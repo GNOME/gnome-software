@@ -2,14 +2,14 @@
 # Copyright (C) 2014 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 # FULL NAME <EMAIL@ADDRESS>, 2014, 2015.
-# Aurimas Černius <aurisc4@gmail.com>, 2014-2022.
+# Aurimas Černius <aurisc4@gmail.com>, 2014-2023.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-09-05 14:40+0000\n"
-"PO-Revision-Date: 2022-09-05 22:34+0300\n"
+"POT-Creation-Date: 2023-01-25 19:41+0000\n"
+"PO-Revision-Date: 2023-01-26 22:42+0200\n"
 "Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
 "Language-Team: Lietuvių <gnome-lt@lists.akl.lt>\n"
 "Language: lt\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "(n%100<10 || n%100>=20) ? 1 : 2)\n"
-"X-Generator: Gtranslator 40.0\n"
+"X-Generator: Gtranslator 42.0\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21
 #: src/org.gnome.Software.desktop.in:3
@@ -31,21 +31,21 @@ msgstr "Įdiegti ir atnaujinti programas"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 msgid ""
-"Software allows you to find and install new applications and system "
-"extensions and remove existing installed applications."
+"Software allows you to find and install new apps and system extensions and "
+"remove existing installed apps."
 msgstr ""
-"Programinė įranga leidžia jums rasti ir įdiegti naujos programas bei "
+"Programinė įranga leidžia jums rasti ir įdiegti naujas programas bei "
 "sistemos plėtinius, taip pat pašalinti įdiegtas programas."
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:14
 msgid ""
-"Software showcases featured and popular applications with useful "
-"descriptions and multiple screenshots per application. Applications can be "
-"found either through browsing the list of categories or by searching. It "
-"also allows you to update your system using an offline update."
+"Software showcases featured and popular apps with useful descriptions and "
+"multiple screenshots per app. Apps can be found either through browsing the "
+"list of categories or by searching. It also allows you to update your system "
+"using an offline update."
 msgstr ""
 "Programinė įranga parodo siūlomas bei populiarias programas su naudingais "
-"aprašymais bei kelios ekrano nuotraukomis kiekvienai programai. Programas "
+"aprašymais bei keliomis ekrano nuotraukomis kiekvienai programai. Programas "
 "galima rasti naršant po kategorijų sąrašą arba ieškant. Taip pat galima "
 "atnaujinti sistemą naudojant atnaujinimą atsijungus."
 
@@ -71,8 +71,8 @@ msgstr "Atnaujinimų skydelis"
 msgid "The update details"
 msgstr "Atnaujinimo detalės"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2018
-#: src/gs-application.c:256
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2135
+#: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "GNOME projektas"
 
@@ -299,44 +299,53 @@ msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
 "assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
-"snap."
+"snap. The formats can be optionally specified with an origin name, divided "
+"by a colon, for example 'flatpak:flathub'."
 msgstr ""
 "Pageidaujamų paketų formatų prioritetinis sąrašas, svarbiausi pradžioje. "
 "Tuščias masyvas reiškia numatytąją tvarką. Praleisti formatai laikomi "
-"esančiais sąrašo pabaigoje. Formatų pavyzdžiai: deb, flatpak, rpm, snap."
+"esančiais sąrašo pabaigoje. Formatų pavyzdžiai: deb, flatpak, rpm, snap. "
+"Formatus taip pat galima nurodyti su šaltinio pavadinimu, atskirtu kableliu, "
+"pavyzdžiui „flatpak:flathub“."
 
-#: data/org.gnome.software.gschema.xml:146
+#: data/org.gnome.software.gschema.xml:143
+msgid "The timestamp of the last attempt to remove unused Flatpak runtimes"
+msgstr ""
+"Laiko žyma paskutiniam bandymui pašalinti nenaudojamas Flatpak vykdymo "
+"aplinkas"
+
+#: data/org.gnome.software.gschema.xml:150
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Simboliu eilutė, sauganti gnome-online-account id, naudojamą prisijungimui"
 
 #. TRANSLATORS: tool that is used when moving profiles system-wide
-#: gs-install-appstream/gs-install-appstream.c:143
+#: gs-install-appstream/gs-install-appstream.c:185
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "GNOME Programinės įrangos AppStream sisteminė diegtuvė"
 
-#: gs-install-appstream/gs-install-appstream.c:145
+#: gs-install-appstream/gs-install-appstream.c:187
 msgid "Failed to parse command line arguments"
 msgstr "Nepavyko perskaityti komandų eilutės argumentų"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: gs-install-appstream/gs-install-appstream.c:152
+#: gs-install-appstream/gs-install-appstream.c:194
 msgid "You need to specify exactly one filename"
 msgstr "Reikia nurodyti vienintelį failą"
 
 #. TRANSLATORS: only able to install files as root
-#: gs-install-appstream/gs-install-appstream.c:159
+#: gs-install-appstream/gs-install-appstream.c:201
 msgid "This program can only be used by the root user"
 msgstr "Šią programą gali naudoti tik root naudotojas"
 
 #. TRANSLATORS: error details
-#: gs-install-appstream/gs-install-appstream.c:167
+#: gs-install-appstream/gs-install-appstream.c:209
 #, c-format
 msgid "Failed to validate content type: %s"
 msgstr "Nepavyko patikrinti turinio tipo: %s"
 
 #. TRANSLATORS: error details
-#: gs-install-appstream/gs-install-appstream.c:178
+#: gs-install-appstream/gs-install-appstream.c:220
 #, c-format
 msgid "Failed to move: %s"
 msgstr "Nepavyko perkelti: %s"
@@ -700,7 +709,7 @@ msgstr "%s • %s"
 
 #. Translators: The app is considered suitable to be run by all ages of people.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-age-rating-context-dialog.c:936
+#: src/gs-age-rating-context-dialog.c:935
 msgctxt "Age rating"
 msgid "All"
 msgstr "Visiems"
@@ -709,44 +718,44 @@ msgstr "Visiems"
 #. * app’s context tile if the size is unknown. It should be short
 #. * (at most a couple of characters wide).
 #. Translators: This is shown in a bubble if the storage
-#. * size of an application is not known. The bubble is small,
+#. * size of an app is not known. The bubble is small,
 #. * so the string should be as short as possible.
-#: src/gs-age-rating-context-dialog.c:949 src/gs-app-context-bar.c:206
+#: src/gs-age-rating-context-dialog.c:948 src/gs-app-context-bar.c:206
 #: src/gs-storage-context-dialog.c:89
 msgid "?"
 msgstr "?"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1023
+#: src/gs-age-rating-context-dialog.c:1020
 #, c-format
 msgid "%s is suitable for everyone"
 msgstr "%s yra tinkama visiems"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 3. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1027
+#: src/gs-age-rating-context-dialog.c:1024
 #, c-format
 msgid "%s is suitable for toddlers"
 msgstr "%s yra tinkama kūdikiams"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 5. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1031
+#: src/gs-age-rating-context-dialog.c:1028
 #, c-format
 msgid "%s is suitable for young children"
 msgstr "%s yra tinkama mažiems vaikams"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1039
+#: src/gs-age-rating-context-dialog.c:1036
 #, c-format
 msgid "%s is suitable for teenagers"
 msgstr "%s yra tinkama paaugliams"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people aged up to and over 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1043
+#: src/gs-age-rating-context-dialog.c:1040
 #, c-format
 msgid "%s is suitable for adults"
 msgstr "%s yra tinkama suaugusiems"
@@ -754,14 +763,14 @@ msgstr "%s yra tinkama suaugusiems"
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for a specified age group. The first placeholder is the app name, the second
 #. * is the age group.
-#: src/gs-age-rating-context-dialog.c:1048
+#: src/gs-age-rating-context-dialog.c:1045
 #, c-format
 msgid "%s is suitable for %s"
 msgstr "%s yra tinkama %s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:211
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:217
 msgid "Age Rating"
 msgstr "Amžiaus įvertinimas"
 
@@ -771,7 +780,7 @@ msgstr "Amžiaus įvertinimas"
 msgid "How to contribute missing information"
 msgstr "Kai pridėti trūkstamą informaciją"
 
-#: lib/gs-app.c:6175
+#: lib/gs-app.c:6187
 msgid "Local file"
 msgstr "Vietinis failas"
 
@@ -780,36 +789,36 @@ msgstr "Vietinis failas"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6194 src/gs-safety-context-dialog.c:439
+#: lib/gs-app.c:6206 src/gs-safety-context-dialog.c:435
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6271
+#: lib/gs-app.c:6283
 msgid "Package"
 msgstr "Paketas"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:457
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:452
 msgid "Pending"
 msgstr "Laukia"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:461 src/gs-details-page.c:369
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:456 src/gs-details-page.c:368
 msgid "Pending install"
 msgstr "Laukia diegimo"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:465 src/gs-details-page.c:376
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:460 src/gs-details-page.c:375
 msgid "Pending remove"
 msgstr "Laukia pašalinimo"
 
 #: src/gs-app-addon-row.c:111 src/gs-app-row.ui:197 src/gs-app-tile.ui:50
-#: src/gs-feature-tile.c:535
+#: src/gs-feature-tile.c:543
 msgctxt "Single app"
 msgid "Installed"
 msgstr "Įdiegta"
 
 #. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:205 src/gs-details-page.c:362
+#. * shows the status of an app being installed
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:207 src/gs-details-page.c:361
 msgid "Installing"
 msgstr "Diegiama"
 
@@ -817,7 +826,8 @@ msgstr "Diegiama"
 msgid "Removing"
 msgstr "Šalinama"
 
-#: src/gs-app-addon-row.ui:64
+#. TRANSLATORS: this is button text to remove the app
+#: src/gs-app-addon-row.ui:64 src/gs-details-page.c:1011 src/gs-page.c:524
 msgid "_Uninstall"
 msgstr "_Pašalinti"
 
@@ -913,28 +923,28 @@ msgid "No update description available."
 msgstr "Nėra prieinamo atnaujinimo aprašo."
 
 #: src/gs-app-details-page.ui:25 src/gs-os-update-page.ui:25
-#: src/gs-shell.ui:367 src/gs-shell.ui:458
+#: src/gs-shell.ui:348 src/gs-shell.ui:439
 msgid "Go back"
 msgstr "Grįžti atgal"
 
-#: src/gs-app-details-page.ui:48 src/gs-app-row.c:516
+#: src/gs-app-details-page.ui:48 src/gs-app-row.c:515
 msgid "Requires additional permissions"
 msgstr "Reikia papildomų leidimų"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:855
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:926
 msgid "Reviews"
 msgstr "Atsiliepimai"
 
 #: src/gs-app-reviews-dialog.ui:25
-msgid "No reviews were found for this application."
+msgid "No reviews were found for this app."
 msgstr "Šiai programai nėra atsiliepimų."
 
 #: src/gs-app-reviews-dialog.ui:27
 msgid "No Reviews"
 msgstr "Nėra atsiliepimų"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:533
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:525
 msgid "Version History"
 msgstr "Versijos istorija"
 
@@ -954,7 +964,7 @@ msgstr "Nėra informacijos šiam leidimui"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
+#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:67
 msgid "%e %B %Y"
 msgstr "%Y %e %B"
 
@@ -1043,12 +1053,12 @@ msgstr "Teikti pirmenybę vietiniams failų šaltiniams vietoj AppStream"
 msgid "Show version number"
 msgstr "Rodyti versijos numerį"
 
-#: src/gs-application.c:261 src/gs-application.c:269
+#: src/gs-application.c:271 src/gs-application.c:279
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr ""
 "Autorių teisės saugomos © 2016–2022 GNOME Programinės įrangos pagalbininkai"
 
-#: src/gs-application.c:263 src/gs-application.c:272
+#: src/gs-application.c:273 src/gs-application.c:282
 msgid "translator-credits"
 msgstr ""
 "Išvertė:\n"
@@ -1056,21 +1066,21 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:277 src/gs-shell.c:2149
+#: src/gs-application.c:287 src/gs-shell.c:2124
 msgid "About Software"
 msgstr "Apie programinę įrangą"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:280
+#: src/gs-application.c:290
 msgid "A nice way to manage the software on your system."
 msgstr "Gražus būdas tvarkyti sistemos programinę įrangą."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:468
+#: src/gs-application.c:478
 msgid "Sorry! There are no details for that application."
 msgstr "Atsiprašome! Apie šią programą nėra informacijos."
 
-#. Translators: The disk usage of an application when installed.
+#. Translators: The disk usage of an app when installed.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:162 src/gs-storage-context-dialog.c:133
 msgid "Installed Size"
@@ -1095,7 +1105,7 @@ msgstr "Įskaitant %s podėlio"
 msgid "Cache and data usage unknown"
 msgstr "Podėlio ir duomenų naudojimas nežinomas"
 
-#. Translators: The download size of an application.
+#. Translators: The download size of an app.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:187 src/gs-storage-context-dialog.c:165
 msgid "Download Size"
@@ -1125,117 +1135,117 @@ msgstr "Dydis nežinomas"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:282
+#: src/gs-app-context-bar.c:281
 msgid "No permissions"
 msgstr "Nėra leidimų"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:293
+#: src/gs-app-context-bar.c:292
 msgid "Has network access"
 msgstr "Turi tinklo prieigą"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:300
+#: src/gs-app-context-bar.c:299
 msgid "Uses system services"
 msgstr "Naudoja sistemos tarnybas"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:307
+#: src/gs-app-context-bar.c:306
 msgid "Uses session services"
 msgstr "Naudoja seanso tarnybas"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:314
+#: src/gs-app-context-bar.c:313
 msgid "Can access hardware devices"
 msgstr "Gali pasiekti sistemos įrenginius"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:326
+#: src/gs-app-context-bar.c:325
 msgid "Can read/write all your data"
 msgstr "Gali rašyti ir skaityti visus jūsų duomenis"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:338
+#: src/gs-app-context-bar.c:337
 msgid "Can read all your data"
 msgstr "Gali skaityti visus jūsų duomenis"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:345
+#: src/gs-app-context-bar.c:344
 msgid "Can read/write your downloads"
 msgstr "Gali skaityti ir rašyti visus jūsų atsisiuntimus"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:352
+#: src/gs-app-context-bar.c:351
 msgid "Can read your downloads"
 msgstr "Gali skaityti jūsų atsiuntimus"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:359
+#: src/gs-app-context-bar.c:358
 msgid "Can access arbitrary files"
 msgstr "Gali pasiekti visus failus"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:366 src/gs-safety-context-dialog.c:227
+#: src/gs-app-context-bar.c:365 src/gs-safety-context-dialog.c:226
 msgid "Can access and change user settings"
 msgstr "Gali pasiekti bei keisti naudotojo nustatymus"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:373 src/gs-safety-context-dialog.c:211
+#: src/gs-app-context-bar.c:372 src/gs-safety-context-dialog.c:210
 msgid "Uses a legacy windowing system"
 msgstr "Naudoja seną langų sistemą"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:380 src/gs-safety-context-dialog.c:219
+#: src/gs-app-context-bar.c:379 src/gs-safety-context-dialog.c:218
 msgid "Can acquire arbitrary permissions"
 msgstr "Gali gauti papildomų leidimų"
 
-#. Translators: This indicates that an application has been packaged
+#. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:406 src/gs-safety-context-dialog.c:146
+#: src/gs-app-context-bar.c:405 src/gs-safety-context-dialog.c:145
 msgid "Reviewed by your distribution"
 msgstr "Peržiūrėta jūsų distribucijos"
 
-#. Translators: This indicates that an application has been packaged
+#. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:413 src/gs-safety-context-dialog.c:143
+#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:142
 msgid "Provided by a third party"
 msgstr "Peržiūrėta trečiosios šalies"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:425
+#: src/gs-app-context-bar.c:424
 msgid "Proprietary code"
 msgstr "Nuosavybinis kodas"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:431
+#: src/gs-app-context-bar.c:430
 msgid "Auditable code"
 msgstr "Audituojamas kodas"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:438
+#: src/gs-app-context-bar.c:437
 msgid "Software developer is verified"
 msgstr "Programos kūrėjas yra patikrintas"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:447
+#: src/gs-app-context-bar.c:446
 msgid "Software no longer supported"
 msgstr "Programinė įranga daugiau nebepalaikoma"
 
@@ -1253,152 +1263,149 @@ msgstr "Programinė įranga daugiau nebepalaikoma"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:459 src/gs-app-context-bar.c:730
+#: src/gs-app-context-bar.c:458 src/gs-app-context-bar.c:724
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:467
+#: src/gs-app-context-bar.c:466
 msgid "Safe"
 msgstr "Saugi"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:474
+#: src/gs-app-context-bar.c:473
 msgid "Potentially Unsafe"
 msgstr "Galimai nesaugi"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:481
+#: src/gs-app-context-bar.c:480
 msgid "Unsafe"
 msgstr "Nesaugi"
 
-#: src/gs-app-context-bar.c:560 src/gs-app-context-bar.c:592
-#: src/gs-hardware-support-context-dialog.c:603
+#: src/gs-app-context-bar.c:556 src/gs-app-context-bar.c:588
+#: src/gs-hardware-support-context-dialog.c:602
 msgid "Mobile Only"
 msgstr "Tik mobiliems įrenginiams"
 
-#: src/gs-app-context-bar.c:561
+#: src/gs-app-context-bar.c:557
 msgid "Only works on a small screen"
 msgstr "Veikia tik mažuose ekranuose"
 
-#: src/gs-app-context-bar.c:566 src/gs-app-context-bar.c:599
-#: src/gs-app-context-bar.c:606 src/gs-app-context-bar.c:656
-#: src/gs-app-context-bar.c:661 src/gs-hardware-support-context-dialog.c:583
+#: src/gs-app-context-bar.c:562 src/gs-app-context-bar.c:595
+#: src/gs-app-context-bar.c:602 src/gs-app-context-bar.c:652
+#: src/gs-app-context-bar.c:657 src/gs-hardware-support-context-dialog.c:582
 msgid "Desktop Only"
 msgstr "Tik darbalaukiui"
 
-#: src/gs-app-context-bar.c:567
+#: src/gs-app-context-bar.c:563
 msgid "Only works on a large screen"
 msgstr "Veikia tik dideliuose ekranuose"
 
-#: src/gs-app-context-bar.c:571 src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:567 src/gs-hardware-support-context-dialog.c:620
 msgid "Screen Size Mismatch"
 msgstr "Ekrano dydžio neatitikimas"
 
-#: src/gs-app-context-bar.c:572 src/gs-hardware-support-context-dialog.c:622
+#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
 msgid "Doesn’t support your current screen size"
 msgstr "Nepalaiko jūsų dabartinio ekrano dydžio"
 
-#: src/gs-app-context-bar.c:593 src/gs-hardware-support-context-dialog.c:674
-#: src/gs-hardware-support-context-dialog.c:680
+#: src/gs-app-context-bar.c:589 src/gs-hardware-support-context-dialog.c:673
+#: src/gs-hardware-support-context-dialog.c:679
 msgid "Requires a touchscreen"
 msgstr "Reikalauja liečiamojo ekrano"
 
-#: src/gs-app-context-bar.c:600 src/gs-hardware-support-context-dialog.c:634
-#: src/gs-hardware-support-context-dialog.c:640
+#: src/gs-app-context-bar.c:596 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-hardware-support-context-dialog.c:639
 msgid "Requires a keyboard"
 msgstr "Reikalauja klaviatūros"
 
-#: src/gs-app-context-bar.c:607
+#: src/gs-app-context-bar.c:603
 msgid "Requires a mouse"
 msgstr "Reikalauja pelės"
 
-#: src/gs-app-context-bar.c:618
+#: src/gs-app-context-bar.c:614
 msgid "Gamepad Needed"
 msgstr "Reikia žaidimų valdiklio"
 
-#: src/gs-app-context-bar.c:619
+#: src/gs-app-context-bar.c:615
 msgid "Requires a gamepad to play"
 msgstr "Žaidimui reikalauja žaidimų valdiklio"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:643
+#: src/gs-app-context-bar.c:639
 msgid "Adaptive"
 msgstr "Adaptyvi"
 
-#: src/gs-app-context-bar.c:644
+#: src/gs-app-context-bar.c:640
 msgid "Works on phones, tablets and desktops"
 msgstr "Veikia telefonuose, planšetėse ir darbalaukiuose"
 
-#: src/gs-app-context-bar.c:657
+#: src/gs-app-context-bar.c:653
 msgid "Probably requires a keyboard or mouse"
 msgstr "Greičiausiai reikalauja klaviatūros arba pelės"
 
-#: src/gs-app-context-bar.c:662
+#: src/gs-app-context-bar.c:658
 msgid "Works on desktops and laptops"
 msgstr "Veikia darbalaukiuose ir planšetėse"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:705
+#: src/gs-app-context-bar.c:699
 msgid "Contains no age-inappropriate content"
 msgstr "Programa neturi netinkamo turinio"
 
-#: src/gs-app-context-bar.c:753
+#: src/gs-app-context-bar.c:747
 msgid "No age rating information available"
 msgstr "Nėra prieinamos amžiaus informacijos"
 
 #. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily installed
-#: src/gs-app-row.c:153
+#. * allows the app to be easily installed
+#: src/gs-app-row.c:154
 msgid "Visit Website"
 msgstr "Aplankyti tinklalapį"
 
 #. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily installed.
+#. * allows the app to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:159
+#: src/gs-app-row.c:160
 msgid "Install…"
 msgstr "Įdiegti…"
 
 #. TRANSLATORS: this is a button next to the search results that
-#. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:167 src/gs-updates-section.ui:62
+#. * allows to cancel a queued install of the app
+#: src/gs-app-row.c:168 src/gs-updates-section.ui:63
 msgid "Cancel"
 msgstr "Atsisakyti"
 
 #. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily installed
-#. TRANSLATORS: button text
-#. TRANSLATORS: update the fw
-#: src/gs-app-row.c:175 src/gs-common.c:286 src/gs-page.c:374
+#. * allows the app to be easily installed
+#: src/gs-app-row.c:176
 msgid "Install"
 msgstr "Įdiegti"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:183
+#: src/gs-app-row.c:184
 msgid "Update"
 msgstr "Atnaujinti"
 
 #. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily removed
-#. TRANSLATORS: button text in the header when an application can be erased
-#. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:188 src/gs-app-row.c:198 src/gs-details-page.ui:281
-#: src/gs-page.c:549
+#. * allows the app to be easily removed
+#. TRANSLATORS: button text in the header when an app can be erased
+#: src/gs-app-row.c:190 src/gs-app-row.c:200 src/gs-details-page.ui:260
+#: src/gs-details-page.ui:270
 msgid "Uninstall"
 msgstr "Pašalinti"
 
 #. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
-#: src/gs-app-row.c:212
+#. * shows the status of an app being erased
+#: src/gs-app-row.c:214
 msgid "Uninstalling"
 msgstr "Šalinama"
 
@@ -1415,18 +1422,18 @@ msgid "Source: %s"
 msgstr "Šaltinis: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:523
+#: src/gs-app-row.c:522
 #, c-format
 msgid "Renamed from %s"
 msgstr "Pervadinta iš %s"
 
-#. Translators: The placeholder is an application name
+#. Translators: The placeholder is an app name
 #: src/gs-app-translation-dialog.c:67
 #, c-format
 msgid "Help Translate %s"
 msgstr "Padėkite išversti %s"
 
-#. Translators: The placeholder is an application name
+#. Translators: The placeholder is an app name
 #: src/gs-app-translation-dialog.c:70
 #, c-format
 msgid ""
@@ -1455,29 +1462,35 @@ msgstr "_Vertimų tinklalapis"
 msgid "Login required remote %s (realm %s)"
 msgstr "Reikalingas nuotolinis prisijungimas %s (sritis %s)"
 
-#: src/gs-basic-auth-dialog.ui:13
+#: src/gs-basic-auth-dialog.ui:6
 msgid "Login Required"
 msgstr "Reikia prisijungti"
 
-#: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:612
-#: src/gs-details-page.ui:294 src/gs-removal-dialog.ui:17
-#: src/gs-review-dialog.ui:18
+#. TRANSLATORS: button text
+#: src/gs-basic-auth-dialog.ui:12 src/gs-common.c:296 src/gs-common.c:697
+#: src/gs-details-page.ui:286 src/gs-page.c:350 src/gs-page.c:522
+#: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:165
+#: src/gs-repos-dialog.c:237 src/gs-review-dialog.ui:18 src/gs-review-row.c:237
+#: src/gs-updates-page.c:847 src/gs-updates-page.c:864
 msgid "_Cancel"
 msgstr "_Atsisakyti"
 
-#: src/gs-basic-auth-dialog.ui:35
+#: src/gs-basic-auth-dialog.ui:24
 msgid "_Login"
 msgstr "_Prisijungti"
 
-#: src/gs-basic-auth-dialog.ui:88
-msgid "_User"
-msgstr "Na_udotojas"
+#. Translators: Placeholder text for a login entry.
+#. Translators: It's an origin scope, 'User' or 'System' installation
+#: src/gs-basic-auth-dialog.ui:60 src/gs-origin-popover-row.ui:138
+msgid "User"
+msgstr "Naudotojas"
 
-#: src/gs-basic-auth-dialog.ui:107
-msgid "_Password"
-msgstr "Sla_ptažodis"
+#. Translators: Placeholder text for a login entry.
+#: src/gs-basic-auth-dialog.ui:73
+msgid "Password"
+msgstr "Slaptažodis"
 
-#. TRANSLATORS: this is where all applications that don't
+#. TRANSLATORS: this is where all apps that don't
 #. * fit in other groups are put
 #: lib/gs-category.c:209
 msgid "Other"
@@ -1497,13 +1510,13 @@ msgstr "Siūlomos"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:41 src/gs-overview-page.ui:106
+#: src/gs-category-page.ui:41 src/gs-overview-page.ui:69
 msgid "Editor’s Choice"
 msgstr "Redaktoriaus pasirinkimai"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:69 src/gs-overview-page.ui:129
+#: src/gs-category-page.ui:69 src/gs-overview-page.ui:92
 msgid "New & Updated"
 msgstr "Nauja ir atnaujinta"
 
@@ -1525,7 +1538,7 @@ msgstr "Įveskite skaičių nuo 1 iki %u: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
 #: lib/gs-cmd.c:266
-msgid "Choose an application:"
+msgid "Choose an app:"
 msgstr "Pasirinkite programą:"
 
 #: lib/gs-desktop-data.c:16
@@ -1898,63 +1911,73 @@ msgstr "Kalbų paketai"
 msgid "Localization"
 msgstr "Lokalizacija"
 
-#. TRANSLATORS: this is the summary of a notification that an application
+#. TRANSLATORS: this is the summary of a notification that an app
 #. * has been successfully installed
 #. TRANSLATORS: this is the summary of a notification that a component
 #. * has been successfully installed
-#: src/gs-common.c:68 src/gs-common.c:91
+#: src/gs-common.c:69 src/gs-common.c:92
 #, c-format
 msgid "%s is now installed"
 msgstr "%s dabar įdiegta"
 
-#. TRANSLATORS: an application has been installed, but
+#. TRANSLATORS: an app has been installed, but
 #. * needs a reboot to complete the installation
-#: src/gs-common.c:72 src/gs-common.c:95
+#: src/gs-common.c:73 src/gs-common.c:96
 msgid "A restart is required for the changes to take effect."
 msgstr "Reikia paleisti iš naujo, kad pakeitimai įsigaliotų."
 
-#. TRANSLATORS: this is the body of a notification that an application
+#. TRANSLATORS: this is the body of a notification that an app
 #. * has been successfully installed
-#: src/gs-common.c:76
-msgid "Application is ready to be used."
-msgstr "Programa pasiruošusi naudojimui."
+#: src/gs-common.c:77
+msgid "App is ready to be used."
+msgstr "Programa paruošta naudojimui."
 
 #. TRANSLATORS: this is the summary of a notification that OS updates
 #. * have been successfully installed
-#: src/gs-common.c:84
+#: src/gs-common.c:85
 msgid "System updates are now installed"
 msgstr "Sistemos atnaujinimai dabar įdiegti"
 
 #. TRANSLATORS: this is the body of a notification that OS updates
 #. * have been successfully installed
-#: src/gs-common.c:87
+#: src/gs-common.c:88
 msgid "Recently installed updates are available to review"
 msgstr "Galima parašyti atsiliepimą apie neseniai įdiegtus atnaujinimus"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:106 src/gs-common.c:775
+#: src/gs-common.c:107 src/gs-common.c:860
 msgid "Restart"
 msgstr "Paleisti iš naujo"
 
-#: src/gs-common.c:112
+#: src/gs-common.c:113
 msgid "Launch"
 msgstr "Paleisti"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:218
+#: src/gs-common.c:230
+msgid "Install Software?"
+msgstr "Įdiegti programinę įrangą?"
+
+#. TRANSLATORS: window title
+#: src/gs-common.c:232
 msgid "Install Third-Party Software?"
 msgstr "Įdiegti trečių šalių programinę įrangą?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:222 src/gs-repos-dialog.c:168
+#: src/gs-common.c:236
+msgid "Enable Software Repository?"
+msgstr "Įjungti programinės įrangos šaltinį?"
+
+#. TRANSLATORS: window title
+#: src/gs-common.c:238 src/gs-repos-dialog.c:162
 msgid "Enable Third-Party Software Repository?"
 msgstr "Įjungti trečių šalių programinės įrangos šaltinį?"
 
 #. TRANSLATORS: the replacements are as follows:
-#. * 1. Application name, e.g. "Firefox"
+#. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:240
+#: src/gs-common.c:250
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1965,56 +1988,73 @@ msgstr ""
 "„%s“."
 
 #. TRANSLATORS: the replacements are as follows:
-#. * 1. Application name, e.g. "Firefox"
+#. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:250
+#: src/gs-common.c:260
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s tiekia „%s“."
 
-#: src/gs-common.c:259
+#: src/gs-common.c:269
 msgid "This software repository must be enabled to continue installation."
 msgstr "Šį programinės įrangos šaltinį reikia įjungti prieš tęsiant diegimą."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:269
+#: src/gs-common.c:279
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "Kai kuriose šalyse gali būti nelegalu naudoti %s."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:275
+#: src/gs-common.c:285
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "Kai kuriose šalyse įdiegti ar naudoti kodeką gali būti nelegalu."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:282
-msgid "Don’t Warn Again"
-msgstr "Daugiau neperspėti"
+#: src/gs-common.c:299
+msgid "Don’t _Warn Again"
+msgstr "Daugiau _neperspėti"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:291
-msgid "Enable and Install"
-msgstr "Įjungti ir įdiegti"
+#. TRANSLATORS: button text in the header when an app
+#. * can be installed
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#. TRANSLATORS: update the fw
+#: src/gs-common.c:303 src/gs-details-page.c:904 src/gs-details-page.c:930
+#: src/gs-details-page.ui:209 src/gs-page.c:352
+#: plugins/packagekit/gs-packagekit-task.c:150
+msgid "_Install"
+msgstr "Į_diegti"
+
+#. TRANSLATORS: button text
+#: src/gs-common.c:308
+msgid "Enable and _Install"
+msgstr "Įjungti ir į_diegti"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:493
+#: src/gs-common.c:511
 msgid "Detailed errors from the package manager follow:"
 msgstr "Detalios klaidos iš paketų tvarkytuvės:"
 
-#: src/gs-common.c:509 src/gs-safety-context-dialog.ui:72
+#: src/gs-common.c:518 src/gs-safety-context-dialog.ui:72
 msgid "Details"
 msgstr "Detali informacija"
 
+#. TRANSLATORS: button text
+#: src/gs-common.c:567
+msgid "_Close"
+msgstr "_Užverti"
+
 #. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:600
+#: src/gs-common.c:689
 msgid "_Accept"
 msgstr "_Priimti"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:750
+#: src/gs-common.c:835
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Atnaujinimas buvo įdiegtas"
@@ -2022,15 +2062,15 @@ msgstr[1] "Atnaujinimai buvo įdiegti"
 msgstr[2] "Atnaujinimai buvo įdiegti"
 
 #. TRANSLATORS: we've just removed some apps
-#: src/gs-common.c:760
-msgid "An application has been removed"
-msgid_plural "Applications have been removed"
+#: src/gs-common.c:845
+msgid "An app has been removed"
+msgid_plural "Apps have been removed"
 msgstr[0] "Programa buvo pašalinta"
 msgstr[1] "Programos buvo pašalintos"
 msgstr[2] "Programos buvo pašalintos"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:766
+#: src/gs-common.c:851
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Reikia paleisti iš naujo, kad jis įsigaliotų."
@@ -2038,16 +2078,16 @@ msgstr[1] "Reikia paleisti iš naujo, kad jie įsigaliotų."
 msgstr[2] "Reikia paleisti iš naujo, kad jie įsigaliotų."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:773
+#: src/gs-common.c:858
 msgid "Not Now"
 msgstr "Ne dabar"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:869
+#: src/gs-common.c:954
 msgid "Just now"
 msgstr "Ką tik"
 
-#: src/gs-common.c:871
+#: src/gs-common.c:956
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
@@ -2055,7 +2095,7 @@ msgstr[0] "prieš %d minutę"
 msgstr[1] "prieš %d minutes"
 msgstr[2] "prieš %d minučių"
 
-#: src/gs-common.c:875
+#: src/gs-common.c:960
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
@@ -2063,7 +2103,7 @@ msgstr[0] "prieš %d valandą"
 msgstr[1] "prieš %d valandas"
 msgstr[2] "prieš %d valandų"
 
-#: src/gs-common.c:879
+#: src/gs-common.c:964
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
@@ -2071,7 +2111,7 @@ msgstr[0] "prieš %d dieną"
 msgstr[1] "prieš %d dienas"
 msgstr[2] "prieš %d dienų"
 
-#: src/gs-common.c:883
+#: src/gs-common.c:968
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
@@ -2079,7 +2119,7 @@ msgstr[0] "prieš %d savaitę"
 msgstr[1] "prieš %d savaites"
 msgstr[2] "prieš %d savaičių"
 
-#: src/gs-common.c:887
+#: src/gs-common.c:972
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
@@ -2087,7 +2127,7 @@ msgstr[0] "prieš %d mėnesį"
 msgstr[1] "prieš %d mėnesius"
 msgstr[2] "prieš %d mėnesių"
 
-#: src/gs-common.c:891
+#: src/gs-common.c:976
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -2099,7 +2139,7 @@ msgstr[2] "prieš %d metų"
 #. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1255
+#: src/gs-common.c:1340
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
@@ -2107,7 +2147,7 @@ msgstr "%s %s"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:291
-msgid "An application"
+msgid "An app"
 msgstr "Programa"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
@@ -2166,11 +2206,11 @@ msgid "Additional Packages Required"
 msgstr "Reikalingi papildomi paketai"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: src/gs-dbus-helper.c:332
+#: src/gs-dbus-helper.c:338
 msgid "Find in Software"
 msgstr "Rasti programinėje įrangoje"
 
-#: src/gs-description-box.c:67 src/gs-description-box.c:269
+#: src/gs-description-box.c:67 src/gs-description-box.c:266
 msgid "_Show More"
 msgstr "_Rodyti daugiau"
 
@@ -2178,50 +2218,41 @@ msgstr "_Rodyti daugiau"
 msgid "_Show Less"
 msgstr "_Rodyti mažiau"
 
-#: src/gs-details-page.c:357
+#: src/gs-details-page.c:356
 msgid "Removing…"
 msgstr "Šalinama…"
 
-#: src/gs-details-page.c:367
+#: src/gs-details-page.c:366
 msgid "Requires restart to finish install"
 msgstr "Diegimo užbaigimui reikia perleisti"
 
-#: src/gs-details-page.c:374
+#: src/gs-details-page.c:373
 msgid "Requires restart to finish remove"
 msgstr "Pašalinimo užbaigimui reikia perleisti"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:391
+#: src/gs-details-page.c:390
 msgid "Pending installation…"
 msgstr "Laukia diegimo…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:398
+#: src/gs-details-page.c:397
 msgid "Pending update…"
 msgstr "Laukia atnaujinimo…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:414
+#: src/gs-details-page.c:413
 msgid "Preparing…"
 msgstr "Ruošiama…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:417
+#: src/gs-details-page.c:416
 msgid "Uninstalling…"
 msgstr "Šalinama…"
 
-#. TRANSLATORS: button text in the header when an application
-#. * can be installed
-#. TRANSLATORS: button text in the header when firmware
-#. * can be live-installed
-#: src/gs-details-page.c:860 src/gs-details-page.c:886
-#: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
-msgid "_Install"
-msgstr "Į_diegti"
-
-#: src/gs-details-page.c:876
+#: src/gs-details-page.c:920
 msgid "_Restart"
 msgstr "Pe_rleisti"
 
@@ -2229,22 +2260,36 @@ msgstr "Pe_rleisti"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:900
+#: src/gs-details-page.c:944
 msgid "_Install…"
 msgstr "Į_diegti…"
 
+#. Translators: %s is the user-visible app name
+#: src/gs-details-page.c:1155
+#, c-format
+msgid "%s will appear in US English"
+msgstr "%s bus rodoma anglu kalba"
+
+#: src/gs-details-page.c:1161
+msgid "This app will appear in US English"
+msgstr "Ši programa bus rodoma anglu kalba"
+
+#: src/gs-details-page.c:1176 src/gs-details-page.ui:59
+msgid "Help _Translate"
+msgstr "Padėti iš_versti"
+
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1177
+#: src/gs-details-page.c:1240
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Kitos %s programos"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1560
+#: src/gs-details-page.c:1623
 msgid "You need internet access to write a review"
 msgstr "Norėdami parašyti atsiliepimą turite prisijungti prie interneto"
 
-#: src/gs-details-page.c:1711 src/gs-details-page.c:1727
+#: src/gs-details-page.c:1793 src/gs-details-page.c:1809
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nepavyko rasti „%s“"
@@ -2254,71 +2299,59 @@ msgid "Details page"
 msgstr "Detalių puslapis"
 
 #: src/gs-details-page.ui:39
-msgid "Loading application details…"
+msgid "Loading app details…"
 msgstr "Įkeliamos programų detalės…"
 
-#: src/gs-details-page.ui:77
-msgid ""
-"This software is not available in your language and will appear in US "
-"English."
-msgstr "Ši programinė įranga neprieinama jūsų kalba ir bus JAV anglų kalba"
-
-#: src/gs-details-page.ui:83
-msgid "Help _Translate"
-msgstr "Padėti iš_versti"
-
-#. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.ui:244
+#. TRANSLATORS: A label for a button to execute the selected app.
+#: src/gs-details-page.ui:226
 msgid "_Open"
 msgstr "_Atverti"
 
-#: src/gs-details-page.ui:257 plugins/packagekit/gs-packagekit-task.c:160
+#: src/gs-details-page.ui:242 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
 msgstr "_Atnaujinti"
 
-#: src/gs-details-page.ui:319
+#: src/gs-details-page.ui:311
 msgid "Downloading"
 msgstr "Atsisiunčiama"
 
-#: src/gs-details-page.ui:456 src/gs-installed-page.ui:135
+#: src/gs-details-page.ui:448 src/gs-installed-page.ui:135
 msgid "Add-ons"
 msgstr "Priedai"
 
-#: src/gs-details-page.ui:467
-msgid "Selected add-ons will be installed with the application."
+#: src/gs-details-page.ui:459
+msgid "Selected add-ons will be installed with the app."
 msgstr "Pasirinkti priedai bus įdiegti su programa."
 
-#: src/gs-details-page.ui:567
-msgid ""
-"This application can only be used when there is an active internet "
-"connection."
+#: src/gs-details-page.ui:559
+msgid "This app can only be used when there is an active internet connection."
 msgstr "Šią programą galima naudoti tik esant aktyviam interneto ryšiui."
 
-#: src/gs-details-page.ui:587
+#: src/gs-details-page.ui:582
 msgid "Software Repository Included"
 msgstr "Įtrauktas programinė įrangos šaltinis"
 
-#: src/gs-details-page.ui:588
+#: src/gs-details-page.ui:592
 msgid ""
-"This application includes a software repository which provides updates, as "
-"well as access to other software."
+"This app includes a software repository which provides updates, as well as "
+"access to other software."
 msgstr ""
 "Ši programa įtraukia programinės įrangos šaltinį, kuris pateikia "
 "atnaujinimus, taip pat leidžia prieiti prie kitos programinės įrangos."
 
-#: src/gs-details-page.ui:605
+#: src/gs-details-page.ui:620
 msgid "No Software Repository Included"
 msgstr "Neįtrauktas programinės įrangos šaltinis"
 
-#: src/gs-details-page.ui:606
+#: src/gs-details-page.ui:630
 msgid ""
-"This application does not include a software repository. It will not be "
-"updated with new versions."
+"This app does not include a software repository. It will not be updated with "
+"new versions."
 msgstr ""
 "Ši programa neturi programinės įrangos šaltinio. Ji nebus atnaujinama į "
 "naujas versijas."
 
-#: src/gs-details-page.ui:624
+#: src/gs-details-page.ui:658
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2327,11 +2360,11 @@ msgstr ""
 "pakeisti."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:641
+#: src/gs-details-page.ui:689
 msgid "Software Repository Identified"
 msgstr "Programinės įrangos šaltinis identifikuotas"
 
-#: src/gs-details-page.ui:642
+#: src/gs-details-page.ui:699
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2339,15 +2372,15 @@ msgstr ""
 "Šio programinės įrangos šaltinio pridėjimas suteiks jums priėjimą prie "
 "papildomos programinės įrangos ir atnaujinimų."
 
-#: src/gs-details-page.ui:643
+#: src/gs-details-page.ui:706
 msgid "Only use software repositories that you trust."
 msgstr "Naudoti tik patikimą programinę įrangą."
 
-#: src/gs-details-page.ui:708
+#: src/gs-details-page.ui:779
 msgid "No Metadata"
 msgstr "Nėra metaduomenų"
 
-#: src/gs-details-page.ui:717
+#: src/gs-details-page.ui:788
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2355,38 +2388,38 @@ msgstr ""
 "Ši programinė įranga nepateikia nuorodų į tinklalapį, kodo saugyklą ar "
 "klaidų sistemą."
 
-#: src/gs-details-page.ui:745
+#: src/gs-details-page.ui:816
 msgid "Project _Website"
 msgstr "Projekto _tinklalapis"
 
-#: src/gs-details-page.ui:762
+#: src/gs-details-page.ui:833
 msgid "_Donate"
 msgstr "_Paremti"
 
-#: src/gs-details-page.ui:779
+#: src/gs-details-page.ui:850
 msgid "Contribute _Translations"
 msgstr "Prisidėti prie _vertimo"
 
-#: src/gs-details-page.ui:796
+#: src/gs-details-page.ui:867
 msgid "_Report an Issue"
 msgstr "P_ranešti apie klaidą"
 
-#: src/gs-details-page.ui:813
+#: src/gs-details-page.ui:884
 msgid "_Help"
 msgstr "_Žinynas"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:908
-msgid "_Write Review"
+#: src/gs-details-page.ui:978
+msgid "Write R_eview"
 msgstr "Raš_yti atsiliepimą"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:945
+#: src/gs-details-page.ui:1015
 msgid "All Reviews"
 msgstr "Visi atsiliepimai"
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:216
+#: lib/gs-external-appstream-utils.c:272
 msgid "Downloading extra metadata files…"
 msgstr "Atsisiunčiami papildomi metaduomenų failai…"
 
@@ -2400,7 +2433,7 @@ msgstr " ir "
 msgid ", "
 msgstr ", "
 
-#. TRANSLATORS: Application window title for fonts installation.
+#. TRANSLATORS: App window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
 #: src/gs-extras-page.c:171
 #, c-format
@@ -2410,7 +2443,7 @@ msgstr[0] "Galimi šriftai %s scenarijui"
 msgstr[1] "Galimi šriftai %s scenarijams"
 msgstr[2] "Galimi šriftai %s scenarijų"
 
-#. TRANSLATORS: Application window title for codec installation.
+#. TRANSLATORS: App window title for codec installation.
 #. %s will be replaced by actual codec name(s)
 #: src/gs-extras-page.c:179
 #, c-format
@@ -2439,11 +2472,11 @@ msgstr "%s nerasta"
 msgid "on the website"
 msgstr "žiniatinklyje"
 
-#. TRANSLATORS: this is when we know about an application or
+#. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:354
 #, c-format
-msgid "No applications are available that provide the file %s."
+msgid "No apps are available that provide the file %s."
 msgstr "Nėra programų, kurios pateikia failą %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
@@ -2451,20 +2484,20 @@ msgstr "Nėra programų, kurios pateikia failą %s."
 #: src/gs-extras-page.c:358 src/gs-extras-page.c:369 src/gs-extras-page.c:380
 #, c-format
 msgid ""
-"Information about %s, as well as options for how to get missing applications "
-"might be found %s."
+"Information about %s, as well as options for how to get missing apps might "
+"be found %s."
 msgstr ""
 "Informaciją apie %s, taip pat kaip gauti trūkstamas programas, galite rasti "
 "tinklalapyje %s."
 
-#. TRANSLATORS: this is when we know about an application or
+#. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:365 src/gs-extras-page.c:387
 #, c-format
-msgid "No applications are available for %s support."
+msgid "No apps are available for %s support."
 msgstr "Nėra programų %s palaikymui."
 
-#. TRANSLATORS: this is when we know about an application or
+#. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:376
 #, c-format
@@ -2476,13 +2509,13 @@ msgstr "%s neprieinama."
 #: src/gs-extras-page.c:391
 #, c-format
 msgid ""
-"Information about %s, as well as options for how to get an application that "
-"can support this format might be found %s."
+"Information about %s, as well as options for how to get an app that can "
+"support this format might be found %s."
 msgstr ""
 "Informaciją apie %s, taip pat kaip gauti programą, kuri gali palaikyti šį "
 "formatą, galite rasti tinklalapyje %s."
 
-#. TRANSLATORS: this is when we know about an application or
+#. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:398
 #, c-format
@@ -2500,7 +2533,7 @@ msgstr ""
 "Informaciją apie %s, taip pat kaip gauti papildomus šriftus, galite rasti "
 "tinklalapyje %s."
 
-#. TRANSLATORS: this is when we know about an application or
+#. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:409
 #, c-format
@@ -2518,7 +2551,7 @@ msgstr ""
 "Informaciją apie %s, taip pat kaip gauti kodeką, kuris gali groti šį "
 "formatą, galite rasti tinklalapyje %s."
 
-#. TRANSLATORS: this is when we know about an application or
+#. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:420
 #, c-format
@@ -2536,7 +2569,7 @@ msgstr ""
 "Informaciją apie %s, taip pat kaip gauti papildomus Plasma išteklius, galite "
 "rasti tinklalapyje %s."
 
-#. TRANSLATORS: this is when we know about an application or
+#. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:431
 #, c-format
@@ -2560,7 +2593,7 @@ msgid "the documentation"
 msgstr "dokumentacija"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
-#. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
+#. the second %s is the app name, which requested the codecs, the third %s is a link titled "the documentation"
 #: src/gs-extras-page.c:487
 #, c-format
 msgid ""
@@ -2618,199 +2651,199 @@ msgstr "Kitas"
 msgid "Featured Apps List"
 msgstr "Siūlomų programų sąrašas"
 
-#: src/gs-hardware-support-context-dialog.c:577
-#: src/gs-hardware-support-context-dialog.c:586
+#: src/gs-hardware-support-context-dialog.c:576
+#: src/gs-hardware-support-context-dialog.c:585
 msgid "Desktop Support"
 msgstr "Darbalaukio palaikymas"
 
-#: src/gs-hardware-support-context-dialog.c:578
-#: src/gs-hardware-support-context-dialog.c:587
+#: src/gs-hardware-support-context-dialog.c:577
+#: src/gs-hardware-support-context-dialog.c:586
 msgid "Supports being used on a large screen"
 msgstr "Palaiko naudojimą dideliuose ekranuose"
 
-#: src/gs-hardware-support-context-dialog.c:580
+#: src/gs-hardware-support-context-dialog.c:579
 msgid "Desktop Support Unknown"
 msgstr "Darbalaukio palaikymas nežinomas"
 
-#: src/gs-hardware-support-context-dialog.c:581
+#: src/gs-hardware-support-context-dialog.c:580
 msgid "Not enough information to know if large screens are supported"
 msgstr "Nepakanka informacijos apie didelių ekranų palaikymą"
 
-#: src/gs-hardware-support-context-dialog.c:584
+#: src/gs-hardware-support-context-dialog.c:583
 msgid "Requires a large screen"
 msgstr "Reikalauja didelio ekrano"
 
-#: src/gs-hardware-support-context-dialog.c:589
+#: src/gs-hardware-support-context-dialog.c:588
 msgid "Desktop Not Supported"
 msgstr "Darbalaukis nepalaikomas"
 
-#: src/gs-hardware-support-context-dialog.c:590
+#: src/gs-hardware-support-context-dialog.c:589
 msgid "Cannot be used on a large screen"
 msgstr "Negali būti naudojama dideliuose ekranuose"
 
-#: src/gs-hardware-support-context-dialog.c:597
-#: src/gs-hardware-support-context-dialog.c:606
+#: src/gs-hardware-support-context-dialog.c:596
+#: src/gs-hardware-support-context-dialog.c:605
 msgid "Mobile Support"
 msgstr "Mobiliųjų palaikymas"
 
-#: src/gs-hardware-support-context-dialog.c:598
-#: src/gs-hardware-support-context-dialog.c:607
+#: src/gs-hardware-support-context-dialog.c:597
+#: src/gs-hardware-support-context-dialog.c:606
 msgid "Supports being used on a small screen"
 msgstr "Veikia mažuose ekranuose"
 
-#: src/gs-hardware-support-context-dialog.c:600
+#: src/gs-hardware-support-context-dialog.c:599
 msgid "Mobile Support Unknown"
 msgstr "Mobiliųjų palaikymas nežinomas"
 
-#: src/gs-hardware-support-context-dialog.c:601
+#: src/gs-hardware-support-context-dialog.c:600
 msgid "Not enough information to know if small screens are supported"
 msgstr "Nepakanka informacijos apie mažų ekranų palaikymą"
 
-#: src/gs-hardware-support-context-dialog.c:604
+#: src/gs-hardware-support-context-dialog.c:603
 msgid "Requires a small screen"
 msgstr "Reikalauja mažo ekrano"
 
-#: src/gs-hardware-support-context-dialog.c:609
+#: src/gs-hardware-support-context-dialog.c:608
 msgid "Mobile Not Supported"
 msgstr "Mobilieji nepalaikomi"
 
-#: src/gs-hardware-support-context-dialog.c:610
+#: src/gs-hardware-support-context-dialog.c:609
 msgid "Cannot be used on a small screen"
 msgstr "Neveikia mažuose ekranuose"
 
-#: src/gs-hardware-support-context-dialog.c:633
-#: src/gs-hardware-support-context-dialog.c:642
+#: src/gs-hardware-support-context-dialog.c:632
+#: src/gs-hardware-support-context-dialog.c:641
 msgid "Keyboard Support"
 msgstr "Klaviatūros palaikymas"
 
-#: src/gs-hardware-support-context-dialog.c:636
+#: src/gs-hardware-support-context-dialog.c:635
 msgid "Keyboard Support Unknown"
 msgstr "Klaviatūros palaikymas nežinomas"
 
-#: src/gs-hardware-support-context-dialog.c:637
+#: src/gs-hardware-support-context-dialog.c:636
 msgid "Not enough information to know if keyboards are supported"
 msgstr "Nepakanka informacijos apie klaviatūros palaikymą"
 
-#: src/gs-hardware-support-context-dialog.c:639
+#: src/gs-hardware-support-context-dialog.c:638
 msgid "Keyboard Required"
 msgstr "Būtina klaviatūra"
 
-#: src/gs-hardware-support-context-dialog.c:643
+#: src/gs-hardware-support-context-dialog.c:642
 msgid "Supports keyboards"
 msgstr "Palaiko klaviatūrą"
 
-#: src/gs-hardware-support-context-dialog.c:645
+#: src/gs-hardware-support-context-dialog.c:644
 msgid "Keyboard Not Supported"
 msgstr "Nepalaiko klaviatūros"
 
-#: src/gs-hardware-support-context-dialog.c:646
+#: src/gs-hardware-support-context-dialog.c:645
 msgid "Cannot be used with a keyboard"
 msgstr "Negali būti naudojama su klaviatūra"
 
-#: src/gs-hardware-support-context-dialog.c:653
-#: src/gs-hardware-support-context-dialog.c:662
+#: src/gs-hardware-support-context-dialog.c:652
+#: src/gs-hardware-support-context-dialog.c:661
 msgid "Mouse Support"
 msgstr "Pelės palaikymas"
 
-#: src/gs-hardware-support-context-dialog.c:654
-#: src/gs-hardware-support-context-dialog.c:660
+#: src/gs-hardware-support-context-dialog.c:653
+#: src/gs-hardware-support-context-dialog.c:659
 msgid "Requires a mouse or pointing device"
 msgstr "Reikalauja pelės ar rodomojo įrenginio"
 
-#: src/gs-hardware-support-context-dialog.c:656
+#: src/gs-hardware-support-context-dialog.c:655
 msgid "Mouse Support Unknown"
 msgstr "Pelės palaikymas nežinomas"
 
-#: src/gs-hardware-support-context-dialog.c:657
+#: src/gs-hardware-support-context-dialog.c:656
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr "Nepakanka informacijos apie pelės ar rodomojo įrenginio palaikymą"
 
-#: src/gs-hardware-support-context-dialog.c:659
+#: src/gs-hardware-support-context-dialog.c:658
 msgid "Mouse Required"
 msgstr "Būtina pelė"
 
-#: src/gs-hardware-support-context-dialog.c:663
+#: src/gs-hardware-support-context-dialog.c:662
 msgid "Supports mice and pointing devices"
 msgstr "Palaiko pelę ir rodomuosius įrenginius"
 
-#: src/gs-hardware-support-context-dialog.c:665
+#: src/gs-hardware-support-context-dialog.c:664
 msgid "Mouse Not Supported"
 msgstr "Pelė nepalaikoma"
 
-#: src/gs-hardware-support-context-dialog.c:666
+#: src/gs-hardware-support-context-dialog.c:665
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "Negali būti naudojama pele ar rodomuoju įrenginiu"
 
-#: src/gs-hardware-support-context-dialog.c:673
-#: src/gs-hardware-support-context-dialog.c:682
+#: src/gs-hardware-support-context-dialog.c:672
+#: src/gs-hardware-support-context-dialog.c:681
 msgid "Touchscreen Support"
 msgstr "Liečiamojo ekrano palaikymas"
 
-#: src/gs-hardware-support-context-dialog.c:676
+#: src/gs-hardware-support-context-dialog.c:675
 msgid "Touchscreen Support Unknown"
 msgstr "Liečiamojo ekrano palaikymas nežinomas"
 
-#: src/gs-hardware-support-context-dialog.c:677
+#: src/gs-hardware-support-context-dialog.c:676
 msgid "Not enough information to know if touchscreens are supported"
 msgstr "Nepakanka informacijos apie liečiamojo ekrano palaikymą"
 
-#: src/gs-hardware-support-context-dialog.c:679
+#: src/gs-hardware-support-context-dialog.c:678
 msgid "Touchscreen Required"
 msgstr "Reikia liečiamojo ekrano"
 
-#: src/gs-hardware-support-context-dialog.c:683
+#: src/gs-hardware-support-context-dialog.c:682
 msgid "Supports touchscreens"
 msgstr "Palaiko liečiamąjį ekraną"
 
-#: src/gs-hardware-support-context-dialog.c:685
+#: src/gs-hardware-support-context-dialog.c:684
 msgid "Touchscreen Not Supported"
 msgstr "Nepalaiko liečiamojo ekrano"
 
-#: src/gs-hardware-support-context-dialog.c:686
+#: src/gs-hardware-support-context-dialog.c:685
 msgid "Cannot be used with a touchscreen"
 msgstr "Negali būti naudojama liečiamuoju ekranu"
 
-#: src/gs-hardware-support-context-dialog.c:699
+#: src/gs-hardware-support-context-dialog.c:698
 msgid "Gamepad Required"
 msgstr "Reikia žaidimų valdiklio"
 
-#: src/gs-hardware-support-context-dialog.c:700
+#: src/gs-hardware-support-context-dialog.c:699
 msgid "Requires a gamepad"
 msgstr "Žaidimui reikalauja žaidimų valdiklio"
 
-#: src/gs-hardware-support-context-dialog.c:702
+#: src/gs-hardware-support-context-dialog.c:701
 msgid "Gamepad Support"
 msgstr "Žaidimų valdiklio palaikymas"
 
-#: src/gs-hardware-support-context-dialog.c:703
+#: src/gs-hardware-support-context-dialog.c:702
 msgid "Supports gamepads"
 msgstr "Palaiko žaidimų valdiklius"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:712
+#: src/gs-hardware-support-context-dialog.c:711
 #, c-format
 msgid "%s probably works on this device"
 msgstr "%s greičiausiai veiktų šiame įrenginyje"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:719
+#: src/gs-hardware-support-context-dialog.c:718
 #, c-format
 msgid "%s works on this device"
 msgstr "%s veiktų šiame įrenginyje"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:726
+#: src/gs-hardware-support-context-dialog.c:725
 #, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s neveiktų tvarkingai šiame įrenginyje"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:733
+#: src/gs-hardware-support-context-dialog.c:732
 #, c-format
 msgid "%s will not work on this device"
 msgstr "%s neveiktų šiame įrenginyje"
@@ -2821,8 +2854,7 @@ msgid "Hardware Support"
 msgstr "Aparatinės įrangos palaikymas"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
-#. Translators: A label for a button to show only software which is already installed.
-#: src/gs-installed-page.c:812 src/gs-shell.ui:307
+#: src/gs-installed-page.c:813
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "Įdiegta"
@@ -2838,15 +2870,15 @@ msgstr "Vykdoma"
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
 #: src/gs-installed-page.ui:75 plugins/flatpak/gs-flatpak-utils.c:107
-msgid "Applications"
+msgid "Apps"
 msgstr "Programos"
 
 #: src/gs-installed-page.ui:95
-msgid "Web Applications"
+msgid "Web Apps"
 msgstr "Internetinės programos"
 
 #: src/gs-installed-page.ui:115
-msgid "System Applications"
+msgid "System Apps"
 msgstr "Sisteminės programos"
 
 #: src/gs-license-tile.c:96
@@ -2920,7 +2952,7 @@ msgstr "Įkeliamas puslapis"
 msgid "Starting up…"
 msgstr "Paleidžiama…"
 
-#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:256
+#: src/gs-metered-data-dialog.ui:5
 msgid "Automatic Updates Paused"
 msgstr "Automatiniai atnaujinimai pristabdyti"
 
@@ -2967,11 +2999,6 @@ msgstr "Nežinomas šaltinis"
 msgid "Beta"
 msgstr "Beta"
 
-#. Translators: It's an origin scope, 'User' or 'System' installation
-#: src/gs-origin-popover-row.ui:138
-msgid "User"
-msgstr "Naudotojas"
-
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
 #: src/gs-os-update-page.c:250
@@ -2997,32 +3024,47 @@ msgstr "Atnaujinimai"
 msgid "Downgrades"
 msgstr "Grąžinama senesnė versija"
 
-#. Translators: This is a clickable link on the third party repositories info bar. It's
+#. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:876
+#: src/gs-overview-page.c:475
 msgid "selected external sources"
 msgstr "pasirinkti išoriniai šaltiniai"
 
-#. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:878
+#. Translators: This is the third party repositories message dialog.
+#. The %s is replaced with "selected external sources" link.
+#. Repositories Preferences is an item from Software's main menu.
+#: src/gs-overview-page.c:479
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
-"included."
+"included.\n"
+"\n"
+"You can enable those repositories later in Software Repositories preferences."
 msgstr ""
 "Pateikia prieiga prie papildomos programinės įrangos iš %s. Įtraukia "
-"nuosavybinę programinę įrangą."
+"nuosavybinę programinę įrangą.\n"
+"\n"
+"Galite įjungti šias saugyklas vėliau Programinės įrangos saugyklų nuostatose."
+
+#. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
+#: src/gs-overview-page.c:485
+msgid "Enable Third Party Software Repositories?"
+msgstr "Įjungti trečių šalių programinės įrangos šaltinius?"
+
+#. TRANSLATORS: button to keep the third party software repositories off
+#: src/gs-overview-page.c:490
+msgid "_Ignore"
+msgstr "_Nepaisyti"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:887 src/gs-repos-dialog.c:173
-msgid "Enable"
-msgstr "Įjungti"
+#: src/gs-overview-page.c:492 src/gs-repos-dialog.c:167
+msgid "_Enable"
+msgstr "Į_jungti"
 
 #. Translators: This is the title of the main page of the UI.
-#. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:946 src/gs-shell.ui:294
+#: src/gs-overview-page.c:981
 msgid "Explore"
 msgstr "Naršyti"
 
@@ -3030,61 +3072,62 @@ msgstr "Naršyti"
 msgid "Overview page"
 msgstr "Apžvalgos puslapis"
 
-#: src/gs-overview-page.ui:35
-msgid "Enable Third Party Software Repositories?"
-msgstr "Įjungti trečių šalių programinės įrangos šaltinius?"
-
 #. Translators: This is a heading for a list of categories.
-#: src/gs-overview-page.ui:180
+#: src/gs-overview-page.ui:143
 msgid "Other Categories"
 msgstr "Kitos kategorijos"
 
-#: src/gs-overview-page.ui:221
-msgid "No Application Data Found"
-msgstr "Nerasto programos duomenų"
+#: src/gs-overview-page.ui:184
+msgid "No App Data Found"
+msgstr "Nerasta programos duomenų"
 
-#: lib/gs-plugin-loader.c:2825
+#: lib/gs-plugin-loader.c:2760
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Nežinomas"
 
-#: src/gs-page.c:274
+#. TRANSLATORS: button text
+#: src/gs-page.c:87
+msgid "_OK"
+msgstr "_Gerai"
+
+#: src/gs-page.c:260
 msgid "User declined installation"
 msgstr "Naudotojas neleido įdiegti"
 
 #. TRANSLATORS: this is a prompt message, and
-#. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:365
+#. * '%s' is an app summary, e.g. 'GNOME Clocks'
+#: src/gs-page.c:344
 #, c-format
 msgid "Prepare %s"
 msgstr "Paruošiama %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:518
+#: src/gs-page.c:496
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Ar tikrai norite pašalinti %s saugyklą?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:522
+#: src/gs-page.c:500
 #, c-format
 msgid ""
-"All applications from %s will be uninstalled, and you will have to re-"
-"install the repository to use them again."
+"All apps from %s will be uninstalled, and you will have to re-install the "
+"repository to use them again."
 msgstr ""
 "Visos programos iš %s bus pašalintos ir turėsite vėl įdiegti saugyklą, jei "
 "norite jomis naudotis."
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
-#. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:530
+#. * app summary, e.g. 'GNOME Clocks'
+#: src/gs-page.c:508
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Ar tikrai norite pašalinti %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:533
+#: src/gs-page.c:511
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -3121,89 +3164,89 @@ msgstr "Rodyti pranešimus automatiškai įdiegus atnaujinimus."
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
-#: src/gs-removal-dialog.c:89
+#: src/gs-removal-dialog.c:96
 #, c-format
 msgid ""
-"Some of the currently installed software is not compatible with %s. If you "
-"continue, the following will be automatically removed during the upgrade:"
+"Installed software is incompatible with %s, and will be automatically "
+"removed during upgrade."
 msgstr ""
-"Dalis šiuo metu įdiegtos programinės įrangos nėra suderinama su %s. Jei "
-"tęsite, šie paketai bus automatiškai pašalinti atnaujinant:"
+"Dalis šiuo metu įdiegtos programinės įrangos nėra suderinama su %s ir bus "
+"automatiškai pašalinti atnaujinant."
 
-#: src/gs-removal-dialog.ui:4
+#: src/gs-removal-dialog.ui:7
 msgid "Incompatible Software"
 msgstr "Nesuderinama programinė įranga"
 
-#: src/gs-removal-dialog.ui:23
-msgid "_Continue"
-msgstr "_Tęsti"
+#: src/gs-removal-dialog.ui:37
+msgid "_Upgrade"
+msgstr "Atna_ujinti"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:239
+#: src/gs-repos-dialog.c:229
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
 msgstr "Programinė įranga, kuri buvo įdiegta iš „%s“, nebegaus atnaujinimų."
 
-#: src/gs-repos-dialog.c:248
+#: src/gs-repos-dialog.c:234
 msgid "Disable Repository?"
 msgstr "Išjungti saugyklą?"
 
-#: src/gs-repos-dialog.c:248
+#: src/gs-repos-dialog.c:234
 msgid "Remove Repository?"
 msgstr "Pašalinti saugyklą?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:254
+#: src/gs-repos-dialog.c:241
 msgid "_Disable"
 msgstr "Iš_jungti"
 
 #. TRANSLATORS: this is button text to remove a repo
-#: src/gs-repos-dialog.c:257
+#: src/gs-repos-dialog.c:245
 msgid "_Remove"
 msgstr "_Pašalinti"
 
-#: src/gs-repos-dialog.c:508
+#: src/gs-repos-dialog.c:495
 msgid "Enable New Repositories"
 msgstr "Įjungti naujas saugyklas"
 
-#: src/gs-repos-dialog.c:509
+#: src/gs-repos-dialog.c:496
 msgid "Turn on new repositories when they are added."
 msgstr "Įjungti naujas saugyklas, kai jos pridedamos."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:518
+#: src/gs-repos-dialog.c:505
 msgid "more information"
 msgstr "daugiau informacijos"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:523
+#: src/gs-repos-dialog.c:510
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Papildomos saugyklos iš pažymėtų trečiųjų šalių – %s."
 
-#: src/gs-repos-dialog.c:528
+#: src/gs-repos-dialog.c:515
 msgid "Fedora Third Party Repositories"
 msgstr "Fedora trečiųjų šalių saugyklos"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:670
+#: src/gs-repos-dialog.c:657
 msgid "the operating system"
 msgstr "operacinė sistema"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:728
+#: src/gs-repos-dialog.c:715
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Šie šaltiniai papildo numatytąjį %s pateiktą šaltinį."
 
 #. button in the info bar
-#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:88
+#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:99
 msgid "Software Repositories"
 msgstr "Programinės įrangos šaltiniai"
 
@@ -3211,12 +3254,12 @@ msgstr "Programinės įrangos šaltiniai"
 msgid "No Repositories"
 msgstr "Nėra saugyklų"
 
-#. TRANSLATORS: This string is used to construct the 'X applications
+#. TRANSLATORS: This string is used to construct the 'X apps
 #. installed' sentence, describing a software repository.
 #: src/gs-repo-row.c:160
 #, c-format
-msgid "%u application installed"
-msgid_plural "%u applications installed"
+msgid "%u app installed"
+msgid_plural "%u apps installed"
 msgstr[0] "Įdiegta %u programa"
 msgstr[1] "Įdiegtos %u programos"
 msgstr[2] "Įdiegta %u programų"
@@ -3231,18 +3274,18 @@ msgstr[0] "Įdiegtas %u priedas"
 msgstr[1] "Įdiegti %u priedai"
 msgstr[2] "Įdiegta %u priedų"
 
-#. TRANSLATORS: This string is used to construct the 'X applications
+#. TRANSLATORS: This string is used to construct the 'X apps
 #. and y add-ons installed' sentence, describing a software repository.
-#. The correct form here depends on the number of applications.
+#. The correct form here depends on the number of apps.
 #: src/gs-repo-row.c:175
 #, c-format
-msgid "%u application"
-msgid_plural "%u applications"
+msgid "%u app"
+msgid_plural "%u apps"
 msgstr[0] "%u programa"
 msgstr[1] "%u programos"
 msgstr[2] "%u programų"
 
-#. TRANSLATORS: This string is used to construct the 'X applications
+#. TRANSLATORS: This string is used to construct the 'X apps
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of add-ons.
 #: src/gs-repo-row.c:181
@@ -3253,10 +3296,10 @@ msgstr[0] "%u priedas"
 msgstr[1] "%u priedai"
 msgstr[2] "%u priedų"
 
-#. TRANSLATORS: This string is used to construct the 'X applications
+#. TRANSLATORS: This string is used to construct the 'X apps
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the total number of
-#. applications and add-ons.
+#. apps and add-ons.
 #: src/gs-repo-row.c:188
 #, c-format
 msgid "%s and %s installed"
@@ -3265,7 +3308,7 @@ msgstr[0] "Įdiegta: %s ir %s"
 msgstr[1] "Įdiegta: %s ir %s"
 msgstr[2] "Įdiegta: %s ir %s"
 
-#. Translators: The first '%s' is replaced with a text like '10 applications installed',
+#. Translators: The first '%s' is replaced with a text like '10 apps installed',
 #. the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'.
 #: src/gs-repo-row.c:243
 #, c-format
@@ -3273,104 +3316,105 @@ msgctxt "repo-row"
 msgid "%s • %s"
 msgstr "%s • %s"
 
+#: src/gs-repo-row.c:314
+msgid "Remove"
+msgstr "Pašalinti"
+
 #. TRANSLATORS: lighthearted star rating description;
-#. *		A really bad application
+#. *		A really bad app
 #: src/gs-review-dialog.c:78
 msgid "Hate it"
 msgstr "Šlamštas"
 
 #. TRANSLATORS: lighthearted star rating description;
-#. *		Not a great application
+#. *		Not a great app
 #: src/gs-review-dialog.c:82
 msgid "Don’t like it"
 msgstr "Nepatinka"
 
 #. TRANSLATORS: lighthearted star rating description;
-#. *		A fairly-good application
+#. *		A fairly-good app
 #: src/gs-review-dialog.c:86
 msgid "It’s OK"
 msgstr "Gera"
 
 #. TRANSLATORS: lighthearted star rating description;
-#. *		A good application
+#. *		A good app
 #: src/gs-review-dialog.c:90
 msgid "Like it"
 msgstr "Patinka"
 
 #. TRANSLATORS: lighthearted star rating description;
-#. *		A really awesome application
+#. *		A really awesome app
 #: src/gs-review-dialog.c:94
 msgid "Love it"
 msgstr "Nuostabi"
 
+#. TRANSLATORS: lighthearted star rating description;
+#. *		No star has been clicked yet
+#: src/gs-review-dialog.c:98
+msgid "Select a Star to Leave a Rating"
+msgstr "Pasirinkite žvaigždutę reitingui palikti"
+
 #. TRANSLATORS: the review can't just be copied and pasted
-#: src/gs-review-dialog.c:118
+#: src/gs-review-dialog.c:119
 msgid "Please take more time writing the review"
 msgstr "Prašome atsiliepimo rašymui skirti daugiau laiko"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:122
+#: src/gs-review-dialog.c:123
 msgid "Please choose a star rating"
 msgstr "Prašome pasirinkti įvertinimą žvaigždutėmis"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:126
+#: src/gs-review-dialog.c:127
 msgid "The summary is too short"
 msgstr "Santrauka pernelyg trumpa"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:130
+#: src/gs-review-dialog.c:131
 msgid "The summary is too long"
 msgstr "Santrauka pernelyg ilga"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:134
+#: src/gs-review-dialog.c:135
 msgid "The description is too short"
 msgstr "Aprašas pernelyg trumpas"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:138
+#: src/gs-review-dialog.c:139
 msgid "The description is too long"
 msgstr "Aprašas pernelyg ilgas"
 
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: src/gs-review-dialog.ui:10
-msgid "Post Review"
-msgstr "Siųsti atsiliepimą"
+msgid "Write a Review"
+msgstr "Rašyti atsiliepimą"
 
 #. Translators: A button to publish the user's opinion about the app.
 #: src/gs-review-dialog.ui:26
-msgid "_Post"
-msgstr "S_iųsti"
+msgid "_Send"
+msgstr "_Siųsti"
 
-#: src/gs-review-dialog.ui:56
-msgid "Rating"
-msgstr "Įvertinimas"
-
-#: src/gs-review-dialog.ui:88
-msgid "Summary"
-msgstr "Santrauka"
-
-#: src/gs-review-dialog.ui:97
+#: src/gs-review-dialog.ui:71
 msgid ""
-"Give a short summary of your review, for example: “Great app, would "
-"recommend”."
+"What did you like about this app? Leaving your feedback along with your "
+"reasons for leaving a review is helpful for others."
 msgstr ""
-"Pateikite trumpą savo atsiliepimo aprašą, pavyzdžiui: \"Puiki programa, "
-"rekomenduoju\"."
+"Kas jums patiko šioje programoje? Palikdami atsiliepimą su priežastimis, "
+"kodėl jį parašėte, yra naudinga kitiems."
+
+#: src/gs-review-dialog.ui:84
+msgid "Review Summary"
+msgstr "Atsiliepimo santrauka"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:119
+#: src/gs-review-dialog.ui:116
 msgctxt "app review"
-msgid "Review"
-msgstr "Atsiliepimas"
+msgid "Write a short review"
+msgstr "Rašyti trumpą atsiliepimą"
 
-#: src/gs-review-dialog.ui:128
-msgid "What do you think of the app? Try to give reasons for your views."
-msgstr ""
-"Ką manote apie šią programą? Pasistenkite pateikti savo nuomonės priežastis."
-
-#: src/gs-review-dialog.ui:156
+#: src/gs-review-dialog.ui:160
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
 "privacy\">privacy policy</a>. The full name attached to your account will be "
@@ -3388,25 +3432,25 @@ msgstr[0] "Iš viso %u apžvalga"
 msgstr[1] "Iš viso %u apžvalgos"
 msgstr[2] "Iš viso %u apžvalgų"
 
-#: src/gs-review-histogram.ui:93
+#: src/gs-review-histogram.ui:88
 msgid "out of 5 stars"
 msgstr "iš 5 žvaigždučių"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:56
+#: src/gs-review-row.c:60
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Nežinomas"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:220
+#: src/gs-review-row.c:222
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Jūs galite pranešti apie įžeidžiančius, nepadorius ir diskriminacinio "
 "pobūdžio atsiliepimus."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:225
+#: src/gs-review-row.c:227
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3417,15 +3461,15 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:239
+#: src/gs-review-row.c:235
 msgid "Report Review?"
 msgstr "Pranešti apie atsiliepimą?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:243
-msgid "Report"
-msgstr "Pranešti"
+#: src/gs-review-row.c:240
+msgid "_Report"
+msgstr "P_ranešti"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
 #: src/gs-review-row.ui:84
@@ -3453,175 +3497,174 @@ msgstr "Pranešti…"
 msgid "Remove…"
 msgstr "Šalinti…"
 
-#: src/gs-safety-context-dialog.c:144
-msgid "Check that you trust the vendor, as the application isn’t sandboxed"
+#: src/gs-safety-context-dialog.c:143
+msgid "Check that you trust the vendor, as the app isn’t sandboxed"
 msgstr "Įsitikinkite, kad pasitikite tiekėju, nes programa nėra apribota"
 
-#: src/gs-safety-context-dialog.c:147
+#: src/gs-safety-context-dialog.c:146
 msgid ""
-"Application isn’t sandboxed but the distribution has checked that it is not "
-"malicious"
+"App isn’t sandboxed but the distribution has checked that it is not malicious"
 msgstr ""
 "Programa nėra apribota, bet distribucija patikrino, kad ji nekenksminga"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:160
+#: src/gs-safety-context-dialog.c:159
 msgid "No Permissions"
 msgstr "Nėra leidimų"
 
-#: src/gs-safety-context-dialog.c:161
+#: src/gs-safety-context-dialog.c:160
 msgid "App is fully sandboxed"
 msgstr "Ši programa yra visiškai izoliuota."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:172
+#: src/gs-safety-context-dialog.c:171
 msgid "Network Access"
 msgstr "Tinklo prieigą"
 
-#: src/gs-safety-context-dialog.c:173
+#: src/gs-safety-context-dialog.c:172
 msgid "Can access the internet"
 msgstr "Gali pasiekti internetą"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:176
+#: src/gs-safety-context-dialog.c:175
 msgid "No Network Access"
 msgstr "Nėra tinklo prieigos"
 
-#: src/gs-safety-context-dialog.c:177
+#: src/gs-safety-context-dialog.c:176
 msgid "Cannot access the internet"
 msgstr "Negali pasiekti interneto"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:182
 msgid "Uses System Services"
 msgstr "Naudoja sistemos tarnybas"
 
-#: src/gs-safety-context-dialog.c:184
+#: src/gs-safety-context-dialog.c:183
 msgid "Can request data from system services"
 msgstr "Gali prašyti duomenų iš sistemos tarnybų"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:191
+#: src/gs-safety-context-dialog.c:190
 msgid "Uses Session Services"
 msgstr "Naudoja seanso tarnybas"
 
-#: src/gs-safety-context-dialog.c:192
+#: src/gs-safety-context-dialog.c:191
 msgid "Can request data from session services"
 msgstr "Gali prašyti duomenų iš seanso tarnybų"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:199
+#: src/gs-safety-context-dialog.c:198
 msgid "Device Access"
 msgstr "Įrenginių prieiga"
 
-#: src/gs-safety-context-dialog.c:200
+#: src/gs-safety-context-dialog.c:199
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr ""
 "Gali pasiekti tokius įrenginius kaip internetinė kamera ar žaidimų valdikliai"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:203
+#: src/gs-safety-context-dialog.c:202
 msgid "No Device Access"
 msgstr "Nėra įrenginių prieigos"
 
-#: src/gs-safety-context-dialog.c:204
+#: src/gs-safety-context-dialog.c:203
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr ""
 "Negali pasiekti tokius įrenginių kaip internetinė kamera ar žaidimų "
 "valdikliai"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:210
+#: src/gs-safety-context-dialog.c:209
 msgid "Legacy Windowing System"
 msgstr "Sena langų sistema"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:218
+#: src/gs-safety-context-dialog.c:217
 msgid "Arbitrary Permissions"
 msgstr "Papildomi leidimai"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:226
+#: src/gs-safety-context-dialog.c:225
 msgid "User Settings"
 msgstr "Naudotojo nustatymai"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:238
+#: src/gs-safety-context-dialog.c:237
 msgid "Full File System Read/Write Access"
 msgstr "Visa failų sistemos skaitymo/rašymo prieiga"
 
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:238
 msgid "Can read and write all data on the file system"
 msgstr "Gali skaityti bei rašyti duomenis failų sistemoje"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:247
+#: src/gs-safety-context-dialog.c:246
 msgid "Home Folder Read/Write Access"
 msgstr "Namų aplanko skaitymo/rašymo prieiga"
 
-#: src/gs-safety-context-dialog.c:248
+#: src/gs-safety-context-dialog.c:247
 msgid "Can read and write all data in your home directory"
 msgstr "Gali rašyti ir skaityti visus jūsų namų aplanko duomenis"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:256
+#: src/gs-safety-context-dialog.c:255
 msgid "Full File System Read Access"
 msgstr "Visos failų sistemos skaitymo prieiga"
 
-#: src/gs-safety-context-dialog.c:257
+#: src/gs-safety-context-dialog.c:256
 msgid "Can read all data on the file system"
 msgstr "Gali skaityti visus duomenis failų sistemoje"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:266
+#: src/gs-safety-context-dialog.c:265
 msgid "Home Folder Read Access"
 msgstr "Namų aplanko skaitymo prieiga"
 
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:266
 msgid "Can read all data in your home directory"
 msgstr "Gali skaityti visus jūsų namų aplanko duomenis"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:276
+#: src/gs-safety-context-dialog.c:275
 msgid "Download Folder Read/Write Access"
 msgstr "Atsisiuntimų aplanko skaitymo/rašymo prieiga"
 
-#: src/gs-safety-context-dialog.c:277
+#: src/gs-safety-context-dialog.c:276
 msgid "Can read and write all data in your downloads directory"
 msgstr "Gali skaityti ir rašyti visus jūsų atsisiuntimus"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:288
+#: src/gs-safety-context-dialog.c:287
 msgid "Download Folder Read Access"
 msgstr "Atsisiuntimų aplanko skaitymo prieiga"
 
-#: src/gs-safety-context-dialog.c:289
+#: src/gs-safety-context-dialog.c:288
 msgid "Can read all data in your downloads directory"
 msgstr "Gali skaityti jūsų atsiuntimus"
 
-#: src/gs-safety-context-dialog.c:299
+#: src/gs-safety-context-dialog.c:298
 msgid "Can read and write all data in the directory"
 msgstr "Gali rašyti ir skaityti visus jūsų namų aplanko duomenis"
 
-#: src/gs-safety-context-dialog.c:310
+#: src/gs-safety-context-dialog.c:309
 msgid "Can read all data in the directory"
 msgstr "Gali skaityti visus duomenis aplanke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:325
 msgid "No File System Access"
 msgstr "Nėra failų sistemos prieigos"
 
-#: src/gs-safety-context-dialog.c:327
+#: src/gs-safety-context-dialog.c:326
 msgid "Cannot access the file system at all"
 msgstr "Išvis negali pasiekti failų sistemos"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:341
+#: src/gs-safety-context-dialog.c:340
 msgid "Proprietary Code"
 msgstr "Nuosavybinis kodas"
 
-#: src/gs-safety-context-dialog.c:342
+#: src/gs-safety-context-dialog.c:341
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3630,11 +3673,11 @@ msgstr ""
 "bei gali būti nesaugi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:345
+#: src/gs-safety-context-dialog.c:344
 msgid "Auditable Code"
 msgstr "Audituojamas kodas"
 
-#: src/gs-safety-context-dialog.c:346
+#: src/gs-safety-context-dialog.c:345
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3644,21 +3687,21 @@ msgstr ""
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:354
+#: src/gs-safety-context-dialog.c:353
 msgid "App developer is verified"
 msgstr "Programos kūrėjas yra patikrintas"
 
-#: src/gs-safety-context-dialog.c:355
+#: src/gs-safety-context-dialog.c:354
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "Šios programos kūrėjas buvo patikrintas"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:366
+#: src/gs-safety-context-dialog.c:365
 msgid "Insecure Dependencies"
 msgstr "Nesaugios priklausomybės"
 
-#: src/gs-safety-context-dialog.c:367
+#: src/gs-safety-context-dialog.c:366
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
@@ -3667,21 +3710,21 @@ msgstr ""
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:376
+#: src/gs-safety-context-dialog.c:375
 #, c-format
 msgid "%s is safe"
 msgstr "%s yra saugi"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:383
+#: src/gs-safety-context-dialog.c:382
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s yra galimai nesaugi"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:390
+#: src/gs-safety-context-dialog.c:389
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s yra nesaugi"
@@ -3718,42 +3761,43 @@ msgstr "Ankstesnė ekrano nuotrauka"
 msgid "Next Screenshot"
 msgstr "Kita ekrano nuotrauka"
 
-#: src/gs-screenshot-carousel.ui:127
-msgid "No screenshot provided"
-msgstr "Nepateikta ekrano nuotrauka"
+#. Translators: Shortened form of “no screenshots available” when showing an app’s details.
+#: src/gs-screenshot-carousel.ui:130
+msgid "No Screenshot"
+msgstr "Nėra ekrano nuotraukos"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:419
-#: src/gs-screenshot-image.c:622
+#: src/gs-screenshot-image.c:359 src/gs-screenshot-image.c:416
+#: src/gs-screenshot-image.c:620
 msgid "Screenshot not found"
 msgstr "Ekrano nuotrauka nerasta"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:438
+#: src/gs-screenshot-image.c:435
 msgid "Failed to load image"
 msgstr "Nepavyko įkelti paveikslėlio"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:650
+#: src/gs-screenshot-image.c:648
 msgid "Screenshot size not found"
 msgstr "Ekrano nuotraukos dydis nerastas"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:732
+#: src/gs-screenshot-image.c:730
 msgid "Could not create cache"
 msgstr "Nepavyko sukurti podėlio"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:746
+#: src/gs-screenshot-image.c:744
 msgid "Screenshot not valid"
 msgstr "Ekrano nuotrauka netinkama"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:796
+#: src/gs-screenshot-image.c:794
 msgid "Screenshot not available"
 msgstr "Ekrano nuotrauka neprieinama"
 
@@ -3763,7 +3807,7 @@ msgstr "Ekrano nuotrauka"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:180
+#: src/gs-search-page.c:179
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -3780,8 +3824,8 @@ msgid "Search for Apps"
 msgstr "Ieškoti programų"
 
 #: src/gs-search-page.ui:46
-msgid "No Application Found"
-msgstr "Nerasta programų"
+msgid "No App Found"
+msgstr "Nerasta programa"
 
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is the truncated hostname, e.g.
@@ -3791,40 +3835,33 @@ msgstr "Nerasta programų"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1199 src/gs-shell.c:1204 src/gs-shell.c:1219
-#: src/gs-shell.c:1223
+#: src/gs-shell.c:1170 src/gs-shell.c:1175 src/gs-shell.c:1190
+#: src/gs-shell.c:1194
 #, c-format
 msgid "“%s”"
 msgstr "„%s“"
 
-#. Translators: The '%s' is replaced with an error message, which had been shortened.
-#. The dots at the end are there to highlight that to the user.
-#: src/gs-shell.c:1240
-#, c-format
-msgid "%s…"
-msgstr "%s…"
-
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1275
+#: src/gs-shell.c:1246
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Nepavyksta atsisiųsti aparatinės programinės įrangos atnaujinimų iš %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1281
+#: src/gs-shell.c:1252
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Nepavyksta atsisiųsti atnaujinimų iš %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1288 src/gs-shell.c:1328
+#: src/gs-shell.c:1259 src/gs-shell.c:1299
 msgid "Unable to download updates"
 msgstr "Nepavyksta atsisiųsti atnaujinimų"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1293
+#: src/gs-shell.c:1264
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -3833,123 +3870,123 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1301
+#: src/gs-shell.c:1272
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Nepavyksta atsisiųsti atnaujinimų iš %s: nepakanka disko vietos"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1306
+#: src/gs-shell.c:1277
 msgid "Unable to download updates: not enough disk space"
 msgstr "Nepavyksta atsisiųsti atnaujinimų: nepakanka disko vietos"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1312
+#: src/gs-shell.c:1283
 msgid "Unable to download updates: authentication was required"
 msgstr "Nepavyksta atsisiųsti atnaujinimų: reikia patvirtinti tapatybę"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1316
+#: src/gs-shell.c:1287
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Nepavyksta atsisiųsti atnaujinimų: nepavyko patvirtinti tapatybės"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1320
+#: src/gs-shell.c:1291
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
 "Nepavyksta atsisiųsti atnaujinimų: neturite leidimo įdiegti programinę įrangą"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1331
+#: src/gs-shell.c:1302
 msgid "Unable to get list of updates"
 msgstr "Nepavyko gauti atnaujinimų sąrašo"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the first %s is the application name (e.g. "GIMP") and
+#. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1373
+#: src/gs-shell.c:1338
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Nepavyko įdiegti %s, nes nepavyko atsisiųsti iš %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1379
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1344
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Nepavyko įdiegti %s, nes nepavyko atsisiųsti"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the first %s is the application name (e.g. "GIMP")
+#. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1391
+#: src/gs-shell.c:1356
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Nepavyko įdiegti %s nes vykdymo aplinka %s nėra prieinama"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1397
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1362
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Nepavyko įdiegti %s nes nepalaikoma"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1403
+#: src/gs-shell.c:1368
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "Nepavyko įdiegti: buvo būtina interneto prieiga, bet jos nebuvo"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1408
-msgid "Unable to install: the application has an invalid format"
+#: src/gs-shell.c:1373
+msgid "Unable to install: the app has an invalid format"
 msgstr "Nepavyko įdiegti: programa yra netinkamo formato"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1412
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1377
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Nepavyko įdiegti %s: nepakanka disko vietos"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1418
+#: src/gs-shell.c:1383
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Nepavyko įdiegti %s: būtina patvirtinti tapatybę"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1424
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1389
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Nepavyko įdiegti %s: nepavyko patvirtinti tapatybės"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1430
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1395
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Nepavyko įdiegti %s: neturite leidimo diegti programinę įrangą"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1437
+#. * where the %s is the app name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1402
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Nepavyko įdiegti %s: būtinas kintamosios srovės šaltinis"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1443
+#. * where the %s is the app name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1408
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Nepavyko įdiegti %s: akumuliatorius per daug išsikrovęs"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1452
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1417
 #, c-format
 msgid "Unable to install %s"
 msgstr "Nepavyko įdiegti %s"
@@ -3958,14 +3995,14 @@ msgstr "Nepavyko įdiegti %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1497
+#: src/gs-shell.c:1456
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Nepavyko atnaujinti %s iš %s, nes nepavyko atsisiųsti"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1504
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1463
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Nepavyko atnaujinti %s, nes nepavyko atsisiųsti"
@@ -3973,71 +4010,71 @@ msgstr "Nepavyko atnaujinti %s, nes nepavyko atsisiųsti"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1511
+#: src/gs-shell.c:1470
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "Nepavyko įdiegti atnaujinimų iš %s, nes nepavyko atsisiųsti"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1515
+#: src/gs-shell.c:1474
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Nepavyko įdiegti atnaujinimų, nes nepavyko atsisiųsti"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1479
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Nepavyko atnaujinti: buvo reikalinga interneto prieiga, bet nebuvo prieinama"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1529
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1488
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Nepavyko atnaujinti %s: nepakanka disko vietos"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1534
+#: src/gs-shell.c:1493
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Nepavyko įdiegti atnaujinimų: nepakanka disko vietos"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1543
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1502
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Nepavyko atnaujinti %s: būtina patvirtinti tapatybę"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1548
+#: src/gs-shell.c:1507
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Nepavyko įdiegti atnaujinimų: būtina patvirtinti tapatybę"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1556
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1515
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Nepavyko atnaujinti %s: nepavyko patvirtinti tapatybės"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1561
+#: src/gs-shell.c:1520
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Nepavyko įdiegti atnaujinimų: nepavyko patvirtinti tapatybės"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1569
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1528
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "Nepavyko atnaujinti %s: neturite leidimo atnaujinti programinę įrangą"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1575
+#: src/gs-shell.c:1534
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -4046,42 +4083,42 @@ msgstr ""
 "įrangą"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1584
+#. * where the %s is the app name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1543
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Nepavyko atnaujinti %s: būtinas kintamosios srovės šaltinis"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1590
+#. * where the %s is the app name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1549
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Nepavyko įdiegti atnaujinimų: būtinas kintamosios srovės šaltinis"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1598
+#. * where the %s is the app name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1557
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Nepavyko atnaujinti %s: akumuliatorius per daug išsikrovęs"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1604
+#. * where the %s is the app name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1563
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Nepavyko įdiegti atnaujinimų: akumuliatorius per daug išsikrovęs"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1615
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1574
 #, c-format
 msgid "Unable to update %s"
 msgstr "Nepavyko atnaujinti %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1618
+#: src/gs-shell.c:1577
 #, c-format
 msgid "Unable to install updates"
 msgstr "Nepavyko įdiegti atnaujinimų"
@@ -4089,21 +4126,21 @@ msgstr "Nepavyko įdiegti atnaujinimų"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1660
+#: src/gs-shell.c:1613
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nepavyko iš esmės atnaujinti %s iš %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1665
+#: src/gs-shell.c:1618
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nepavyko iš esmės atnaujinti %s, nes nepavyko atsisiųsti"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1673
+#: src/gs-shell.c:1626
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -4113,156 +4150,156 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1681
+#: src/gs-shell.c:1634
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nepavyko iš esmės atnaujinti į %s: nepakanka disko vietos"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1688
+#: src/gs-shell.c:1641
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Nepavyko iš esmės atnaujinti į %s: būtina patvirtinti tapatybę"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1694
+#: src/gs-shell.c:1647
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Nepavyko iš esmės atnaujinti į %s: nepavyko patvirtinti tapatybės"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1700
+#: src/gs-shell.c:1653
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Nepavyko iš esmės atnaujinti į %s: neturite leidimo atnaujinti"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1706
+#: src/gs-shell.c:1659
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Nepavyko iš esmės atnaujinti į %s: būtinas kintamosios srovės šaltinis"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1712
+#: src/gs-shell.c:1665
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "Nepavyko iš esmės atnaujinti į %s: akumuliatorius per daug išsikrovęs"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1721
+#: src/gs-shell.c:1674
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Nepavyko iš esmės atnaujinti į %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1758
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1705
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Nepavyko pašalinti %s: būtina patvirtinti tapatybę"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1763
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1710
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Nepavyko pašalinti %s: nepavyko patvirtinti tapatybės"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1768
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1715
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Nepavyko pašalinti %s: neturite leidimo pašalinti programinę įrangą"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1774
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1721
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Nepavyko pašalinti %s: būtinas kintamosios srovės šaltinis"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1780
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1727
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Nepavyko pašalinti %s: akumuliatorius per daug išsikrovęs"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1792
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1739
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Nepavyko pašalinti %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
-#. * where the first %s is the application name (e.g. "GIMP")
+#. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1833
+#: src/gs-shell.c:1774
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Nepavyko paleisti %s: %s neįdiegta"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1839 src/gs-shell.c:1887 src/gs-shell.c:1925
-#: src/gs-shell.c:1968
-msgid "Not enough disk space — free up some space and try again"
-msgstr "Nepakanka disko vietos – atlaisvinkite vietos ir bandykite vėl"
-
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1850 src/gs-shell.c:1898 src/gs-shell.c:1936
-#: src/gs-shell.c:1989
+#: src/gs-shell.c:1782 src/gs-shell.c:1798 src/gs-shell.c:1840
+#: src/gs-shell.c:1882 src/gs-shell.c:1939
 msgid "Sorry, something went wrong"
 msgstr "Atleiskite, atsitiko kažkas negero"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1881
+#: src/gs-shell.c:1787 src/gs-shell.c:1829 src/gs-shell.c:1871
+#: src/gs-shell.c:1918
+msgid "Not enough disk space — free up some space and try again"
+msgstr "Nepakanka disko vietos – atlaisvinkite vietos ir bandykite vėl"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1823
 msgid "Failed to install file: not supported"
 msgstr "Nepavyko įdiegti failo: nepalaikoma"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1884
+#: src/gs-shell.c:1826
 msgid "Failed to install file: authentication failed"
 msgstr "Nepavyko įdiegti failo: nepavyko patvirtinti tapatybės"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1919
+#: src/gs-shell.c:1865
 msgid "Failed to install: not supported"
 msgstr "Nepavyko įdiegti: nepalaikoma"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1922
+#: src/gs-shell.c:1868
 msgid "Failed to install: authentication failed"
 msgstr "Nepavyko įdiegti: nepavyko patvirtinti tapatybės"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1963
+#: src/gs-shell.c:1913
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nepavyko susisiekti su %s"
 
-#. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1973
+#. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
+#: src/gs-shell.c:1923
 msgid "Software needs to be restarted to use new plugins."
 msgstr "Reikia perleisti Programinę įrangą norint naudoti naujus įskiepius."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1977
+#: src/gs-shell.c:1927
 msgid "AC power is required"
 msgstr "Būtinas kintamosios srovės šaltinis"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1980
+#: src/gs-shell.c:1930
 msgid "The battery level is too low"
 msgstr "Akumuliatorius per daug išsikrovęs"
 
@@ -4275,44 +4312,61 @@ msgid "_Update Preferences"
 msgstr "_Atnaujinimų nustatymai"
 
 #. button in the info bar
-#: src/gs-shell.ui:98
+#: src/gs-shell.ui:109
 msgid "Examine Disk"
 msgstr "Tikrinti diską"
 
 #. button in the info bar
-#. TRANSLATORS: this is a link to the
-#. * control-center network panel
-#: src/gs-shell.ui:108 src/gs-updates-page.c:881
+#: src/gs-shell.ui:119
 msgid "Network Settings"
 msgstr "Tinklo nustatymai"
 
 #. button in the info bar
-#: src/gs-shell.ui:118
-msgid "Restart Now"
-msgstr "Paleisti dabar"
+#: src/gs-shell.ui:129
+msgid "_Restart Now…"
+msgstr "Pe_rleisti dabar…"
 
 #. button in the info bar
-#: src/gs-shell.ui:128
+#: src/gs-shell.ui:140
 msgid "More Information"
 msgstr "Daugiau informacijos"
 
-#: src/gs-shell.ui:189
+#: src/gs-shell.ui:200 src/gs-shell.ui:202
 msgid "Search"
 msgstr "Paieška"
 
-#: src/gs-shell.ui:204
-msgid "Primary Menu"
+#: src/gs-shell.ui:216 src/gs-shell.ui:218
+msgid "Main Menu"
 msgstr "Pagrindinis meniu"
 
-#: src/gs-shell.ui:274
+#: src/gs-shell.ui:245
+msgid "Search apps"
+msgstr "Ieškoti programų"
+
+#: src/gs-shell.ui:257
+msgid "Metered network ‒ automatic updates paused"
+msgstr "Matuojamas tinklas – automatiniai atnaujinimai pristabdyti"
+
+#: src/gs-shell.ui:258
 msgid "Find Out _More"
 msgstr "Sužinokite _daugiau…"
 
+#. Translators: A label for a button to show all available software.
+#: src/gs-shell.ui:272
+msgid "_Explore"
+msgstr "_Naršyti"
+
+#. Translators: A label for a button to show only software which is already installed.
+#: src/gs-shell.ui:286
+msgctxt "List of installed apps"
+msgid "_Installed"
+msgstr "Į_diegta"
+
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-shell.ui:328
+#: src/gs-shell.ui:308
 msgctxt "Header bar button for list of apps to be updated"
-msgid "Updates"
-msgstr "Atnaujinimai"
+msgid "_Updates"
+msgstr "_Atnaujinimai"
 
 #. Translators: This is shown in a bubble to represent a 0 byte
 #. * storage size, so its context is “storage size: none”. The
@@ -4323,11 +4377,11 @@ msgid "None"
 msgstr "Nėra"
 
 #: src/gs-storage-context-dialog.c:139
-msgid "Application Data"
-msgstr "Programos duomenys"
+msgid "App Data"
+msgstr "Programų duomenys"
 
 #: src/gs-storage-context-dialog.c:140
-msgid "Data needed for the application to run"
+msgid "Data needed for the app to run"
 msgstr "Programos vykdymui reikalingi duomenys"
 
 #: src/gs-storage-context-dialog.c:145
@@ -4335,7 +4389,7 @@ msgid "User Data"
 msgstr "Naudotojo duomenys"
 
 #: src/gs-storage-context-dialog.c:146
-msgid "Data created by you in the application"
+msgid "Data created by you in the app"
 msgstr "Jūsų sukurti duomenys programoje"
 
 #: src/gs-storage-context-dialog.c:153
@@ -4347,7 +4401,7 @@ msgid "Temporary cached data"
 msgstr "Laikini podėlio duomenys"
 
 #: src/gs-storage-context-dialog.c:172
-msgid "The application itself"
+msgid "The app itself"
 msgstr "Pati programa"
 
 #: src/gs-storage-context-dialog.c:177
@@ -4355,7 +4409,7 @@ msgid "Required Dependencies"
 msgstr "Būtinos priklausomybės"
 
 #: src/gs-storage-context-dialog.c:178
-msgid "Shared system components required by this application"
+msgid "Shared system components required by this app"
 msgstr "Bendri sistemos komponentai, kurių reikia šiai programai"
 
 #: src/gs-storage-context-dialog.c:188
@@ -4371,11 +4425,10 @@ msgstr "Saugykla"
 #. Translators: Please do not translate the markup or link href
 #: src/gs-storage-context-dialog.ui:69
 msgid ""
-"Cached data can be cleared from the <a href=\"dummy\">_application settings</"
-"a>."
+"Cached data can be cleared from the <a href=\"dummy\">_app settings</a>."
 msgstr ""
 "Podėlio duomenys gali būti išvalyti naudojant <a href=\"dummy\">progr_amos "
-"nustatymus</a>."
+"nuostatas</a>."
 
 #: src/gs-summary-tile.c:118
 #, c-format
@@ -4407,8 +4460,6 @@ msgid "Installed on %s"
 msgstr "Įdiegta %s"
 
 #: src/gs-update-dialog.ui:77
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "No Updates Installed"
 msgstr "Nėra įdiegtų atnaujinimų"
 
@@ -4455,8 +4506,8 @@ msgstr "Atsisiųskite laukiančius programinės įrangos atnaujinimus."
 #. TRANSLATORS: apps were auto-updated and restart is required
 #: src/gs-update-monitor.c:355
 #, c-format
-msgid "%u Application Updated — Restart Required"
-msgid_plural "%u Applications Updated — Restart Required"
+msgid "%u App Updated — Restart Required"
+msgid_plural "%u Apps Updated — Restart Required"
 msgstr[0] "%u programa atnaujinta – reikia paleisti iš naujo"
 msgstr[1] "%u programos atnaujintos – reikia paleisti iš naujo"
 msgstr[2] "%u programų atnaujinta – reikia paleisti iš naujo"
@@ -4464,13 +4515,13 @@ msgstr[2] "%u programų atnaujinta – reikia paleisti iš naujo"
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:361
 #, c-format
-msgid "%u Application Updated"
-msgid_plural "%u Applications Updated"
+msgid "%u App Updated"
+msgid_plural "%u Apps Updated"
 msgstr[0] "%u programa atnaujinta"
 msgstr[1] "%u programos atnaujintos"
 msgstr[2] "%u programų atnaujinta"
 
-#. TRANSLATORS: %1 is an application name, e.g. Firefox
+#. TRANSLATORS: %1 is an app name, e.g. Firefox
 #: src/gs-update-monitor.c:372
 #, c-format
 msgid "%s has been updated."
@@ -4478,32 +4529,32 @@ msgstr "%s buvo atnaujinta."
 
 #. TRANSLATORS: the app needs restarting
 #: src/gs-update-monitor.c:375
-msgid "Please restart the application."
+msgid "Please restart the app."
 msgstr "Paleiskite programą iš naujo."
 
-#. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
+#. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
 #: src/gs-update-monitor.c:383
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s ir %s buvo atnaujintos."
 
-#. TRANSLATORS: at least one application needs restarting
+#. TRANSLATORS: at least one app needs restarting
 #: src/gs-update-monitor.c:389 src/gs-update-monitor.c:408
 #, c-format
-msgid "%u application requires a restart."
-msgid_plural "%u applications require a restart."
-msgstr[0] "Reikia iš naujo paleisti %u programą"
-msgstr[1] "Reikia iš naujo paleisti %u programas"
-msgstr[2] "Reikia iš naujo paleisti %u programų"
+msgid "%u app requires a restart."
+msgid_plural "%u apps require a restart."
+msgstr[0] "Reikia iš naujo paleisti %u programą."
+msgstr[1] "Reikia iš naujo paleisti %u programas."
+msgstr[2] "Reikia iš naujo paleisti %u programų."
 
-#. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
+#. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
 #: src/gs-update-monitor.c:401
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Įskaitant %s, %s bei %s."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:671 src/gs-updates-page.ui:20
+#: src/gs-update-monitor.c:671
 msgid "Operating System Updates Unavailable"
 msgstr "Yra programinės įrangos atnaujinimų"
 
@@ -4568,7 +4619,7 @@ msgstr[1] "Buvo įdiegti svarbūs operacinės sistemos atnaujinimai."
 msgstr[2] "Buvo įdiegti svarbūs operacinės sistemos atnaujinimai."
 
 #. TRANSLATORS: Button to look at the updates that were installed.
-#. * Note that it has nothing to do with the application reviews, the
+#. * Note that it has nothing to do with the app reviews, the
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
@@ -4628,68 +4679,72 @@ msgstr ""
 "bandykite vėl. Jei problema išliks, kreipkitės į programinės įrangos tiekėją."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:247
+#: src/gs-updates-page.c:253
 #, c-format
 msgid "Last checked: %s"
 msgstr "Paskutinį kartą tikrinta: %s"
 
+#: src/gs-updates-page.c:302
+msgid "Stop"
+msgstr "Stabdyti"
+
+#: src/gs-updates-page.c:311 src/gs-updates-page.c:323
+msgid "Check for Updates"
+msgstr "Tikrinti, ar yra atnaujinimų"
+
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:559
-#, c-format
-msgid "%s %s is no longer supported."
-msgstr "%s %s daugiau nebepalaikoma."
-
-#: src/gs-updates-page.c:563
-msgid "Your operating system is no longer supported."
-msgstr "Jūsų operacinė sistema nebepalaikoma."
-
-#. TRANSLATORS: EOL distros do not get important updates
 #: src/gs-updates-page.c:568
-msgid "This means that it does not receive security updates."
-msgstr "Tai reiškia, kad daugiau nebegausite saugumo spragų taisymų."
+#, c-format
+msgid "%s %s has stopped receiving critical software updates"
+msgstr "%s %s nustojo gauti kritinius programinės įrangos atnaujinimus"
 
-#. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:572
-msgid "It is recommended that you upgrade to a more recent version."
-msgstr "Rekomenduojama dabar atsinaujinti į paskutinę versiją."
+#. TRANSLATORS: This message is meant to tell users that they need to upgrade
+#. * or else their distro will not get important updates.
+#: src/gs-updates-page.c:574
+msgid "Your operating system has stopped receiving critical software updates"
+msgstr ""
+"Jūsų operacinė sistema nustojo gauti kritinius programinės įrangos "
+"atnaujinimus"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:849
+#: src/gs-updates-page.c:843
 msgid "Charges May Apply"
 msgstr "Tai gali kainuoti"
 
-#. TRANSLATORS: we need network
-#. * to do the updates check
-#: src/gs-updates-page.c:853
+#. TRANSLATORS: we need network to do the updates check
+#: src/gs-updates-page.c:845
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
 msgstr ""
 "Atnaujinimų tikrinimas naudojant mobilų plačiajuostį ryšį gali kainuoti."
 
-#. TRANSLATORS: this is a link to the
-#. * control-center network panel
-#: src/gs-updates-page.c:857
+#. TRANSLATORS: this is a link to the control-center network panel
+#: src/gs-updates-page.c:849
 msgid "Check _Anyway"
 msgstr "_Vistiek tikrinti"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:873
+#: src/gs-updates-page.c:860
 msgid "No Network"
 msgstr "Nėra tinklo"
 
-#. TRANSLATORS: we need network
-#. * to do the updates check
-#: src/gs-updates-page.c:877
+#. TRANSLATORS: we need network to do the updates check
+#: src/gs-updates-page.c:862
 msgid "Internet access is required to check for updates."
 msgstr "Atnaujinimų tikrinimui reikalingas tinklo ryšys."
 
-#: src/gs-updates-page.c:1250
+#. TRANSLATORS: this is a link to the control-center network panel
+#: src/gs-updates-page.c:866
+msgid "Network _Settings"
+msgstr "Tinklo _nustatymai"
+
+#: src/gs-updates-page.c:1235
 msgid "Check for updates"
 msgstr "Tikrinti, ar yra atnaujinimų"
 
-#: src/gs-updates-page.c:1286
+#: src/gs-updates-page.c:1271
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Atnaujinimai"
@@ -4699,66 +4754,66 @@ msgid "Updates page"
 msgstr "Atnaujinimų puslapis"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:82
+#: src/gs-updates-page.ui:58
 msgid "Loading Updates…"
 msgstr "Įkeliami atnaujinimai…"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:95
+#: src/gs-updates-page.ui:71
 msgid "This could take a while."
 msgstr "Tai gali užtrukti."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:203
+#: src/gs-updates-page.ui:179
 msgid "Up to Date"
 msgstr "Naujausia"
 
-#: src/gs-updates-page.ui:242
+#: src/gs-updates-page.ui:218
 msgid "Use Mobile Data?"
 msgstr "Naudoti mobiliuosius duomenis?"
 
-#: src/gs-updates-page.ui:243
+#: src/gs-updates-page.ui:219
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
 msgstr ""
 "Atnaujinimų tikrinimas naudojant mobilųjį plačiajuostį ryšį gali kainuoti."
 
-#: src/gs-updates-page.ui:246
+#: src/gs-updates-page.ui:222
 msgid "_Check Anyway"
 msgstr "_Vistiek tikrinti"
 
-#: src/gs-updates-page.ui:262
+#: src/gs-updates-page.ui:238
 msgid "No Connection"
 msgstr "Nėra ryšio"
 
-#: src/gs-updates-page.ui:263
+#: src/gs-updates-page.ui:239
 msgid "Go online to check for updates."
 msgstr "Prisijungti ir tikrinti, ar yra atnaujinimų"
 
-#: src/gs-updates-page.ui:266
+#: src/gs-updates-page.ui:242
 msgid "_Network Settings"
 msgstr "Tinklo _nustatymai"
 
-#: src/gs-updates-page.ui:295
+#: src/gs-updates-page.ui:275
 msgid "Error"
 msgstr "Klaida"
 
-#: src/gs-updates-page.ui:296
+#: src/gs-updates-page.ui:276
 msgid "Updates are automatically managed."
 msgstr "Atnaujinimai tvarkomi automatiškai."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
 #: src/gs-updates-section.c:312
-msgid "Restart & Update"
-msgstr "Perleisti ir atnaujinti"
+msgid "_Restart & Update…"
+msgstr "Pe_rleisti ir atnaujinti…"
 
 #. TRANSLATORS: This is the button for upgrading all
-#. * online-updatable applications
+#. * online-updatable apps
 #: src/gs-updates-section.c:318
-msgid "Update All"
-msgstr "Atnaujinti viską"
+msgid "U_pdate All"
+msgstr "_Atnaujinti viską"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
@@ -4775,8 +4830,8 @@ msgstr "Reikia perleisti"
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
 #: src/gs-updates-section.c:460
-msgid "Application Updates"
-msgstr "Programos atnaujinimai"
+msgid "App Updates"
+msgstr "Programų atnaujinimai"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
@@ -4833,8 +4888,8 @@ msgstr ""
 "Esminis atnaujinimas su naujomis ypatybėmis ir pridėtomis įmantrybėmis."
 
 #: src/gs-upgrade-banner.ui:187
-msgid "_Restart & Upgrade"
-msgstr "Pe_rleisti ir įdiegti"
+msgid "_Restart & Upgrade…"
+msgstr "Pe_rleisti ir atnaujinti…"
 
 #: src/gs-upgrade-banner.ui:201
 msgid "Remember to back up data and files before upgrading."
@@ -4844,7 +4899,7 @@ msgstr "Prieš atnaujinant pasidarykite savo duomenų ir failų atsarginę kopij
 msgid "Add, remove or update software on this computer"
 msgstr "Pridėti, šalinti arba atnaujinti šio kompiuterio programinę įrangą"
 
-#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:12
 msgid ""
 "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
@@ -4856,12 +4911,14 @@ msgstr ""
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
 #: plugins/core/gs-plugin-generic-updates.c:67
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2929
 msgid "System Updates"
 msgstr "Sistemos atnaujinimai"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
 #: plugins/core/gs-plugin-generic-updates.c:72
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2934
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
@@ -4875,18 +4932,19 @@ msgid "Downloading featured images…"
 msgstr "Atsisiunčiami siūlomų programų paveikslėliai…"
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
-#: plugins/eos-updater/gs-plugin-eos-updater.c:637
+#: plugins/eos-updater/gs-plugin-eos-updater.c:724
 #, c-format
 msgid "%s update with new features and fixes."
 msgstr "%s atnaujinimas su naujomis ypatybėmis ir taisymais."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:970
+#: plugins/eos-updater/gs-plugin-eos-updater.c:1100
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS atnaujinimo tarnybai nepavyko gauti ir pritaikyti atnaujinimo."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:498
-msgid "GNOME Web"
-msgstr "GNOME Žiniatinklis"
+#: plugins/epiphany/gs-plugin-epiphany.c:499
+#: plugins/epiphany/gs-plugin-epiphany.c:503
+msgid "Web App"
+msgstr "Internetinė programa"
 
 #: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
 msgid "Web Apps Support"
@@ -4902,7 +4960,7 @@ msgid "Downloading upgrade information…"
 msgstr "Atsisiunčiami atnaujinimo informacija…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:404
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:405
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr "Atnaujinkite ir gaukite naujausias savybes bei patobulinimus."
@@ -4912,139 +4970,139 @@ msgid "Flatpak Support"
 msgstr "Flatpak palaikymas"
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
-msgid "Flatpak is a framework for desktop applications on Linux"
+msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak yra karkasas, skirtas darbalaukio programoms Linux sistemose"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:313
+#: plugins/flatpak/gs-flatpak.c:315
 #, c-format
 msgid "System folder %s"
 msgstr "Sistemos aplankas %s"
 
-#: plugins/flatpak/gs-flatpak.c:314 plugins/flatpak/gs-flatpak.c:315
+#: plugins/flatpak/gs-flatpak.c:316 plugins/flatpak/gs-flatpak.c:317
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Namų aplankas %s"
 
-#: plugins/flatpak/gs-flatpak.c:316
+#: plugins/flatpak/gs-flatpak.c:318
 msgid "Host system folders"
 msgstr "Pagrindinės sistemos aplankai"
 
-#: plugins/flatpak/gs-flatpak.c:317
+#: plugins/flatpak/gs-flatpak.c:319
 msgid "Host system configuration from /etc"
 msgstr "Pagrindinės sistemos konfigūracija iš /etc"
 
-#: plugins/flatpak/gs-flatpak.c:318
+#: plugins/flatpak/gs-flatpak.c:320
 msgid "Desktop folder"
 msgstr "Darbastalio aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:318
+#: plugins/flatpak/gs-flatpak.c:320
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Darbastalio poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:319
+#: plugins/flatpak/gs-flatpak.c:321
 msgid "Documents folder"
 msgstr "Dokumentų aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:319
+#: plugins/flatpak/gs-flatpak.c:321
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Dokumentų poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:320
+#: plugins/flatpak/gs-flatpak.c:322
 msgid "Music folder"
 msgstr "Muzikos aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:320
+#: plugins/flatpak/gs-flatpak.c:322
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Muzikos poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:321
+#: plugins/flatpak/gs-flatpak.c:323
 msgid "Pictures folder"
 msgstr "Paveikslėlių aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:321
+#: plugins/flatpak/gs-flatpak.c:323
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Paveikslėlių poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:322
+#: plugins/flatpak/gs-flatpak.c:324
 msgid "Public Share folder"
 msgstr "Viešinių aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:322
+#: plugins/flatpak/gs-flatpak.c:324
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Viešinių poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:323
+#: plugins/flatpak/gs-flatpak.c:325
 msgid "Videos folder"
 msgstr "Vaizdo įrašų aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:323
+#: plugins/flatpak/gs-flatpak.c:325
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Vaizdo įrašų poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:324
+#: plugins/flatpak/gs-flatpak.c:326
 msgid "Templates folder"
 msgstr "Šablonų aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:324
+#: plugins/flatpak/gs-flatpak.c:326
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Šablonų poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:327
 msgid "User cache folder"
 msgstr "Naudotojo podėlio aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:327
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Naudotojo podėlio poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:326
+#: plugins/flatpak/gs-flatpak.c:328
 msgid "User configuration folder"
 msgstr "Naudotojo konfigūracijos aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:326
+#: plugins/flatpak/gs-flatpak.c:328
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Naudotojo konfigūracijos poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:329
 msgid "User data folder"
 msgstr "Naudotojo duomenų aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:329
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Naudotojo duomenų poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:330
 msgid "User runtime folder"
 msgstr "Naudotojo vykdymo aplinkos aplankas"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:330
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Naudotojo vykdymo aplinkos poaplankis %s"
 
-#: plugins/flatpak/gs-flatpak.c:386
+#: plugins/flatpak/gs-flatpak.c:388
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Failų sistemos prieiga prie %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1403
+#: plugins/flatpak/gs-flatpak.c:1405
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Gaunami %s flatpak metaduomenys…"
 
-#: plugins/flatpak/gs-flatpak.c:3579
+#: plugins/flatpak/gs-flatpak.c:3582
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Nepavyko patikslinti priedo „%s“: %s"
@@ -5057,17 +5115,17 @@ msgstr "Naudotojo diegimas"
 msgid "System Installation"
 msgstr "Sistemos diegimas"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1037
+#: plugins/flatpak/gs-plugin-flatpak.c:1135
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Nepavyko pridėti prie diegimo priedo „%s“: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1051
+#: plugins/flatpak/gs-plugin-flatpak.c:1149
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Nepavyko pridėti prie šalinimo priedo „%s“: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1317
+#: plugins/flatpak/gs-plugin-flatpak.c:1415
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5076,44 +5134,87 @@ msgstr ""
 "Nuotolinis „%s“ neleidžia diegti „%s“, galimai dėl jo filtro. Pašalinkite "
 "filtrą ir pakartokite diegimą. Detali klaida: %s"
 
+#. TRANSLATORS: as in laptop battery power
+#: plugins/fwupd/gs-fwupd-app.c:66
+msgid "System power is too low to perform the update"
+msgstr "Sistemai trūksta energijos atnaujinimui"
+
+#. TRANSLATORS: as in laptop battery power
+#: plugins/fwupd/gs-fwupd-app.c:70
+#, c-format
+msgid "System power is too low to perform the update (%u%%, requires %u%%)"
+msgstr "Sistemai trūksta energijos atnaujinimui (%u%%, reikia %u%%)"
+
+#. TRANSLATORS: for example, a Bluetooth mouse that is in powersave mode
+#: plugins/fwupd/gs-fwupd-app.c:76
+msgid "Device is unreachable, or out of wireless range"
+msgstr "Įrenginys nepasiekiamas arba už belaidžio ryšio ribų"
+
+#. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
+#: plugins/fwupd/gs-fwupd-app.c:82
+#, c-format
+msgid "Device battery power is too low"
+msgstr "Akumuliatorius per daug išsikrovęs"
+
+#. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
+#: plugins/fwupd/gs-fwupd-app.c:85
+#, c-format
+msgid "Device battery power is too low (%u%%, requires %u%%)"
+msgstr "Akumuliatorius per daug išsikrovęs (%u%%, reikia %u%%)"
+
+#. TRANSLATORS: usually this is when we're waiting for a reboot
+#: plugins/fwupd/gs-fwupd-app.c:91
+msgid "Device is waiting for the update to be applied"
+msgstr "Įrenginys laukia, kol bus pritaikytas atnaujinimas"
+
+#. TRANSLATORS: as in, wired mains power for a laptop
+#: plugins/fwupd/gs-fwupd-app.c:95
+msgid "Device requires AC power to be connected"
+msgstr "Įrenginį reikia prijungti prie srovės šaltinio"
+
+#. TRANSLATORS: lid means "laptop top cover"
+#: plugins/fwupd/gs-fwupd-app.c:99
+msgid "Device cannot be used while the lid is closed"
+msgstr "Įrenginio negalima naudoti užversto"
+
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:134
+#: plugins/fwupd/gs-fwupd-app.c:218
 #, c-format
 msgid "%s Device Update"
 msgstr "%s įrenginio atnaujinimas"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:139
+#: plugins/fwupd/gs-fwupd-app.c:223
 #, c-format
 msgid "%s System Update"
 msgstr "%s sistemos atnaujinimas"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:144
+#: plugins/fwupd/gs-fwupd-app.c:228
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "%s integruoto valdiklio atnaujinimas"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:149
+#: plugins/fwupd/gs-fwupd-app.c:233
 #, c-format
 msgid "%s ME Update"
 msgstr "%s ME atnaujinimas"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:154
+#: plugins/fwupd/gs-fwupd-app.c:238
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "%s korporacijos ME atnaujinimas"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:159
+#: plugins/fwupd/gs-fwupd-app.c:243
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "%s naudotojo ME atnaujinimas"
@@ -5121,7 +5222,7 @@ msgstr "%s naudotojo ME atnaujinimas"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:165
+#: plugins/fwupd/gs-fwupd-app.c:249
 #, c-format
 msgid "%s Controller Update"
 msgstr "%s valdiklio atnaujinimas"
@@ -5129,97 +5230,137 @@ msgstr "%s valdiklio atnaujinimas"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:171
+#: plugins/fwupd/gs-fwupd-app.c:255
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "%s Thunderbolt valdiklio atnaujinimas"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:176
+#: plugins/fwupd/gs-fwupd-app.c:260
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "%s CPU mikrokodo atnaujinimas"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:181
+#: plugins/fwupd/gs-fwupd-app.c:265
 #, c-format
 msgid "%s Configuration Update"
 msgstr "%s konfigūracijos atnaujinimas"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:185
+#: plugins/fwupd/gs-fwupd-app.c:269
 #, c-format
 msgid "%s Battery Update"
 msgstr "%s baterijos atnaujinimas"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:190
+#: plugins/fwupd/gs-fwupd-app.c:274
 #, c-format
 msgid "%s Camera Update"
 msgstr "%s kameros atnaujinimas"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:194
+#: plugins/fwupd/gs-fwupd-app.c:278
 #, c-format
 msgid "%s TPM Update"
 msgstr "%s TPM atnaujinimas"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:198
+#: plugins/fwupd/gs-fwupd-app.c:282
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "%s jutiklinio kilimėlio atnaujinimas"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:202
+#: plugins/fwupd/gs-fwupd-app.c:286
 #, c-format
 msgid "%s Mouse Update"
 msgstr "%s pelės atnaujinimas"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:206
+#: plugins/fwupd/gs-fwupd-app.c:290
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "%s klaviatūros atnaujinimas"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:210
+#: plugins/fwupd/gs-fwupd-app.c:294
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "%s saugyklos valdiklio atnaujinimas"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:215
+#: plugins/fwupd/gs-fwupd-app.c:299
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "%s tinklo sąsajos atnaujinimas"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:220
+#: plugins/fwupd/gs-fwupd-app.c:304
 #, c-format
 msgid "%s Display Update"
 msgstr "%s vaizduoklio atnaujinimas"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:225
+#: plugins/fwupd/gs-fwupd-app.c:309
 #, c-format
 msgid "%s BMC Update"
 msgstr "%s BMC atnaujinimas"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:230
+#: plugins/fwupd/gs-fwupd-app.c:314
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "%s USB imtuvo atnaujinimas"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1240
+#. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
+#: plugins/fwupd/gs-fwupd-app.c:318
+#, c-format
+msgid "%s Drive Update"
+msgstr "%s disko atnaujinimas"
+
+#. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
+#: plugins/fwupd/gs-fwupd-app.c:322
+#, c-format
+msgid "%s Flash Drive Update"
+msgstr "%s Flash atnaujinimas"
+
+#. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
+#. * SATA or NVMe disk
+#: plugins/fwupd/gs-fwupd-app.c:327
+#, c-format
+msgid "%s SSD Update"
+msgstr "%s SSD atnaujinimas"
+
+#. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
+#. * the "video card"
+#: plugins/fwupd/gs-fwupd-app.c:332
+#, c-format
+msgid "%s GPU Update"
+msgstr "%s GPU atnaujinimas"
+
+#. TRANSLATORS: Dock refers to the port replicator hardware laptops are
+#. * cradled in, or lowered onto
+#: plugins/fwupd/gs-fwupd-app.c:337
+#, c-format
+msgid "%s Dock Update"
+msgstr "%s doko atnaujinimas"
+
+#. TRANSLATORS: Dock refers to the port replicator device connected
+#. * by plugging in a USB cable -- which may or may not also provide power
+#: plugins/fwupd/gs-fwupd-app.c:342
+#, c-format
+msgid "%s USB Dock Update"
+msgstr "%s USB doko atnaujinimas"
+
+#: plugins/fwupd/gs-plugin-fwupd.c:1244
 msgid "Firmware"
 msgstr "Įrenginio aparatinė programinė įranga"
 
@@ -5275,7 +5416,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Paketai"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2690
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2650
 msgid "Operating System (OSTree)"
 msgstr "Operacinė sistema (OSTree)"
 
@@ -5291,6 +5432,97 @@ msgstr "Snap palaikymas"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap yra universalus Linux paketas"
+
+#~ msgid "_User"
+#~ msgstr "Na_udotojas"
+
+#~ msgid "An application"
+#~ msgstr "Programa"
+
+#~ msgid ""
+#~ "This software is not available in your language and will appear in US "
+#~ "English."
+#~ msgstr "Ši programinė įranga neprieinama jūsų kalba ir bus JAV anglų kalba"
+
+#~ msgid "Applications"
+#~ msgstr "Programos"
+
+#~ msgid "Enable"
+#~ msgstr "Įjungti"
+
+#~ msgid "_Continue"
+#~ msgstr "_Tęsti"
+
+#, c-format
+#~ msgid "%u application"
+#~ msgid_plural "%u applications"
+#~ msgstr[0] "%u programa"
+#~ msgstr[1] "%u programos"
+#~ msgstr[2] "%u programų"
+
+#~ msgid "Post Review"
+#~ msgstr "Siųsti atsiliepimą"
+
+#~ msgid "_Post"
+#~ msgstr "S_iųsti"
+
+#~ msgid "Rating"
+#~ msgstr "Įvertinimas"
+
+#~ msgid ""
+#~ "Give a short summary of your review, for example: “Great app, would "
+#~ "recommend”."
+#~ msgstr ""
+#~ "Pateikite trumpą savo atsiliepimo aprašą, pavyzdžiui: \"Puiki programa, "
+#~ "rekomenduoju\"."
+
+#~ msgctxt "app review"
+#~ msgid "Review"
+#~ msgstr "Atsiliepimas"
+
+#~ msgid "What do you think of the app? Try to give reasons for your views."
+#~ msgstr ""
+#~ "Ką manote apie šią programą? Pasistenkite pateikti savo nuomonės "
+#~ "priežastis."
+
+#~ msgid "No screenshot provided"
+#~ msgstr "Nepateikta ekrano nuotrauka"
+
+#, c-format
+#~ msgid "%s…"
+#~ msgstr "%s…"
+
+#~ msgid "Restart Now"
+#~ msgstr "Paleisti dabar"
+
+#~ msgid "Primary Menu"
+#~ msgstr "Pagrindinis meniu"
+
+#~ msgctxt "Header bar button for list of apps to be updated"
+#~ msgid "Updates"
+#~ msgstr "Atnaujinimai"
+
+#~ msgid "Application Data"
+#~ msgstr "Programos duomenys"
+
+#, c-format
+#~ msgid "%s %s is no longer supported."
+#~ msgstr "%s %s daugiau nebepalaikoma."
+
+#~ msgid "This means that it does not receive security updates."
+#~ msgstr "Tai reiškia, kad daugiau nebegausite saugumo spragų taisymų."
+
+#~ msgid "It is recommended that you upgrade to a more recent version."
+#~ msgstr "Rekomenduojama dabar atsinaujinti į paskutinę versiją."
+
+#~ msgid "Update All"
+#~ msgstr "Atnaujinti viską"
+
+#~ msgid "Application Updates"
+#~ msgstr "Programos atnaujinimai"
+
+#~ msgid "GNOME Web"
+#~ msgstr "GNOME Žiniatinklis"
 
 #~ msgid "No updates have been installed on this system."
 #~ msgstr "Šioje sistemoje nebuvo įdiegta atnaujinimų."
@@ -5509,14 +5741,8 @@ msgstr "Snap yra universalus Linux paketas"
 #~ msgid "Disable “%s”?"
 #~ msgstr "Išjungti „%s“?"
 
-#~ msgid "Remove"
-#~ msgstr "Pašalinti"
-
 #~ msgid "No Additional Repositories"
 #~ msgstr "Nėra papildomų šaltinių"
-
-#~ msgid "_Enable"
-#~ msgstr "Į_jungti"
 
 #~ msgid "_Remove…"
 #~ msgstr "Š_alinti…"
@@ -5550,9 +5776,6 @@ msgstr "Snap yra universalus Linux paketas"
 #~ msgid "Looking for New Updates…"
 #~ msgstr "Ieškoma naujų atnaujinimų…"
 
-#~ msgid "_Restart Now"
-#~ msgstr "Pe_rleisti dabar"
-
 #~ msgid "Updates will be applied when the computer is restarted."
 #~ msgstr ""
 #~ "Atnaujinimai bus pritaikyti, kai kompiuteris bus paleistas iš naujo."
@@ -5571,12 +5794,6 @@ msgstr "Snap yra universalus Linux paketas"
 
 #~ msgid "Select None"
 #~ msgstr "Nežymėti nieko"
-
-#~ msgid "_Installed"
-#~ msgstr "Į_diegta"
-
-#~ msgid "_Updates"
-#~ msgstr "_Atnaujinimai"
 
 #~ msgid "Featured %s"
 #~ msgstr "Siūlomos %s"
@@ -6138,9 +6355,6 @@ msgstr "Snap yra universalus Linux paketas"
 #~ msgid "Error message here"
 #~ msgstr "Čia pranešimas apie klaidą"
 
-#~ msgid "App ID"
-#~ msgstr "Programos ID"
-
 #~ msgid "Category Featured"
 #~ msgstr "Siūlomų kategorijoje"
 
@@ -6161,9 +6375,6 @@ msgstr "Snap yra universalus Linux paketas"
 
 #~ msgid "Delete Design"
 #~ msgstr "Ištrinti reklamjuostę"
-
-#~ msgid "OS Upgrade"
-#~ msgstr "OS atnaujinimas"
 
 #~ msgid "Spacing"
 #~ msgstr "Tarpai"
@@ -6365,9 +6576,6 @@ msgstr "Snap yra universalus Linux paketas"
 
 #~ msgid "Includes: ."
 #~ msgstr "Įskaitant: ."
-
-#~ msgid "U_pdate All"
-#~ msgstr "_Atnaujinti viską"
 
 #~ msgid "Restart & _Install"
 #~ msgstr "Perleisti ir į_diegti"
@@ -6663,9 +6871,6 @@ msgstr "Snap yra universalus Linux paketas"
 
 #~ msgid "3rd party"
 #~ msgstr "Trečiosios šalies"
-
-#~ msgid "web app"
-#~ msgstr "internetinė programa"
 
 #~ msgid "nonfree"
 #~ msgstr "nelaisva"
@@ -7255,9 +7460,6 @@ msgstr "Snap yra universalus Linux paketas"
 
 #~ msgid "The offline update failed in an unexpected way."
 #~ msgstr "Atnaujinimas atsijungus nepavyko netikėtu būdu."
-
-#~ msgid "OK"
-#~ msgstr "Gerai"
 
 #~ msgid "No sources found."
 #~ msgstr "Nerasta šaltinių."
