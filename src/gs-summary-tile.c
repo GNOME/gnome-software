@@ -66,6 +66,7 @@ struct _GsSummaryTile
 	GsAppTile	 parent_instance;
 
 	GtkWidget	*image;
+	GtkWidget	*image_stack;
 	GtkWidget	*name;
 	GtkWidget	*summary;
 	GtkWidget	*bin;
@@ -104,11 +105,22 @@ gs_summary_tile_refresh (GsAppTile *self)
 	gtk_label_set_label (GTK_LABEL (tile->summary), summary);
 	gtk_widget_set_visible (tile->summary, summary && summary[0]);
 
-	icon = gs_app_get_icon_for_size (app,
-					 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
-					 gtk_widget_get_scale_factor (tile->image),
-					 "system-component-application");
-	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
+	switch (gs_app_get_icons_state (app)) {
+	case GS_APP_ICONS_STATE_AVAILABLE:
+		icon = gs_app_get_icon_for_size (app,
+						 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
+						 gtk_widget_get_scale_factor (tile->image),
+						 "system-component-application");
+		gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
+		gtk_stack_set_visible_child_name (GTK_STACK (tile->image_stack), "image");
+		break;
+	case GS_APP_ICONS_STATE_UNKNOWN:
+	case GS_APP_ICONS_STATE_PENDING_DOWNLOAD:
+	case GS_APP_ICONS_STATE_DOWNLOADING:
+	default:
+		gtk_stack_set_visible_child_name (GTK_STACK (tile->image_stack), "loading");
+		break;
+	}
 
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLED:
@@ -234,6 +246,8 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      image);
+	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
+					      image_stack);
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      name);
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
