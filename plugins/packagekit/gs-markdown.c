@@ -134,15 +134,36 @@ gs_markdown_to_text_line_is_bullet (const gchar **pline)
 }
 
 static gboolean
-gs_markdown_to_text_line_is_header1 (const gchar *line)
+gs_markdown_to_text_line_is_header_x (const gchar **pline,
+				      guint xx)
 {
-	return g_str_has_prefix (line, "# ");
+	const gchar *line = *pline;
+
+	while (*line == '#' && xx > 0) {
+		line++;
+		xx--;
+	}
+
+	if (xx == 0 && *line != '\0' && *line != '#') {
+		if (g_ascii_isspace (*line))
+			line++;
+		*pline = line;
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 static gboolean
-gs_markdown_to_text_line_is_header2 (const gchar *line)
+gs_markdown_to_text_line_is_header1 (const gchar **pline)
 {
-	return g_str_has_prefix (line, "## ");
+	return gs_markdown_to_text_line_is_header_x (pline, 1);
+}
+
+static gboolean
+gs_markdown_to_text_line_is_header2 (const gchar **pline)
+{
+	return gs_markdown_to_text_line_is_header_x (pline, 2);
 }
 
 static gboolean
@@ -647,20 +668,20 @@ gs_markdown_to_text_line_process (GsMarkdown *self, const gchar *line)
 	}
 
 	/* header1 */
-	ret = gs_markdown_to_text_line_is_header1 (line);
+	ret = gs_markdown_to_text_line_is_header1 (&line);
 	if (ret) {
 		gs_markdown_flush_pending (self);
 		self->mode = GS_MARKDOWN_MODE_H1;
-		ret = gs_markdown_add_pending_header (self, &line[2]);
+		ret = gs_markdown_add_pending_header (self, line);
 		goto out;
 	}
 
 	/* header2 */
-	ret = gs_markdown_to_text_line_is_header2 (line);
+	ret = gs_markdown_to_text_line_is_header2 (&line);
 	if (ret) {
 		gs_markdown_flush_pending (self);
 		self->mode = GS_MARKDOWN_MODE_H2;
-		ret = gs_markdown_add_pending_header (self, &line[3]);
+		ret = gs_markdown_add_pending_header (self, line);
 		goto out;
 	}
 
