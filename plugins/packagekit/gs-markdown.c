@@ -115,14 +115,22 @@ gs_markdown_to_text_line_is_rule (const gchar *line)
 }
 
 static gboolean
-gs_markdown_to_text_line_is_bullet (const gchar *line)
+gs_markdown_to_text_line_is_bullet (const gchar **pline)
 {
-	return (g_str_has_prefix (line, "- ") ||
-		g_str_has_prefix (line, "* ") ||
-		g_str_has_prefix (line, "+ ") ||
-		g_str_has_prefix (line, " - ") ||
-		g_str_has_prefix (line, " * ") ||
-		g_str_has_prefix (line, " + "));
+	const gchar *line = *pline;
+
+	/* skip leading spaces */
+	while (g_ascii_isspace (*line))
+		line++;
+
+	if (g_str_has_prefix (line, "- ") ||
+	    g_str_has_prefix (line, "* ") ||
+	    g_str_has_prefix (line, "+ ")) {
+		*pline = line + 2;
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 static gboolean
@@ -630,11 +638,11 @@ gs_markdown_to_text_line_process (GsMarkdown *self, const gchar *line)
 	}
 
 	/* bullet */
-	ret = gs_markdown_to_text_line_is_bullet (line);
+	ret = gs_markdown_to_text_line_is_bullet (&line);
 	if (ret) {
 		gs_markdown_flush_pending (self);
 		self->mode = GS_MARKDOWN_MODE_BULLETT;
-		ret = gs_markdown_add_pending (self, &line[2]);
+		ret = gs_markdown_add_pending (self, line);
 		goto out;
 	}
 
