@@ -42,6 +42,10 @@ typedef enum {
 	GS_MARKDOWN_MODE_PARA,
 	GS_MARKDOWN_MODE_H1,
 	GS_MARKDOWN_MODE_H2,
+	GS_MARKDOWN_MODE_H3,
+	GS_MARKDOWN_MODE_H4,
+	GS_MARKDOWN_MODE_H5,
+	GS_MARKDOWN_MODE_H6,
 	GS_MARKDOWN_MODE_UNKNOWN
 } GsMarkdownMode;
 
@@ -56,6 +60,14 @@ typedef struct {
 	const gchar *h1_end;
 	const gchar *h2_start;
 	const gchar *h2_end;
+	const gchar *h3_start;
+	const gchar *h3_end;
+	const gchar *h4_start;
+	const gchar *h4_end;
+	const gchar *h5_start;
+	const gchar *h5_end;
+	const gchar *h6_start;
+	const gchar *h6_end;
 	const gchar *bullet_start;
 	const gchar *bullet_end;
 	const gchar *rule;
@@ -164,6 +176,30 @@ static gboolean
 gs_markdown_to_text_line_is_header2 (const gchar **pline)
 {
 	return gs_markdown_to_text_line_is_header_x (pline, 2);
+}
+
+static gboolean
+gs_markdown_to_text_line_is_header3 (const gchar **pline)
+{
+	return gs_markdown_to_text_line_is_header_x (pline, 3);
+}
+
+static gboolean
+gs_markdown_to_text_line_is_header4 (const gchar **pline)
+{
+	return gs_markdown_to_text_line_is_header_x (pline, 4);
+}
+
+static gboolean
+gs_markdown_to_text_line_is_header5 (const gchar **pline)
+{
+	return gs_markdown_to_text_line_is_header_x (pline, 5);
+}
+
+static gboolean
+gs_markdown_to_text_line_is_header6 (const gchar **pline)
+{
+	return gs_markdown_to_text_line_is_header_x (pline, 6);
 }
 
 static gboolean
@@ -607,6 +643,26 @@ gs_markdown_flush_pending (GsMarkdown *self)
 					self->tags.h2_start,
 					temp,
 					self->tags.h2_end);
+	} else if (self->mode == GS_MARKDOWN_MODE_H3) {
+		g_string_append_printf (self->processed, "%s%s%s\n",
+					self->tags.h3_start,
+					temp,
+					self->tags.h3_end);
+	} else if (self->mode == GS_MARKDOWN_MODE_H4) {
+		g_string_append_printf (self->processed, "%s%s%s\n",
+					self->tags.h4_start,
+					temp,
+					self->tags.h4_end);
+	} else if (self->mode == GS_MARKDOWN_MODE_H5) {
+		g_string_append_printf (self->processed, "%s%s%s\n",
+					self->tags.h5_start,
+					temp,
+					self->tags.h5_end);
+	} else if (self->mode == GS_MARKDOWN_MODE_H6) {
+		g_string_append_printf (self->processed, "%s%s%s\n",
+					self->tags.h6_start,
+					temp,
+					self->tags.h6_end);
 	} else if (self->mode == GS_MARKDOWN_MODE_PARA ||
 		   self->mode == GS_MARKDOWN_MODE_RULE) {
 		g_string_append_printf (self->processed, "%s\n", temp);
@@ -685,6 +741,42 @@ gs_markdown_to_text_line_process (GsMarkdown *self, const gchar *line)
 		goto out;
 	}
 
+	/* header3 */
+	ret = gs_markdown_to_text_line_is_header3 (&line);
+	if (ret) {
+		gs_markdown_flush_pending (self);
+		self->mode = GS_MARKDOWN_MODE_H3;
+		ret = gs_markdown_add_pending_header (self, line);
+		goto out;
+	}
+
+	/* header4 */
+	ret = gs_markdown_to_text_line_is_header4 (&line);
+	if (ret) {
+		gs_markdown_flush_pending (self);
+		self->mode = GS_MARKDOWN_MODE_H4;
+		ret = gs_markdown_add_pending_header (self, line);
+		goto out;
+	}
+
+	/* header5 */
+	ret = gs_markdown_to_text_line_is_header5 (&line);
+	if (ret) {
+		gs_markdown_flush_pending (self);
+		self->mode = GS_MARKDOWN_MODE_H5;
+		ret = gs_markdown_add_pending_header (self, line);
+		goto out;
+	}
+
+	/* header6 */
+	ret = gs_markdown_to_text_line_is_header6 (&line);
+	if (ret) {
+		gs_markdown_flush_pending (self);
+		self->mode = GS_MARKDOWN_MODE_H6;
+		ret = gs_markdown_add_pending_header (self, line);
+		goto out;
+	}
+
 	/* paragraph */
 	if (self->mode == GS_MARKDOWN_MODE_BLANK ||
 	    self->mode == GS_MARKDOWN_MODE_UNKNOWN) {
@@ -720,6 +812,14 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		self->tags.h1_end = "</big>";
 		self->tags.h2_start = "<b>";
 		self->tags.h2_end = "</b>";
+		self->tags.h3_start = "<b>";
+		self->tags.h3_end = "</b>";
+		self->tags.h4_start = "<b>";
+		self->tags.h4_end = "</b>";
+		self->tags.h5_start = "<b>";
+		self->tags.h5_end = "</b>";
+		self->tags.h6_start = "<b>";
+		self->tags.h6_end = "</b>";
 		self->tags.bullet_start = "• ";
 		self->tags.bullet_end = "";
 		self->tags.rule = "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n";
@@ -738,6 +838,14 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		self->tags.h1_end = "</h1>";
 		self->tags.h2_start = "<h2>";
 		self->tags.h2_end = "</h2>";
+		self->tags.h3_start = "<h3>";
+		self->tags.h3_end = "</h3>";
+		self->tags.h4_start = "<h4>";
+		self->tags.h4_end = "</h4>";
+		self->tags.h5_start = "<h5>";
+		self->tags.h5_end = "</h5>";
+		self->tags.h6_start = "<h6>";
+		self->tags.h6_end = "</h6>";
 		self->tags.bullet_start = "<li>";
 		self->tags.bullet_end = "</li>";
 		self->tags.rule = "<hr>";
@@ -756,6 +864,14 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		self->tags.h1_end = "]";
 		self->tags.h2_start = "-";
 		self->tags.h2_end = "-";
+		self->tags.h3_start = "  ";
+		self->tags.h3_end = "  ";
+		self->tags.h4_start = "   ";
+		self->tags.h4_end = "   ";
+		self->tags.h5_start = "    ";
+		self->tags.h5_end = "    ";
+		self->tags.h6_start = "     ";
+		self->tags.h6_end = "     ";
 		self->tags.bullet_start = "* ";
 		self->tags.bullet_end = "";
 		self->tags.rule = " ----- \n";
