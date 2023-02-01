@@ -927,6 +927,7 @@ gs_markdown_parse (GsMarkdown *self, const gchar *markdown)
 	guint i;
 	guint len;
 	g_auto(GStrv) lines = NULL;
+	const gchar *output;
 
 	g_return_val_if_fail (GS_IS_MARKDOWN (self), NULL);
 
@@ -947,11 +948,16 @@ gs_markdown_parse (GsMarkdown *self, const gchar *markdown)
 	gs_markdown_flush_pending (self);
 
 	/* remove trailing \n */
-	while (g_str_has_suffix (self->processed->str, "\n"))
+	while (self->processed->len > 0 && self->processed->str[self->processed->len - 1] == '\n')
 		g_string_set_size (self->processed, self->processed->len - 1);
 
+	/* skip leading \n, which can happen with headers in the Pango mode */
+	output = self->processed->str;
+	while (*output == '\n')
+		output++;
+
 	/* get a copy */
-	temp = g_strdup (self->processed->str);
+	temp = g_strdup (output);
 	g_string_truncate (self->pending, 0);
 	g_string_truncate (self->processed, 0);
 	return temp;

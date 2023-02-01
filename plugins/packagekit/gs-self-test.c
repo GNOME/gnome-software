@@ -29,7 +29,7 @@ gs_markdown_func (void)
 		   "====\n"
 		   " - Bullett\n";
 	markdown_expected =
-		   "\n<big>OEMs</big>\n\n"
+		   "<big>OEMs</big>\n\n"
 		   "• Bullett";
 	/* markdown (type2 header) */
 	text = gs_markdown_parse (md, markdown);
