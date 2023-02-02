@@ -29,7 +29,7 @@ gs_markdown_func (void)
 		   "====\n"
 		   " - Bullett\n";
 	markdown_expected =
-		   "<big>OEMs</big>\n"
+		   "<big>OEMs</big>\n\n"
 		   "• Bullett";
 	/* markdown (type2 header) */
 	text = gs_markdown_parse (md, markdown);
@@ -101,7 +101,7 @@ gs_markdown_func (void)
 	markdown_expected =
 		   "This is a spec file description or an <b>update</b> description in bohdi.\n"
 		   "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n"
-		   "<big>Big title</big>\n"
+		   "\n<big>Big title</big>\n\n"
 		   "The <i>following</i> things 'were' fixed:\n"
 		   "• Fix <tt>dave</tt>\n"
 		   "• Fubar update because of \"security\"";
