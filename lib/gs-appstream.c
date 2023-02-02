@@ -117,6 +117,39 @@ gs_appstream_format_description_text (XbNode *node)
 	return g_string_free (g_steal_pointer (&str), FALSE);
 }
 
+static void
+format_issue_link (GString     *str,
+                   const gchar *issue_content,
+                   AsIssueKind  kind,
+                   const gchar *url)
+{
+	g_autofree gchar *escaped_text = NULL;
+
+	if (url != NULL) {
+		escaped_text = g_markup_printf_escaped ("<a href=\"%s\" title=\"%s\">%s</a>",
+							url, url, issue_content);
+		g_string_append (str, escaped_text);
+		return;
+	}
+
+	switch (kind) {
+	case AS_ISSUE_KIND_CVE:
+		#define CVE_URL "https://cve.mitre.org/cgi-bin/cvename.cgi?name="
+		/* @issue_content is expected to be in the form ‘CVE-2023-12345’ */
+		escaped_text = g_markup_printf_escaped ("<a href=\"" CVE_URL "%s\" title=\"" CVE_URL "%s\">%s</a>",
+							issue_content, issue_content, issue_content);
+		#undef CVE_URL
+		break;
+	case AS_ISSUE_KIND_GENERIC:
+	case AS_ISSUE_KIND_UNKNOWN:
+	default:
+		escaped_text = g_markup_escape_text (issue_content, -1);
+		break;
+	}
+
+	g_string_append (str, escaped_text);
+}
+
 static gchar *
 gs_appstream_format_description (XbNode *description_node,
 				 XbNode *issues_node)
@@ -176,11 +209,14 @@ gs_appstream_format_description (XbNode *description_node,
 		for (g_autoptr(XbNode) n = xb_node_get_child (issues_node); n != NULL; node_set_to_next (&n)) {
 			if (g_strcmp0 (xb_node_get_element (n), "issue") == 0) {
 				const gchar *node_text = xb_node_get_text (n);
+				AsIssueKind issue_kind = as_issue_kind_from_string (xb_node_get_attr (n, "type"));
+				const gchar *issue_url = xb_node_get_attr (n, "url");
+
 				if (node_text != NULL && *node_text != '\0') {
 					if (str->str[str->len - 1] != '\n')
 						g_string_append_c (str, '\n');
 					g_string_append (str, " • ");
-					g_string_append (str, node_text);
+					format_issue_link (str, node_text, issue_kind, issue_url);
 				}
 			}
 		}
