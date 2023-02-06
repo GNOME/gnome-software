@@ -143,11 +143,10 @@ static gboolean
 refine_app_unlocked (GsPluginIcons        *self,
                      GsApp                *app,
                      GsPluginRefineFlags   flags,
+                     gboolean              interactive,
                      GCancellable         *cancellable,
                      GError              **error)
 {
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
-
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) == 0)
 		return TRUE;
@@ -167,6 +166,7 @@ gs_plugin_icons_refine_async (GsPlugin            *plugin,
 {
 	GsPluginIcons *self = GS_PLUGIN_ICONS (plugin);
 	g_autoptr(GTask) task = NULL;
+	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_icons_refine_async);
@@ -184,7 +184,8 @@ gs_plugin_icons_refine_async (GsPlugin            *plugin,
 			g_autoptr(GError) local_error = NULL;
 			GsApp *app = gs_app_list_index (list, i);
 
-			if (!refine_app_unlocked (self, app, flags, cancellable, &local_error)) {
+			if (!refine_app_unlocked (self, app, flags, interactive, cancellable,
+						  &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
