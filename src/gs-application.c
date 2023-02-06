@@ -144,7 +144,7 @@ gs_application_init (GsApplication *application)
 		{ "autoupdate", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Installs any pending updates in the background"), NULL },
 		{ "prefs", 0, 0, G_OPTION_ARG_NONE, NULL,
-		  _("Show update preferences"), NULL },
+		  _("Show preferences"), NULL },
 		{ "quit", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Quit the running instance"), NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, NULL,
@@ -541,7 +541,7 @@ details_activated (GSimpleAction *action,
 							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					  "sort-func", gs_utils_app_sort_match_value,
 					  NULL);
-		plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+		plugin_job = gs_plugin_job_list_apps_new (query, gs_shell_get_list_apps_flags (app->shell));
 		gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
 						    app->cancellable,
 						    _search_launchable_details_cb,
@@ -822,7 +822,7 @@ launch_activated (GSimpleAction *action,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
-	search_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	search_job = gs_plugin_job_list_apps_new (query, gs_shell_get_list_apps_flags (self->shell));
 	list = gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
 	if (!list) {
 		g_warning ("Failed to search for application '%s' (from '%s'): %s", id, management_plugin_name, error ? error->message : "Unknown error");

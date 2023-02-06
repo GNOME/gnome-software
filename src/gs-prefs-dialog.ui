@@ -2,12 +2,12 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsPrefsDialog" parent="AdwPreferencesWindow">
-    <property name="title" translatable="yes">Update Preferences</property>
+    <property name="title" translatable="yes">Preferences</property>
     <property name="default_width">610</property>
-    <property name="default_height">300</property>
+    <property name="default_height">370</property>
     <property name="search_enabled">False</property>
     <style>
-      <class name="update-preferences"/>
+      <class name="preferences"/>
     </style>
     <child>
       <object class="AdwPreferencesPage">
@@ -16,10 +16,11 @@
             <property name="description" translatable="yes">To avoid charges and network caps, software updates are not automatically downloaded on mobile or metered connections.</property>
             <child>
               <object class="AdwActionRow" id="automatic_updates_row">
-                <property name="title" translatable="yes">Automatic Updates</property>
+                <property name="title" translatable="yes">Automatic _Updates</property>
                 <property name="subtitle" translatable="yes">Downloads and installs software updates in the background, when possible.</property>
                 <property name="subtitle_lines">0</property>
                 <property name="activatable_widget">switch_updates</property>
+                <property name="use_underline">True</property>
                 <child>
                   <object class="GtkSwitch" id="switch_updates">
                     <property name="valign">center</property>
@@ -29,12 +30,27 @@
             </child>
             <child>
               <object class="AdwActionRow" id="automatic_update_notifications_row">
-                <property name="title" translatable="yes">Automatic Update Notifications</property>
+                <property name="title" translatable="yes">Automatic Update _Notifications</property>
                 <property name="subtitle" translatable="yes">Show notifications when updates have been automatically installed.</property>
                 <property name="subtitle_lines">0</property>
                 <property name="activatable_widget">switch_updates_notify</property>
+                <property name="use_underline">True</property>
                 <child>
                   <object class="GtkSwitch" id="switch_updates_notify">
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow" id="show_only_free_apps_row">
+                <property name="title" translatable="yes">Show Only _Free Apps</property>
+                <property name="subtitle" translatable="yes">Show only freely licensed apps and hide any proprietary apps.</property>
+                <property name="subtitle_lines">0</property>
+                <property name="activatable_widget">switch_free_apps</property>
+                <property name="use_underline">True</property>
+                <child>
+                  <object class="GtkSwitch" id="switch_free_apps">
                     <property name="valign">center</property>
                   </object>
                 </child>

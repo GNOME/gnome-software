@@ -831,3 +831,12 @@ gs_page_new (void)
 {
 	return GS_PAGE (g_object_new (GS_TYPE_PAGE, NULL));
 }
+
+GsPluginListAppsFlags
+gs_page_get_list_apps_flags (GsPage *self)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (self);
+	g_return_val_if_fail (GS_IS_PAGE (self), GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_return_val_if_fail (priv->shell != NULL, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	return gs_shell_get_list_apps_flags (priv->shell);
+}

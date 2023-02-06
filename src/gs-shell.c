@@ -2689,3 +2689,12 @@ gs_shell_new (void)
 {
 	return GS_SHELL (g_object_new (GS_TYPE_SHELL, NULL));
 }
+
+GsPluginListAppsFlags
+gs_shell_get_list_apps_flags (GsShell *self)
+{
+	g_return_val_if_fail (GS_IS_SHELL (self), GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	if (g_settings_get_boolean (self->settings, "show-only-free-apps"))
+		return GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED;
+	return GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+}

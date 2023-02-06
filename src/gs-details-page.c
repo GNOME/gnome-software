@@ -1248,7 +1248,9 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 						  NULL);
 
-			plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+			plugin_job = gs_plugin_job_list_apps_new (query,
+								  GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
+								  gs_page_get_list_apps_flags (GS_PAGE (self)));
 
 			g_debug ("searching other apps for: '%s'", names[0]);
 			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
@@ -1757,7 +1759,9 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 				  "filter-func", gs_details_page_filter_origin,
 				  "sort-func", gs_utils_app_sort_priority,
 				  NULL);
-	plugin_job2 = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+	plugin_job2 = gs_plugin_job_list_apps_new (query,
+						   GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
+						   gs_page_get_list_apps_flags (GS_PAGE (self)));
 
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job1,
 					    self->cancellable,

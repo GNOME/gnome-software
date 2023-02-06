@@ -706,7 +706,8 @@ gs_overview_page_load (GsOverviewPage *self)
 	if (!self->loading_featured) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		g_autoptr(GsAppQuery) query = NULL;
-		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
+					      gs_page_get_list_apps_flags (GS_PAGE (self));
 
 		query = gs_app_query_new ("is-featured", GS_APP_QUERY_TRISTATE_TRUE,
 					  "max-results", 5,
@@ -731,7 +732,8 @@ gs_overview_page_load (GsOverviewPage *self)
 	if (!self->loading_deployment_featured && self->deployment_featured != NULL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		g_autoptr(GsAppQuery) query = NULL;
-		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
+					      gs_page_get_list_apps_flags (GS_PAGE (self));
 
 		self->loading_deployment_featured = TRUE;
 
@@ -757,7 +759,8 @@ gs_overview_page_load (GsOverviewPage *self)
 	if (!self->loading_curated) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		g_autoptr(GsAppQuery) query = NULL;
-		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
+					      gs_page_get_list_apps_flags (GS_PAGE (self));
 
 		query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
 					  "max-results", N_TILES,
@@ -784,7 +787,8 @@ gs_overview_page_load (GsOverviewPage *self)
 		g_autoptr(GDateTime) now = NULL;
 		g_autoptr(GDateTime) released_since = NULL;
 		g_autoptr(GsAppQuery) query = NULL;
-		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
+					      gs_page_get_list_apps_flags (GS_PAGE (self));
 
 		now = g_date_time_new_now_local ();
 		released_since = g_date_time_add_seconds (now, -(60 * 60 * 24 * 30));

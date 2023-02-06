@@ -22,6 +22,7 @@ typedef struct {
 	guint64		 refine_flags;
 	guint		 max_results;
 	gboolean	 interactive;
+	gboolean	 only_freely_licensed;
 } GsCmdSelf;
 
 static void
@@ -196,6 +197,14 @@ gs_cmd_prompt_for_number (guint maxnum)
 	return answer;
 }
 
+static GsPluginListAppsFlags
+get_list_apps_flags (GsCmdSelf *self)
+{
+	if (self->only_freely_licensed)
+		return GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED;
+	return GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+}
+
 static gboolean
 gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, GError **error)
 {
@@ -207,7 +216,7 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gboolean show_installed = TRUE;
 	const gchar * const keywords[] = { name, NULL };
-	GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+	GsPluginListAppsFlags flags = get_list_apps_flags (self);
 
 	/* ensure set */
 	self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
@@ -347,6 +356,8 @@ main (int argc, char **argv)
 		  "Show verbose debugging information", NULL },
 		{ "interactive", 'i', 0, G_OPTION_ARG_NONE, &self->interactive,
 		  "Allow interactive authentication", NULL },
+		{ "only-freely-licensed", '\0', 0, G_OPTION_ARG_NONE, &self->only_freely_licensed,
+		  "Filter results to include only freely licensed apps", NULL },
 		{ NULL}
 	};
 
@@ -421,7 +432,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = get_list_apps_flags (self);
 
 			if (list != NULL)
 				g_object_unref (list);
@@ -447,7 +458,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = get_list_apps_flags (self);
 			const gchar *keywords[2] = { argv[2], NULL };
 
 			if (list != NULL)
@@ -476,7 +487,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = get_list_apps_flags (self);
 
 			if (list != NULL)
 				g_object_unref (list);
@@ -631,7 +642,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = get_list_apps_flags (self);
 
 			if (list != NULL)
 				g_object_unref (list);
@@ -657,7 +668,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = get_list_apps_flags (self);
 
 			if (list != NULL)
 				g_object_unref (list);
@@ -684,7 +695,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = get_list_apps_flags (self);
 
 			if (list != NULL)
 				g_object_unref (list);
@@ -714,7 +725,7 @@ main (int argc, char **argv)
 			g_autoptr(GDateTime) now = NULL;
 			g_autoptr(GDateTime) released_since = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = get_list_apps_flags (self);
 
 			if (list != NULL)
 				g_object_unref (list);
@@ -782,7 +793,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = get_list_apps_flags (self);
 
 			if (list != NULL)
 				g_object_unref (list);
