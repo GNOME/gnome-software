@@ -32,14 +32,12 @@ struct _GsPluginIcons
 {
 	GsPlugin	parent;
 
+	GMutex		 mutex;  /* protects @icon_downloader **/
+	GsIconDownloader	*icon_downloader; /* (owned) */
 	SoupSession	*soup_session;  /* (owned) */
-	GsWorkerThread	*worker;  /* (owned) */
 };
 
 G_DEFINE_TYPE (GsPluginIcons, gs_plugin_icons, GS_TYPE_PLUGIN)
-
-#define assert_in_worker(self) \
-	g_assert (gs_worker_thread_is_in_worker_context (self->worker))
 
 static void
 gs_plugin_icons_init (GsPluginIcons *self)
@@ -54,8 +52,8 @@ gs_plugin_icons_dispose (GObject *object)
 {
 	GsPluginIcons *self = GS_PLUGIN_ICONS (object);
 
+	g_clear_object (&self->icon_downloader);
 	g_clear_object (&self->soup_session);
-	g_clear_object (&self->worker);
 
 	G_OBJECT_CLASS (gs_plugin_icons_parent_class)->dispose (object);
 }
@@ -68,14 +66,18 @@ gs_plugin_icons_setup_async (GsPlugin            *plugin,
 {
 	GsPluginIcons *self = GS_PLUGIN_ICONS (plugin);
 	g_autoptr(GTask) task = NULL;
+	guint maximum_icon_size_px;
+
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_icons_setup_async);
 
+	g_mutex_init (&self->mutex);
 	self->soup_session = gs_build_soup_session ();
 
-	/* Start up a worker thread to process all the plugin’s function calls. */
-	self->worker = gs_worker_thread_new ("gs-plugin-icons");
+	/* Currently a 160px icon is needed for #GsFeatureTile, at most. */
+	maximum_icon_size_px = 160 * gs_plugin_get_scale (plugin);
+	self->icon_downloader = gs_icon_downloader_new (self->soup_session, maximum_icon_size_px);
 
 	g_task_return_boolean (task, TRUE);
 }
@@ -104,8 +106,9 @@ gs_plugin_icons_shutdown_async (GsPlugin            *plugin,
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_icons_shutdown_async);
 
-	/* Stop the worker thread. */
-	gs_worker_thread_shutdown_async (self->worker, cancellable, shutdown_cb, g_steal_pointer (&task));
+	/* Stop the icon downloader. */
+	gs_icon_downloader_shutdown_async (self->icon_downloader, cancellable,
+					   shutdown_cb, g_steal_pointer (&task));
 }
 
 static void
@@ -113,15 +116,14 @@ shutdown_cb (GObject      *source_object,
              GAsyncResult *result,
              gpointer      user_data)
 {
+	g_autoptr(GsIconDownloader) icon_downloader = NULL;
 	g_autoptr(GTask) task = G_TASK (user_data);
 	GsPluginIcons *self = g_task_get_source_object (task);
-	g_autoptr(GsWorkerThread) worker = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	g_clear_object (&self->soup_session);
-	worker = g_steal_pointer (&self->worker);
-
-	if (!gs_worker_thread_shutdown_finish (worker, result, &local_error)) {
+	icon_downloader = g_steal_pointer (&self->icon_downloader);
+	if (!gs_icon_downloader_shutdown_finish (icon_downloader, result, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -138,32 +140,21 @@ gs_plugin_icons_shutdown_finish (GsPlugin      *plugin,
 }
 
 static gboolean
-refine_app (GsPluginIcons        *self,
-            GsApp                *app,
-            GsPluginRefineFlags   flags,
-            GCancellable         *cancellable,
-            GError              **error)
+refine_app_unlocked (GsPluginIcons        *self,
+                     GsApp                *app,
+                     GsPluginRefineFlags   flags,
+                     gboolean              interactive,
+                     GCancellable         *cancellable,
+                     GError              **error)
 {
-	guint maximum_icon_size;
-
-	assert_in_worker (self);
-
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) == 0)
 		return TRUE;
 
-	/* Currently a 160px icon is needed for #GsFeatureTile, at most. */
-	maximum_icon_size = 160 * gs_plugin_get_scale (GS_PLUGIN (self));
-
-	gs_app_ensure_icons_downloaded (app, self->soup_session, maximum_icon_size, cancellable);
+	gs_icon_downloader_queue_app (self->icon_downloader, app, interactive);
 
 	return TRUE;
 }
-
-static void refine_thread_cb (GTask        *task,
-                              gpointer      source_object,
-                              gpointer      task_data,
-                              GCancellable *cancellable);
 
 static void
 gs_plugin_icons_refine_async (GsPlugin            *plugin,
@@ -177,7 +168,7 @@ gs_plugin_icons_refine_async (GsPlugin            *plugin,
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
 
-	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_icons_refine_async);
 
 	/* nothing to do here */
@@ -186,32 +177,18 @@ gs_plugin_icons_refine_async (GsPlugin            *plugin,
 		return;
 	}
 
-	/* Queue a job for the refine. */
-	gs_worker_thread_queue (self->worker, interactive ? G_PRIORITY_DEFAULT : G_PRIORITY_LOW,
-				refine_thread_cb, g_steal_pointer (&task));
-}
+	{
+		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 
-/* Run in @worker. */
-static void
-refine_thread_cb (GTask        *task,
-                  gpointer      source_object,
-                  gpointer      task_data,
-                  GCancellable *cancellable)
-{
-	GsPluginIcons *self = GS_PLUGIN_ICONS (source_object);
-	GsPluginRefineData *data = task_data;
-	GsAppList *list = data->list;
-	GsPluginRefineFlags flags = data->flags;
-	g_autoptr(GError) local_error = NULL;
+		for (guint i = 0; i < gs_app_list_length (list); i++) {
+			g_autoptr(GError) local_error = NULL;
+			GsApp *app = gs_app_list_index (list, i);
 
-	assert_in_worker (self);
-
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-
-		if (!refine_app (self, app, flags, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+			if (!refine_app_unlocked (self, app, flags, interactive, cancellable,
+						  &local_error)) {
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
 		}
 	}
 
