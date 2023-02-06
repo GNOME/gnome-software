@@ -117,12 +117,46 @@ gs_appstream_format_description_text (XbNode *node)
 	return g_string_free (g_steal_pointer (&str), FALSE);
 }
 
+static void
+format_issue_link (GString     *str,
+                   const gchar *issue_content,
+                   AsIssueKind  kind,
+                   const gchar *url)
+{
+	g_autofree gchar *escaped_text = NULL;
+
+	if (url != NULL) {
+		escaped_text = g_markup_printf_escaped ("<a href=\"%s\" title=\"%s\">%s</a>",
+							url, url, issue_content);
+		g_string_append (str, escaped_text);
+		return;
+	}
+
+	switch (kind) {
+	case AS_ISSUE_KIND_CVE:
+		#define CVE_URL "https://cve.mitre.org/cgi-bin/cvename.cgi?name="
+		/* @issue_content is expected to be in the form ‘CVE-2023-12345’ */
+		escaped_text = g_markup_printf_escaped ("<a href=\"" CVE_URL "%s\" title=\"" CVE_URL "%s\">%s</a>",
+							issue_content, issue_content, issue_content);
+		#undef CVE_URL
+		break;
+	case AS_ISSUE_KIND_GENERIC:
+	case AS_ISSUE_KIND_UNKNOWN:
+	default:
+		escaped_text = g_markup_escape_text (issue_content, -1);
+		break;
+	}
+
+	g_string_append (str, escaped_text);
+}
+
 static gchar *
-gs_appstream_format_description (XbNode *root, GError **error)
+gs_appstream_format_description (XbNode *description_node,
+				 XbNode *issues_node)
 {
 	g_autoptr(GString) str = g_string_new (NULL);
 
-	for (g_autoptr(XbNode) n = xb_node_get_child (root); n != NULL; node_set_to_next (&n)) {
+	for (g_autoptr(XbNode) n = description_node ? xb_node_get_child (description_node) : NULL; n != NULL; node_set_to_next (&n)) {
 		/* support <p>, <em>, <code>, <ul>, <ol> and <li>, ignore all else */
 		if (g_strcmp0 (xb_node_get_element (n), "p") == 0) {
 			g_autofree gchar *escaped = gs_appstream_format_description_text (n);
@@ -166,6 +200,31 @@ gs_appstream_format_description (XbNode *root, GError **error)
 	/* remove extra newlines */
 	while (str->len > 0 && str->str[str->len - 1] == '\n')
 		g_string_truncate (str, str->len - 1);
+
+	if (issues_node) {
+		/* Add a single new line to delimit the description node's text from the issues */
+		if (str->len)
+			g_string_append_c (str, '\n');
+
+		for (g_autoptr(XbNode) n = xb_node_get_child (issues_node); n != NULL; node_set_to_next (&n)) {
+			if (g_strcmp0 (xb_node_get_element (n), "issue") == 0) {
+				const gchar *node_text = xb_node_get_text (n);
+				AsIssueKind issue_kind = as_issue_kind_from_string (xb_node_get_attr (n, "type"));
+				const gchar *issue_url = xb_node_get_attr (n, "url");
+
+				if (node_text != NULL && *node_text != '\0') {
+					if (str->str[str->len - 1] != '\n')
+						g_string_append_c (str, '\n');
+					g_string_append (str, " • ");
+					format_issue_link (str, node_text, issue_kind, issue_url);
+				}
+			}
+		}
+
+		/* remove extra newlines, in case there was no text for the issues */
+		while (str->len > 0 && str->str[str->len - 1] == '\n')
+			g_string_truncate (str, str->len - 1);
+	}
 
 	/* success */
 	return g_string_free (g_steal_pointer (&str), FALSE);
@@ -694,6 +753,8 @@ gs_appstream_refine_app_updates (GsApp *app,
 		/* add updates with a description */
 		description = xb_node_query_first (release, "description", NULL);
 		if (description == NULL)
+			description = xb_node_query_first (release, "issues", NULL);
+		if (description == NULL)
 			continue;
 		g_ptr_array_add (updates_list, release);
 	}
@@ -705,10 +766,12 @@ gs_appstream_refine_app_updates (GsApp *app,
 	/* no prefix on each release */
 	if (updates_list->len == 1) {
 		XbNode *release = g_ptr_array_index (updates_list, 0);
-		g_autoptr(XbNode) n = NULL;
+		g_autoptr(XbNode) description_node = NULL;
+		g_autoptr(XbNode) issues_node = NULL;
 		g_autofree gchar *desc = NULL;
-		n = xb_node_query_first (release, "description", NULL);
-		desc = gs_appstream_format_description (n, NULL);
+		description_node = xb_node_query_first (release, "description", NULL);
+		issues_node = xb_node_query_first (release, "issues", NULL);
+		desc = gs_appstream_format_description (description_node, issues_node);
 		gs_app_set_update_details_markup (app, desc);
 
 	/* get the descriptions with a version prefix */
@@ -719,14 +782,16 @@ gs_appstream_refine_app_updates (GsApp *app,
 			XbNode *release = g_ptr_array_index (updates_list, i);
 			const gchar *release_version = xb_node_get_attr (release, "version");
 			g_autofree gchar *desc = NULL;
-			g_autoptr(XbNode) n = NULL;
+			g_autoptr(XbNode) description_node = NULL;
+			g_autoptr(XbNode) issues_node = NULL;
 
 			/* skip the currently installed version and all below it */
 			if (version != NULL && as_vercmp_simple (version, release_version) >= 0)
 				continue;
 
-			n = xb_node_query_first (release, "description", NULL);
-			desc = gs_appstream_format_description (n, NULL);
+			description_node = xb_node_query_first (release, "description", NULL);
+			issues_node = xb_node_query_first (release, "issues", NULL);
+			desc = gs_appstream_format_description (description_node, issues_node);
 			g_string_append_printf (update_desc,
 						"Version %s:\n%s\n\n",
 						xb_node_get_attr (release, "version"),
@@ -772,6 +837,7 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 		XbNode *release_node = g_ptr_array_index (releases, i);
 		const gchar *version = xb_node_get_attr (release_node, "version");
 		g_autoptr(XbNode) description_node = NULL;
+		g_autoptr(XbNode) issues_node = NULL;
 		g_autofree gchar *description = NULL;
 		guint64 timestamp;
 		const gchar *date_str;
@@ -788,8 +854,9 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 
 		/* include updates with or without a description */
 		description_node = xb_node_query_first (release_node, "description", NULL);
-		if (description_node != NULL)
-			description = gs_appstream_format_description (description_node, NULL);
+		issues_node = xb_node_query_first (release_node, "issues", NULL);
+		if (description_node != NULL || issues_node != NULL)
+			description = gs_appstream_format_description (description_node, issues_node);
 
 		release = as_release_new ();
 		as_release_set_version (release, version);
