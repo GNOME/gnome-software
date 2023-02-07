@@ -95,8 +95,8 @@
  *
  * `updater_proxy`, `os_upgrade` and `cancellable` are only set in
  * gs_plugin_eos_updater_setup(), and are both internally thread-safe — so they can both be
- * dereferenced and have their methods called from any thread without
- * necessarily holding `mutex`.
+ * dereferenced and have their methods called from any thread without any
+ * locking.
  *
  * Cancellation of any operations on the `eos-updater` daemon (polling, fetching
  * or applying) is implemented by calling the `Cancel()` method on it. This is
@@ -104,9 +104,6 @@
  * which persists for the lifetime of the plugin. The #GCancellable instances
  * for various operations can be temporarily chained to it for the duration of
  * each operation.
- *
- * FIXME: Once all methods are made asynchronous, the locking can be dropped
- * from this plugin.
  */
 
 static const guint max_progress_for_update = 75;  /* percent */
@@ -203,26 +200,23 @@ static const guint upgrade_apply_progress_range = 100 - max_progress_for_update;
 static const gfloat upgrade_apply_max_time = 600.0; /* sec */
 static const gfloat upgrade_apply_step_time = 0.250; /* sec */
 
-static void sync_state_from_updater_unlocked (GsPluginEosUpdater *self);
+static void sync_state_from_updater (GsPluginEosUpdater *self);
 
 struct _GsPluginEosUpdater
 {
 	GsPlugin parent;
 
 	/* These members are only set once in gs_plugin_eos_updater_setup(), and are
-	 * internally thread-safe, so can be accessed without holding @mutex: */
+	 * internally thread-safe, so can be accessed without any locking. */
 	GsEosUpdater *updater_proxy;  /* (owned) */
 	GsApp *os_upgrade;  /* (owned); represents both large upgrades and small updates */
 	GCancellable *cancellable;  /* (owned) */
 	gulong cancelled_id;
 
 	/* These members must only ever be accessed from the main thread, so
-	 * can be accessed without holding @mutex: */
+	 * can be accessed without any locking. */
 	gfloat upgrade_fake_progress;
 	guint upgrade_fake_progress_handler;
-
-	/* State synchronisation between threads: */
-	GMutex mutex;
 };
 
 G_DEFINE_TYPE (GsPluginEosUpdater, gs_plugin_eos_updater, GS_TYPE_PLUGIN)
@@ -329,25 +323,19 @@ app_set_update_is_user_visible (GsApp    *app,
 static void
 updater_state_changed (GsPluginEosUpdater *self)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
-
 	g_debug ("%s", G_STRFUNC);
 
-	sync_state_from_updater_unlocked (self);
+	sync_state_from_updater (self);
 }
 
 /* This will be invoked in the main thread. */
 static void
 updater_downloaded_bytes_changed (GsPluginEosUpdater *self)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
-
-	sync_state_from_updater_unlocked (self);
+	sync_state_from_updater (self);
 }
 
-/* This will be invoked in the main thread, but doesn’t currently need to hold
- * `mutex` since it only accesses `self->updater_proxy` and `self->os_upgrade`,
- * both of which are internally thread-safe. */
+/* This will be invoked in the main thread. */
 static void
 updater_version_changed (GsPluginEosUpdater *self)
 {
@@ -359,9 +347,7 @@ updater_version_changed (GsPluginEosUpdater *self)
 		gs_app_set_version (self->os_upgrade, version);
 }
 
-/* This will be invoked in the main thread, but doesn’t currently need to hold
- * `mutex` since it only accesses `self->updater_proxy` and `self->os_upgrade`,
- * both of which are internally thread-safe. */
+/* This will be invoked in the main thread. */
 static void
 updater_update_is_user_visible_changed (GsPluginEosUpdater *self)
 {
@@ -370,9 +356,7 @@ updater_update_is_user_visible_changed (GsPluginEosUpdater *self)
 	app_set_update_is_user_visible (self->os_upgrade, update_is_user_visible);
 }
 
-/* This will be invoked in the main thread, but doesn’t currently need to hold
- * `mutex` since it only accesses `self->updater_proxy` and `self->os_upgrade`,
- * both of which are internally thread-safe. */
+/* This will be invoked in the main thread. */
 static void
 updater_release_notes_uri_changed (GsPluginEosUpdater *self)
 {
@@ -385,11 +369,7 @@ updater_release_notes_uri_changed (GsPluginEosUpdater *self)
 	gs_app_set_url (self->os_upgrade, AS_URL_KIND_HOMEPAGE, release_notes_uri);
 }
 
-/* This will be invoked in the main thread, but doesn’t currently need to hold
- * `mutex` since `self->updater_proxy` and `self->os_upgrade` are both
- * thread-safe, and `self->upgrade_fake_progress` and
- * `self->upgrade_fake_progress_handler` are only ever accessed from the main
- * thread. */
+/* This will be invoked in the main thread. */
 static gboolean
 fake_os_upgrade_progress_cb (gpointer user_data)
 {
@@ -422,11 +402,9 @@ fake_os_upgrade_progress_cb (gpointer user_data)
 
 /* This method deals with the synchronization between the EOS updater's states
  * (D-Bus service) and the OS upgrade's states (GsApp), in order to show the user
- * what is happening and what they can do.
- *
- * It must be called with self->mutex already locked. */
+ * what is happening and what they can do. */
 static void
-sync_state_from_updater_unlocked (GsPluginEosUpdater *self)
+sync_state_from_updater (GsPluginEosUpdater *self)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
 	GsApp *app = self->os_upgrade;
@@ -586,17 +564,12 @@ gs_plugin_eos_updater_setup_async (GsPlugin            *plugin,
                                    gpointer             user_data)
 {
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GTask) task = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_eos_updater_setup_async);
 
 	g_debug ("%s", G_STRFUNC);
-
-	g_mutex_init (&self->mutex);
-
-	locker = g_mutex_locker_new (&self->mutex);
 
 	self->cancellable = g_cancellable_new ();
 	self->cancelled_id =
@@ -636,11 +609,8 @@ proxy_new_cb (GObject      *source_object,
 	g_autofree gchar *version = NULL;
 	gboolean update_is_user_visible = FALSE;
 	g_autoptr(GsOsRelease) os_release = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
 	const gchar *os_name, *os_logo;
-
-	locker = g_mutex_locker_new (&self->mutex);
 
 	self->updater_proxy = gs_eos_updater_proxy_new_finish (result, &local_error);
 	if (self->updater_proxy == NULL) {
@@ -735,7 +705,7 @@ proxy_new_cb (GObject      *source_object,
 	self->os_upgrade = g_steal_pointer (&app);
 
 	/* sync initial state */
-	sync_state_from_updater_unlocked (self);
+	sync_state_from_updater (self);
 
 	g_task_return_boolean (task, TRUE);
 }
@@ -791,16 +761,6 @@ gs_plugin_eos_updater_dispose (GObject *object)
 	g_clear_object (&self->os_upgrade);
 
 	G_OBJECT_CLASS (gs_plugin_eos_updater_parent_class)->dispose (object);
-}
-
-static void
-gs_plugin_eos_updater_finalize (GObject *object)
-{
-	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (object);
-
-	g_mutex_clear (&self->mutex);
-
-	G_OBJECT_CLASS (gs_plugin_eos_updater_parent_class)->finalize (object);
 }
 
 static void poll_cb (GObject      *source_object,
@@ -1002,19 +962,18 @@ object_unref_closure (gpointer  data,
 	g_object_unref (obj);
 }
 
-/* Must be called with self->mutex already locked. */
 static void
-wait_for_state_change_unlocked_async (GsEosUpdater        *updater_proxy,
-                                      GCancellable        *cancellable,
-                                      GAsyncReadyCallback  callback,
-                                      gpointer             user_data)
+wait_for_state_change_async (GsEosUpdater        *updater_proxy,
+                             GCancellable        *cancellable,
+                             GAsyncReadyCallback  callback,
+                             gpointer             user_data)
 {
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(WaitForStateChangeData) data_owned = NULL;
 	WaitForStateChangeData *data;
 
 	task = g_task_new (updater_proxy, cancellable, callback, user_data);
-	g_task_set_source_tag (task, wait_for_state_change_unlocked_async);
+	g_task_set_source_tag (task, wait_for_state_change_async);
 
 	/* Store the initial state to compare against later. */
 	data = data_owned = g_new0 (WaitForStateChangeData, 1);
@@ -1084,14 +1043,14 @@ wait_for_state_change_cancelled_cb (GCancellable *cancellable,
 }
 
 static gboolean
-wait_for_state_change_unlocked_finish (GsEosUpdater  *updater_proxy,
-                                       GAsyncResult  *result,
-                                       GError       **error)
+wait_for_state_change_finish (GsEosUpdater  *updater_proxy,
+                              GAsyncResult  *result,
+                              GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-/* Could be executed in any thread. No need to hold `self->mutex` since we don’t
+/* Could be executed in any thread. No need to hold a lock since we don’t
  * access anything which is not thread-safe. */
 static void
 cancelled_cb (GCancellable *ui_cancellable,
@@ -1152,8 +1111,7 @@ static void download_iterate_state_machine_cb (GObject      *source_object,
                                                GAsyncResult *result,
                                                gpointer      user_data);
 
-/* Called in a #GTask worker thread or in the main thread, and it needs to hold
- * `self->mutex` due to synchronising on state with the main thread. */
+/* Called in a #GTask worker thread or in the main thread. */
 static void
 gs_plugin_eos_updater_app_upgrade_download_async (GsPluginEosUpdater  *self,
                                                   GsApp               *app,
@@ -1166,7 +1124,6 @@ gs_plugin_eos_updater_app_upgrade_download_async (GsPluginEosUpdater  *self,
 	g_autoptr(UpgradeDownloadState) data_owned = NULL;
 	UpgradeDownloadState *data;
 	EosUpdaterState state;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_eos_updater_app_upgrade_download_async);
@@ -1234,7 +1191,6 @@ download_iterate_state_machine_cb (GObject      *source_object,
 	UpgradeDownloadState *data = g_task_get_task_data (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	EosUpdaterState state;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 
 	/* Call the finish function from the asynchronous method call which has
 	 * just completed and brought us back into
@@ -1400,8 +1356,8 @@ download_iterate_state_machine_cb (GObject      *source_object,
 
 		/* Block on the next state change. */
 		if (!data->done) {
-			data->finish_func = wait_for_state_change_unlocked_finish;
-			wait_for_state_change_unlocked_async (self->updater_proxy, cancellable, download_iterate_state_machine_cb, g_steal_pointer (&task));
+			data->finish_func = wait_for_state_change_finish;
+			wait_for_state_change_async (self->updater_proxy, cancellable, download_iterate_state_machine_cb, g_steal_pointer (&task));
 			return;
 		}
 	}
@@ -1548,7 +1504,6 @@ gs_plugin_eos_updater_class_init (GsPluginEosUpdaterClass *klass)
 	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_eos_updater_dispose;
-	object_class->finalize = gs_plugin_eos_updater_finalize;
 
 	plugin_class->setup_async = gs_plugin_eos_updater_setup_async;
 	plugin_class->setup_finish = gs_plugin_eos_updater_setup_finish;
