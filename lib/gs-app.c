@@ -1880,6 +1880,33 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 	_g_set_str (&priv->developer_name, developer_name);
 }
 
+static GtkIconTheme *
+get_icon_theme (void)
+{
+	GtkIconTheme *theme;
+	GdkDisplay *display = gdk_display_get_default ();
+
+	if (display != NULL) {
+		theme = g_object_ref (gtk_icon_theme_get_for_display (display));
+	} else {
+		const gchar *test_search_path;
+
+		/* This fallback path is needed for the unit tests,
+		 * which run without a screen, and in an environment
+		 * where the XDG dir variables don’t point to the system
+		 * datadir which contains the system icon theme. */
+		theme = gtk_icon_theme_new ();
+
+		test_search_path = g_getenv ("GS_SELF_TEST_ICON_THEME_PATH");
+		if (test_search_path != NULL) {
+			g_auto(GStrv) dirs = g_strsplit (test_search_path, ":", -1);
+			gtk_icon_theme_set_search_path (theme, (const char * const *) dirs);
+		}
+	}
+
+	return theme;
+}
+
 /**
  * gs_app_get_icon_for_size:
  * @app: a #GsApp
@@ -1926,7 +1953,22 @@ gs_app_get_icon_for_size (GsApp       *app,
 	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s",
 		 gs_app_get_id (app), size, scale, fallback_icon_name);
 
-	/* See if there’s an icon the right size, or the first one which is too
+	/* If there’s a themed icon with no width set, use that, as typically
+	 * themed icons are available in any given size. */
+	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
+		GIcon *icon = priv->icons->pdata[i];
+		guint icon_width = gs_icon_get_width (icon);
+
+		if (icon_width == 0 && G_IS_THEMED_ICON (icon)) {
+			g_autoptr(GtkIconTheme) theme = get_icon_theme ();
+			if (gtk_icon_theme_has_gicon (theme, icon)) {
+				g_debug ("Found themed icon");
+				return g_object_ref (icon);
+			}
+		}
+	}
+
+	/* See if there’s an icon of the right size, or the first one which is too
 	 * big which could be scaled down. Note that the icons array may be
 	 * lazily created. */
 	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
@@ -1953,18 +1995,6 @@ gs_app_get_icon_for_size (GsApp       *app,
 			continue;
 
 		if (icon_width * icon_scale >= size * scale)
-			return g_object_ref (icon);
-	}
-
-	g_debug ("Found no icons of the right size; checking themed icons");
-
-	/* If there’s a themed icon with no width set, use that, as typically
-	 * themed icons are available in all the right sizes. */
-	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
-		GIcon *icon = priv->icons->pdata[i];
-		guint icon_width = gs_icon_get_width (icon);
-
-		if (icon_width == 0 && G_IS_THEMED_ICON (icon))
 			return g_object_ref (icon);
 	}
 
@@ -4676,28 +4706,7 @@ calculate_key_colors (GsApp *app)
 			pb_small = gdk_pixbuf_new_from_stream_at_scale (icon_stream, 32, 32, TRUE, NULL, NULL);
 	} else if (G_IS_THEMED_ICON (icon_small)) {
 		g_autoptr(GtkIconPaintable) icon_paintable = NULL;
-		g_autoptr(GtkIconTheme) theme = NULL;
-		GdkDisplay *display;
-
-		display = gdk_display_get_default ();
-		if (display != NULL) {
-			theme = g_object_ref (gtk_icon_theme_get_for_display (display));
-		} else {
-			const gchar *test_search_path;
-
-			/* This fallback path is needed for the unit tests,
-			 * which run without a screen, and in an environment
-			 * where the XDG dir variables don’t point to the system
-			 * datadir which contains the system icon theme. */
-			theme = gtk_icon_theme_new ();
-
-			test_search_path = g_getenv ("GS_SELF_TEST_ICON_THEME_PATH");
-			if (test_search_path != NULL) {
-				g_auto(GStrv) dirs = g_strsplit (test_search_path, ":", -1);
-				gtk_icon_theme_set_search_path (theme, (const char * const *)dirs);
-
-			}
-		}
+		g_autoptr(GtkIconTheme) theme = get_icon_theme ();
 
 		icon_paintable = gtk_icon_theme_lookup_by_gicon (theme, icon_small,
 								 32, 1,
