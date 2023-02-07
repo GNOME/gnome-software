@@ -3972,37 +3972,6 @@ gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
 
 #endif /* HAVE_PK_OFFLINE_WITH_FLAGS */
 
-static gboolean
-_systemd_trigger_app (GsPluginPackagekit  *self,
-                      GsApp               *app,
-                      GCancellable        *cancellable,
-                      GError             **error)
-{
-	/* if we can process this online do not require a trigger */
-	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
-		return TRUE;
-
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-		return TRUE;
-
-	/* already in correct state */
-	if (self->is_triggered)
-		return TRUE;
-
-	/* trigger offline update */
-	if (!gs_systemd_call_trigger (GS_PLUGIN (self), PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
-		gs_plugin_packagekit_error_convert (error);
-		return FALSE;
-	}
-
-	/* don't rely on the file monitor */
-	gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
-
-	/* success */
-	return TRUE;
-}
-
 gboolean
 gs_plugin_update (GsPlugin *plugin,
 		  GsAppList *list,
@@ -4010,25 +3979,48 @@ gs_plugin_update (GsPlugin *plugin,
 		  GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	gboolean trigger_update = FALSE;
 
-	/* any are us? */
+	/* Are any of these apps from PackageKit, and suitable for offline
+	 * updates? If any of them can be processed offline, trigger an offline
+	 * update. If all of them are updatable online, don’t. */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GsAppList *related = gs_app_get_related (app);
 
 		/* try to trigger this app */
-		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
-			if (!_systemd_trigger_app (self, app, cancellable, error))
-				return FALSE;
-			continue;
+		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY) &&
+		    gs_app_get_state (app) == GS_APP_STATE_UPDATABLE &&
+		    gs_app_has_management_plugin (app, GS_PLUGIN (self))) {
+			trigger_update = TRUE;
+			break;
 		}
 
 		/* try to trigger each related app */
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
-			if (!_systemd_trigger_app (self, app_tmp, cancellable, error))
-				return FALSE;
+
+			if (gs_app_get_state (app_tmp) == GS_APP_STATE_UPDATABLE &&
+			    gs_app_has_management_plugin (app_tmp, GS_PLUGIN (self))) {
+				trigger_update = TRUE;
+				break;
+			}
 		}
+	}
+
+	if (trigger_update) {
+		/* already in correct state */
+		if (self->is_triggered)
+			return TRUE;
+
+		/* trigger offline update */
+		if (!gs_systemd_call_trigger (GS_PLUGIN (self), PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
+			gs_plugin_packagekit_error_convert (error);
+			return FALSE;
+		}
+
+		/* don't rely on the file monitor */
+		gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
 	}
 
 	/* success */
