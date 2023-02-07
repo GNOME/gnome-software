@@ -91,11 +91,7 @@
  * The other functions (gs_plugin_app_upgrade_download(),
  * etc.) are called in #GTask worker threads. They are allowed to call methods
  * on the proxy; the main thread is only allowed to receive signals and check
- * properties on the proxy, to avoid blocking. Consequently, worker threads need
- * to block on the main thread receiving state change signals from
- * `eos-updater`. Receipt of these signals is notified through
- * `state_change_cond`. This means that all functions which access
- * `GsPluginEosUpdater` must lock it using the `mutex`.
+ * properties on the proxy, to avoid blocking.
  *
  * `updater_proxy`, `os_upgrade` and `cancellable` are only set in
  * gs_plugin_eos_updater_setup(), and are both internally thread-safe — so they can both be
@@ -227,7 +223,6 @@ struct _GsPluginEosUpdater
 
 	/* State synchronisation between threads: */
 	GMutex mutex;
-	GCond state_change_cond;  /* locked by @mutex */
 };
 
 G_DEFINE_TYPE (GsPluginEosUpdater, gs_plugin_eos_updater, GS_TYPE_PLUGIN)
@@ -339,10 +334,6 @@ updater_state_changed (GsPluginEosUpdater *self)
 	g_debug ("%s", G_STRFUNC);
 
 	sync_state_from_updater_unlocked (self);
-
-	/* Signal any blocked threads; typically this will be
-	 * gs_plugin_app_upgrade_download() in a #GTask worker thread. */
-	g_cond_broadcast (&self->state_change_cond);
 }
 
 /* This will be invoked in the main thread. */
@@ -604,7 +595,6 @@ gs_plugin_eos_updater_setup_async (GsPlugin            *plugin,
 	g_debug ("%s", G_STRFUNC);
 
 	g_mutex_init (&self->mutex);
-	g_cond_init (&self->state_change_cond);
 
 	locker = g_mutex_locker_new (&self->mutex);
 
@@ -808,7 +798,6 @@ gs_plugin_eos_updater_finalize (GObject *object)
 {
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (object);
 
-	g_cond_clear (&self->state_change_cond);
 	g_mutex_clear (&self->mutex);
 
 	G_OBJECT_CLASS (gs_plugin_eos_updater_parent_class)->finalize (object);
@@ -1114,9 +1103,6 @@ cancelled_cb (GCancellable *ui_cancellable,
 	g_debug ("Propagating OS download cancellation from %p to %p",
 		 ui_cancellable, self->cancellable);
 	g_cancellable_cancel (self->cancellable);
-
-	/* And wake up anything blocking on a state change. */
-	g_cond_broadcast (&self->state_change_cond);
 }
 
 /* State tracking for a single call to a D-Bus method on the updater proxy.
