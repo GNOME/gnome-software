@@ -3730,6 +3730,11 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 	return retval;
 }
 
+static gboolean gs_systemd_call_trigger (GsPlugin         *plugin,
+                                         PkOfflineAction   action,
+                                         GCancellable     *cancellable,
+                                         GError          **error);
+
 static void
 gs_plugin_packagekit_update_apps_async (GsPlugin                           *plugin,
                                         GsAppList                          *apps,
@@ -3758,7 +3763,47 @@ gs_plugin_packagekit_update_apps_async (GsPlugin                           *plug
 	}
 
 	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
-		/* TODO */
+		gboolean trigger_update = FALSE;
+
+		/* Are any of these apps from PackageKit, and suitable for offline
+		 * updates? If any of them can be processed offline, trigger an offline
+		 * update. If all of them are updatable online, don’t. */
+		for (guint i = 0; i < gs_app_list_length (apps); i++) {
+			GsApp *app = gs_app_list_index (apps, i);
+			GsAppList *related = gs_app_get_related (app);
+
+			/* try to trigger this app */
+			if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY) &&
+			    gs_app_get_state (app) == GS_APP_STATE_UPDATABLE &&
+			    gs_app_has_management_plugin (app, GS_PLUGIN (self))) {
+				trigger_update = TRUE;
+				break;
+			}
+
+			/* try to trigger each related app */
+			for (guint j = 0; j < gs_app_list_length (related); j++) {
+				GsApp *app_tmp = gs_app_list_index (related, j);
+
+				if (gs_app_get_state (app_tmp) == GS_APP_STATE_UPDATABLE &&
+				    gs_app_has_management_plugin (app_tmp, GS_PLUGIN (self))) {
+					trigger_update = TRUE;
+					break;
+				}
+			}
+		}
+
+		if (trigger_update && !self->is_triggered) {
+			/* trigger offline update if it’s not already been triggered */
+			/* FIXME: Make this async and add progress reporting */
+			if (!gs_systemd_call_trigger (GS_PLUGIN (self), PK_OFFLINE_ACTION_REBOOT, cancellable, &local_error)) {
+				gs_plugin_packagekit_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+
+			/* don't rely on the file monitor */
+			gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
+		}
 	}
 
 	g_task_return_boolean (task, TRUE);
@@ -3971,61 +4016,6 @@ gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
 }
 
 #endif /* HAVE_PK_OFFLINE_WITH_FLAGS */
-
-gboolean
-gs_plugin_update (GsPlugin *plugin,
-		  GsAppList *list,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	gboolean trigger_update = FALSE;
-
-	/* Are any of these apps from PackageKit, and suitable for offline
-	 * updates? If any of them can be processed offline, trigger an offline
-	 * update. If all of them are updatable online, don’t. */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		GsAppList *related = gs_app_get_related (app);
-
-		/* try to trigger this app */
-		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY) &&
-		    gs_app_get_state (app) == GS_APP_STATE_UPDATABLE &&
-		    gs_app_has_management_plugin (app, GS_PLUGIN (self))) {
-			trigger_update = TRUE;
-			break;
-		}
-
-		/* try to trigger each related app */
-		for (guint j = 0; j < gs_app_list_length (related); j++) {
-			GsApp *app_tmp = gs_app_list_index (related, j);
-
-			if (gs_app_get_state (app_tmp) == GS_APP_STATE_UPDATABLE &&
-			    gs_app_has_management_plugin (app_tmp, GS_PLUGIN (self))) {
-				trigger_update = TRUE;
-				break;
-			}
-		}
-	}
-
-	if (trigger_update) {
-		/* already in correct state */
-		if (self->is_triggered)
-			return TRUE;
-
-		/* trigger offline update */
-		if (!gs_systemd_call_trigger (GS_PLUGIN (self), PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
-			gs_plugin_packagekit_error_convert (error);
-			return FALSE;
-		}
-
-		/* don't rely on the file monitor */
-		gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
-	}
-
-	/* success */
-	return TRUE;
-}
 
 gboolean
 gs_plugin_update_cancel (GsPlugin *plugin,
