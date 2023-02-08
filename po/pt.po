@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-01-25 19:41+0000\n"
-"PO-Revision-Date: 2023-01-26 16:17+0000\n"
+"POT-Creation-Date: 2023-02-06 23:50+0000\n"
+"PO-Revision-Date: 2023-02-08 10:21+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -341,7 +341,15 @@ msgstr ""
 "O carimbo temporal da última tentativa de remover os tempos de execução não "
 "utilizados do Flatpak"
 
-#: data/org.gnome.software.gschema.xml:150
+#: data/org.gnome.software.gschema.xml:147
+msgid ""
+"Set to 'true' to show only freely licensed apps and hide any proprietary "
+"apps."
+msgstr ""
+"Definir para 'verdadeiro' para mostrar apenas aplicações licenciadas "
+"livremente e ocultar todas as aplicações proprietárias."
+
+#: data/org.gnome.software.gschema.xml:154
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Um texto a gravar o id utilizado no início de sessão da conta online Gnome"
@@ -809,7 +817,7 @@ msgstr "Classificação Etária"
 msgid "How to contribute missing information"
 msgstr "Como contribuir com informação em falta"
 
-#: lib/gs-app.c:6187
+#: lib/gs-app.c:6212
 msgid "Local file"
 msgstr "Ficheiro local"
 
@@ -818,12 +826,12 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6206 src/gs-safety-context-dialog.c:435
+#: lib/gs-app.c:6231 src/gs-safety-context-dialog.c:435
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6283
+#: lib/gs-app.c:6308
 msgid "Package"
 msgstr "Pacote"
 
@@ -1070,8 +1078,8 @@ msgid "Installs any pending updates in the background"
 msgstr "Instala qualquer atualização pendente em segundo plano"
 
 #: src/gs-application.c:147
-msgid "Show update preferences"
-msgstr "Mostrar definições de atualização"
+msgid "Show preferences"
+msgstr "Mostrar preferências"
 
 #: src/gs-application.c:149
 msgid "Quit the running instance"
@@ -1451,7 +1459,7 @@ msgid "Device cannot be used during update."
 msgstr "O dispositivo não pode ser usado durante a atualização."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:337 src/gs-shell-search-provider.c:264
+#: src/gs-app-row.c:337 src/gs-shell-search-provider.c:272
 #, c-format
 msgid "Source: %s"
 msgstr "Fonte: %s"
@@ -1567,13 +1575,13 @@ msgid "Other Software"
 msgstr "Outro software"
 
 #. TRANSLATORS: the user isn't reading the question
-#: lib/gs-cmd.c:194
+#: lib/gs-cmd.c:195
 #, c-format
 msgid "Please enter a number from 1 to %u: "
 msgstr "Introduza um número de 1 a %u: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
-#: lib/gs-cmd.c:266
+#: lib/gs-cmd.c:275
 msgid "Choose an app:"
 msgstr "Escolha uma aplicação:"
 
@@ -2315,11 +2323,11 @@ msgid "Other Apps by %s"
 msgstr "Outras aplicações por %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1623
+#: src/gs-details-page.c:1625
 msgid "You need internet access to write a review"
 msgstr "É necessário conexão à Internet para escrever uma avaliação"
 
-#: src/gs-details-page.c:1793 src/gs-details-page.c:1809
+#: src/gs-details-page.c:1797 src/gs-details-page.c:1813
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impossível encontrar «%s»"
@@ -2655,12 +2663,12 @@ msgstr[1] ""
 msgid "Failed to find any search results: %s"
 msgstr "Falha ao localizar resultados da procura: %s"
 
-#: src/gs-extras-page.c:874
+#: src/gs-extras-page.c:878
 #, c-format
 msgid "%s file format"
 msgstr "Formato de ficheiro %s"
 
-#: src/gs-extras-page.c:1254
+#: src/gs-extras-page.c:1258
 msgid "Unable to Find Requested Software"
 msgstr "Impossível encontrar o software solicitado"
 
@@ -3101,7 +3109,7 @@ msgid "_Enable"
 msgstr "_Ativar"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:981
+#: src/gs-overview-page.c:985
 msgid "Explore"
 msgstr "Explorar"
 
@@ -3171,8 +3179,8 @@ msgid ""
 msgstr "%s será desinstalada, e terá de a instalar para a utilizar novamente."
 
 #: src/gs-prefs-dialog.ui:5
-msgid "Update Preferences"
-msgstr "Definições de Atualização"
+msgid "Preferences"
+msgstr "Preferências"
 
 #: src/gs-prefs-dialog.ui:16
 msgid ""
@@ -3183,8 +3191,8 @@ msgstr ""
 "transferidas automaticamente em ligações móveis ou com limite."
 
 #: src/gs-prefs-dialog.ui:19
-msgid "Automatic Updates"
-msgstr "Atualizações automáticas"
+msgid "Automatic _Updates"
+msgstr "A_tualizações automáticas"
 
 #: src/gs-prefs-dialog.ui:20
 msgid ""
@@ -3193,14 +3201,24 @@ msgstr ""
 "Transfere e instala atualizações de software em segundo plano, quando "
 "possível."
 
-#: src/gs-prefs-dialog.ui:32
-msgid "Automatic Update Notifications"
-msgstr "Notificações de atualizações automáticas"
-
 #: src/gs-prefs-dialog.ui:33
+msgid "Automatic Update _Notifications"
+msgstr "_Notificações de atualizações automáticas"
+
+#: src/gs-prefs-dialog.ui:34
 msgid "Show notifications when updates have been automatically installed."
 msgstr ""
 "Mostrar notificações quando atualizações forem instaladas automaticamente."
+
+#: src/gs-prefs-dialog.ui:47
+msgid "Show Only _Free Apps"
+msgstr "Mostrar apenas aplicações _livres"
+
+#: src/gs-prefs-dialog.ui:48
+msgid "Show only freely licensed apps and hide any proprietary apps."
+msgstr ""
+"Mostrar apenas aplicações licenciadas livremente e ocultar todas as "
+"aplicações proprietárias."
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -4364,8 +4382,8 @@ msgid "_Software Repositories"
 msgstr "Repositórios de _Software"
 
 #: src/gs-shell.ui:12
-msgid "_Update Preferences"
-msgstr "_Definições de atualização"
+msgid "_Preferences"
+msgstr "_Preferências"
 
 #. button in the info bar
 #: src/gs-shell.ui:109
@@ -4486,17 +4504,17 @@ msgstr ""
 "Os dados em cache podem ser removidos das <a href=\"dummy\">definições da "
 "_aplicação</a>."
 
-#: src/gs-summary-tile.c:118
+#: src/gs-summary-tile.c:139
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Instalada)"
 
-#: src/gs-summary-tile.c:123
+#: src/gs-summary-tile.c:144
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (A instalar)"
 
-#: src/gs-summary-tile.c:128
+#: src/gs-summary-tile.c:149
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (A remover)"
@@ -5493,6 +5511,9 @@ msgstr "Suporte para Snap"
 msgid "A snap is a universal Linux package"
 msgstr "Um snap é um pacote universal para Linux"
 
+#~ msgid "Update Preferences"
+#~ msgstr "Definições de Atualização"
+
 #~ msgid "_User"
 #~ msgstr "_Utilizador"
 
@@ -5887,9 +5908,6 @@ msgstr "Um snap é um pacote universal para Linux"
 
 #~ msgid "Communication & News"
 #~ msgstr "Comunicação e Notícias"
-
-#~ msgid "Reference"
-#~ msgstr "Referência"
 
 #~ msgid "Utilities"
 #~ msgstr "Utilitários"
