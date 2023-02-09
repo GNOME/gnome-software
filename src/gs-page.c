@@ -266,7 +266,7 @@ gs_page_install_app (GsPage *page,
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable);
+	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
 	helper->interaction = interaction;
 	helper->propagate_error = TRUE;
 
@@ -390,7 +390,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->action = GS_PLUGIN_ACTION_UPDATE;
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable);
+	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
 	helper->propagate_error = TRUE;
 
 	/* tell the user what they have to do */

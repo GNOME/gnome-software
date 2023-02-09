@@ -58,16 +58,22 @@
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="button_remove">
-                <property name="visible">False</property>
-                <property name="use_underline">True</property>
-                <property name="label" translatable="yes">_Uninstall</property>
-                <property name="width_request">105</property>
-                <property name="can_focus">True</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="checkbox">
+              <object class="GtkStack" id="buttons_stack">
+                <property name="hhomogeneous">True</property>
+                <child>
+                  <object class="GtkButton" id="button_install">
+                    <property name="use_underline">True</property>
+                    <property name="label" translatable="yes">_Install</property>
+                    <property name="can_focus">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button_remove">
+                    <property name="use_underline">True</property>
+                    <property name="label" translatable="yes">_Uninstall</property>
+                    <property name="can_focus">True</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
