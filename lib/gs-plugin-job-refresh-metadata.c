@@ -196,6 +196,7 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 	GPtrArray *plugins;  /* (element-type GsPlugin) */
 	gboolean any_plugins_ran = FALSE;
 	GsOdrsProvider *odrs_provider;
+	g_autoptr(GError) local_error = NULL;
 
 	/* Chosen to allow a few UI updates per second without updating the
 	 * progress label so often it’s unreadable. */
@@ -222,13 +223,15 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 
 	/* Start downloading updated external appstream before anything else */
 #ifdef ENABLE_EXTERNAL_APPSTREAM
-	self->n_pending_ops++;
-	gs_external_appstream_refresh_async (self->cache_age_secs,
-					     refresh_progress_tuple_cb,
-					     &self->external_appstream_progress,
-					     cancellable,
-					     external_appstream_refresh_cb,
-					     g_object_ref (task));
+	if (!g_cancellable_is_cancelled (cancellable)) {
+		self->n_pending_ops++;
+		gs_external_appstream_refresh_async (self->cache_age_secs,
+						     refresh_progress_tuple_cb,
+						     &self->external_appstream_progress,
+						     cancellable,
+						     external_appstream_refresh_cb,
+						     g_object_ref (task));
+	}
 #endif
 
 #ifdef HAVE_SYSPROF
@@ -247,6 +250,10 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 		/* at least one plugin supports this vfunc */
 		any_plugins_ran = TRUE;
 
+		/* Handle cancellation */
+		if (g_cancellable_set_error_if_cancelled (cancellable, &local_error))
+			break;
+
 		/* Set up progress reporting for this plugin. */
 		self->plugins_progress.n_plugins++;
 
@@ -260,7 +267,8 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 						      g_object_ref (task));
 	}
 
-	if (odrs_provider != NULL) {
+	if (odrs_provider != NULL &&
+	    !g_cancellable_is_cancelled (cancellable)) {
 		self->n_pending_ops++;
 		gs_odrs_provider_refresh_ratings_async (odrs_provider,
 							self->cache_age_secs,
@@ -273,15 +281,13 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 
 	/* some functions are really required for proper operation */
 	if (!any_plugins_ran) {
-		g_autoptr(GError) local_error = NULL;
 		g_set_error_literal (&local_error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "no plugin could handle refreshing");
-		finish_op (task, g_steal_pointer (&local_error));
-	} else {
-		finish_op (task, NULL);
 	}
+
+	finish_op (task, g_steal_pointer (&local_error));
 }
 
 static void
