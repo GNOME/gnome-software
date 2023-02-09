@@ -145,6 +145,7 @@ gs_plugin_job_list_categories_run_async (GsPluginJob         *job,
 	gboolean anything_ran = FALSE;
 	GsCategory * const *categories = NULL;
 	gsize n_categories;
+	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (job, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_job_list_categories_run_async);
@@ -178,6 +179,10 @@ gs_plugin_job_list_categories_run_async (GsPluginJob         *job,
 		/* at least one plugin supports this vfunc */
 		anything_ran = TRUE;
 
+		/* Handle cancellation */
+		if (g_cancellable_set_error_if_cancelled (cancellable, &local_error))
+			break;
+
 		/* run the plugin */
 		self->n_pending_ops++;
 		plugin_class->refine_categories_async (plugin, self->category_list, self->flags, cancellable, plugin_refine_categories_cb, g_object_ref (task));
@@ -186,7 +191,7 @@ gs_plugin_job_list_categories_run_async (GsPluginJob         *job,
 	if (!anything_ran)
 		g_debug ("no plugin could handle listing categories");
 
-	finish_op (task, NULL);
+	finish_op (task, g_steal_pointer (&local_error));
 }
 
 static void

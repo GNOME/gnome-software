@@ -287,6 +287,7 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 	RefineInternalData *data;
 	g_autoptr(RefineInternalData) data_owned = NULL;
 	gboolean anything_ran = FALSE;
+	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, run_refine_internal_async);
@@ -337,6 +338,10 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 		/* at least one plugin supports this vfunc */
 		anything_ran = TRUE;
 
+		/* Handle cancellation */
+		if (g_cancellable_set_error_if_cancelled (cancellable, &local_error))
+			break;
+
 		/* FIXME: The next refine_async() call is made in
 		 * finish_refine_internal_op(). */
 		data->next_plugin_index = i + 1;
@@ -351,7 +356,7 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 		g_debug ("no plugin could handle refining apps");
 
 	data->n_pending_ops++;
-	finish_refine_internal_op (task, NULL);
+	finish_refine_internal_op (task, g_steal_pointer (&local_error));
 }
 
 static void

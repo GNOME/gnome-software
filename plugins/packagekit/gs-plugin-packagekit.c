@@ -267,7 +267,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 					 -1);
 
 	task_related = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_related), GS_PLUGIN_ACTION_GET_SOURCES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_related), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	results = pk_client_get_packages (PK_CLIENT (task_related),
 					   filter,
@@ -332,7 +332,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 					 -1);
 
 	task_sources = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_sources), GS_PLUGIN_ACTION_GET_SOURCES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_sources), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	results = pk_client_get_repo_list (PK_CLIENT (task_sources),
 					   filter,
@@ -463,7 +463,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	/* Set up a #PkTask to handle the D-Bus calls to packagekitd. */
 	task_install = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PLUGIN_ACTION_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		/* get everything up front we need */
@@ -687,7 +687,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_packagekit_helper_add_app (helper, app);
 
 	task_remove = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_remove), GS_PLUGIN_ACTION_REMOVE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_remove), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	results = pk_task_remove_packages_sync (task_remove,
 						package_ids,
@@ -766,7 +766,7 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
 	task_updates = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PLUGIN_ACTION_GET_UPDATES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	results = pk_client_get_updates (PK_CLIENT (task_updates),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
@@ -848,7 +848,7 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
 	task_list_apps = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_list_apps), GS_PLUGIN_ACTION_UNKNOWN, interactive);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_list_apps), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
 
 	if (gs_app_query_get_provides_files (query) != NULL) {
 		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
@@ -2569,7 +2569,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPluginPackagekit  *self,
 	gs_packagekit_helper_add_app (helper, app);
 
 	task_local = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PLUGIN_ACTION_FILE_TO_APP, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	results = pk_client_get_files_local (PK_CLIENT (task_local),
 					     files,
@@ -2714,7 +2714,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	task_local = gs_packagekit_task_new (plugin);
 	pk_client_set_cache_age (PK_CLIENT (task_local), G_MAXUINT);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PLUGIN_ACTION_FILE_TO_APP, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	results = pk_client_get_details_local (PK_CLIENT (task_local),
 					       files,
@@ -3382,7 +3382,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	task_upgrade = gs_packagekit_task_new (plugin);
 	pk_task_set_only_download (task_upgrade, TRUE);
 	pk_client_set_cache_age (PK_CLIENT (task_upgrade), 60 * 60 * 24);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_upgrade), GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_upgrade), GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	results = pk_task_upgrade_system_sync (task_upgrade,
 					       gs_app_get_version (app),
@@ -3498,7 +3498,7 @@ gs_plugin_packagekit_enable_repository_async (GsPlugin                     *plug
 	gs_packagekit_helper_add_app (helper, repository);
 
 	task_enable_repo = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_enable_repo), GS_PLUGIN_ACTION_ENABLE_REPO,
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_enable_repo), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE,
 				  (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE) != 0);
 	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_enable_repo), helper);
 
@@ -3585,7 +3585,7 @@ gs_plugin_packagekit_disable_repository_async (GsPlugin                     *plu
 	gs_packagekit_helper_add_app (helper, repository);
 
 	task_disable_repo = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_disable_repo), GS_PLUGIN_ACTION_DISABLE_REPO,
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_disable_repo), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE,
 				  (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE) != 0);
 	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_disable_repo), helper);
 
@@ -3629,7 +3629,7 @@ _download_only (GsPluginPackagekit  *self,
 	 * shown to the user */
 	task_refresh = gs_packagekit_task_new (plugin);
 	pk_task_set_only_download (task_refresh, TRUE);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PLUGIN_ACTION_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	results = pk_client_get_updates (PK_CLIENT (task_refresh),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
@@ -3766,7 +3766,7 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
 
 	task_refresh = gs_packagekit_task_new (plugin);
 	pk_task_set_only_download (task_refresh, TRUE);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PLUGIN_ACTION_UNKNOWN, interactive);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
 	pk_client_set_cache_age (PK_CLIENT (task_refresh), cache_age_secs);
 
 	/* refresh the metadata */
