@@ -1383,7 +1383,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		/* FIXME: Add additional details here, especially the download
 		 * size bounds (using `size-minimum` and `size-maximum`, both
 		 * type `t`). */
-		if (!gs_metered_block_app_on_download_scheduler (app, &schedule_entry_handle, cancellable, &error_local)) {
+		if (!gs_metered_block_on_download_scheduler (gs_metered_build_scheduler_parameters_for_app (app),
+							     &schedule_entry_handle, cancellable, &error_local)) {
 			g_warning ("Failed to block on download scheduler: %s",
 				   error_local->message);
 			g_clear_error (&error_local);
