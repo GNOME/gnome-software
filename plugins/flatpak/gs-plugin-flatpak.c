@@ -622,7 +622,7 @@ refine_app (GsPluginFlatpak      *self,
             GCancellable         *cancellable,
             GError              **error)
 {
-	GS_PROFILER_BEGIN (FlatpakRefineApp, "Flatpak (refine app)", NULL);
+	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineApp, "Flatpak (refine app)", NULL);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
@@ -632,7 +632,7 @@ refine_app (GsPluginFlatpak      *self,
 	if (!gs_plugin_flatpak_refine_app (self, app, flags, interactive, cancellable, error))
 		return FALSE;
 
-	GS_PROFILER_END (FlatpakRefineApp);
+	GS_PROFILER_END_SCOPED (FlatpakRefineApp);
 
 	/* the runtime might be installed in a different scope */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) {
