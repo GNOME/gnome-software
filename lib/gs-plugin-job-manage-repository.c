@@ -63,6 +63,8 @@ gs_plugin_job_manage_repository_dispose (GObject *object)
 	g_assert (self->saved_error == NULL);
 	g_assert (self->n_pending_ops == 0);
 
+	g_clear_object (&self->repository);
+
 	G_OBJECT_CLASS (gs_plugin_job_manage_repository_parent_class)->dispose (object);
 }
 
