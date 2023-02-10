@@ -1450,7 +1450,7 @@ update_apps_thread_cb (GTask        *task,
 		GsApp *app = gs_app_list_index (data->apps, i);
 		GsAppList *related = gs_app_get_related (app);
 
-		/* we don't currently don't put all updates in the OsUpdate proxy app */
+		/* we don't currently put all updates in the OsUpdate proxy app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
 			if (!trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, cancellable, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
