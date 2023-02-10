@@ -202,12 +202,18 @@ get_list_apps_flags (GsCmdSelf *self)
 {
 	GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
 
-	if (self->only_freely_licensed)
-		flags |= GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED;
 	if (self->interactive)
 		flags |= GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 
 	return flags;
+}
+
+static GsAppQueryLicenseType
+get_query_license_type (GsCmdSelf *self)
+{
+	if (self->only_freely_licensed)
+		return GS_APP_QUERY_LICENSE_FOSS;
+	return GS_APP_QUERY_LICENSE_ANY;
 }
 
 static gboolean
@@ -232,6 +238,7 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 				  "max-results", self->max_results,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
+				  "license-type", get_query_license_type (self),
 				  NULL);
 
 	plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
@@ -441,6 +448,7 @@ main (int argc, char **argv)
 						  "refine-flags", self->refine_flags,
 						  "max-results", self->max_results,
 						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "license-type", get_query_license_type (self),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
@@ -465,6 +473,7 @@ main (int argc, char **argv)
 						  "max-results", self->max_results,
 						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 						  "sort-func", gs_utils_app_sort_match_value,
+						  "license-type", get_query_license_type (self),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
@@ -489,6 +498,7 @@ main (int argc, char **argv)
 						  "max-results", self->max_results,
 						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 						  "sort-func", gs_utils_app_sort_priority,
+						  "license-type", get_query_license_type (self),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
@@ -639,6 +649,7 @@ main (int argc, char **argv)
 						  "refine-flags", self->refine_flags,
 						  "max-results", self->max_results,
 						  "sort-func", app_sort_kind_cb,
+						  "license-type", get_query_license_type (self),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
@@ -660,6 +671,7 @@ main (int argc, char **argv)
 			query = gs_app_query_new ("is-featured", GS_APP_QUERY_TRISTATE_TRUE,
 						  "refine-flags", self->refine_flags,
 						  "max-results", self->max_results,
+						  "license-type", get_query_license_type (self),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
@@ -684,6 +696,7 @@ main (int argc, char **argv)
 						  "refine-flags", self->refine_flags,
 						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID,
 						  "max-results", self->max_results,
+						  "license-type", get_query_license_type (self),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
@@ -713,6 +726,7 @@ main (int argc, char **argv)
 						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID,
 						  "max-results", self->max_results,
 						  "sort-func", app_sort_kind_cb,
+						  "license-type", get_query_license_type (self),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
@@ -774,6 +788,7 @@ main (int argc, char **argv)
 						  "refine-flags", self->refine_flags,
 						  "max-results", self->max_results,
 						  "sort-func", gs_utils_app_sort_name,
+						  "license-type", get_query_license_type (self),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));

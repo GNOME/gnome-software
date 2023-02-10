@@ -456,10 +456,10 @@ gs_category_page_load_category (GsCategoryPage *self)
 		featured_query = gs_app_query_new ("category", featured_subcat,
 						   "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
 						   "sort-func", gs_utils_app_sort_name,
+						   "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 						   NULL);
 		featured_plugin_job = gs_plugin_job_list_apps_new (featured_query,
-								   GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
-								   gs_page_get_list_apps_flags (GS_PAGE (self)));
+								   GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    featured_plugin_job,
 						    self->cancellable,
@@ -477,10 +477,10 @@ gs_category_page_load_category (GsCategoryPage *self)
 				       "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 						       GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 				       "sort-func", _max_results_sort_cb,
+				       "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 				       NULL);
 	main_plugin_job = gs_plugin_job_list_apps_new (main_query,
-						       GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
-						       gs_page_get_list_apps_flags (GS_PAGE (self)));
+						       GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader,
 					    main_plugin_job,
 					    self->cancellable,

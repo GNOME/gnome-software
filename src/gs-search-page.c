@@ -308,8 +308,9 @@ gs_search_page_load (GsSearchPage *self)
 				  "max-results", self->max_results,
 				  "sort-func", gs_search_page_sort_cb,
 				  "sort-user-data", self,
+				  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 				  NULL);
-	plugin_job = gs_plugin_job_list_apps_new (query, gs_page_get_list_apps_flags (GS_PAGE (self)));
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->search_cancellable,
 					    gs_search_page_get_search_cb,

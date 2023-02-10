@@ -174,7 +174,6 @@ typedef enum {
  * GsPluginListAppsFlags:
  * @GS_PLUGIN_LIST_APPS_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE: User initiated the job.
- * @GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED: Filter result to return only freely licensed apps.
  *
  * Flags for an operation to list apps matching a given query.
  *
@@ -183,7 +182,6 @@ typedef enum {
 typedef enum {
 	GS_PLUGIN_LIST_APPS_FLAGS_NONE = 0,
 	GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE = 1 << 0,
-	GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED = 1 << 1,
 } GsPluginListAppsFlags;
 
 /**

@@ -540,8 +540,9 @@ details_activated (GSimpleAction *action,
 					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					  "sort-func", gs_utils_app_sort_match_value,
+					  "license-type", gs_shell_get_query_license_type (app->shell),
 					  NULL);
-		plugin_job = gs_plugin_job_list_apps_new (query, gs_shell_get_list_apps_flags (app->shell));
+		plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 		gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
 						    app->cancellable,
 						    _search_launchable_details_cb,
@@ -821,8 +822,9 @@ launch_activated (GSimpleAction *action,
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
+				  "license-type", gs_shell_get_query_license_type (self->shell),
 				  NULL);
-	search_job = gs_plugin_job_list_apps_new (query, gs_shell_get_list_apps_flags (self->shell));
+	search_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
 	if (!list) {
 		g_warning ("Failed to search for application '%s' (from '%s'): %s", id, management_plugin_name, error ? error->message : "Unknown error");
