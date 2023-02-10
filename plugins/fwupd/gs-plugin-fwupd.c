@@ -855,6 +855,70 @@ gs_plugin_fwupd_refresh_metadata_finish (GsPlugin      *plugin,
 }
 
 static gboolean
+gs_plugin_fwupd_download (GsPluginFwupd  *self,
+                          GsApp          *app,
+                          gboolean        interactive,
+                          GCancellable   *cancellable,
+                          GError        **error)
+{
+	GFile *local_file;
+	g_autoptr(GError) local_error = NULL;
+
+	/* not set */
+	local_file = gs_app_get_local_file (app);
+	if (local_file == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "not enough data for fwupd");
+		return FALSE;
+	}
+
+	/* Check the cancellable, since the error return for
+	 * g_file_query_exists() is the same as file-not-exists. */
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+		return FALSE;
+
+	/* file does not yet exist */
+	if (!g_file_query_exists (local_file, cancellable)) {
+		const gchar *uri = gs_fwupd_app_get_update_uri (app);
+		gboolean download_success;
+		gpointer schedule_entry_handle = NULL;
+
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+
+		if (!interactive) {
+			/* FIXME: Make this call async */
+			if (!gs_metered_block_on_download_scheduler (gs_metered_build_scheduler_parameters_for_app (app),
+								     &schedule_entry_handle, cancellable, &local_error)) {
+				g_warning ("Failed to block on download scheduler: %s",
+					   local_error->message);
+				g_clear_error (&local_error);
+			}
+		}
+
+		download_success = fwupd_client_download_file (self->client,
+							       uri, local_file,
+							       FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
+							       cancellable,
+							       error);
+
+		/* FIXME: Make this call async */
+		if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &local_error))
+			g_warning ("Failed to remove schedule entry: %s", local_error->message);
+
+		if (!download_success) {
+			gs_plugin_fwupd_error_convert (error);
+			return FALSE;
+		}
+	}
+
+	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+
+	return TRUE;
+}
+
+static gboolean
 gs_plugin_fwupd_install (GsPluginFwupd                       *self,
                          GsApp                               *app,
                          GsPluginAppNeedsUserActionCallback   app_needs_user_action_callback,
@@ -865,38 +929,18 @@ gs_plugin_fwupd_install (GsPluginFwupd                       *self,
 	const gchar *device_id;
 	FwupdInstallFlags install_flags = 0;
 	GFile *local_file;
-	g_autofree gchar *filename = NULL;
-	gboolean downloaded_to_cache = FALSE;
 	g_autoptr(FwupdDevice) dev = NULL;
 	g_autoptr(GError) error_local = NULL;
 
-	/* not set */
+	/* This function assumes that the file has already been downloaded and
+	 * cached at @local_file. */
 	local_file = gs_app_get_local_file (app);
 	if (local_file == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "not enough data for fwupd %s",
-			     filename);
+			     "not enough data for fwupd");
 		return FALSE;
-	}
-
-	/* file does not yet exist */
-	filename = g_file_get_path (local_file);
-	if (!g_file_query_exists (local_file, cancellable)) {
-		const gchar *uri = gs_fwupd_app_get_update_uri (app);
-		g_autoptr(GFile) file = g_file_new_for_path (filename);
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		if (!fwupd_client_download_file (self->client,
-						 uri, file,
-						 FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
-						 cancellable,
-						 error)) {
-			gs_plugin_fwupd_error_convert (error);
-			return FALSE;
-		}
-
-		downloaded_to_cache = TRUE;
 	}
 
 	/* limit to single device? */
@@ -913,19 +957,23 @@ gs_plugin_fwupd_install (GsPluginFwupd                       *self,
 
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	if (!fwupd_client_install (self->client, device_id,
-				   filename, install_flags,
+				   g_file_peek_path (local_file), install_flags,
 				   cancellable, error)) {
 		gs_plugin_fwupd_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 
-	/* delete the file from the cache */
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-	if (downloaded_to_cache) {
-		if (!g_file_delete (local_file, cancellable, error))
-			return FALSE;
+
+	/* delete the file from the cache */
+	if (!g_file_delete (local_file, cancellable, &error_local) &&
+	    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
 	}
+
+	g_clear_error (&error_local);
 
 	/* does the device have an update message */
 	dev = fwupd_client_get_device_by_id (self->client, device_id,
@@ -1052,12 +1100,18 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* source -> remote, handled by dedicated function */
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	/* Download the file first. */
+	if (!gs_plugin_fwupd_download (self, app, interactive, cancellable, error))
+		return FALSE;
 
 	/* FIXME: Connect #GsPluginAppNeedsUserActionCallback when this function
 	 * is ported to the new #GsPluginJob subclasses. */
@@ -1086,59 +1140,17 @@ gs_plugin_fwupd_update_apps_async (GsPlugin                           *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
-		GFile *local_file;
-		gpointer schedule_entry_handle = NULL;
 
 		/* only process this app if was created by this plugin */
 		if (!gs_app_has_management_plugin (app, plugin))
 			continue;
 
 		if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
-			/* not set */
-			local_file = gs_app_get_local_file (app);
-			if (local_file == NULL) {
-				g_task_return_new_error (task, GS_PLUGIN_ERROR,
-							 GS_PLUGIN_ERROR_FAILED,
-							 "not enough data for fwupd %s",
-							 g_file_peek_path (local_file));
+			/* FIXME: Make this call async */
+			if (!gs_plugin_fwupd_download (self, app, interactive, cancellable, &local_error)) {
+				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
-
-			/* file does not yet exist */
-			if (!g_file_query_exists (local_file, cancellable) &&
-			    !g_cancellable_is_cancelled (cancellable)) {
-				const gchar *uri = gs_fwupd_app_get_update_uri (app);
-				gboolean download_success;
-
-				if (!interactive) {
-					/* FIXME: Make this call async */
-					if (!gs_metered_block_on_download_scheduler (gs_metered_build_scheduler_parameters_for_app (app),
-										     &schedule_entry_handle, cancellable, &local_error)) {
-						g_warning ("Failed to block on download scheduler: %s",
-							   local_error->message);
-						g_clear_error (&local_error);
-					}
-				}
-
-				/* FIXME: Make this call async */
-				download_success = fwupd_client_download_file (self->client,
-									       uri, local_file,
-									       FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
-									       cancellable,
-									       &local_error);
-
-				/* FIXME: Make this call async */
-				if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &local_error))
-					g_warning ("Failed to remove schedule entry: %s", local_error->message);
-
-				if (!download_success) {
-					gs_plugin_fwupd_error_convert (&local_error);
-					g_task_return_error (task, g_steal_pointer (&local_error));
-					return;
-				}
-			}
-
-			gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 		}
 
 		if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
