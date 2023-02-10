@@ -74,6 +74,21 @@ typedef enum {
 	GS_APP_QUERY_PROVIDES_PLASMA,
 } GsAppQueryProvidesType;
 
+/**
+ * GsAppQueryLicenseType:
+ * @GS_APP_QUERY_LICENSE_ANY: Any license, proprietary or free
+ * @GS_APP_QUERY_LICENSE_FOSS: Only free licenses (FOSS or open source)
+ *
+ * A type for categorising licenses, so that apps can be filtered by the type of
+ * license they have.
+ *
+ * Since: 44
+ */
+typedef enum {
+	GS_APP_QUERY_LICENSE_ANY,
+	GS_APP_QUERY_LICENSE_FOSS,
+} GsAppQueryLicenseType;
+
 #define GS_TYPE_APP_QUERY (gs_app_query_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsAppQuery, gs_app_query, GS, APP_QUERY, GObject)
@@ -104,5 +119,6 @@ const gchar * const	*gs_app_query_get_keywords	 (GsAppQuery *self);
 GsApp			*gs_app_query_get_alternate_of	 (GsAppQuery *self);
 GsAppQueryProvidesType	 gs_app_query_get_provides	 (GsAppQuery *self,
 							  const gchar **out_provides_tag);
+GsAppQueryLicenseType	 gs_app_query_get_license_type	 (GsAppQuery *self);
 
 G_END_DECLS
