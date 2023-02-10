@@ -3583,7 +3583,7 @@ gs_plugin_packagekit_disable_repository_finish (GsPlugin      *plugin,
 
 static gboolean
 _download_only (GsPluginPackagekit  *self,
-                GsAppList           *list,
+                GsAppList           *download_list,
                 GsAppList           *progress_list,
                 GCancellable        *cancellable,
                 GError             **error)
@@ -3621,8 +3621,8 @@ _download_only (GsPluginPackagekit  *self,
 	if (pk_package_sack_get_size (sack) == 0)
 		return TRUE;
 	package_ids = pk_package_sack_get_ids (sack);
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
+	for (guint i = 0; i < gs_app_list_length (download_list); i++) {
+		GsApp *app = gs_app_list_index (download_list, i);
 		gs_packagekit_helper_add_app (helper, app);
 	}
 	gs_packagekit_helper_set_progress_list (helper, progress_list);
@@ -3643,8 +3643,8 @@ _download_only (GsPluginPackagekit  *self,
 	}
 	if (g_cancellable_set_error_if_cancelled (cancellable, error))
 		return FALSE;
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
+	for (guint i = 0; i < gs_app_list_length (download_list); i++) {
+		GsApp *app = gs_app_list_index (download_list, i);
 		/* To indicate the app is already downloaded */
 		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 	}
@@ -3658,7 +3658,7 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 			       GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GsAppList) download_list = gs_app_list_new ();
 	g_autoptr(GError) error_local = NULL;
 	gboolean retval;
 	gpointer schedule_entry_handle = NULL;
@@ -3671,7 +3671,7 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 		/* add this app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
 			if (gs_app_has_management_plugin (app, plugin))
-				gs_app_list_add (list_tmp, app);
+				gs_app_list_add (download_list, app);
 			continue;
 		}
 
@@ -3679,22 +3679,22 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
 			if (gs_app_has_management_plugin (app_tmp, plugin))
-				gs_app_list_add (list_tmp, app_tmp);
+				gs_app_list_add (download_list, app_tmp);
 		}
 	}
 
-	if (gs_app_list_length (list_tmp) == 0)
+	if (gs_app_list_length (download_list) == 0)
 		return TRUE;
 
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
-		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
+		if (!gs_metered_block_app_list_on_download_scheduler (download_list, &schedule_entry_handle, cancellable, &error_local)) {
 			g_warning ("Failed to block on download scheduler: %s",
 				   error_local->message);
 			g_clear_error (&error_local);
 		}
 	}
 
-	retval = _download_only (self, list_tmp, list, cancellable, error);
+	retval = _download_only (self, download_list, list, cancellable, error);
 
 	if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
 		g_warning ("Failed to remove schedule entry: %s", error_local->message);
