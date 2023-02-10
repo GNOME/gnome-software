@@ -577,7 +577,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	sysprof_name = g_strconcat ("vfunc:", gs_plugin_action_to_string (action), NULL);
 	sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
 
-	GS_PROFILER_BEGIN (PluginLoader, sysprof_name, sysprof_message);
+	GS_PROFILER_BEGIN_SCOPED (PluginLoader, sysprof_name, sysprof_message);
 
 	/* load the possible symbol */
 	func = gs_plugin_get_symbol (plugin, helper->function_name);
@@ -700,7 +700,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	        add_app_to_install_queue (plugin_loader, app);
 	}
 
-	GS_PROFILER_END (PluginLoader);
+	GS_PROFILER_END_SCOPED (PluginLoader);
 
 	/* check the plugin didn't take too long */
 	if (g_timer_elapsed (timer, NULL) > 1.0f) {
@@ -759,7 +759,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 				    NULL);
 	sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
 
-	GS_PROFILER_BEGIN (PluginLoader, sysprof_name, sysprof_message);
+	GS_PROFILER_BEGIN_SCOPED (PluginLoader, sysprof_name, sysprof_message);
 
 	/* Refining is done separately as it’s a special action */
 	g_assert (!GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job));
@@ -779,7 +779,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
-	GS_PROFILER_END (PluginLoader);
+	GS_PROFILER_END_SCOPED (PluginLoader);
 
 	return TRUE;
 }
@@ -3149,7 +3149,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	sysprof_name = g_strconcat ("process-thread:", gs_plugin_action_to_string (action), NULL);
 	sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
 
-	GS_PROFILER_BEGIN (PluginLoader, sysprof_name, sysprof_message);
+	GS_PROFILER_BEGIN_SCOPED (PluginLoader, sysprof_name, sysprof_message);
 
 	/* these change the pending count on the installed panel */
 	switch (action) {
@@ -3420,7 +3420,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	if (dedupe_flags != GS_APP_LIST_FILTER_FLAG_NONE)
 		gs_app_list_filter_duplicates (list, dedupe_flags);
 
-	GS_PROFILER_END (PluginLoader);
+	GS_PROFILER_END_SCOPED (PluginLoader);
 
 	/* show elapsed time */
 	job_debug = gs_plugin_job_to_string (helper->plugin_job);
