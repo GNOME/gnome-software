@@ -165,6 +165,7 @@ gs_metered_block_on_download_scheduler_async (GVariant            *parameters,
                                               gpointer             user_data)
 {
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(GVariant) parameters_owned = (parameters != NULL) ? g_variant_ref_sink (parameters) : NULL;
 #ifdef HAVE_MOGWAI
 	g_autofree gchar *parameters_str = NULL;
 #endif
@@ -178,7 +179,7 @@ gs_metered_block_on_download_scheduler_async (GVariant            *parameters,
 	parameters_str = (parameters != NULL) ? g_variant_print (parameters, TRUE) : g_strdup ("(none)");
 	g_debug ("%s: Waiting with parameters: %s", G_STRFUNC, parameters_str);
 
-	g_task_set_task_data (task, (parameters != NULL) ? g_variant_ref (parameters) : NULL, (GDestroyNotify) g_variant_unref);
+	g_task_set_task_data (task, g_steal_pointer (&parameters_owned), (GDestroyNotify) g_variant_unref);
 
 	/* Wait until the download can be scheduled.
 	 * FIXME: In future, downloads could be split up by app, so they can all

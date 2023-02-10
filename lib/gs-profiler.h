@@ -151,8 +151,8 @@ gs_profiler_auto_trace_end_helper (GsProfilerHead **head)
 		sysprof_collector_mark (begin_time, \
 					SYSPROF_CAPTURE_CURRENT_TIME - begin_time, \
 					"gnome-software", \
-					sysprof_name, \
-					sysprof_description); \
+					_owned_sysprof_name_##Name, \
+					_owned_sysprof_description_##Name); \
 	} G_STMT_END
 
 #define GS_PROFILER_ADD_MARK(Name, begin_time, sysprof_name, sysprof_description) \
