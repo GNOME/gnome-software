@@ -3705,6 +3705,10 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 	return retval;
 }
 
+static void update_apps_trigger_cb (GObject      *source_object,
+                                    GAsyncResult *result,
+                                    gpointer      user_data);
+
 static void
 gs_plugin_packagekit_update_apps_async (GsPlugin                           *plugin,
                                         GsAppList                          *apps,
@@ -3764,21 +3768,62 @@ gs_plugin_packagekit_update_apps_async (GsPlugin                           *plug
 		}
 
 		if (trigger_update && !self->is_triggered) {
+			GDBusConnection *connection;
+
 			/* trigger offline update if it’s not already been triggered */
-			/* FIXME: Make this async and add progress reporting */
-			if (!pk_offline_trigger_with_flags (PK_OFFLINE_ACTION_REBOOT,
-							    interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
-							    cancellable,
-							    &local_error)) {
-				gs_plugin_packagekit_error_convert (&local_error);
+
+			/* Assume we can use the singleton system bus connection
+			 * due to prior PackageKit calls having created it. This
+			 * avoids an async callback. */
+			connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
+						     cancellable,
+						     &local_error);
+			if (connection == NULL) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
 
-			/* don't rely on the file monitor */
-			gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
+			/* FIXME: This can be simplified down to a call to
+			 * pk_offline_trigger_with_flags_async() when it exists.
+			 * See https://github.com/PackageKit/PackageKit/issues/605 */
+			g_dbus_connection_call (connection,
+						"org.freedesktop.PackageKit",
+						"/org/freedesktop/PackageKit",
+						"org.freedesktop.PackageKit.Offline",
+						"Trigger",
+						g_variant_new ("(s)", pk_offline_action_to_string (PK_OFFLINE_ACTION_REBOOT)),
+						NULL,
+						interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
+						-1,
+						cancellable,
+						update_apps_trigger_cb,
+						g_steal_pointer (&task));
+			return;
 		}
 	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+update_apps_trigger_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data)
+{
+	GDBusConnection *connection = G_DBUS_CONNECTION (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!g_dbus_connection_call_finish (connection, result, &local_error)) {
+		gs_plugin_packagekit_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* don't rely on the file monitor */
+	gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
 
 	g_task_return_boolean (task, TRUE);
 }
