@@ -3705,11 +3705,6 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 	return retval;
 }
 
-static gboolean gs_systemd_call_trigger (GsPlugin         *plugin,
-                                         PkOfflineAction   action,
-                                         GCancellable     *cancellable,
-                                         GError          **error);
-
 static void
 gs_plugin_packagekit_update_apps_async (GsPlugin                           *plugin,
                                         GsAppList                          *apps,
@@ -3724,6 +3719,7 @@ gs_plugin_packagekit_update_apps_async (GsPlugin                           *plug
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
@@ -3770,7 +3766,10 @@ gs_plugin_packagekit_update_apps_async (GsPlugin                           *plug
 		if (trigger_update && !self->is_triggered) {
 			/* trigger offline update if it’s not already been triggered */
 			/* FIXME: Make this async and add progress reporting */
-			if (!gs_systemd_call_trigger (GS_PLUGIN (self), PK_OFFLINE_ACTION_REBOOT, cancellable, &local_error)) {
+			if (!pk_offline_trigger_with_flags (PK_OFFLINE_ACTION_REBOOT,
+							    interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
+							    cancellable,
+							    &local_error)) {
 				gs_plugin_packagekit_error_convert (&local_error);
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
@@ -3859,44 +3858,6 @@ gs_plugin_packagekit_refresh_metadata_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static PkOfflineFlags
-gs_systemd_get_offline_flags (GsPlugin *plugin)
-{
-	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
-		return PK_OFFLINE_FLAGS_INTERACTIVE;
-	return PK_OFFLINE_FLAGS_NONE;
-}
-
-static gboolean
-gs_systemd_call_trigger (GsPlugin *plugin,
-			 PkOfflineAction action,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	return pk_offline_trigger_with_flags (action,
-					      gs_systemd_get_offline_flags (plugin),
-					      cancellable, error);
-}
-
-static gboolean
-gs_systemd_call_cancel (GsPlugin *plugin,
-			GCancellable *cancellable,
-			GError **error)
-{
-	return pk_offline_cancel_with_flags (gs_systemd_get_offline_flags (plugin), cancellable, error);
-}
-
-static gboolean
-gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
-				 PkOfflineAction action,
-				 GCancellable *cancellable,
-				 GError **error)
-{
-	return pk_offline_trigger_upgrade_with_flags (action,
-						      gs_systemd_get_offline_flags (plugin),
-						      cancellable, error);
-}
-
 gboolean
 gs_plugin_update_cancel (GsPlugin *plugin,
 			 GsApp *app,
@@ -3904,6 +3865,7 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 			 GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -3914,7 +3876,9 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 		return TRUE;
 
 	/* cancel offline update */
-	if (!gs_systemd_call_cancel (plugin, cancellable, error)) {
+	if (!pk_offline_cancel_with_flags (interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
+					   cancellable,
+					   error)) {
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
@@ -3932,11 +3896,16 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
                                GCancellable *cancellable,
                                GError **error)
 {
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
-	if (!gs_systemd_call_trigger_upgrade (plugin, PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
+	if (!pk_offline_trigger_upgrade_with_flags (PK_OFFLINE_ACTION_REBOOT,
+						    interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
+						    cancellable,
+						    error)) {
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
