@@ -1999,7 +1999,6 @@ get_updates_cb (GObject      *source_object,
 		pkg = pk_package_sack_find_by_id (sack, package_id);
 		if (pkg == NULL)
 			continue;
-		#ifdef HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY
 		switch (pk_package_get_update_severity (pkg)) {
 		case PK_INFO_ENUM_LOW:
 			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
@@ -2017,30 +2016,6 @@ get_updates_cb (GObject      *source_object,
 			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
 			break;
 		}
-		#else
-		switch (pk_package_get_info (pkg)) {
-		case PK_INFO_ENUM_AVAILABLE:
-		case PK_INFO_ENUM_NORMAL:
-		case PK_INFO_ENUM_LOW:
-		case PK_INFO_ENUM_ENHANCEMENT:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
-			break;
-		case PK_INFO_ENUM_BUGFIX:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
-			break;
-		case PK_INFO_ENUM_SECURITY:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
-			break;
-		case PK_INFO_ENUM_IMPORTANT:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
-			break;
-		default:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
-			g_warning ("unhandled info state %s",
-				   pk_info_enum_to_string (pk_package_get_info (pkg)));
-			break;
-		}
-		#endif
 	}
 
 	refine_task_complete_operation (refine_task);
@@ -3884,8 +3859,6 @@ gs_plugin_packagekit_refresh_metadata_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-#ifdef HAVE_PK_OFFLINE_WITH_FLAGS
-
 static PkOfflineFlags
 gs_systemd_get_offline_flags (GsPlugin *plugin)
 {
@@ -3923,99 +3896,6 @@ gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
 						      gs_systemd_get_offline_flags (plugin),
 						      cancellable, error);
 }
-
-#else /* HAVE_PK_OFFLINE_WITH_FLAGS */
-
-static GDBusCallFlags
-gs_systemd_get_gdbus_call_flags (GsPlugin *plugin)
-{
-	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
-		return G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
-	return G_DBUS_CALL_FLAGS_NONE;
-}
-
-static gboolean
-gs_systemd_call_trigger (GsPlugin *plugin,
-			 PkOfflineAction action,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	const gchar *tmp;
-	g_autoptr(GVariant) res = NULL;
-
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	tmp = pk_offline_action_to_string (action);
-	res = g_dbus_connection_call_sync (gs_plugin_get_system_bus_connection (plugin),
-					   "org.freedesktop.PackageKit",
-					   "/org/freedesktop/PackageKit",
-					   "org.freedesktop.PackageKit.Offline",
-					   "Trigger",
-					   g_variant_new ("(s)", tmp),
-					   NULL,
-					   gs_systemd_get_gdbus_call_flags (plugin),
-					   -1,
-					   cancellable,
-					   error);
-	if (res == NULL)
-		return FALSE;
-	return TRUE;
-}
-
-static gboolean
-gs_systemd_call_cancel (GsPlugin *plugin,
-			GCancellable *cancellable,
-			GError **error)
-{
-	g_autoptr(GVariant) res = NULL;
-
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	res = g_dbus_connection_call_sync (gs_plugin_get_system_bus_connection (plugin),
-					   "org.freedesktop.PackageKit",
-					   "/org/freedesktop/PackageKit",
-					   "org.freedesktop.PackageKit.Offline",
-					   "Cancel",
-					   NULL,
-					   NULL,
-					   gs_systemd_get_gdbus_call_flags (plugin),
-					   -1,
-					   cancellable,
-					   error);
-	if (res == NULL)
-		return FALSE;
-	return TRUE;
-}
-
-static gboolean
-gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
-				 PkOfflineAction action,
-				 GCancellable *cancellable,
-				 GError **error)
-{
-	const gchar *tmp;
-	g_autoptr(GVariant) res = NULL;
-
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	tmp = pk_offline_action_to_string (action);
-	res = g_dbus_connection_call_sync (gs_plugin_get_system_bus_connection (plugin),
-					   "org.freedesktop.PackageKit",
-					   "/org/freedesktop/PackageKit",
-					   "org.freedesktop.PackageKit.Offline",
-					   "TriggerUpgrade",
-					   g_variant_new ("(s)", tmp),
-					   NULL,
-					   gs_systemd_get_gdbus_call_flags (plugin),
-					   -1,
-					   cancellable,
-					   error);
-	if (res == NULL)
-		return FALSE;
-	return TRUE;
-}
-
-#endif /* HAVE_PK_OFFLINE_WITH_FLAGS */
 
 gboolean
 gs_plugin_update_cancel (GsPlugin *plugin,

@@ -193,7 +193,7 @@ if get_option('polkit')
 endif
 
 if get_option('packagekit')
-  packagekit = dependency('packagekit-glib2', version : '>= 1.1.0')
+  packagekit = dependency('packagekit-glib2', version : '>= 1.2.5')
   conf.set('HAVE_PACKAGEKIT', '1')
   add_project_arguments('-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE',
                         language : 'c')
@@ -201,17 +201,6 @@ if get_option('packagekit')
       conf.set('GS_PACKAGEKIT_AUTOREMOVE', 'TRUE')
   else
       conf.set('GS_PACKAGEKIT_AUTOREMOVE', 'FALSE')
-  endif
-  if meson.get_compiler('c').has_function('pk_package_get_update_severity', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit)
-      conf.set('HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY', '1')
-  endif
-  if meson.get_compiler('c').has_function('pk_details_get_download_size', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit)
-      conf.set('HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE', '1')
-  endif
-  if meson.get_compiler('c').has_function('pk_offline_cancel_with_flags', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit) and \
-     meson.get_compiler('c').has_function('pk_offline_trigger_with_flags', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit) and \
-     meson.get_compiler('c').has_function('pk_offline_trigger_upgrade_with_flags', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit)
-      conf.set('HAVE_PK_OFFLINE_WITH_FLAGS', '1')
   endif
 endif
 
