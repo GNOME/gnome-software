@@ -3582,76 +3582,6 @@ gs_plugin_packagekit_disable_repository_finish (GsPlugin      *plugin,
 }
 
 static gboolean
-_download_only (GsPluginPackagekit  *self,
-                GsAppList           *download_list,
-                GsAppList           *progress_list,
-                GCancellable        *cancellable,
-                GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	g_auto(GStrv) package_ids = NULL;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_refresh = NULL;
-	g_autoptr(PkPackageSack) sack = NULL;
-	g_autoptr(PkResults) results2 = NULL;
-	g_autoptr(PkResults) results = NULL;
-
-	/* get the list of packages to update */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-
-	/* never refresh the metadata here as this can surprise the frontend if
-	 * we end up downloading a different set of packages than what was
-	 * shown to the user */
-	task_refresh = gs_packagekit_task_new (plugin);
-	pk_task_set_only_download (task_refresh, TRUE);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
-	results = pk_client_get_updates (PK_CLIENT (task_refresh),
-					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		return FALSE;
-	}
-
-	/* download all the packages */
-	sack = pk_results_get_package_sack (results);
-	if (pk_package_sack_get_size (sack) == 0)
-		return TRUE;
-	package_ids = pk_package_sack_get_ids (sack);
-	for (guint i = 0; i < gs_app_list_length (download_list); i++) {
-		GsApp *app = gs_app_list_index (download_list, i);
-		gs_packagekit_helper_add_app (helper, app);
-	}
-	gs_packagekit_helper_set_progress_list (helper, progress_list);
-
-	/* never refresh the metadata here as this can surprise the frontend if
-	 * we end up downloading a different set of packages than what was
-	 * shown to the user */
-	results2 = pk_task_update_packages_sync (task_refresh,
-						 package_ids,
-						 cancellable,
-						 gs_packagekit_helper_cb, helper,
-						 error);
-
-	gs_app_list_override_progress (progress_list, GS_APP_PROGRESS_UNKNOWN);
-	if (results2 == NULL) {
-		gs_plugin_packagekit_error_convert (error);
-		return FALSE;
-	}
-	if (g_cancellable_set_error_if_cancelled (cancellable, error))
-		return FALSE;
-	for (guint i = 0; i < gs_app_list_length (download_list); i++) {
-		GsApp *app = gs_app_list_index (download_list, i);
-		/* To indicate the app is already downloaded */
-		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_packagekit_download (GsPlugin *plugin,
 			       GsAppList *list,
 			       GCancellable *cancellable,
@@ -3662,6 +3592,13 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	gboolean retval;
 	gpointer schedule_entry_handle = NULL;
+	GsAppList *progress_list = list;
+	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkTask) task_refresh = NULL;
+	g_autoptr(PkPackageSack) sack = NULL;
+	g_autoptr(PkResults) results2 = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	/* add any packages */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -3694,8 +3631,70 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 		}
 	}
 
-	retval = _download_only (self, download_list, list, cancellable, error);
+	/* get the list of packages to update */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
+	/* never refresh the metadata here as this can surprise the frontend if
+	 * we end up downloading a different set of packages than what was
+	 * shown to the user */
+	task_refresh = gs_packagekit_task_new (plugin);
+	pk_task_set_only_download (task_refresh, TRUE);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
+	results = pk_client_get_updates (PK_CLIENT (task_refresh),
+					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
+					 cancellable,
+					 gs_packagekit_helper_cb, helper,
+					 error);
+
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		retval = FALSE;
+		goto done;
+	}
+
+	/* download all the packages */
+	sack = pk_results_get_package_sack (results);
+	if (pk_package_sack_get_size (sack) == 0) {
+		retval = TRUE;
+		goto done;
+	}
+
+	package_ids = pk_package_sack_get_ids (sack);
+	for (guint i = 0; i < gs_app_list_length (download_list); i++) {
+		GsApp *app = gs_app_list_index (download_list, i);
+		gs_packagekit_helper_add_app (helper, app);
+	}
+	gs_packagekit_helper_set_progress_list (helper, progress_list);
+
+	/* never refresh the metadata here as this can surprise the frontend if
+	 * we end up downloading a different set of packages than what was
+	 * shown to the user */
+	results2 = pk_task_update_packages_sync (task_refresh,
+						 package_ids,
+						 cancellable,
+						 gs_packagekit_helper_cb, helper,
+						 error);
+
+	gs_app_list_override_progress (progress_list, GS_APP_PROGRESS_UNKNOWN);
+	if (results2 == NULL) {
+		gs_plugin_packagekit_error_convert (error);
+		retval = FALSE;
+		goto done;
+	}
+	if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+		retval = FALSE;
+		goto done;
+	}
+
+	for (guint i = 0; i < gs_app_list_length (download_list); i++) {
+		GsApp *app = gs_app_list_index (download_list, i);
+		/* To indicate the app is already downloaded */
+		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+	}
+
+	retval = TRUE;
+
+done:
 	if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
 		g_warning ("Failed to remove schedule entry: %s", error_local->message);
 
