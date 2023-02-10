@@ -2101,11 +2101,27 @@ gs_plugin_packagekit_permission_cb (GPermission *permission,
 	gs_plugin_set_allow_updates (plugin, ret);
 }
 
-static gboolean
-gs_plugin_packagekit_download (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error);
+static void gs_plugin_packagekit_download_async (GsPluginPackagekit  *self,
+                                                 GsAppList           *list,
+                                                 gboolean             interactive,
+                                                 GCancellable        *cancellable,
+                                                 GAsyncReadyCallback  callback,
+                                                 gpointer             user_data);
+static gboolean gs_plugin_packagekit_download_finish (GsPluginPackagekit  *self,
+                                                      GAsyncResult        *result,
+                                                      GError             **error);
+
+static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+
+	g_assert (result_out != NULL && *result_out == NULL);
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (g_main_context_get_thread_default ());
+}
 
 static void
 gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
@@ -2113,26 +2129,36 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 						 gpointer task_data,
 						 GCancellable *cancellable)
 {
-	GsPlugin *plugin = source_object;
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) local_error = NULL;
+	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
 
-	g_return_if_fail (GS_IS_PLUGIN_PACKAGEKIT (plugin));
+	g_return_if_fail (GS_IS_PLUGIN_PACKAGEKIT (source_object));
 
 	list = gs_app_list_new ();
-	if (!gs_plugin_packagekit_add_updates (plugin, list, cancellable, &local_error)) {
+	if (!gs_plugin_packagekit_add_updates (GS_PLUGIN (self), list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	if (gs_app_list_length (list) > 0 &&
-	    !gs_plugin_packagekit_download (plugin, list, cancellable, &local_error)) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
+	if (gs_app_list_length (list) > 0) {
+		g_autoptr(GMainContext) context = g_main_context_new ();
+		g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
+		g_autoptr(GAsyncResult) result = NULL;
+
+		gs_plugin_packagekit_download_async (self, list, interactive, cancellable, async_result_cb, &result);
+		while (result == NULL)
+			g_main_context_iteration (context, TRUE);
+
+		if (!gs_plugin_packagekit_download_finish (self, result, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 	}
 
 	/* Ignore errors here */
-	gs_plugin_systemd_update_cache (GS_PLUGIN_PACKAGEKIT (source_object), NULL);
+	gs_plugin_systemd_update_cache (self, NULL);
 
 	g_task_return_boolean (task, TRUE);
 }
@@ -3581,24 +3607,69 @@ gs_plugin_packagekit_disable_repository_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-gs_plugin_packagekit_download (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error)
+typedef struct {
+	gpointer schedule_entry_handle;  /* (nullable) (owned) */
+
+	/* List of apps to download, and list of apps to notify of download
+	 * progress on. @download_list is a superset of @progress_list, and
+	 * may include extra dependencies. */
+	GsAppList *download_list;  /* (owned) */
+	GsAppList *progress_list;  /* (owned) */
+
+	gboolean interactive;
+
+	GsPackagekitHelper *helper;  /* (owned) */
+} DownloadData;
+
+static void
+download_data_free (DownloadData *data)
 {
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	g_autoptr(GsAppList) download_list = gs_app_list_new ();
-	g_autoptr(GError) error_local = NULL;
-	gboolean retval;
-	gpointer schedule_entry_handle = NULL;
-	GsAppList *progress_list = list;
-	g_auto(GStrv) package_ids = NULL;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_refresh = NULL;
-	g_autoptr(PkPackageSack) sack = NULL;
-	g_autoptr(PkResults) results2 = NULL;
-	g_autoptr(PkResults) results = NULL;
+	/* Should have been explicitly removed from the scheduler by now. */
+	g_assert (data->schedule_entry_handle == NULL);
+
+	g_clear_object (&data->download_list);
+	g_clear_object (&data->progress_list);
+	g_clear_object (&data->helper);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (DownloadData, download_data_free)
+
+static void download_schedule_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data);
+static void download_get_updates_cb (GObject      *source_object,
+                                     GAsyncResult *result,
+                                     gpointer      user_data);
+static void download_update_packages_cb (GObject      *source_object,
+                                         GAsyncResult *result,
+                                         gpointer      user_data);
+static void finish_download (GTask  *task,
+                             GError *error);
+
+static void
+gs_plugin_packagekit_download_async (GsPluginPackagekit  *self,
+                                     GsAppList           *list,
+                                     gboolean             interactive,
+                                     GCancellable        *cancellable,
+                                     GAsyncReadyCallback  callback,
+                                     gpointer             user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (self);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(DownloadData) data_owned = NULL;
+	DownloadData *data;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_download_async);
+
+	data = data_owned = g_new0 (DownloadData, 1);
+	data->download_list = gs_app_list_new ();
+	data->progress_list = g_object_ref (list);
+	data->interactive = interactive;
+	data->helper = gs_packagekit_helper_new (plugin);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) download_data_free);
 
 	/* add any packages */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -3608,7 +3679,7 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 		/* add this app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
 			if (gs_app_has_management_plugin (app, plugin))
-				gs_app_list_add (download_list, app);
+				gs_app_list_add (data->download_list, app);
 			continue;
 		}
 
@@ -3616,94 +3687,185 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
 			if (gs_app_has_management_plugin (app_tmp, plugin))
-				gs_app_list_add (download_list, app_tmp);
+				gs_app_list_add (data->download_list, app_tmp);
 		}
 	}
 
-	if (gs_app_list_length (download_list) == 0)
-		return TRUE;
+	if (gs_app_list_length (data->download_list) == 0) {
+		finish_download (task, NULL);
+		return;
+	}
 
-	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
-		if (!gs_metered_block_app_list_on_download_scheduler (download_list, &schedule_entry_handle, cancellable, &error_local)) {
-			g_warning ("Failed to block on download scheduler: %s",
-				   error_local->message);
-			g_clear_error (&error_local);
-		}
+	/* Wait for permission to download, if needed. */
+	if (!data->interactive) {
+		g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
+
+		g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
+
+		gs_metered_block_on_download_scheduler_async (g_variant_dict_end (&parameters_dict),
+							      cancellable,
+							      download_schedule_cb,
+							      g_steal_pointer (&task));
+	} else {
+		download_schedule_cb (NULL, NULL, g_steal_pointer (&task));
+	}
+}
+
+static void
+download_schedule_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	DownloadData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(PkTask) task_update = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	if (result != NULL &&
+	    !gs_metered_block_on_download_scheduler_finish (result, &data->schedule_entry_handle, &local_error)) {
+		g_warning ("Failed to block on download scheduler: %s",
+			   local_error->message);
+		g_clear_error (&local_error);
 	}
 
 	/* get the list of packages to update */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	gs_plugin_status_update (GS_PLUGIN (self), NULL, GS_PLUGIN_STATUS_WAITING);
 
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
-	task_refresh = gs_packagekit_task_new (plugin);
-	pk_task_set_only_download (task_refresh, TRUE);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	task_update = gs_packagekit_task_new (GS_PLUGIN (self));
+	pk_task_set_only_download (task_update, TRUE);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_update),
+				  GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD,
+				  data->interactive);
 
-	results = pk_client_get_updates (PK_CLIENT (task_refresh),
-					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
+	pk_client_get_updates_async (PK_CLIENT (task_update),
+				     pk_bitfield_value (PK_FILTER_ENUM_NONE),
+				     cancellable,
+				     gs_packagekit_helper_cb, data->helper,
+				     download_get_updates_cb,
+				     g_steal_pointer (&task));
+}
 
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		retval = FALSE;
-		goto done;
+static void
+download_get_updates_cb (GObject      *source_object,
+                         GAsyncResult *result,
+                         gpointer      user_data)
+{
+	PkTask *task_update = PK_TASK (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	DownloadData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(PkPackageSack) sack = NULL;
+	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (PK_CLIENT (task_update), result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+		finish_download (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* download all the packages */
 	sack = pk_results_get_package_sack (results);
 	if (pk_package_sack_get_size (sack) == 0) {
-		retval = TRUE;
-		goto done;
+		finish_download (task, NULL);
+		return;
 	}
 
 	package_ids = pk_package_sack_get_ids (sack);
-	for (guint i = 0; i < gs_app_list_length (download_list); i++) {
-		GsApp *app = gs_app_list_index (download_list, i);
-		gs_packagekit_helper_add_app (helper, app);
+	for (guint i = 0; i < gs_app_list_length (data->download_list); i++) {
+		GsApp *app = gs_app_list_index (data->download_list, i);
+		gs_packagekit_helper_add_app (data->helper, app);
 	}
-	gs_packagekit_helper_set_progress_list (helper, progress_list);
+	gs_packagekit_helper_set_progress_list (data->helper, data->progress_list);
 
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
-	results2 = pk_task_update_packages_sync (task_refresh,
-						 package_ids,
-						 cancellable,
-						 gs_packagekit_helper_cb, helper,
-						 error);
+	pk_task_update_packages_async (task_update,
+				       package_ids,
+				       cancellable,
+				       gs_packagekit_helper_cb, data->helper,
+				       download_update_packages_cb,
+				       g_steal_pointer (&task));
+}
 
-	gs_app_list_override_progress (progress_list, GS_APP_PROGRESS_UNKNOWN);
-	if (results2 == NULL) {
-		gs_plugin_packagekit_error_convert (error);
-		retval = FALSE;
-		goto done;
-	}
-	if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
-		retval = FALSE;
-		goto done;
+static void
+download_update_packages_cb (GObject      *source_object,
+                             GAsyncResult *result,
+                             gpointer      user_data)
+{
+	PkTask *task_update = PK_TASK (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	DownloadData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_task_generic_finish (task_update, result, &local_error);
+
+	gs_app_list_override_progress (data->progress_list, GS_APP_PROGRESS_UNKNOWN);
+	if (results == NULL) {
+		gs_plugin_packagekit_error_convert (&local_error);
+		finish_download (task, g_steal_pointer (&local_error));
+		return;
 	}
 
-	for (guint i = 0; i < gs_app_list_length (download_list); i++) {
-		GsApp *app = gs_app_list_index (download_list, i);
+	if (g_cancellable_set_error_if_cancelled (cancellable, &local_error)) {
+		finish_download (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	for (guint i = 0; i < gs_app_list_length (data->download_list); i++) {
+		GsApp *app = gs_app_list_index (data->download_list, i);
 		/* To indicate the app is already downloaded */
 		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 	}
 
-	retval = TRUE;
-
-done:
-	if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
-		g_warning ("Failed to remove schedule entry: %s", error_local->message);
-
-	if (retval)
-		gs_plugin_updates_changed (plugin);
-
-	return retval;
+	/* Success! */
+	finish_download (task, NULL);
 }
 
+/* If non-%NULL, @error is (transfer full). */
+static void
+finish_download (GTask  *task,
+                 GError *error)
+{
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	DownloadData *data = g_task_get_task_data (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	/* Fire this call off into the void, it’s not worth tracking it.
+	 * Don’t pass a cancellable in, as the download may have been cancelled. */
+	if (data->schedule_entry_handle != NULL)
+		gs_metered_remove_from_download_scheduler_async (data->schedule_entry_handle, NULL, NULL, NULL);
+
+	if (error_owned == NULL)
+		gs_plugin_updates_changed (GS_PLUGIN (self));
+
+	if (error_owned != NULL)
+		g_task_return_error (task, g_steal_pointer (&error_owned));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_packagekit_download_finish (GsPluginPackagekit  *self,
+                                      GAsyncResult        *result,
+                                      GError             **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void update_apps_download_cb (GObject      *source_object,
+                                     GAsyncResult *result,
+                                     gpointer      user_data);
 static void update_apps_trigger_cb (GObject      *source_object,
                                     GAsyncResult *result,
                                     gpointer      user_data);
@@ -3723,27 +3885,47 @@ gs_plugin_packagekit_update_apps_async (GsPlugin                           *plug
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
-	g_autoptr(GError) local_error = NULL;
 
-	task = g_task_new (plugin, cancellable, callback, user_data);
+	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
+						    progress_callback, progress_user_data,
+						    app_needs_user_action_callback, app_needs_user_action_data,
+						    cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_update_apps_async);
 
 	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
-		/* FIXME: Make this async and add progress reporting */
-		if (!gs_plugin_packagekit_download (plugin, apps, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
+		/* FIXME: Add progress reporting */
+		gs_plugin_packagekit_download_async (self, apps, interactive, cancellable, update_apps_download_cb, g_steal_pointer (&task));
+	} else {
+		update_apps_download_cb (G_OBJECT (self), NULL, g_steal_pointer (&task));
+	}
+}
+
+static void
+update_apps_download_cb (GObject      *source_object,
+                         GAsyncResult *result,
+                         gpointer      user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginUpdateAppsData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	gboolean interactive = (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
+
+	if (result != NULL &&
+	    !gs_plugin_packagekit_download_finish (self, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
-	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
 		gboolean trigger_update = FALSE;
 
 		/* Are any of these apps from PackageKit, and suitable for offline
 		 * updates? If any of them can be processed offline, trigger an offline
 		 * update. If all of them are updatable online, don’t. */
-		for (guint i = 0; i < gs_app_list_length (apps); i++) {
-			GsApp *app = gs_app_list_index (apps, i);
+		for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+			GsApp *app = gs_app_list_index (data->apps, i);
 			GsAppList *related = gs_app_get_related (app);
 
 			/* try to trigger this app */
