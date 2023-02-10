@@ -19,52 +19,22 @@
  * @short_description: Macros for profiling
  *
  * GNOME Software provides a simple profiling mechanism that both plugins
- * and GNOME Software itself can make use. Use the GS_PROFILER_BEGIN()
+ * and GNOME Software itself can make use. Use the GS_PROFILER_BEGIN_SCOPED()
  * macro to start profiling a specific code section; and pair it with
- * GS_PROFILER_END() to finish profiling the section:
+ * GS_PROFILER_END_SCOPED() to finish profiling the section:
  *
  * ```
- * GS_PROFILER_BEGIN(Flatpak, "list-installed-refs", "Description");
+ * GS_PROFILER_BEGIN_SCOPED(Flatpak, "list-installed-refs", "Description");
  * ... list all installed refs ...
- * GS_PROFILER_END(Flatpak);
+ * GS_PROFILER_END_SCOPED(Flatpak);
  *
  *
- * GS_PROFILER_BEGIN(Foo, "parse-something", "Parse some data");
+ * GS_PROFILER_BEGIN_SCOPED(Foo, "parse-something", "Parse some data");
  * ... parse some data ...
- * GS_PROFILER_END(Foo);
+ * GS_PROFILER_END_SCOPED(Foo);
  * ```
  *
- * The description argument is nullable:
- *
- * ```
- * GS_PROFILER_BEGIN(Flatpak, "list-installed-refs", NULL);
- * ... list all installed refs ...
- * GS_PROFILER_END(Flatpak);
- *```
- *
- * A rather common case is to allocate new strings for the Sysprof name
- * and description. The convenience macro GS_PROFILER_BEGIN_TAKE() is
- * provided for that:
- *
- * ```
- * GS_PROFILER_BEGIN(Foo, g_strdup_printf ("list-installed-refs:%s", name), NULL);
- * ... list all installed refs ...
- * GS_PROFILER_END(Foo);
- *```
- *
- * Asynchronous operations might need to track the start and end times in
- * separate functions. The convenience macros GS_PROFILER_ADD_MARK() and
- * GS_PROFILER_ADD_MARK_TAKE() allow for passing an independent begin time:
- *
- * ```
- * GS_PROFILER_ADD_MARK(Foo, task->begin_time, "do-something", NULL);
- *```
- *
- * Another common case is profiling functions that may have various
- * early returns, and adding one GS_PROFILER_END() before each return
- * is inconvenient. For that, wrap the entire function with a
- * GS_PROFILER_BEGIN_SCOPED() (or GS_PROFILER_BEGIN_SCOPED_TAKE()) and
- * a GS_PROFILER_END_SCOPED() pair of macros:
+ * The macros are scoped, so work correctly with early returns in the middle:
  *
  * ```
  * GS_PROFILER_BEGIN_SCOPED(Foo, "list-applications", NULL);
@@ -78,6 +48,32 @@
  * return TRUE;
  *
  * GS_PROFILER_END_SCOPED(Foo);
+ * ```
+ *
+ * The description argument is nullable:
+ *
+ * ```
+ * GS_PROFILER_BEGIN_SCOPED(Flatpak, "list-installed-refs", NULL);
+ * ... list all installed refs ...
+ * GS_PROFILER_END_SCOPED(Flatpak);
+ *```
+ *
+ * A rather common case is to allocate new strings for the Sysprof name
+ * and description. The convenience macro GS_PROFILER_BEGIN_SCOPED_TAKE() is
+ * provided for that:
+ *
+ * ```
+ * GS_PROFILER_BEGIN_SCOPED_TAKE(Foo, g_strdup_printf ("list-installed-refs:%s", name), NULL);
+ * ... list all installed refs ...
+ * GS_PROFILER_END_SCOPED(Foo);
+ *```
+ *
+ * Asynchronous operations might need to track the start and end times in
+ * separate functions. The convenience macros GS_PROFILER_ADD_MARK() and
+ * GS_PROFILER_ADD_MARK_TAKE() allow for passing an independent begin time:
+ *
+ * ```
+ * GS_PROFILER_ADD_MARK(Foo, task->begin_time, "do-something", NULL);
  *```
  *
  * Since: 44
@@ -112,21 +108,6 @@ gs_profiler_auto_trace_end_helper (GsProfilerHead **head)
 		gs_profiler_tracing_end (*head);
 }
 
-#define GS_PROFILER_BEGIN_TAKE(Name, sysprof_name, sysprof_description) \
-	G_STMT_START { \
-	GsProfilerHead GsProfiler##Name = { \
-		.begin_time = SYSPROF_CAPTURE_CURRENT_TIME, \
-		.name = sysprof_name, \
-		.description = sysprof_description, \
-	};
-
-#define GS_PROFILER_BEGIN(Name, sysprof_name, sysprof_description) \
-	GS_PROFILER_BEGIN_TAKE (Name, g_strdup (sysprof_name), g_strdup (sysprof_description))
-
-#define GS_PROFILER_END(Name) \
-	gs_profiler_tracing_end (&GsProfiler##Name); \
-	} G_STMT_END
-
 #define GS_PROFILER_BEGIN_SCOPED_TAKE(Name, sysprof_name, sysprof_description) \
 	G_STMT_START { \
 	GsProfilerHead GsProfiler##Name; \
@@ -160,9 +141,6 @@ gs_profiler_auto_trace_end_helper (GsProfilerHead **head)
 
 #else
 
-#define GS_PROFILER_BEGIN_TAKE(Name, sysprof_name, sysprof_description)
-#define GS_PROFILER_BEGIN(Name, name, description)
-#define GS_PROFILER_END(Name)
 #define GS_PROFILER_BEGIN_SCOPED_TAKE(Name, sysprof_name, sysprof_description) \
 	G_STMT_START {
 #define GS_PROFILER_BEGIN_SCOPED(Name, sysprof_name, sysprof_description) \

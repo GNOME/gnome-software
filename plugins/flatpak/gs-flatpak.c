@@ -3656,9 +3656,9 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		XbNode *component = g_ptr_array_index (components, i);
 		g_autoptr(GsApp) new = NULL;
 
-		GS_PROFILER_BEGIN (FlatpakRefineWildcardCreateAppstreamApp, "Flatpak (create Appstream app)", NULL);
+		GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardCreateAppstreamApp, "Flatpak (create Appstream app)", NULL);
 		new = gs_appstream_create_app (self->plugin, self->silo, component, error);
-		GS_PROFILER_END (FlatpakRefineWildcardCreateAppstreamApp);
+		GS_PROFILER_END_SCOPED (FlatpakRefineWildcardCreateAppstreamApp);
 
 		if (new == NULL)
 			return FALSE;
@@ -3669,9 +3669,9 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 			return FALSE;
 		GS_PROFILER_END_SCOPED (FlatpakRefineWildcardRefineNewApp);
 
-		GS_PROFILER_BEGIN (FlatpakRefineWildcardSubsumeMetadata, "Flatpak (subsume metadata)", NULL);
+		GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardSubsumeMetadata, "Flatpak (subsume metadata)", NULL);
 		gs_app_subsume_metadata (new, app);
-		GS_PROFILER_END (FlatpakRefineWildcardSubsumeMetadata);
+		GS_PROFILER_END_SCOPED (FlatpakRefineWildcardSubsumeMetadata);
 
 		gs_app_list_add (list, new);
 	}
