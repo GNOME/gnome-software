@@ -89,6 +89,7 @@ gs_plugin_job_list_apps_dispose (GObject *object)
 	g_assert (self->n_pending_ops == 0);
 
 	g_clear_object (&self->result_list);
+	g_clear_object (&self->query);
 
 	G_OBJECT_CLASS (gs_plugin_job_list_apps_parent_class)->dispose (object);
 }
