@@ -744,11 +744,11 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 
 			query = gs_app_query_new ("provides-files", provides_files,
 						  "refine-flags", refine_flags,
+						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query,
-								  GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
-								  gs_page_get_list_apps_flags (GS_PAGE (self)));
+								  GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 
 			g_debug ("searching filename: '%s'", search_data->search_filename);
 			gs_plugin_loader_job_process_async (self->plugin_loader,
@@ -776,11 +776,11 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			query = gs_app_query_new ("provides-tag", search_data->search,
 						  "provides-type", search_data->search_provides_type,
 						  "refine-flags", refine_flags,
+						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query,
-								  GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE |
-								  gs_page_get_list_apps_flags (GS_PAGE (self)));
+								  GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 
 			g_debug ("searching what provides: '%s'", search_data->search);
 			gs_plugin_loader_job_process_async (self->plugin_loader,

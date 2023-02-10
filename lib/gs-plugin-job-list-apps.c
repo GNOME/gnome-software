@@ -314,6 +314,7 @@ finish_op (GTask  *task,
 	GsPluginLoader *plugin_loader = g_task_get_task_data (task);
 	g_autoptr(GsAppList) merged_list = NULL;
 	GsPluginRefineFlags refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
+	GsAppQueryLicenseType license_type = GS_APP_QUERY_LICENSE_ANY;
 	g_autoptr(GError) error_owned = g_steal_pointer (&error);
 
 	if (error_owned != NULL && self->saved_error == NULL)
@@ -336,11 +337,13 @@ finish_op (GTask  *task,
 	}
 
 	/* run refine() on each one if required */
-	if (self->query != NULL)
+	if (self->query != NULL) {
 		refine_flags = gs_app_query_get_refine_flags (self->query);
+		license_type = gs_app_query_get_license_type (self->query);
+	}
 
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0 &&
-	    (self->flags & GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED) != 0) {
+	if (!(refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) &&
+	    license_type != GS_APP_QUERY_LICENSE_ANY) {
 		/* Needs the license information when filtering with it */
 		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE;
 	}
@@ -392,6 +395,7 @@ finish_task (GTask     *task,
 	GsAppListFilterFlags dedupe_flags = GS_APP_LIST_FILTER_FLAG_NONE;
 	GsAppListSortFunc sort_func = NULL;
 	gpointer sort_func_data = NULL;
+	GsAppQueryLicenseType license_type = GS_APP_QUERY_LICENSE_ANY;
 	GsAppListFilterFunc filter_func = NULL;
 	gpointer filter_func_data = NULL;
 	guint max_results = 0;
@@ -403,7 +407,10 @@ finish_task (GTask     *task,
 	gs_app_list_filter (merged_list, filter_valid_apps, self);
 	gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
 
-	if ((self->flags & GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED) != 0)
+	if (self->query != NULL)
+		license_type = gs_app_query_get_license_type (self->query);
+
+	if (license_type == GS_APP_QUERY_LICENSE_FOSS)
 		gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
 
 	/* Caller-specified filtering. */

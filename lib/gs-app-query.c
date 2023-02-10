@@ -87,6 +87,7 @@ struct _GsAppQuery
 	GsApp *alternate_of;  /* (nullable) (owned) */
 	gchar *provides_tag;  /* (owned) (nullable) */
 	GsAppQueryProvidesType provides_type;
+	GsAppQueryLicenseType license_type;
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -113,9 +114,10 @@ typedef enum {
 	PROP_ALTERNATE_OF,
 	PROP_PROVIDES_TAG,
 	PROP_PROVIDES_TYPE,
+	PROP_LICENSE_TYPE,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_PROVIDES_TYPE + 1] = { NULL, };
+static GParamSpec *props[PROP_LICENSE_TYPE + 1] = { NULL, };
 
 static void
 gs_app_query_constructed (GObject *object)
@@ -198,6 +200,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_PROVIDES_TYPE:
 		g_value_set_enum (value, self->provides_type);
+		break;
+	case PROP_LICENSE_TYPE:
+		g_value_set_enum (value, self->license_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -338,6 +343,11 @@ gs_app_query_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->provides_type == GS_APP_QUERY_PROVIDES_UNKNOWN);
 		self->provides_type = g_value_get_enum (value);
+		break;
+	case PROP_LICENSE_TYPE:
+		/* Construct only. */
+		g_assert (self->license_type == GS_APP_QUERY_LICENSE_ANY);
+		self->license_type = g_value_get_enum (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -771,6 +781,23 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:license-type:
+	 *
+	 * The type of license the app must be under.
+	 *
+	 * If this is %GS_APP_QUERY_LICENSE_ANY, apps are not filtered by
+	 * their license type.
+	 *
+	 * Since: 44
+	 */
+	props[PROP_LICENSE_TYPE] =
+		g_param_spec_enum ("license-type", "License Type",
+				   "The type of license the app must be under.",
+				   GS_TYPE_APP_QUERY_LICENSE_TYPE, GS_APP_QUERY_LICENSE_ANY,
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -781,6 +808,7 @@ gs_app_query_init (GsAppQuery *self)
 	self->is_featured = GS_APP_QUERY_TRISTATE_UNSET;
 	self->is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	self->provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
+	self->license_type = GS_APP_QUERY_LICENSE_ANY;
 }
 
 /**
@@ -915,7 +943,8 @@ gs_app_query_get_filter_func (GsAppQuery *self,
  * These are the properties which determine the query results, rather than ones
  * which control refining the results (#GsAppQuery:refine-flags,
  * #GsAppQuery:max-results, #GsAppQuery:dedupe-flags, #GsAppQuery:sort-func and
- * its user data, #GsAppQuery:filter-func and its user data).
+ * its user data, #GsAppQuery:filter-func and its user data,
+ * #GsAppQuery:license-type).
  *
  * Returns: number of properties set so they will affect query results
  * Since: 43
@@ -1170,4 +1199,22 @@ gs_app_query_get_provides (GsAppQuery   *self,
 		*out_provides_tag = self->provides_tag;
 
 	return self->provides_type;
+}
+
+/**
+ * gs_app_query_get_license_type:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:license-type.
+ *
+ * Returns: the type of license the app must be under, or
+ *   %GS_APP_QUERY_LICENSE_ANY to not filter by license
+ * Since: 44
+ */
+GsAppQueryLicenseType
+gs_app_query_get_license_type (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_LICENSE_ANY);
+
+	return self->license_type;
 }
