@@ -8,17 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-02-06 23:50+0000\n"
-"PO-Revision-Date: 2023-02-07 22:33+0200\n"
-"Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
+"POT-Creation-Date: 2023-02-10 13:00+0000\n"
+"PO-Revision-Date: 2023-02-12 08:32+0200\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : n==2 ? 1 : n>10 && n%10==0 ? "
-"2 : 3)\n"
-"X-Generator: Gtranslator 42.0\n"
+"2 : 3);\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21
 #: src/org.gnome.Software.desktop.in:3
@@ -190,14 +190,10 @@ msgid "The last update timestamp"
 msgstr "The last update timestamp"
 
 #: data/org.gnome.software.gschema.xml:67
-msgid "The last timestamp when the system was online and got any updates"
-msgstr "The last timestamp when the system was online and got any updates"
-
-#: data/org.gnome.software.gschema.xml:71
 msgid "The age in seconds to verify the upstream screenshot is still valid"
 msgstr "The age in seconds to verify the upstream screenshot is still valid"
 
-#: data/org.gnome.software.gschema.xml:72
+#: data/org.gnome.software.gschema.xml:68
 msgid ""
 "Choosing a larger value will mean less round-trips to the remote server but "
 "updates to the screenshots may take longer to show to the user. A value of 0 "
@@ -207,105 +203,105 @@ msgstr ""
 "updates to the screenshots may take longer to show to the user. A value of 0 "
 "means to never check the server if the image already exists in the cache."
 
-#: data/org.gnome.software.gschema.xml:81
+#: data/org.gnome.software.gschema.xml:77
 msgid "The server to use for application reviews"
 msgstr "The server to use for application reviews"
 
-#: data/org.gnome.software.gschema.xml:85
+#: data/org.gnome.software.gschema.xml:81
 msgid "The minimum karma score for reviews"
 msgstr "The minimum karma score for reviews"
 
-#: data/org.gnome.software.gschema.xml:86
+#: data/org.gnome.software.gschema.xml:82
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Reviews with karma less than this number will not be shown."
 
-#: data/org.gnome.software.gschema.xml:90
+#: data/org.gnome.software.gschema.xml:86
 msgid "A list of official repositories that should not be considered 3rd party"
 msgstr ""
 "A list of official repositories that should not be considered 3rd party"
 
-#: data/org.gnome.software.gschema.xml:94
+#: data/org.gnome.software.gschema.xml:90
 msgid "A list of required repositories that cannot be disabled or removed"
 msgstr "רשימה של מאגרים נפוצים שאי אפשר להשבית או להסיר"
 
-#: data/org.gnome.software.gschema.xml:98
+#: data/org.gnome.software.gschema.xml:94
 msgid "A list of official repositories that should be considered free software"
 msgstr ""
 "A list of official repositories that should be considered free software"
 
-#: data/org.gnome.software.gschema.xml:102
+#: data/org.gnome.software.gschema.xml:98
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 "The licence URL to use when an application should be considered free software"
 
-#: data/org.gnome.software.gschema.xml:106
+#: data/org.gnome.software.gschema.xml:102
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 "Install bundled applications for all users on the system where possible"
 
-#: data/org.gnome.software.gschema.xml:110
+#: data/org.gnome.software.gschema.xml:106
 msgid "Allow access to the Software Repositories dialog"
 msgstr "Allow access to the Software Repositories dialog"
 
-#: data/org.gnome.software.gschema.xml:114
+#: data/org.gnome.software.gschema.xml:110
 msgid "Offer upgrades for pre-releases"
 msgstr "Offer upgrades for pre-releases"
 
-#: data/org.gnome.software.gschema.xml:118
+#: data/org.gnome.software.gschema.xml:114
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr "Show some UI elements informing the user that an app is non-free"
 
-#: data/org.gnome.software.gschema.xml:122
+#: data/org.gnome.software.gschema.xml:118
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr "Show the installed size for apps in the list of installed applications"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:126
+#: data/org.gnome.software.gschema.xml:122
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://en.wikipedia.org/wiki/Proprietary_software'"
 
-#: data/org.gnome.software.gschema.xml:127
+#: data/org.gnome.software.gschema.xml:123
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "The URI that explains nonfree and proprietary software"
 
-#: data/org.gnome.software.gschema.xml:131
+#: data/org.gnome.software.gschema.xml:127
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "swcatalog folder"
 msgstr ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "swcatalog folder"
+
+#: data/org.gnome.software.gschema.xml:131
+msgid ""
+"Install the AppStream files to a system-wide location for all users. If "
+"false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
+"directory"
+msgstr ""
+"Install the AppStream files to a system-wide location for all users. If "
+"false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
+"directory"
 
 #: data/org.gnome.software.gschema.xml:135
 msgid ""
-"Install the AppStream files to a system-wide location for all users. If "
-"false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
-"directory"
+"Priority order of packaging formats to prefer, with more important formats "
+"listed first. An empty array means the default order. Omitted formats are "
+"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
+"snap. The formats can be optionally specified with an origin name, divided "
+"by a colon, for example 'flatpak:flathub'."
 msgstr ""
-"Install the AppStream files to a system-wide location for all users. If "
-"false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
-"directory"
+"Priority order of packaging formats to prefer, with more important formats "
+"listed first. An empty array means the default order. Omitted formats are "
+"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
+"snap. The formats can be optionally specified with an origin name, divided "
+"by a colon, for example 'flatpak:flathub'."
 
 #: data/org.gnome.software.gschema.xml:139
-msgid ""
-"Priority order of packaging formats to prefer, with more important formats "
-"listed first. An empty array means the default order. Omitted formats are "
-"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
-"snap. The formats can be optionally specified with an origin name, divided "
-"by a colon, for example 'flatpak:flathub'."
-msgstr ""
-"Priority order of packaging formats to prefer, with more important formats "
-"listed first. An empty array means the default order. Omitted formats are "
-"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
-"snap. The formats can be optionally specified with an origin name, divided "
-"by a colon, for example 'flatpak:flathub'."
-
-#: data/org.gnome.software.gschema.xml:143
 msgid "The timestamp of the last attempt to remove unused Flatpak runtimes"
 msgstr "The timestamp of the last attempt to remove unused Flatpak runtimes"
 
-#: data/org.gnome.software.gschema.xml:147
+#: data/org.gnome.software.gschema.xml:143
 msgid ""
 "Set to 'true' to show only freely licensed apps and hide any proprietary "
 "apps."
@@ -313,7 +309,7 @@ msgstr ""
 "Set to 'true' to show only freely licensed apps and hide any proprietary "
 "apps."
 
-#: data/org.gnome.software.gschema.xml:154
+#: data/org.gnome.software.gschema.xml:150
 msgid "A string storing the gnome-online-account id used to login"
 msgstr "A string storing the gnome-online-account id used to login"
 
@@ -789,36 +785,42 @@ msgstr "‏%s ‏(%s)"
 msgid "Package"
 msgstr "חבילה"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:452
+#: src/gs-app-addon-row.c:95 src/gs-app-row.c:452
 msgid "Pending"
 msgstr "בהמתנה"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:456 src/gs-details-page.c:368
+#: src/gs-app-addon-row.c:99 src/gs-app-row.c:456 src/gs-details-page.c:368
 msgid "Pending install"
 msgstr "בהמתנה להתקנה"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:460 src/gs-details-page.c:375
+#: src/gs-app-addon-row.c:103 src/gs-app-row.c:460 src/gs-details-page.c:375
 msgid "Pending remove"
 msgstr "בהמתנה להסרה"
 
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:197 src/gs-app-tile.ui:50
-#: src/gs-feature-tile.c:543
-msgctxt "Single app"
-msgid "Installed"
-msgstr "הותקן"
-
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:207 src/gs-details-page.c:361
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:207 src/gs-details-page.c:361
 msgid "Installing"
 msgstr "בהתקנה"
 
-#: src/gs-app-addon-row.c:119
+#: src/gs-app-addon-row.c:111
 msgid "Removing"
 msgstr "בהסרה"
 
+#. TRANSLATORS: button text
+#. TRANSLATORS: button text in the header when an app
+#. * can be installed
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#. TRANSLATORS: update the fw
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:904
+#: src/gs-details-page.c:930 src/gs-details-page.ui:209 src/gs-page.c:352
+#: plugins/packagekit/gs-packagekit-task.c:149
+msgid "_Install"
+msgstr "ה_תקנה"
+
 #. TRANSLATORS: this is button text to remove the app
-#: src/gs-app-addon-row.ui:64 src/gs-details-page.c:1011 src/gs-page.c:524
+#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1011 src/gs-page.c:524
 msgid "_Uninstall"
 msgstr "ה_סרת התקנה"
 
@@ -1408,7 +1410,7 @@ msgid "Device cannot be used during update."
 msgstr "לא נתן להשתמש בהתקן בזמן העדכון."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:337 src/gs-shell-search-provider.c:272
+#: src/gs-app-row.c:337 src/gs-shell-search-provider.c:268
 #, c-format
 msgid "Source: %s"
 msgstr "מקור: %s"
@@ -1418,6 +1420,11 @@ msgstr "מקור: %s"
 #, c-format
 msgid "Renamed from %s"
 msgstr "שונה השם מ־%s"
+
+#: src/gs-app-row.ui:197 src/gs-app-tile.ui:50 src/gs-feature-tile.c:543
+msgctxt "Single app"
+msgid "Installed"
+msgstr "הותקן"
 
 #. Translators: The placeholder is an app name
 #: src/gs-app-translation-dialog.c:67
@@ -1531,7 +1538,7 @@ msgid "Please enter a number from 1 to %u: "
 msgstr "יש למלא מספר מ־1 עד %u: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
-#: lib/gs-cmd.c:275
+#: lib/gs-cmd.c:283
 msgid "Choose an app:"
 msgstr "בחירת יישום:"
 
@@ -2009,18 +2016,6 @@ msgid "Don’t _Warn Again"
 msgstr "לא לה_זהיר שוב"
 
 #. TRANSLATORS: button text
-#. TRANSLATORS: button text in the header when an app
-#. * can be installed
-#. TRANSLATORS: button text in the header when firmware
-#. * can be live-installed
-#. TRANSLATORS: update the fw
-#: src/gs-common.c:303 src/gs-details-page.c:904 src/gs-details-page.c:930
-#: src/gs-details-page.ui:209 src/gs-page.c:352
-#: plugins/packagekit/gs-packagekit-task.c:150
-msgid "_Install"
-msgstr "ה_תקנה"
-
-#. TRANSLATORS: button text
 #: src/gs-common.c:308
 msgid "Enable and _Install"
 msgstr "לאפשר ולה_תקין"
@@ -2288,11 +2283,11 @@ msgid "Other Apps by %s"
 msgstr "יישומים נוספים מאת %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1625
+#: src/gs-details-page.c:1629
 msgid "You need internet access to write a review"
 msgstr "נדרשת גישה לרשת אל מנת לכתוב ביקורת"
 
-#: src/gs-details-page.c:1797 src/gs-details-page.c:1813
+#: src/gs-details-page.c:1801 src/gs-details-page.c:1817
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "לא ניתן למצוא את „%s”"
@@ -2310,7 +2305,7 @@ msgstr "פרטי יישום נטענים…"
 msgid "_Open"
 msgstr "_פתיחה"
 
-#: src/gs-details-page.ui:242 plugins/packagekit/gs-packagekit-task.c:160
+#: src/gs-details-page.ui:242 plugins/packagekit/gs-packagekit-task.c:159
 msgid "_Update"
 msgstr "_עדכון"
 
@@ -4814,7 +4809,7 @@ msgid "Device Firmware"
 msgstr "קושחת התקן"
 
 #: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:72
-#: plugins/packagekit/gs-packagekit-task.c:155
+#: plugins/packagekit/gs-packagekit-task.c:154
 msgid "_Download"
 msgstr "הו_רדה"
 
@@ -5096,7 +5091,7 @@ msgstr "‫הוספה להתקנה של התוסף ‚%s’ נכשלה: %s"
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "‫הוספה להסרה של התוסף ‚%s’ נכשלה: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1415
+#: plugins/flatpak/gs-plugin-flatpak.c:1416
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5320,18 +5315,16 @@ msgstr "עדכון ל־GPU ‏%s"
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
 #: plugins/fwupd/gs-fwupd-app.c:337
-#, fuzzy, c-format
-#| msgid "%s Device Update"
+#, c-format
 msgid "%s Dock Update"
-msgstr "עדכון להתקן %s"
+msgstr "עדכון לתחנת עגינה %s"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
 #: plugins/fwupd/gs-fwupd-app.c:342
-#, fuzzy, c-format
-#| msgid "%s USB Receiver Update"
+#, c-format
 msgid "%s USB Dock Update"
-msgstr "עדכון להתקן USB ‏%s"
+msgstr "עדכון לתחנת עגינה USB ‏%s"
 
 #: plugins/fwupd/gs-plugin-fwupd.c:1244
 msgid "Firmware"
@@ -5345,11 +5338,11 @@ msgstr "תמיכה בשדרוג קושחות"
 msgid "Provides support for firmware upgrades"
 msgstr "מספק תמיכה עבור שדרוג קושחות"
 
-#: plugins/packagekit/gs-packagekit-task.c:148
+#: plugins/packagekit/gs-packagekit-task.c:147
 msgid "Install Unsigned Software?"
 msgstr "להתקין תכנית לא חתומה?"
 
-#: plugins/packagekit/gs-packagekit-task.c:149
+#: plugins/packagekit/gs-packagekit-task.c:148
 msgid ""
 "Software that is to be installed is not signed. It will not be possible to "
 "verify the origin of updates to this software, or whether updates have been "
@@ -5358,11 +5351,11 @@ msgstr ""
 "התכנית המיועדת להתקנה אינה חתומה. לא ניתן יהיה לאמת את מקור עדכוני התכנית "
 "הזאת או האם בוצעה חבלה בעדכונים."
 
-#: plugins/packagekit/gs-packagekit-task.c:153
+#: plugins/packagekit/gs-packagekit-task.c:152
 msgid "Download Unsigned Software?"
 msgstr "להוריד תכנית לא חתומה?"
 
-#: plugins/packagekit/gs-packagekit-task.c:154
+#: plugins/packagekit/gs-packagekit-task.c:153
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with."
@@ -5370,11 +5363,11 @@ msgstr ""
 "עדכונים לא חתומים זמינים. ללא חתימה, לא ניתן יהיה לוודא את מקור העדכון או "
 "האם בוצעה בהם חבלה."
 
-#: plugins/packagekit/gs-packagekit-task.c:158
+#: plugins/packagekit/gs-packagekit-task.c:157
 msgid "Update Unsigned Software?"
 msgstr "לעדכן תכנית לא חתומה?"
 
-#: plugins/packagekit/gs-packagekit-task.c:159
+#: plugins/packagekit/gs-packagekit-task.c:158
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with. "
@@ -5405,6 +5398,9 @@ msgstr "תמיכה ב־Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוקס"
+
+#~ msgid "The last timestamp when the system was online and got any updates"
+#~ msgstr "The last timestamp when the system was online and got any updates"
 
 #~ msgid "Update Preferences"
 #~ msgstr "העדפות עדכונים"
