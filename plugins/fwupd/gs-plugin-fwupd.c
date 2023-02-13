@@ -1030,37 +1030,85 @@ gs_plugin_fwupd_download_finish (GsPluginFwupd  *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-gs_plugin_fwupd_install (GsPluginFwupd                       *self,
-                         GsApp                               *app,
-                         GsPluginAppNeedsUserActionCallback   app_needs_user_action_callback,
-                         gpointer                             app_needs_user_action_data,
-                         GCancellable                        *cancellable,
-                         GError                             **error)
+typedef struct {
+	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
+	gpointer app_needs_user_action_data;
+	GsApp *app;  /* (owned) (not nullable) */
+	GFile *local_file;  /* (owned) (not nullable) */
+	const gchar *device_id;  /* (not nullable) */
+} InstallData;
+
+static void
+install_data_free (InstallData *data)
 {
-	const gchar *device_id;
+	g_clear_object (&data->app);
+	g_clear_object (&data->local_file);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (InstallData, install_data_free)
+
+static void install_install_cb (GObject      *source_object,
+                                GAsyncResult *result,
+                                gpointer      user_data);
+static void install_delete_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+static void install_get_device_cb (GObject      *source_object,
+                                   GAsyncResult *result,
+                                   gpointer      user_data);
+
+static void
+gs_plugin_fwupd_install_async (GsPluginFwupd                      *self,
+                               GsApp                              *app,
+                               GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                               gpointer                            app_needs_user_action_data,
+                               GCancellable                       *cancellable,
+                               GAsyncReadyCallback                 callback,
+                               gpointer                            user_data)
+{
 	FwupdInstallFlags install_flags = 0;
 	GFile *local_file;
-	g_autoptr(FwupdDevice) dev = NULL;
-	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GTask) task = NULL;
+	InstallData *data;
+	g_autoptr(InstallData) data_owned = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fwupd_install_async);
 
 	/* This function assumes that the file has already been downloaded and
 	 * cached at @local_file. */
 	local_file = gs_app_get_local_file (app);
 	if (local_file == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "not enough data for fwupd");
-		return FALSE;
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_FAILED,
+					 "not enough data for fwupd");
+		return;
 	}
 
-	/* limit to single device? */
-	device_id = gs_fwupd_app_get_device_id (app);
-	if (device_id == NULL)
-		device_id = FWUPD_DEVICE_ID_ANY;
+	data = data_owned = g_new0 (InstallData, 1);
+	data->app_needs_user_action_callback = app_needs_user_action_callback;
+	data->app_needs_user_action_data = app_needs_user_action_data;
+	data->app = g_object_ref (app);
+	data->local_file = g_object_ref (local_file);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) install_data_free);
 
-	/* set the last object */
+	/* limit to single device? */
+	data->device_id = gs_fwupd_app_get_device_id (app);
+	if (data->device_id == NULL)
+		data->device_id = FWUPD_DEVICE_ID_ANY;
+
+	/* Store the app pointer for getting status and progress updates from
+	 * the daemon.
+	 *
+	 * FIXME: This only supports one operation in parallel, so progress
+	 * reporting with gs_app_set_progress() will get a little confused if
+	 * there are multiple firmware updates being applied. We need more API
+	 * from libfwupd to improve on this; see
+	 * https://github.com/fwupd/fwupd/issues/5522. */
 	g_set_object (&self->app_current, app);
 
 	/* only offline supported */
@@ -1068,34 +1116,85 @@ gs_plugin_fwupd_install (GsPluginFwupd                       *self,
 		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
 
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-	if (!fwupd_client_install (self->client, device_id,
-				   g_file_peek_path (local_file), install_flags,
-				   cancellable, error)) {
-		gs_plugin_fwupd_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
+
+	fwupd_client_install_async (self->client, data->device_id,
+				    g_file_peek_path (local_file), install_flags,
+				    cancellable,
+				    install_install_cb, g_steal_pointer (&task));
+}
+
+static void
+install_install_cb (GObject      *source_object,
+                    GAsyncResult *result,
+                    gpointer      user_data)
+{
+	FwupdClient *client = FWUPD_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	InstallData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!fwupd_client_install_finish (client, result, &local_error)) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		gs_app_set_state_recover (data->app);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
 
 	/* delete the file from the cache */
-	if (!g_file_delete (local_file, cancellable, &error_local) &&
-	    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
+	g_file_delete_async (data->local_file, G_PRIORITY_DEFAULT, cancellable,
+			     install_delete_cb, g_steal_pointer (&task));
+}
+
+static void
+install_delete_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	GFile *local_file = G_FILE (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginFwupd *self = g_task_get_source_object (task);
+	InstallData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!g_file_delete_finish (local_file, result, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
-	g_clear_error (&error_local);
+	g_clear_error (&local_error);
 
-	/* does the device have an update message */
-	dev = fwupd_client_get_device_by_id (self->client, device_id,
-					     cancellable, &error_local);
+	/* does the device have an update message? */
+	fwupd_client_get_device_by_id_async (self->client,
+					     data->device_id,
+					     cancellable,
+					     install_get_device_cb,
+					     g_steal_pointer (&task));
+}
+
+static void
+install_get_device_cb (GObject      *source_object,
+                       GAsyncResult *result,
+                       gpointer      user_data)
+{
+	FwupdClient *client = FWUPD_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginFwupd *self = g_task_get_source_object (task);
+	InstallData *data = g_task_get_task_data (task);
+	g_autoptr(FwupdDevice) dev = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	dev = fwupd_client_get_device_by_id_finish (client, result, &local_error);
 	if (dev == NULL) {
 		/* NOTE: this is probably entirely fine; some devices do not
 		 * re-enumerate until replugged manually or the machine is
 		 * rebooted -- and the metadata to know that is only available
 		 * in a too-new-to-depend-on fwupd version */
-		g_debug ("failed to find device after install: %s", error_local->message);
+		g_debug ("failed to find device after install: %s", local_error->message);
 	} else {
 		if (fwupd_device_get_update_message (dev) != NULL) {
 			g_autoptr(AsScreenshot) ss = as_screenshot_new ();
@@ -1111,21 +1210,29 @@ gs_plugin_fwupd_install (GsPluginFwupd                       *self,
 			/* caption is required */
 			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
 			as_screenshot_set_caption (ss, fwupd_device_get_update_message (dev), NULL);
-			gs_app_set_action_screenshot (app, ss);
+			gs_app_set_action_screenshot (data->app, ss);
 
 			/* require the dialog */
-			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION);
+			gs_app_add_quirk (data->app, GS_APP_QUIRK_NEEDS_USER_ACTION);
 
-			if (app_needs_user_action_callback != NULL)
-				app_needs_user_action_callback (GS_PLUGIN (self),
-								app,
-								ss,
-								app_needs_user_action_data);
+			if (data->app_needs_user_action_callback != NULL)
+				data->app_needs_user_action_callback (GS_PLUGIN (self),
+								      data->app,
+								      ss,
+								      data->app_needs_user_action_data);
 		}
 	}
 
 	/* success */
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_fwupd_install_finish (GsPluginFwupd  *self,
+                                GAsyncResult   *result,
+                                GError        **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -1244,9 +1351,15 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (!gs_plugin_fwupd_download_finish (self, result, error))
 		return FALSE;
 
+	g_clear_object (&result);
+
 	/* FIXME: Connect #GsPluginAppNeedsUserActionCallback when this function
 	 * is ported to the new #GsPluginJob subclasses. */
-	return gs_plugin_fwupd_install (self, app, NULL, NULL, cancellable, error);
+	gs_plugin_fwupd_install_async (self, app, NULL, NULL, cancellable, async_result_cb, &result);
+	while (result == NULL)
+		g_main_context_iteration (context, TRUE);
+
+	return gs_plugin_fwupd_install_finish (self, result, error);
 }
 
 typedef struct {
@@ -1297,6 +1410,9 @@ static void update_app_download_cb (GObject      *source_object,
 static void update_app_unlock_cb (GObject      *source_object,
                                   GAsyncResult *result,
                                   gpointer      user_data);
+static void update_app_install_cb (GObject      *source_object,
+                                   GAsyncResult *result,
+                                   gpointer      user_data);
 static void finish_update_apps_op (GTask  *task,
                                    GError *error);
 
@@ -1428,11 +1544,26 @@ update_app_unlock_cb (GObject      *source_object,
 	}
 
 	/* update means install */
-	/* FIXME: Make this call async */
-	if (!gs_plugin_fwupd_install (self, app_data->app,
-				      data->app_needs_user_action_callback,
-				      data->app_needs_user_action_data,
-				      cancellable, &local_error)) {
+	gs_plugin_fwupd_install_async (self, app_data->app,
+				       data->app_needs_user_action_callback,
+				       data->app_needs_user_action_data,
+				       cancellable,
+				       update_app_install_cb,
+				       g_steal_pointer (&app_data));
+}
+
+static void
+update_app_install_cb (GObject      *source_object,
+                       GAsyncResult *result,
+                       gpointer      user_data)
+{
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (source_object);
+	g_autoptr(UpdateSingleAppData) app_data = g_steal_pointer (&user_data);
+	GTask *task = app_data->task;
+	UpdateAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_fwupd_install_finish (self, result, &local_error)) {
 		gs_plugin_fwupd_error_convert (&local_error);
 		finish_update_apps_op (task, g_steal_pointer (&local_error));
 		return;
