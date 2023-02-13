@@ -1396,7 +1396,7 @@ async_result_cb (GObject      *source_object,
 
 	g_assert (result_out != NULL && *result_out == NULL);
 	*result_out = g_object_ref (result);
-	g_main_context_wakeup (NULL);
+	g_main_context_wakeup (g_main_context_get_thread_default ());
 }
 
 /* This is called in a #GTask worker thread.
