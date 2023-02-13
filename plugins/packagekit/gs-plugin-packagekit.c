@@ -2134,8 +2134,6 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 	g_autoptr(GError) local_error = NULL;
 	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
 
-	g_return_if_fail (GS_IS_PLUGIN_PACKAGEKIT (source_object));
-
 	list = gs_app_list_new ();
 	if (!gs_plugin_packagekit_add_updates (GS_PLUGIN (self), list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
