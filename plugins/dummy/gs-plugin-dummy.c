@@ -1010,14 +1010,27 @@ update_apps_cb (GObject      *source_object,
 				continue;
 
 			if (!g_str_has_prefix (gs_app_get_id (app), "proxy")) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
 				/* always fail */
 				g_set_error_literal (&local_error,
 						     GS_PLUGIN_ERROR,
 						     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 						     "no network connection is available");
 				gs_utils_error_add_origin_id (&local_error, self->cached_origin);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
+
+				event = gs_plugin_event_new ("app", app,
+							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+							     "error", local_error,
+							     "origin", self->cached_origin,
+							     NULL);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_report_event (plugin, event);
+
+				g_clear_error (&local_error);
+				continue;
 			}
 
 			/* simulate an update for 4 seconds */
