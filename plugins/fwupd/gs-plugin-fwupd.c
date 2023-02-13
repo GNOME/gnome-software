@@ -854,68 +854,180 @@ gs_plugin_fwupd_refresh_metadata_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-gs_plugin_fwupd_download (GsPluginFwupd  *self,
-                          GsApp          *app,
-                          gboolean        interactive,
-                          GCancellable   *cancellable,
-                          GError        **error)
+typedef struct {
+	GsApp *app;  /* (owned) (not nullable) */
+	GFile *local_file;  /* (owned) (not nullable) */
+	gpointer schedule_entry_handle;  /* (nullable) (owned) */
+} DownloadData;
+
+static void
+download_data_free (DownloadData *data)
+{
+	/* Should have been explicitly removed from the scheduler by now. */
+	g_assert (data->schedule_entry_handle == NULL);
+
+	g_clear_object (&data->app);
+	g_clear_object (&data->local_file);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (DownloadData, download_data_free)
+
+static void download_schedule_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data);
+static void download_download_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data);
+static void download_replace_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+
+static void
+gs_plugin_fwupd_download_async (GsPluginFwupd       *self,
+                                GsApp               *app,
+                                gboolean             interactive,
+                                GCancellable        *cancellable,
+                                GAsyncReadyCallback  callback,
+                                gpointer             user_data)
 {
 	GFile *local_file;
+	g_autoptr(GTask) task = NULL;
+	DownloadData *data;
+	g_autoptr(DownloadData) data_owned = NULL;
 	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fwupd_download_async);
 
 	/* not set */
 	local_file = gs_app_get_local_file (app);
 	if (local_file == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "not enough data for fwupd");
-		return FALSE;
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_FAILED,
+					 "not enough data for fwupd");
+		return;
 	}
+
+	data = data_owned = g_new0 (DownloadData, 1);
+	data->app = g_object_ref (app);
+	data->local_file = g_object_ref (local_file);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) download_data_free);
 
 	/* Check the cancellable, since the error return for
 	 * g_file_query_exists() is the same as file-not-exists. */
-	if (g_cancellable_set_error_if_cancelled (cancellable, error))
-		return FALSE;
+	if (g_task_return_error_if_cancelled (task))
+		return;
 
-	/* file does not yet exist */
-	if (!g_file_query_exists (local_file, cancellable)) {
-		const gchar *uri = gs_fwupd_app_get_update_uri (app);
-		gboolean download_success;
-		gpointer schedule_entry_handle = NULL;
-
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-
-		if (!interactive) {
-			/* FIXME: Make this call async */
-			if (!gs_metered_block_on_download_scheduler (gs_metered_build_scheduler_parameters_for_app (app),
-								     &schedule_entry_handle, cancellable, &local_error)) {
-				g_warning ("Failed to block on download scheduler: %s",
-					   local_error->message);
-				g_clear_error (&local_error);
-			}
-		}
-
-		download_success = fwupd_client_download_file (self->client,
-							       uri, local_file,
-							       FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
-							       cancellable,
-							       error);
-
-		/* FIXME: Make this call async */
-		if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &local_error))
-			g_warning ("Failed to remove schedule entry: %s", local_error->message);
-
-		if (!download_success) {
-			gs_plugin_fwupd_error_convert (error);
-			return FALSE;
-		}
+	/* If the file exists already, return early */
+	if (g_file_query_exists (local_file, cancellable)) {
+		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
 
-	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
-	return TRUE;
+	if (!interactive) {
+		gs_metered_block_on_download_scheduler_async (gs_metered_build_scheduler_parameters_for_app (app),
+							      cancellable, download_schedule_cb, g_steal_pointer (&task));
+	} else {
+		download_schedule_cb (NULL, NULL, g_steal_pointer (&task));
+	}
+}
+
+static void
+download_schedule_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginFwupd *self = g_task_get_source_object (task);
+	DownloadData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	const gchar *uri = gs_fwupd_app_get_update_uri (data->app);
+	g_autoptr(GError) local_error = NULL;
+
+	if (result != NULL &&
+	    !gs_metered_block_on_download_scheduler_finish (result, &data->schedule_entry_handle, &local_error)) {
+		g_warning ("Failed to block on download scheduler: %s",
+			   local_error->message);
+		g_clear_error (&local_error);
+	}
+
+	/* Download the firmware contents. */
+	fwupd_client_download_bytes_async (self->client,
+					   uri,
+					   FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
+					   cancellable,
+					   download_download_cb,
+					   g_steal_pointer (&task));
+}
+
+static void
+download_download_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
+{
+	FwupdClient *client = FWUPD_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	DownloadData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	bytes = fwupd_client_download_bytes_finish (client, result, &local_error);
+	if (bytes == NULL) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Now write to the file. */
+	g_file_replace_contents_bytes_async (data->local_file, bytes, NULL, FALSE,
+					     G_FILE_CREATE_NONE,
+					     cancellable,
+					     download_replace_cb,
+					     g_steal_pointer (&task));
+}
+
+static void
+download_replace_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	GFile *local_file = G_FILE (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	DownloadData *data = g_task_get_task_data (task);
+	gboolean download_success;
+	g_autoptr(GError) local_error = NULL;
+
+	download_success = g_file_replace_contents_finish (local_file, result, NULL, &local_error);
+
+	/* Fire this call off into the void, it’s not worth tracking it.
+	 * Don’t pass a cancellable in, as the download may have been cancelled. */
+	if (data->schedule_entry_handle != NULL)
+		gs_metered_remove_from_download_scheduler_async (data->schedule_entry_handle, NULL, NULL, NULL);
+
+	if (!download_success) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_fwupd_download_finish (GsPluginFwupd  *self,
+                                 GAsyncResult   *result,
+                                 GError        **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -1093,6 +1205,18 @@ gs_plugin_fwupd_modify_source_finish (GsPluginFwupd *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+
+	g_assert (result_out != NULL && *result_out == NULL);
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (g_main_context_get_thread_default ());
+}
+
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -1101,6 +1225,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GMainContext) context = g_main_context_new ();
+	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
+	g_autoptr(GAsyncResult) result = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -1110,13 +1237,68 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* Download the file first. */
-	if (!gs_plugin_fwupd_download (self, app, interactive, cancellable, error))
+	gs_plugin_fwupd_download_async (self, app, interactive, cancellable, async_result_cb, &result);
+	while (result == NULL)
+		g_main_context_iteration (context, TRUE);
+
+	if (!gs_plugin_fwupd_download_finish (self, result, error))
 		return FALSE;
 
 	/* FIXME: Connect #GsPluginAppNeedsUserActionCallback when this function
 	 * is ported to the new #GsPluginJob subclasses. */
 	return gs_plugin_fwupd_install (self, app, NULL, NULL, cancellable, error);
 }
+
+typedef struct {
+	/* Input data. */
+	guint n_apps;
+	GsPluginUpdateAppsFlags flags;
+	GsPluginProgressCallback progress_callback;
+	gpointer progress_user_data;
+	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
+	gpointer app_needs_user_action_data;
+
+	/* In-progress data. */
+	guint n_pending_ops;
+	GError *saved_error;  /* (owned) (nullable) */
+} UpdateAppsData;
+
+static void
+update_apps_data_free (UpdateAppsData *data)
+{
+	/* Error should have been propagated by now, and all pending ops completed. */
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppsData, update_apps_data_free)
+
+typedef struct {
+	GTask *task;  /* (owned) */
+	GsApp *app;  /* (owned) */
+	guint index;  /* zero-based */
+} UpdateSingleAppData;
+
+static void
+update_single_app_data_free (UpdateSingleAppData *data)
+{
+	g_clear_object (&data->app);
+	g_clear_object (&data->task);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateSingleAppData, update_single_app_data_free)
+
+static void update_app_download_cb (GObject      *source_object,
+                                    GAsyncResult *result,
+                                    gpointer      user_data);
+static void update_app_unlock_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data);
+static void finish_update_apps_op (GTask  *task,
+                                   GError *error);
 
 static void
 gs_plugin_fwupd_update_apps_async (GsPlugin                           *plugin,
@@ -1133,71 +1315,164 @@ gs_plugin_fwupd_update_apps_async (GsPlugin                           *plugin,
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	UpdateAppsData *data;
+	g_autoptr(UpdateAppsData) data_owned = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fwupd_update_apps_async);
 
+	data = data_owned = g_new0 (UpdateAppsData, 1);
+	data->flags = flags;
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	data->app_needs_user_action_callback = app_needs_user_action_callback;
+	data->app_needs_user_action_data = app_needs_user_action_data;
+	data->n_apps = gs_app_list_length (apps);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) update_apps_data_free);
+
+	/* Start a load of operations in parallel to download the firmware
+	 * updates for all the apps. When each download is complete, start the
+	 * install process for it in parallel with whatever downloads and
+	 * installs are going on for the other apps.
+	 *
+	 * When all installs are finished for all apps, finish_update_apps_op()
+	 * will return success/error for the overall #GTask. */
+	data->n_pending_ops = 1;
+
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
+		g_autoptr(UpdateSingleAppData) app_data = NULL;
 
 		/* only process this app if was created by this plugin */
 		if (!gs_app_has_management_plugin (app, plugin))
 			continue;
 
+		app_data = g_new0 (UpdateSingleAppData, 1);
+		app_data->index = i;
+		app_data->task = g_object_ref (task);
+		app_data->app = g_object_ref (app);
+
+		data->n_pending_ops++;
 		if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
-			/* FIXME: Make this call async */
-			if (!gs_plugin_fwupd_download (self, app, interactive, cancellable, &local_error)) {
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
-			}
-		}
-
-		if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
-			/* locked devices need unlocking, rather than installing */
-			if (gs_fwupd_app_get_is_locked (app)) {
-				const gchar *device_id;
-				device_id = gs_fwupd_app_get_device_id (app);
-				if (device_id == NULL) {
-					g_task_return_new_error (task,
-								 GS_PLUGIN_ERROR,
-								 GS_PLUGIN_ERROR_INVALID_FORMAT,
-								 "not enough data for fwupd unlock");
-					return;
-				}
-
-				/* FIXME: Make this call async */
-				if (!fwupd_client_unlock (self->client, device_id,
-							  cancellable, &local_error)) {
-					gs_plugin_fwupd_error_convert (&local_error);
-					g_task_return_error (task, g_steal_pointer (&local_error));
-					return;
-				}
-
-				continue;
-			}
-
-			/* update means install */
-			/* FIXME: Make this call async */
-			if (!gs_plugin_fwupd_install (self, app,
-						      app_needs_user_action_callback,
-						      app_needs_user_action_data,
-						      cancellable, &local_error)) {
-				gs_plugin_fwupd_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
-			}
-		}
-
-		/* Simple progress reporting. */
-		if (progress_callback != NULL) {
-			progress_callback (GS_PLUGIN (self),
-					   100 * ((gdouble) (i + 1) / gs_app_list_length (apps)),
-					   progress_user_data);
+			gs_plugin_fwupd_download_async (self, app, interactive, cancellable, update_app_download_cb, g_steal_pointer (&app_data));
+		} else {
+			update_app_download_cb (G_OBJECT (self), NULL, g_steal_pointer (&app_data));
 		}
 	}
 
-	g_task_return_boolean (task, TRUE);
+	finish_update_apps_op (task, NULL);
+}
+
+static void
+update_app_download_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data)
+{
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (source_object);
+	g_autoptr(UpdateSingleAppData) app_data = g_steal_pointer (&user_data);
+	GTask *task = app_data->task;
+	UpdateAppsData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (result != NULL &&
+	    !gs_plugin_fwupd_download_finish (self, result, &local_error)) {
+		finish_update_apps_op (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+		/* locked devices need unlocking, rather than installing */
+		if (gs_fwupd_app_get_is_locked (app_data->app)) {
+			const gchar *device_id = gs_fwupd_app_get_device_id (app_data->app);
+
+			if (device_id == NULL) {
+				finish_update_apps_op (task, g_error_new (GS_PLUGIN_ERROR,
+									  GS_PLUGIN_ERROR_INVALID_FORMAT,
+									  "not enough data for fwupd unlock"));
+				return;
+			}
+
+			fwupd_client_unlock_async (self->client, device_id,
+						   cancellable,
+						   update_app_unlock_cb,
+						   g_steal_pointer (&app_data));
+		} else {
+			update_app_unlock_cb (G_OBJECT (self->client), NULL, g_steal_pointer (&app_data));
+		}
+	} else {
+		/* Not applying the update, so finish the operation now. */
+		finish_update_apps_op (task, NULL);
+	}
+}
+
+static void
+update_app_unlock_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
+{
+	FwupdClient *client = FWUPD_CLIENT (source_object);
+	g_autoptr(UpdateSingleAppData) app_data = g_steal_pointer (&user_data);
+	GTask *task = app_data->task;
+	UpdateAppsData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPluginFwupd *self = g_task_get_source_object (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (result != NULL &&
+	    !fwupd_client_unlock_finish (client, result, &local_error)) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		finish_update_apps_op (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* update means install */
+	/* FIXME: Make this call async */
+	if (!gs_plugin_fwupd_install (self, app_data->app,
+				      data->app_needs_user_action_callback,
+				      data->app_needs_user_action_data,
+				      cancellable, &local_error)) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		finish_update_apps_op (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Simple progress reporting. */
+	if (data->progress_callback != NULL) {
+		data->progress_callback (GS_PLUGIN (self),
+					 100 * ((gdouble) (app_data->index + 1) / data->n_apps),
+					 data->progress_user_data);
+	}
+
+	/* App successfully updated. */
+	finish_update_apps_op (task, NULL);
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_update_apps_op (GTask  *task,
+                       GError *error)
+{
+	UpdateAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while updating apps: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops > 0)
+		return;
+
+	/* Get the results of the parallel ops. */
+	if (data->saved_error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->saved_error));
+	else
+		g_task_return_boolean (task, TRUE);
 }
 
 static gboolean
