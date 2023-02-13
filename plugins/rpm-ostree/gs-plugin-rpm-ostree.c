@@ -1387,33 +1387,97 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_update_app (GsPlugin *plugin,
-                      GsApp *app,
-                      GCancellable *cancellable,
-                      GError **error)
+static void update_apps_thread_cb (GTask        *task,
+                                   gpointer      source_object,
+                                   gpointer      task_data,
+                                   GCancellable *cancellable);
+
+static void
+gs_plugin_rpm_ostree_update_apps_async (GsPlugin                           *plugin,
+                                        GsAppList                          *apps,
+                                        GsPluginUpdateAppsFlags             flags,
+                                        GsPluginProgressCallback            progress_callback,
+                                        gpointer                            progress_user_data,
+                                        GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                        gpointer                            app_needs_user_action_data,
+                                        GCancellable                       *cancellable,
+                                        GAsyncReadyCallback                 callback,
+                                        gpointer                            user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
-	GsAppList *related = gs_app_get_related (app);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+
+	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
+						    progress_callback, progress_user_data,
+						    app_needs_user_action_callback, app_needs_user_action_data,
+						    cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_update_apps_async);
+
+	/* Queue a job to update the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				update_apps_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+update_apps_thread_cb (GTask        *task,
+                       gpointer      source_object,
+                       gpointer      task_data,
+                       GCancellable *cancellable)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
+	GsPluginUpdateAppsData *data = task_data;
+	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
+	assert_in_worker (self);
 
-	/* we don't currently don't put all updates in the OsUpdate proxy app */
-	if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY))
-		return trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, cancellable, error);
-
-	/* try to trigger each related app */
-	for (guint i = 0; i < gs_app_list_length (related); i++) {
-		GsApp *app_tmp = gs_app_list_index (related, i);
-		if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, cancellable, error))
-			return FALSE;
+	/* Doing updates is only a case of triggering the deploy of a
+	 * pre-downloaded update, so there’s no need to bother with progress updates. */
+	if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY) {
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
 
-	/* success */
-	return TRUE;
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
+		GsAppList *related = gs_app_get_related (app);
+
+		/* we don't currently put all updates in the OsUpdate proxy app */
+		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
+			if (!trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, cancellable, &local_error)) {
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+
+		/* try to trigger each related app */
+		for (guint j = 0; j < gs_app_list_length (related); j++) {
+			GsApp *app_tmp = gs_app_list_index (related, j);
+
+			if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, cancellable, &local_error)) {
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_rpm_ostree_update_apps_finish (GsPlugin      *plugin,
+                                         GAsyncResult  *result,
+                                         GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -2969,6 +3033,8 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->disable_repository_finish = gs_plugin_rpm_ostree_disable_repository_finish;
 	plugin_class->list_apps_async = gs_plugin_rpm_ostree_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_rpm_ostree_list_apps_finish;
+	plugin_class->update_apps_async = gs_plugin_rpm_ostree_update_apps_async;
+	plugin_class->update_apps_finish = gs_plugin_rpm_ostree_update_apps_finish;
 }
 
 GType

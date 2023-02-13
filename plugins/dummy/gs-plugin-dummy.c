@@ -519,39 +519,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_update_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
-
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
-
-	if (!g_str_has_prefix (gs_app_get_id (app), "proxy")) {
-		/* always fail */
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-				     "no network connection is available");
-		gs_utils_error_add_origin_id (error, self->cached_origin);
-		return FALSE;
-	}
-
-	/* simulate an update for 4 seconds */
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-	for (guint i = 1; i <= 4; ++i) {
-		gs_app_set_progress (app, 25 * i);
-		sleep (1);
-	}
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-	return TRUE;
-}
-
 static gboolean
 refine_app (GsPluginDummy        *self,
             GsApp                *app,
@@ -986,13 +953,116 @@ gs_plugin_dummy_list_distro_upgrades_finish (GsPlugin      *plugin,
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_download_app (GsPlugin *plugin,
-			GsApp *app,
-			GCancellable *cancellable,
-			GError **error)
+static void update_apps_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            gpointer      user_data);
+
+static void
+gs_plugin_dummy_update_apps_async (GsPlugin                           *plugin,
+                                   GsAppList                          *apps,
+                                   GsPluginUpdateAppsFlags             flags,
+                                   GsPluginProgressCallback            progress_callback,
+                                   gpointer                            progress_user_data,
+                                   GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                   gpointer                            app_needs_user_action_data,
+                                   GCancellable                       *cancellable,
+                                   GAsyncReadyCallback                 callback,
+                                   gpointer                            user_data)
 {
-	return gs_plugin_dummy_delay (plugin, app, 5100, cancellable, error);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
+						    progress_callback, progress_user_data,
+						    app_needs_user_action_callback, app_needs_user_action_data,
+						    cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_update_apps_async);
+
+	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD))
+		gs_plugin_dummy_delay_async (plugin, NULL, 5100, cancellable, update_apps_cb, g_steal_pointer (&task));
+	else
+		update_apps_cb (G_OBJECT (plugin), NULL, g_steal_pointer (&task));
+}
+
+static void
+update_apps_cb (GObject      *source_object,
+                GAsyncResult *result,
+                gpointer      user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginUpdateAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (result != NULL &&
+	    !gs_plugin_dummy_delay_finish (plugin, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+		for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+			GsApp *app = gs_app_list_index (data->apps, i);
+
+			/* only process this app if was created by this plugin */
+			if (!gs_app_has_management_plugin (app, plugin))
+				continue;
+
+			if (!g_str_has_prefix (gs_app_get_id (app), "proxy")) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				/* always fail */
+				g_set_error_literal (&local_error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+						     "no network connection is available");
+				gs_utils_error_add_origin_id (&local_error, self->cached_origin);
+
+				event = gs_plugin_event_new ("app", app,
+							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+							     "error", local_error,
+							     "origin", self->cached_origin,
+							     NULL);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_report_event (plugin, event);
+
+				g_clear_error (&local_error);
+				continue;
+			}
+
+			/* simulate an update for 4 seconds */
+			gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+
+			for (guint j = 1; j <= 4; ++j) {
+				gs_app_set_progress (app, 25 * j);
+				sleep (1); /* FIXME: make this async */
+			}
+
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
+			/* Simple progress reporting. */
+			if (data->progress_callback != NULL) {
+				data->progress_callback (GS_PLUGIN (self),
+							 100 * ((gdouble) (i + 1) / gs_app_list_length (data->apps)),
+							 data->progress_user_data);
+			}
+		}
+
+		g_task_return_boolean (task, TRUE);
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
+static gboolean
+gs_plugin_dummy_update_apps_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void refresh_metadata_cb (GObject      *source_object,
@@ -1095,6 +1165,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->refresh_metadata_finish = gs_plugin_dummy_refresh_metadata_finish;
 	plugin_class->list_distro_upgrades_async = gs_plugin_dummy_list_distro_upgrades_async;
 	plugin_class->list_distro_upgrades_finish = gs_plugin_dummy_list_distro_upgrades_finish;
+	plugin_class->update_apps_async = gs_plugin_dummy_update_apps_async;
+	plugin_class->update_apps_finish = gs_plugin_dummy_update_apps_finish;
 }
 
 GType

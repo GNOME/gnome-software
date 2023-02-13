@@ -17,7 +17,7 @@
  * scheduler to control when, and in which order, large downloads happen on
  * the system.
  *
- * All large downloads from gs_plugin_download() or gs_plugin_download_app()
+ * All large downloads from #GsPlugin.update_apps_async()
  * calls should be scheduled using Mogwai, which will notify gnome-software
  * when those downloads can start and stop, according to system policy.
  *

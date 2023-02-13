@@ -646,8 +646,6 @@ gs_app_func (void)
 	/* check pending action */
 	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
 	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_pending_action (app, GS_PLUGIN_ACTION_UPDATE);
-	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UPDATE);
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
 	gs_app_set_state_recover (app);

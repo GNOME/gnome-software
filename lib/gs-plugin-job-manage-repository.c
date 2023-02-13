@@ -271,6 +271,7 @@ finish_op (GTask  *task,
 		g_task_return_error (task, g_steal_pointer (&self->saved_error));
 	else
 		g_task_return_boolean (task, TRUE);
+	g_signal_emit_by_name (G_OBJECT (self), "completed");
 }
 
 static gboolean

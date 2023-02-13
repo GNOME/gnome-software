@@ -76,6 +76,7 @@ struct _GsPluginLoader
 	gulong			 network_available_notify_handler;
 	gulong			 network_metered_notify_handler;
 
+	GsJobManager		*job_manager;  /* (owned) (not nullable) */
 	GsCategoryManager	*category_manager;
 	GsOdrsProvider		*odrs_provider;  /* (owned) (nullable) */
 
@@ -230,8 +231,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	switch (gs_plugin_job_get_action (helper->plugin_job)) {
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
-	case GS_PLUGIN_ACTION_UPDATE:
-	case GS_PLUGIN_ACTION_DOWNLOAD:
 		{
 			GsApp *app;
 			GsAppList *list;
@@ -602,32 +601,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_UPDATE:
-		if (g_strcmp0 (helper->function_name, "gs_plugin_update_app") == 0) {
-			GsPluginActionFunc plugin_func = func;
-			ret = plugin_func (plugin, app, cancellable, &error_local);
-		} else if (g_strcmp0 (helper->function_name, "gs_plugin_update") == 0) {
-			GsPluginUpdateFunc plugin_func = func;
-			ret = plugin_func (plugin, list, cancellable, &error_local);
-		} else {
-			g_critical ("function_name %s invalid for %s",
-				    helper->function_name,
-				    gs_plugin_action_to_string (action));
-		}
-		break;
-	case GS_PLUGIN_ACTION_DOWNLOAD:
-		if (g_strcmp0 (helper->function_name, "gs_plugin_download_app") == 0) {
-			GsPluginActionFunc plugin_func = func;
-			ret = plugin_func (plugin, app, cancellable, &error_local);
-		} else if (g_strcmp0 (helper->function_name, "gs_plugin_download") == 0) {
-			GsPluginUpdateFunc plugin_func = func;
-			ret = plugin_func (plugin, list, cancellable, &error_local);
-		} else {
-			g_critical ("function_name %s invalid for %s",
-				    helper->function_name,
-				    gs_plugin_action_to_string (action));
-		}
-		break;
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
@@ -2511,6 +2484,7 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&plugin_loader->network_monitor);
 	g_clear_object (&plugin_loader->settings);
 	g_clear_object (&plugin_loader->pending_apps);
+	g_clear_object (&plugin_loader->job_manager);
 	g_clear_object (&plugin_loader->category_manager);
 	g_clear_object (&plugin_loader->odrs_provider);
 	g_clear_object (&plugin_loader->setup_complete_cancellable);
@@ -2726,6 +2700,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 							     (GEqualFunc) as_utils_data_id_equal,
 							     g_free,
 							     (GDestroyNotify) g_object_unref);
+
+	/* get the job manager */
+	plugin_loader->job_manager = gs_job_manager_new ();
 
 	/* get the category manager */
 	plugin_loader->category_manager = gs_category_manager_new ();
@@ -3047,77 +3024,6 @@ gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
 /******************************************************************************/
 
 static void
-generic_update_cancelled_cb (GCancellable *cancellable, gpointer data)
-{
-	GCancellable *app_cancellable = G_CANCELLABLE (data);
-	g_cancellable_cancel (app_cancellable);
-}
-
-static gboolean
-gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
-				 GsPluginLoaderHelper *helper,
-				 GCancellable *cancellable,
-				 GError **error)
-{
-	guint cancel_handler_id = 0;
-	GsAppList *list;
-
-	/* run each plugin, per-app version */
-	list = gs_plugin_job_get_list (helper->plugin_job);
-	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
-		GsPluginActionFunc plugin_app_func = NULL;
-		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
-		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
-			gs_utils_error_convert_gio (error);
-			return FALSE;
-		}
-		plugin_app_func = gs_plugin_get_symbol (plugin, helper->function_name);
-		if (plugin_app_func == NULL)
-			continue;
-
-		/* for each app */
-		for (guint j = 0; j < gs_app_list_length (list); j++) {
-			GCancellable *app_cancellable;
-			GsApp *app = gs_app_list_index (list, j);
-			gboolean ret;
-			g_autoptr(GError) error_local = NULL;
-
-			/* if the whole operation should be cancelled */
-			if (g_cancellable_set_error_if_cancelled (cancellable, error))
-				return FALSE;
-
-			/* already installed? */
-			if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
-				continue;
-
-			/* make sure that the app update is cancelled when the whole op is cancelled */
-			app_cancellable = gs_app_get_cancellable (app);
-			cancel_handler_id = g_cancellable_connect (cancellable,
-								   G_CALLBACK (generic_update_cancelled_cb),
-								   g_object_ref (app_cancellable),
-								   g_object_unref);
-
-			gs_plugin_job_set_app (helper->plugin_job, app);
-			ret = plugin_app_func (plugin, app, app_cancellable, &error_local);
-			g_cancellable_disconnect (cancellable, cancel_handler_id);
-
-			if (!ret) {
-				if (!gs_plugin_error_handle_failure (helper,
-								     plugin,
-								     error_local,
-								     error)) {
-					return FALSE;
-				}
-			}
-		}
-		helper->anything_ran = TRUE;
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-	}
-
-	return TRUE;
-}
-
-static void
 gs_plugin_loader_inherit_list_props (GsAppList *des_list,
 				     GsAppList *src_list)
 {
@@ -3174,6 +3080,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			}
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 
@@ -3203,25 +3110,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	}
 
-	/* run per-app version */
-	if (action == GS_PLUGIN_ACTION_UPDATE) {
-		helper->function_name = "gs_plugin_update_app";
-		if (!gs_plugin_loader_generic_update (plugin_loader, helper,
-						      cancellable, &error)) {
-			gs_utils_error_convert_gio (&error);
-			g_task_return_error (task, error);
-			return;
-		}
-	} else if (action == GS_PLUGIN_ACTION_DOWNLOAD) {
-		helper->function_name = "gs_plugin_download_app";
-		if (!gs_plugin_loader_generic_update (plugin_loader, helper,
-						      cancellable, &error)) {
-			gs_utils_error_convert_gio (&error);
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
 	/* remove from pending list */
 	if (add_to_pending_array) {
 		GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
@@ -3247,10 +3135,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	switch (action) {
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_INSTALL:
-	case GS_PLUGIN_ACTION_DOWNLOAD:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_REMOVE:
-	case GS_PLUGIN_ACTION_UPDATE:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
 				     GS_PLUGIN_ERROR,
@@ -3258,6 +3144,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 				     "no plugin could handle %s",
 				     gs_plugin_action_to_string (action));
 			g_task_return_error (task, error);
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 		break;
@@ -3319,6 +3206,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		if (new_list == NULL) {
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, g_steal_pointer (&error));
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 
@@ -3367,6 +3255,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		if (new_list == NULL) {
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, g_steal_pointer (&error));
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 
@@ -3406,6 +3295,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			if (!gs_plugin_job_get_propagate_error (helper->plugin_job))
 				gs_plugin_loader_claim_job_error (plugin_loader, NULL, helper->plugin_job, error_local);
 			g_task_return_error (task, g_steal_pointer (&error_local));
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 		if (gs_app_list_length (list) > 1) {
@@ -3428,6 +3318,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+	gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 }
 
 static void
@@ -3530,7 +3421,8 @@ run_job_cb (GObject      *source_object,
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
 		return;
 	} else if (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job)) {
+		   GS_IS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job) ||
+		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job)) {
 		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
 		 * pointer on success, thus return it. */
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
@@ -3633,6 +3525,8 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 						(GDestroyNotify) cancellable_data_free);
 		}
 	}
+
+	gs_job_manager_add_job (plugin_loader->job_manager, plugin_job);
 
 	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 	g_task_set_name (task, task_name);
@@ -3764,7 +3658,6 @@ job_process_cb (GTask *task)
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:
-	case GS_PLUGIN_ACTION_UPDATE:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 		/* these actions must be performed by the thread pool because we
 		 * want to limit the number of them running in parallel */
@@ -4028,6 +3921,23 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 	if (!g_thread_pool_set_max_threads (plugin_loader->queued_ops_pool, max_ops, &error))
 		g_warning ("Failed to set the maximum number of ops in parallel: %s",
 			   error->message);
+}
+
+/**
+ * gs_plugin_loader_get_job_manager:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the job manager singleton.
+ *
+ * Returns: (transfer none): a job manager
+ * Since: 44
+ */
+GsJobManager *
+gs_plugin_loader_get_job_manager (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->job_manager;
 }
 
 /**

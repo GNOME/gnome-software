@@ -50,9 +50,11 @@ typedef struct {
 	GCancellable	*cancellable;
 	gulong		 notify_quirk_id;
 	GtkWidget	*dialog_install;
+	GsPluginJob	*job;  /* (nullable) (unowned) */
 	GsPluginAction	 action;
 	GsShellInteraction interaction;
 	gboolean	 propagate_error;
+	gulong		 app_needs_user_action_id;
 } GsPageHelper;
 
 static void
@@ -60,6 +62,8 @@ gs_page_helper_free (GsPageHelper *helper)
 {
 	if (helper->notify_quirk_id > 0)
 		g_signal_handler_disconnect (helper->app, helper->notify_quirk_id);
+	if (helper->app_needs_user_action_id != 0)
+		g_signal_handler_disconnect (helper->job, helper->app_needs_user_action_id);
 	if (helper->app != NULL)
 		g_object_unref (helper->app);
 	if (helper->page != NULL)
@@ -131,12 +135,18 @@ gs_page_app_installed_cb (GObject *source,
 	}
 	if (!ret) {
 		if (helper->propagate_error) {
-			gs_plugin_loader_claim_error (plugin_loader,
-						      NULL,
-						      helper->action,
-						      helper->app,
-						      helper->interaction == GS_SHELL_INTERACTION_FULL,
-						      error);
+			if (helper->job != NULL)
+				gs_plugin_loader_claim_job_error (plugin_loader,
+								  NULL,
+								  helper->job,
+								  error);
+			else
+				gs_plugin_loader_claim_error (plugin_loader,
+							      NULL,
+							      helper->action,
+							      helper->app,
+							      helper->interaction == GS_SHELL_INTERACTION_FULL,
+							      error);
 		} else {
 			g_warning ("failed to install %s: %s", gs_app_get_id (helper->app), error->message);
 		}
@@ -301,17 +311,21 @@ gs_page_update_app_response_cb (AdwMessageDialog *dialog,
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	/* not agreed */
 	if (g_strcmp0 (response, "install") != 0)
 		return;
 
 	g_debug ("update %s", gs_app_get_id (helper->app));
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-					 "interactive", TRUE,
-					 "propagate-error", helper->propagate_error,
-					 "app", helper->app,
-					 NULL);
+
+	list = gs_app_list_new ();
+	gs_app_list_add (list, helper->app);
+
+	plugin_job = gs_plugin_job_update_apps_new (list,
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
+
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,
 					    helper->cancellable,
@@ -329,9 +343,52 @@ gs_page_notify_quirk_cb (GsApp *app, GParamSpec *pspec, GsPageHelper *helper)
 								    GS_APP_QUIRK_NEEDS_USER_ACTION));
 }
 
-static void
-gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
+static gboolean update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
+                                                 GsApp                 *app,
+                                                 AsScreenshot          *action_screenshot,
+                                                 gpointer               user_data);
+
+void
+gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	GsPageHelper *helper;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* non-firmware apps do not have to be prepared */
+	helper = g_slice_new0 (GsPageHelper);
+	helper->app = g_object_ref (app);
+	helper->page = g_object_ref (page);
+	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->propagate_error = TRUE;
+
+	/* generic fallback */
+	list = gs_app_list_new ();
+	gs_app_list_add (list, app);
+
+	plugin_job = gs_plugin_job_update_apps_new (list,
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
+	helper->job = plugin_job;
+
+	helper->app_needs_user_action_id =
+		g_signal_connect (plugin_job, "app-needs-user-action",
+				  G_CALLBACK (update_app_needs_user_action_cb), helper);
+
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    helper->cancellable,
+					    gs_page_app_installed_cb,
+					    helper);
+}
+
+static gboolean
+update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
+                                 GsApp                 *app,
+                                 AsScreenshot          *action_screenshot,
+                                 gpointer               user_data)
+{
+	GsPageHelper *helper = user_data;
 	GtkWidget *dialog;
 	g_autoptr(SoupSession) soup_session = NULL;
 	GtkWidget *ssimg;
@@ -339,10 +396,12 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	g_autofree gchar *escaped = NULL;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 
+	g_assert (helper->app == app);
+
 	/* TRANSLATORS: this is a prompt message, and
 	 * '%s' is an app summary, e.g. 'GNOME Clocks' */
 	heading = g_strdup_printf (_("Prepare %s"), gs_app_get_name (helper->app));
-	escaped = g_markup_escape_text (as_screenshot_get_caption (ss), -1);
+	escaped = g_markup_escape_text (as_screenshot_get_caption (action_screenshot), -1);
 	dialog = adw_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW)),
 					 heading, escaped);
 	adw_message_dialog_set_body_use_markup (ADW_MESSAGE_DIALOG (dialog), TRUE);
@@ -364,7 +423,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	/* load screenshot */
 	soup_session = gs_build_soup_session ();
 	ssimg = gs_screenshot_image_new (soup_session);
-	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
+	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), action_screenshot);
 	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg),
 					helper->cancellable);
@@ -376,43 +435,10 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_page_update_app_response_cb), helper);
 	gs_shell_modal_dialog_present (priv->shell, GTK_WINDOW (dialog));
-}
 
-void
-gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
-{
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	GsPageHelper *helper;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	/* non-firmware apps do not have to be prepared */
-	helper = g_slice_new0 (GsPageHelper);
-	helper->action = GS_PLUGIN_ACTION_UPDATE;
-	helper->app = g_object_ref (app);
-	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
-	helper->propagate_error = TRUE;
-
-	/* tell the user what they have to do */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE &&
-	    gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION)) {
-		AsScreenshot *ss = gs_app_get_action_screenshot (app);
-		if (ss != NULL && as_screenshot_get_caption (ss) != NULL) {
-			gs_page_needs_user_action (helper, ss);
-			return;
-		}
-	}
-
-	/* generic fallback */
-	plugin_job = gs_plugin_job_newv (helper->action,
-					 "interactive", TRUE,
-					 "propagate-error", helper->propagate_error,
-					 "app", app,
-					 NULL);
-	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
-					    helper->cancellable,
-					    gs_page_app_installed_cb,
-					    helper);
+	/* Cancel the job to allow us to wait for the user to interact with the
+	 * dialogue. It’ll be rescheduled in gs_page_update_app_response_cb() */
+	return FALSE;
 }
 
 static void

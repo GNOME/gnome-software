@@ -420,10 +420,26 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	return g_steal_pointer (&n);
 }
 
+typedef struct {
+	GsUpdateMonitor *monitor;  /* (owned) */
+	GsPluginJob *job;  /* (owned) */
+} UpdateAppsData;
+
 static void
-update_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
+update_apps_data_free (UpdateAppsData *data)
 {
-	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
+	g_clear_object (&data->monitor);
+	g_clear_object (&data->job);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppsData, update_apps_data_free)
+
+static void
+update_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
+{
+	g_autoptr(UpdateAppsData) data = g_steal_pointer (&user_data);
+	GsUpdateMonitor *monitor = data->monitor;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -431,12 +447,10 @@ update_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* get result */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		gs_plugin_loader_claim_error (plugin_loader,
-					      NULL,
-					      GS_PLUGIN_ACTION_UPDATE,
-					      NULL,
-					      TRUE,
-					      error);
+		gs_plugin_loader_claim_job_error (plugin_loader,
+						  NULL,
+						  data->job,
+						  error);
 		return;
 	}
 
@@ -463,9 +477,10 @@ _should_auto_update (GsApp *app)
 }
 
 static void
-download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
+download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 {
-	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
+	g_autoptr(UpdateAppsData) data = g_steal_pointer (&user_data);
+	GsUpdateMonitor *monitor = data->monitor;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -475,12 +490,10 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* get result */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		gs_plugin_loader_claim_error (plugin_loader,
-					      NULL,
-					      GS_PLUGIN_ACTION_DOWNLOAD,
-					      NULL,
-					      TRUE,
-					      error);
+		gs_plugin_loader_claim_job_error (plugin_loader,
+						  NULL,
+						  data->job,
+						  error);
 		return;
 	}
 
@@ -499,15 +512,15 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* install any apps that can be installed LIVE */
 	if (gs_app_list_length (update_online) > 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-						 "list", update_online,
-						 "propagate-error", TRUE,
-						 NULL);
+
+		plugin_job = gs_plugin_job_update_apps_new (update_online,
+							    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
+		gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
 						    monitor->update_cancellable,
 						    update_finished_cb,
-						    monitor);
+						    g_steal_pointer (&data));
 	}
 
 	/* show a notification for offline updates */
@@ -516,9 +529,9 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 }
 
 static void
-get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
+get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 {
-	g_autoptr(DownloadUpdatesData) download_updates_data = (DownloadUpdatesData *) data;
+	g_autoptr(DownloadUpdatesData) download_updates_data = (DownloadUpdatesData *) user_data;
 	GsUpdateMonitor *monitor = download_updates_data->monitor;
 	guint64 security_timestamp = 0;
 	guint64 security_timestamp_old = 0;
@@ -570,21 +583,26 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	    (security_timestamp_old != security_timestamp ||
 	    check_if_timestamp_more_than_days_ago (monitor, "install-timestamp", 14))) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		g_autoptr(UpdateAppsData) data = NULL;
 
 		/* download any updates; individual plugins are responsible for deciding
 		 * whether it’s appropriate to unconditionally download the updates, or
 		 * to schedule the download in accordance with the user’s metered data
 		 * preferences */
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
-						 "list", apps,
-						 "propagate-error", TRUE,
-						 NULL);
+		plugin_job = gs_plugin_job_update_apps_new (apps,
+							    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY);
+		gs_plugin_job_set_propagate_error (plugin_job, TRUE);
+
+		data = g_new0 (UpdateAppsData, 1);
+		data->monitor = g_object_ref (monitor);
+		data->job = g_object_ref (plugin_job);
+
 		g_debug ("Getting updates");
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
 						    monitor->refresh_cancellable,
 						    download_finished_cb,
-						    monitor);
+						    g_steal_pointer (&data));
 	} else {
 		g_autoptr(GsAppList) update_online = NULL;
 		g_autoptr(GsAppList) update_offline = NULL;
@@ -610,17 +628,22 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 		if (should_download && gs_app_list_length (update_online) > 0) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			g_autoptr(UpdateAppsData) data = NULL;
 
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
-							 "list", update_online,
-							 "propagate-error", TRUE,
-							 NULL);
+			plugin_job = gs_plugin_job_update_apps_new (update_online,
+								    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY);
+			gs_plugin_job_set_propagate_error (plugin_job, TRUE);
+
+			data = g_new0 (UpdateAppsData, 1);
+			data->monitor = g_object_ref (monitor);
+			data->job = g_object_ref (plugin_job);
+
 			g_debug ("Getting %u online updates", gs_app_list_length (update_online));
 			gs_plugin_loader_job_process_async (monitor->plugin_loader,
 							    plugin_job,
 							    monitor->refresh_cancellable,
 							    download_finished_cb,
-							    monitor);
+							    g_steal_pointer (&data));
 		}
 
 		if (should_download)

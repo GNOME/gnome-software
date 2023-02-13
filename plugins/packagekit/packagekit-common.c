@@ -506,9 +506,8 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	 * repository, on the order of 400 or 700 apps */
 	source_ids = gs_app_get_source_ids (app);
 	for (j = 0; j < source_ids->len; j++) {
-		#ifdef HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE
 		guint64 download_sz;
-		#endif
+
 		package_id = g_ptr_array_index (source_ids, j);
 		details = g_hash_table_lookup (details_collection, package_id);
 		if (details == NULL)
@@ -534,7 +533,6 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 			                        pk_details_get_description (details));
 		}
 		install_size += pk_details_get_size (details);
-		#ifdef HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE
 		download_sz = pk_details_get_download_size (details);
 
 		/* If the package is already prepared as part of an offline
@@ -542,12 +540,7 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 		if (download_sz != G_MAXUINT64 &&
 		    !g_hash_table_contains (prepared_updates, package_id))
 			download_size += download_sz;
-		#endif
 	}
-
-	#ifndef HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE
-	download_size = install_size;
-	#endif
 
 	/* the size is the size of all sources */
 	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE) {

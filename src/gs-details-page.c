@@ -242,18 +242,25 @@ gs_details_page_set_state (GsDetailsPage *self,
 }
 
 static gboolean
-app_has_pending_action (GsApp *app)
+gs_details_page_app_has_pending_action (GsDetailsPage *self)
 {
+	GsJobManager *job_manager = gs_plugin_loader_get_job_manager (self->plugin_loader);
+	g_autoptr(GPtrArray) pending_jobs_for_app = NULL;  /* (element-type GsPluginJob) */
+	GsAppState app_state = gs_app_get_state (self->app);
+
 	/* sanitize the pending state change by verifying we're in one of the
 	 * expected states */
-	if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE &&
-	    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE &&
-	    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE &&
-	    gs_app_get_state (app) != GS_APP_STATE_QUEUED_FOR_INSTALL)
+	if (app_state != GS_APP_STATE_AVAILABLE &&
+	    app_state != GS_APP_STATE_UPDATABLE_LIVE &&
+	    app_state != GS_APP_STATE_UPDATABLE &&
+	    app_state != GS_APP_STATE_QUEUED_FOR_INSTALL)
 		return FALSE;
 
-	return (gs_app_get_pending_action (app) != GS_PLUGIN_ACTION_UNKNOWN) ||
-	       (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL);
+	pending_jobs_for_app = gs_job_manager_get_pending_jobs_for_app (job_manager, self->app);
+
+	return (gs_app_get_pending_action (self->app) != GS_PLUGIN_ACTION_UNKNOWN) ||
+	       (gs_app_get_state (self->app) == GS_APP_STATE_QUEUED_FOR_INSTALL) ||
+	       pending_jobs_for_app->len > 0;
 }
 
 static void
@@ -319,6 +326,7 @@ gs_details_page_switch_to (GsPage *page)
 static void
 gs_details_page_refresh_progress (GsDetailsPage *self)
 {
+	GsJobManager *job_manager = gs_plugin_loader_get_job_manager (self->plugin_loader);
 	guint percentage;
 	GsAppState state;
 
@@ -341,7 +349,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), FALSE);
 		break;
 	}
-	if (app_has_pending_action (self->app)) {
+	if (gs_details_page_app_has_pending_action (self)) {
 		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), TRUE);
 		gtk_widget_set_sensitive (GTK_WIDGET (self->button_cancel),
 					  !g_cancellable_is_cancelled (self->app_cancellable) &&
@@ -379,26 +387,23 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->label_progress_status, FALSE);
 		break;
 	}
-	if (app_has_pending_action (self->app)) {
+	if (gs_details_page_app_has_pending_action (self)) {
 		GsPluginAction action = gs_app_get_pending_action (self->app);
 		gtk_widget_set_visible (self->label_progress_status, TRUE);
-		switch (action) {
-		case GS_PLUGIN_ACTION_INSTALL:
+
+		if (action == GS_PLUGIN_ACTION_INSTALL) {
 			gtk_label_set_label (GTK_LABEL (self->label_progress_status),
 					     /* TRANSLATORS: This is a label on top of the app's progress
 					      * bar to inform the user that the app should be installed soon */
 					     _("Pending installation…"));
-			break;
-		case GS_PLUGIN_ACTION_UPDATE:
-		case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
+		} else if (gs_job_manager_app_has_pending_job_type (job_manager, self->app, GS_TYPE_PLUGIN_JOB_UPDATE_APPS) ||
+			   action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD) {
 			gtk_label_set_label (GTK_LABEL (self->label_progress_status),
 					     /* TRANSLATORS: This is a label on top of the app's progress
 					      * bar to inform the user that the app should be updated soon */
 					     _("Pending update…"));
-			break;
-		default:
+		} else {
 			gtk_widget_set_visible (self->label_progress_status, FALSE);
-			break;
 		}
 	}
 
@@ -436,7 +441,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gs_progress_button_set_progress (self->button_cancel, 0);
 		break;
 	}
-	if (app_has_pending_action (self->app)) {
+	if (gs_details_page_app_has_pending_action (self)) {
 		gs_progress_button_set_progress (self->button_cancel, 0);
 		gs_progress_button_set_show_progress (self->button_cancel, TRUE);
 	}
@@ -997,7 +1002,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		}
 	}
 
-	if (app_has_pending_action (self->app)) {
+	if (gs_details_page_app_has_pending_action (self)) {
 		gtk_widget_set_visible (self->button_install, FALSE);
 		gtk_widget_set_visible (self->button_update, FALSE);
 		gtk_widget_set_visible (self->button_details_launch, FALSE);

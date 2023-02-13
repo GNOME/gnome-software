@@ -28,29 +28,6 @@ const gchar * const allowlist[] = {
 
 static guint _status_changed_cnt = 0;
 
-typedef struct {
-	GError *error;
-	GMainLoop *loop;
-} GsDummyTestHelper;
-
-static GsDummyTestHelper *
-gs_dummy_test_helper_new (void)
-{
-        return g_new0 (GsDummyTestHelper, 1);
-}
-
-static void
-gs_dummy_test_helper_free (GsDummyTestHelper *helper)
-{
-	if (helper->error != NULL)
-		g_error_free (helper->error);
-	if (helper->loop != NULL)
-		g_main_loop_unref (helper->loop);
-	g_free (helper);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsDummyTestHelper, gs_dummy_test_helper_free)
-
 static void
 gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 				    GsApp *app,
@@ -103,6 +80,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GPtrArray) events = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginEvent) event = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsPlugin *plugin;
@@ -116,9 +94,11 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-					 "app", app,
-					 NULL);
+
+	list = gs_app_list_new ();
+	gs_app_list_add (list, app);
+
+	plugin_job = gs_plugin_job_update_apps_new (list, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -598,16 +578,15 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-plugin_job_action_cb (GObject *source,
-		      GAsyncResult *res,
-		      gpointer user_data)
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
 {
-      GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-      GsDummyTestHelper *helper = (GsDummyTestHelper *) user_data;
+	GAsyncResult **result_out = user_data;
 
-      gs_plugin_loader_job_action_finish (plugin_loader, res, &helper->error);
-      if (helper->loop != NULL)
-              g_main_loop_quit (helper->loop);
+	g_assert (result_out != NULL && *result_out == NULL);
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (g_main_context_get_thread_default ());
 }
 
 static void
@@ -622,9 +601,10 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job2 = NULL;
 	g_autoptr(GsPluginJob) plugin_job3 = NULL;
 	g_autoptr(GMainContext) context = NULL;
-	g_autoptr(GsDummyTestHelper) helper1 = gs_dummy_test_helper_new ();
-	g_autoptr(GsDummyTestHelper) helper2 = gs_dummy_test_helper_new ();
-	g_autoptr(GsDummyTestHelper) helper3 = gs_dummy_test_helper_new ();
+	g_autoptr(GAsyncResult) result1 = NULL;
+	g_autoptr(GAsyncResult) result2 = NULL;
+	g_autoptr(GAsyncResult) result3 = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -633,9 +613,9 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	/* get the updates list */
 	plugin_job1 = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
 							      GS_PLUGIN_REFINE_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job1, NULL, &helper3->error);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job1, NULL, &local_error);
 	gs_test_flush_main_context ();
-	g_assert_no_error (helper3->error);
+	g_assert_no_error (local_error);
 	g_assert (list != NULL);
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	app1 = gs_app_list_index (list, 0);
@@ -657,7 +637,6 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app3, GS_APP_STATE_UPDATABLE_LIVE);
 
 	context = g_main_context_new ();
-	helper3->loop = g_main_loop_new (context, FALSE);
 	g_main_context_push_thread_default (context);
 
 	/* call a few operations at the "same time" */
@@ -670,8 +649,8 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job1,
 					    NULL,
-					    plugin_job_action_cb,
-					    helper1);
+					    async_result_cb,
+					    &result1);
 
 	/* install an app */
 	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
@@ -680,35 +659,35 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job2,
 					    NULL,
-					    plugin_job_action_cb,
-					    helper2);
+					    async_result_cb,
+					    &result2);
 
 	/* update an app */
-	plugin_job3 = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-					  "app", app3,
-					  NULL);
+	list = gs_app_list_new ();
+	gs_app_list_add (list, app3);
+	plugin_job3 = gs_plugin_job_update_apps_new (list, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job3,
 					    NULL,
-					    plugin_job_action_cb,
-					    helper3);
+					    async_result_cb,
+					    &result3);
 
-	/* since we have only 1 parallel installation op possible,
-	 * verify the last operations are pending */
-	g_assert_cmpint (gs_app_get_state (app2), ==, GS_APP_STATE_QUEUED_FOR_INSTALL);
-	g_assert_cmpint (gs_app_get_pending_action (app2), ==, GS_PLUGIN_ACTION_INSTALL);
-	g_assert_cmpint (gs_app_get_state (app3), ==, GS_APP_STATE_UPDATABLE_LIVE);
-	g_assert_cmpint (gs_app_get_pending_action (app3), ==, GS_PLUGIN_ACTION_UPDATE);
+	/* wait for all operations to finish */
+	while (result1 == NULL || result2 == NULL || result3 == NULL)
+		g_main_context_iteration (context, TRUE);
 
-	/* wait for the 2nd installation to finish, it means the 1st should have been
-	 * finished too */
-	g_main_loop_run (helper3->loop);
 	g_main_context_pop_thread_default (context);
 
 	gs_test_flush_main_context ();
-	g_assert_no_error (helper1->error);
-	g_assert_no_error (helper2->error);
-	g_assert_no_error (helper3->error);
+
+	gs_plugin_loader_job_action_finish (plugin_loader, result1, &local_error);
+	g_assert_no_error (local_error);
+
+	gs_plugin_loader_job_action_finish (plugin_loader, result2, &local_error);
+	g_assert_no_error (local_error);
+
+	gs_plugin_loader_job_action_finish (plugin_loader, result3, &local_error);
+	g_assert_no_error (local_error);
 
 	g_assert_cmpint (gs_app_get_state (app1), ==, GS_APP_STATE_UPDATABLE);
 	g_assert_cmpint (gs_app_get_state (app2), ==, GS_APP_STATE_INSTALLED);

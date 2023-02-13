@@ -1866,38 +1866,189 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_update (GsPlugin *plugin,
-                  GsAppList *list,
-                  GCancellable *cancellable,
-                  GError **error)
+typedef struct {
+	/* Input data. */
+	guint n_apps;
+	GsPluginProgressCallback progress_callback;
+	gpointer progress_user_data;
+
+	/* In-progress data. */
+	guint n_pending_ops;
+	GError *saved_error;  /* (owned) (nullable) */
+} UpdateAppsData;
+
+static void
+update_apps_data_free (UpdateAppsData *data)
+{
+	/* Error should have been propagated by now, and all pending ops completed. */
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppsData, update_apps_data_free)
+
+typedef struct {
+	GTask *task;  /* (owned) */
+	GsApp *app;  /* (owned) */
+	guint index;  /* zero-based */
+} RefreshAppData;
+
+static void
+refresh_app_data_free (RefreshAppData *data)
+{
+	g_clear_object (&data->app);
+	g_clear_object (&data->task);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefreshAppData, refresh_app_data_free)
+
+static void update_app_cb (GObject      *source_object,
+                           GAsyncResult *result,
+                           gpointer      user_data);
+static void finish_update_apps_op (GTask  *task,
+                                   GError *error);
+
+static void
+gs_plugin_snap_update_apps_async (GsPlugin                           *plugin,
+                                  GsAppList                          *apps,
+                                  GsPluginUpdateAppsFlags             flags,
+                                  GsPluginProgressCallback            progress_callback,
+                                  gpointer                            progress_user_data,
+                                  GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                  gpointer                            app_needs_user_action_data,
+                                  GCancellable                       *cancellable,
+                                  GAsyncReadyCallback                 callback,
+                                  gpointer                            user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
+	g_autoptr(GTask) task = NULL;
+	UpdateAppsData *data;
+	g_autoptr(UpdateAppsData) data_owned = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(SnapdClient) client = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
 
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_update_apps_async);
+	data = data_owned = g_new0 (UpdateAppsData, 1);
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	data->n_apps = gs_app_list_length (apps);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) update_apps_data_free);
 
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
+	if (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY) {
+		/* snap only seems to support downloading and applying updates
+		 * at the same time, rather than pre-downloading them and
+		 * applying them separately. */
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	client = get_client (self, interactive, &local_error);
+	if (client == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Start an update operation for each of the sections we’re interested
+	 * in, keeping a counter of pending operations which is initialised to 1
+	 * until all the operations are started.
+	 *
+	 * For some reason, updating an app is called ‘refreshing’ it in snap
+	 * land. */
+	data->n_pending_ops = 1;
+
+	for (guint i = 0; i < gs_app_list_length (apps); i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+		const gchar *name;
+		g_autoptr(RefreshAppData) app_data = NULL;
+
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, plugin))
+			continue;
+
 		/* Get the name of the snap to refresh */
-		GsApp *app = gs_app_list_index (list, i);
-		const gchar *name = gs_app_get_metadata_item (app, "snap::name");
+		name = gs_app_get_metadata_item (app, "snap::name");
 
 		/* Refresh the snap */
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
-		if (!snapd_client_refresh_sync (client, name, NULL, progress_cb, app, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			snapd_error_convert (error);
-			return FALSE;
-		}
+		app_data = g_new0 (RefreshAppData, 1);
+		app_data->index = i;
+		app_data->task = g_object_ref (task);
+		app_data->app = g_object_ref (app);
 
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		data->n_pending_ops++;
+		snapd_client_refresh_async (client, name, NULL, progress_cb, app, cancellable, update_app_cb, g_steal_pointer (&app_data));
 	}
 
-	return TRUE;
+	finish_update_apps_op (task, NULL);
+}
+
+static void
+update_app_cb (GObject      *source_object,
+               GAsyncResult *result,
+               gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(RefreshAppData) app_data = g_steal_pointer (&user_data);
+	GTask *task = app_data->task;
+	GsPluginSnap *self = g_task_get_source_object (task);
+	UpdateAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!snapd_client_refresh_finish (client, result, &local_error)) {
+		gs_app_set_state_recover (app_data->app);
+		snapd_error_convert (&local_error);
+	} else {
+		gs_app_set_state (app_data->app, GS_APP_STATE_INSTALLED);
+	}
+
+	/* Simple progress reporting. */
+	if (data->progress_callback != NULL) {
+		data->progress_callback (GS_PLUGIN (self),
+					 100 * ((gdouble) (app_data->index + 1) / data->n_apps),
+					 data->progress_user_data);
+	}
+
+	finish_update_apps_op (task, g_steal_pointer (&local_error));
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_update_apps_op (GTask  *task,
+                       GError *error)
+{
+	UpdateAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while updating apps: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops > 0)
+		return;
+
+	/* Get the results of the parallel ops. */
+	if (data->saved_error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->saved_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_snap_update_apps_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -1915,6 +2066,8 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	plugin_class->refine_finish = gs_plugin_snap_refine_finish;
 	plugin_class->list_apps_async = gs_plugin_snap_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_snap_list_apps_finish;
+	plugin_class->update_apps_async = gs_plugin_snap_update_apps_async;
+	plugin_class->update_apps_finish = gs_plugin_snap_update_apps_finish;
 }
 
 GType

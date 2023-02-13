@@ -265,6 +265,7 @@ finish_op (GTask  *task,
 
 	if (self->saved_error != NULL) {
 		g_task_return_error (task, g_steal_pointer (&self->saved_error));
+		g_signal_emit_by_name (G_OBJECT (self), "completed");
 		return;
 	}
 
@@ -287,6 +288,7 @@ finish_op (GTask  *task,
 	/* success */
 	self->result_list = g_ptr_array_ref (category_list);
 	g_task_return_boolean (task, TRUE);
+	g_signal_emit_by_name (G_OBJECT (self), "completed");
 
 #ifdef HAVE_SYSPROF
 	sysprof_collector_mark (self->begin_time_nsec,

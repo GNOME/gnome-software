@@ -164,6 +164,7 @@ typedef struct {
 	GsUpdatesSection	*self;
 	gboolean		 do_reboot;
 	gboolean		 do_reboot_notification;
+	GsPluginJob		*job;  /* (owned) */
 } GsUpdatesSectionUpdateHelper;
 
 static gchar *
@@ -229,6 +230,7 @@ _list_sort_func (GtkListBoxRow *a, GtkListBoxRow *b, gpointer user_data)
 static void
 _update_helper_free (GsUpdatesSectionUpdateHelper *helper)
 {
+	g_clear_object (&helper->job);
 	g_object_unref (helper->self);
 	g_free (helper);
 }
@@ -333,17 +335,10 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-			GsApp *app = NULL;
-
-			if (gs_app_list_length (self->list) == 1)
-				app = gs_app_list_index (self->list, 0);
-
-			gs_plugin_loader_claim_error (plugin_loader,
-						      NULL,
-						      GS_PLUGIN_ACTION_UPDATE,
-						      app,
-						      TRUE,
-						      error);
+			gs_plugin_loader_claim_job_error (plugin_loader,
+							  NULL,
+							  helper->job,
+							  error);
 		}
 		goto out;
 	}
@@ -396,11 +391,8 @@ _button_download_clicked_cb (GsUpdatesSection *self)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	g_set_object (&self->cancellable, cancellable);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
-					 "list", self->list,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
-					 "interactive", TRUE,
-					 NULL);
+	plugin_job = gs_plugin_job_update_apps_new (self->list,
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    (GAsyncReadyCallback) _download_finished_cb,
@@ -427,11 +419,10 @@ _button_update_all_clicked_cb (GsUpdatesSection *self)
 	}
 
 	g_set_object (&self->cancellable, cancellable);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-					 "list", self->list,
-					 "interactive", TRUE,
-					 "propagate-error", TRUE,
-					 NULL);
+	plugin_job = gs_plugin_job_update_apps_new (self->list,
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	gs_plugin_job_set_propagate_error (plugin_job, TRUE);
+	helper->job = g_object_ref (plugin_job);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    (GAsyncReadyCallback) _perform_update_cb,
