@@ -398,6 +398,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "zeus");
 	icon = gs_app_get_icon_for_size (app, 48, 1, NULL);
 	g_assert_nonnull (icon);
+	g_assert_true (G_IS_THEMED_ICON (icon));
 	g_clear_object (&icon);
 
 	/* check various bitfields */
@@ -428,6 +429,8 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
 	g_assert_cmpstr (gs_app_get_license (addon), ==,
 			 "LicenseRef-free=https://www.debian.org/");
+	/* The app has a non-existent icon */
+	g_assert_nonnull (gs_app_get_icons (addon));
 	icon = gs_app_get_icon_for_size (addon, 48, 1, NULL);
 	g_assert_null (icon);
 }
@@ -875,6 +878,7 @@ main (int argc, char **argv)
 		"    <name>Spell Check</name>\n"
 		"    <summary>Check the spelling when teaching</summary>\n"
 		"    <pkgname>zeus-spell</pkgname>\n"
+		"    <icon type=\"stock\">non-existent</icon>\n"
 		"  </component>\n"
 		"  <component type=\"desktop\">\n"
 		"    <id>Uninstall Zeus.desktop</id>\n"
