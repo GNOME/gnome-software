@@ -126,7 +126,6 @@ struct _GsDetailsPage
 	GtkWidget		*infobar_details_repo;
 	GtkWidget		*label_progress_percentage;
 	GtkWidget		*label_progress_status;
-	GtkWidget		*label_addons_uninstalled_app;
 	GsAppContextBar		*context_bar;
 	GtkLabel		*developer_name_label;
 	GtkImage		*developer_verified_image;
@@ -1345,18 +1344,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		break;
 	}
 
-	/* only show the "select addons" string if the app isn't yet installed */
-	switch (gs_app_get_state (self->app)) {
-	case GS_APP_STATE_INSTALLED:
-	case GS_APP_STATE_UPDATABLE:
-	case GS_APP_STATE_UPDATABLE_LIVE:
-		gtk_widget_set_visible (self->label_addons_uninstalled_app, FALSE);
-		break;
-	default:
-		gtk_widget_set_visible (self->label_addons_uninstalled_app, TRUE);
-		break;
-	}
-
 	/* update progress */
 	gs_details_page_refresh_progress (self);
 
@@ -2496,7 +2483,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_package_baseos);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_repo);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_addons_uninstalled_app);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, context_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_percentage);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_status);
