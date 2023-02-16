@@ -33,6 +33,7 @@ struct _GsDescriptionBox {
 	GtkButton *button;
 	gchar *text;
 	gboolean is_collapsed;
+	gboolean always_expanded;
 	gboolean needs_recalc;
 	gint last_width;
 	gint last_height;
@@ -40,6 +41,14 @@ struct _GsDescriptionBox {
 };
 
 G_DEFINE_TYPE (GsDescriptionBox, gs_description_box, GTK_TYPE_WIDGET)
+
+typedef enum {
+	PROP_ALWAYS_EXPANDED = 1,
+	PROP_COLLAPSED,
+	PROP_TEXT,
+} GsDescriptionBoxProperty;
+
+static GParamSpec *obj_props[PROP_TEXT + 1] = { NULL, };
 
 static void
 gs_description_box_update_content (GsDescriptionBox *box)
@@ -60,9 +69,20 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	if (!box->needs_recalc && box->last_width == allocation.width && box->last_height == allocation.height)
 		return;
 
+	if ((!gtk_widget_get_visible (GTK_WIDGET (box->button))) == (!box->always_expanded))
+		gtk_widget_set_visible (GTK_WIDGET (box->button), !box->always_expanded);
+
 	box->needs_recalc = allocation.width <= 1 || allocation.height <= 1;
 	box->last_width = allocation.width;
 	box->last_height = allocation.height;
+
+	if (box->always_expanded) {
+		gtk_widget_set_visible (GTK_WIDGET (box->button), FALSE);
+		gtk_label_set_markup (box->label, box->text);
+		gtk_label_set_lines (box->label, -1);
+		gtk_label_set_ellipsize (box->label, PANGO_ELLIPSIZE_NONE);
+		return;
+	}
 
 	text = box->is_collapsed ? _("_Show More") : _("_Show Less");
 	/* FIXME: Work around a flickering issue in GTK:
@@ -212,6 +232,54 @@ gs_description_box_get_request_mode (GtkWidget *widget)
 }
 
 static void
+gs_description_box_get_property (GObject    *object,
+				 guint       prop_id,
+				 GValue     *value,
+				 GParamSpec *pspec)
+{
+	GsDescriptionBox *self = GS_DESCRIPTION_BOX (object);
+
+	switch ((GsDescriptionBoxProperty) prop_id) {
+	case PROP_ALWAYS_EXPANDED:
+		g_value_set_boolean (value, gs_description_box_get_always_expanded (self));
+		break;
+	case PROP_COLLAPSED:
+		g_value_set_boolean (value, gs_description_box_get_collapsed (self));
+		break;
+	case PROP_TEXT:
+		g_value_set_string (value, gs_description_box_get_text (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_description_box_set_property (GObject      *object,
+				 guint         prop_id,
+				 const GValue *value,
+				 GParamSpec   *pspec)
+{
+	GsDescriptionBox *self = GS_DESCRIPTION_BOX (object);
+
+	switch ((GsDescriptionBoxProperty) prop_id) {
+	case PROP_ALWAYS_EXPANDED:
+		gs_description_box_set_always_expanded (self, g_value_get_boolean (value));
+		break;
+	case PROP_COLLAPSED:
+		gs_description_box_set_collapsed (self, g_value_get_boolean (value));
+		break;
+	case PROP_TEXT:
+		gs_description_box_set_text (self, g_value_get_string (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_description_box_dispose (GObject *object)
 {
 	GsDescriptionBox *box = GS_DESCRIPTION_BOX (object);
@@ -238,6 +306,7 @@ gs_description_box_init (GsDescriptionBox *box)
 	GtkWidget *widget;
 
 	box->is_collapsed = TRUE;
+	box->always_expanded = FALSE;
 
 	box->box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 24);
 	gtk_widget_set_parent (GTK_WIDGET (box->box), GTK_WIDGET (box));
@@ -291,6 +360,8 @@ gs_description_box_class_init (GsDescriptionBoxClass *klass)
 	GtkWidgetClass *widget_class;
 
 	object_class = G_OBJECT_CLASS (klass);
+	object_class->get_property = gs_description_box_get_property;
+	object_class->set_property = gs_description_box_set_property;
 	object_class->dispose = gs_description_box_dispose;
 	object_class->finalize = gs_description_box_finalize;
 
@@ -298,6 +369,55 @@ gs_description_box_class_init (GsDescriptionBoxClass *klass)
 	widget_class->get_request_mode = gs_description_box_get_request_mode;
 	widget_class->measure = gs_description_box_measure;
 	widget_class->size_allocate = gs_description_box_size_allocate;
+
+	/**
+	 * GsDescriptionBox:always-expanded:
+	 *
+	 * If always expanded, the ‘Show More’ button will be hidden, and the box’s
+	 * content will not be truncated. It will all always be shown.
+	 *
+	 * This property is useful to allow a single widget tree using #GsDescriptionBox
+	 * to be used in situations where sometimes its expanding/truncating behaviour
+	 * isn’t needed.
+	 *
+	 * The text is not shown as always expanded by default.
+	 *
+	 * Since: 44
+	 */
+	obj_props[PROP_ALWAYS_EXPANDED] =
+		g_param_spec_boolean ("always-expanded", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsDescriptionBox:collapsed:
+	 *
+	 * Whether the text is currently collapsed. When being collapsed,
+	 * and the text is long enough, there's a "Show More" button shown.
+	 *
+	 * The text is collapsed by default.
+	 *
+	 * Since: 44
+	 */
+	obj_props[PROP_COLLAPSED] =
+		g_param_spec_boolean ("collapsed", NULL, NULL,
+				      TRUE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsDescriptionBox:text:
+	 *
+	 * Text shown in the description box. It's interpreted
+	 * as a markup, not as a plain text.
+	 *
+	 * Since: 44
+	 */
+	obj_props[PROP_TEXT] =
+		g_param_spec_string ("text", NULL, NULL,
+				      NULL,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 GtkWidget *
@@ -327,7 +447,14 @@ gs_description_box_set_text (GsDescriptionBox *box,
 
 		gtk_widget_set_visible (GTK_WIDGET (box), text && *text);
 
+		/* Set the text and everything immediately, to avoid screen flickering
+		   when no button will be shown anyway */
+		if (box->always_expanded)
+			gs_description_box_update_content (box);
+
 		gtk_widget_queue_resize (GTK_WIDGET (box));
+
+		g_object_notify_by_pspec (G_OBJECT (box), obj_props[PROP_TEXT]);
 	}
 }
 
@@ -345,10 +472,56 @@ gs_description_box_set_collapsed (GsDescriptionBox *box,
 {
 	g_return_if_fail (GS_IS_DESCRIPTION_BOX (box));
 
-	if ((collapsed ? 1 : 0) != (box->is_collapsed ? 1 : 0)) {
+	if ((!collapsed) != (!box->is_collapsed)) {
 		box->is_collapsed = collapsed;
 		box->needs_recalc = TRUE;
 
 		gtk_widget_queue_resize (GTK_WIDGET (box));
+
+		g_object_notify_by_pspec (G_OBJECT (box), obj_props[PROP_COLLAPSED]);
+	}
+}
+
+gboolean
+gs_description_box_get_always_expanded (GsDescriptionBox *box)
+{
+	g_return_val_if_fail (GS_IS_DESCRIPTION_BOX (box), FALSE);
+
+	return box->always_expanded;
+}
+
+/**
+ * gs_description_box_set_always_expanded:
+ * @box: a #GsDescriptionBox
+ * @always_expanded: %TRUE to always expand the box, %FALSE otherwise
+ *
+ * Set whether to always expand the box.
+ *
+ * If always expanded, the ‘Show More’ button will be hidden, and the box’s
+ * content will not be truncated. It will all always be shown.
+ *
+ * This property is useful to allow a single widget tree using #GsDescriptionBox
+ * to be used in situations where sometimes its expanding/truncating behaviour
+ * isn’t needed.
+ *
+ * Since: 44
+ */
+void
+gs_description_box_set_always_expanded (GsDescriptionBox *box,
+					gboolean always_expanded)
+{
+	g_return_if_fail (GS_IS_DESCRIPTION_BOX (box));
+
+	if ((!always_expanded) != (!box->always_expanded)) {
+		box->always_expanded = always_expanded;
+		box->needs_recalc = TRUE;
+
+		/* Hide the button immediately, because the rest is loaded on resize,
+		   which shows it in the GUI otherwise */
+		if (box->always_expanded)
+			gtk_widget_set_visible (GTK_WIDGET (box->button), FALSE);
+
+		gtk_widget_queue_resize (GTK_WIDGET (box));
+		g_object_notify_by_pspec (G_OBJECT (box), obj_props[PROP_ALWAYS_EXPANDED]);
 	}
 }

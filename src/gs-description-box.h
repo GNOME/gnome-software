@@ -25,5 +25,10 @@ gboolean	 gs_description_box_get_collapsed
 void		 gs_description_box_set_collapsed
 						(GsDescriptionBox *box,
 						 gboolean collapsed);
+gboolean	gs_description_box_get_always_expanded
+						(GsDescriptionBox *box);
+void		gs_description_box_set_always_expanded
+						(GsDescriptionBox *box,
+						 gboolean always_expanded);
 
 G_END_DECLS

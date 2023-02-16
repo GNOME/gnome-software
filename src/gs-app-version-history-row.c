@@ -11,6 +11,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-app-version-history-row.h"
+#include "gs-description-box.h"
 
 #include "gs-common.h"
 
@@ -20,21 +21,82 @@ struct _GsAppVersionHistoryRow
 
 	GtkWidget	*version_number_label;
 	GtkWidget	*version_date_label;
-	GtkWidget	*version_description_label;
+	GtkWidget	*version_description_box;
 };
 
 G_DEFINE_TYPE (GsAppVersionHistoryRow, gs_app_version_history_row, GTK_TYPE_LIST_BOX_ROW)
 
+typedef enum {
+	PROP_ALWAYS_EXPANDED = 1,
+} GsAppVersionHistoryRowProperty;
+
+static GParamSpec *obj_props[PROP_ALWAYS_EXPANDED + 1] = { NULL, };
+
+static void
+gs_app_version_history_row_get_property (GObject    *object,
+					 guint       prop_id,
+					 GValue     *value,
+					 GParamSpec *pspec)
+{
+	GsAppVersionHistoryRow *self = GS_APP_VERSION_HISTORY_ROW (object);
+
+	switch ((GsAppVersionHistoryRowProperty) prop_id) {
+	case PROP_ALWAYS_EXPANDED:
+		g_value_set_boolean (value, gs_app_version_history_row_get_always_expanded (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_app_version_history_row_set_property (GObject      *object,
+					 guint         prop_id,
+					 const GValue *value,
+					 GParamSpec   *pspec)
+{
+	GsAppVersionHistoryRow *self = GS_APP_VERSION_HISTORY_ROW (object);
+
+	switch ((GsAppVersionHistoryRowProperty) prop_id) {
+	case PROP_ALWAYS_EXPANDED:
+		gs_app_version_history_row_set_always_expanded (self, g_value_get_boolean (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
 static void
 gs_app_version_history_row_class_init (GsAppVersionHistoryRowClass *klass)
 {
+	GObjectClass *object_class;
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
+	object_class = G_OBJECT_CLASS (klass);
+	object_class->get_property = gs_app_version_history_row_get_property;
+	object_class->set_property = gs_app_version_history_row_set_property;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-version-history-row.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryRow, version_number_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryRow, version_date_label);
-	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryRow, version_description_label);
+	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryRow, version_description_box);
+
+	/**
+	 * GsAppVersionHistoryRow:always-expanded:
+	 *
+	 * A proxy property for internal GsDescriptionBox:always-expanded.
+	 *
+	 * Since: 44
+	 */
+	obj_props[PROP_ALWAYS_EXPANDED] =
+		g_param_spec_boolean ("always-expanded", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 static void
@@ -70,16 +132,16 @@ gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 		g_autofree char *version_tmp = NULL;
 		version_tmp = g_strdup_printf (_("New in Version %s"), version_number);
 		gtk_label_set_label (GTK_LABEL (row->version_number_label), version_tmp);
-		gtk_label_set_markup (GTK_LABEL (row->version_description_label), version_description);
-		gtk_widget_remove_css_class (row->version_description_label, "dim-label");
+		gs_description_box_set_text (GS_DESCRIPTION_BOX (row->version_description_box), version_description);
+		gtk_widget_remove_css_class (row->version_description_box, "dim-label");
 	} else {
 		g_autofree char *version_tmp = NULL;
 		const gchar *version_description_fallback;
 		version_tmp = g_strdup_printf (_("Version %s"), version_number);
 		gtk_label_set_label (GTK_LABEL (row->version_number_label), version_tmp);
 		version_description_fallback = _("No details for this release");
-		gtk_label_set_label (GTK_LABEL (row->version_description_label), version_description_fallback);
-		gtk_widget_add_css_class (row->version_description_label, "dim-label");
+		gs_description_box_set_text (GS_DESCRIPTION_BOX (row->version_description_box), version_description_fallback);
+		gtk_widget_add_css_class (row->version_description_box, "dim-label");
 	}
 
 	if (version_date != 0) {
@@ -112,4 +174,21 @@ gs_app_version_history_row_new (void)
 
 	row = g_object_new (GS_TYPE_APP_VERSION_HISTORY_ROW, NULL);
 	return GTK_WIDGET (row);
+}
+
+gboolean
+gs_app_version_history_row_get_always_expanded (GsAppVersionHistoryRow *self)
+{
+	g_return_val_if_fail (GS_IS_APP_VERSION_HISTORY_ROW (self), FALSE);
+
+	return gs_description_box_get_always_expanded (GS_DESCRIPTION_BOX (self->version_description_box));
+}
+
+void
+gs_app_version_history_row_set_always_expanded (GsAppVersionHistoryRow *self,
+						gboolean always_expanded)
+{
+	g_return_if_fail (GS_IS_APP_VERSION_HISTORY_ROW (self));
+
+	gs_description_box_set_always_expanded (GS_DESCRIPTION_BOX (self->version_description_box), always_expanded);
 }
