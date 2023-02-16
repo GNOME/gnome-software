@@ -1534,6 +1534,7 @@ update_app_unlock_cb (GObject      *source_object,
 	UpdateAppsData *data = g_task_get_task_data (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	GsPluginFwupd *self = g_task_get_source_object (task);
+	GsApp *app = app_data->app;
 	g_autoptr(GError) local_error = NULL;
 
 	if (result != NULL &&
@@ -1544,7 +1545,7 @@ update_app_unlock_cb (GObject      *source_object,
 	}
 
 	/* update means install */
-	gs_plugin_fwupd_install_async (self, app_data->app,
+	gs_plugin_fwupd_install_async (self, app,
 				       data->app_needs_user_action_callback,
 				       data->app_needs_user_action_data,
 				       cancellable,
