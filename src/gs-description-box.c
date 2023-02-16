@@ -41,6 +41,13 @@ struct _GsDescriptionBox {
 
 G_DEFINE_TYPE (GsDescriptionBox, gs_description_box, GTK_TYPE_WIDGET)
 
+typedef enum {
+	PROP_COLLAPSED = 1,
+	PROP_TEXT,
+} GsDescriptionBoxProperty;
+
+static GParamSpec *obj_props[PROP_TEXT + 1] = { NULL, };
+
 static void
 gs_description_box_update_content (GsDescriptionBox *box)
 {
@@ -212,6 +219,48 @@ gs_description_box_get_request_mode (GtkWidget *widget)
 }
 
 static void
+gs_description_box_get_property (GObject    *object,
+				 guint       prop_id,
+				 GValue     *value,
+				 GParamSpec *pspec)
+{
+	GsDescriptionBox *self = GS_DESCRIPTION_BOX (object);
+
+	switch ((GsDescriptionBoxProperty) prop_id) {
+	case PROP_COLLAPSED:
+		g_value_set_boolean (value, gs_description_box_get_collapsed (self));
+		break;
+	case PROP_TEXT:
+		g_value_set_string (value, gs_description_box_get_text (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_description_box_set_property (GObject      *object,
+				 guint         prop_id,
+				 const GValue *value,
+				 GParamSpec   *pspec)
+{
+	GsDescriptionBox *self = GS_DESCRIPTION_BOX (object);
+
+	switch ((GsDescriptionBoxProperty) prop_id) {
+	case PROP_COLLAPSED:
+		gs_description_box_set_collapsed (self, g_value_get_boolean (value));
+		break;
+	case PROP_TEXT:
+		gs_description_box_set_text (self, g_value_get_string (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_description_box_dispose (GObject *object)
 {
 	GsDescriptionBox *box = GS_DESCRIPTION_BOX (object);
@@ -291,6 +340,8 @@ gs_description_box_class_init (GsDescriptionBoxClass *klass)
 	GtkWidgetClass *widget_class;
 
 	object_class = G_OBJECT_CLASS (klass);
+	object_class->get_property = gs_description_box_get_property;
+	object_class->set_property = gs_description_box_set_property;
 	object_class->dispose = gs_description_box_dispose;
 	object_class->finalize = gs_description_box_finalize;
 
@@ -298,6 +349,36 @@ gs_description_box_class_init (GsDescriptionBoxClass *klass)
 	widget_class->get_request_mode = gs_description_box_get_request_mode;
 	widget_class->measure = gs_description_box_measure;
 	widget_class->size_allocate = gs_description_box_size_allocate;
+
+	/**
+	 * GsDescriptionBox:collapsed:
+	 *
+	 * Whether the text is currently collapsed. When being collapsed,
+	 * and the text is long enough, there's a "Show More" button shown.
+	 *
+	 * The text is collapsed by default.
+	 *
+	 * Since: 44
+	 */
+	obj_props[PROP_COLLAPSED] =
+		g_param_spec_boolean ("collapsed", NULL, NULL,
+				      TRUE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsDescriptionBox:text:
+	 *
+	 * Text shown in the description box. It's interpreted
+	 * as a markup, not as a plain text.
+	 *
+	 * Since: 44
+	 */
+	obj_props[PROP_TEXT] =
+		g_param_spec_string ("text", NULL, NULL,
+				      NULL,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 GtkWidget *
@@ -328,6 +409,8 @@ gs_description_box_set_text (GsDescriptionBox *box,
 		gtk_widget_set_visible (GTK_WIDGET (box), text && *text);
 
 		gtk_widget_queue_resize (GTK_WIDGET (box));
+
+		g_object_notify_by_pspec (G_OBJECT (box), obj_props[PROP_TEXT]);
 	}
 }
 
@@ -345,10 +428,12 @@ gs_description_box_set_collapsed (GsDescriptionBox *box,
 {
 	g_return_if_fail (GS_IS_DESCRIPTION_BOX (box));
 
-	if ((collapsed ? 1 : 0) != (box->is_collapsed ? 1 : 0)) {
+	if ((!collapsed) != (!box->is_collapsed)) {
 		box->is_collapsed = collapsed;
 		box->needs_recalc = TRUE;
 
 		gtk_widget_queue_resize (GTK_WIDGET (box));
+
+		g_object_notify_by_pspec (G_OBJECT (box), obj_props[PROP_COLLAPSED]);
 	}
 }
