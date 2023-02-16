@@ -37,6 +37,7 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 	if (version_history == NULL || version_history->len == 0) {
 		GtkWidget *row;
 		row = gs_app_version_history_row_new ();
+		gs_app_version_history_row_set_always_expanded (GS_APP_VERSION_HISTORY_ROW (row), TRUE);
 		gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (row),
 						     gs_app_get_version (app),
 						     gs_app_get_release_date (app), NULL);
@@ -51,6 +52,7 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 		AsRelease *version = g_ptr_array_index (version_history, i);
 
 		row = gs_app_version_history_row_new ();
+		gs_app_version_history_row_set_always_expanded (GS_APP_VERSION_HISTORY_ROW (row), TRUE);
 		gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (row),
 						     as_release_get_version (version),
 						     as_release_get_timestamp (version),
