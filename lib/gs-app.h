@@ -137,7 +137,7 @@ typedef enum {
  * @GS_APP_QUIRK_NOT_LAUNCHABLE:	The app is not launchable (run-able)
  * @GS_APP_QUIRK_NEEDS_USER_ACTION:	The component requires some kind of user action
  * @GS_APP_QUIRK_IS_PROXY:		Is a proxy app that operates on other applications
- * @GS_APP_QUIRK_REMOVABLE_HARDWARE:	The device is unusable whilst the action is performed
+ * @GS_APP_QUIRK_UNUSABLE_DURING_UPDATE:The device is unusable whilst the action is performed
  * @GS_APP_QUIRK_DEVELOPER_VERIFIED:	The app developer has been verified
  * @GS_APP_QUIRK_PARENTAL_FILTER:	The app has been filtered by parental controls, and should be hidden
  * @GS_APP_QUIRK_NEW_PERMISSIONS:	The update requires new permissions
@@ -161,7 +161,7 @@ typedef enum {
 	GS_APP_QUIRK_NOT_LAUNCHABLE	= 1 << 7,	/* Since: 3.32 */
 	GS_APP_QUIRK_NEEDS_USER_ACTION	= 1 << 8,	/* Since: 3.32 */
 	GS_APP_QUIRK_IS_PROXY 		= 1 << 9,	/* Since: 3.32 */
-	GS_APP_QUIRK_REMOVABLE_HARDWARE	= 1 << 10,	/* Since: 3.32 */
+	GS_APP_QUIRK_UNUSABLE_DURING_UPDATE	= 1 << 10,	/* Since: 44 */
 	GS_APP_QUIRK_DEVELOPER_VERIFIED	= 1 << 11,	/* Since: 3.32 */
 	GS_APP_QUIRK_PARENTAL_FILTER	= 1 << 12,	/* Since: 3.32 */
 	GS_APP_QUIRK_NEW_PERMISSIONS	= 1 << 13,	/* Since: 3.32 */
