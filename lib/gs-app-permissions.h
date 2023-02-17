@@ -13,6 +13,13 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GsAppPermissionsFlags:
+ * @GS_APP_PERMISSIONS_FLAGS_DEVICES: App can access general purpose devices
+ *   such as webcams or gaming controllers.
+ *
+ * Flags to indicate what permissions an app requires, at a high level.
+ */
 typedef enum {
 	GS_APP_PERMISSIONS_FLAGS_UNKNOWN 		= 0,
 	GS_APP_PERMISSIONS_FLAGS_NONE			= 1 << 0,
