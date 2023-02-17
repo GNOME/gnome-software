@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-02-16 11:05+0000\n"
-"PO-Revision-Date: 2023-02-16 15:15+0300\n"
+"POT-Creation-Date: 2023-02-17 06:12+0000\n"
+"PO-Revision-Date: 2023-02-17 15:22+0300\n"
 "Last-Translator: Yuras Shumovich <shumovichy@gmail.com>\n"
 "Language-Team: Belarusian <i18n-bel-gnome@googlegroups.com>\n"
 "Language: be\n"
@@ -943,7 +943,7 @@ msgid "Requires additional permissions"
 msgstr "Патрабуюцца дадатковыя дазволы"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:918
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:919
 msgid "Reviews"
 msgstr "Водгукі"
 
@@ -955,27 +955,27 @@ msgstr "Не знойдзена водгукаў для гэтай прагра�
 msgid "No Reviews"
 msgstr "Няма водгукаў"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:517
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:518
 msgid "Version History"
 msgstr "Гісторыя версій"
 
-#: src/gs-app-version-history-row.c:71
+#: src/gs-app-version-history-row.c:133
 #, c-format
 msgid "New in Version %s"
 msgstr "Новае ў версіі %s"
 
-#: src/gs-app-version-history-row.c:78
+#: src/gs-app-version-history-row.c:140
 #, c-format
 msgid "Version %s"
 msgstr "Версія %s"
 
-#: src/gs-app-version-history-row.c:80
+#: src/gs-app-version-history-row.c:142
 msgid "No details for this release"
 msgstr "Пра гэта выданне няма звестак"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:67
+#: src/gs-app-version-history-row.c:156 src/gs-review-row.c:67
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -2219,11 +2219,11 @@ msgstr "Патрабуюцца дадатковыя пакеты"
 msgid "Find in Software"
 msgstr "Пошук у Software"
 
-#: src/gs-description-box.c:67 src/gs-description-box.c:266
+#: src/gs-description-box.c:87 src/gs-description-box.c:335
 msgid "_Show More"
 msgstr "Паказаць _больш"
 
-#: src/gs-description-box.c:67
+#: src/gs-description-box.c:87
 msgid "_Show Less"
 msgstr "Паказаць _менш"
 
@@ -2328,17 +2328,17 @@ msgstr "Спампоўванне"
 msgid "Add-ons"
 msgstr "Дадатковыя кампаненты"
 
-#: src/gs-details-page.ui:551
+#: src/gs-details-page.ui:552
 msgid "This app can only be used when there is an active internet connection."
 msgstr ""
 "Гэту праграму можна выкарыстоўваць толькі пры наяўнасці злучэння з "
 "інтэрнэтам."
 
-#: src/gs-details-page.ui:574
+#: src/gs-details-page.ui:575
 msgid "Software Repository Included"
 msgstr "Сховішча праграмнага забеспячэння падключана"
 
-#: src/gs-details-page.ui:584
+#: src/gs-details-page.ui:585
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2346,11 +2346,11 @@ msgstr ""
 "Гэтая праграма змяшчае сховішча праграмнага забеспячэння, праз якое "
 "адбываецца абнаўленне, а таксама доступ да іншага праграмнага забеспячэння."
 
-#: src/gs-details-page.ui:612
+#: src/gs-details-page.ui:613
 msgid "No Software Repository Included"
 msgstr "Сховішча праграмнага забеспячэння не падключана"
 
-#: src/gs-details-page.ui:622
+#: src/gs-details-page.ui:623
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2358,7 +2358,7 @@ msgstr ""
 "Гэтая праграма не змяшчае сховішча праграмнага забеспячэння. Яна не будзе "
 "абнаўляцца са з'яўленнем новых версій."
 
-#: src/gs-details-page.ui:650
+#: src/gs-details-page.ui:651
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2367,11 +2367,11 @@ msgstr ""
 "непатрэбна замяняць."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:681
+#: src/gs-details-page.ui:682
 msgid "Software Repository Identified"
 msgstr "Выяўлена сховішча праграмнага забеспячэння"
 
-#: src/gs-details-page.ui:691
+#: src/gs-details-page.ui:692
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2379,17 +2379,17 @@ msgstr ""
 "Дадаванне гэтага сховішча праграмнага забеспячэння, дасць доступ да "
 "дадатковага праграмнага забеспячэння і абнаўленняў."
 
-#: src/gs-details-page.ui:698
+#: src/gs-details-page.ui:699
 msgid "Only use software repositories that you trust."
 msgstr ""
 "Выкарыстоўвайце толькі тыя сховішчы праграмнага забеспячэння, якім вы "
 "давяраеце."
 
-#: src/gs-details-page.ui:771
+#: src/gs-details-page.ui:772
 msgid "No Metadata"
 msgstr "Няма метаданых"
 
-#: src/gs-details-page.ui:780
+#: src/gs-details-page.ui:781
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2397,33 +2397,33 @@ msgstr ""
 "Гэта праграмнае забеспячэнне пастаўляецца без спасылак на яго сайт, "
 "рэпазіторый або трэкер памылак."
 
-#: src/gs-details-page.ui:808
+#: src/gs-details-page.ui:809
 msgid "Project _Website"
 msgstr "_Вэб-сайт праекта"
 
-#: src/gs-details-page.ui:825
+#: src/gs-details-page.ui:826
 msgid "_Donate"
 msgstr "_Ахвяраваць"
 
-#: src/gs-details-page.ui:842
+#: src/gs-details-page.ui:843
 msgid "Contribute _Translations"
 msgstr "_Зрабіць унёсак у пераклад"
 
-#: src/gs-details-page.ui:859
+#: src/gs-details-page.ui:860
 msgid "_Report an Issue"
 msgstr "Паведаміць пра _памылку"
 
-#: src/gs-details-page.ui:876
+#: src/gs-details-page.ui:877
 msgid "_Help"
 msgstr "_Даведка"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:970
+#: src/gs-details-page.ui:971
 msgid "Write R_eview"
 msgstr "_Напісаць водгук"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:1007
+#: src/gs-details-page.ui:1008
 msgid "All Reviews"
 msgstr "Усе водгукі"
 
@@ -3170,27 +3170,27 @@ msgstr "_Аўтаматычнае абнаўленне"
 
 #: src/gs-prefs-dialog.ui:20
 msgid ""
-"Downloads and installs software updates in the background, when possible."
+"Downloads and installs software updates in the background, when possible"
 msgstr ""
-"Калі гэта магчыма, спампоўваць і ўсталёўваць абнаўленні ПЗ у фонавым рэжыме."
+"Калі гэта магчыма, спампоўваць і ўсталёўваць абнаўленні ПЗ у фонавым рэжыме"
 
 #: src/gs-prefs-dialog.ui:33
 msgid "Automatic Update _Notifications"
 msgstr "Апа_вяшчэнні для аўтаматычнага абнаўлення"
 
 #: src/gs-prefs-dialog.ui:34
-msgid "Show notifications when updates have been automatically installed."
+msgid "Show notifications when updates have been automatically installed"
 msgstr ""
-"Паказваць апавяшчэнне, калі выканана аўтаматычнае ўсталяванне абнаўленняў."
+"Паказваць апавяшчэнне, калі выканана аўтаматычнае ўсталяванне абнаўленняў"
 
 #: src/gs-prefs-dialog.ui:47
 msgid "Show Only _Free Apps"
 msgstr "Паказваць толькі _свабодныя праграмы"
 
 #: src/gs-prefs-dialog.ui:48
-msgid "Show only freely licensed apps and hide any proprietary apps."
+msgid "Show only freely licensed apps and hide any proprietary apps"
 msgstr ""
-"Паказваць толькі праграмы са свабоднымі ліцэнзіямі і хаваць прапрыетарныя."
+"Паказваць толькі праграмы са свабоднымі ліцэнзіямі і хаваць прапрыетарныя"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -3796,7 +3796,7 @@ msgstr "Наступны здымак"
 
 #. Translators: Shortened form of “no screenshots available” when showing an app’s details.
 #: src/gs-screenshot-carousel.ui:130
-msgid "No Screenshot"
+msgid "No Screenshots"
 msgstr "Няма здымкаў"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
