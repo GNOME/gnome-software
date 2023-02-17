@@ -312,6 +312,13 @@ update_safety_tile (GsAppContextBar *self)
 					       * It’s used in a context tile, so should be short. */
 					      _("Can access hardware devices"));
 			break;
+		case GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES:
+			add_to_safety_rating (&chosen_rating, descriptions,
+					      SAFETY_POTENTIALLY_UNSAFE,
+					      /* Translators: This indicates an app can access system devices such as /dev/shm.
+					       * It’s used in a context tile, so should be short. */
+					      _("Can access system devices"));
+			break;
 		case GS_APP_PERMISSIONS_FLAGS_HOME_FULL:
 		case GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL:
 			/* Don’t add twice. */
