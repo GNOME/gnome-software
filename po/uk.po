@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-02-16 11:05+0000\n"
-"PO-Revision-Date: 2023-02-16 15:23+0200\n"
+"POT-Creation-Date: 2023-02-17 06:12+0000\n"
+"PO-Revision-Date: 2023-02-17 14:38+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -941,7 +941,7 @@ msgid "Requires additional permissions"
 msgstr "Потребує додаткових прав доступу"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:918
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:919
 msgid "Reviews"
 msgstr "Огляди"
 
@@ -953,27 +953,27 @@ msgstr "Для цієї програми не знайдено оглядів."
 msgid "No Reviews"
 msgstr "Немає оглядів"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:517
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:518
 msgid "Version History"
 msgstr "Журнал версій"
 
-#: src/gs-app-version-history-row.c:71
+#: src/gs-app-version-history-row.c:133
 #, c-format
 msgid "New in Version %s"
 msgstr "Нове у версії %s"
 
-#: src/gs-app-version-history-row.c:78
+#: src/gs-app-version-history-row.c:140
 #, c-format
 msgid "Version %s"
 msgstr "Версія %s"
 
-#: src/gs-app-version-history-row.c:80
+#: src/gs-app-version-history-row.c:142
 msgid "No details for this release"
 msgstr "Немає подробиць щодо цього випуску"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:67
+#: src/gs-app-version-history-row.c:156 src/gs-review-row.c:67
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -1064,7 +1064,6 @@ msgid "Show version number"
 msgstr "Показати номер версії"
 
 #: src/gs-application.c:271 src/gs-application.c:279
-#| msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgid "Copyright © 2016–2023 GNOME Software contributors"
 msgstr "© Учасники розробки «Програм GNOME», 2016–2023"
 
@@ -2226,11 +2225,11 @@ msgstr "Потрібно додаткові пакунки"
 msgid "Find in Software"
 msgstr "Знайти серед програм"
 
-#: src/gs-description-box.c:67 src/gs-description-box.c:266
+#: src/gs-description-box.c:87 src/gs-description-box.c:335
 msgid "_Show More"
 msgstr "_Показати більше"
 
-#: src/gs-description-box.c:67
+#: src/gs-description-box.c:87
 msgid "_Show Less"
 msgstr "_Показати менше"
 
@@ -2335,16 +2334,16 @@ msgstr "Отримання"
 msgid "Add-ons"
 msgstr "Додатки"
 
-#: src/gs-details-page.ui:551
+#: src/gs-details-page.ui:552
 msgid "This app can only be used when there is an active internet connection."
 msgstr ""
 "Цю програму можна використовувати лише, коли є з'єднання з інтернетом. "
 
-#: src/gs-details-page.ui:574
+#: src/gs-details-page.ui:575
 msgid "Software Repository Included"
 msgstr "Визначено сховище програмного забезпечення"
 
-#: src/gs-details-page.ui:584
+#: src/gs-details-page.ui:585
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2352,11 +2351,11 @@ msgstr ""
 "До запису цієї програми включено сховище програмного забезпечення, яке надає "
 "оновлення, а також доступ до іншого програмного забезпечення."
 
-#: src/gs-details-page.ui:612
+#: src/gs-details-page.ui:613
 msgid "No Software Repository Included"
 msgstr "Не визначено сховища програмного забезпечення"
 
-#: src/gs-details-page.ui:622
+#: src/gs-details-page.ui:623
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2364,7 +2363,7 @@ msgstr ""
 "Запис цієї програми не містить даних щодо сховища, звідки її можна "
 "встановити. Її не буде оновлено до нової версії."
 
-#: src/gs-details-page.ui:650
+#: src/gs-details-page.ui:651
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2372,11 +2371,11 @@ msgstr ""
 "Цю програму вже забезпечено вашим дистрибутивом і її не варто заміняти."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:681
+#: src/gs-details-page.ui:682
 msgid "Software Repository Identified"
 msgstr "Виявлено сховище програм"
 
-#: src/gs-details-page.ui:691
+#: src/gs-details-page.ui:692
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2384,15 +2383,15 @@ msgstr ""
 "Додавання цього сховища програм надасть доступ до додаткових програм і "
 "оновлень."
 
-#: src/gs-details-page.ui:698
+#: src/gs-details-page.ui:699
 msgid "Only use software repositories that you trust."
 msgstr "Використовувати тільки ті сховища програм, яким ви довіряєте."
 
-#: src/gs-details-page.ui:771
+#: src/gs-details-page.ui:772
 msgid "No Metadata"
 msgstr "Немає метаданих"
 
-#: src/gs-details-page.ui:780
+#: src/gs-details-page.ui:781
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2400,33 +2399,33 @@ msgstr ""
 "Авторами цієї програми не надано жодних посилань на сайти, сховища коду або "
 "сторінку системи стеження за вадами."
 
-#: src/gs-details-page.ui:808
+#: src/gs-details-page.ui:809
 msgid "Project _Website"
 msgstr "_Сайт проєкту"
 
-#: src/gs-details-page.ui:825
+#: src/gs-details-page.ui:826
 msgid "_Donate"
 msgstr "_Підтримати фінансово"
 
-#: src/gs-details-page.ui:842
+#: src/gs-details-page.ui:843
 msgid "Contribute _Translations"
 msgstr "Д_опомогти із перекладом"
 
-#: src/gs-details-page.ui:859
+#: src/gs-details-page.ui:860
 msgid "_Report an Issue"
 msgstr "По_відомити про ваду"
 
-#: src/gs-details-page.ui:876
+#: src/gs-details-page.ui:877
 msgid "_Help"
 msgstr "_Довідка"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:970
+#: src/gs-details-page.ui:971
 msgid "Write R_eview"
 msgstr "_Написати рецензію"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:1007
+#: src/gs-details-page.ui:1008
 msgid "All Reviews"
 msgstr "Усі огляди"
 
@@ -3186,27 +3185,30 @@ msgid "Automatic _Updates"
 msgstr "Автоматичні _оновлення"
 
 #: src/gs-prefs-dialog.ui:20
+#| msgid ""
+#| "Downloads and installs software updates in the background, when possible."
 msgid ""
-"Downloads and installs software updates in the background, when possible."
+"Downloads and installs software updates in the background, when possible"
 msgstr ""
 "Отримує та встановлює будь-які оновлення програмного забезпечення у фоновому "
-"режимі, якщо це можливо."
+"режимі, якщо це можливо"
 
 #: src/gs-prefs-dialog.ui:33
 msgid "Automatic Update _Notifications"
 msgstr "С_повіщення щодо автоматичних оновлень"
 
 #: src/gs-prefs-dialog.ui:34
-msgid "Show notifications when updates have been automatically installed."
-msgstr ""
-"Показувати сповіщення, коли програма автоматично встановлює оновлення."
+#| msgid "Show notifications when updates have been automatically installed."
+msgid "Show notifications when updates have been automatically installed"
+msgstr "Показувати сповіщення, коли програма автоматично встановлює оновлення"
 
 #: src/gs-prefs-dialog.ui:47
 msgid "Show Only _Free Apps"
 msgstr "Показати лише _вільні програми"
 
 #: src/gs-prefs-dialog.ui:48
-msgid "Show only freely licensed apps and hide any proprietary apps."
+#| msgid "Show only freely licensed apps and hide any proprietary apps."
+msgid "Show only freely licensed apps and hide any proprietary apps"
 msgstr ""
 "Показувати лише програми із вільними умовами ліцензування і приховувати "
 "програми із закритим кодом"
@@ -3825,8 +3827,9 @@ msgstr "Наступний знімок вікна"
 
 #. Translators: Shortened form of “no screenshots available” when showing an app’s details.
 #: src/gs-screenshot-carousel.ui:130
-msgid "No Screenshot"
-msgstr "Немає знімка"
+#| msgid "No Screenshot"
+msgid "No Screenshots"
+msgstr "Немає знімків"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
