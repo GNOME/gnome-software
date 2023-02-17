@@ -55,13 +55,14 @@ struct _GsOsUpdatePage
 	GtkBox		 parent_instance;
 
 	GtkWidget	*back_button;
-	GtkWidget	*box;
-	GtkWidget	*group;
+	GtkWidget	*description_group;
+	GtkWidget	*page;
 	GtkWidget	*header_bar;
 	AdwWindowTitle	*window_title;
 
 	GsApp		*app;  /* (owned) (nullable) */
 	GtkWidget	*list_boxes[GS_OS_UPDATE_PAGE_SECTION_LAST];
+	GtkWidget	*groups[GS_OS_UPDATE_PAGE_SECTION_LAST];
 };
 
 G_DEFINE_TYPE (GsOsUpdatePage, gs_os_update_page, GTK_TYPE_BOX)
@@ -237,93 +238,47 @@ os_updates_sort_func (GtkListBoxRow *a,
 	return g_strcmp0 (key1, key2);
 }
 
-static GtkWidget *
-get_section_header (GsOsUpdatePage *page, GsOsUpdatePageSection section)
+static const gchar *
+get_section_title (GsOsUpdatePageSection section)
 {
-	GtkWidget *header;
-	GtkWidget *label;
+	const gchar *title = NULL;
 
-	/* get labels and buttons for everything */
 	if (section == GS_OS_UPDATE_PAGE_SECTION_ADDITIONS) {
 		/* TRANSLATORS: This is the header for package additions during
 		 * a system update */
-		label = gtk_label_new (_("Additions"));
+		title = _("Additions");
 	} else if (section == GS_OS_UPDATE_PAGE_SECTION_REMOVALS) {
 		/* TRANSLATORS: This is the header for package removals during
 		 * a system update */
-		label = gtk_label_new (_("Removals"));
+		title = _("Removals");
 	} else if (section == GS_OS_UPDATE_PAGE_SECTION_UPDATES) {
 		/* TRANSLATORS: This is the header for package updates during
 		 * a system update */
-		label = gtk_label_new (C_("Packages to be updated during a system upgrade", "Updates"));
+		title = C_("Packages to be updated during a system upgrade", "Updates");
 	} else if (section == GS_OS_UPDATE_PAGE_SECTION_DOWNGRADES) {
 		/* TRANSLATORS: This is the header for package downgrades during
 		 * a system update */
-		label = gtk_label_new (_("Downgrades"));
+		title = _("Downgrades");
 	} else {
 		g_assert_not_reached ();
 	}
 
-	/* create header */
-	header = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
-	gtk_widget_add_css_class (header, "app-listbox-header");
-
-	/* put label into the header */
-	gtk_widget_set_hexpand (label, TRUE);
-	gtk_box_append (GTK_BOX (header), label);
-	gtk_widget_set_margin_start (label, 16);
-	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
-	gtk_widget_add_css_class (label, "heading");
-
-	/* success */
-	return header;
-}
-
-static void
-list_header_func (GtkListBoxRow *row,
-		  GtkListBoxRow *before,
-		  gpointer user_data)
-{
-	GsOsUpdatePage *page = (GsOsUpdatePage *) user_data;
-	GObject *o = G_OBJECT (gtk_list_box_row_get_child (row));
-	GsApp *app = g_object_get_data (o, "app");
-	GtkWidget *header = NULL;
-
-	if (before == NULL)
-		header = get_section_header (page, get_app_section (app));
-	else
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
+	return title;
 }
 
 static void
 create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 {
-	GtkWidget *previous = NULL;
-
 	page->list_boxes[section] = gtk_list_box_new ();
 	gtk_list_box_set_selection_mode (GTK_LIST_BOX (page->list_boxes[section]),
 	                                 GTK_SELECTION_NONE);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (page->list_boxes[section]),
 				    os_updates_sort_func,
 				    page, NULL);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (page->list_boxes[section]),
-				      list_header_func,
-				      page, NULL);
 	g_signal_connect (GTK_LIST_BOX (page->list_boxes[section]), "row-activated",
 			  G_CALLBACK (row_activated_cb), page);
-	gtk_box_append (GTK_BOX (page->box), page->list_boxes[section]);
-	gtk_widget_set_margin_top (page->list_boxes[section], 24);
-
-	/* reorder the children */
-	for (guint i = 0; i < GS_OS_UPDATE_PAGE_SECTION_LAST; i++) {
-		if (page->list_boxes[i] == NULL)
-			continue;
-		gtk_box_reorder_child_after (GTK_BOX (page->box),
-					     page->list_boxes[i],
-					     previous);
-		previous = page->list_boxes[i];
-	}
+	adw_preferences_group_add (ADW_PREFERENCES_GROUP (page->groups[section]), page->list_boxes[section]);
+	gtk_widget_set_visible (page->groups[section], TRUE);
 
 	/* make rounded edges */
 	gtk_widget_set_overflow (page->list_boxes[section], GTK_OVERFLOW_HIDDEN);
@@ -374,15 +329,16 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 
 	/* clear existing data */
 	for (guint i = 0; i < GS_OS_UPDATE_PAGE_SECTION_LAST; i++) {
-		if (page->list_boxes[i] == NULL)
-			continue;
-		gs_widget_remove_all (page->list_boxes[i], (GsRemoveFunc) gtk_list_box_remove);
+		gtk_widget_set_visible (page->groups[i], FALSE);
+		if (page->list_boxes[i] != NULL) {
+			adw_preferences_group_remove (ADW_PREFERENCES_GROUP (page->groups[i]), page->list_boxes[i]);
+			page->list_boxes[i] = NULL;
+		}
 	}
 
 	if (app) {
 		adw_window_title_set_title (page->window_title, gs_app_get_name (app));
-		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->group),
-						       gs_app_get_description (app));
+		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->description_group), gs_app_get_description (app));
 
 		/* add new apps */
 		related = gs_app_get_related (app);
@@ -398,7 +354,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 		}
 	} else {
 		adw_window_title_set_title (page->window_title, NULL);
-		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->group), NULL);
+		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->description_group), NULL);
 	}
 
 	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APP]);
@@ -507,6 +463,13 @@ static void
 gs_os_update_page_init (GsOsUpdatePage *page)
 {
 	gtk_widget_init_template (GTK_WIDGET (page));
+
+	for (guint i = 0; i < GS_OS_UPDATE_PAGE_SECTION_LAST; i++) {
+		page->groups[i] = adw_preferences_group_new ();
+		gtk_widget_set_visible (page->groups[i], FALSE);
+		adw_preferences_group_set_title (ADW_PREFERENCES_GROUP (page->groups[i]), get_section_title (i));
+		adw_preferences_page_add (ADW_PREFERENCES_PAGE (page->page), ADW_PREFERENCES_GROUP (page->groups[i]));
+	}
 }
 
 static void
@@ -591,8 +554,8 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-os-update-page.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, back_button);
-	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, box);
-	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, group);
+	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, description_group);
+	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, page);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, header_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, window_title);
 	gtk_widget_class_bind_template_callback (widget_class, back_clicked_cb);
