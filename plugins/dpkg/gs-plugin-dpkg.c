@@ -64,6 +64,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	argv[0] = g_strdup (DPKG_DEB_BINARY);
 	argv[1] = g_strdup ("--showformat=${Package}\\n"
 			    "${Version}\\n"
+			    "${License}\\n"
 			    "${Installed-Size}\\n"
 			    "${Homepage}\\n"
 			    "${Description}");
@@ -78,7 +79,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	/* parse output */
 	tokens = g_strsplit (output, "\n", 0);
-	if (g_strv_length (tokens) < 5) {
+	if (g_strv_length (tokens) < 6) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
@@ -92,9 +93,10 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_add_source (app, tokens[0]);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, tokens[0]);
 	gs_app_set_version (app, tokens[1]);
-	gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, 1024 * g_ascii_strtoull (tokens[2], NULL, 10));
-	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, tokens[3]);
-	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, tokens[4]);
+	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, tokens[2]);
+	gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, 1024 * g_ascii_strtoull (tokens[3], NULL, 10));
+	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, tokens[4]);
+	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, tokens[5]);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
@@ -102,7 +104,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	/* multiline text */
 	str = g_string_new ("");
-	for (i = 5; tokens[i] != NULL; i++) {
+	for (i = 6; tokens[i] != NULL; i++) {
 		if (g_strcmp0 (tokens[i], " .") == 0) {
 			if (str->len > 0)
 				g_string_truncate (str, str->len - 1);
