@@ -320,7 +320,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	}
 
 	/* add warning */
-	if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_REMOVABLE_HARDWARE)) {
+	if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_UNUSABLE_DURING_UPDATE)) {
 		gtk_label_set_text (GTK_LABEL (priv->label_warning),
 				    /* TRANSLATORS: during the update the device
 				     * will restart into a special update-only mode */

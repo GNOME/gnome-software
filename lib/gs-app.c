@@ -340,8 +340,8 @@ _as_component_quirk_flag_to_string (GsAppQuirk quirk)
 		return "needs-user-action";
 	case GS_APP_QUIRK_IS_PROXY:
 		return "is-proxy";
-	case GS_APP_QUIRK_REMOVABLE_HARDWARE:
-		return "removable-hardware";
+	case GS_APP_QUIRK_UNUSABLE_DURING_UPDATE:
+		return "unusable-during-update";
 	case GS_APP_QUIRK_DEVELOPER_VERIFIED:
 		return "developer-verified";
 	case GS_APP_QUIRK_PARENTAL_FILTER:

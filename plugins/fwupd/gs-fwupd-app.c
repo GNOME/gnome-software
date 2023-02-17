@@ -126,9 +126,10 @@ gs_fwupd_app_set_from_device (GsApp *app,
 	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_NEEDS_REBOOT))
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 
-	/* is removable */
-	if (!fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_INTERNAL))
-		gs_app_add_quirk (app, GS_APP_QUIRK_REMOVABLE_HARDWARE);
+	/* is removable or cannot be used during update */
+	if (!fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_INTERNAL) ||
+	    !fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_USABLE_DURING_UPDATE))
+		gs_app_add_quirk (app, GS_APP_QUIRK_UNUSABLE_DURING_UPDATE);
 
 	guids = fwupd_device_get_guids (dev);
 	if (guids->len > 0) {
