@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-02-16 11:05+0000\n"
-"PO-Revision-Date: 2023-02-17 10:36+0700\n"
-"Last-Translator: Kukuh Syafaat <kukuhsyafaat@gnome.org>\n"
+"POT-Creation-Date: 2023-02-17 06:12+0000\n"
+"PO-Revision-Date: 2023-02-19 12:57+0700\n"
+"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
@@ -945,7 +945,7 @@ msgid "Requires additional permissions"
 msgstr "Membutuhkan izin tambahan"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:918
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:919
 msgid "Reviews"
 msgstr "Ulasan"
 
@@ -957,27 +957,27 @@ msgstr "Tidak ada ulasan yang ditemukan untuk aplikasi ini."
 msgid "No Reviews"
 msgstr "Tidak Ada Ulasan"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:517
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:518
 msgid "Version History"
 msgstr "Riwayat Versi"
 
-#: src/gs-app-version-history-row.c:71
+#: src/gs-app-version-history-row.c:133
 #, c-format
 msgid "New in Version %s"
 msgstr "Baru dalam Versi %s"
 
-#: src/gs-app-version-history-row.c:78
+#: src/gs-app-version-history-row.c:140
 #, c-format
 msgid "Version %s"
 msgstr "Versi %s"
 
-#: src/gs-app-version-history-row.c:80
+#: src/gs-app-version-history-row.c:142
 msgid "No details for this release"
 msgstr "Tidak ada detail untuk rilis ini"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:67
+#: src/gs-app-version-history-row.c:156 src/gs-review-row.c:67
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -2204,11 +2204,11 @@ msgstr "Memerlukan Paket Tambahan"
 msgid "Find in Software"
 msgstr "Cari dalam Perangkat Lunak"
 
-#: src/gs-description-box.c:67 src/gs-description-box.c:266
+#: src/gs-description-box.c:87 src/gs-description-box.c:335
 msgid "_Show More"
 msgstr "Tampilkan _Rinciannya"
 
-#: src/gs-description-box.c:67
+#: src/gs-description-box.c:87
 msgid "_Show Less"
 msgstr "Tampilkan Lebih Sedikit"
 
@@ -2313,15 +2313,15 @@ msgstr "Mengunduh"
 msgid "Add-ons"
 msgstr "Tambahan"
 
-#: src/gs-details-page.ui:551
+#: src/gs-details-page.ui:552
 msgid "This app can only be used when there is an active internet connection."
 msgstr "Aplikasi ini hanya dapat dipakai ketika ada koneksi internet aktif."
 
-#: src/gs-details-page.ui:574
+#: src/gs-details-page.ui:575
 msgid "Software Repository Included"
 msgstr "Repositori Perangkat Lunak Yang Disertakan"
 
-#: src/gs-details-page.ui:584
+#: src/gs-details-page.ui:585
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2329,11 +2329,11 @@ msgstr ""
 "Aplikasi ini menyertakan repositori perangkat lunak yang menyediakan "
 "pemutakhiran maupun akses ke perangkat lunak lain."
 
-#: src/gs-details-page.ui:612
+#: src/gs-details-page.ui:613
 msgid "No Software Repository Included"
 msgstr "Tak Ada Repositori Perangkat Lunak Yang Disertakan"
 
-#: src/gs-details-page.ui:622
+#: src/gs-details-page.ui:623
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2341,7 +2341,7 @@ msgstr ""
 "Aplikasi ini tak termasuk repositori perangkat lunak. Ini tak akan "
 "dimutakhirkan ke versi-versi lebih baru."
 
-#: src/gs-details-page.ui:650
+#: src/gs-details-page.ui:651
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2349,11 +2349,11 @@ msgstr ""
 "Perangkat lunak ini telah disediakan distribusi Anda dan tak boleh diganti."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:681
+#: src/gs-details-page.ui:682
 msgid "Software Repository Identified"
 msgstr "Repositori Perangkat Lunak Teridentifikasi"
 
-#: src/gs-details-page.ui:691
+#: src/gs-details-page.ui:692
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2361,15 +2361,15 @@ msgstr ""
 "Menambahkan repositori perangkat lunak ini akan memberi Anda akses ke "
 "perangkat lunak tambahan dan peningkatan."
 
-#: src/gs-details-page.ui:698
+#: src/gs-details-page.ui:699
 msgid "Only use software repositories that you trust."
 msgstr "Hanya pakai repositori perangkat lunak yang Anda percayai."
 
-#: src/gs-details-page.ui:771
+#: src/gs-details-page.ui:772
 msgid "No Metadata"
 msgstr "Tidak Ada Metadata"
 
-#: src/gs-details-page.ui:780
+#: src/gs-details-page.ui:781
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2377,33 +2377,33 @@ msgstr ""
 "Perangkat lunak ini tidak menyediakan tautan ke situs web, repositori kode, "
 "atau pelacak masalah."
 
-#: src/gs-details-page.ui:808
+#: src/gs-details-page.ui:809
 msgid "Project _Website"
 msgstr "Situs _Web Proyek"
 
-#: src/gs-details-page.ui:825
+#: src/gs-details-page.ui:826
 msgid "_Donate"
 msgstr "_Donasi"
 
-#: src/gs-details-page.ui:842
+#: src/gs-details-page.ui:843
 msgid "Contribute _Translations"
 msgstr "Kontribusi _Terjemahan"
 
-#: src/gs-details-page.ui:859
+#: src/gs-details-page.ui:860
 msgid "_Report an Issue"
 msgstr "Lapo_rkan Masalah"
 
-#: src/gs-details-page.ui:876
+#: src/gs-details-page.ui:877
 msgid "_Help"
 msgstr "_Bantuan"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:970
+#: src/gs-details-page.ui:971
 msgid "Write R_eview"
 msgstr "_Tulis Ulasan"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:1007
+#: src/gs-details-page.ui:1008
 msgid "All Reviews"
 msgstr "Semua Ulasan"
 
@@ -3138,29 +3138,29 @@ msgstr "Pem_utakhiran Otomatis"
 
 #: src/gs-prefs-dialog.ui:20
 msgid ""
-"Downloads and installs software updates in the background, when possible."
+"Downloads and installs software updates in the background, when possible"
 msgstr ""
 "Unduh dan pasang pemutakhiran perangkat lunak di latar belakang, jika "
-"memungkinkan."
+"memungkinkan"
 
 #: src/gs-prefs-dialog.ui:33
 msgid "Automatic Update _Notifications"
 msgstr "Pemberitahua_n Pemutakhiran Otomatis"
 
 #: src/gs-prefs-dialog.ui:34
-msgid "Show notifications when updates have been automatically installed."
+msgid "Show notifications when updates have been automatically installed"
 msgstr ""
-"Tampilkan pemberitahuan ketika pemutakhiran telah dipasang secara otomatis."
+"Tampilkan pemberitahuan ketika pemutakhiran telah dipasang secara otomatis"
 
 #: src/gs-prefs-dialog.ui:47
 msgid "Show Only _Free Apps"
 msgstr "Hanya Tampilkan Aplikasi _Bebas"
 
 #: src/gs-prefs-dialog.ui:48
-msgid "Show only freely licensed apps and hide any proprietary apps."
+msgid "Show only freely licensed apps and hide any proprietary apps"
 msgstr ""
 "Hanya tampilkan aplikasi berlisensi bebas dan sembunyikan aplikasi "
-"proprietari apa pun."
+"proprietari apa pun"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -3746,24 +3746,24 @@ msgstr "Versi SDK usang"
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:46
 msgid "Previous Screenshot"
-msgstr "Tangkapan Layar Sebelumnya"
+msgstr "Cuplikan Layar Sebelumnya"
 
 #. Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:74
 msgid "Next Screenshot"
-msgstr "Tangkapan Layar Berikutnya"
+msgstr "Cuplikan Layar Berikutnya"
 
 #. Translators: Shortened form of “no screenshots available” when showing an app’s details.
 #: src/gs-screenshot-carousel.ui:130
-msgid "No Screenshot"
-msgstr "Tidak Ada Tangkapan layar"
+msgid "No Screenshots"
+msgstr "Tidak Ada Cuplikan layar"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
 #: src/gs-screenshot-image.c:359 src/gs-screenshot-image.c:416
 #: src/gs-screenshot-image.c:620
 msgid "Screenshot not found"
-msgstr "Tangkapan layar tak ditemukan"
+msgstr "Cuplikan layar tak ditemukan"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
 #: src/gs-screenshot-image.c:435
@@ -3774,7 +3774,7 @@ msgstr "Gagal memuat citra"
 #. * the generator did not create or the parser did not add
 #: src/gs-screenshot-image.c:648
 msgid "Screenshot size not found"
-msgstr "Ukuran tangkapan layar tak ditemukan"
+msgstr "Ukuran cuplikan layar tak ditemukan"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
@@ -3786,16 +3786,16 @@ msgstr "Tak bisa membuat singgahan"
 #. * that was not a valid URL
 #: src/gs-screenshot-image.c:744
 msgid "Screenshot not valid"
-msgstr "Tangkapan layar tak valid"
+msgstr "Cuplikan layar tak valid"
 
 #. TRANSLATORS: this is when networking is not available
 #: src/gs-screenshot-image.c:794
 msgid "Screenshot not available"
-msgstr "Tangkapan layar tak tersedia"
+msgstr "Cuplikan layar tak tersedia"
 
 #: src/gs-screenshot-image.ui:6
 msgid "Screenshot"
-msgstr "Tangkapan layar"
+msgstr "Cuplikan layar"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
@@ -5421,11 +5421,3 @@ msgstr "Dukungan Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap adalah paket Linux yang universal"
-
-#~ msgid "The last timestamp when the system was online and got any updates"
-#~ msgstr ""
-#~ "Stempel waktu terakhir ketika sistem daring dan mendapat pemutakhiran apa "
-#~ "pun"
-
-#~ msgid "Selected add-ons will be installed with the app."
-#~ msgstr "Tambahan yang dipilih akan dipasang dengan aplikasi."
