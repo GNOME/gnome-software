@@ -1012,7 +1012,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	    !gtk_widget_get_visible (self->button_install) &&
 	    !gtk_widget_get_visible (self->button_update)) {
 		remove_is_destructive = FALSE;
-		gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Uninstall"));
+		gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Uninstall…"));
 	} else {
 		gtk_button_set_icon_name (GTK_BUTTON (self->button_remove), "user-trash-symbolic");
 	}
