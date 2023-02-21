@@ -5208,6 +5208,32 @@ gs_app_get_cancellable (GsApp *app)
 }
 
 /**
+ * gs_app_peek_cancellable:
+ * @app: a #GsApp
+ *
+ * Peek the current cancellable used by the @app. It's referenced for thread safety;
+ * if not %NULL, free it with g_object_unref() when no longer needed.
+ *
+ * Returns: (nullable) (transfer full): the current cancellable, or %NULL
+ *
+ * Since: 44
+ **/
+GCancellable *
+gs_app_peek_cancellable (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	locker = g_mutex_locker_new (&priv->mutex);
+	if (priv->cancellable)
+		return g_object_ref (priv->cancellable);
+
+	return NULL;
+}
+
+/**
  * gs_app_get_pending_action:
  * @app: a #GsApp
  *
