@@ -1248,7 +1248,6 @@ get_page_interaction_from_string (const gchar *interaction)
 static int
 gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 {
-	GsApplication *self = GS_APPLICATION (app);
 	const gchar *id;
 	const gchar *pkgname;
 	const gchar *local_filename;
@@ -1256,8 +1255,6 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	const gchar *search;
 	gint rc = -1;
 	g_autoptr(GError) error = NULL;
-
-	gs_debug_set_verbose (self->debug, g_variant_dict_contains (options, "verbose"));
 
 	/* prefer local sources */
 	if (g_variant_dict_contains (options, "prefer-local"))
@@ -1271,6 +1268,12 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	if (!g_application_register (app, NULL, &error)) {
 		g_printerr ("%s\n", error->message);
 		return 1;
+	}
+
+	if (g_variant_dict_contains (options, "verbose")) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"verbose",
+						NULL);
 	}
 
 	if (g_variant_dict_contains (options, "autoupdate")) {
@@ -1290,12 +1293,6 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 						"shutdown",
 						NULL);
 		return 0;
-	}
-
-	if (g_variant_dict_contains (options, "verbose")) {
-		g_action_group_activate_action (G_ACTION_GROUP (app),
-						"verbose",
-						NULL);
 	}
 
 	if (g_variant_dict_lookup (options, "mode", "&s", &mode)) {
