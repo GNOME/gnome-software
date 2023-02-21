@@ -1060,226 +1060,210 @@ update_apps_thread_cb (GTask        *task,
 
 	assert_in_worker (self);
 
-	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
-		/* build and run transaction for each flatpak installation */
-		applist_by_flatpaks = _group_apps_by_installation (self, data->apps);
-		g_hash_table_iter_init (&iter, applist_by_flatpaks);
-		while (g_hash_table_iter_next (&iter, &key, &value)) {
-			GsFlatpak *flatpak = GS_FLATPAK (key);
-			GsAppList *list_tmp = GS_APP_LIST (value);
-			g_autoptr(FlatpakTransaction) transaction = NULL;
-			gpointer schedule_entry_handle = NULL;
+	/* build and run transaction for each flatpak installation */
+	applist_by_flatpaks = _group_apps_by_installation (self, data->apps);
+	g_hash_table_iter_init (&iter, applist_by_flatpaks);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		GsFlatpak *flatpak = GS_FLATPAK (key);
+		GsAppList *list_tmp = GS_APP_LIST (value);
+		g_autoptr(FlatpakTransaction) transaction = NULL;
+		gpointer schedule_entry_handle = NULL;
+		gboolean is_update_downloaded = TRUE;
 
-			g_assert (GS_IS_FLATPAK (flatpak));
-			g_assert (list_tmp != NULL);
-			g_assert (gs_app_list_length (list_tmp) > 0);
+		g_assert (GS_IS_FLATPAK (flatpak));
+		g_assert (list_tmp != NULL);
+		g_assert (gs_app_list_length (list_tmp) > 0);
 
-			if (!interactive) {
-				if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &local_error)) {
-					g_warning ("Failed to block on download scheduler: %s",
-						   local_error->message);
-					g_clear_error (&local_error);
-				}
-			}
-
-			/* build and run non-deployed transaction */
-			transaction = _build_transaction (GS_PLUGIN (self), flatpak, interactive, cancellable, &local_error);
-			if (transaction == NULL) {
-				gs_flatpak_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
-			}
-
-			flatpak_transaction_set_no_deploy (transaction, TRUE);
-
-			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-				GsApp *app = gs_app_list_index (list_tmp, i);
-				g_autofree gchar *ref = NULL;
-
-				ref = gs_flatpak_app_get_ref_display (app);
-				if (flatpak_transaction_add_update (transaction, ref, NULL, NULL, &local_error))
-					continue;
-
-				/* Errors about missing remotes are not fatal, as that’s
-				 * a not-uncommon situation. */
-				if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
-					g_autoptr(GsPluginEvent) event = NULL;
-
-					g_warning ("Skipping update for ‘%s’: %s", ref, local_error->message);
-
-					gs_flatpak_error_convert (&local_error);
-
-					event = gs_plugin_event_new ("error", local_error,
-								     NULL);
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-					gs_plugin_report_event (GS_PLUGIN (self), event);
-				} else {
-					gs_flatpak_error_convert (&local_error);
-					g_task_return_error (task, g_steal_pointer (&local_error));
-					return;
-				}
-			}
-
-			/* FIXME: Link progress reporting from #FlatpakTransaction
-			 * up to `data->progress_callback`. */
-			if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
-				gs_flatpak_error_convert (&local_error);
-				remove_schedule_entry (schedule_entry_handle);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
-			}
-
-			remove_schedule_entry (schedule_entry_handle);
-
-			/* Traverse over the GsAppList again and set that the update has been already downloaded
-			 * for the apps. */
-			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-				GsApp *app = gs_app_list_index (list_tmp, i);
-				gs_app_set_is_update_downloaded (app, TRUE);
+		if (!interactive) {
+			if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &local_error)) {
+				g_warning ("Failed to block on download scheduler: %s",
+					   local_error->message);
+				g_clear_error (&local_error);
 			}
 		}
-	}
 
-	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
-		/* build and run transaction for each flatpak installation */
-		applist_by_flatpaks = _group_apps_by_installation (self, data->apps);
-		g_hash_table_iter_init (&iter, applist_by_flatpaks);
+		/* build and run non-deployed transaction */
+		transaction = _build_transaction (GS_PLUGIN (self), flatpak, interactive, cancellable, &local_error);
+		if (transaction == NULL) {
+			gs_flatpak_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 
-		while (g_hash_table_iter_next (&iter, &key, &value)) {
-			GsFlatpak *flatpak = GS_FLATPAK (key);
-			GsAppList *list_tmp = GS_APP_LIST (value);
-			g_autoptr(FlatpakTransaction) transaction = NULL;
-			gboolean is_update_downloaded = TRUE;
-			gpointer schedule_entry_handle = NULL;
+		flatpak_transaction_set_no_deploy (transaction, TRUE);
 
-			g_assert (GS_IS_FLATPAK (flatpak));
-			g_assert (list_tmp != NULL);
-			g_assert (gs_app_list_length (list_tmp) > 0);
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			g_autofree gchar *ref = NULL;
 
-			gs_flatpak_set_busy (flatpak, TRUE);
+			ref = gs_flatpak_app_get_ref_display (app);
+			if (flatpak_transaction_add_update (transaction, ref, NULL, NULL, &local_error))
+				continue;
 
-			if (!interactive) {
-				g_autoptr(GError) error_local = NULL;
+			/* Errors about missing remotes are not fatal, as that’s
+			 * a not-uncommon situation. */
+			if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
+				g_autoptr(GsPluginEvent) event = NULL;
 
-				if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
-					g_warning ("Failed to block on download scheduler: %s",
-						   error_local->message);
-					g_clear_error (&error_local);
-				}
-			}
-
-			/* build and run transaction */
-			transaction = _build_transaction (GS_PLUGIN (self), flatpak, interactive, cancellable, &local_error);
-			if (transaction == NULL) {
-				gs_flatpak_set_busy (flatpak, FALSE);
-				gs_flatpak_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
-			}
-
-			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-				GsApp *app = gs_app_list_index (list_tmp, i);
-				g_autofree gchar *ref = NULL;
-
-				ref = gs_flatpak_app_get_ref_display (app);
-				if (flatpak_transaction_add_update (transaction, ref, NULL, NULL, &local_error)) {
-					/* add to the transaction cache for quick look up -- other unrelated
-					 * refs will be matched using gs_plugin_flatpak_find_app_by_ref() */
-					gs_flatpak_transaction_add_app (transaction, app);
-
-					continue;
-				}
-
-				/* Errors about missing remotes are not fatal, as that’s
-				 * a not-uncommon situation. */
-				if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
-					g_autoptr(GsPluginEvent) event = NULL;
-
-					g_warning ("Skipping update for ‘%s’: %s", ref, local_error->message);
-
-					gs_flatpak_error_convert (&local_error);
-
-					event = gs_plugin_event_new ("error", local_error,
-								     NULL);
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-					gs_plugin_report_event (GS_PLUGIN (self), event);
-				} else {
-					gs_flatpak_set_busy (flatpak, FALSE);
-					gs_flatpak_error_convert (&local_error);
-					g_task_return_error (task, g_steal_pointer (&local_error));
-					return;
-				}
-			}
-
-			/* run transaction */
-			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-				GsApp *app = gs_app_list_index (list_tmp, i);
-				gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-
-				/* If all apps' update are previously downloaded and available locally,
-				 * FlatpakTransaction should run with no-pull flag. This is the case
-				 * for apps' autoupdates. */
-				is_update_downloaded &= gs_app_get_is_update_downloaded (app);
-			}
-
-			if (is_update_downloaded) {
-				flatpak_transaction_set_no_pull (transaction, TRUE);
-			}
-
-			/* automatically clean up unused EOL runtimes when updating */
-			flatpak_transaction_set_include_unused_uninstall_ops (transaction, TRUE);
-
-			/* FIXME: Link progress reporting from #FlatpakTransaction
-			 * up to `data->progress_callback`. */
-			if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
-				for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-					GsApp *app = gs_app_list_index (list_tmp, i);
-					gs_app_set_state_recover (app);
-				}
-
-				remove_schedule_entry (schedule_entry_handle);
-				gs_flatpak_set_busy (flatpak, FALSE);
+				g_warning ("Skipping update for ‘%s’: %s", ref, local_error->message);
 
 				gs_flatpak_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
+
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_report_event (GS_PLUGIN (self), event);
 			} else {
-				/* Reset the state to have it updated */
-				for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-					GsApp *app = gs_app_list_index (list_tmp, i);
-					gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-				}
+				gs_flatpak_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+
+		/* FIXME: Link progress reporting from #FlatpakTransaction
+		 * up to `data->progress_callback`. */
+		if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
+			gs_flatpak_error_convert (&local_error);
+			remove_schedule_entry (schedule_entry_handle);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		remove_schedule_entry (schedule_entry_handle);
+
+		/* Traverse over the GsAppList again and set that the update has been already downloaded
+		 * for the apps. */
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			gs_app_set_is_update_downloaded (app, TRUE);
+		}
+
+		g_clear_object (&transaction);
+
+		/* Now apply the updates. */
+		gs_flatpak_set_busy (flatpak, TRUE);
+
+		if (!interactive) {
+			g_autoptr(GError) error_local = NULL;
+
+			if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
+				g_warning ("Failed to block on download scheduler: %s",
+					   error_local->message);
+				g_clear_error (&error_local);
+			}
+		}
+
+		/* build and run transaction */
+		transaction = _build_transaction (GS_PLUGIN (self), flatpak, interactive, cancellable, &local_error);
+		if (transaction == NULL) {
+			gs_flatpak_set_busy (flatpak, FALSE);
+			gs_flatpak_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			g_autofree gchar *ref = NULL;
+
+			ref = gs_flatpak_app_get_ref_display (app);
+			if (flatpak_transaction_add_update (transaction, ref, NULL, NULL, &local_error)) {
+				/* add to the transaction cache for quick look up -- other unrelated
+				 * refs will be matched using gs_plugin_flatpak_find_app_by_ref() */
+				gs_flatpak_transaction_add_app (transaction, app);
+
+				continue;
 			}
 
-			remove_schedule_entry (schedule_entry_handle);
-			gs_plugin_updates_changed (GS_PLUGIN (self));
+			/* Errors about missing remotes are not fatal, as that’s
+			 * a not-uncommon situation. */
+			if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
+				g_autoptr(GsPluginEvent) event = NULL;
 
-			/* get any new state */
-			if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, &local_error)) {
+				g_warning ("Skipping update for ‘%s’: %s", ref, local_error->message);
+
+				gs_flatpak_error_convert (&local_error);
+
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_report_event (GS_PLUGIN (self), event);
+			} else {
 				gs_flatpak_set_busy (flatpak, FALSE);
 				gs_flatpak_error_convert (&local_error);
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
+		}
+
+		/* run transaction */
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+
+			/* If all apps' update are previously downloaded and available locally,
+			 * FlatpakTransaction should run with no-pull flag. This is the case
+			 * for apps' autoupdates. */
+			is_update_downloaded &= gs_app_get_is_update_downloaded (app);
+		}
+
+		if (is_update_downloaded) {
+			flatpak_transaction_set_no_pull (transaction, TRUE);
+		}
+
+		/* automatically clean up unused EOL runtimes when updating */
+		flatpak_transaction_set_include_unused_uninstall_ops (transaction, TRUE);
+
+		/* FIXME: Link progress reporting from #FlatpakTransaction
+		 * up to `data->progress_callback`. */
+		if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
 			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 				GsApp *app = gs_app_list_index (list_tmp, i);
-				g_autofree gchar *ref = NULL;
-
-				ref = gs_flatpak_app_get_ref_display (app);
-				if (!gs_flatpak_refine_app (flatpak, app,
-							    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
-							    interactive,
-							    cancellable, &local_error)) {
-					gs_flatpak_set_busy (flatpak, FALSE);
-					g_prefix_error (&local_error, "failed to run refine for %s: ", ref);
-					gs_flatpak_error_convert (&local_error);
-					g_task_return_error (task, g_steal_pointer (&local_error));
-					return;
-				}
+				gs_app_set_state_recover (app);
 			}
 
+			remove_schedule_entry (schedule_entry_handle);
 			gs_flatpak_set_busy (flatpak, FALSE);
+
+			gs_flatpak_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		} else {
+			/* Reset the state to have it updated */
+			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+				GsApp *app = gs_app_list_index (list_tmp, i);
+				gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+			}
 		}
+
+		remove_schedule_entry (schedule_entry_handle);
+		gs_plugin_updates_changed (GS_PLUGIN (self));
+
+		/* get any new state */
+		if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, &local_error)) {
+			gs_flatpak_set_busy (flatpak, FALSE);
+			gs_flatpak_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			g_autofree gchar *ref = NULL;
+
+			ref = gs_flatpak_app_get_ref_display (app);
+			if (!gs_flatpak_refine_app (flatpak, app,
+						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+						    interactive,
+						    cancellable, &local_error)) {
+				gs_flatpak_set_busy (flatpak, FALSE);
+				g_prefix_error (&local_error, "failed to run refine for %s: ", ref);
+				gs_flatpak_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+
+		gs_flatpak_set_busy (flatpak, FALSE);
 	}
 
 	g_task_return_boolean (task, TRUE);
