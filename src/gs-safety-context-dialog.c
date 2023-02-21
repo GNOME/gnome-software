@@ -195,11 +195,11 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "camera-photo-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("Device Access"),
+				    _("User Device Access"),
 				    _("Can access devices such as webcams or gaming controllers"),
 				    "camera-disabled-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("No Device Access"),
+				    _("No User Device Access"),
 				    _("Cannot access devices such as webcams or gaming controllers"));
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES) != 0,
