@@ -13,6 +13,15 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GsAppPermissionsFlags:
+ * @GS_APP_PERMISSIONS_FLAGS_DEVICES: App can access general purpose devices
+ *   such as webcams or gaming controllers.
+ * @GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES: App can access non-physical
+ *   privileged system devices, such as `/dev/shm` or `/dev/kvm` (Since: 44)
+ *
+ * Flags to indicate what permissions an app requires, at a high level.
+ */
 typedef enum {
 	GS_APP_PERMISSIONS_FLAGS_UNKNOWN 		= 0,
 	GS_APP_PERMISSIONS_FLAGS_NONE			= 1 << 0,
@@ -30,6 +39,7 @@ typedef enum {
 	GS_APP_PERMISSIONS_FLAGS_X11			= 1 << 12,
 	GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX		= 1 << 13,
 	GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER	= 1 << 14,
+	GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES		= 1 << 15,
 	GS_APP_PERMISSIONS_FLAGS_LAST  /*< skip >*/
 } GsAppPermissionsFlags;
 
