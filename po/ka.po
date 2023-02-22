@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-02-17 06:12+0000\n"
-"PO-Revision-Date: 2023-02-17 08:39+0100\n"
+"POT-Creation-Date: 2023-02-21 13:25+0000\n"
+"PO-Revision-Date: 2023-02-22 06:36+0100\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -744,7 +744,7 @@ msgstr "ლოკალური ფაილი"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6242 src/gs-safety-context-dialog.c:435
+#: lib/gs-app.c:6242 src/gs-safety-context-dialog.c:443
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
@@ -788,7 +788,7 @@ msgid "_Install"
 msgstr "_დაყენება"
 
 #. TRANSLATORS: this is button text to remove the app
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1015 src/gs-page.c:550
+#: src/gs-app-addon-row.ui:73 src/gs-page.c:550
 msgid "_Uninstall"
 msgstr "_წაშლა"
 
@@ -816,70 +816,74 @@ msgstr "სესიის სერვსები"
 msgid "Can access D-Bus services on the session bus"
 msgstr ""
 
-#: src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:72
 msgid "Devices"
 msgstr "მოწყობილობები"
 
 #: src/gs-app-details-page.c:71
+msgid "Can access arbitrary devices such as webcams"
+msgstr "აქვს წვდომა ისეთ მოწყობილობებთან, როგორიცაა ვებკამერა"
+
+#: src/gs-app-details-page.c:72
 msgid "Can access system device files"
 msgstr "მოწყობილობების ფაილებთან წვდომა"
 
-#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:73
+#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
 msgid "Home folder"
 msgstr "საწყისი საქაღალდე"
 
-#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
-#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:150
+#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:151
 msgid "Can view, edit and create files"
 msgstr "ფაილების ნახვის, ჩასწორების და შექმნის უფლება"
 
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:145
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:79 src/gs-app-details-page.c:146
 msgid "Can view files"
 msgstr "ფაილების ნახვის უფლება"
 
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:76
 msgid "File system"
 msgstr "ფაილური სისტემა"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
-#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
 msgid "Downloads folder"
 msgstr "საქაღალდის გადმოწერა"
 
-#: src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:80
 msgid "Settings"
 msgstr "მორგება"
 
-#: src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:80
 msgid "Can view and change any settings"
 msgstr "შეუძლია პარამეტრების ნახვა და შეცვლა"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:81
 msgid "Legacy display system"
 msgstr "ჩვენების მოძველებული სისტემა"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:81
 msgid "Uses an old, insecure display system"
 msgstr "იყენებს ძველ, დაუცველ ეკრანის სისტემას"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:82
 msgid "Sandbox escape"
 msgstr ""
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:82
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr ""
 
 #. FIXME support app == NULL
 #. set window title
-#: src/gs-app-details-page.c:166
+#: src/gs-app-details-page.c:167
 msgid "Update Details"
 msgstr "კონტაქტის დეტალები"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:174
+#: src/gs-app-details-page.c:175
 msgid "No update description available."
 msgstr "განახლების აღწერა ხელმისაწვდომი არაა."
 
@@ -1010,7 +1014,7 @@ msgstr ""
 
 #: src/gs-application.c:153
 msgid "Show version number"
-msgstr ""
+msgstr "ვერსიის ნომრის ჩვენება"
 
 #: src/gs-application.c:271 src/gs-application.c:279
 msgid "Copyright © 2016–2023 GNOME Software contributors"
@@ -1119,89 +1123,95 @@ msgstr "იყენებს სესიის სერვისებს"
 msgid "Can access hardware devices"
 msgstr "შეუძლია აპარატურასთან წვდომა"
 
+#. Translators: This indicates an app can access system devices such as /dev/shm.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:320
+msgid "Can access system devices"
+msgstr "აქვს წვდომა სისტემურ მოწყობილობებთან"
+
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:325
+#: src/gs-app-context-bar.c:332
 msgid "Can read/write all your data"
 msgstr "შეუძლია წაიკითხოს/ჩაწერის ყველა თქვენი მონაცემი"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:337
+#: src/gs-app-context-bar.c:344
 msgid "Can read all your data"
 msgstr "შეუძლია თქვენი მონაცემების წაკითხვა"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:344
+#: src/gs-app-context-bar.c:351
 msgid "Can read/write your downloads"
 msgstr "შეუძლია წაიკითხოს/ჩაწეროს თქვენს გადმოწერილ ფაილებში"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:351
+#: src/gs-app-context-bar.c:358
 msgid "Can read your downloads"
 msgstr "შეუძლია წაიკითხოს თქვენი გადმოწერილი ფაილები"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:358
+#: src/gs-app-context-bar.c:365
 msgid "Can access arbitrary files"
 msgstr "შეუძლია ჩვეულებრივ ფაილებთან წვდომა"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:365 src/gs-safety-context-dialog.c:226
+#: src/gs-app-context-bar.c:372 src/gs-safety-context-dialog.c:234
 msgid "Can access and change user settings"
 msgstr "შეუძლია წვდომა ჰქონდეს და შეცვალოს მომხმარებლის პარამეტრები"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:372 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:379 src/gs-safety-context-dialog.c:218
 msgid "Uses a legacy windowing system"
 msgstr "იყენებს მოძველებულ ფანჯრულ სისტემას"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:379 src/gs-safety-context-dialog.c:218
+#: src/gs-app-context-bar.c:386 src/gs-safety-context-dialog.c:226
 msgid "Can acquire arbitrary permissions"
 msgstr "შეუძლია ჩვეულებრივი წვდომების მიღება"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:405 src/gs-safety-context-dialog.c:145
+#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:145
 msgid "Reviewed by your distribution"
 msgstr "განხილულია თქვენი დისტრიბუტორის მიერ"
 
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:142
+#: src/gs-app-context-bar.c:419 src/gs-safety-context-dialog.c:142
 msgid "Provided by a third party"
 msgstr "მოწოდებულია მესამე პირის მიერ"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:424
+#: src/gs-app-context-bar.c:431
 msgid "Proprietary code"
 msgstr "დახურული კოდი"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:430
+#: src/gs-app-context-bar.c:437
 msgid "Auditable code"
 msgstr "აუდიტირებადი კოდი"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:437
+#: src/gs-app-context-bar.c:444
 msgid "Software developer is verified"
 msgstr "პროგრამის ავტორი შემოწმებულია"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:446
+#: src/gs-app-context-bar.c:453
 msgid "Software no longer supported"
 msgstr "პროგრამა მხარდაჭერილი აღარაა"
 
@@ -1219,104 +1229,104 @@ msgstr "პროგრამა მხარდაჭერილი აღა�
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:458 src/gs-app-context-bar.c:724
+#: src/gs-app-context-bar.c:465 src/gs-app-context-bar.c:731
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:466
+#: src/gs-app-context-bar.c:473
 msgid "Safe"
 msgstr "უსაფრთხო"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:473
+#: src/gs-app-context-bar.c:480
 msgid "Potentially Unsafe"
 msgstr "პოტენციურად სახიფათო"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:480
+#: src/gs-app-context-bar.c:487
 msgid "Unsafe"
 msgstr "სახიფათო"
 
-#: src/gs-app-context-bar.c:556 src/gs-app-context-bar.c:588
+#: src/gs-app-context-bar.c:563 src/gs-app-context-bar.c:595
 #: src/gs-hardware-support-context-dialog.c:602
 msgid "Mobile Only"
 msgstr "მხოლოდ მობილური"
 
-#: src/gs-app-context-bar.c:557
+#: src/gs-app-context-bar.c:564
 msgid "Only works on a small screen"
 msgstr "მუშაობს მხოლოდ პატარა ეკრანზე"
 
-#: src/gs-app-context-bar.c:562 src/gs-app-context-bar.c:595
-#: src/gs-app-context-bar.c:602 src/gs-app-context-bar.c:652
-#: src/gs-app-context-bar.c:657 src/gs-hardware-support-context-dialog.c:582
+#: src/gs-app-context-bar.c:569 src/gs-app-context-bar.c:602
+#: src/gs-app-context-bar.c:609 src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:664 src/gs-hardware-support-context-dialog.c:582
 msgid "Desktop Only"
 msgstr "მხოლოდ სამუშაო მაგიდა"
 
-#: src/gs-app-context-bar.c:563
+#: src/gs-app-context-bar.c:570
 msgid "Only works on a large screen"
 msgstr "მუშაობს მხოლოდ სამუშაო მაგიდაზე"
 
-#: src/gs-app-context-bar.c:567 src/gs-hardware-support-context-dialog.c:620
+#: src/gs-app-context-bar.c:574 src/gs-hardware-support-context-dialog.c:620
 msgid "Screen Size Mismatch"
 msgstr "ეკრანის ზომა არ ემთხვევა"
 
-#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:575 src/gs-hardware-support-context-dialog.c:621
 msgid "Doesn’t support your current screen size"
 msgstr "ეკრანის მიმდინარე ზომა მხარდაუჭერელია"
 
-#: src/gs-app-context-bar.c:589 src/gs-hardware-support-context-dialog.c:673
+#: src/gs-app-context-bar.c:596 src/gs-hardware-support-context-dialog.c:673
 #: src/gs-hardware-support-context-dialog.c:679
 msgid "Requires a touchscreen"
 msgstr "მოითხოვს სენსორულ ეკრანს"
 
-#: src/gs-app-context-bar.c:596 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-app-context-bar.c:603 src/gs-hardware-support-context-dialog.c:633
 #: src/gs-hardware-support-context-dialog.c:639
 msgid "Requires a keyboard"
 msgstr "მოითხოვს კლავიატურას"
 
-#: src/gs-app-context-bar.c:603
+#: src/gs-app-context-bar.c:610
 msgid "Requires a mouse"
 msgstr "მოითხოვს თაგუნას"
 
-#: src/gs-app-context-bar.c:614
+#: src/gs-app-context-bar.c:621
 msgid "Gamepad Needed"
 msgstr "მოითხოვს გეიმპედს"
 
-#: src/gs-app-context-bar.c:615
+#: src/gs-app-context-bar.c:622
 msgid "Requires a gamepad to play"
 msgstr "სათამაშოდ მოითხოვს გეიმპედს"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:639
+#: src/gs-app-context-bar.c:646
 msgid "Adaptive"
 msgstr "შეგუებადი"
 
-#: src/gs-app-context-bar.c:640
+#: src/gs-app-context-bar.c:647
 msgid "Works on phones, tablets and desktops"
 msgstr "მუშაობს ტელეფონზე, ტაბლეტზე და სამუშაო კომპიუტერზე"
 
-#: src/gs-app-context-bar.c:653
+#: src/gs-app-context-bar.c:660
 msgid "Probably requires a keyboard or mouse"
 msgstr "ალბათ მოითხოვს კლავიატურას ან თაგუნას"
 
-#: src/gs-app-context-bar.c:658
+#: src/gs-app-context-bar.c:665
 msgid "Works on desktops and laptops"
 msgstr "მუშაობს სამუშაო კომპიუტერებზე და ლეპტოპებზე"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:699
+#: src/gs-app-context-bar.c:706
 msgid "Contains no age-inappropriate content"
 msgstr "ასაკისთვის დაუშვებელ შემცველობას არ შეიცავს"
 
-#: src/gs-app-context-bar.c:747
+#: src/gs-app-context-bar.c:754
 msgid "No age rating information available"
 msgstr "ასაკზე შეზღუდვის ინფორმაცია მიუწვდომელია"
 
@@ -1353,11 +1363,9 @@ msgstr "განახლება"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily removed
-#. TRANSLATORS: button text in the header when an app can be erased
-#: src/gs-app-row.c:190 src/gs-app-row.c:200 src/gs-details-page.ui:260
-#: src/gs-details-page.ui:270
-msgid "Uninstall"
-msgstr "ამოშლა"
+#: src/gs-app-row.c:190 src/gs-app-row.c:200
+msgid "Uninstall…"
+msgstr "წაშლა…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being erased
@@ -2188,6 +2196,10 @@ msgstr "_გადატვირთვა"
 msgid "_Install…"
 msgstr "_დაყენება…"
 
+#: src/gs-details-page.c:1015
+msgid "_Uninstall…"
+msgstr "_წაშლა…"
+
 #. Translators: %s is the user-visible app name
 #: src/gs-details-page.c:1159
 #, c-format
@@ -2234,6 +2246,11 @@ msgstr "_გახსნა"
 #: src/gs-details-page.ui:242 plugins/packagekit/gs-packagekit-task.c:159
 msgid "_Update"
 msgstr "_განახლება"
+
+#. TRANSLATORS: button text in the header when an app can be erased
+#: src/gs-details-page.ui:260 src/gs-details-page.ui:270
+msgid "Uninstall"
+msgstr "ამოშლა"
 
 #: src/gs-details-page.ui:311
 msgid "Downloading"
@@ -2872,26 +2889,26 @@ msgstr "ბეტა"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:250
+#: src/gs-os-update-page.c:249
 msgid "Additions"
 msgstr "დამატებები"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:254
+#: src/gs-os-update-page.c:253
 msgid "Removals"
 msgstr "წაშლები"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:258
+#: src/gs-os-update-page.c:257
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "განახლებები"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:262
+#: src/gs-os-update-page.c:261
 msgid "Downgrades"
 msgstr "ვერსიის ჩამოწევა"
 
@@ -3403,8 +3420,8 @@ msgstr "შეუძლია მონაცემების გამოთ�
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:198
-msgid "Device Access"
-msgstr "მოწყობილობასთან წვდომა"
+msgid "User Device Access"
+msgstr "მომხმარებლის მოწყობილობასთან წვდომა"
 
 #: src/gs-safety-context-dialog.c:199
 msgid "Can access devices such as webcams or gaming controllers"
@@ -3412,8 +3429,8 @@ msgstr "აქვს ისეთ მოწყობილობებთან 
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:202
-msgid "No Device Access"
-msgstr "მოწყობილობებთან წვდომის გარეშე"
+msgid "No User Device Access"
+msgstr "მომხმარებლის მოწყობილობებთან წვდომის გარეშე"
 
 #: src/gs-safety-context-dialog.c:203
 msgid "Cannot access devices such as webcams or gaming controllers"
@@ -3421,107 +3438,118 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:209
+msgid "System Device Access"
+msgstr "სისტემურ მოწყობილობასთან წვდომა"
+
+#: src/gs-safety-context-dialog.c:210
+msgid "Can access system devices which require elevated permissions"
+msgstr ""
+"აქვს წვდომა სისტემურ მოწყობილობებთან, რომლებსაც დამატებითი წვდომები "
+"ესაჭიროება"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:217
 msgid "Legacy Windowing System"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:225
 msgid "Arbitrary Permissions"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:225
+#: src/gs-safety-context-dialog.c:233
 msgid "User Settings"
 msgstr "მომხმარებლის პარამეტრები"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:237
+#: src/gs-safety-context-dialog.c:245
 msgid "Full File System Read/Write Access"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:238
+#: src/gs-safety-context-dialog.c:246
 msgid "Can read and write all data on the file system"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:246
+#: src/gs-safety-context-dialog.c:254
 msgid "Home Folder Read/Write Access"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:247
+#: src/gs-safety-context-dialog.c:255
 msgid "Can read and write all data in your home directory"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:255
+#: src/gs-safety-context-dialog.c:263
 msgid "Full File System Read Access"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:256
+#: src/gs-safety-context-dialog.c:264
 msgid "Can read all data on the file system"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:265
+#: src/gs-safety-context-dialog.c:273
 msgid "Home Folder Read Access"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:266
+#: src/gs-safety-context-dialog.c:274
 msgid "Can read all data in your home directory"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:275
+#: src/gs-safety-context-dialog.c:283
 msgid "Download Folder Read/Write Access"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:276
+#: src/gs-safety-context-dialog.c:284
 msgid "Can read and write all data in your downloads directory"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:287
+#: src/gs-safety-context-dialog.c:295
 msgid "Download Folder Read Access"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:288
+#: src/gs-safety-context-dialog.c:296
 msgid "Can read all data in your downloads directory"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:298
+#: src/gs-safety-context-dialog.c:306
 msgid "Can read and write all data in the directory"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:309
+#: src/gs-safety-context-dialog.c:317
 msgid "Can read all data in the directory"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:333
 msgid "No File System Access"
 msgstr "ფაილურ სისტემასთან წვდომის გარეშე"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:334
 msgid "Cannot access the file system at all"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:340
+#: src/gs-safety-context-dialog.c:348
 msgid "Proprietary Code"
 msgstr "დახურული კოდი"
 
-#: src/gs-safety-context-dialog.c:341
+#: src/gs-safety-context-dialog.c:349
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
 msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:344
+#: src/gs-safety-context-dialog.c:352
 msgid "Auditable Code"
 msgstr "აუდიტირებადი კოდი"
 
-#: src/gs-safety-context-dialog.c:345
+#: src/gs-safety-context-dialog.c:353
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3529,42 +3557,42 @@ msgstr ""
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:353
+#: src/gs-safety-context-dialog.c:361
 msgid "App developer is verified"
 msgstr "აპის ავტორი შემოწმებულია"
 
-#: src/gs-safety-context-dialog.c:354
+#: src/gs-safety-context-dialog.c:362
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr ""
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:365
+#: src/gs-safety-context-dialog.c:373
 msgid "Insecure Dependencies"
 msgstr "დაუცველი დამოკიდებულებები"
 
-#: src/gs-safety-context-dialog.c:366
+#: src/gs-safety-context-dialog.c:374
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:375
+#: src/gs-safety-context-dialog.c:383
 #, c-format
 msgid "%s is safe"
 msgstr "%s უსაფრთხოა"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:382
+#: src/gs-safety-context-dialog.c:390
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s პოტენციურად სახიფათოა"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:389
+#: src/gs-safety-context-dialog.c:397
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s სახიფათოა"
@@ -4072,7 +4100,7 @@ msgstr ""
 #: src/gs-shell.c:1740
 #, c-format
 msgid "Unable to remove %s"
-msgstr ""
+msgstr "წაშლის შეცდომა: %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the app name (e.g. "GIMP")
@@ -4782,135 +4810,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr ""
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:315
+#: plugins/flatpak/gs-flatpak.c:318
 #, c-format
 msgid "System folder %s"
 msgstr "სისტემური საქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:316 plugins/flatpak/gs-flatpak.c:317
+#: plugins/flatpak/gs-flatpak.c:319 plugins/flatpak/gs-flatpak.c:320
 #, c-format
 msgid "Home subfolder %s"
 msgstr "საწყისი ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:318
+#: plugins/flatpak/gs-flatpak.c:321
 msgid "Host system folders"
 msgstr "ჰოსტი სისტემის საქაღალდეები"
 
-#: plugins/flatpak/gs-flatpak.c:319
+#: plugins/flatpak/gs-flatpak.c:322
 msgid "Host system configuration from /etc"
 msgstr ""
 
-#: plugins/flatpak/gs-flatpak.c:320
+#: plugins/flatpak/gs-flatpak.c:323
 msgid "Desktop folder"
 msgstr "სამუშაო მაგიდის საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:320
+#: plugins/flatpak/gs-flatpak.c:323
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "სამუშაო მაგიდის ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:321
+#: plugins/flatpak/gs-flatpak.c:324
 msgid "Documents folder"
 msgstr "დოკუმენტების საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:321
+#: plugins/flatpak/gs-flatpak.c:324
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "დოკუმენტების ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:322
+#: plugins/flatpak/gs-flatpak.c:325
 msgid "Music folder"
 msgstr "მუსიკის საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:322
+#: plugins/flatpak/gs-flatpak.c:325
 #, c-format
 msgid "Music subfolder %s"
 msgstr "მუსიკის საქაღალდე: %s"
 
-#: plugins/flatpak/gs-flatpak.c:323
+#: plugins/flatpak/gs-flatpak.c:326
 msgid "Pictures folder"
 msgstr "სურთების საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:323
+#: plugins/flatpak/gs-flatpak.c:326
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "სურათების ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:324
+#: plugins/flatpak/gs-flatpak.c:327
 msgid "Public Share folder"
 msgstr "საჯარო გაზიარების საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:324
+#: plugins/flatpak/gs-flatpak.c:327
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "საჯარო გაზიარების ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:328
 msgid "Videos folder"
 msgstr "ვიდეოების საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:328
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "ვიდეოების ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:326
+#: plugins/flatpak/gs-flatpak.c:329
 msgid "Templates folder"
 msgstr "შაბლონების საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:326
+#: plugins/flatpak/gs-flatpak.c:329
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "შაბლონების ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:330
 msgid "User cache folder"
 msgstr "მომხმარებლის ქეშის საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:330
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "მომხმარებლის ქეშის ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:331
 msgid "User configuration folder"
 msgstr "მომხმარებლის კონფიგურაციის საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:331
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "მომხმარებლის კონფიგურაციის ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:329
+#: plugins/flatpak/gs-flatpak.c:332
 msgid "User data folder"
 msgstr "მომხმარებლის მონაცემების საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:329
+#: plugins/flatpak/gs-flatpak.c:332
 #, c-format
 msgid "User data subfolder %s"
 msgstr "მომხმარებლის მონაცემების ქვესაქაღალდე %s"
 
-#: plugins/flatpak/gs-flatpak.c:330
+#: plugins/flatpak/gs-flatpak.c:333
 msgid "User runtime folder"
 msgstr "მომხმარებლის პროგრამების მონაცემების საქაღალდე"
 
-#: plugins/flatpak/gs-flatpak.c:330
+#: plugins/flatpak/gs-flatpak.c:333
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr ""
 
-#: plugins/flatpak/gs-flatpak.c:388
+#: plugins/flatpak/gs-flatpak.c:391
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "ფაილური სისტემის წვდომა %s-ზე"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1405
+#: plugins/flatpak/gs-flatpak.c:1408
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr ""
 
-#: plugins/flatpak/gs-flatpak.c:3582
+#: plugins/flatpak/gs-flatpak.c:3585
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr ""
@@ -4989,42 +5017,42 @@ msgstr "მოწყობილობას ვერ გამოიყენ�
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:218
+#: plugins/fwupd/gs-fwupd-app.c:219
 #, c-format
 msgid "%s Device Update"
 msgstr "%s მოწყობილობის განახლება"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:224
 #, c-format
 msgid "%s System Update"
 msgstr "%s სისტემის განახლება"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:229
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "%s ჩადგმული კონტროლერის განახლება"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:234
 #, c-format
 msgid "%s ME Update"
 msgstr "%s ME-ის განახლება"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:238
+#: plugins/fwupd/gs-fwupd-app.c:239
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "%s კორპორატიული ME-ის განახლება"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:243
+#: plugins/fwupd/gs-fwupd-app.c:244
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "%s მომხმარებლის ME-ის განახლება"
@@ -5032,7 +5060,7 @@ msgstr "%s მომხმარებლის ME-ის განახლე�
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:249
+#: plugins/fwupd/gs-fwupd-app.c:250
 #, c-format
 msgid "%s Controller Update"
 msgstr "%s კონტროლერის განახლება"
@@ -5040,132 +5068,132 @@ msgstr "%s კონტროლერის განახლება"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:255
+#: plugins/fwupd/gs-fwupd-app.c:256
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "%s Thunderbolt კონტროლერის განახლება"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:260
+#: plugins/fwupd/gs-fwupd-app.c:261
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "%s CPU მიკროკოდის განახლება"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:265
+#: plugins/fwupd/gs-fwupd-app.c:266
 #, c-format
 msgid "%s Configuration Update"
 msgstr "%s კონფიგურაციის განახლება"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:269
+#: plugins/fwupd/gs-fwupd-app.c:270
 #, c-format
 msgid "%s Battery Update"
 msgstr "%s ელემენტის განახლება"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:274
+#: plugins/fwupd/gs-fwupd-app.c:275
 #, c-format
 msgid "%s Camera Update"
 msgstr "%s კამერის განახლება"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:278
+#: plugins/fwupd/gs-fwupd-app.c:279
 #, c-format
 msgid "%s TPM Update"
 msgstr "%s TPM განახლება"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:282
+#: plugins/fwupd/gs-fwupd-app.c:283
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "%s თაჩპედის განახლება"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:286
+#: plugins/fwupd/gs-fwupd-app.c:287
 #, c-format
 msgid "%s Mouse Update"
 msgstr "%s თაგუნას განახლება"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:290
+#: plugins/fwupd/gs-fwupd-app.c:291
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "%s კლავიატურის განახლება"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:294
+#: plugins/fwupd/gs-fwupd-app.c:295
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "%s საცავის კონტროლერის განახლება"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:300
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "%s ქსელის ინტერფეისის განახლება"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:305
 #, c-format
 msgid "%s Display Update"
 msgstr "%s ეკრანის განახლება"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:309
+#: plugins/fwupd/gs-fwupd-app.c:310
 #, c-format
 msgid "%s BMC Update"
 msgstr "%s BMC -ის განახლება"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:314
+#: plugins/fwupd/gs-fwupd-app.c:315
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "%s USB მიმღების განახლება"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:318
+#: plugins/fwupd/gs-fwupd-app.c:319
 #, c-format
 msgid "%s Drive Update"
 msgstr "%s დისკის განახლება"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:322
+#: plugins/fwupd/gs-fwupd-app.c:323
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr "%s Flash დისკის განახლება"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:328
 #, c-format
 msgid "%s SSD Update"
 msgstr "%s SSD -ის განახლება"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:333
 #, c-format
 msgid "%s GPU Update"
 msgstr "%s GPU -ის განახლება"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:337
+#: plugins/fwupd/gs-fwupd-app.c:338
 #, c-format
 msgid "%s Dock Update"
 msgstr "%s დოკის განახლება"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:342
+#: plugins/fwupd/gs-fwupd-app.c:343
 #, c-format
 msgid "%s USB Dock Update"
 msgstr "%s USB დოკის განახლება"
