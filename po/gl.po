@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-02-16 11:05+0000\n"
-"PO-Revision-Date: 2023-02-16 13:03+0100\n"
+"POT-Creation-Date: 2023-02-21 13:25+0000\n"
+"PO-Revision-Date: 2023-02-23 11:32+0100\n"
 "Last-Translator: Fran Dieguez <fran.dieguez@gnome.org>\n"
 "Language-Team: Galician <proxecto@trasno.gal>\n"
 "Language: gl\n"
@@ -334,7 +334,7 @@ msgid ""
 "apps."
 msgstr ""
 "Estabeleza a «verdadeiro» para mostrar só as aplicacións con licencia libre "
-"e ocultar calquera aplicación privativa"
+"e ocultar calquera aplicación privativa."
 
 #: data/org.gnome.software.gschema.xml:150
 msgid "A string storing the gnome-online-account id used to login"
@@ -810,7 +810,7 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6242 src/gs-safety-context-dialog.c:435
+#: lib/gs-app.c:6242 src/gs-safety-context-dialog.c:443
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
@@ -854,7 +854,7 @@ msgid "_Install"
 msgstr "_Instalar"
 
 #. TRANSLATORS: this is button text to remove the app
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1015 src/gs-page.c:550
+#: src/gs-app-addon-row.ui:73 src/gs-page.c:550
 msgid "_Uninstall"
 msgstr "_Desinstalar"
 
@@ -882,70 +882,74 @@ msgstr "Servizos da sesión"
 msgid "Can access D-Bus services on the session bus"
 msgstr "Pode acceder aos servizos de D-Bus no bus de sesión"
 
-#: src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:72
 msgid "Devices"
 msgstr "Dispositivos"
 
 #: src/gs-app-details-page.c:71
+msgid "Can access arbitrary devices such as webcams"
+msgstr "Pode acceder a dispositivos arbitrarios como cámaras web"
+
+#: src/gs-app-details-page.c:72
 msgid "Can access system device files"
 msgstr "Pode acceder aos ficheiros do dispositivo do sistema"
 
-#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:73
+#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
 msgid "Home folder"
 msgstr "Cartafol persoal"
 
-#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
-#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:150
+#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:151
 msgid "Can view, edit and create files"
 msgstr "Pode ver, editar e crear ficheiros"
 
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:145
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:79 src/gs-app-details-page.c:146
 msgid "Can view files"
 msgstr "Pode ver ficheiros"
 
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:76
 msgid "File system"
 msgstr "Sistema de ficheiros"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
-#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
 msgid "Downloads folder"
 msgstr "Cartafol de descargas"
 
-#: src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:80
 msgid "Settings"
 msgstr "Configuracións"
 
-#: src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:80
 msgid "Can view and change any settings"
 msgstr "Pode ver e cambiar calquera preferencia"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:81
 msgid "Legacy display system"
 msgstr "Sistema de pantalla antigo"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:81
 msgid "Uses an old, insecure display system"
 msgstr "Usa un sistema de pantalla antigo e inseguro"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:82
 msgid "Sandbox escape"
 msgstr "Saír do illamento"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:82
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Pode escapar da caixa de area e saltar calquera outra restrición"
 
 #. FIXME support app == NULL
 #. set window title
-#: src/gs-app-details-page.c:166
+#: src/gs-app-details-page.c:167
 msgid "Update Details"
 msgstr "Información da actualización"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:174
+#: src/gs-app-details-page.c:175
 msgid "No update description available."
 msgstr "Non hai unha descrición dispoñíbel."
 
@@ -959,7 +963,7 @@ msgid "Requires additional permissions"
 msgstr "Require permisos adicionais"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:918
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:919
 msgid "Reviews"
 msgstr "Revisións"
 
@@ -971,27 +975,27 @@ msgstr "Non se atoparon revisións para esta aplicación."
 msgid "No Reviews"
 msgstr "Non hai revisións"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:517
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:518
 msgid "Version History"
 msgstr "Historial de versións"
 
-#: src/gs-app-version-history-row.c:71
+#: src/gs-app-version-history-row.c:133
 #, c-format
 msgid "New in Version %s"
 msgstr "Novo na versión %s"
 
-#: src/gs-app-version-history-row.c:78
+#: src/gs-app-version-history-row.c:140
 #, c-format
 msgid "Version %s"
 msgstr "Versión %s"
 
-#: src/gs-app-version-history-row.c:80
+#: src/gs-app-version-history-row.c:142
 msgid "No details for this release"
 msgstr "Non hai detalles para esta publicación"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:67
+#: src/gs-app-version-history-row.c:156 src/gs-review-row.c:67
 msgid "%e %B %Y"
 msgstr "%e de %B de %Y"
 
@@ -1087,7 +1091,7 @@ msgstr "Copyright © 2016–2023 Contribuíntes de GNOME Software"
 
 #: src/gs-application.c:273 src/gs-application.c:282
 msgid "translator-credits"
-msgstr "Fran Diéguez <frandieguez@gnome.org>, 2013-2023."
+msgstr "Fran Diéguez <frandieguez@gnome.org>, 2013-2023"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
@@ -1188,89 +1192,95 @@ msgstr "Usa os servizos da sesión"
 msgid "Can access hardware devices"
 msgstr "Pode acceder ao hardware do sistema"
 
+#. Translators: This indicates an app can access system devices such as /dev/shm.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:320
+msgid "Can access system devices"
+msgstr "Pode acceder aos dispositivos do sistema"
+
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:325
+#: src/gs-app-context-bar.c:332
 msgid "Can read/write all your data"
 msgstr "Pode ler/escribir todos os seus datos"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:337
+#: src/gs-app-context-bar.c:344
 msgid "Can read all your data"
 msgstr "Pode ler todos os seus datos"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:344
+#: src/gs-app-context-bar.c:351
 msgid "Can read/write your downloads"
 msgstr "Pode ler/escribir nas súas descargas"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:351
+#: src/gs-app-context-bar.c:358
 msgid "Can read your downloads"
 msgstr "Pode ler as súas descargas"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:358
+#: src/gs-app-context-bar.c:365
 msgid "Can access arbitrary files"
 msgstr "Pode acceder a ficheiros arbitrarios"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:365 src/gs-safety-context-dialog.c:226
+#: src/gs-app-context-bar.c:372 src/gs-safety-context-dialog.c:234
 msgid "Can access and change user settings"
 msgstr "Pode ver e cambiar calquera preferencia de usuario"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:372 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:379 src/gs-safety-context-dialog.c:218
 msgid "Uses a legacy windowing system"
 msgstr "Usa un sistema de xanelas antigo"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:379 src/gs-safety-context-dialog.c:218
+#: src/gs-app-context-bar.c:386 src/gs-safety-context-dialog.c:226
 msgid "Can acquire arbitrary permissions"
 msgstr "Pode adquirir permisos arbitrarios"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:405 src/gs-safety-context-dialog.c:145
+#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:145
 msgid "Reviewed by your distribution"
 msgstr "Revisado pola súa distribución"
 
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:142
+#: src/gs-app-context-bar.c:419 src/gs-safety-context-dialog.c:142
 msgid "Provided by a third party"
 msgstr "Fornecido por un terceiro"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:424
+#: src/gs-app-context-bar.c:431
 msgid "Proprietary code"
 msgstr "Código privativo"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:430
+#: src/gs-app-context-bar.c:437
 msgid "Auditable code"
 msgstr "Código auditábel"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:437
+#: src/gs-app-context-bar.c:444
 msgid "Software developer is verified"
 msgstr "O desenvolvedor do software está verificado"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:446
+#: src/gs-app-context-bar.c:453
 msgid "Software no longer supported"
 msgstr "Software xa non é compatíbel"
 
@@ -1288,104 +1298,104 @@ msgstr "Software xa non é compatíbel"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:458 src/gs-app-context-bar.c:724
+#: src/gs-app-context-bar.c:465 src/gs-app-context-bar.c:731
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:466
+#: src/gs-app-context-bar.c:473
 msgid "Safe"
 msgstr "Segura"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:473
+#: src/gs-app-context-bar.c:480
 msgid "Potentially Unsafe"
 msgstr "Potencialmente insegura"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:480
+#: src/gs-app-context-bar.c:487
 msgid "Unsafe"
 msgstr "Insegura"
 
-#: src/gs-app-context-bar.c:556 src/gs-app-context-bar.c:588
+#: src/gs-app-context-bar.c:563 src/gs-app-context-bar.c:595
 #: src/gs-hardware-support-context-dialog.c:602
 msgid "Mobile Only"
 msgstr "Móbil só"
 
-#: src/gs-app-context-bar.c:557
+#: src/gs-app-context-bar.c:564
 msgid "Only works on a small screen"
 msgstr "Só funciona nunha pantalla pequena"
 
-#: src/gs-app-context-bar.c:562 src/gs-app-context-bar.c:595
-#: src/gs-app-context-bar.c:602 src/gs-app-context-bar.c:652
-#: src/gs-app-context-bar.c:657 src/gs-hardware-support-context-dialog.c:582
+#: src/gs-app-context-bar.c:569 src/gs-app-context-bar.c:602
+#: src/gs-app-context-bar.c:609 src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:664 src/gs-hardware-support-context-dialog.c:582
 msgid "Desktop Only"
 msgstr "Escritorio só"
 
-#: src/gs-app-context-bar.c:563
+#: src/gs-app-context-bar.c:570
 msgid "Only works on a large screen"
 msgstr "Só funciona en pantallas grandes"
 
-#: src/gs-app-context-bar.c:567 src/gs-hardware-support-context-dialog.c:620
+#: src/gs-app-context-bar.c:574 src/gs-hardware-support-context-dialog.c:620
 msgid "Screen Size Mismatch"
 msgstr "Discordancia do tamaño de pantalal"
 
-#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:575 src/gs-hardware-support-context-dialog.c:621
 msgid "Doesn’t support your current screen size"
 msgstr "Non admite o seu tamaño de pantalla actual"
 
-#: src/gs-app-context-bar.c:589 src/gs-hardware-support-context-dialog.c:673
+#: src/gs-app-context-bar.c:596 src/gs-hardware-support-context-dialog.c:673
 #: src/gs-hardware-support-context-dialog.c:679
 msgid "Requires a touchscreen"
 msgstr "Require unha pantalla táctil"
 
-#: src/gs-app-context-bar.c:596 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-app-context-bar.c:603 src/gs-hardware-support-context-dialog.c:633
 #: src/gs-hardware-support-context-dialog.c:639
 msgid "Requires a keyboard"
 msgstr "Require un teclado"
 
-#: src/gs-app-context-bar.c:603
+#: src/gs-app-context-bar.c:610
 msgid "Requires a mouse"
 msgstr "Require un rato"
 
-#: src/gs-app-context-bar.c:614
+#: src/gs-app-context-bar.c:621
 msgid "Gamepad Needed"
 msgstr "Precisa mando de xogos"
 
-#: src/gs-app-context-bar.c:615
+#: src/gs-app-context-bar.c:622
 msgid "Requires a gamepad to play"
 msgstr "Require un mando de xogo para xogar"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:639
+#: src/gs-app-context-bar.c:646
 msgid "Adaptive"
 msgstr "Adaptativo"
 
-#: src/gs-app-context-bar.c:640
+#: src/gs-app-context-bar.c:647
 msgid "Works on phones, tablets and desktops"
 msgstr "Funciona en teléfonos, tabletas e escritorios"
 
-#: src/gs-app-context-bar.c:653
+#: src/gs-app-context-bar.c:660
 msgid "Probably requires a keyboard or mouse"
 msgstr "Probabelmente require un teclado ou rato"
 
-#: src/gs-app-context-bar.c:658
+#: src/gs-app-context-bar.c:665
 msgid "Works on desktops and laptops"
 msgstr "Funciona en computadoras de sobremesa e portátiles"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:699
+#: src/gs-app-context-bar.c:706
 msgid "Contains no age-inappropriate content"
 msgstr "Contén contido non axeitado á idade"
 
-#: src/gs-app-context-bar.c:747
+#: src/gs-app-context-bar.c:754
 msgid "No age rating information available"
 msgstr "Non hai información de cualificación por idade dispoñíbel"
 
@@ -1422,11 +1432,9 @@ msgstr "Actualizar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily removed
-#. TRANSLATORS: button text in the header when an app can be erased
-#: src/gs-app-row.c:190 src/gs-app-row.c:200 src/gs-details-page.ui:260
-#: src/gs-details-page.ui:270
-msgid "Uninstall"
-msgstr "Desinstalar"
+#: src/gs-app-row.c:190 src/gs-app-row.c:200
+msgid "Uninstall…"
+msgstr "Desinstalar…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being erased
@@ -2223,11 +2231,11 @@ msgstr "Requírense paquetes adicionais"
 msgid "Find in Software"
 msgstr "Buscar en Software"
 
-#: src/gs-description-box.c:67 src/gs-description-box.c:266
+#: src/gs-description-box.c:87 src/gs-description-box.c:335
 msgid "_Show More"
 msgstr "_Mostrar máis"
 
-#: src/gs-description-box.c:67
+#: src/gs-description-box.c:87
 msgid "_Show Less"
 msgstr "_Mostrar menos"
 
@@ -2277,6 +2285,10 @@ msgstr "_Reiniciar"
 msgid "_Install…"
 msgstr "_Instalar…"
 
+#: src/gs-details-page.c:1015
+msgid "_Uninstall…"
+msgstr "_Desinstalar…"
+
 #. Translators: %s is the user-visible app name
 #: src/gs-details-page.c:1159
 #, c-format
@@ -2324,6 +2336,11 @@ msgstr "_Abrir"
 msgid "_Update"
 msgstr "_Actualizar"
 
+#. TRANSLATORS: button text in the header when an app can be erased
+#: src/gs-details-page.ui:260 src/gs-details-page.ui:270
+msgid "Uninstall"
+msgstr "Desinstalar"
+
 #: src/gs-details-page.ui:311
 msgid "Downloading"
 msgstr "Descargando"
@@ -2332,16 +2349,16 @@ msgstr "Descargando"
 msgid "Add-ons"
 msgstr "Engadidos"
 
-#: src/gs-details-page.ui:551
+#: src/gs-details-page.ui:552
 msgid "This app can only be used when there is an active internet connection."
 msgstr ""
 "Esta aplicación só pode usarse cando hai unha conexión a Internet activa."
 
-#: src/gs-details-page.ui:574
+#: src/gs-details-page.ui:575
 msgid "Software Repository Included"
 msgstr "Inclúe repositorio de software"
 
-#: src/gs-details-page.ui:584
+#: src/gs-details-page.ui:585
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2349,11 +2366,11 @@ msgstr ""
 "Esta aplicación inclúe unha repositorio de software que fornece "
 "actualizacións, así como acceso a outro software."
 
-#: src/gs-details-page.ui:612
+#: src/gs-details-page.ui:613
 msgid "No Software Repository Included"
 msgstr "Non inclúe repositorio de software"
 
-#: src/gs-details-page.ui:622
+#: src/gs-details-page.ui:623
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2361,7 +2378,7 @@ msgstr ""
 "Esta aplicación non inclúe un repositorio de software. Non se actualizará "
 "con novas versións."
 
-#: src/gs-details-page.ui:650
+#: src/gs-details-page.ui:651
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2370,11 +2387,11 @@ msgstr ""
 "substituílo."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:681
+#: src/gs-details-page.ui:682
 msgid "Software Repository Identified"
 msgstr "Repositorio de software identificado"
 
-#: src/gs-details-page.ui:691
+#: src/gs-details-page.ui:692
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2382,15 +2399,15 @@ msgstr ""
 "Ao engadir este repositorio de software terá acceso a software e anovacións "
 "adicionais."
 
-#: src/gs-details-page.ui:698
+#: src/gs-details-page.ui:699
 msgid "Only use software repositories that you trust."
 msgstr "Use só repositorios de software nas que confíe."
 
-#: src/gs-details-page.ui:771
+#: src/gs-details-page.ui:772
 msgid "No Metadata"
 msgstr "Sen metadatos"
 
-#: src/gs-details-page.ui:780
+#: src/gs-details-page.ui:781
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2398,33 +2415,33 @@ msgstr ""
 "Esta aplicación non fornece ningunha ligazón a un sitio web, repositorio de "
 "código ou xestor de problemas."
 
-#: src/gs-details-page.ui:808
+#: src/gs-details-page.ui:809
 msgid "Project _Website"
 msgstr "Sitio _web do proxecto"
 
-#: src/gs-details-page.ui:825
+#: src/gs-details-page.ui:826
 msgid "_Donate"
 msgstr "_Donar"
 
-#: src/gs-details-page.ui:842
+#: src/gs-details-page.ui:843
 msgid "Contribute _Translations"
 msgstr "_Contribuír traducións"
 
-#: src/gs-details-page.ui:859
+#: src/gs-details-page.ui:860
 msgid "_Report an Issue"
 msgstr "_Informar dun erro"
 
-#: src/gs-details-page.ui:876
+#: src/gs-details-page.ui:877
 msgid "_Help"
 msgstr "_Axuda"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:970
+#: src/gs-details-page.ui:971
 msgid "Write R_eview"
 msgstr "_Escribir unha revisión"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:1007
+#: src/gs-details-page.ui:1008
 msgid "All Reviews"
 msgstr "Todas as revisións"
 
@@ -3015,26 +3032,26 @@ msgstr "Beta"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:250
+#: src/gs-os-update-page.c:249
 msgid "Additions"
 msgstr "A engadir"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:254
+#: src/gs-os-update-page.c:253
 msgid "Removals"
 msgstr "A eliminar"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:258
+#: src/gs-os-update-page.c:257
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Actualizacións"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:262
+#: src/gs-os-update-page.c:261
 msgid "Downgrades"
 msgstr "A desactualizar"
 
@@ -3166,29 +3183,29 @@ msgstr "Actualizacións _automáticas"
 
 #: src/gs-prefs-dialog.ui:20
 msgid ""
-"Downloads and installs software updates in the background, when possible."
+"Downloads and installs software updates in the background, when possible"
 msgstr ""
-"Instala calquera actualización pendente en segundo plano, cando sexa posíbel."
+"Descarga e Instala calquera actualización de software pendente en segundo "
+"plano, cando sexa posíbel"
 
 #: src/gs-prefs-dialog.ui:33
 msgid "Automatic Update _Notifications"
 msgstr "_Notificacións de actualizacións automáticas"
 
 #: src/gs-prefs-dialog.ui:34
-msgid "Show notifications when updates have been automatically installed."
+msgid "Show notifications when updates have been automatically installed"
 msgstr ""
-"Mostrar notificacións cando as actualizacións sexan instaladas "
-"automaticamente."
+"Mostrar notificacións cando se instalaron actualizacións automaticamente"
 
 #: src/gs-prefs-dialog.ui:47
 msgid "Show Only _Free Apps"
 msgstr "Mostrar só as aplicacións _libres"
 
 #: src/gs-prefs-dialog.ui:48
-msgid "Show only freely licensed apps and hide any proprietary apps."
+msgid "Show only freely licensed apps and hide any proprietary apps"
 msgstr ""
 "Mostrar só as aplicacións con licencia libre e ocultar calquera aplicación "
-"privativa."
+"privativa"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -3579,8 +3596,8 @@ msgstr "Pode solicitar datos dos servizos da sesión"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:198
-msgid "Device Access"
-msgstr "Acceso a dispositivos"
+msgid "User Device Access"
+msgstr "Acceso a dispositivos do usuario"
 
 #: src/gs-safety-context-dialog.c:199
 msgid "Can access devices such as webcams or gaming controllers"
@@ -3589,8 +3606,8 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:202
-msgid "No Device Access"
-msgstr "Sen acceso a dispositivos"
+msgid "No User Device Access"
+msgstr "Sen acceso a dispositivos do usuario"
 
 #: src/gs-safety-context-dialog.c:203
 msgid "Cannot access devices such as webcams or gaming controllers"
@@ -3600,96 +3617,106 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:209
+msgid "System Device Access"
+msgstr "Acceso a dispositivos do sistema"
+
+#: src/gs-safety-context-dialog.c:210
+msgid "Can access system devices which require elevated permissions"
+msgstr ""
+"Pode acceder aos dispositivos do sistema o cal require de permisos elevados"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:217
 msgid "Legacy Windowing System"
 msgstr "Sistema de xanelas antigo"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:225
 msgid "Arbitrary Permissions"
 msgstr "Permisos arbitrarios"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:225
+#: src/gs-safety-context-dialog.c:233
 msgid "User Settings"
 msgstr "Preferencias do usuario"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:237
+#: src/gs-safety-context-dialog.c:245
 msgid "Full File System Read/Write Access"
 msgstr "Acceso de lectura/escritura ao sistema de ficheiros completo"
 
-#: src/gs-safety-context-dialog.c:238
+#: src/gs-safety-context-dialog.c:246
 msgid "Can read and write all data on the file system"
 msgstr "Pode ler escribir todos os datos no sistema de ficheiros"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:246
+#: src/gs-safety-context-dialog.c:254
 msgid "Home Folder Read/Write Access"
 msgstr "Acceso de lectura e escritura ao cartafol persoal"
 
-#: src/gs-safety-context-dialog.c:247
+#: src/gs-safety-context-dialog.c:255
 msgid "Can read and write all data in your home directory"
 msgstr "Pode ler e escribir todos os seus datos no seu cartafol persoal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:255
+#: src/gs-safety-context-dialog.c:263
 msgid "Full File System Read Access"
 msgstr "Acceso de lectura ao sistema de ficheiros completo"
 
-#: src/gs-safety-context-dialog.c:256
+#: src/gs-safety-context-dialog.c:264
 msgid "Can read all data on the file system"
 msgstr "Pode ler todos os datos no seu sistema de ficheiros"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:265
+#: src/gs-safety-context-dialog.c:273
 msgid "Home Folder Read Access"
 msgstr "Acceso de lectura ao cartafol personal"
 
-#: src/gs-safety-context-dialog.c:266
+#: src/gs-safety-context-dialog.c:274
 msgid "Can read all data in your home directory"
 msgstr "Pode ler os seus datos no seu cartafol personal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:275
+#: src/gs-safety-context-dialog.c:283
 msgid "Download Folder Read/Write Access"
 msgstr "Acceso de lectura/escritura ao cartafol de Descargas"
 
-#: src/gs-safety-context-dialog.c:276
+#: src/gs-safety-context-dialog.c:284
 msgid "Can read and write all data in your downloads directory"
 msgstr "Pode ler/escribir todos os datos no seu cartafol de descargas"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:287
+#: src/gs-safety-context-dialog.c:295
 msgid "Download Folder Read Access"
 msgstr "Acceso de lectura ao cartafol de Descargas"
 
-#: src/gs-safety-context-dialog.c:288
+#: src/gs-safety-context-dialog.c:296
 msgid "Can read all data in your downloads directory"
 msgstr "Pode ler todos os datos no seu cartafol de descargas"
 
-#: src/gs-safety-context-dialog.c:298
+#: src/gs-safety-context-dialog.c:306
 msgid "Can read and write all data in the directory"
 msgstr "Pode ler e escribir todos os seus datos no cartafol"
 
-#: src/gs-safety-context-dialog.c:309
+#: src/gs-safety-context-dialog.c:317
 msgid "Can read all data in the directory"
 msgstr "Pode ler todos os seus datos no cartafol"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:333
 msgid "No File System Access"
 msgstr "Sen acceso ao sistema de ficheiros"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:334
 msgid "Cannot access the file system at all"
 msgstr "Non pode acceder ao sistema de ficheiros de ningunha forma"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:340
+#: src/gs-safety-context-dialog.c:348
 msgid "Proprietary Code"
 msgstr "Código privativo"
 
-#: src/gs-safety-context-dialog.c:341
+#: src/gs-safety-context-dialog.c:349
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3698,11 +3725,11 @@ msgstr ""
 "independentemente e podería non ser seguro"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:344
+#: src/gs-safety-context-dialog.c:352
 msgid "Auditable Code"
 msgstr "Código auditábel"
 
-#: src/gs-safety-context-dialog.c:345
+#: src/gs-safety-context-dialog.c:353
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3712,21 +3739,21 @@ msgstr ""
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:353
+#: src/gs-safety-context-dialog.c:361
 msgid "App developer is verified"
 msgstr "O desenvolvedor da aplicación está verificado"
 
-#: src/gs-safety-context-dialog.c:354
+#: src/gs-safety-context-dialog.c:362
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "O desenvolvedor desta aplicación foi verificado ser quen di ser"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:365
+#: src/gs-safety-context-dialog.c:373
 msgid "Insecure Dependencies"
 msgstr "Dependencias non seguras"
 
-#: src/gs-safety-context-dialog.c:366
+#: src/gs-safety-context-dialog.c:374
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
@@ -3734,21 +3761,21 @@ msgstr ""
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:375
+#: src/gs-safety-context-dialog.c:383
 #, c-format
 msgid "%s is safe"
 msgstr "%s é segura"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:382
+#: src/gs-safety-context-dialog.c:390
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s é potencialmente insegura"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:389
+#: src/gs-safety-context-dialog.c:397
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s é insegura"
@@ -3787,8 +3814,8 @@ msgstr "Captura de pantalla seguinte"
 
 #. Translators: Shortened form of “no screenshots available” when showing an app’s details.
 #: src/gs-screenshot-carousel.ui:130
-msgid "No Screenshot"
-msgstr "Non hai unha captura de pantalla"
+msgid "No Screenshots"
+msgstr "Non hai capturas de pantalla"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
@@ -5020,135 +5047,135 @@ msgstr ""
 "Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:315
+#: plugins/flatpak/gs-flatpak.c:318
 #, c-format
 msgid "System folder %s"
 msgstr "Cartafol do sistema %s"
 
-#: plugins/flatpak/gs-flatpak.c:316 plugins/flatpak/gs-flatpak.c:317
+#: plugins/flatpak/gs-flatpak.c:319 plugins/flatpak/gs-flatpak.c:320
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Subcartafol persoal %s"
 
-#: plugins/flatpak/gs-flatpak.c:318
+#: plugins/flatpak/gs-flatpak.c:321
 msgid "Host system folders"
 msgstr "Cartafoles do sistema anfitrión"
 
-#: plugins/flatpak/gs-flatpak.c:319
+#: plugins/flatpak/gs-flatpak.c:322
 msgid "Host system configuration from /etc"
 msgstr "Configuración do sistema do anfitrión desde /etc"
 
-#: plugins/flatpak/gs-flatpak.c:320
+#: plugins/flatpak/gs-flatpak.c:323
 msgid "Desktop folder"
 msgstr "Cartafol do escritorio"
 
-#: plugins/flatpak/gs-flatpak.c:320
+#: plugins/flatpak/gs-flatpak.c:323
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Subcartafol do escritorio %s"
 
-#: plugins/flatpak/gs-flatpak.c:321
+#: plugins/flatpak/gs-flatpak.c:324
 msgid "Documents folder"
 msgstr "Cartafol de documentos"
 
-#: plugins/flatpak/gs-flatpak.c:321
+#: plugins/flatpak/gs-flatpak.c:324
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Subcartafol de documentos %s"
 
-#: plugins/flatpak/gs-flatpak.c:322
+#: plugins/flatpak/gs-flatpak.c:325
 msgid "Music folder"
 msgstr "Cartafol de música"
 
-#: plugins/flatpak/gs-flatpak.c:322
+#: plugins/flatpak/gs-flatpak.c:325
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Subcartafoles de música %s"
 
-#: plugins/flatpak/gs-flatpak.c:323
+#: plugins/flatpak/gs-flatpak.c:326
 msgid "Pictures folder"
 msgstr "Cartafol de imaxes"
 
-#: plugins/flatpak/gs-flatpak.c:323
+#: plugins/flatpak/gs-flatpak.c:326
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Subcartafol de imaxes %s"
 
-#: plugins/flatpak/gs-flatpak.c:324
+#: plugins/flatpak/gs-flatpak.c:327
 msgid "Public Share folder"
 msgstr "Cartafol de compartición pública"
 
-#: plugins/flatpak/gs-flatpak.c:324
+#: plugins/flatpak/gs-flatpak.c:327
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Subcartafol de compartición pública %s"
 
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:328
 msgid "Videos folder"
 msgstr "Cartafol de vídeos"
 
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:328
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Subcartafol de vídeos %s"
 
-#: plugins/flatpak/gs-flatpak.c:326
+#: plugins/flatpak/gs-flatpak.c:329
 msgid "Templates folder"
 msgstr "Cartafol de modelos"
 
-#: plugins/flatpak/gs-flatpak.c:326
+#: plugins/flatpak/gs-flatpak.c:329
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Subcartafol de modelos %s"
 
-#: plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:330
 msgid "User cache folder"
 msgstr "Cartafol de caché de usuario"
 
-#: plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:330
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Subcartafol de caché de usuario %s"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:331
 msgid "User configuration folder"
 msgstr "Cartafol de configuración de usuario"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:331
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Subcartafol de configuración de usuario %s"
 
-#: plugins/flatpak/gs-flatpak.c:329
+#: plugins/flatpak/gs-flatpak.c:332
 msgid "User data folder"
 msgstr "Cartafol datos de usuario"
 
-#: plugins/flatpak/gs-flatpak.c:329
+#: plugins/flatpak/gs-flatpak.c:332
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Subcartafol de datos de usuario %s"
 
-#: plugins/flatpak/gs-flatpak.c:330
+#: plugins/flatpak/gs-flatpak.c:333
 msgid "User runtime folder"
 msgstr "Cartafol de «runtime» de usuario"
 
-#: plugins/flatpak/gs-flatpak.c:330
+#: plugins/flatpak/gs-flatpak.c:333
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Subcartafol de «runtime» de usuario %s"
 
-#: plugins/flatpak/gs-flatpak.c:388
+#: plugins/flatpak/gs-flatpak.c:391
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Acceso ao sistema de ficheiros a %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1405
+#: plugins/flatpak/gs-flatpak.c:1408
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Obtendo os metadatos de flatpak para %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3582
+#: plugins/flatpak/gs-flatpak.c:3585
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Non foi posíbel refinar o engadido «%s»: %s"
@@ -5229,42 +5256,42 @@ msgstr "O dispositivo non se pode usar namentres está pechada a tapa"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:218
+#: plugins/fwupd/gs-fwupd-app.c:219
 #, c-format
 msgid "%s Device Update"
 msgstr "Actualización de dispositivo %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:224
 #, c-format
 msgid "%s System Update"
 msgstr "Actualización de sistema %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:229
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "Actualización de controlador embebido de %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:234
 #, c-format
 msgid "%s ME Update"
 msgstr "Actualización de %s ME"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:238
+#: plugins/fwupd/gs-fwupd-app.c:239
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "Actualización de %s ME Corporativo"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:243
+#: plugins/fwupd/gs-fwupd-app.c:244
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "Actualización de %s ME de consumidor"
@@ -5272,7 +5299,7 @@ msgstr "Actualización de %s ME de consumidor"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:249
+#: plugins/fwupd/gs-fwupd-app.c:250
 #, c-format
 msgid "%s Controller Update"
 msgstr "Actualización de controlador %s"
@@ -5280,132 +5307,132 @@ msgstr "Actualización de controlador %s"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:255
+#: plugins/fwupd/gs-fwupd-app.c:256
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "Actualización de controlador de Thunderbolt de %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:260
+#: plugins/fwupd/gs-fwupd-app.c:261
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "Actualización do microcódigo da CPU %s"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:265
+#: plugins/fwupd/gs-fwupd-app.c:266
 #, c-format
 msgid "%s Configuration Update"
 msgstr "Actualización de configuración %s"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:269
+#: plugins/fwupd/gs-fwupd-app.c:270
 #, c-format
 msgid "%s Battery Update"
 msgstr "Actualización de batería %s"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:274
+#: plugins/fwupd/gs-fwupd-app.c:275
 #, c-format
 msgid "%s Camera Update"
 msgstr "Actualización de cámara %s"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:278
+#: plugins/fwupd/gs-fwupd-app.c:279
 #, c-format
 msgid "%s TPM Update"
 msgstr "Actualización de TPM %s"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:282
+#: plugins/fwupd/gs-fwupd-app.c:283
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "Actualización de área táctil %s"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:286
+#: plugins/fwupd/gs-fwupd-app.c:287
 #, c-format
 msgid "%s Mouse Update"
 msgstr "Actualización de rato %s"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:290
+#: plugins/fwupd/gs-fwupd-app.c:291
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "Actualización de teclado %s"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:294
+#: plugins/fwupd/gs-fwupd-app.c:295
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "Actualización de controlador do almacenamento %s"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:300
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "Actualización de controlador da rede %s"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:305
 #, c-format
 msgid "%s Display Update"
 msgstr "Actualización de pantalla %s"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:309
+#: plugins/fwupd/gs-fwupd-app.c:310
 #, c-format
 msgid "%s BMC Update"
 msgstr "Actualización de BMC %s"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:314
+#: plugins/fwupd/gs-fwupd-app.c:315
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "Actualización de Receptor USB %s"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:318
+#: plugins/fwupd/gs-fwupd-app.c:319
 #, c-format
 msgid "%s Drive Update"
 msgstr "Actualización de unidade %s"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:322
+#: plugins/fwupd/gs-fwupd-app.c:323
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr "Actualización de unidade flash %s"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:328
 #, c-format
 msgid "%s SSD Update"
 msgstr "Actualización de SSD %s"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:333
 #, c-format
 msgid "%s GPU Update"
 msgstr "Actualización de GPU %s"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:337
+#: plugins/fwupd/gs-fwupd-app.c:338
 #, c-format
 msgid "%s Dock Update"
 msgstr "Actualización de Dock %s"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:342
+#: plugins/fwupd/gs-fwupd-app.c:343
 #, c-format
 msgid "%s USB Dock Update"
 msgstr "Actualización de Receptor USB %s"
