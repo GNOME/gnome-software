@@ -962,6 +962,8 @@ _webflow_done (FlatpakTransaction *transaction,
 	g_debug ("Browser done");
 }
 
+/* This can only fail if flatpak_dir_ensure_repo() fails, for example if the
+ * repo is configured but doesn’t exist and can’t be created on disk. */
 static FlatpakTransaction *
 _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		    gboolean interactive,
@@ -1068,7 +1070,6 @@ update_apps_thread_cb (GTask        *task,
 		GsAppList *list_tmp = GS_APP_LIST (value);
 		g_autoptr(FlatpakTransaction) transaction = NULL;
 		gpointer schedule_entry_handle = NULL;
-		gboolean is_update_downloaded = TRUE;
 
 		g_assert (GS_IS_FLATPAK (flatpak));
 		g_assert (list_tmp != NULL);
@@ -1088,12 +1089,24 @@ update_apps_thread_cb (GTask        *task,
 		/* build and run transaction */
 		transaction = _build_transaction (GS_PLUGIN (self), flatpak, interactive, cancellable, &local_error);
 		if (transaction == NULL) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			/* This can only fail if the repo doesn’t exist and can’t
+			 * be created, which is unlikely. */
+			gs_flatpak_error_convert (&local_error);
+
+			event = gs_plugin_event_new ("error", local_error,
+						     NULL);
+			if (interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (GS_PLUGIN (self), event);
+			g_clear_error (&local_error);
+
 			remove_schedule_entry (schedule_entry_handle);
 			gs_flatpak_set_busy (flatpak, FALSE);
 
-			gs_flatpak_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+			continue;
 		}
 
 		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
@@ -1109,27 +1122,33 @@ update_apps_thread_cb (GTask        *task,
 				continue;
 			}
 
-			/* Errors about missing remotes are not fatal, as that’s
-			 * a not-uncommon situation. */
-			if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
+			/* Errors are not fatal, as otherwise a single app
+			 * failure will take down the whole update, blocking
+			 * updates for all other apps.
+			 *
+			 * The common two errors to see here are
+			 *  - FLATPAK_ERROR_REMOTE_NOT_FOUND
+			 *  - FLATPAK_ERROR_NOT_INSTALLED
+			 */
+			{
 				g_autoptr(GsPluginEvent) event = NULL;
 
 				g_warning ("Skipping update for ‘%s’: %s", ref, local_error->message);
 
+				/* Reset the state of the app. */
+				gs_app_set_state_recover (app);
+
 				gs_flatpak_error_convert (&local_error);
 
 				event = gs_plugin_event_new ("error", local_error,
+							     "app", app,
 							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				gs_plugin_report_event (GS_PLUGIN (self), event);
 				g_clear_error (&local_error);
-			} else {
-				remove_schedule_entry (schedule_entry_handle);
-				gs_flatpak_set_busy (flatpak, FALSE);
-
-				gs_flatpak_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
+				continue;
 			}
 		}
 
@@ -1144,17 +1163,28 @@ update_apps_thread_cb (GTask        *task,
 		/* FIXME: Link progress reporting from #FlatpakTransaction
 		 * up to `data->progress_callback`. */
 		if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			/* Reset the state of all the apps in this transaction. */
 			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 				GsApp *app = gs_app_list_index (list_tmp, i);
 				gs_app_set_state_recover (app);
 			}
 
+			gs_flatpak_error_convert (&local_error);
+
+			event = gs_plugin_event_new ("error", local_error,
+						     NULL);
+			if (interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (GS_PLUGIN (self), event);
+			g_clear_error (&local_error);
+
 			remove_schedule_entry (schedule_entry_handle);
 			gs_flatpak_set_busy (flatpak, FALSE);
 
-			gs_flatpak_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+			continue;
 		} else {
 			/* Reset the state to have it updated */
 			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
@@ -1173,13 +1203,19 @@ update_apps_thread_cb (GTask        *task,
 			gs_app_set_is_update_downloaded (app, TRUE);
 		}
 
-		/* get any new state */
+		/* Get any new state. Ignore failure and fall through to
+		 * refining the apps, since refreshing is not an entirely
+		 * necessary part of the update operation. */
 		if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, &local_error)) {
-			gs_flatpak_set_busy (flatpak, FALSE);
 			gs_flatpak_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+			g_warning ("Error refreshing flatpak data for ‘%s’ after update: %s",
+				   gs_flatpak_get_id (flatpak), local_error->message);
+			g_clear_error (&local_error);
 		}
+
+		/* Refine all the updated apps to make sure they’re up to date
+		 * in the UI. Ignore failure since it’s not an entirely
+		 * necessary part of the update operation. */
 		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 			GsApp *app = gs_app_list_index (list_tmp, i);
 			g_autofree gchar *ref = NULL;
@@ -1189,11 +1225,10 @@ update_apps_thread_cb (GTask        *task,
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 						    interactive,
 						    cancellable, &local_error)) {
-				gs_flatpak_set_busy (flatpak, FALSE);
-				g_prefix_error (&local_error, "failed to run refine for %s: ", ref);
 				gs_flatpak_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
+				g_warning ("Error refining app ‘%s’ after update: %s", ref, local_error->message);
+				g_clear_error (&local_error);
+				continue;
 			}
 		}
 
