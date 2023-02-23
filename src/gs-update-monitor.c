@@ -486,8 +486,9 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) update_online = NULL;
 	g_autoptr(GsAppList) update_offline = NULL;
+	GsAppList *job_apps;
 
-	/* get result */
+	/* the returned list is always empty, the existence indicates success */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
@@ -497,10 +498,11 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		return;
 	}
 
+	job_apps = gs_plugin_job_update_apps_get_apps (GS_PLUGIN_JOB_UPDATE_APPS (data->job));
 	update_online = gs_app_list_new ();
 	update_offline = gs_app_list_new ();
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
+	for (guint i = 0; i < gs_app_list_length (job_apps); i++) {
+		GsApp *app = gs_app_list_index (job_apps, i);
 		if (_should_auto_update (app)) {
 			g_debug ("auto-updating %s", gs_app_get_unique_id (app));
 			gs_app_list_add (update_online, app);
