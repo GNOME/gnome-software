@@ -1155,11 +1155,6 @@ update_apps_thread_cb (GTask        *task,
 		/* automatically clean up unused EOL runtimes when updating */
 		flatpak_transaction_set_include_unused_uninstall_ops (transaction, TRUE);
 
-		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-			GsApp *app = gs_app_list_index (list_tmp, i);
-			gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		}
-
 		/* FIXME: Link progress reporting from #FlatpakTransaction
 		 * up to `data->progress_callback`. */
 		if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
@@ -1185,12 +1180,6 @@ update_apps_thread_cb (GTask        *task,
 			gs_flatpak_set_busy (flatpak, FALSE);
 
 			continue;
-		} else {
-			/* Reset the state to have it updated */
-			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-				GsApp *app = gs_app_list_index (list_tmp, i);
-				gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-			}
 		}
 
 		remove_schedule_entry (schedule_entry_handle);
