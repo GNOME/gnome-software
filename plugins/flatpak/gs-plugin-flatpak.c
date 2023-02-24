@@ -1196,13 +1196,6 @@ update_apps_thread_cb (GTask        *task,
 		remove_schedule_entry (schedule_entry_handle);
 		gs_plugin_updates_changed (GS_PLUGIN (self));
 
-		/* Traverse over the GsAppList again and set that the update has been already downloaded
-		 * for the apps. */
-		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-			GsApp *app = gs_app_list_index (list_tmp, i);
-			gs_app_set_is_update_downloaded (app, TRUE);
-		}
-
 		/* Get any new state. Ignore failure and fall through to
 		 * refining the apps, since refreshing is not an entirely
 		 * necessary part of the update operation. */

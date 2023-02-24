@@ -4611,6 +4611,7 @@ gs_app_remove_category (GsApp *app, const gchar *category)
  * Sets if the new update is already downloaded for the app.
  *
  * Since: 3.36
+ * Deprecated: 44: No longer supported.
  **/
 void
 gs_app_set_is_update_downloaded (GsApp *app, gboolean is_update_downloaded)
@@ -4630,6 +4631,7 @@ gs_app_set_is_update_downloaded (GsApp *app, gboolean is_update_downloaded)
  * Returns: (element-type gboolean): Whether a new update for the #GsApp is already downloaded.
  *
  * Since: 3.36
+ * Deprecated: 44: No longer supported.
  **/
 gboolean
 gs_app_get_is_update_downloaded (GsApp *app)
@@ -5478,7 +5480,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		gs_app_set_key_colors (app, g_value_get_boxed (value));
 		break;
 	case PROP_IS_UPDATE_DOWNLOADED:
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 		gs_app_set_is_update_downloaded (app, g_value_get_boolean (value));
+G_GNUC_END_IGNORE_DEPRECATIONS
 		break;
 	case PROP_URLS:
 		/* Read only */
@@ -5759,10 +5763,12 @@ gs_app_class_init (GsAppClass *klass)
 
 	/**
 	 * GsApp:is-update-downloaded:
+	 *
+	 * Deprecated: 44: No longer supported.
 	 */
 	obj_props[PROP_IS_UPDATE_DOWNLOADED] = g_param_spec_boolean ("is-update-downloaded", NULL, NULL,
 					       FALSE,
-					       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+					       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_DEPRECATED);
 
 	/**
 	 * GsApp:urls: (nullable) (element-type AsUrlKind utf8)
