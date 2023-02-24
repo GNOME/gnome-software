@@ -1159,11 +1159,24 @@ update_apps_thread_cb (GTask        *task,
 		 * up to `data->progress_callback`. */
 		if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
 			g_autoptr(GsPluginEvent) event = NULL;
+			g_autoptr(GError) prune_error = NULL;
 
 			/* Reset the state of all the apps in this transaction. */
 			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 				GsApp *app = gs_app_list_index (list_tmp, i);
 				gs_app_set_state_recover (app);
+			}
+
+			/* Try pruning the repo, just in case this is a failure
+			 * caused by running out of disk space. The transaction
+			 * typically won’t try this itself, and will only prune
+			 * on success (if it knows an update has potentially
+			 * left dangling objects). */
+			if (!flatpak_installation_prune_local_repo (gs_flatpak_get_installation (flatpak, interactive),
+								    NULL, &prune_error)) {
+				gs_flatpak_error_convert (&prune_error);
+				g_warning ("Error pruning flatpak repo for %s after failed update: %s",
+					   gs_flatpak_get_id (flatpak), prune_error->message);
 			}
 
 			gs_flatpak_error_convert (&local_error);
