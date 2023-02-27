@@ -1953,21 +1953,6 @@ gs_app_get_icon_for_size (GsApp       *app,
 	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s",
 		 gs_app_get_id (app), size, scale, fallback_icon_name);
 
-	/* If there’s a themed icon with no width set, use that, as typically
-	 * themed icons are available in any given size. */
-	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
-		GIcon *icon = priv->icons->pdata[i];
-		guint icon_width = gs_icon_get_width (icon);
-
-		if (icon_width == 0 && G_IS_THEMED_ICON (icon)) {
-			g_autoptr(GtkIconTheme) theme = get_icon_theme ();
-			if (gtk_icon_theme_has_gicon (theme, icon)) {
-				g_debug ("Found themed icon");
-				return g_object_ref (icon);
-			}
-		}
-	}
-
 	/* See if there’s an icon of the right size, or the first one which is too
 	 * big which could be scaled down. Note that the icons array may be
 	 * lazily created. */
@@ -1999,6 +1984,21 @@ gs_app_get_icon_for_size (GsApp       *app,
 
 		if (icon_width * icon_scale >= size * scale)
 			return g_object_ref (icon);
+	}
+
+	/* Fallback to themed icons with no width set. Typically
+	 * themed icons are available in any given size. */
+	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
+		GIcon *icon = priv->icons->pdata[i];
+		guint icon_width = gs_icon_get_width (icon);
+
+		if (icon_width == 0 && G_IS_THEMED_ICON (icon)) {
+			g_autoptr(GtkIconTheme) theme = get_icon_theme ();
+			if (gtk_icon_theme_has_gicon (theme, icon)) {
+				g_debug ("Found themed icon");
+				return g_object_ref (icon);
+			}
+		}
 	}
 
 	if (scale > 1) {
