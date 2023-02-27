@@ -269,6 +269,17 @@
                                                       <!-- TRANSLATORS: button text in the header when an app can be erased -->
                                                       <property name="label" translatable="yes">Uninstall</property>
                                                     </accessibility>
+                                                    <child>
+                                                      <object class="GtkShortcutController">
+                                                        <property name="scope">managed</property>
+                                                        <child>
+                                                          <object class="GtkShortcut">
+                                                            <property name="trigger">&lt;Control&gt;U</property>
+                                                            <property name="action">activate</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
                                                   </object>
                                                 </child>
                                                 <child>
