@@ -71,6 +71,9 @@ struct _GsPluginPackagekit {
 	guint			 prepare_update_timeout_id;
 
 	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
+
+	GHashTable		*cached_sources; /* (nullable) (owned) (element-type utf8 GsApp); sources by id, each value is weak reffed */
+	GMutex			 cached_sources_mutex;
 };
 
 G_DEFINE_TYPE (GsPluginPackagekit, gs_plugin_packagekit, GS_TYPE_PLUGIN)
@@ -95,6 +98,31 @@ static void reload_proxy_settings_async (GsPluginPackagekit  *self,
 static gboolean reload_proxy_settings_finish (GsPluginPackagekit  *self,
                                               GAsyncResult        *result,
                                               GError             **error);
+
+static void
+cached_sources_weak_ref_cb (gpointer user_data,
+			    GObject *object)
+{
+	GsPluginPackagekit *self = user_data;
+	GHashTableIter iter;
+	gpointer key, value;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+
+	g_assert (self->cached_sources != NULL);
+
+	g_hash_table_iter_init (&iter, self->cached_sources);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		GObject *repo_object = value;
+		if (repo_object == object) {
+			g_hash_table_iter_remove (&iter);
+			if (!g_hash_table_size (self->cached_sources))
+				g_clear_pointer (&self->cached_sources, g_hash_table_unref);
+			break;
+		}
+	}
+}
 
 static void
 gs_plugin_packagekit_init (GsPluginPackagekit *self)
@@ -131,6 +159,8 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	g_mutex_init (&self->prepared_updates_mutex);
 	self->prepared_updates = g_hash_table_new_full (g_str_hash, g_str_equal,
 							g_free, NULL);
+
+	g_mutex_init (&self->cached_sources_mutex);
 
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
@@ -174,6 +204,19 @@ gs_plugin_packagekit_dispose (GObject *object)
 	g_clear_object (&self->monitor);
 	g_clear_object (&self->monitor_trigger);
 
+	if (self->cached_sources != NULL) {
+		GHashTableIter iter;
+		gpointer value;
+
+		g_hash_table_iter_init (&iter, self->cached_sources);
+		while (g_hash_table_iter_next (&iter, NULL, &value)) {
+			GObject *app_repo = value;
+			g_object_weak_unref (app_repo, cached_sources_weak_ref_cb, self);
+		}
+
+		g_clear_pointer (&self->cached_sources, g_hash_table_unref);
+	}
+
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->dispose (object);
 }
 
@@ -183,6 +226,7 @@ gs_plugin_packagekit_finalize (GObject *object)
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
 
 	g_mutex_clear (&self->prepared_updates_mutex);
+	g_mutex_clear (&self->cached_sources_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
 }
@@ -316,13 +360,14 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	PkBitfield filter;
 	PkRepoDetail *rd;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkTask) task_sources = NULL;
 	const gchar *id;
 	guint i;
-	g_autoptr(GHashTable) hash = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
@@ -342,38 +387,47 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+	if (self->cached_sources == NULL)
+		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	array = pk_results_get_repo_detail_array (results);
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		rd = g_ptr_array_index (array, i);
 		id = pk_repo_detail_get_id (rd);
-		app = gs_app_new (id);
-		gs_app_set_management_plugin (app, plugin);
-		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-		gs_app_set_state (app, pk_repo_detail_get_enabled (rd) ?
-				  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
-		gs_app_set_name (app,
-				 GS_APP_QUALITY_NORMAL,
-				 pk_repo_detail_get_description (rd));
-		gs_app_set_summary (app,
-				    GS_APP_QUALITY_NORMAL,
-				    pk_repo_detail_get_description (rd));
-		gs_plugin_packagekit_set_packaging_format (plugin, app);
-		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "300");
-		gs_app_set_origin_ui (app, _("Packages"));
+		app = g_hash_table_lookup (self->cached_sources, id);
+		if (app == NULL) {
+			app = gs_app_new (id);
+			gs_app_set_management_plugin (app, plugin);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
+			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+			gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+			gs_app_set_state (app, pk_repo_detail_get_enabled (rd) ?
+					  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
+			gs_app_set_name (app,
+					 GS_APP_QUALITY_NORMAL,
+					 pk_repo_detail_get_description (rd));
+			gs_app_set_summary (app,
+					    GS_APP_QUALITY_NORMAL,
+					    pk_repo_detail_get_description (rd));
+			gs_plugin_packagekit_set_packaging_format (plugin, app);
+			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "300");
+			gs_app_set_origin_ui (app, _("Packages"));
+			g_hash_table_insert (self->cached_sources, g_strdup (id), app);
+			g_object_weak_ref (G_OBJECT (app), cached_sources_weak_ref_cb, self);
+		} else {
+			g_object_ref (app);
+			/* The repo-related apps are those installed; due to re-using
+			   cached app, make sure the list is populated from fresh data. */
+			gs_app_list_remove_all (gs_app_get_related (app));
+		}
 		gs_app_list_add (list, app);
-		g_hash_table_insert (hash,
-				     g_strdup (id),
-				     (gpointer) app);
 	}
 
 	/* get every application on the system and add it as a related package
 	 * if it matches */
-	return gs_plugin_add_sources_related (plugin, hash, cancellable, error);
+	return gs_plugin_add_sources_related (plugin, self->cached_sources, cancellable, error);
 }
 
 static gboolean

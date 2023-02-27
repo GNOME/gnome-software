@@ -61,12 +61,40 @@ struct _GsPluginRpmOstree {
 	OstreeSysroot		*ot_sysroot;
 	gboolean		 update_triggered;
 	guint			 inactive_timeout_id;
+
+	GHashTable		*cached_sources; /* (nullable) (owned) (element-type utf8 GsApp); sources by id, each value is weak reffed */
+	GMutex			 cached_sources_mutex;
 };
 
 G_DEFINE_TYPE (GsPluginRpmOstree, gs_plugin_rpm_ostree, GS_TYPE_PLUGIN)
 
 #define assert_in_worker(self) \
 	g_assert (gs_worker_thread_is_in_worker_context (self->worker))
+
+static void
+cached_sources_weak_ref_cb (gpointer user_data,
+			    GObject *object)
+{
+	GsPluginRpmOstree *self = user_data;
+	GHashTableIter iter;
+	gpointer key, value;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+
+	g_assert (self->cached_sources != NULL);
+
+	g_hash_table_iter_init (&iter, self->cached_sources);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		GObject *repo_object = value;
+		if (repo_object == object) {
+			g_hash_table_iter_remove (&iter);
+			if (!g_hash_table_size (self->cached_sources))
+				g_clear_pointer (&self->cached_sources, g_hash_table_unref);
+			break;
+		}
+	}
+}
 
 static void
 gs_plugin_rpm_ostree_dispose (GObject *object)
@@ -80,6 +108,19 @@ gs_plugin_rpm_ostree_dispose (GObject *object)
 	g_clear_object (&self->ot_repo);
 	g_clear_object (&self->worker);
 
+	if (self->cached_sources != NULL) {
+		GHashTableIter iter;
+		gpointer value;
+
+		g_hash_table_iter_init (&iter, self->cached_sources);
+		while (g_hash_table_iter_next (&iter, NULL, &value)) {
+			GObject *app_repo = value;
+			g_object_weak_unref (app_repo, cached_sources_weak_ref_cb, self);
+		}
+
+		g_clear_pointer (&self->cached_sources, g_hash_table_unref);
+	}
+
 	G_OBJECT_CLASS (gs_plugin_rpm_ostree_parent_class)->dispose (object);
 }
 
@@ -89,6 +130,7 @@ gs_plugin_rpm_ostree_finalize (GObject *object)
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (object);
 
 	g_mutex_clear (&self->mutex);
+	g_mutex_clear (&self->cached_sources_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_rpm_ostree_parent_class)->finalize (object);
 }
@@ -103,6 +145,7 @@ gs_plugin_rpm_ostree_init (GsPluginRpmOstree *self)
 	}
 
 	g_mutex_init (&self->mutex);
+	g_mutex_init (&self->cached_sources_mutex);
 
 	/* open transaction */
 	rpmReadConfigFiles (NULL, NULL);
@@ -2649,6 +2692,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GVariant) repos = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gsize n_children;
 	gboolean done;
@@ -2679,6 +2723,10 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		}
 	}
 
+	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+	if (self->cached_sources == NULL)
+		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
 	n_children = g_variant_n_children (repos);
 	for (gsize i = 0; i < n_children; i++) {
 		g_autoptr(GVariant) value = g_variant_get_child_value (repos, i);
@@ -2702,16 +2750,24 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		if (!g_variant_dict_lookup (dict, "is-enabled", "b", &is_enabled))
 			is_enabled = FALSE;
 
-		app = gs_app_new (id);
-		gs_app_set_management_plugin (app, plugin);
-		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-		gs_app_set_state (app, is_enabled ? GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, description);
-		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, description);
-		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "200");
-		gs_app_set_origin_ui (app, _("Operating System (OSTree)"));
+		app = g_hash_table_lookup (self->cached_sources, id);
+		if (app == NULL) {
+			app = gs_app_new (id);
+			gs_app_set_management_plugin (app, plugin);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
+			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+			gs_app_set_state (app, is_enabled ? GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
+			gs_app_set_name (app, GS_APP_QUALITY_LOWEST, description);
+			gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, description);
+			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "200");
+			gs_app_set_origin_ui (app, _("Operating System (OSTree)"));
+		} else {
+			g_object_ref (app);
+			/* The repo-related apps are those installed; due to re-using
+			   cached app, make sure the list is populated from fresh data. */
+			gs_app_list_remove_all (gs_app_get_related (app));
+		}
 
 		gs_app_list_add (list, app);
 	}

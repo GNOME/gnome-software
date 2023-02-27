@@ -99,11 +99,17 @@ _enable_repo (InstallRemoveData *install_data)
 {
 	GsReposDialog *dialog = install_data->dialog;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GCancellable) cancellable = gs_app_peek_cancellable (install_data->repo);
+	if (cancellable != NULL) {
+		g_cancellable_cancel (cancellable);
+		g_clear_object (&cancellable);
+	}
+	cancellable = g_object_ref (gs_app_get_cancellable (install_data->repo));
 	g_debug ("enabling repo %s", gs_app_get_id (install_data->repo));
 	plugin_job = gs_plugin_job_manage_repository_new (install_data->repo,
 							  install_data->operation | GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-	                                    dialog->cancellable,
+	                                    cancellable,
 	                                    repo_enabled_cb,
 	                                    install_data);
 }
@@ -189,6 +195,7 @@ remove_repo_response_cb (AdwMessageDialog *confirm_dialog,
 	g_autoptr(InstallRemoveData) remove_data = (InstallRemoveData *) user_data;
 	GsReposDialog *dialog = remove_data->dialog;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GCancellable) cancellable = gs_app_peek_cancellable (remove_data->repo);
 
 	/* not agreed */
 	if (g_strcmp0 (response, "disable") != 0 &&
@@ -199,12 +206,17 @@ remove_repo_response_cb (AdwMessageDialog *confirm_dialog,
 		return;
 	}
 
+	if (cancellable != NULL) {
+		g_cancellable_cancel (cancellable);
+		g_clear_object (&cancellable);
+	}
+	cancellable = g_object_ref (gs_app_get_cancellable (remove_data->repo));
 	g_debug ("removing repo %s", gs_app_get_id (remove_data->repo));
 	plugin_job = gs_plugin_job_manage_repository_new (remove_data->repo,
 							  remove_data->operation |
 							  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-					    dialog->cancellable,
+					    cancellable,
 					    repo_enabled_cb,
 					    g_steal_pointer (&remove_data));
 }
