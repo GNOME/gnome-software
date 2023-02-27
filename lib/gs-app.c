@@ -1945,7 +1945,6 @@ gs_app_get_icon_for_size (GsApp       *app,
                           const gchar *fallback_icon_name)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GIcon) candidate_icon = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	g_return_val_if_fail (size > 0, NULL);
@@ -1954,6 +1953,24 @@ gs_app_get_icon_for_size (GsApp       *app,
 	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s",
 		 gs_app_get_id (app), size, scale, fallback_icon_name);
 
+	/* If there’s a themed icon with no width set, use that, as typically
+	 * themed icons are available in any given size. */
+	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
+		GIcon *icon = priv->icons->pdata[i];
+		guint icon_width = gs_icon_get_width (icon);
+
+		if (icon_width == 0 && G_IS_THEMED_ICON (icon)) {
+			g_autoptr(GtkIconTheme) theme = get_icon_theme ();
+			if (gtk_icon_theme_has_gicon (theme, icon)) {
+				g_debug ("Found themed icon");
+				return g_object_ref (icon);
+			}
+		}
+	}
+
+	/* See if there’s an icon of the right size, or the first one which is too
+	 * big which could be scaled down. Note that the icons array may be
+	 * lazily created. */
 	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
 		GIcon *icon = priv->icons->pdata[i];
 		g_autofree gchar *icon_str = g_icon_to_string (icon);
@@ -1963,16 +1980,6 @@ gs_app_get_icon_for_size (GsApp       *app,
 
 		g_debug ("\tConsidering icon of type %s (%s), width %u×%u",
 			 G_OBJECT_TYPE_NAME (icon), icon_str, icon_width, icon_scale);
-
-		/* If there’s a themed icon with no width set, use that, as
-		 * typically themed icons are available in any given size. */
-		if (icon_width == 0 && G_IS_THEMED_ICON (icon)) {
-			g_autoptr(GtkIconTheme) theme = get_icon_theme ();
-			if (gtk_icon_theme_has_gicon (theme, icon)) {
-				g_debug ("Found themed icon");
-				return g_object_ref (icon);
-			}
-		}
 
 		/* To avoid excessive I/O, the loading of AppStream data does
 		 * not verify the existence of cached icons, which we do now.
@@ -1990,15 +1997,9 @@ gs_app_get_icon_for_size (GsApp       *app,
 		if (icon_width == 0 || icon_width * icon_scale < size * scale)
 			continue;
 
-		/* See if there’s an icon of the right size, or the first one which is too
-		 * big which could be scaled down. Note that the icons array may be
-		 * lazily created. */
-		if (candidate_icon == NULL && (icon_width * icon_scale >= size * scale))
-			candidate_icon = g_object_ref (icon);
+		if (icon_width * icon_scale >= size * scale)
+			return g_object_ref (icon);
 	}
-
-	if (candidate_icon != NULL)
-		return g_object_ref (candidate_icon);
 
 	if (scale > 1) {
 		g_debug ("Retrying at scale 1");
