@@ -356,8 +356,16 @@ plugin_update_apps_cb (GObject      *source_object,
 	GsPluginJobUpdateApps *self = g_task_get_source_object (task);
 	g_autoptr(GError) local_error = NULL;
 
-	if (!plugin_class->update_apps_finish (plugin, result, &local_error))
-		g_debug ("Failed to update apps: %s", local_error->message);
+	/* Forward cancellation errors, but ignore all other errors so
+	 * that other plugins don’t get blocked. */
+	if (!plugin_class->update_apps_finish (plugin, result, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("Plugin ‘%s‘ failed to update apps: %s",
+			 gs_plugin_get_name (plugin), local_error->message);
+		g_clear_error (&local_error);
+	}
+
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 
 	GS_PROFILER_ADD_MARK_TAKE (PluginJobUpdateApps,
@@ -370,8 +378,7 @@ plugin_update_apps_cb (GObject      *source_object,
 	/* Update progress reporting. */
 	g_hash_table_replace (self->plugins_progress, plugin, GUINT_TO_POINTER (100));
 
-	/* Intentionally ignore errors, to not block other plugins */
-	finish_op (task, NULL);
+	finish_op (task, g_steal_pointer (&local_error));
 }
 
 /* @error is (transfer full) if non-%NULL */
