@@ -105,20 +105,6 @@
             ]
         },
         {
-            "name": "linux-pam",
-            "buildsystem": "autotools",
-            "config-opts": [
-                "--disable-doc",
-                "--includedir=/app/include/security"
-            ],
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "https://github.com/linux-pam/linux-pam.git"
-                }
-            ]
-        },
-        {
             "name": "libfuse",
             "buildsystem": "meson",
             "config-opts": [
