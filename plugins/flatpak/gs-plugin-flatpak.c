@@ -1062,8 +1062,27 @@ update_apps_thread_cb (GTask        *task,
 
 	assert_in_worker (self);
 
-	/* build and run transaction for each flatpak installation */
+	/* Mark all the apps as pending installation. While the op/progress
+	 * handling code in #GsFlatpakTransaction does this more accurately and
+	 * in more detail, we need to pre-emptively do it here, since multiple
+	 * transactions are run sequentially below. That means that all the apps
+	 * from the 2nd, 3rd, etc. transactions will not have their state
+	 * updated until that transaction is prepared. That’s a long time for
+	 * the apps to look like they’ve been left out of the update in the UI. */
 	applist_by_flatpaks = _group_apps_by_installation (self, data->apps);
+
+	g_hash_table_iter_init (&iter, applist_by_flatpaks);
+	while (g_hash_table_iter_next (&iter, NULL, &value)) {
+		GsAppList *apps_for_installation = GS_APP_LIST (value);
+
+		for (guint i = 0; i < gs_app_list_length (apps_for_installation); i++) {
+			GsApp *app = gs_app_list_index (apps_for_installation, i);
+
+			gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+		}
+	}
+
+	/* build and run transaction for each flatpak installation */
 	g_hash_table_iter_init (&iter, applist_by_flatpaks);
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
 		GsFlatpak *flatpak = GS_FLATPAK (key);
@@ -1090,6 +1109,12 @@ update_apps_thread_cb (GTask        *task,
 		transaction = _build_transaction (GS_PLUGIN (self), flatpak, interactive, cancellable, &local_error);
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
+
+			/* Reset the state of all the apps in this transaction. */
+			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+				GsApp *app = gs_app_list_index (list_tmp, i);
+				gs_app_set_state_recover (app);
+			}
 
 			/* This can only fail if the repo doesn’t exist and can’t
 			 * be created, which is unlikely. */
