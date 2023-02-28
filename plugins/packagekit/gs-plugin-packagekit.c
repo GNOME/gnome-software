@@ -2853,7 +2853,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 static gboolean
 gs_plugin_packagekit_convert_error (GError **error,
 				    PkErrorEnum error_enum,
-				    const gchar *details)
+				    const gchar *details,
+				    const gchar *prefix)
 {
 	switch (error_enum) {
 	case PK_ERROR_ENUM_PACKAGE_DOWNLOAD_FAILED:
@@ -2903,6 +2904,8 @@ gs_plugin_packagekit_convert_error (GError **error,
 				     details);
 		break;
 	}
+	if (prefix != NULL)
+		g_prefix_error_literal (error, prefix);
 	return FALSE;
 }
 
@@ -2974,7 +2977,8 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 
 		return gs_plugin_packagekit_convert_error (error,
 		                                           pk_error_get_code (error_code),
-		                                           pk_error_get_details (error_code));
+		                                           pk_error_get_details (error_code),
+							   _("Failed to install updates: "));
 	}
 
 	/* distro upgrade? */
