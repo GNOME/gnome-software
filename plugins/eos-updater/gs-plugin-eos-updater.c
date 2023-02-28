@@ -1181,6 +1181,19 @@ gs_plugin_eos_updater_app_upgrade_download_async (GsPluginEosUpdater  *self,
 	download_iterate_state_machine_cb (G_OBJECT (self->updater_proxy), NULL, g_steal_pointer (&task));
 }
 
+static gboolean
+is_wrong_state_error (const GError *error)
+{
+	g_autofree gchar *remote_error = NULL;
+
+	if (!g_dbus_error_is_remote_error (error))
+		return FALSE;
+
+	remote_error = g_dbus_error_get_remote_error (error);
+
+	return g_str_equal (remote_error, "com.endlessm.Updater.Error.WrongState");
+}
+
 static void
 download_iterate_state_machine_cb (GObject      *source_object,
                                    GAsyncResult *result,
@@ -1201,9 +1214,18 @@ download_iterate_state_machine_cb (GObject      *source_object,
 		g_autoptr(GError) local_error = NULL;
 
 		if (!data->finish_func (self->updater_proxy, result, &local_error)) {
-			gs_eos_updater_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+			/* Ignore WrongState errors, since we explicitly synchronise
+			 * to the daemon’s state again below, so should be able
+			 * to recover from them. The user can’t do anything
+			 * about them anyway. */
+			if (is_wrong_state_error (local_error)) {
+				g_debug ("Got WrongState error from eos-updater daemon; ignoring.");
+				g_clear_error (&local_error);
+			} else {
+				gs_eos_updater_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
 		}
 
 		data->finish_func = NULL;
