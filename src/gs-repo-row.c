@@ -155,36 +155,53 @@ get_repo_installed_text (GsApp *repo)
 	}
 
 	if (cnt_addon == 0) {
-		/* TRANSLATORS: This string is used to construct the 'X apps
-		   installed' sentence, describing a software repository. */
+		/* TRANSLATORS: This string states how many apps have been
+		 * installed from a particular repo, and is displayed on a row
+		 * describing that repo. The placeholder is the number of apps. */
 		return g_strdup_printf (ngettext ("%u app installed",
 		                                  "%u apps installed",
 		                                  cnt_apps), cnt_apps);
 	}
 	if (cnt_apps == 0) {
-		/* TRANSLATORS: This string is used to construct the 'X add-ons
-		   installed' sentence, describing a software repository. */
+		/* TRANSLATORS: This string states how many add-ons have been
+		 * installed from a particular repo, and is displayed on a row
+		 * describing that repo. The placeholder is the number of add-ons. */
 		return g_strdup_printf (ngettext ("%u add-on installed",
 		                                  "%u add-ons installed",
 		                                  cnt_addon), cnt_addon);
 	}
 
 	/* TRANSLATORS: This string is used to construct the 'X apps
-	   and y add-ons installed' sentence, describing a software repository.
-	   The correct form here depends on the number of apps. */
+	   and Y add-ons installed' sentence, stating how many things have been
+	 * installed from a particular repo. It’s displayed on a row describing
+	 * that repo. The placeholder is the number of apps, and the translated
+	 * string will be substituted in for the first placeholder in the
+	 * string “%s and %s installed”. */
 	apps_text = g_strdup_printf (ngettext ("%u app",
 	                                       "%u apps",
 	                                       cnt_apps), cnt_apps);
 	/* TRANSLATORS: This string is used to construct the 'X apps
-	   and y add-ons installed' sentence, describing a software repository.
-	   The correct form here depends on the number of add-ons. */
+	   and Y add-ons installed' sentence, stating how many things have been
+	 * installed from a particular repo. It’s displayed on a row describing
+	 * that repo. The placeholder is the number of add-ons, and the translated
+	 * string will be substituted in for the second placeholder in the
+	 * string “%s and %s installed”. */
 	addons_text = g_strdup_printf (ngettext ("%u add-on",
 	                                         "%u add-ons",
 	                                         cnt_addon), cnt_addon);
 	/* TRANSLATORS: This string is used to construct the 'X apps
-	   and y add-ons installed' sentence, describing a software repository.
-	   The correct form here depends on the total number of
-	   apps and add-ons. */
+	   and Y add-ons installed' sentence, stating how many things have been
+	 * installed from a particular repo. It’s displayed on a row describing
+	 * that repo. The first placeholder is the translated string “%u app” or
+	 * “%u apps”. The second placeholder is the translated string “%u add-on”
+	 * or “%u add-ons”.
+	 *
+	 * The choice of plural form for this string is determined by the total
+	 * number of apps plus add-ons. For example,
+	 *  - “1 app and 2 add-ons installed” - uses count 3
+	 *  - “2 apps and 1 add-on installed” - uses count 3
+	 *  - “4 apps and 5 add-ons installed” - uses count 9
+	 */
 	return g_strdup_printf (ngettext ("%s and %s installed",
 	                                  "%s and %s installed",
 	                                  cnt_apps + cnt_addon),
