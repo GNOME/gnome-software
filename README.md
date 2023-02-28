@@ -29,7 +29,7 @@ For questions about how to use Software, ask on [Discourse](https://discourse.gn
 
 Bug reports and merge requests should be filed on [GNOME GitLab](https://gitlab.gnome.org/GNOME/gnome-software).
 
-For development discussion, join us on `#gnome-software` on [irc.gnome.org](https://wiki.gnome.org/Community/GettingInTouch/IRC) or `#gnome-software:gnome.org` on [Matrix](https://matrix.to/#/#gnome-software:gnome.org).
+For development discussion, join us on [#gnome-software](irc://irc.libera.chat/gnome-software) on [Libera Chat](https://wiki.gnome.org/GettingInTouch/IRC) or `#gnome-software:gnome.org` on [Matrix](https://matrix.to/#/#gnome-software:gnome.org).
 
 # Documentation for app developers and vendors
 
