@@ -380,9 +380,13 @@ plugin_refine_cb (GObject      *source_object,
 						    gs_plugin_get_name (plugin)),
 				   NULL);
 
-	if (!plugin_class->refine_finish (plugin, result, &local_error)) {
-		finish_refine_internal_op (task, g_steal_pointer (&local_error));
-		return;
+	if (!plugin_class->refine_finish (plugin, result, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("plugin '%s' failed to refine apps: %s",
+			 gs_plugin_get_name (plugin),
+			 local_error->message);
+		g_clear_error (&local_error);
 	}
 
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
@@ -399,7 +403,13 @@ odrs_provider_refine_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
 
-	gs_odrs_provider_refine_finish (odrs_provider, result, &local_error);
+	if (!gs_odrs_provider_refine_finish (odrs_provider, result, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("ODRS provider failed to refine apps: %s",
+			 local_error->message);
+		g_clear_error (&local_error);
+	}
 	finish_refine_internal_op (task, g_steal_pointer (&local_error));
 }
 
@@ -617,7 +627,13 @@ recursive_internal_refine_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
 
-	run_refine_internal_finish (self, result, &local_error);
+	if (!run_refine_internal_finish (self, result, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("failed to recursive-refine: %s", local_error->message);
+		g_clear_error (&local_error);
+	}
+
 	finish_refine_internal_recursion (task, g_steal_pointer (&local_error));
 }
 
