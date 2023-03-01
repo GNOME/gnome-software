@@ -1629,8 +1629,12 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	origin = flatpak_installed_ref_get_origin (xref);
 	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref), xremote, interactive, cancellable);
 
-	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	/* Set the state to installed only from some states, to not override the updatable-live or other states */
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+	    gs_app_get_state (app) == GS_APP_STATE_AVAILABLE) {
+		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	}
 
 	gs_flatpak_set_metadata_installed (self, app, xref, interactive, cancellable);
 	return g_steal_pointer (&app);
