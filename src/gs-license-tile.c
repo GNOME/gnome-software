@@ -91,7 +91,8 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		return;
 
 	if (gs_app_get_license_is_free (self->app)) {
-		const gchar *license_spdx, *license_url;
+		const gchar *license_spdx;
+		g_autofree gchar *license_url = NULL;
 
 		title = _("Community Built");
 		css_class = "green";
