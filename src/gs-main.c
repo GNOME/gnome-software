@@ -45,7 +45,8 @@ main (int argc, char **argv)
 	/* redirect logs */
 	application = gs_application_new (debug);
 	appinfo = g_desktop_app_info_new ("org.gnome.Software.desktop");
-	g_set_application_name (g_app_info_get_name (G_APP_INFO (appinfo)));
+	if (appinfo != NULL)
+		g_set_application_name (g_app_info_get_name (G_APP_INFO (appinfo)));
 	status = g_application_run (G_APPLICATION (application), argc, argv);
 	return status;
 }
