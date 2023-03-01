@@ -2355,6 +2355,8 @@ gs_details_page_dispose (GObject *object)
 	if (self->app != NULL) {
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_allow_cancel_changed_cb,
+						      self);
 		g_clear_object (&self->app);
 	}
 
