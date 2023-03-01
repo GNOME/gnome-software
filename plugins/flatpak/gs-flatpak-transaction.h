@@ -13,11 +13,17 @@
 
 G_BEGIN_DECLS
 
+typedef enum {
+	GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS = 0,
+	GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR = 1,
+} GsFlatpakErrorMode;
+
 #define GS_TYPE_FLATPAK_TRANSACTION (gs_flatpak_transaction_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsFlatpakTransaction, gs_flatpak_transaction, GS, FLATPAK_TRANSACTION, FlatpakTransaction)
 
 FlatpakTransaction	*gs_flatpak_transaction_new		(FlatpakInstallation	*installation,
+								 gboolean		 stop_on_first_error,
 								 GCancellable		*cancellable,
 								 GError			**error);
 GsApp			*gs_flatpak_transaction_get_app_by_ref	(FlatpakTransaction	*transaction,

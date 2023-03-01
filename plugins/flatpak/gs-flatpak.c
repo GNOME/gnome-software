@@ -4676,7 +4676,7 @@ gs_flatpak_purge_sync (GsFlatpak    *self,
 
 	if (unused_refs->len > 0) {
 		g_autoptr(FlatpakTransaction) transaction = NULL;
-		transaction = gs_flatpak_transaction_new (installation, cancellable, error);
+		transaction = gs_flatpak_transaction_new (installation, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, cancellable, error);
 		if (transaction == NULL) {
 			g_prefix_error_literal (error, "failed to build transaction: ");
 			return FALSE;

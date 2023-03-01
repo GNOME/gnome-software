@@ -965,9 +965,12 @@ _webflow_done (FlatpakTransaction *transaction,
 /* This can only fail if flatpak_dir_ensure_repo() fails, for example if the
  * repo is configured but doesn’t exist and can’t be created on disk. */
 static FlatpakTransaction *
-_build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
-		    gboolean interactive,
-		    GCancellable *cancellable, GError **error)
+_build_transaction (GsPlugin      *plugin,
+                    GsFlatpak     *flatpak,
+                    gboolean       stop_on_first_error,
+                    gboolean       interactive,
+                    GCancellable  *cancellable,
+                    GError       **error)
 {
 	FlatpakInstallation *installation;
 	g_autoptr(FlatpakInstallation) installation_clone = NULL;
@@ -978,7 +981,7 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 	installation_clone = g_object_ref (installation);
 
 	/* create transaction */
-	transaction = gs_flatpak_transaction_new (installation_clone, cancellable, error);
+	transaction = gs_flatpak_transaction_new (installation_clone, stop_on_first_error, cancellable, error);
 	if (transaction == NULL) {
 		g_prefix_error (error, "failed to build transaction: ");
 		gs_flatpak_error_convert (error);
@@ -1106,7 +1109,7 @@ update_apps_thread_cb (GTask        *task,
 		gs_flatpak_set_busy (flatpak, TRUE);
 
 		/* build and run transaction */
-		transaction = _build_transaction (GS_PLUGIN (self), flatpak, interactive, cancellable, &local_error);
+		transaction = _build_transaction (GS_PLUGIN (self), flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, cancellable, &local_error);
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
@@ -1350,7 +1353,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* build and run transaction */
-	transaction = _build_transaction (plugin, flatpak, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE), cancellable, error);
+	transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE), cancellable, error);
 	if (transaction == NULL) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
@@ -1474,7 +1477,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* build */
-	transaction = _build_transaction (plugin, flatpak, interactive, cancellable, error);
+	transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, cancellable, error);
 	if (transaction == NULL) {
 		gs_flatpak_error_convert (error);
 		return FALSE;

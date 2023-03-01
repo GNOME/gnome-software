@@ -16,6 +16,7 @@ struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
 	GHashTable		*refhash;	/* ref:GsApp */
 	GError			*first_operation_error;
+	gboolean		 stop_on_first_error;
 };
 
 enum {
@@ -26,6 +27,50 @@ enum {
 static guint signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (GsFlatpakTransaction, gs_flatpak_transaction, FLATPAK_TYPE_TRANSACTION)
+
+typedef enum {
+	PROP_STOP_ON_FIRST_ERROR = 1,
+} GsFlatpakTransactionProperty;
+
+static GParamSpec *props[PROP_STOP_ON_FIRST_ERROR + 1] = { NULL, };
+
+static void
+gs_flatpak_transaction_get_property (GObject    *object,
+                                     guint       prop_id,
+                                     GValue     *value,
+                                     GParamSpec *pspec)
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (object);
+
+	switch ((GsFlatpakTransactionProperty) prop_id) {
+	case PROP_STOP_ON_FIRST_ERROR:
+		g_value_set_boolean (value, self->stop_on_first_error);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_flatpak_transaction_set_property (GObject      *object,
+                                     guint         prop_id,
+                                     const GValue *value,
+                                     GParamSpec   *pspec)
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (object);
+
+	switch ((GsFlatpakTransactionProperty) prop_id) {
+	case PROP_STOP_ON_FIRST_ERROR:
+		/* Construct only. */
+		self->stop_on_first_error = g_value_get_boolean (value);
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
 
 static void
 gs_flatpak_transaction_finalize (GObject *object)
@@ -637,7 +682,12 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 		if (app != NULL)
 			gs_utils_error_add_app_id (&self->first_operation_error, app);
 	}
-	return FALSE; /* stop */
+
+	if (!(detail & FLATPAK_TRANSACTION_ERROR_DETAILS_NON_FATAL) &&
+	    self->stop_on_first_error)
+		return FALSE;  /* stop */
+
+	return TRUE; /* continue */
 }
 
 static int
@@ -730,7 +780,11 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	FlatpakTransactionClass *transaction_class = FLATPAK_TRANSACTION_CLASS (klass);
+
+	object_class->get_property = gs_flatpak_transaction_get_property;
+	object_class->set_property = gs_flatpak_transaction_set_property;
 	object_class->finalize = gs_flatpak_transaction_finalize;
+
 	transaction_class->ready = _transaction_ready;
 	transaction_class->add_new_remote = _transaction_add_new_remote;
 	transaction_class->new_operation = _transaction_new_operation;
@@ -739,6 +793,31 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 	transaction_class->choose_remote_for_ref = _transaction_choose_remote_for_ref;
 	transaction_class->end_of_lifed = _transaction_end_of_lifed;
 	transaction_class->end_of_lifed_with_rebase = _transaction_end_of_lifed_with_rebase;
+
+	/**
+	 * GsFlatpakTransaction:stop-on-first-error:
+	 *
+	 * Stop the transaction on the first fatal error. If %FALSE, the
+	 * transaction will continue running and ignore subsequent errors. Some
+	 * operations may be automatically skipped if they are related to
+	 * operations which have errored.
+	 *
+	 * Typically this should be %TRUE. It may be %FALSE for transactions
+	 * where lots of apps are being updated, as typically updates should be
+	 * mostly independent of each other, and we want as many of them to
+	 * be attempted as possible.
+	 *
+	 * Since: 44
+	 */
+	props[PROP_STOP_ON_FIRST_ERROR] =
+		g_param_spec_boolean ("stop-on-first-error",
+				      "Stop on First Error",
+				      "Stop the transaction on the first fatal error.",
+				      TRUE,
+				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 
 	signals[SIGNAL_REF_TO_APP] =
 		g_signal_new ("ref-to-app",
@@ -751,10 +830,12 @@ gs_flatpak_transaction_init (GsFlatpakTransaction *self)
 {
 	self->refhash = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       g_free, (GDestroyNotify) g_object_unref);
+	self->stop_on_first_error = TRUE;
 }
 
 FlatpakTransaction *
 gs_flatpak_transaction_new (FlatpakInstallation	*installation,
+			    gboolean stop_on_first_error,
 			    GCancellable *cancellable,
 			    GError **error)
 {
@@ -762,6 +843,7 @@ gs_flatpak_transaction_new (FlatpakInstallation	*installation,
 	self = g_initable_new (GS_TYPE_FLATPAK_TRANSACTION,
 			       cancellable, error,
 			       "installation", installation,
+			       "stop-on-first-error", stop_on_first_error,
 			       NULL);
 	if (self == NULL)
 		return NULL;
