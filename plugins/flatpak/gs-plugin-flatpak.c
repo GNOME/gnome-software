@@ -1108,8 +1108,25 @@ update_apps_thread_cb (GTask        *task,
 		/* Now apply the updates. */
 		gs_flatpak_set_busy (flatpak, TRUE);
 
-		/* build and run transaction */
-		transaction = _build_transaction (GS_PLUGIN (self), flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, cancellable, &local_error);
+		/* Build and run transaction. Pass %FALSE to stop_on_first_error
+		 * so that the transaction continues past the first fatal error
+		 * in an attempt to try and update as many apps as possible.
+		 *
+		 * Internally, `FlatpakTransaction` uses `op->fail_if_op_fails`
+		 * and `op->non_fatal` to track the relationships between ops
+		 * (such as updating an app and its runtime, or add-ons and
+		 * their app). If, for example, updating a runtime fails, the
+		 * ops to update apps which use that runtime will automatically
+		 * be skipped and will fail with `FLATPAK_ERROR_SKIPPED`.
+		 *
+		 * %GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS does not ignore
+		 * `FLATPAK_ERROR_SKIPPED` errors, so this will not cause
+		 * corruption of the transaction.
+		 *
+		 * This approach is the same as what the `flatpak` CLI uses in
+		 * `flatpak-builtins-update.c` in flatpak.
+		 */
+		transaction = _build_transaction (GS_PLUGIN (self), flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, interactive, cancellable, &local_error);
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
