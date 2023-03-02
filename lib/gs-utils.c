@@ -827,8 +827,9 @@ gs_utils_error_convert_gdbus (GError **perror)
 		error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
 		break;
 	default:
-		g_warning ("can't reliably fixup error code %i in domain %s",
-			   error->code, g_quark_to_string (error->domain));
+		g_warning ("can't reliably fixup error code %i in domain %s: %s",
+			   error->code, g_quark_to_string (error->domain),
+			   error->message);
 		error->code = GS_PLUGIN_ERROR_FAILED;
 		break;
 	}
@@ -889,8 +890,9 @@ gs_utils_error_convert_gio (GError **perror)
 		error->code = GS_PLUGIN_ERROR_NO_NETWORK;
 		break;
 	default:
-		g_warning ("can't reliably fixup error code %i in domain %s",
-			   error->code, g_quark_to_string (error->domain));
+		g_warning ("can't reliably fixup error code %i in domain %s: %s",
+			   error->code, g_quark_to_string (error->domain),
+			   error->message);
 		error->code = GS_PLUGIN_ERROR_FAILED;
 		break;
 	}
@@ -927,8 +929,9 @@ gs_utils_error_convert_gresolver (GError **perror)
 		error->code = GS_PLUGIN_ERROR_DOWNLOAD_FAILED;
 		break;
 	default:
-		g_warning ("can't reliably fixup error code %i in domain %s",
-			   error->code, g_quark_to_string (error->domain));
+		g_warning ("can't reliably fixup error code %i in domain %s: %s",
+			   error->code, g_quark_to_string (error->domain),
+			   error->message);
 		error->code = GS_PLUGIN_ERROR_FAILED;
 		break;
 	}
@@ -968,8 +971,9 @@ gs_utils_error_convert_gdk_pixbuf (GError **perror)
 		error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
 		break;
 	default:
-		g_warning ("can't reliably fixup error code %i in domain %s",
-			   error->code, g_quark_to_string (error->domain));
+		g_warning ("can't reliably fixup error code %i in domain %s: %s",
+			   error->code, g_quark_to_string (error->domain),
+			   error->message);
 		error->code = GS_PLUGIN_ERROR_FAILED;
 		break;
 	}
@@ -1032,8 +1036,9 @@ gs_utils_error_convert_appstream (GError **perror)
 			break;
 		}
 	} else {
-		g_warning ("can't reliably fixup error from domain %s",
-			   g_quark_to_string (error->domain));
+		g_warning ("can't reliably fixup error code %i in domain %s: %s",
+			   error->code, g_quark_to_string (error->domain),
+			   error->message);
 		error->code = GS_PLUGIN_ERROR_FAILED;
 	}
 	error->domain = GS_PLUGIN_ERROR;
