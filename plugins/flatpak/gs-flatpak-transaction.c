@@ -722,6 +722,8 @@ _transaction_end_of_lifed_with_rebase (FlatpakTransaction  *transaction,
 				       const gchar         *rebased_to_ref,
 				       const gchar        **previous_ids)
 {
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+
 	if (rebased_to_ref) {
 		g_message ("%s is end-of-life, in favor of %s", ref, rebased_to_ref);
 	} else if (reason) {
@@ -734,12 +736,15 @@ _transaction_end_of_lifed_with_rebase (FlatpakTransaction  *transaction,
 		if (!flatpak_transaction_add_rebase (transaction, remote, rebased_to_ref,
 						     NULL, previous_ids, &local_error) ||
 		    !flatpak_transaction_add_uninstall (transaction, ref, &local_error)) {
-			/* There's no way to make the whole transaction fail on
-			 * this error path, so just print a warning and return
-			 * FALSE, which will cause the operation on the
-			 * end-of-lifed ref not to be skipped.
-			 */
-			g_warning ("Failed to rebase %s to %s: %s", ref, rebased_to_ref, local_error->message);
+			/* NOT_INSTALLED error is expected in case the op that triggered this was install not update */
+			if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_NOT_INSTALLED))
+				g_clear_error (&local_error);
+			else if (self->first_operation_error == NULL)
+				g_propagate_prefixed_error (&self->first_operation_error,
+							    g_steal_pointer (&local_error),
+							    "Failed to rebase %s to %s: ",
+							    ref, rebased_to_ref);
+
 			return FALSE;
 		}
 
