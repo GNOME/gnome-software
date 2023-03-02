@@ -428,13 +428,6 @@ gs_fedora_third_party_list_sync (GsFedoraThirdParty *self,
 				 GCancellable *cancellable,
 				 GError **error)
 {
-	const gchar *args[] = {
-		"", /* executable */
-		"list",
-		"--csv",
-		"--columns=type,name",
-		NULL
-	};
 	gboolean success = FALSE;
 
 	g_return_val_if_fail (GS_IS_FEDORA_THIRD_PARTY (self), FALSE);
@@ -442,6 +435,14 @@ gs_fedora_third_party_list_sync (GsFedoraThirdParty *self,
 	g_mutex_lock (&self->lock);
 	/* Auto-recheck only twice a day */
 	if (self->repos == NULL || (g_get_real_time () / G_USEC_PER_SEC) - self->last_update > 12 * 60 * 60) {
+		const gchar *args[] = {
+			"", /* executable */
+			"list",
+			"--csv",
+			"--columns=type,name",
+			NULL
+		};
+
 		g_clear_pointer (&self->repos, g_hash_table_unref);
 		if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
 			gint wait_status = -1;
