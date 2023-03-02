@@ -472,9 +472,13 @@ void		 gs_app_set_key_colors		(GsApp		*app,
 void		 gs_app_add_key_color		(GsApp		*app,
 						 GdkRGBA	*key_color);
 gboolean	gs_app_get_user_key_colors	(GsApp		*app);
+
+G_DEPRECATED
 void            gs_app_set_is_update_downloaded (GsApp         *app,
                                                  gboolean       is_update_downloaded);
+G_DEPRECATED
 gboolean        gs_app_get_is_update_downloaded (GsApp         *app);
+
 gboolean	 gs_app_has_category		(GsApp		*app,
 						 const gchar	*category);
 void		 gs_app_add_category		(GsApp		*app,

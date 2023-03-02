@@ -323,7 +323,7 @@ gs_page_update_app_response_cb (AdwMessageDialog *dialog,
 	gs_app_list_add (list, helper->app);
 
 	plugin_job = gs_plugin_job_update_apps_new (list,
-						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
@@ -368,7 +368,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	gs_app_list_add (list, app);
 
 	plugin_job = gs_plugin_job_update_apps_new (list,
-						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 	helper->job = plugin_job;
 

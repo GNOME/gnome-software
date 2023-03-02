@@ -615,6 +615,14 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 		return TRUE; /* continue */
 	}
 
+	/* If the transaction has been cancelled, bail out early rather
+	 * than continuing to try operations which are all cancelled. */
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		g_debug ("Transaction cancelled; stopping it");
+
+		return FALSE;  /* stop */
+	}
+
 	if (detail & FLATPAK_TRANSACTION_ERROR_DETAILS_NON_FATAL) {
 		g_warning ("failed to %s %s (non fatal): %s",
 		           _flatpak_transaction_operation_type_to_string (operation_type),

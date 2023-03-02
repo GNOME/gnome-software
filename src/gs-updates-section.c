@@ -420,7 +420,7 @@ _button_update_all_clicked_cb (GsUpdatesSection *self)
 
 	g_set_object (&self->cancellable, cancellable);
 	plugin_job = gs_plugin_job_update_apps_new (self->list,
-						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 	helper->job = g_object_ref (plugin_job);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
