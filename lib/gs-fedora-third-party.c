@@ -74,7 +74,7 @@ gs_fedora_third_party_new (void)
 	return g_object_new (GS_TYPE_FEDORA_THIRD_PARTY, NULL);
 }
 
-static gboolean
+static gchar *
 gs_fedora_third_party_ensure_executable_locked (GsFedoraThirdParty *self,
 						GError **error)
 {
@@ -83,24 +83,24 @@ gs_fedora_third_party_ensure_executable_locked (GsFedoraThirdParty *self,
 
 	if (self->executable == NULL) {
 		g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND, "File 'fedora-third-party' not found");
-		return FALSE;
+		return NULL;
 	}
 
-	return TRUE;
+	return g_strdup (self->executable);
 }
 
 gboolean
 gs_fedora_third_party_is_available (GsFedoraThirdParty *self)
 {
-	gboolean res;
+	g_autofree gchar *executable = NULL;
 
 	g_return_val_if_fail (GS_IS_FEDORA_THIRD_PARTY (self), FALSE);
 
 	g_mutex_lock (&self->lock);
-	res = gs_fedora_third_party_ensure_executable_locked (self, NULL);
+	executable = gs_fedora_third_party_ensure_executable_locked (self, NULL);
 	g_mutex_unlock (&self->lock);
 
-	return res;
+	return (executable != NULL);
 }
 
 void
@@ -197,6 +197,7 @@ gs_fedora_third_party_query_sync (GsFedoraThirdParty *self,
 				  GCancellable *cancellable,
 				  GError **error)
 {
+	g_autofree gchar *executable = NULL;
 	const gchar *args[] = {
 		"", /* executable */
 		"query",
@@ -204,35 +205,38 @@ gs_fedora_third_party_query_sync (GsFedoraThirdParty *self,
 		NULL
 	};
 	gboolean success = FALSE;
+	gint wait_status = -1;
 
 	g_return_val_if_fail (GS_IS_FEDORA_THIRD_PARTY (self), FALSE);
 
 	g_mutex_lock (&self->lock);
-	if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
-		gint wait_status = -1;
-		args[0] = self->executable;
-		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error);
-		if (success) {
-			GsFedoraThirdPartyState state = GS_FEDORA_THIRD_PARTY_STATE_UNKNOWN;
-			/* See https://pagure.io/fedora-third-party/blob/main/f/doc/fedora-third-party.1.md */
-			switch (WEXITSTATUS (wait_status)) {
-			case 0:
-				state = GS_FEDORA_THIRD_PARTY_STATE_ENABLED;
-				break;
-			case 1:
-				state = GS_FEDORA_THIRD_PARTY_STATE_DISABLED;
-				break;
-			case 2:
-				state = GS_FEDORA_THIRD_PARTY_STATE_ASK;
-				break;
-			default:
-				break;
-			}
-			if (out_state)
-				*out_state = state;
-		}
-	}
+	executable = gs_fedora_third_party_ensure_executable_locked (self, error);
 	g_mutex_unlock (&self->lock);
+
+	if (executable == NULL)
+		return FALSE;
+
+	args[0] = executable;
+	success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error);
+	if (success) {
+		GsFedoraThirdPartyState state = GS_FEDORA_THIRD_PARTY_STATE_UNKNOWN;
+		/* See https://pagure.io/fedora-third-party/blob/main/f/doc/fedora-third-party.1.md */
+		switch (WEXITSTATUS (wait_status)) {
+		case 0:
+			state = GS_FEDORA_THIRD_PARTY_STATE_ENABLED;
+			break;
+		case 1:
+			state = GS_FEDORA_THIRD_PARTY_STATE_DISABLED;
+			break;
+		case 2:
+			state = GS_FEDORA_THIRD_PARTY_STATE_ASK;
+			break;
+		default:
+			break;
+		}
+		if (out_state)
+			*out_state = state;
+	}
 
 	return success;
 }
@@ -285,6 +289,7 @@ gs_fedora_third_party_switch_sync (GsFedoraThirdParty *self,
 				   GCancellable *cancellable,
 				   GError **error)
 {
+	g_autofree gchar *executable = NULL;
 	const gchar *args[] = {
 		"pkexec",
 		"", /* executable */
@@ -292,22 +297,22 @@ gs_fedora_third_party_switch_sync (GsFedoraThirdParty *self,
 		"", /* config-only */
 		NULL
 	};
-	gboolean success = FALSE;
+	gint wait_status = -1;
 
 	g_return_val_if_fail (GS_IS_FEDORA_THIRD_PARTY (self), FALSE);
 
 	g_mutex_lock (&self->lock);
-	if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
-		gint wait_status = -1;
-		args[1] = self->executable;
-		args[2] = enable ? "enable" : "disable";
-		args[3] = config_only ? "--config-only" : NULL;
-		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error) &&
-			  g_spawn_check_wait_status (wait_status, error);
-	}
+	executable = gs_fedora_third_party_ensure_executable_locked (self, error);
 	g_mutex_unlock (&self->lock);
 
-	return success;
+	if (executable == NULL)
+		return FALSE;
+
+	args[1] = executable;
+	args[2] = enable ? "enable" : "disable";
+	args[3] = config_only ? "--config-only" : NULL;
+	return g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error) &&
+			     g_spawn_check_wait_status (wait_status, error);
 }
 
 static void
@@ -357,24 +362,22 @@ gs_fedora_third_party_opt_out_sync (GsFedoraThirdParty *self,
 	 * a different pkexec configuration for opting-out and thus avoid
 	 * admin users needing to authenticate to opt-out.
 	 */
+	g_autofree gchar *executable = NULL;
 	const gchar *args[] = {
 		"pkexec",
 		"/usr/lib/fedora-third-party/fedora-third-party-opt-out",
 		NULL
 	};
-	gboolean success = FALSE;
+	gint wait_status = -1;
 
 	g_return_val_if_fail (GS_IS_FEDORA_THIRD_PARTY (self), FALSE);
 
 	g_mutex_lock (&self->lock);
-	if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
-		gint wait_status = -1;
-		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error) &&
-			  g_spawn_check_wait_status (wait_status, error);
-	}
+	executable = gs_fedora_third_party_ensure_executable_locked (self, error);
 	g_mutex_unlock (&self->lock);
 
-	return success;
+	return g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error) &&
+			     g_spawn_check_wait_status (wait_status, error);
 }
 
 static void
@@ -428,13 +431,6 @@ gs_fedora_third_party_list_sync (GsFedoraThirdParty *self,
 				 GCancellable *cancellable,
 				 GError **error)
 {
-	const gchar *args[] = {
-		"", /* executable */
-		"list",
-		"--csv",
-		"--columns=type,name",
-		NULL
-	};
 	gboolean success = FALSE;
 
 	g_return_val_if_fail (GS_IS_FEDORA_THIRD_PARTY (self), FALSE);
@@ -442,16 +438,28 @@ gs_fedora_third_party_list_sync (GsFedoraThirdParty *self,
 	g_mutex_lock (&self->lock);
 	/* Auto-recheck only twice a day */
 	if (self->repos == NULL || (g_get_real_time () / G_USEC_PER_SEC) - self->last_update > 12 * 60 * 60) {
-		g_clear_pointer (&self->repos, g_hash_table_unref);
-		if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
+		g_autofree gchar *executable = NULL;
+		const gchar *args[] = {
+			"", /* executable */
+			"list",
+			"--csv",
+			"--columns=type,name",
+			NULL
+		};
+		g_autoptr(GHashTable) repos = NULL;
+
+		executable = gs_fedora_third_party_ensure_executable_locked (self, error);
+		g_mutex_unlock (&self->lock);
+
+		if (executable != NULL) {
 			gint wait_status = -1;
 			g_autofree gchar *stdoutput = NULL;
-			args[0] = self->executable;
+			args[0] = executable;
 			if (g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_DEFAULT, NULL, NULL, &stdoutput, NULL, &wait_status, error) &&
 			    g_spawn_check_wait_status (wait_status, error)) {
-				GHashTable *repos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 				g_auto(GStrv) lines = NULL;
 
+				repos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 				lines = g_strsplit (stdoutput != NULL ? stdoutput : "", "\n", -1);
 
 				for (gsize ii = 0; lines != NULL && lines[ii]; ii++) {
@@ -465,10 +473,12 @@ gs_fedora_third_party_list_sync (GsFedoraThirdParty *self,
 						g_hash_table_insert (repos, g_strdup (tokens[1]), g_strdup (repo_type));
 					}
 				}
-
-				self->repos = repos;
 			}
 		}
+
+		g_mutex_lock (&self->lock);
+		g_clear_pointer (&self->repos, g_hash_table_unref);
+		self->repos = g_steal_pointer (&repos);
 		self->last_update = g_get_real_time () / G_USEC_PER_SEC;
 	}
 	success = self->repos != NULL;
