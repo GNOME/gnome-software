@@ -36,4 +36,30 @@ gboolean	 gs_job_manager_app_has_pending_job_type	(GsJobManager	*self,
 								 GsApp		*app,
 								 GType		 pending_job_type);
 
+/**
+ * GsJobManagerJobCallback:
+ * @job_manager: a #GsJobManager
+ * @job: (not nullable): a #GsPluginJob
+ * @user_data: user data
+ *
+ * A callback related to a specific job.
+ *
+ * This is used by gs_job_manager_add_watch().
+ *
+ * Since: 44
+ */
+typedef void (*GsJobManagerJobCallback)	(GsJobManager	*job_manager,
+					 GsPluginJob	*job,
+					 gpointer	 user_data);
+
+guint		 gs_job_manager_add_watch			(GsJobManager	*self,
+								 GsApp		*match_app,
+								 GType		 match_job_type,
+								 GsJobManagerJobCallback added_handler,
+								 GsJobManagerJobCallback removed_handler,
+								 gpointer	 user_data,
+								 GDestroyNotify	 user_data_free_func);
+void		 gs_job_manager_remove_watch			(GsJobManager	*self,
+								 guint		 watch_id);
+
 G_END_DECLS
