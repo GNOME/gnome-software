@@ -213,7 +213,7 @@ gs_appstream_format_description (XbNode *description_node,
 				const gchar *issue_url = xb_node_get_attr (n, "url");
 
 				if (node_text != NULL && *node_text != '\0') {
-					if (str->str[str->len - 1] != '\n')
+					if (str->len > 0 && str->str[str->len - 1] != '\n')
 						g_string_append_c (str, '\n');
 					g_string_append (str, " • ");
 					format_issue_link (str, node_text, issue_kind, issue_url);
