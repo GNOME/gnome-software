@@ -1469,6 +1469,7 @@ gs_plugin_eos_updater_update_apps_async (GsPlugin                           *plu
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
 	g_autoptr(GTask) task = NULL;
 	GsApp *app;
+	guint n_managed_apps = 0;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GError) local_error = NULL;
 
@@ -1484,8 +1485,22 @@ gs_plugin_eos_updater_update_apps_async (GsPlugin                           *plu
 		return;
 	}
 
-	g_assert (gs_app_list_length (apps) == 1);
-	app = gs_app_list_index (apps, 0);
+	/* Find the app for the OS upgrade in the list of apps. It might not be present. */
+	for (guint i = 0; i < gs_app_list_length (apps); i++) {
+		GsApp *app_i = gs_app_list_index (apps, i);
+
+		if (gs_app_has_management_plugin (app_i, plugin)) {
+			app = app_i;
+			n_managed_apps++;
+		}
+	}
+
+	if (n_managed_apps == 0) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	g_assert (n_managed_apps == 1);
 
 	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
 		/* Download the update.
