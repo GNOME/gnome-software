@@ -158,6 +158,7 @@ gs_updates_section_remove_all (GsUpdatesSection *self)
 		gtk_list_box_remove (GTK_LIST_BOX (self->listbox), child);
 	gs_app_list_remove_all (self->list);
 	gtk_widget_set_visible (GTK_WIDGET (self), FALSE);
+	g_clear_object (&self->cancellable);
 }
 
 typedef struct {
@@ -289,9 +290,29 @@ _all_offline_updates_downloaded (GsUpdatesSection *self)
 	return TRUE;
 }
 
+static guint
+gs_updates_section_count_busy_apps (GsUpdatesSection *self)
+{
+	guint ii, busy = 0;
+
+	for (ii = 0; ii < gs_app_list_length (self->list); ii++) {
+		GsApp *app = gs_app_list_index (self->list, ii);
+		GsAppState state = gs_app_get_state (app);
+
+		if (state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_REMOVING) {
+			busy++;
+		}
+	}
+
+	return busy;
+}
+
 static void
 _update_buttons (GsUpdatesSection *self)
 {
+	guint busy, len;
+
 	/* operation in progress */
 	if (self->cancellable != NULL) {
 		gtk_widget_set_sensitive (self->button_cancel,
@@ -300,6 +321,11 @@ _update_buttons (GsUpdatesSection *self)
 		gtk_widget_set_visible (GTK_WIDGET (self->button_stack), TRUE);
 		return;
 	}
+
+	len = gs_app_list_length (self->list);
+	busy = gs_updates_section_count_busy_apps (self);
+
+	gtk_widget_set_sensitive (self->button_update, busy == 0 || busy < len);
 
 	if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE ||
 	    self->kind == GS_UPDATES_SECTION_KIND_OFFLINE) {
@@ -362,6 +388,13 @@ static void
 _button_cancel_clicked_cb (GsUpdatesSection *self)
 {
 	g_cancellable_cancel (self->cancellable);
+	/* cancel also individual app's cancellables */
+	for (guint i = 0; i < gs_app_list_length (self->list); i++) {
+		GsApp *app = gs_app_list_index (self->list, i);
+		g_autoptr(GCancellable) cancellable = gs_app_peek_cancellable (app);
+		if (cancellable != NULL)
+			g_cancellable_cancel (cancellable);
+	}
 	_update_buttons (self);
 }
 
@@ -624,21 +657,19 @@ gs_updates_section_app_state_changed_cb (GsAppList *list,
 					 GsApp *in_app,
 					 GsUpdatesSection *self)
 {
-	guint ii, len, busy = 0;
+	guint busy, len;
 
-	len = gs_app_list_length (list);
+	len = gs_app_list_length (self->list);
+	busy = gs_updates_section_count_busy_apps (self);
 
-	for (ii = 0; ii < len; ii++) {
-		GsApp *app = gs_app_list_index (list, ii);
-		GsAppState state = gs_app_get_state (app);
-
-		if (state == GS_APP_STATE_INSTALLING ||
-		    state == GS_APP_STATE_REMOVING) {
-			busy++;
-		}
+	if (busy == len && busy > 0 && self->cancellable == NULL) {
+		/* this will show the "Cancel" button, instead of "Update All" */
+		self->cancellable = g_cancellable_new ();
+	} else if (busy == 0 && self->cancellable != NULL) {
+		g_clear_object (&self->cancellable);
 	}
 
-	gtk_widget_set_sensitive (self->button_update, busy < len);
+	_update_buttons (self);
 }
 
 static void
