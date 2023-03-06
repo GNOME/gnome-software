@@ -251,6 +251,26 @@ typedef enum {
 } GsPluginManageRepositoryFlags;
 
 /**
+ * GsPluginInstallAppsFlags:
+ * @GS_PLUGIN_INSTALL_APPS_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE: User initiated the job.
+ * @GS_PLUGIN_INSTALL_APPS_FLAGS_NO_DOWNLOAD: Only use locally cached resources,
+ *   and error if they don’t exist.
+ * @GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY: Only download the resources, and don’t
+ *   do the installation.
+ *
+ * Flags for an operation to download or install apps.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_INSTALL_APPS_FLAGS_NONE = 0,
+	GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE = 1 << 0,
+	GS_PLUGIN_INSTALL_APPS_FLAGS_NO_DOWNLOAD = 1 << 1,
+	GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY = 1 << 2,
+} GsPluginInstallAppsFlags;
+
+/**
  * GsPluginUpdateAppsFlags:
  * @GS_PLUGIN_UPDATE_APPS_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE: User initiated the job.

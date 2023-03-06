@@ -338,6 +338,98 @@ gs_plugin_refine_categories_data_free (GsPluginRefineCategoriesData *data)
 }
 
 /**
+ * gs_plugin_install_apps_data_new:
+ * @apps: list of apps to install
+ * @flags: install flags
+ *
+ * Context data for a call to #GsPluginClass.install_apps_async.
+ *
+ * Returns: (transfer full): context data structure
+ * Since: 47
+ */
+GsPluginInstallAppsData *
+gs_plugin_install_apps_data_new (GsAppList                          *apps,
+                                 GsPluginInstallAppsFlags            flags,
+                                 GsPluginProgressCallback            progress_callback,
+                                 gpointer                            progress_user_data,
+                                 GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                 gpointer                            app_needs_user_action_data)
+{
+	g_autoptr(GsPluginInstallAppsData) data = g_new0 (GsPluginInstallAppsData, 1);
+	data->apps = g_object_ref (apps);
+	data->flags = flags;
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	data->app_needs_user_action_callback = app_needs_user_action_callback;
+	data->app_needs_user_action_data = app_needs_user_action_data;
+
+	return g_steal_pointer (&data);
+}
+
+/**
+ * gs_plugin_install_apps_data_new_task:
+ * @source_object: task source object
+ * @apps: list of apps to install
+ * @flags: install flags
+ * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_user_data: data to pass to @progress_callback
+ * @app_needs_user_action_callback: (nullable): function to call to ask the
+ *   user for a decision
+ * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: function to call once asynchronous operation is finished
+ * @user_data: data to pass to @callback
+ *
+ * Create a #GTask for an install apps operation with the given arguments.
+ * The task data will be set to a #GsPluginInstallAppsData containing the
+ * given context.
+ *
+ * This is essentially a combination of gs_plugin_install_apps_data_new(),
+ * g_task_new() and g_task_set_task_data().
+ *
+ * Returns: (transfer full): new #GTask with the given context data
+ * Since: 47
+ */
+GTask *
+gs_plugin_install_apps_data_new_task (gpointer                            source_object,
+                                      GsAppList                          *apps,
+                                      GsPluginInstallAppsFlags            flags,
+                                      GsPluginProgressCallback            progress_callback,
+                                      gpointer                            progress_user_data,
+                                      GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                      gpointer                            app_needs_user_action_data,
+                                      GCancellable                       *cancellable,
+                                      GAsyncReadyCallback                 callback,
+                                      gpointer                            user_data)
+{
+	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
+	g_task_set_task_data (task,
+			      gs_plugin_install_apps_data_new (apps,
+							       flags,
+							       progress_callback,
+							       progress_user_data,
+							       app_needs_user_action_callback,
+							       app_needs_user_action_data),
+			      (GDestroyNotify) gs_plugin_install_apps_data_free);
+	return g_steal_pointer (&task);
+}
+
+/**
+ * gs_plugin_install_apps_data_free:
+ * @data: (transfer full): a #GsPluginInstallAppsData
+ *
+ * Free the given @data.
+ *
+ * Since: 47
+ */
+void
+gs_plugin_install_apps_data_free (GsPluginInstallAppsData *data)
+{
+	g_clear_object (&data->apps);
+	g_free (data);
+}
+
+/**
  * gs_plugin_update_apps_data_new:
  * @apps: list of apps to update
  * @flags: update flags
