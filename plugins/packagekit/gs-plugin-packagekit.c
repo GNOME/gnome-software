@@ -2916,7 +2916,9 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	guint i;
 	g_autoptr(GPtrArray) package_array = NULL;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GSettings) settings = NULL;
 	g_autoptr(PkResults) results = NULL;
+	gboolean is_new_result;
 	PkExitEnum exit_code;
 
 	/* get the results */
@@ -2946,6 +2948,12 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	settings = g_settings_new ("org.gnome.software");
+	/* Two seconds precision */
+	is_new_result = mtime > g_settings_get_uint64 (settings, "packagekit-historical-updates-timestamp") + 2;
+	if (is_new_result)
+		g_settings_set_uint64 (settings, "packagekit-historical-updates-timestamp", mtime);
+
 	/* only return results if successful */
 	exit_code = pk_results_get_exit_code (results);
 	if (exit_code != PK_EXIT_ENUM_SUCCESS) {
@@ -2959,6 +2967,10 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 			             "Offline update failed without error_code set");
 			return FALSE;
 		}
+
+		/* Ignore previously shown errors */
+		if (!is_new_result)
+			return TRUE;
 
 		return gs_plugin_packagekit_convert_error (error,
 		                                           pk_error_get_code (error_code),
