@@ -197,7 +197,8 @@ containing the deployment name as an identifier.
 
 The second file is `deployment-featured.ini`, which contains a human-readable title and
 the selector for the section. The title is a localized key, and is used to set the heading
-for the section on the Explore page. The selector defines which apps should be picked.
+for the section on the Explore page. When the title is not provided, a fallback title
+"Available for ${distro-name}" is used. The selector defines which apps should be picked.
 It is a semicolon-separated list of `GnomeSoftware::DeploymentFeatured` key values, thus
 the deployment can feature apps from zero or more vendors.
 

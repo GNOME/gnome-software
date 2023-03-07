@@ -663,20 +663,11 @@ gs_overview_page_read_deployment_featured_keys (gchar **out_label,
 		return FALSE;
 	}
 
-	*out_label = g_key_file_get_locale_string (key_file, "Deployment Featured Apps", "Title", NULL, NULL);
-
-	if (*out_label == NULL || **out_label == '\0') {
-		g_clear_pointer (out_label, g_free);
-		return FALSE;
-	}
-
 	selector = g_key_file_get_string_list (key_file, "Deployment Featured Apps", "Selector", NULL, NULL);
 
 	/* Sanitize the content */
-	if (selector == NULL) {
-		g_clear_pointer (out_label, g_free);
+	if (selector == NULL)
 		return FALSE;
-	}
 
 	array = g_ptr_array_sized_new (g_strv_length (selector) + 1);
 
@@ -686,14 +677,28 @@ gs_overview_page_read_deployment_featured_keys (gchar **out_label,
 			g_ptr_array_add (array, g_strdup (value));
 	}
 
-	if (array->len == 0) {
-		g_clear_pointer (out_label, g_free);
+	if (array->len == 0)
 		return FALSE;
-	}
 
 	g_ptr_array_add (array, NULL);
 
 	*out_deployment_featured = (gchar **) g_ptr_array_free (g_steal_pointer (&array), FALSE);
+	*out_label = g_key_file_get_locale_string (key_file, "Deployment Featured Apps", "Title", NULL, NULL);
+
+	if (*out_label == NULL || **out_label == '\0') {
+		g_autoptr(GsOsRelease) os_release = gs_os_release_new (NULL);
+		const gchar *name = NULL;
+		if (os_release != NULL)
+			name = gs_os_release_get_name (os_release);
+		g_free (*out_label);
+		if (name == NULL) {
+			*out_label = g_strdup (_("Available for your operating system"));
+		} else {
+			/* Translators: the '%s' is replaced with the distribution name, constructing
+			   for example: "Available for Fedora Linux" */
+			*out_label = g_strdup_printf (_("Available for %s"), name);
+		}
+	}
 
 	return TRUE;
 }
