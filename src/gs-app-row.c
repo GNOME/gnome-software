@@ -534,6 +534,21 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 		if (warning->len > 0) {
 			gtk_label_set_text (GTK_LABEL (priv->label_warning), warning->str);
+			gtk_widget_set_tooltip_text (priv->label_warning, warning->str);
+			gtk_widget_set_visible (priv->label_warning, TRUE);
+		}
+	} else if (priv->show_installed) {
+		const gchar *problems;
+		problems = gs_app_get_metadata_item (priv->app, "GnomeSoftware::problems");
+		if (problems == NULL || *problems == '\0') {
+			/* Show runtime problems on the apps which use them, unless they have their own problems */
+			GsApp *runtime = gs_app_get_runtime (priv->app);
+			if (runtime != NULL)
+				problems = gs_app_get_metadata_item (runtime, "GnomeSoftware::problems");
+		}
+		if (problems != NULL && *problems != '\0') {
+			gtk_label_set_text (GTK_LABEL (priv->label_warning), problems);
+			gtk_widget_set_tooltip_text (priv->label_warning, problems);
 			gtk_widget_set_visible (priv->label_warning, TRUE);
 		}
 	}
