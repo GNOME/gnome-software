@@ -244,6 +244,8 @@ gs_rpmostree_inactive_timeout_cb (gpointer user_data)
 					       g_variant_new_string (GS_RPMOSTREE_CLIENT_ID));
 			gs_rpmostree_sysroot_call_unregister_client (sysroot_proxy,
 								     g_variant_builder_end (options_builder),
+								     G_DBUS_CALL_FLAGS_NONE,
+								     -1  /* timeout */,
 								     NULL,
 								     gs_rpmostree_unregister_client_done_cb,
 								     NULL);
@@ -287,6 +289,8 @@ gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
 		/* Register as a client so that the rpm-ostree daemon doesn't exit */
 		if (!gs_rpmostree_sysroot_call_register_client_sync (self->sysroot_proxy,
 								     g_variant_builder_end (options_builder),
+								     G_DBUS_CALL_FLAGS_NONE,
+								     -1  /* timeout */,
 								     cancellable,
 								     error)) {
 			g_clear_object (&self->sysroot_proxy);
@@ -305,6 +309,8 @@ gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
 		if (os_object_path == NULL &&
 		    !gs_rpmostree_sysroot_call_get_os_sync (self->sysroot_proxy,
 		                                            "",
+		                                            G_DBUS_CALL_FLAGS_NONE,
+		                                            -1  /* timeout */,
 		                                            &os_object_path,
 		                                            cancellable,
 		                                            error)) {
@@ -643,7 +649,10 @@ cancelled_handler (GCancellable *cancellable,
                    gpointer user_data)
 {
 	GsRPMOSTreeTransaction *transaction = user_data;
-	gs_rpmostree_transaction_call_cancel_sync (transaction, NULL, NULL);
+	gs_rpmostree_transaction_call_cancel_sync (transaction,
+						   G_DBUS_CALL_FLAGS_NONE,
+						   -1  /* timeout */,
+						   NULL, NULL);
 }
 
 static gboolean
@@ -698,6 +707,8 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 
 	/* Tell the server we're ready to receive signals. */
 	if (!gs_rpmostree_transaction_call_start_sync (transaction,
+	                                               G_DBUS_CALL_FLAGS_NONE,
+	                                               -1  /* timeout */,
 	                                               &just_started,
 	                                               cancellable,
 	                                               error))
@@ -1000,6 +1011,8 @@ rpmostree_update_deployment (GsRPMOSTreeOS *os_proxy,
 	return gs_rpmostree_os_call_update_deployment_sync (os_proxy,
 	                                                    modifiers,
 	                                                    options,
+	                                                    G_DBUS_CALL_FLAGS_NONE,
+	                                                    -1  /* timeout */,
 	                                                    fd_list,
 	                                                    out_transaction_address,
 	                                                    NULL,
@@ -1066,6 +1079,8 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 			done = TRUE;
 			if (!gs_rpmostree_os_call_refresh_md_sync (os_proxy,
 								   options,
+								   G_DBUS_CALL_FLAGS_NONE,
+								   -1  /* timeout */,
 								   &transaction_address,
 								   cancellable,
 								   &local_error)) {
@@ -1122,6 +1137,8 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 			done = TRUE;
 			if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
 								options,
+								G_DBUS_CALL_FLAGS_NONE,
+								-1  /* timeout */,
 								NULL /* fd list */,
 								&transaction_address,
 								NULL /* fd list out */,
@@ -1172,6 +1189,8 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 			done = TRUE;
 			if (!gs_rpmostree_os_call_automatic_update_trigger_sync (os_proxy,
 										 options,
+										 G_DBUS_CALL_FLAGS_NONE,
+										 -1  /* timeout */,
 										 NULL,
 										 &transaction_address,
 										 cancellable,
@@ -1261,7 +1280,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	}
 
 	/* ensure D-Bus properties are updated before reading them */
-	if (!gs_rpmostree_sysroot_call_reload_sync (sysroot_proxy, cancellable, &local_error)) {
+	if (!gs_rpmostree_sysroot_call_reload_sync (sysroot_proxy,
+						    G_DBUS_CALL_FLAGS_NONE,
+						    -1  /* timeout */,
+						    cancellable,
+						    &local_error)) {
 		g_debug ("Failed to call reload to get updates: %s", local_error->message);
 		return TRUE;
 	}
@@ -1396,6 +1419,8 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 		done = TRUE;
 		if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
 							options,
+							G_DBUS_CALL_FLAGS_NONE,
+							-1  /* timeout */,
 							NULL /* fd list */,
 							&transaction_address,
 							NULL /* fd list out */,
@@ -1574,6 +1599,8 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 						       options,
 						       new_refspec,
 						       packages,
+						       G_DBUS_CALL_FLAGS_NONE,
+						       -1  /* timeout */,
 						       NULL /* fd list */,
 						       &transaction_address,
 						       NULL /* fd list out */,
@@ -1651,6 +1678,8 @@ gs_rpmostree_repo_enable (GsPlugin *plugin,
 		if (!gs_rpmostree_os_call_modify_yum_repo_sync (os_proxy,
 								gs_app_get_id (app),
 								g_variant_builder_end (options_builder),
+								G_DBUS_CALL_FLAGS_NONE,
+								-1  /* timeout */,
 								&transaction_address,
 								cancellable,
 								&local_error)) {
@@ -2052,7 +2081,11 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	/* ensure D-Bus properties are updated before reading them */
-	if (!gs_rpmostree_sysroot_call_reload_sync (sysroot_proxy, cancellable, error)) {
+	if (!gs_rpmostree_sysroot_call_reload_sync (sysroot_proxy,
+						    G_DBUS_CALL_FLAGS_NONE,
+						    -1  /* timeout */,
+						    cancellable,
+						    error)) {
 		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
@@ -2133,7 +2166,13 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		g_autoptr(GVariant) var_packages = NULL;
 
 		names = g_hash_table_get_keys_as_array (lookup_apps, NULL);
-		if (gs_rpmostree_os_call_get_packages_sync (os_proxy, (const gchar * const *) names, &var_packages, cancellable, &local_error)) {
+		if (gs_rpmostree_os_call_get_packages_sync (os_proxy,
+							    (const gchar * const *) names,
+							    G_DBUS_CALL_FLAGS_NONE,
+							    -1  /* timeout */,
+							    &var_packages,
+							    cancellable,
+							    &local_error)) {
 			gsize n_children = g_variant_n_children (var_packages);
 			for (gsize i = 0; i < n_children; i++) {
 				g_autoptr(GVariant) value = g_variant_get_child_value (var_packages, i);
@@ -2295,6 +2334,8 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 						       options,
 						       new_refspec,
 						       packages,
+						       G_DBUS_CALL_FLAGS_NONE,
+						       -1  /* timeout */,
 						       NULL /* fd list */,
 						       &transaction_address,
 						       NULL /* fd list out */,
@@ -2629,7 +2670,13 @@ list_apps_thread_cb (GTask        *task,
 	done = FALSE;
 	while (!done) {
 		done = TRUE;
-		if (!gs_rpmostree_os_call_what_provides_sync (os_proxy, (const gchar * const *) provides, &packages, cancellable, &local_error)) {
+		if (!gs_rpmostree_os_call_what_provides_sync (os_proxy,
+							      (const gchar * const *) provides,
+							      G_DBUS_CALL_FLAGS_NONE,
+							      -1  /* timeout */,
+							      &packages,
+							      cancellable,
+							      &local_error)) {
 			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 				g_clear_error (&local_error);
 				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
@@ -2717,7 +2764,12 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	done = FALSE;
 	while (!done) {
 		done = TRUE;
-		if (!gs_rpmostree_os_call_list_repos_sync (os_proxy, &repos, cancellable, &local_error)) {
+		if (!gs_rpmostree_os_call_list_repos_sync (os_proxy,
+							   G_DBUS_CALL_FLAGS_NONE,
+							   -1  /* timeout */,
+							   &repos,
+							   cancellable,
+							   &local_error)) {
 			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 				g_clear_error (&local_error);
 				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
