@@ -244,6 +244,7 @@ gs_rpmostree_inactive_timeout_cb (gpointer user_data)
 					       g_variant_new_string (GS_RPMOSTREE_CLIENT_ID));
 			gs_rpmostree_sysroot_call_unregister_client (sysroot_proxy,
 								     g_variant_builder_end (options_builder),
+								     /* never interactive */
 								     G_DBUS_CALL_FLAGS_NONE,
 								     -1  /* timeout */,
 								     NULL,
@@ -258,6 +259,7 @@ gs_rpmostree_inactive_timeout_cb (gpointer user_data)
 /* Hold the plugin mutex when called */
 static gboolean
 gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
+				 gboolean interactive,
 				 GsRPMOSTreeOS **out_os_proxy,
 				 GsRPMOSTreeSysroot **out_sysroot_proxy,
 				 GCancellable *cancellable,
@@ -289,7 +291,7 @@ gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
 		/* Register as a client so that the rpm-ostree daemon doesn't exit */
 		if (!gs_rpmostree_sysroot_call_register_client_sync (self->sysroot_proxy,
 								     g_variant_builder_end (options_builder),
-								     G_DBUS_CALL_FLAGS_NONE,
+								     interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 								     -1  /* timeout */,
 								     cancellable,
 								     error)) {
@@ -309,7 +311,7 @@ gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
 		if (os_object_path == NULL &&
 		    !gs_rpmostree_sysroot_call_get_os_sync (self->sysroot_proxy,
 		                                            "",
-		                                            G_DBUS_CALL_FLAGS_NONE,
+		                                            interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 		                                            -1  /* timeout */,
 		                                            &os_object_path,
 		                                            cancellable,
@@ -372,6 +374,7 @@ gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
 
 static gboolean
 gs_rpmostree_ref_proxies (GsPluginRpmOstree *self,
+			  gboolean interactive,
 			  GsRPMOSTreeOS **out_os_proxy,
 			  GsRPMOSTreeSysroot **out_sysroot_proxy,
 			  GCancellable *cancellable,
@@ -381,7 +384,7 @@ gs_rpmostree_ref_proxies (GsPluginRpmOstree *self,
 
 	locker = g_mutex_locker_new (&self->mutex);
 
-	return gs_rpmostree_ref_proxies_locked (self, out_os_proxy, out_sysroot_proxy, cancellable, error);
+	return gs_rpmostree_ref_proxies_locked (self, interactive, out_os_proxy, out_sysroot_proxy, cancellable, error);
 }
 
 static gint
@@ -432,7 +435,7 @@ setup_thread_cb (GTask        *task,
 
 	assert_in_worker (self);
 
-	if (!gs_rpmostree_ref_proxies (self, NULL, NULL, cancellable, &local_error))
+	if (!gs_rpmostree_ref_proxies (self, FALSE  /* not interactive */, NULL, NULL, cancellable, &local_error))
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	else
 		g_task_return_boolean (task, TRUE);
@@ -650,6 +653,7 @@ cancelled_handler (GCancellable *cancellable,
 {
 	GsRPMOSTreeTransaction *transaction = user_data;
 	gs_rpmostree_transaction_call_cancel_sync (transaction,
+						   /* never interactive */
 						   G_DBUS_CALL_FLAGS_NONE,
 						   -1  /* timeout */,
 						   NULL, NULL);
@@ -659,6 +663,7 @@ static gboolean
 gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
                                             const gchar *transaction_address,
                                             TransactionProgress *tp,
+                                            gboolean interactive,
                                             GCancellable *cancellable,
                                             GError **error)
 {
@@ -707,7 +712,7 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 
 	/* Tell the server we're ready to receive signals. */
 	if (!gs_rpmostree_transaction_call_start_sync (transaction,
-	                                               G_DBUS_CALL_FLAGS_NONE,
+	                                               interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 	                                               -1  /* timeout */,
 	                                               &just_started,
 	                                               cancellable,
@@ -995,6 +1000,7 @@ rpmostree_update_deployment (GsRPMOSTreeOS *os_proxy,
                              const char *uninstall_package,
                              const char *install_local_package,
                              GVariant *options,
+                             gboolean interactive,
                              char **out_transaction_address,
                              GCancellable *cancellable,
                              GError **error)
@@ -1011,7 +1017,7 @@ rpmostree_update_deployment (GsRPMOSTreeOS *os_proxy,
 	return gs_rpmostree_os_call_update_deployment_sync (os_proxy,
 	                                                    modifiers,
 	                                                    options,
-	                                                    G_DBUS_CALL_FLAGS_NONE,
+	                                                    interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 	                                                    -1  /* timeout */,
 	                                                    fd_list,
 	                                                    out_transaction_address,
@@ -1056,6 +1062,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 	GsPlugin *plugin = GS_PLUGIN (self);
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
+	gboolean interactive = data->flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
 
 	assert_in_worker (self);
 
@@ -1079,7 +1086,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 			done = TRUE;
 			if (!gs_rpmostree_os_call_refresh_md_sync (os_proxy,
 								   options,
-								   G_DBUS_CALL_FLAGS_NONE,
+								   interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 								   -1  /* timeout */,
 								   &transaction_address,
 								   cancellable,
@@ -1101,6 +1108,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 								 transaction_address,
 								 tp,
+								 interactive,
 								 cancellable,
 								 error)) {
 			gs_rpmostree_error_convert (error);
@@ -1137,7 +1145,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 			done = TRUE;
 			if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
 								options,
-								G_DBUS_CALL_FLAGS_NONE,
+								interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 								-1  /* timeout */,
 								NULL /* fd list */,
 								&transaction_address,
@@ -1160,6 +1168,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 		                                                 transaction_address,
 		                                                 tp,
+		                                                 interactive,
 		                                                 cancellable,
 		                                                 error)) {
 			gs_rpmostree_error_convert (error);
@@ -1189,7 +1198,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 			done = TRUE;
 			if (!gs_rpmostree_os_call_automatic_update_trigger_sync (os_proxy,
 										 options,
-										 G_DBUS_CALL_FLAGS_NONE,
+										 interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 										 -1  /* timeout */,
 										 NULL,
 										 &transaction_address,
@@ -1211,6 +1220,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 		                                                 transaction_address,
 		                                                 tp,
+		                                                 interactive,
 		                                                 cancellable,
 		                                                 error)) {
 			gs_rpmostree_error_convert (error);
@@ -1235,11 +1245,12 @@ refresh_metadata_thread_cb (GTask        *task,
 	GsPluginRefreshMetadataData *data = task_data;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	gboolean interactive = data->flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -1273,15 +1284,16 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	const gchar *checksum = NULL;
 	const gchar *version = NULL;
 	g_auto(GVariantDict) cached_update_dict;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
 		g_debug ("Failed to ref proxies to get updates: %s", local_error->message);
 		return TRUE;
 	}
 
 	/* ensure D-Bus properties are updated before reading them */
 	if (!gs_rpmostree_sysroot_call_reload_sync (sysroot_proxy,
-						    G_DBUS_CALL_FLAGS_NONE,
+						    interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 						    -1  /* timeout */,
 						    cancellable,
 						    &local_error)) {
@@ -1388,6 +1400,7 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
                           GsApp *app,
 			  GsRPMOSTreeOS *os_proxy,
 			  GsRPMOSTreeSysroot *sysroot_proxy,
+			  gboolean interactive,
 			  GCancellable *cancellable,
                           GError **error)
 {
@@ -1419,7 +1432,7 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 		done = TRUE;
 		if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
 							options,
-							G_DBUS_CALL_FLAGS_NONE,
+							interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 							-1  /* timeout */,
 							NULL /* fd list */,
 							&transaction_address,
@@ -1443,6 +1456,7 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 	                                                 transaction_address,
 	                                                 tp,
+	                                                 interactive,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_rpmostree_error_convert (error);
@@ -1499,6 +1513,7 @@ update_apps_thread_cb (GTask        *task,
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	gboolean interactive = data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE;
 
 	assert_in_worker (self);
 
@@ -1509,7 +1524,7 @@ update_apps_thread_cb (GTask        *task,
 		return;
 	}
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -1520,7 +1535,7 @@ update_apps_thread_cb (GTask        *task,
 
 		/* we don't currently put all updates in the OsUpdate proxy app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
-			if (!trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, cancellable, &local_error)) {
+			if (!trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
@@ -1530,7 +1545,7 @@ update_apps_thread_cb (GTask        *task,
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
 
-			if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, cancellable, &local_error)) {
+			if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
@@ -1564,6 +1579,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -1574,8 +1590,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 		return TRUE;
 
 	gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
-
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error)) {
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, error)) {
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		return FALSE;
 	}
@@ -1599,7 +1614,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 						       options,
 						       new_refspec,
 						       packages,
-						       G_DBUS_CALL_FLAGS_NONE,
+						       interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 						       -1  /* timeout */,
 						       NULL /* fd list */,
 						       &transaction_address,
@@ -1626,6 +1641,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 	                                                 transaction_address,
 	                                                 tp,
+	                                                 interactive,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_rpmostree_error_convert (error);
@@ -1652,6 +1668,7 @@ gs_rpmostree_repo_enable (GsPlugin *plugin,
 			  gboolean enable,
 			  GsRPMOSTreeOS *os_proxy,
 			  GsRPMOSTreeSysroot *sysroot_proxy,
+			  gboolean interactive,
 			  GCancellable *cancellable,
 			  GError **error)
 {
@@ -1678,7 +1695,7 @@ gs_rpmostree_repo_enable (GsPlugin *plugin,
 		if (!gs_rpmostree_os_call_modify_yum_repo_sync (os_proxy,
 								gs_app_get_id (app),
 								g_variant_builder_end (options_builder),
-								G_DBUS_CALL_FLAGS_NONE,
+								interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 								-1  /* timeout */,
 								&transaction_address,
 								cancellable,
@@ -1707,6 +1724,7 @@ gs_rpmostree_repo_enable (GsPlugin *plugin,
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 	                                                 transaction_address,
 	                                                 tp,
+	                                                 interactive,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_rpmostree_error_convert (error);
@@ -1744,6 +1762,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -1752,7 +1771,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* enable repo, handled by dedicated function */
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	switch (gs_app_get_state (app)) {
@@ -1803,6 +1822,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 						  NULL /* remove package */,
 						  local_filename,
 						  options,
+						  interactive,
 						  &transaction_address,
 						  cancellable,
 						  &local_error)) {
@@ -1826,6 +1846,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 	                                                 transaction_address,
 	                                                 tp,
+	                                                 interactive,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_rpmostree_error_convert (error);
@@ -1860,12 +1881,13 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	/* disable repo, handled by dedicated function */
@@ -1887,6 +1909,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 						  gs_app_get_source_default (app),
 						  NULL /* install local package */,
 						  options,
+						  interactive,
 						  &transaction_address,
 						  cancellable,
 						  &local_error)) {
@@ -1910,6 +1933,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 	                                                 transaction_address,
 	                                                 tp,
+	                                                 interactive,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_rpmostree_error_convert (error);
@@ -2070,10 +2094,11 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	g_auto(GStrv) layered_packages_strv = NULL;
 	g_auto(GStrv) layered_local_packages_strv = NULL;
 	g_autofree gchar *checksum = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	locker = g_mutex_locker_new (&self->mutex);
 
-	if (!gs_rpmostree_ref_proxies_locked (self, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies_locked (self, interactive, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	ot_repo = g_object_ref (self->ot_repo);
@@ -2082,7 +2107,7 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 
 	/* ensure D-Bus properties are updated before reading them */
 	if (!gs_rpmostree_sysroot_call_reload_sync (sysroot_proxy,
-						    G_DBUS_CALL_FLAGS_NONE,
+						    interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 						    -1  /* timeout */,
 						    cancellable,
 						    error)) {
@@ -2168,7 +2193,7 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		names = g_hash_table_get_keys_as_array (lookup_apps, NULL);
 		if (gs_rpmostree_os_call_get_packages_sync (os_proxy,
 							    (const gchar * const *) names,
-							    G_DBUS_CALL_FLAGS_NONE,
+							    interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 							    -1  /* timeout */,
 							    &var_packages,
 							    cancellable,
@@ -2303,6 +2328,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -2312,7 +2338,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 		return TRUE;
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
@@ -2334,7 +2360,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 						       options,
 						       new_refspec,
 						       packages,
-						       G_DBUS_CALL_FLAGS_NONE,
+						       interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 						       -1  /* timeout */,
 						       NULL /* fd list */,
 						       &transaction_address,
@@ -2361,6 +2387,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 	                                                 transaction_address,
 	                                                 tp,
+	                                                 interactive,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_rpmostree_error_convert (error);
@@ -2645,6 +2672,7 @@ list_apps_thread_cb (GTask        *task,
 	g_autoptr(GVariant) packages = NULL;
 	gsize n_children;
 	gboolean done;
+	gboolean interactive = data->flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 
 	assert_in_worker (self);
 
@@ -2660,7 +2688,7 @@ list_apps_thread_cb (GTask        *task,
 		return;
 	}
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error) ||
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error) ||
 	    !gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
@@ -2672,7 +2700,7 @@ list_apps_thread_cb (GTask        *task,
 		done = TRUE;
 		if (!gs_rpmostree_os_call_what_provides_sync (os_proxy,
 							      (const gchar * const *) provides,
-							      G_DBUS_CALL_FLAGS_NONE,
+							      interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 							      -1  /* timeout */,
 							      &packages,
 							      cancellable,
@@ -2755,8 +2783,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	g_autoptr(GError) local_error = NULL;
 	gsize n_children;
 	gboolean done;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
 		return FALSE;
@@ -2765,7 +2794,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	while (!done) {
 		done = TRUE;
 		if (!gs_rpmostree_os_call_list_repos_sync (os_proxy,
-							   G_DBUS_CALL_FLAGS_NONE,
+							   interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 							   -1  /* timeout */,
 							   &repos,
 							   cancellable,
@@ -2888,12 +2917,12 @@ enable_repository_thread_cb (GTask        *task,
 
 	assert_in_worker (self);
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	if (!gs_rpmostree_repo_enable (GS_PLUGIN (self), data->repository, TRUE, os_proxy, sysroot_proxy, cancellable, &local_error)) {
+	if (!gs_rpmostree_repo_enable (GS_PLUGIN (self), data->repository, TRUE, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -2961,16 +2990,17 @@ disable_repository_thread_cb (GTask        *task,
 	GsPluginManageRepositoryData *data = task_data;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	gboolean interactive = data->flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	if (gs_rpmostree_repo_enable (GS_PLUGIN (self), data->repository, FALSE, os_proxy, sysroot_proxy, cancellable, &local_error))
+	if (gs_rpmostree_repo_enable (GS_PLUGIN (self), data->repository, FALSE, os_proxy, sysroot_proxy, interactive, cancellable, &local_error))
 		g_task_return_boolean (task, TRUE);
 	else
 		g_task_return_error (task, g_steal_pointer (&local_error));
