@@ -683,6 +683,8 @@ ensure_installed_apps_cache (GsPluginEpiphany  *self,
 		return TRUE;
 
 	if (!gs_ephy_web_app_provider_call_get_installed_apps_sync (self->epiphany_proxy,
+								    G_DBUS_CALL_FLAGS_NONE,
+								    -1  /* timeout */,
 								    &webapps,
 								    cancellable,
 								    error)) {
@@ -1084,6 +1086,8 @@ gs_plugin_app_install (GsPlugin      *plugin,
 	g_variant_get (token_v, "(&s)", &token);
 	if (!gs_ephy_web_app_provider_call_install_sync (self->epiphany_proxy,
 							 url, name, token,
+							 G_DBUS_CALL_FLAGS_NONE,
+							 -1  /* timeout */,
 							 &installed_app_id,
 							 cancellable,
 							 error)) {
@@ -1130,6 +1134,8 @@ gs_plugin_app_remove (GsPlugin      *plugin,
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	if (!gs_ephy_web_app_provider_call_uninstall_sync (self->epiphany_proxy,
 							   installed_app_id,
+							   G_DBUS_CALL_FLAGS_NONE,
+							   -1  /* timeout */,
 							   cancellable,
 							   error)) {
 		gs_epiphany_error_convert (error);
