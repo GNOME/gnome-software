@@ -229,6 +229,7 @@ os_upgrade_cancelled_cb (GCancellable *cancellable,
 
 	g_debug ("%s: Cancelling upgrade", G_STRFUNC);
 	gs_eos_updater_call_cancel (self->updater_proxy,
+				    /* never interactive */
 				    G_DBUS_CALL_FLAGS_NONE,
 				    -1  /* timeout */,
 				    NULL, NULL, NULL);
@@ -782,6 +783,7 @@ gs_plugin_eos_updater_refresh_metadata_async (GsPlugin                     *plug
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
 	EosUpdaterState updater_state;
 	g_autoptr(GTask) task = NULL;
+	gboolean interactive = flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_eos_updater_refresh_metadata_async);
@@ -812,7 +814,7 @@ gs_plugin_eos_updater_refresh_metadata_async (GsPlugin                     *plug
 	case EOS_UPDATER_STATE_NONE:
 	case EOS_UPDATER_STATE_READY:
 		gs_eos_updater_call_poll (self->updater_proxy,
-					  G_DBUS_CALL_FLAGS_NONE,
+					  interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 					  -1  /* timeout */,
 					  cancellable,
 					  poll_cb,
@@ -1258,7 +1260,7 @@ download_iterate_state_machine_cb (GObject      *source_object,
 
 				data->finish_func = gs_eos_updater_call_poll_finish;
 				gs_eos_updater_call_poll (self->updater_proxy,
-							  G_DBUS_CALL_FLAGS_NONE,
+							  data->interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 							  -1  /* timeout */,
 							  cancellable,
 							  download_iterate_state_machine_cb,
@@ -1302,7 +1304,7 @@ download_iterate_state_machine_cb (GObject      *source_object,
 			data->finish_func = gs_eos_updater_call_fetch_full_finish;
 			gs_eos_updater_call_fetch_full (self->updater_proxy,
 							g_variant_dict_end (&options_dict),
-							G_DBUS_CALL_FLAGS_NONE,
+							data->interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 							-1  /* timeout */,
 							cancellable,
 							download_iterate_state_machine_cb,
@@ -1323,7 +1325,7 @@ download_iterate_state_machine_cb (GObject      *source_object,
 
 			data->finish_func = gs_eos_updater_call_apply_finish;
 			gs_eos_updater_call_apply (self->updater_proxy,
-						   G_DBUS_CALL_FLAGS_NONE,
+						   data->interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 						   -1  /* timeout */,
 						   cancellable,
 						   download_iterate_state_machine_cb,
@@ -1377,7 +1379,7 @@ download_iterate_state_machine_cb (GObject      *source_object,
 
 			data->finish_func = gs_eos_updater_call_poll_finish;
 			gs_eos_updater_call_poll (self->updater_proxy,
-						  G_DBUS_CALL_FLAGS_NONE,
+						  data->interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 						  -1  /* timeout */,
 						  cancellable,
 						  download_iterate_state_machine_cb,
