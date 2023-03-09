@@ -1031,6 +1031,7 @@ download_download_cb (GObject      *source_object,
 
 	bytes = fwupd_client_download_bytes_finish (client, result, &local_error);
 	if (bytes == NULL) {
+		gs_app_set_state_recover (data->app);
 		gs_plugin_fwupd_error_convert (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
@@ -1061,6 +1062,8 @@ download_replace_cb (GObject      *source_object,
 	 * Don’t pass a cancellable in, as the download may have been cancelled. */
 	if (data->schedule_entry_handle != NULL)
 		gs_metered_remove_from_download_scheduler_async (data->schedule_entry_handle, NULL, NULL, NULL);
+
+	gs_app_set_state_recover (data->app);
 
 	if (!download_success) {
 		gs_plugin_fwupd_error_convert (&local_error);
