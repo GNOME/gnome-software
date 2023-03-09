@@ -12,7 +12,8 @@ gdbus_src = gnome.gdbus_codegen(
   'gs-shell-search-provider-generated',
   'shell-search-provider-dbus-interfaces.xml',
   interface_prefix : 'org.gnome.',
-  namespace : 'Gs'
+  namespace : 'Gs',
+  extra_args : [ '--glib-min-required=' + glib.version() ],
 )
 
 enums = gnome.mkenums_simple('gs-enums',
@@ -111,13 +112,15 @@ if get_option('packagekit')
     'gs-packagekit-generated',
     'org.freedesktop.PackageKit.xml',
     interface_prefix : 'org.freedesktop.',
-    namespace : 'Gs'
+    namespace : 'Gs',
+    extra_args : [ '--glib-min-required=' + glib.version() ],
   )
   gnome_software_sources += gnome.gdbus_codegen(
     'gs-packagekit-modify2-generated',
     'org.freedesktop.PackageKit.Modify2.xml',
     interface_prefix : 'org.freedesktop.',
-    namespace : 'Gs'
+    namespace : 'Gs',
+    extra_args : [ '--glib-min-required=' + glib.version() ],
   )
   gnome_software_dependencies += [packagekit]
 endif
