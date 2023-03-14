@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the gnome-software package.
 #
 # Matej Urbančič <mateju@src.gnome.org>, 2013–2022.
+# Martin Srebotnjak <miles@filmsi.net>, 2023.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-03-09 20:07+0000\n"
-"PO-Revision-Date: 2023-03-09 22:24+0100\n"
-"Last-Translator: Matej Urbančič <mateju@src.gnome.org>\n"
+"POT-Creation-Date: 2023-03-10 23:30+0000\n"
+"PO-Revision-Date: 2023-03-14 13:38+0100\n"
+"Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || "
 "n%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21
 #: src/org.gnome.Software.desktop.in:3
@@ -32,23 +33,14 @@ msgstr "Namesti in posodobi programe"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 #, fuzzy
-#| msgid ""
-#| "Software allows you to find and install new applications and system "
-#| "extensions and remove existing installed applications."
 msgid ""
 "Software allows you to find and install new apps and system extensions and "
 "remove existing installed apps."
 msgstr ""
-"Program omogoča iskanje, nameščanje in odstranjevanje novih programov in "
-"sistemskih razširitev."
+"Program omogoča iskanje, nameščanje novih programov in sistemskih razširitev "
+"ter odstranjevanje obstoječih, nameščenih programov."
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:14
-#, fuzzy
-#| msgid ""
-#| "Software showcases featured and popular applications with useful "
-#| "descriptions and multiple screenshots per application. Applications can "
-#| "be found either through browsing the list of categories or by searching. "
-#| "It also allows you to update your system using an offline update."
 msgid ""
 "Software showcases featured and popular apps with useful descriptions and "
 "multiple screenshots per app. Apps can be found either through browsing the "
@@ -305,11 +297,6 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:135
 #, fuzzy
-#| msgid ""
-#| "Priority order of packaging formats to prefer, with more important "
-#| "formats listed first. An empty array means the default order. Omitted "
-#| "formats are assumed to be listed last. Example packaging formats are: "
-#| "deb, flatpak, rpm, snap."
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
@@ -319,17 +306,25 @@ msgid ""
 msgstr ""
 "Prednostni vrstni red zapisov pakiranja, z bolj pomembnimi navedenimi "
 "najprej. Prazna vrednost pomeni privzeti vrstni red. Izpuščeni zapisi so "
-"nanizani nazadnje. Primer zapisov pakiranja so deb, flatpak, rpm, snap."
+"nanizani nazadnje. Primer zapisov pakiranja so deb, flatpak, rpm, snap. "
+"Zapise lahko po potrebi navedete z imenom izvora, ločene s podpičji, npr. "
+"»flatpak:flathub«."
 
 #: data/org.gnome.software.gschema.xml:139
+#, fuzzy
 msgid "The timestamp of the last attempt to remove unused Flatpak runtimes"
 msgstr ""
+"Časovni žig zadnjega poskusa odstranjevanja neuporabljenih izvajalnih "
+"paketov Flatpak"
 
 #: data/org.gnome.software.gschema.xml:143
+#, fuzzy
 msgid ""
 "Set to 'true' to show only freely licensed apps and hide any proprietary "
 "apps."
 msgstr ""
+"Nastavite na »res« (»true«), tako da prikazuje samo programe s prostimi "
+"dovoljenji in skrije vse lastniške programe."
 
 #: data/org.gnome.software.gschema.xml:150
 msgid "A string storing the gnome-online-account id used to login"
@@ -880,9 +875,8 @@ msgstr "Naprave"
 
 #: src/gs-app-details-page.c:71
 #, fuzzy
-#| msgid "Can access arbitrary files"
 msgid "Can access arbitrary devices such as webcams"
-msgstr "Lahko dostopa do poljubnih datotek"
+msgstr "Lahko dostopa do poljubnih naprav, kot so spletne kamere"
 
 #: src/gs-app-details-page.c:72
 msgid "Can access system device files"
@@ -964,8 +958,6 @@ msgid "Reviews"
 msgstr "Mnenja"
 
 #: src/gs-app-reviews-dialog.ui:25
-#, fuzzy
-#| msgid "No reviews were found for this application."
 msgid "No reviews were found for this app."
 msgstr "Za ta program še ni nobene ocene."
 
@@ -1194,10 +1186,8 @@ msgstr "Uporablja strojno opremo"
 #. Translators: This indicates an app can access system devices such as /dev/shm.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:320
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Can access system devices"
-msgstr "Omogočen je dostop do sistemskih datotek naprave"
+msgstr "Lahko dostopa do sistemskih naprav"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
@@ -2092,9 +2082,6 @@ msgstr[3] "Posodobitve so nameščene"
 
 #. TRANSLATORS: we've just removed some apps
 #: src/gs-common.c:845
-#, fuzzy
-#| msgid "An application has been removed"
-#| msgid_plural "Applications have been removed"
 msgid "An app has been removed"
 msgid_plural "Apps have been removed"
 msgstr[0] "Programi so odstranjeni"
@@ -2310,13 +2297,14 @@ msgstr "_Odstrani namestitev …"
 
 #. Translators: %s is the user-visible app name
 #: src/gs-details-page.c:1175
-#, c-format
+#, fuzzy, c-format
 msgid "%s will appear in US English"
-msgstr ""
+msgstr "%s se bo pojavil v angleščini (ZDA)"
 
 #: src/gs-details-page.c:1181
+#, fuzzy
 msgid "This app will appear in US English"
-msgstr ""
+msgstr "Ta program se bo pojavil v angleščini (ZDA)"
 
 #: src/gs-details-page.c:1196 src/gs-details-page.ui:59
 msgid "Help _Translate"
@@ -2369,10 +2357,6 @@ msgid "Add-ons"
 msgstr "Vstavki"
 
 #: src/gs-details-page.ui:563
-#, fuzzy
-#| msgid ""
-#| "This application can only be used when there is an active internet "
-#| "connection."
 msgid "This app can only be used when there is an active internet connection."
 msgstr "Program je mogoče uporabljati le z dejavno internetno povezavo."
 
@@ -2381,10 +2365,6 @@ msgid "Software Repository Included"
 msgstr "Programski vir je vključen"
 
 #: src/gs-details-page.ui:596
-#, fuzzy
-#| msgid ""
-#| "This application includes a software repository which provides updates, "
-#| "as well as access to other software."
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2397,10 +2377,6 @@ msgid "No Software Repository Included"
 msgstr "Ni vključenega programskega vira"
 
 #: src/gs-details-page.ui:634
-#, fuzzy
-#| msgid ""
-#| "This application does not include a software repository. It will not be "
-#| "updated with new versions."
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2534,18 +2510,14 @@ msgstr "na spletni strani"
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:354
-#, fuzzy, c-format
-#| msgid "No applications are available that provide the file %s."
+#, c-format
 msgid "No apps are available that provide the file %s."
 msgstr "Ni programa s podporo za datoteko %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
 #: src/gs-extras-page.c:358 src/gs-extras-page.c:369 src/gs-extras-page.c:380
-#, fuzzy, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get missing "
-#| "applications might be found %s."
+#, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing apps might "
 "be found %s."
@@ -2556,8 +2528,7 @@ msgstr ""
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:365 src/gs-extras-page.c:387
-#, fuzzy, c-format
-#| msgid "No applications are available for %s support."
+#, c-format
 msgid "No apps are available for %s support."
 msgstr "Za podporo %s ni na voljo programa."
 
@@ -2571,10 +2542,7 @@ msgstr "%s ni na voljo."
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
 #: src/gs-extras-page.c:391
-#, fuzzy, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get an application "
-#| "that can support this format might be found %s."
+#, c-format
 msgid ""
 "Information about %s, as well as options for how to get an app that can "
 "support this format might be found %s."
@@ -3116,9 +3084,6 @@ msgstr "izbrani zunanji viri"
 #. Repositories Preferences is an item from Software's main menu.
 #: src/gs-overview-page.c:479
 #, fuzzy, c-format
-#| msgid ""
-#| "Provides access to additional software from %s. Some proprietary software "
-#| "is included."
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included.\n"
@@ -3126,7 +3091,10 @@ msgid ""
 "You can enable those repositories later in Software Repositories preferences."
 msgstr ""
 "Omogoča dostop do dodatne programske opreme %s, vključno s plačljivimi "
-"programi."
+"programi.\n"
+"\n"
+"Ta skladišča lahko kasneje omogočite v nastavitvah Skladišč programske "
+"opreme."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
 #: src/gs-overview-page.c:485
@@ -3159,8 +3127,6 @@ msgid "Other Categories"
 msgstr "Druge kategorije"
 
 #: src/gs-overview-page.ui:184
-#, fuzzy
-#| msgid "No Application Data Found"
 msgid "No App Data Found"
 msgstr "Podatkov o programu ni mogoče najti"
 
@@ -3194,10 +3160,7 @@ msgstr "Ali res želite odstraniti shrambo %s?"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:527
-#, fuzzy, c-format
-#| msgid ""
-#| "All applications from %s will be uninstalled, and you will have to re-"
-#| "install the repository to use them again."
+#, c-format
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
 "repository to use them again."
@@ -3238,45 +3201,39 @@ msgstr "_Samodejno posodabljanje"
 
 #: src/gs-prefs-dialog.ui:20
 #, fuzzy
-#| msgid ""
-#| "Downloads and installs software updates in the background, when possible."
 msgid ""
 "Downloads and installs software updates in the background, when possible"
 msgstr ""
-"V ozadju začne in namesti posodobitve programske opreme, če je to mogoče."
+"V ozadju prenese in namesti posodobitve programske opreme, če je to mogoče."
 
 #: src/gs-prefs-dialog.ui:33
 msgid "Automatic Update _Notifications"
 msgstr "Obvestila _samodejnega posodabljanja"
 
 #: src/gs-prefs-dialog.ui:34
-#, fuzzy
-#| msgid "Show notifications when updates have been automatically installed."
 msgid "Show notifications when updates have been automatically installed"
-msgstr "Pokaži obvestilo, ko so posodobitve samodejno nameščene."
+msgstr "Pokaži obvestilo, ko so posodobitve samodejno nameščene"
 
 #: src/gs-prefs-dialog.ui:47
 msgid "Show Only _Free Apps"
 msgstr "Pokaži le _proste programe"
 
 #: src/gs-prefs-dialog.ui:48
+#, fuzzy
 msgid "Show only freely licensed apps and hide any proprietary apps"
 msgstr ""
+"Pokaži samo programje s prostimi dovoljenji in skrij vse lastniške programe"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
 #: src/gs-removal-dialog.c:96
 #, fuzzy, c-format
-#| msgid ""
-#| "Some of the currently installed software is not compatible with %s. If "
-#| "you continue, the following will be automatically removed during the "
-#| "upgrade:"
 msgid ""
 "Installed software is incompatible with %s, and will be automatically "
 "removed during upgrade."
 msgstr ""
-"Nekatera trenutno nameščena programska oprema ni združljiva z %s. Če "
-"nadaljujete, bodo med nadgradnjo samodejno odstranjeni naslednji paketi:"
+"Nameščena programska oprema ni združljiva z %s in bo med nadgradnjo "
+"samodejno odstranjena."
 
 #: src/gs-removal-dialog.ui:7
 msgid "Incompatible Software"
@@ -3364,9 +3321,7 @@ msgstr "Ni vpisanih skladišč"
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of apps.
 #: src/gs-repo-row.c:161
-#, fuzzy, c-format
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
+#, c-format
 msgid "%u app installed"
 msgid_plural "%u apps installed"
 msgstr[0] "%u nameščenih programov"
@@ -3393,14 +3348,13 @@ msgstr[3] "%u nameščeni vstavki"
 #. * string will be substituted in for the first placeholder in the
 #. * string “%s and %s installed”.
 #: src/gs-repo-row.c:180
-#, fuzzy, c-format
-#| msgid "web app"
+#, c-format
 msgid "%u app"
 msgid_plural "%u apps"
-msgstr[0] "spletni program"
-msgstr[1] "spletni program"
-msgstr[2] "spletni program"
-msgstr[3] "spletni program"
+msgstr[0] "%u programov"
+msgstr[1] "%u program"
+msgstr[2] "%u programa"
+msgstr[3] "%u programi"
 
 #. TRANSLATORS: This string is used to construct the 'X apps
 #. and Y add-ons installed' sentence, stating how many things have been
@@ -3484,8 +3438,9 @@ msgstr "Noro dober je"
 #. TRANSLATORS: lighthearted star rating description;
 #. *		No star has been clicked yet
 #: src/gs-review-dialog.c:98
+#, fuzzy
 msgid "Select a Star to Leave a Rating"
-msgstr ""
+msgstr "Izberite zvezdico, če želite podati oceno"
 
 #. TRANSLATORS: the review can't just be copied and pasted
 #: src/gs-review-dialog.c:119
@@ -3528,10 +3483,13 @@ msgid "_Send"
 msgstr "_Pošlji"
 
 #: src/gs-review-dialog.ui:71
+#, fuzzy
 msgid ""
 "What did you like about this app? Leaving your feedback along with your "
 "reasons for leaving a review is helpful for others."
 msgstr ""
+"Kaj vam je bilo všeč pri tem programu? Če pustite povratne informacije "
+"skupaj z razlogi za pisanje ocene je koristno za druge uporabnike."
 
 #: src/gs-review-dialog.ui:84
 msgid "Review Summary"
@@ -3539,11 +3497,9 @@ msgstr "Predogled povzetka"
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: src/gs-review-dialog.ui:116
-#, fuzzy
-#| msgid "_Write Review"
 msgctxt "app review"
 msgid "Write a short review"
-msgstr "_Napišite oceno"
+msgstr "Napišite kratko oceno"
 
 #: src/gs-review-dialog.ui:160
 msgid ""
@@ -3630,16 +3586,10 @@ msgid "Remove…"
 msgstr "Odstrani …"
 
 #: src/gs-safety-context-dialog.c:143
-#, fuzzy
-#| msgid "Check that you trust the vendor, as the application isn’t sandboxed"
 msgid "Check that you trust the vendor, as the app isn’t sandboxed"
 msgstr "Prepričajte se, da zaupate ponudniku, ker program ni sistemsko omejen."
 
 #: src/gs-safety-context-dialog.c:146
-#, fuzzy
-#| msgid ""
-#| "Application isn’t sandboxed but the distribution has checked that it is "
-#| "not malicious"
 msgid ""
 "App isn’t sandboxed but the distribution has checked that it is not malicious"
 msgstr ""
@@ -3718,9 +3668,8 @@ msgstr "Dostop do sistemske naprave"
 
 #: src/gs-safety-context-dialog.c:210
 #, fuzzy
-#| msgid "Can access system device files"
 msgid "Can access system devices which require elevated permissions"
-msgstr "Omogočen je dostop do sistemskih datotek naprave"
+msgstr "Omogočen je dostop do sistemskih naprav, ki zahtevajo več pravic"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:217
@@ -4094,8 +4043,6 @@ msgstr "Namestitev ni mogoča: zahtevana je omrežna povezava, ki pa ni na voljo
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1374
-#, fuzzy
-#| msgid "Unable to install: the application has an invalid format"
 msgid "Unable to install: the app has an invalid format"
 msgstr "Paketa ni mogoče namestiti: program je shranjen v napačnem zapisu"
 
@@ -4518,9 +4465,8 @@ msgstr "Poišči programe"
 
 #: src/gs-shell.ui:257
 #, fuzzy
-#| msgid "Automatic Updates Paused"
 msgid "Metered network ‒ automatic updates paused"
-msgstr "Samodejno posodabljanje je v premoru"
+msgstr "Omrežje z omejeno uporabo ‒ samodejno posodabljanje je v premoru"
 
 #: src/gs-shell.ui:258
 msgid "Find Out _More"
@@ -4556,8 +4502,6 @@ msgid "App Data"
 msgstr "Podatki programa"
 
 #: src/gs-storage-context-dialog.c:140
-#, fuzzy
-#| msgid "Data needed for the application to run"
 msgid "Data needed for the app to run"
 msgstr "Podatki, ključni za delovanje programa"
 
@@ -4566,8 +4510,6 @@ msgid "User Data"
 msgstr "Uporabniški podatki"
 
 #: src/gs-storage-context-dialog.c:146
-#, fuzzy
-#| msgid "Data created by you in the application"
 msgid "Data created by you in the app"
 msgstr "Podatki, ki ste jih ustvarili z uporabo programa"
 
@@ -4588,8 +4530,6 @@ msgid "Required Dependencies"
 msgstr "Zahtevane odvisnosti"
 
 #: src/gs-storage-context-dialog.c:178
-#, fuzzy
-#| msgid "Shared system components required by this application"
 msgid "Shared system components required by this app"
 msgstr "Sistemsko dodeljene knjižnice, ki jih program zahteva"
 
@@ -4686,9 +4626,7 @@ msgstr "Priporočljivo je prejeti posodobitve, pripravljene za namestitev."
 
 #. TRANSLATORS: apps were auto-updated and restart is required
 #: src/gs-update-monitor.c:355
-#, fuzzy, c-format
-#| msgid "%u Application Updated — Restart Required"
-#| msgid_plural "%u Applications Updated — Restart Required"
+#, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
 msgstr[0] "%u posodobljenih programov – sistem zahteva ponovni zagon"
@@ -4698,9 +4636,7 @@ msgstr[3] "%u posodobljeni programi – sistem zahteva ponovni zagon"
 
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:361
-#, fuzzy, c-format
-#| msgid "%u Application Updated"
-#| msgid_plural "%u Applications Updated"
+#, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
 msgstr[0] "%u posodobljenih programov"
@@ -4727,9 +4663,7 @@ msgstr "Programa %s in %s sta posodobljena."
 
 #. TRANSLATORS: at least one app needs restarting
 #: src/gs-update-monitor.c:389 src/gs-update-monitor.c:408
-#, fuzzy, c-format
-#| msgid "%u application requires a restart."
-#| msgid_plural "%u applications require a restart."
+#, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
 msgstr[0] "%u programov zahteva ponovni zagon."
@@ -4888,17 +4822,17 @@ msgstr "Preveri za posodobitve"
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
 #: src/gs-updates-page.c:568
-#, c-format
+#, fuzzy, c-format
 msgid "%s %s has stopped receiving critical software updates"
-msgstr ""
+msgstr "%s %s je prenehal prejemati kritične posodobitve programske opreme"
 
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
 #: src/gs-updates-page.c:574
-#, fuzzy
-#| msgid "Your operating system is no longer supported."
 msgid "Your operating system has stopped receiving critical software updates"
-msgstr "Nameščen operacijski sistem ni več podprt."
+msgstr ""
+"Vaš operacijski sistem je prenehal prejemati kritične posodobitve programske "
+"opreme"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
 #: src/gs-updates-page.c:843
@@ -5335,19 +5269,22 @@ msgstr ""
 
 #. TRANSLATORS: as in laptop battery power
 #: plugins/fwupd/gs-fwupd-app.c:66
+#, fuzzy
 msgid "System power is too low to perform the update"
-msgstr ""
+msgstr "Sistemska moč je prenizka za izvedbo posodobitve"
 
 #. TRANSLATORS: as in laptop battery power
 #: plugins/fwupd/gs-fwupd-app.c:70
-#, c-format
+#, fuzzy, c-format
 msgid "System power is too low to perform the update (%u%%, requires %u%%)"
 msgstr ""
+"Sistemska moč je prenizka za izvedbo posodobitve (%u %%, potrebuje %u %%)"
 
 #. TRANSLATORS: for example, a Bluetooth mouse that is in powersave mode
 #: plugins/fwupd/gs-fwupd-app.c:76
+#, fuzzy
 msgid "Device is unreachable, or out of wireless range"
-msgstr ""
+msgstr "Naprava je nedosegljiva ali je zunaj brezžičnega območja"
 
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
 #: plugins/fwupd/gs-fwupd-app.c:82
@@ -5357,26 +5294,27 @@ msgstr "Napetost baterije naprave je prenizka"
 
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
 #: plugins/fwupd/gs-fwupd-app.c:85
-#, c-format
+#, fuzzy, c-format
 msgid "Device battery power is too low (%u%%, requires %u%%)"
-msgstr ""
+msgstr "Napolnjenost baterije naprave je prenizka (%u %%, potrebuje %u %%)"
 
 #. TRANSLATORS: usually this is when we're waiting for a reboot
 #: plugins/fwupd/gs-fwupd-app.c:91
+#, fuzzy
 msgid "Device is waiting for the update to be applied"
-msgstr ""
+msgstr "Naprava čaka na uveljavitev posodobitve"
 
 #. TRANSLATORS: as in, wired mains power for a laptop
 #: plugins/fwupd/gs-fwupd-app.c:95
+#, fuzzy
 msgid "Device requires AC power to be connected"
-msgstr ""
+msgstr "Naprava mora biti priključena na napajanje"
 
 #. TRANSLATORS: lid means "laptop top cover"
 #: plugins/fwupd/gs-fwupd-app.c:99
 #, fuzzy
-#| msgid "Device cannot be used during update."
 msgid "Device cannot be used while the lid is closed"
-msgstr "Naprave med posodabljanjem ni mogoče uporabljati."
+msgstr "Naprave ni mogoče uporabiti, ko je pokrov zaprt"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
@@ -5551,9 +5489,8 @@ msgstr "Posodobitev modula GPU %s"
 #. * cradled in, or lowered onto
 #: plugins/fwupd/gs-fwupd-app.c:338
 #, fuzzy, c-format
-#| msgid "%s Device Update"
 msgid "%s Dock Update"
-msgstr "Posodobitev naprave %s"
+msgstr "Posodobitev pogona %s"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
@@ -5637,2177 +5574,3 @@ msgstr "Podpora Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "»Snap« je univerzalni paket operacijskega sistema Linux"
-
-#~ msgid "The last timestamp when the system was online and got any updates"
-#~ msgstr ""
-#~ "Zadnji časovni žig, ko je bil sistem povezan v omrežje in posodobljen"
-
-#~ msgid "_User"
-#~ msgstr "_Uporabnik"
-
-#~ msgid "An application"
-#~ msgstr "Program"
-
-#~ msgid ""
-#~ "This software is not available in your language and will appear in US "
-#~ "English."
-#~ msgstr ""
-#~ "Ta programska oprema ni na voljo v vašem jeziku in bo prikazana v "
-#~ "angleškem."
-
-#~ msgid "Selected add-ons will be installed with the application."
-#~ msgstr "Izbrani vstavki bodo nameščeni skupaj s programom."
-
-#~ msgid "Applications"
-#~ msgstr "Programi"
-
-#~ msgid "Enable"
-#~ msgstr "Omogoči"
-
-#~ msgid "Update Preferences"
-#~ msgstr "Nastavitve posodabljanja"
-
-#~ msgid "_Continue"
-#~ msgstr "N_adaljuj"
-
-#, c-format
-#~ msgid "%u application"
-#~ msgid_plural "%u applications"
-#~ msgstr[0] "%u programov"
-#~ msgstr[1] "%u program"
-#~ msgstr[2] "%u programa"
-#~ msgstr[3] "%u programi"
-
-#~ msgid "Post Review"
-#~ msgstr "Objavi mnenje"
-
-#~ msgid "_Post"
-#~ msgstr "_Objavi"
-
-#~ msgid "Rating"
-#~ msgstr "Ocena"
-
-#~ msgid ""
-#~ "Give a short summary of your review, for example: “Great app, would "
-#~ "recommend”."
-#~ msgstr ""
-#~ "Podajte kratek povzetek mnenja oziroma ocene, na primer »Odličen program, "
-#~ "ki ga toplo priporočam!«"
-
-#~ msgctxt "app review"
-#~ msgid "Review"
-#~ msgstr "Ocena"
-
-#~ msgid "What do you think of the app? Try to give reasons for your views."
-#~ msgstr "Kakšno je vaše mnenje o programu. Podajte razloge za opis programa."
-
-#~ msgid "No screenshot provided"
-#~ msgstr "Ni pripadajoče zaslonske slike"
-
-#, c-format
-#~ msgid "%s…"
-#~ msgstr "%s …"
-
-#~ msgid "Restart Now"
-#~ msgstr "Ponovno zaženi"
-
-#~ msgid "Primary Menu"
-#~ msgstr "Osnovni meni"
-
-#~ msgctxt "Header bar button for list of apps to be updated"
-#~ msgid "Updates"
-#~ msgstr "Posodobitve"
-
-#~ msgid "Application Data"
-#~ msgstr "Podatki programa"
-
-#, c-format
-#~ msgid "%s %s is no longer supported."
-#~ msgstr "Distribucija %s %s ni več podprta."
-
-#~ msgid "This means that it does not receive security updates."
-#~ msgstr "To pomeni, da ne bo več mogoče prejemati varnostnih posodobitev."
-
-#~ msgid "It is recommended that you upgrade to a more recent version."
-#~ msgstr "Priporočljivo je nadgraditi sistem na novejšo različico."
-
-#~ msgid "Update All"
-#~ msgstr "Posodobi vse"
-
-#~ msgid "Application Updates"
-#~ msgstr "Posodobitve programov"
-
-#~ msgid "GNOME Web"
-#~ msgstr "GNOME Splet"
-
-#~ msgid "Application manager for GNOME"
-#~ msgstr "Upravljalnik programov za GNOME"
-
-#~ msgid "A list of popular applications"
-#~ msgstr "Seznam priljubljene programske opreme"
-
-#~ msgid "A list of applications to use, overriding the system defined ones."
-#~ msgstr ""
-#~ "Seznam programov za uporabo, ki prepišejo privzeta določila sistema."
-
-#, c-format
-#~ msgid "%s %s"
-#~ msgstr "%s %s"
-
-#~ msgid "Software catalog is being downloaded"
-#~ msgstr "Katalog programske opreme se posodablja"
-
-#~ msgid "Name"
-#~ msgstr "Ime"
-
-#~ msgid "system"
-#~ msgstr "sistem"
-
-#~ msgid "user"
-#~ msgstr "uporabnik"
-
-#~ msgid "Channel"
-#~ msgstr "Kanal"
-
-#~ msgid "Branch"
-#~ msgstr "Veja"
-
-#~ msgid "URL"
-#~ msgstr "Naslov URL"
-
-#~ msgid "Installation"
-#~ msgstr "Namestitev"
-
-#~ msgid "Version"
-#~ msgstr "Različica"
-
-#~ msgid "No updates have been installed on this system."
-#~ msgstr "Sistem ni bil posodobljen."
-
-#~ msgid "Checking…"
-#~ msgstr "Poteka preverjanje …"
-
-#~ msgid "Endless OS"
-#~ msgstr "Endless OS"
-
-#~ msgid "Loading…"
-#~ msgstr "Poteka nalaganje …"
-
-#~ msgid "Downloading application ratings…"
-#~ msgstr "Poteka prejemanje ocen programske preme …"
-
-#~ msgid "The URI that references the background for an upgrade banner."
-#~ msgstr "Naslov URI, ki pomeni sklic za ozadje pasice posodobitve"
-
-#~ msgid ""
-#~ "The URI can contain up to three '%u', which will be replaced by the "
-#~ "upgrade version."
-#~ msgstr ""
-#~ "Naslov URI lahko vsebuje do tri »%u«, ki bodo zamenjanji pri "
-#~ "posodobitveni različici."
-
-#~ msgid "_Add shortcut"
-#~ msgstr "_Dodaj tipkovno bližnjico"
-
-#~ msgid "Re_move shortcut"
-#~ msgstr "Od_strani tipkovno bližnjico"
-
-#~ msgid "Welcome"
-#~ msgstr "Dobrodošli"
-
-#~ msgid "Welcome to Software"
-#~ msgstr "Dobrodošli med programi"
-
-#~ msgid ""
-#~ "Software lets you install all the software you need, all from one place. "
-#~ "See our recommendations, browse the categories, or search for the "
-#~ "applications you want."
-#~ msgstr ""
-#~ "Orodje omogoča nameščanje programske opreme. Oglejte si priporočene "
-#~ "programe, prebrskajte med kategorijami in poiščite programe po vaših "
-#~ "željah."
-
-#~ msgid "_Browse Software"
-#~ msgstr "_Prebrskaj programsko opremo"
-
-#~ msgid "OS Updates"
-#~ msgstr "Posodobitve sistema"
-
-#~ msgid "Includes performance, stability and security improvements."
-#~ msgstr ""
-#~ "Vključuje izboljšave delovanja, stabilnosti in varnosti za vse uporabnike."
-
-#~ msgid "Downloading firmware update signature…"
-#~ msgstr "Prejemanje podpisov posodobitev strojne programske opreme …"
-
-#~ msgid "Downloading firmware update metadata…"
-#~ msgstr "Prejemanje metapodatkov posodobitev strojne programske opreme …"
-
-#~ msgid "Software has unknown permissions"
-#~ msgstr "Zahteve programa niso znane"
-
-#~ msgid "Software comes from a trusted source"
-#~ msgstr "Program objavlja zaupanja vreden vir"
-
-#~ msgid "Unknown Permissions"
-#~ msgstr "Neznana dovoljenja"
-
-#~ msgid "The permissions needed by this app aren’t known"
-#~ msgstr "Posebne zahteve programa niso znane"
-
-#~ msgid "App comes from a trusted source"
-#~ msgstr "Program objavlja zaupanja vreden vir"
-
-#~ msgid "Your distribution has verified that this app can be trusted"
-#~ msgstr "Program je sistemsko overjen kot varen"
-
-#~ msgid "Show the prompt to install nonfree software repositories"
-#~ msgstr ""
-#~ "Pokaži potrditveno okno pred nameščanjem plačljive programske opreme"
-
-#~ msgid "Not optimized for touch devices or phones"
-#~ msgstr "Ni prilagojeno za mobilne naprave in telefone"
-
-#~ msgid "Editor’s Picks"
-#~ msgstr "Izbor urednikov"
-
-#~ msgid "Recently Updated"
-#~ msgstr "Nedavno posodobljeno"
-
-#~ msgid "_Read More"
-#~ msgstr "_Preberi več"
-
-#~ msgid "_Read Less"
-#~ msgstr "_Preberi manj"
-
-#~ msgid "_Launch"
-#~ msgstr "_Zaženi"
-
-#~ msgid ""
-#~ "Some of this software is proprietary and therefore has restrictions on "
-#~ "use, sharing, and access to source code."
-#~ msgstr ""
-#~ "Nekateri programski viri so lastniški in omejujejo dovoljenja za uporabo, "
-#~ "izmenjavo oziroma dostop do izvorne programske kode."
-
-#~ msgid "Find out more…"
-#~ msgstr "Več o tem …"
-
-#~ msgid "Recent Releases"
-#~ msgstr "Nedavne objave"
-
-#, c-format
-#~ msgid "Remove “%s”?"
-#~ msgstr "Ali želite odstraniti »%s«?"
-
-#, c-format
-#~ msgid "Disable “%s”?"
-#~ msgstr "Ali želite onemogočiti »%s«?"
-
-#~ msgid "No Additional Repositories"
-#~ msgstr "Ni dodatnih programskih virov"
-
-#~ msgid "_Remove…"
-#~ msgstr "_Odstrani …"
-
-#~ msgid "_Disable…"
-#~ msgstr "O_nemogoči …"
-
-#~ msgid "Enabling"
-#~ msgstr "Omogočeno"
-
-#~ msgid "Disabling"
-#~ msgstr "Onemogočeno"
-
-#~ msgid "Enabled"
-#~ msgstr "Omogočeno"
-
-#~ msgid "Disabled"
-#~ msgstr "Onemogočeno"
-
-#~ msgid "_Remove All"
-#~ msgstr "_Odstrani vse"
-
-#~ msgid "Updates will be applied when the computer is restarted."
-#~ msgstr "Posodobitve bodo uveljavljene ob naslednjem zagonu naprave."
-
-#, c-format
-#~ msgid "Waiting to Download %s %s"
-#~ msgstr "Poteka prejemanje paketov %s %s"
-
-#, c-format
-#~ msgid "Downloading %s %s"
-#~ msgstr "Prejemanje posodobitve %s %s"
-
-#, c-format
-#~ msgid "%s %s Ready to be Installed"
-#~ msgstr "%s %s Pripravljeno za namestitev"
-
-#~ msgid "Requires a specific screen size"
-#~ msgstr "Zahteva določeno velikost zaslona"
-
-#~ msgctxt "updated"
-#~ msgid "Never"
-#~ msgstr "Nikoli"
-
-#~ msgid "Localized in your Language"
-#~ msgstr "Na voljo je jezikovna prilagoditev"
-
-#~ msgid "Release Activity"
-#~ msgstr "Objava"
-
-#~ msgid "Developer"
-#~ msgstr "Razvijalec"
-
-#~ msgctxt "app status"
-#~ msgid "Uninstalled"
-#~ msgstr "Odstranjena namestitev"
-
-#~ msgctxt "app status"
-#~ msgid "Installed"
-#~ msgstr "Nameščeno"
-
-#~ msgctxt "app status"
-#~ msgid "Updated"
-#~ msgstr "Posodobljeno"
-
-#~ msgctxt "app status"
-#~ msgid "Unknown"
-#~ msgstr "Neznano"
-
-#~ msgid "History"
-#~ msgstr "Zgodovina"
-
-#~ msgid "More…"
-#~ msgstr "Več …"
-
-#~ msgid "Recommended Games"
-#~ msgstr "Priporočene igre"
-
-#, fuzzy
-#~| msgid "Recommended Audio Applications"
-#~ msgid "Recommended Creation Applications"
-#~ msgstr "Priporočeni zvočni programi"
-
-#, fuzzy
-#~| msgid "Recommended Audio Applications"
-#~ msgid "Recommended Work Applications"
-#~ msgstr "Priporočeni zvočni programi"
-
-#~ msgid "Navigation sidebar"
-#~ msgstr "Navigacijska stranska vrstica"
-
-#, c-format
-#~ msgid "%s (needs attention)"
-#~ msgstr "%s (zahteva pregled)"
-
-#, fuzzy
-#~| msgid "Setting up updates…"
-#~ msgid "Setting Up Updates…"
-#~ msgstr "Poteka nastavljanje posodobitev …"
-
-#~ msgid "Looking for New Updates…"
-#~ msgstr "Poteka preverjanje za posodobitve …"
-
-#~ msgid "Select All"
-#~ msgstr "Izberi vse"
-
-#~ msgid "Select None"
-#~ msgstr "Odstrani izbor"
-
-#, c-format
-#~ msgid "Featured %s"
-#~ msgstr "Novosti %s"
-
-#~ msgid "Show"
-#~ msgstr "Pokaži"
-
-#~ msgid "Subcategories filter menu"
-#~ msgstr "Meni filtrov podkategorij"
-
-#~ msgid "Sort"
-#~ msgstr "Razvrsti"
-
-#~ msgid "Subcategories sorting menu"
-#~ msgstr "Meni razvrščanja podkategorij"
-
-#~ msgctxt "Menu of Games"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Games"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgctxt "Menu of Utilities"
-#~ msgid "All"
-#~ msgstr "Vsi"
-
-#~ msgctxt "Menu of Utilities"
-#~ msgid "Featured"
-#~ msgstr "Novosti"
-
-#~ msgctxt "Menu of Reference"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Reference"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgid "Audio & Video"
-#~ msgstr "Zvok in slika"
-
-#~ msgid "Developer Tools"
-#~ msgstr "Razvojna orodja"
-
-#~ msgid "Education & Science"
-#~ msgstr "Izobraževanje in Znanost"
-
-#~ msgid "Games"
-#~ msgstr "Igre"
-
-#~ msgid "Graphics & Photography"
-#~ msgstr "Grafika in fotografija"
-
-#~ msgid "Productivity"
-#~ msgstr "Produktivnost"
-
-#~ msgid "Communication & News"
-#~ msgstr "Sporočanje in novičarstvo"
-
-#~ msgid "Utilities"
-#~ msgstr "Pripomočki"
-
-#~ msgid ""
-#~ "Unable to determine which parts of the system this application accesses. "
-#~ "This is typical for older applications."
-#~ msgstr ""
-#~ "Ni mogoče določiti, do katerih delov sistema program dostopa. Napaka je "
-#~ "običajno zaznana pri starejših programih."
-
-#~ msgctxt "App permissions"
-#~ msgid "Low"
-#~ msgstr "Nizka"
-
-#~ msgctxt "App permissions"
-#~ msgid "Medium"
-#~ msgstr "Srednja"
-
-#~ msgctxt "App permissions"
-#~ msgid "High"
-#~ msgstr "Visoka"
-
-#~ msgctxt "App permissions"
-#~ msgid "Unknown"
-#~ msgstr "Neznana"
-
-#~ msgid "Public domain"
-#~ msgstr "Javna domena"
-
-#~ msgid "https://en.wikipedia.org/wiki/Public_domain"
-#~ msgstr "https://sl.wikipedia.org/wiki/Javna_last"
-
-#~ msgid "https://www.gnu.org/philosophy/free-sw"
-#~ msgstr "https://www.gnu.org/philosophy/free-sw.sl"
-
-#~ msgid "Users are bound by the following license:"
-#~ msgid_plural "Users are bound by the following licenses:"
-#~ msgstr[0] ""
-#~ "Uporabniki so zavezani k upoštevanju določil naslednjih dovoljenj:"
-#~ msgstr[1] ""
-#~ "Uporabniki so zavezani k upoštevanju določil naslednega dovoljenja:"
-#~ msgstr[2] ""
-#~ "Uporabniki so zavezani k upoštevanju določil naslednjih dovoljenj:"
-#~ msgstr[3] ""
-#~ "Uporabniki so zavezani k upoštevanju določil naslednjih dovoljenj:"
-
-#~ msgid "Sandboxed"
-#~ msgstr "Izvedeno v peskovniku"
-
-#~ msgid "Category"
-#~ msgstr "Kategorija"
-
-#~ msgid "Free"
-#~ msgstr "Prosto"
-
-#~ msgctxt "Application license"
-#~ msgid "Unknown"
-#~ msgstr "Neznano"
-
-#~ msgid ""
-#~ "This means that the software can be freely run, copied, distributed, "
-#~ "studied and modified."
-#~ msgstr ""
-#~ "To pomeni, da je programska oprema brez omejitev uporabe, kopiranja, "
-#~ "razširjanja in tudi spreminjanja izvorne kode."
-
-#~ msgid "Proprietary Software"
-#~ msgstr "Lastniški programski viri"
-
-#~ msgid ""
-#~ "This means that the software is owned by an individual or a company. "
-#~ "There are often restrictions on its use and its source code cannot "
-#~ "usually be accessed."
-#~ msgstr ""
-#~ "To pomeni, da je programska oprema v lasti posameznika ali podjetja. "
-#~ "Obstajajo pogosto omejitve uporabe in dostopa do izvorne kode."
-
-#~ msgid "Unknown Software License"
-#~ msgstr "Neznano dovoljenje programske opreme"
-
-#~ msgid "The license terms of this software are unknown."
-#~ msgstr "Pogoji dovoljenja te programske opreme niso znani."
-
-#~ msgid "The application was rated this way because it features:"
-#~ msgstr "Program je tako ocenjen zaradi:"
-
-#~ msgid "No details were available for this rating."
-#~ msgstr "Ni podrobnosti o tej oceni."
-
-#~ msgid "Recommended Audio & Video Applications"
-#~ msgstr "Priporočeni zvočni in video programi"
-
-#~ msgid "Recommended Graphics Applications"
-#~ msgstr "Priporočeni grafični programi"
-
-#~ msgid "Recommended Productivity Applications"
-#~ msgstr "Priporočeni pisarniški programi"
-
-#~ msgid "ratings in total"
-#~ msgstr "skupno število ocen"
-
-#~ msgid "Software is up to date"
-#~ msgstr "Programska oprema je posodobljena"
-
-#~ msgid "ODRS is a service providing user reviews of applications"
-#~ msgstr ""
-#~ "Storitev ODRS omogoča objavljanje in prebiranje uporabniških mnenj o "
-#~ "programski opremi."
-
-#~ msgid "Cartoon characters in unsafe situations"
-#~ msgstr "Risani liki v nevarnih situacijah"
-
-#~ msgid "Cartoon characters in aggressive conflict"
-#~ msgstr "Risani liki v nasilnih konfliktih"
-
-#~ msgid "Graphic violence involving cartoon characters"
-#~ msgstr "Nazorno nasilje med risanimi liki"
-
-#~ msgid "Characters in unsafe situations easily distinguishable from reality"
-#~ msgstr ""
-#~ "Liki v nevarnih situacijah, ki jih je mogoče zlahka razlikovati od "
-#~ "realnosti"
-
-#~ msgid ""
-#~ "Characters in aggressive conflict easily distinguishable from reality"
-#~ msgstr ""
-#~ "Liki v nasilnem konfliktu, ki ga je mogoče zlahka razlikovati od realnosti"
-
-#~ msgid "Graphic violence easily distinguishable from reality"
-#~ msgstr "Nazorno nasilje, ki ga je mogoče zlahka razlikovati od realnosti"
-
-#~ msgid "Mildly realistic characters in unsafe situations"
-#~ msgstr "Napol realistični liki v nevarnih situacijah"
-
-#~ msgid "Depictions of realistic characters in aggressive conflict"
-#~ msgstr "Prikazovanje realističnih likov v nasilnih konfliktih"
-
-#~ msgid "Graphic violence involving realistic characters"
-#~ msgstr "Nazorno nasilje, ki vključuje realistične like"
-
-#~ msgid "No bloodshed"
-#~ msgstr "Brez prelivanja krvi"
-
-#~ msgid "Unrealistic bloodshed"
-#~ msgstr "Nerealistično prelivanje krvi"
-
-#~ msgid "Realistic bloodshed"
-#~ msgstr "Realistično prelivanje krvi"
-
-#~ msgid "Depictions of bloodshed and the mutilation of body parts"
-#~ msgstr "Prikazi prelivanja krvi in pohabljanje delov telesa"
-
-#~ msgid "Rape or other violent sexual behavior"
-#~ msgstr "Posilstvo ali drugo nasilno vedenje"
-
-#~ msgid "References to alcoholic beverages"
-#~ msgstr "Omenjanje alkoholnih pijač"
-
-#~ msgid "Use of alcoholic beverages"
-#~ msgstr "Uporaba alkoholnih pijač"
-
-#~ msgid "References to illicit drugs"
-#~ msgstr "Omenjanje prepovedanih drog"
-
-#~ msgid "Use of illicit drugs"
-#~ msgstr "Uporaba prepovedanih drog"
-
-#~ msgid "References to tobacco products"
-#~ msgstr "Sklici na tobačne izdelke"
-
-#~ msgid "Use of tobacco products"
-#~ msgstr "Uporaba tobačnih izdelkov"
-
-#~ msgid "Brief artistic nudity"
-#~ msgstr "Krajše umetniško ponazorjena spolnost"
-
-#~ msgid "Prolonged nudity"
-#~ msgstr "Daljši prikazi golote"
-
-#~ msgid "Provocative references or depictions"
-#~ msgstr "Izzivalno obnašanje ali upodobljanje"
-
-#~ msgid "Sexual references or depictions"
-#~ msgstr "Prikrit spolni akt"
-
-#~ msgid "Graphic sexual behavior"
-#~ msgstr "Nazorno seksualno vedenje"
-
-#~ msgid "Mild or infrequent use of profanity"
-#~ msgstr "Nežno ali redko preklinjanje"
-
-#~ msgid "Moderate use of profanity"
-#~ msgstr "Zmerno preklinjanje"
-
-#~ msgid "Strong or frequent use of profanity"
-#~ msgstr "Izrazito ali pogosto preklinjanje"
-
-#~ msgid "Slapstick humor"
-#~ msgstr "Situacijski humor"
-
-#~ msgid "Vulgar or bathroom humor"
-#~ msgstr "Vulgaren humor"
-
-#~ msgid "Mature or sexual humor"
-#~ msgstr "Humor za odrasle"
-
-#~ msgid "Negativity towards a specific group of people"
-#~ msgstr "Negativen odnos do specifične skupine ljudi"
-
-#~ msgid "Discrimination designed to cause emotional harm"
-#~ msgstr "Diskriminatorno delovanje, ki lahko sproži močan čustven odziv"
-
-#~ msgid "Explicit discrimination based on gender, sexuality, race or religion"
-#~ msgstr "Izrecna diskriminacija na podlagi spola, spolnosti, rase ali vere"
-
-#~ msgid "Product placement"
-#~ msgstr "Opredelitev izdelka"
-
-#~ msgid "Explicit references to specific brands or trademarked products"
-#~ msgstr "Izrecna sklicevanja na določene blagovne znamke ali izdelke"
-
-#~ msgid "Users are encouraged to purchase specific real-world items"
-#~ msgstr "Uporabnike spodbuja k nakupu določenih fizičnih predmetov"
-
-#~ msgid "Gambling on random events using tokens or credits"
-#~ msgstr ""
-#~ "Igranje na srečo na naključnih dogodkih z uporabo žetonov ali kreditnih "
-#~ "točk"
-
-#~ msgid "Gambling using “play” money"
-#~ msgstr "Igranje na srečo s namišljenim denarjem"
-
-#~ msgid "Gambling using real money"
-#~ msgstr "Igranje na srečo s pravim denarjem"
-
-#~ msgid "Users are encouraged to donate real money"
-#~ msgstr "Uporabnike spodbuja k donaciji uradnih denarnih valut"
-
-#~ msgid "Ability to spend real money in-app"
-#~ msgstr "Možnost uporabe pravega denarja v programu"
-
-#~ msgid "User-to-user interactions without chat functionality"
-#~ msgstr "Interakcije med uporabniki brez funkcije za klepet"
-
-#~ msgid "Moderated chat functionality between users"
-#~ msgstr "Nadzorovana možnost klepeta med uporabniki"
-
-#~ msgid "Uncontrolled audio or video chat functionality between users"
-#~ msgstr "Nenadzorovana možnost zvočnega ali video klepeta med uporabniki"
-
-#~ msgid "Sharing social network usernames or email addresses"
-#~ msgstr ""
-#~ "Objavljanje uporabniškega imena ali elektronskega naslova socialnega "
-#~ "omrežja"
-
-#~ msgid "Checking for the latest application version"
-#~ msgstr "Poteka preverjanje najnovejše različice programa"
-
-#~ msgid "Sharing diagnostic data that does not let others identify the user"
-#~ msgstr ""
-#~ "Objavljanje podatkov diagnostike, ki ne vključuje podatkov o istovetnosti "
-#~ "uporabnika"
-
-#~ msgid "Sharing information that lets others identify the user"
-#~ msgstr "Objavljanje podrobnosti o uporabniku"
-
-#~ msgid "Sharing physical location with other users"
-#~ msgstr "Omogočeno je objavljanje trenutnega mesta drugim uporabnikom"
-
-#~ msgid "Indirect references to homosexuality"
-#~ msgstr "Posredno namigovanje na homoseksualnost"
-
-#~ msgid "Kissing between people of the same gender"
-#~ msgstr "Poljubljanje med osebami istega spola"
-
-#~ msgid "Graphic sexual behavior between people of the same gender"
-#~ msgstr "Nazorno spolno obnašanje med osebami istega spola"
-
-#~ msgid "Indirect references to prostitution"
-#~ msgstr "Posredno namigovanje na prostitucijo"
-
-#~ msgid "Direct references to prostitution"
-#~ msgstr "Neposredno omenjanje prostitucije"
-
-#~ msgid "Graphic depictions of the act of prostitution"
-#~ msgstr "Nazoren prikaz prostitucije"
-
-#~ msgid "Indirect references to adultery"
-#~ msgstr "Posredno namigovanje na nezvestobo"
-
-#~ msgid "Direct references to adultery"
-#~ msgstr "Neposredno omenjanje nezvestobe"
-
-#~ msgid "Graphic depictions of the act of adultery"
-#~ msgstr "Nazoren prikaz prešuštva"
-
-#~ msgid "Scantily clad human characters"
-#~ msgstr "Pomanjkljivo oblečeni človeški liki"
-
-#~ msgid "Overtly sexualized human characters"
-#~ msgstr "Prekomerno spolno izraženi človeški liki"
-
-#~ msgid "Depictions of or references to historical desecration"
-#~ msgstr "Prikazovanje ali sklicevanja na zgodovinsko skrunitev"
-
-#~ msgid "Depictions of modern-day human desecration"
-#~ msgstr "Prikazovanje sodobnega skrunjenja človeškega telesa"
-
-#~ msgid "Graphic depictions of modern-day desecration"
-#~ msgstr "Nazorno prikazovanje sodobnega skrunjenja človeškega telesa"
-
-#~ msgid "Visible dead human remains"
-#~ msgstr "Vidni deli mrtvih ljudi"
-
-#~ msgid "Dead human remains that are exposed to the elements"
-#~ msgstr "Izpostavljanje ostankov človeških teles"
-
-#~ msgid "Graphic depictions of desecration of human bodies"
-#~ msgstr "Nazorno prikazovanje oskrunjenja človeškega telesa"
-
-#~ msgid "Depictions of or references to historical slavery"
-#~ msgstr "Prikazovanje suženjstva v preteklosti"
-
-#~ msgid "Depictions of modern-day slavery"
-#~ msgstr "Prikazovanje sodobnega suženjstva"
-
-#~ msgid "Graphic depictions of modern-day slavery"
-#~ msgstr "Nazorno prikazovanje sodobnega suženjstva"
-
-#~ msgid "General"
-#~ msgstr "Splošno"
-
-#~ msgid "ALL"
-#~ msgstr "Vse"
-
-#~ msgid "Teen"
-#~ msgstr "Najstniki"
-
-#~ msgid "Everyone 10+"
-#~ msgstr "Kdorkoli nad 10"
-
-#~ msgid "Everyone"
-#~ msgstr "Vsi"
-
-#~ msgid "Early Childhood"
-#~ msgstr "Zgodnje otroštvo"
-
-#~ msgctxt "version"
-#~ msgid "Unknown"
-#~ msgstr "Neznano"
-
-#, fuzzy
-#~| msgid "Recent Releases"
-#~ msgid "Released"
-#~ msgstr "Nedavne objave"
-
-#~ msgid "Format"
-#~ msgstr "Zapis"
-
-#~ msgid "%R"
-#~ msgstr "%R"
-
-#~ msgid "%l:%M %p"
-#~ msgstr "%H:%M"
-
-#~ msgid "Yesterday, %R"
-#~ msgstr "Včeraj, %R"
-
-#~ msgid "Yesterday, %l:%M %p"
-#~ msgstr "Včeraj, %l:%M %p"
-
-#~ msgid "Three days ago"
-#~ msgstr "Pred tremi dnevi"
-
-#~ msgid "Four days ago"
-#~ msgstr "Pred štirimi dnevi"
-
-#~ msgid "Five days ago"
-#~ msgstr "Pred petimi dnevi"
-
-#~ msgid "Six days ago"
-#~ msgstr "Pred šestimi dnevi"
-
-#~ msgid "Two weeks ago"
-#~ msgstr "Pred dvema tednoma"
-
-#~ msgid "Enable GNOME Shell extensions repository"
-#~ msgstr "Omogoči skladišče razširitev za lupino GNOME"
-
-#~ msgid "this website"
-#~ msgstr "ta spletna stran"
-
-#~ msgid "_Let’s Go Shopping"
-#~ msgstr "_Začnimo z nakupi"
-
-#~ msgctxt "app status"
-#~ msgid "Removed"
-#~ msgstr "Odstranjeno"
-
-#~ msgid "Are you sure you want to remove %s?"
-#~ msgstr "Ali ste prepričani, da želite odstraniti %s?"
-
-#~ msgid "This application needs to be restarted to use new plugins."
-#~ msgstr "Program je treba pred uporabo novih vstavkov ponovno zagnati."
-
-#~ msgid "Security Updates Pending"
-#~ msgstr "Pripravljene so varnostne posodobitve programov"
-
-#~ msgid "It is recommended that you install important updates now"
-#~ msgstr "Priporočljivo je takoj namestiti pomembne posodobitve"
-
-#~ msgid "Restart & Install"
-#~ msgstr "Ponovno zaženi in namesti"
-
-#~ msgid "Important OS and application updates are ready to be installed"
-#~ msgstr "Na voljo so pomembne sistemske posodobitve in posodobitve programov"
-
-#~ msgid "View"
-#~ msgstr "Pogled"
-
-#~ msgid "About %s"
-#~ msgstr "O programu %s"
-
-#~ msgid "%s ME"
-#~ msgstr "Upravljalnik %s"
-
-#~ msgid "Show the folder management UI"
-#~ msgstr "Pokaži vmesnik upravljanja map"
-
-#~ msgid "Folder Name"
-#~ msgstr "Ime mape"
-
-#~ msgid "_Add"
-#~ msgstr "_Dodaj"
-
-#~ msgid "Add to Application Folder"
-#~ msgstr "Dodaj v programsko mapo"
-
-#~ msgid "Top Rated"
-#~ msgstr "Najbolje ocenjeno"
-
-#~ msgid "Extension Settings"
-#~ msgstr "Nastavitev pripone"
-
-#~ msgid ""
-#~ "Extensions are used at your own risk. If you have any system problems, it "
-#~ "is recommended to disable them."
-#~ msgstr ""
-#~ "Razširitve uporabljate na lastno odgovornost. Če imate kakšne sistemske "
-#~ "težave, je priporočljito te onemogočiti."
-
-#~ msgid "Failed to load components"
-#~ msgstr "Nalaganje paketov je spodletelo"
-
-#~ msgid "CSS validated OK!"
-#~ msgstr "Slogovna predloga CSS je uspešno overjena!"
-
-#~ msgid "Failed to load file"
-#~ msgstr "Nalaganje datoteke je spodletelo"
-
-#~ msgid "Unsaved changes"
-#~ msgstr "Neshranjene spremembe"
-
-#~ msgid "The application list is already loaded."
-#~ msgstr "Seznam programov je že naložen"
-
-#~ msgid "Merge documents"
-#~ msgstr "Združi dokumente"
-
-#~ msgid "Throw away changes"
-#~ msgstr "Zavrzi spremembe"
-
-#~ msgid "Open AppStream File"
-#~ msgstr "Odpri datoteko AppStream"
-
-#~ msgid "Save AppStream File"
-#~ msgstr "Shrani datoteko AppStream"
-
-#~ msgid "_Save"
-#~ msgstr "_Shrani"
-
-#~ msgid "Failed to save file"
-#~ msgstr "Shranjevanje datoteke je spodletelo"
-
-#~ msgid "%s banner design deleted."
-#~ msgstr "Zasnova oblikovanja pasice %s je izbrisana."
-
-#~ msgid "Banner design deleted."
-#~ msgstr "Zasnova oblikovanja pasice je izbrisana."
-
-#~ msgid "The application list has unsaved changes."
-#~ msgstr "Seznam programov vključuje še ne shranjene spremembe."
-
-#~ msgid "Use verbose logging"
-#~ msgstr "Shranjuj podroben izpis"
-
-#~ msgid "GNOME Software Banner Designer"
-#~ msgstr "Oblikovalnik vmesnikov za okolje GNOME"
-
-#~ msgid "No Designs"
-#~ msgstr "Ni zasnov"
-
-#~ msgid "Error message here"
-#~ msgstr "Sporočilo o napaki"
-
-#~ msgid "Category Featured"
-#~ msgstr "Kategorija novosti"
-
-#~ msgid "Undo"
-#~ msgstr "Razveljavi"
-
-#~ msgid "Banner Designer"
-#~ msgstr "Snovalnik pasic"
-
-#~ msgid "New Banner"
-#~ msgstr "Nova pasica"
-
-#~ msgid "Import from file"
-#~ msgstr "Uvozi iz datoteke"
-
-#~ msgid "Export to file"
-#~ msgstr "Izvozi v datoteko"
-
-#~ msgid "Delete Design"
-#~ msgstr "Izbriši zasnovo"
-
-#~ msgid "Spacing"
-#~ msgstr "Razmik"
-
-#~ msgid "The amount of space between children"
-#~ msgstr "Velikost prostora med podrejenimi predmeti"
-
-#~ msgid "Click on items to select them"
-#~ msgstr "S klikom se predmeti izberejo"
-
-#~ msgid "Select"
-#~ msgstr "Izberi"
-
-#~ msgid "_Add to Folder…"
-#~ msgstr "_Dodaj v mapo …"
-
-#~ msgid "_Move to Folder…"
-#~ msgstr "_Premakni v mapo …"
-
-#~ msgid "_Remove from Folder"
-#~ msgstr "_Odstrani iz mape"
-
-#~ msgid "Featured Applications"
-#~ msgstr "Izbrani programi"
-
-#~ msgid "Design the featured banners for GNOME Software"
-#~ msgstr "Oblikovanje pasic za programsko opremo GNOME"
-
-#~ msgid "AppStream;Software;App;"
-#~ msgstr "AppStream;Programi;Programska oprema;Oprema;Aplikacije;App;"
-
-#~ msgctxt "Menu of Add-ons"
-#~ msgid "Shell Extensions"
-#~ msgstr "Razširitve lupine"
-
-#~ msgid "GNOME Shell Extensions Repository"
-#~ msgstr "Skladišče razširitev Lupine GNOME"
-
-#~ msgid "Downloading shell extension metadata…"
-#~ msgstr "Prejemanje metapodatkov razširitev ukazne lupine …"
-
-#~ msgid "GNOME Shell Extension"
-#~ msgstr "Razširitve lupine GNOME"
-
-#~ msgid "system-software-install"
-#~ msgstr "system-software-install"
-
-#~ msgid "_All"
-#~ msgstr "_Vse"
-
-#~ msgid "Sign In / Register…"
-#~ msgstr "Prijava / Vpis"
-
-#~ msgid "Continue"
-#~ msgstr "Nadaljuj"
-
-#~ msgid "Use"
-#~ msgstr "Uporabi"
-
-#~ msgid "Add another…"
-#~ msgstr "Dodaj drugo …"
-
-#~ msgid "%s will be installed, and you will be charged %s."
-#~ msgstr "Program %s bo nameščen, prejem pa bo obračunan z %s."
-
-#~ msgid "A$%.2f"
-#~ msgstr "A$%.2f"
-
-#~ msgid "C$%.2f"
-#~ msgstr "C$%.2f"
-
-#~ msgid "CN¥%.2f"
-#~ msgstr "CN¥%.2f"
-
-#~ msgid "€%.2f"
-#~ msgstr "€%.2f"
-
-#~ msgid "£%.2f"
-#~ msgstr "£%.2f"
-
-#~ msgid "¥%.2f"
-#~ msgstr "¥%.2f"
-
-#~ msgid "NZ$%.2f"
-#~ msgstr "NZ$%.2f"
-
-#~ msgid "₽%.2f"
-#~ msgstr "₽%.2f"
-
-#~ msgid "US$%.2f"
-#~ msgstr "US$%.2f"
-
-#~ msgid "Signed in as %s"
-#~ msgstr "Prijava kot %s"
-
-#~ msgid "Sign in…"
-#~ msgstr "Prijava …"
-
-#~ msgid "Sign out"
-#~ msgstr "Odjava"
-
-#~ msgid "Unable to purchase %s: authentication was required"
-#~ msgstr "Nakup paketa %s je spodletel: zahtevana je overitev"
-
-#~ msgid "Unable to purchase %s: authentication was invalid"
-#~ msgstr "Nakup paketa %s je spodletel: overitev ni veljavna"
-
-#~ msgid "Unable to purchase %s: no payment method setup"
-#~ msgstr "Nakup paketa %s je spodletel: ni določenega načina plačila"
-
-#~ msgid "Unable to purchase %s: payment was declined"
-#~ msgstr "Nakup paketa %s je spodletel: nakup je zavrnjen"
-
-#~ msgid "Unable to purchase %s"
-#~ msgstr "Nakup paketa %s je spodletel"
-
-#~ msgid "org.gnome.Software"
-#~ msgstr "org.gnome.Software"
-
-#~ msgid "To continue, you need to use an Ubuntu One account."
-#~ msgstr "Za nadaljevanje se je treba uporabiti račun Ubuntu One."
-
-#~ msgid "To continue, you need to use your Ubuntu One account."
-#~ msgstr "Za nadaljevanje se je treba prijaviti v račun Ubuntu One."
-
-#~ msgid "..."
-#~ msgstr "..."
-
-#~ msgid "Software catalog is being loaded"
-#~ msgstr "Katalog programske opreme se posodablja"
-
-#~ msgid "To continue you need to sign in to %s."
-#~ msgstr "Za nadaljevanje se je treba prijaviti v %s."
-
-#~ msgid "Email address"
-#~ msgstr "Elektronski naslov"
-
-#~ msgid "I have an account already"
-#~ msgstr "Račun že imam"
-
-#~ msgid "I want to register for an account now"
-#~ msgstr "Želim se vpisati za račun"
-
-#~ msgid "I have forgotten my password"
-#~ msgstr "Ne spomnim se gesla"
-
-#~ msgid "Sign in automatically next time"
-#~ msgstr "Naslednjič se samodejno prijavi"
-
-#~ msgid "Enter your one-time pin for two-factor authentication."
-#~ msgstr "Vpišite enkratno kodo PIN za dvofaktorsko overjanje."
-
-#~ msgid "PIN"
-#~ msgstr "Koda PIN"
-
-#~ msgid "Authenticate"
-#~ msgstr "Overi"
-
-#~ msgid "Your %s account has been suspended."
-#~ msgstr "Račun %s je onemogočen."
-
-#~ msgid "It is not possible to install software until this has been resolved."
-#~ msgstr ""
-#~ "Programske opreme ni mogoče namestiti, dokler težava ni odpravljena."
-
-#~ msgid "For more information, visit %s."
-#~ msgstr "Več podrobnosti je zabeleženih na %s"
-
-#~ msgid "Unable to update %s from %s"
-#~ msgstr "Paketa %s prek spletišča %s ni mogoče posodobiti."
-
-#~ msgid "_About"
-#~ msgstr "_O programu"
-
-#~ msgid "_Quit"
-#~ msgstr "_Končaj"
-
-#~ msgid ""
-#~ "Information about %s, as well as options for how to get a codec that can "
-#~ "play this format can be found on the website."
-#~ msgstr ""
-#~ "Podrobnosti o %s in o možnostih za nameščenje kodekov za predvajanje "
-#~ "predstavnega zapisa, so na voljo na spletišču programa."
-
-#~ msgid "Downloading new updates…"
-#~ msgstr "Prejemanje novih posodobitev ..."
-
-#~ msgid "Downloading application page…"
-#~ msgstr "Poteka prejemanje strani programske opreme ..."
-
-#~ msgid "The ultimate entertainment platform from Valve"
-#~ msgstr "Ultimativno zabavno okolje Valve"
-
-#~ msgid "Show profiling information for the service"
-#~ msgstr "Pokaži podrobnosti profila za storitev"
-
-#~ msgid "Restart & _Install"
-#~ msgstr "Ponovno zaženi in _namesti"
-
-#~ msgid "Getting runtime source…"
-#~ msgstr "Pridobivanje virov zagonskih programov ..."
-
-#~ msgid "Limba Support"
-#~ msgstr "Podpora Limba"
-
-#~ msgid "Limba provides developers a way to easily create software bundles"
-#~ msgstr ""
-#~ "Sistem Limba omogoča razvijalcem enostavno ustvarjanje paketov programske "
-#~ "opreme"
-
-#~ msgid "The list of extra sources that have been previously enabled"
-#~ msgstr "Seznam dodatnih virov, ki so v preteklosti že bili omogočeni"
-
-#~ msgid ""
-#~ "The list of sources that have been previously enabled when installing "
-#~ "third-party applications."
-#~ msgstr ""
-#~ "Seznam virov, ki so v preteklosti med nameščanjem programske opreme "
-#~ "tretjih oseb že bili omogočeni ."
-
-#~ msgid "Show non-free software in search results"
-#~ msgstr "Pokaži tudi ne-prosto programsko opremo v zadetkih iskanja"
-
-#~ msgid "A list of non-free sources that can be optionally enabled"
-#~ msgstr ""
-#~ "Seznam dodatnih lastniških virov, ki jih je mogoče izbirno omogočiti"
-
-#~ msgid "Player-to-player preset interactions without chat functionality"
-#~ msgstr ""
-#~ "Predložene interakcije med igralci znotraj igre brez funkcije za klepet"
-
-#~ msgid "Enable Proprietary Software Sources?"
-#~ msgstr "Ali želite omogočiti lastniške vire programske opreme?"
-
-#~ msgid "No applications or addons installed; other software might still be"
-#~ msgstr "Ni nameščenih programov; druga programska oprema še vedno je lahko"
-
-#~ msgid "Typically has restrictions on use and access to source code."
-#~ msgstr "Običajne so omejitve uporabe in dostopa do programske kode."
-
-#~ msgid "Proprietary Software Sources"
-#~ msgstr "Lastniški programski viri"
-
-#~ msgid "Remove Source"
-#~ msgstr "Odstrani vir"
-
-#~ msgid ""
-#~ "Software sources can be downloaded from the internet. They give you "
-#~ "access to additional software that is not provided by %s."
-#~ msgstr ""
-#~ "Programske vire je mogoče prejeti prek interneta. Omogočajo dostop do "
-#~ "dodatne programske opreme, ki ni podprta s strani %s."
-
-#~ msgid ""
-#~ "Removing a source will also remove any software you have installed from "
-#~ "it."
-#~ msgstr ""
-#~ "Z odstranjevanjem vira bodo odstranjeni tudi programski paketi, ki so "
-#~ "bili preko vira nameščeni."
-
-#~ msgid "No software installed from this source"
-#~ msgstr "Iz tega vira ni nameščenih programskih paketov"
-
-#~ msgid "Installed from this Source"
-#~ msgstr "Nameščeno iz podanega vira"
-
-#~ msgid "Last Checked"
-#~ msgstr "Nazadnje preverjeno"
-
-#~ msgid "Added"
-#~ msgstr "Dodano"
-
-#~ msgid "Website"
-#~ msgstr "Spletišče"
-
-#~ msgid "“%s” [%s]"
-#~ msgstr "“%s” [%s]"
-
-#~ msgctxt "Menu of AudioVideo"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of AudioVideo"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgctxt "Menu of Development"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Development"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgctxt "Menu of Education and Science"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Education and Science"
-#~ msgid "Featured"
-#~ msgstr "Novosti"
-
-#~ msgctxt "Menu of Graphics"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Graphics"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgctxt "Menu of Office"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Office"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgctxt "Menu of Communication"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Communication"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgctxt "Menu of Utility"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Utility"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgid "Total"
-#~ msgstr "Skupno"
-
-#~ msgid "Could not find '%s'"
-#~ msgstr "Ni mogoče najti »%s«"
-
-#~ msgid "_Install All"
-#~ msgstr "_Namesti vse"
-
-#~ msgid "Installation of %s failed."
-#~ msgstr "Namestitev %s je spodletela."
-
-#~ msgid "Removal of %s failed."
-#~ msgstr "Odstranjevanje %s je spodletelo."
-
-#~ msgid "Please make sure that you have internet access and try again."
-#~ msgstr ""
-#~ "Prepričajte se, da je vzpostavljena spletna povezava in nato poskusite "
-#~ "znova."
-
-#~ msgid "Please free up some space and try again."
-#~ msgstr "Sprostite prostor in poskusite znova."
-
-#~ msgid "If the problem persists, contact your software provider."
-#~ msgstr ""
-#~ "Če se težava ponavlja, stopite v stik s ponudnikom programske opreme."
-
-#~ msgctxt "content rating violence-fantasy"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating violence-realistic"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating violence-bloodshed"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating violence-sexual"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating drugs-alcohol"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating drugs-narcotics"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating sex-nudity"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating sex-themes"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating language-profanity"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating language-humor"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating language-discrimination"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating money-advertising"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating money-gambling"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating money-purchasing"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating social-chat"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating social-audio"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating social-contacts"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating social-info"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "content rating social-location"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgctxt "Menu of Education"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Education"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgctxt "Menu of Science"
-#~ msgid "All"
-#~ msgstr "Vse"
-
-#~ msgctxt "Menu of Science"
-#~ msgid "Featured"
-#~ msgstr "Novosti v ospredju"
-
-#~ msgctxt "Menu of Science"
-#~ msgid "Astronomy"
-#~ msgstr "Astronomija"
-
-#~ msgctxt "Menu of Science"
-#~ msgid "Chemistry"
-#~ msgstr "Kemija"
-
-#~ msgctxt "Menu of Science"
-#~ msgid "Math"
-#~ msgstr "Matematika"
-
-#~ msgid "Science"
-#~ msgstr "Znanost"
-
-#~ msgid " or "
-#~ msgstr " ali "
-
-#~ msgid "3rd party"
-#~ msgstr "program tretje osebe"
-
-#~ msgid "nonfree"
-#~ msgstr "lastniški program"
-
-#~ msgid "_Installing"
-#~ msgstr "_Nameščanje"
-
-#~ msgid "_Removing"
-#~ msgstr "_Odstranjevanje"
-
-#~ msgctxt "license"
-#~ msgid "Unknown"
-#~ msgstr "Neznano"
-
-#~ msgctxt "size"
-#~ msgid "Calculating…"
-#~ msgstr "Poteka preračunavanje ..."
-
-#~ msgctxt "size"
-#~ msgid "Unknown"
-#~ msgstr "Neznano"
-
-#~ msgctxt "menu category"
-#~ msgid "None"
-#~ msgstr "Brez"
-
-#~ msgid "This software comes from a 3rd party."
-#~ msgstr "Programska oprema je iz tretje roke."
-
-#~ msgid ""
-#~ "This software comes from a 3rd party and may contain non-free components."
-#~ msgstr ""
-#~ "Programsko opremo razvijajo tretje osebe in lahko vključuje tudi "
-#~ "lastniško kodo."
-
-#~ msgid "This software may contain non-free components."
-#~ msgstr "Programska oprema lahko vključuje tudi lastniško kodo."
-
-#~ msgid "_History"
-#~ msgstr "_Zgodovina"
-
-#~ msgid "Size"
-#~ msgstr "Velikost"
-
-#~ msgid "non-free"
-#~ msgstr "Lastniški program"
-
-#~ msgid "Recommended Office Applications"
-#~ msgstr "Priporočeni pisarniški programi"
-
-#~ msgid "Software sources give you access to additional software."
-#~ msgstr "Programski viri omogočajo dostop do dodatne programske opreme."
-
-#~ msgid "One Star"
-#~ msgstr "Ena zvezdica"
-
-#~ msgid "Two Stars"
-#~ msgstr "Dve zvezdici"
-
-#~ msgid "Three Stars"
-#~ msgstr "Tri zvezdice"
-
-#~ msgid "Four Stars"
-#~ msgstr "Štiri zvezdice"
-
-#~ msgid "Five Stars"
-#~ msgstr "Pet zvezdic"
-
-#~ msgid "Audio"
-#~ msgstr "Zvok"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Editing"
-#~ msgstr "Montaža"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Databases"
-#~ msgstr "Podatkovne zbirke"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Disc Burning"
-#~ msgstr "Zapisovanje diska"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Ham Radio"
-#~ msgstr "Radioamaterstvo"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "MIDI"
-#~ msgstr "MIDI"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Mixer"
-#~ msgstr "Mešanje"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Music"
-#~ msgstr "Glasba"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Recorders"
-#~ msgstr "Snemalniki"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Sequencers"
-#~ msgstr "Zaporejevalniki"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Tuners"
-#~ msgstr "Uravnalniki"
-
-#~ msgid "Development Tools"
-#~ msgstr "Razvojna orodja"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Building"
-#~ msgstr "Izgradnja paketov"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Databases"
-#~ msgstr "Podatkovne zbirke"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Debuggers"
-#~ msgstr "Razhroščevalniki"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "IDE"
-#~ msgstr "IDE"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Profiling"
-#~ msgstr "Profiliranje"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Project Management"
-#~ msgstr "Upravljanje projektov"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Web Development"
-#~ msgstr "Spletni razvoj"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Art"
-#~ msgstr "Umetnost"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Artificial Intelligence"
-#~ msgstr "Umetna inteligenca"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Astronomy"
-#~ msgstr "Astronomija"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Biology"
-#~ msgstr "Biologija"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Chemistry"
-#~ msgstr "Kemija"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Computer Science"
-#~ msgstr "Računalniške znanosti"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Data Visualization"
-#~ msgstr "Predočenje podatkov"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Economy"
-#~ msgstr "Ekonomija"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Electricity"
-#~ msgstr "Elektrika"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Electronics"
-#~ msgstr "Elektronika"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Engineering"
-#~ msgstr "Inženirstvo"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Geology"
-#~ msgstr "Geologija"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Geoscience"
-#~ msgstr "Geoznanost"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "History"
-#~ msgstr "Zgodovina"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Image Processing"
-#~ msgstr "Obdelava slik"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Languages"
-#~ msgstr "Jeziki"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Literature"
-#~ msgstr "Literatura"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Maps"
-#~ msgstr "Zemljevidi"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Math"
-#~ msgstr "Matematika"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Music"
-#~ msgstr "Glasba"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Numerical Analysis"
-#~ msgstr "Številska analiza"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Parallel Computing"
-#~ msgstr "Vzporedno računanje"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Physics"
-#~ msgstr "Fizika"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Robotics"
-#~ msgstr "Robotika"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Spirituality"
-#~ msgstr "Duhovnost in vera"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Sports"
-#~ msgstr "Šport"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Action"
-#~ msgstr "Akcijske igre"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Adventure"
-#~ msgstr "Pustolovščine"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Arcade"
-#~ msgstr "Arkadne igre"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Blocks"
-#~ msgstr "Bloki"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Board"
-#~ msgstr "Tabla"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Card"
-#~ msgstr "Karte"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Emulators"
-#~ msgstr "Posnemovalniki"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Kids"
-#~ msgstr "Za otroke"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Logic"
-#~ msgstr "Logika"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Role Playing"
-#~ msgstr "Igra vlog"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Shooter"
-#~ msgstr "Strelske igre"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Simulation"
-#~ msgstr "Simulacija"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Sports"
-#~ msgstr "Šport"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Strategy"
-#~ msgstr "Strateške igre"
-
-#~ msgid "Graphics"
-#~ msgstr "Grafika"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "2D Graphics"
-#~ msgstr "2D-grafika"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "3D Graphics"
-#~ msgstr "3D-grafika"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "OCR"
-#~ msgstr "Optično prepoznavanje znakov"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "Photography"
-#~ msgstr "Fotografija"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "Publishing"
-#~ msgstr "Založništvo"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "Raster Graphics"
-#~ msgstr "Rastrska grafika"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "Scanning"
-#~ msgstr "Optično branje"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "Vector Graphics"
-#~ msgstr "Vektorska grafika"
-
-#~ msgid "Internet"
-#~ msgstr "Splet"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Chat"
-#~ msgstr "Klepetanje"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Dialup"
-#~ msgstr "Klicanje"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Email"
-#~ msgstr "Elektronska pošta"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Feed"
-#~ msgstr "Viri"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "File Transfer"
-#~ msgstr "Prenos datotek"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Ham Radio"
-#~ msgstr "Ham radio"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Instant Messaging"
-#~ msgstr "Hipno sporočanje"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "IRC Clients"
-#~ msgstr "Odjemalci IRC"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Monitor"
-#~ msgstr "Zaslon"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "News"
-#~ msgstr "Novice"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "P2P"
-#~ msgstr "Protokol P2P"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Telephony"
-#~ msgstr "Telefonija"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Video Conference"
-#~ msgstr "Video konferenca"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Web Browser"
-#~ msgstr "Spletni brskalnik"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Web Development"
-#~ msgstr "Spletni razvoj"
-
-#~ msgid "Office"
-#~ msgstr "Pisarna"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Calendar"
-#~ msgstr "Koledar"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Chart"
-#~ msgstr "Grafikon"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Contact Management"
-#~ msgstr "Upravljanje s stiki"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Database"
-#~ msgstr "Podatkovna zbirka"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Dictionary"
-#~ msgstr "Slovar"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Email"
-#~ msgstr "Elektronska pošta"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Finance"
-#~ msgstr "Finance"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Flow Chart"
-#~ msgstr "Diagram poteka"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "PDA"
-#~ msgstr "Dlančnik"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Photography"
-#~ msgstr "Fotografija"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Project Management"
-#~ msgstr "Upravljanje projektov"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Publishing"
-#~ msgstr "Založništvo"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Spreadsheet"
-#~ msgstr "Preglednica"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Viewer"
-#~ msgstr "Pregledovalnik"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Word Processor"
-#~ msgstr "Urejanje besedila"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Art"
-#~ msgstr "Umetnost"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Artificial Intelligence"
-#~ msgstr "Umetna inteligenca"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Astronomy"
-#~ msgstr "Astronomija"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Biology"
-#~ msgstr "Biologija"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Chemistry"
-#~ msgstr "Kemija"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Computer Science"
-#~ msgstr "Računalniške znanosti"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Construction"
-#~ msgstr "Gradnja"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Data Visualization"
-#~ msgstr "Predočenje podatkov"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Economy"
-#~ msgstr "Ekonomija"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Electricity"
-#~ msgstr "Elektrika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Electronics"
-#~ msgstr "Elektronika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Engineering"
-#~ msgstr "Inženirstvo"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Geography"
-#~ msgstr "Geografija"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Geology"
-#~ msgstr "Geologija"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Geoscience"
-#~ msgstr "Geoznanost"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "History"
-#~ msgstr "Zgodovina"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Humanities"
-#~ msgstr "Humanistika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Image Processing"
-#~ msgstr "Obdelava slik"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Languages"
-#~ msgstr "Jeziki"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Literature"
-#~ msgstr "Literatura"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Maps"
-#~ msgstr "Zemljevidi"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Math"
-#~ msgstr "Matematika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Medical"
-#~ msgstr "Zdravstvo"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Numerical Analysis"
-#~ msgstr "Številska analiza"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Parallel Computing"
-#~ msgstr "Vzporedno računanje"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Physics"
-#~ msgstr "Fizika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Robotics"
-#~ msgstr "Robotika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Spirituality"
-#~ msgstr "Duhovnost in vera"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Sports"
-#~ msgstr "Šport"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "Emulator"
-#~ msgstr "Posnemovalnik"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "File Manager"
-#~ msgstr "Upravljalnik datotek"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "File Tools"
-#~ msgstr "Datotečna orodja"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "Monitor"
-#~ msgstr "Zaslon"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "Security"
-#~ msgstr "Varnost"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "Terminal Emulator"
-#~ msgstr "Posnemovalnik terminala"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Accessibility"
-#~ msgstr "Dostopnost"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Archiving"
-#~ msgstr "Arhiviranje"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Calculator"
-#~ msgstr "Računalo"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Clock"
-#~ msgstr "Ura"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Compression"
-#~ msgstr "Stiskanje"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "File Tools"
-#~ msgstr "Datotečna orodja"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Maps"
-#~ msgstr "Zemljevidi"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Spirituality"
-#~ msgstr "Duhovnost"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Telephony Tools"
-#~ msgstr "Telefonska orodja"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Text Editor"
-#~ msgstr "Urejevalnik besedil"
-
-#~ msgid "Video"
-#~ msgstr "Video"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Editing"
-#~ msgstr "Montaža"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Database"
-#~ msgstr "Podatkovna zbirka"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Disc Burning"
-#~ msgstr "Zapisovanje diska"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Players"
-#~ msgstr "Predvajalniki"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Recorders"
-#~ msgstr "Snemalniki"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "TV"
-#~ msgstr "TV"
-
-#~ msgctxt "Menu subcategory of Add-ons"
-#~ msgid "Fonts"
-#~ msgstr "Pisave"
-
-#~ msgctxt "Menu subcategory of Add-ons"
-#~ msgid "Codecs"
-#~ msgstr "Kodeki"
-
-#~ msgctxt "Menu subcategory of Add-ons"
-#~ msgid "Input Sources"
-#~ msgstr "Vhodni viri"
-
-#~ msgctxt "Menu subcategory of Add-ons"
-#~ msgid "Language Packs"
-#~ msgstr "Jezikovni paketi"
-
-#~ msgctxt "Menu subcategory of Add-ons"
-#~ msgid "Shell Extensions"
-#~ msgstr "Razširitve lupine"
-
-#~ msgctxt "Menu subcategory of Add-ons"
-#~ msgid "Localization"
-#~ msgstr "Jezikovno prilagajanje"
-
-#~ msgid "A previous update was unfinished."
-#~ msgstr "Predhodna posodobitev ni bila uspešno končana."
-
-#~ msgid ""
-#~ "The update couldn’t be installed; this is often a problem with the update "
-#~ "itself. Please wait for another update and try again."
-#~ msgstr ""
-#~ "Posodobitve ni mogoče namestiti; najverjetneje je težava v sami "
-#~ "posodobitvi. Počakajte na naslednjo posodobitev in poskusite znova."
-
-#~ msgid "Internet Only Application"
-#~ msgstr "Le spletni programi"
-
-#~ msgid "Review"
-#~ msgstr "Ocena"
-
-#~ msgid "No AppStream data found"
-#~ msgstr "Ni najdenih podatkov AppStream"
-
-#~ msgid "An update was not signed in the correct way."
-#~ msgstr "Paketi posodobitve niso podpisani na ustrezen način."
-
-#~ msgid "The update could not be completed."
-#~ msgstr "Posodobitve ni mogoče končati."
-
-#~ msgid "An offline update was requested but no packages required updating."
-#~ msgstr ""
-#~ "Zahtevana je posodobitev brez povezave, vendar ni paketov za posodobitev."
-
-#~ msgid "No space was left on the drive."
-#~ msgstr "Ni več prostora na pogonu."
-
-#~ msgid "An update failed to install correctly."
-#~ msgstr "Namestitev posodobitve je spodletela."
-
-#~ msgid "The offline update failed in an unexpected way."
-#~ msgstr "Posodobitev brez povezave je spodletela na nepričakovan način."
-
-#~ msgid "No addon fonts are available for %s support."
-#~ msgstr "Za podporo %s ni na voljo dodatnih pisav."
-
-#~ msgid "No sources found."
-#~ msgstr "Ni najdenih virov"
