@@ -486,36 +486,185 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+typedef struct {
+	/* Input data. */
+	guint n_apps;
+	GsPluginProgressCallback progress_callback;
+	gpointer progress_user_data;
+
+	/* In-progress data. */
+	guint n_pending_ops;
+	GError *saved_error;  /* (owned) (nullable) */
+
+	/* For progress reporting. */
+	guint n_installs_started;
+} InstallAppsData;
+
+static void
+install_apps_data_free (InstallAppsData *data)
+{
+	/* Error should have been propagated by now, and all pending ops completed. */
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (InstallAppsData, install_apps_data_free)
+
+typedef struct {
+	GTask *task;  /* (owned) */
+	GsApp *app;  /* (owned) */
+} InstallSingleAppData;
+
+static void
+install_single_app_data_free (InstallSingleAppData *data)
+{
+	g_clear_object (&data->app);
+	g_clear_object (&data->task);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (InstallSingleAppData, install_single_app_data_free)
+
+static void install_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data);
+static void finish_install_apps_op (GTask  *task,
+                                    GError *error);
+
+static void
+gs_plugin_dummy_install_apps_async (GsPlugin                           *plugin,
+                                    GsAppList                          *apps,
+                                    GsPluginInstallAppsFlags            flags,
+                                    GsPluginProgressCallback            progress_callback,
+                                    gpointer                            progress_user_data,
+                                    GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                    gpointer                            app_needs_user_action_data,
+                                    GCancellable                       *cancellable,
+                                    GAsyncReadyCallback                 callback,
+                                    gpointer                            user_data)
 {
 	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
+	g_autoptr(GTask) task = NULL;
+	InstallAppsData *data;
+	g_autoptr(InstallAppsData) data_owned = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_install_apps_async);
 
-	/* install app */
-	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
+	data = data_owned = g_new0 (InstallAppsData, 1);
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	data->n_apps = gs_app_list_length (apps);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) install_apps_data_free);
+
+	/* Start a load of operations in parallel to install the apps.
+	 *
+	 * When all installs are finished for all apps, finish_install_apps_op()
+	 * will return success/error for the overall #GTask. */
+	data->n_pending_ops = 1;
+	data->n_installs_started = 0;
+
+	for (guint i = 0; i < data->n_apps; i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+		g_autoptr(InstallSingleAppData) app_data = NULL;
+
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+
+		if (!g_str_equal (gs_app_get_id (app), "chiron.desktop") &&
+		    !g_str_equal (gs_app_get_id (app), "zeus.desktop"))
+			continue;
+
+		app_data = g_new0 (InstallSingleAppData, 1);
+		app_data->task = g_object_ref (task);
+		app_data->app = g_object_ref (app);
+
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		if (!gs_plugin_dummy_delay (plugin, app, 500, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
+		data->n_pending_ops++;
+		data->n_installs_started++;
+		gs_plugin_dummy_delay_async (GS_PLUGIN (self),
+					     app,
+					     500  /* ms */,
+					     cancellable,
+					     install_cb,
+					     g_steal_pointer (&app_data));
 	}
+
+	finish_install_apps_op (task, NULL);
+}
+
+static void
+install_cb (GObject      *source_object,
+            GAsyncResult *result,
+            gpointer      user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	g_autoptr(InstallSingleAppData) app_data = g_steal_pointer (&user_data);
+	GTask *task = app_data->task;
+	GsPluginDummy *self = g_task_get_source_object (task);
+	InstallAppsData * data = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (data->progress_callback != NULL) {
+		data->progress_callback (plugin,
+					 (data->n_installs_started - data->n_pending_ops + 1) * 100 / data->n_installs_started,
+					 data->progress_user_data);
+	}
+
+	if (!gs_plugin_dummy_delay_finish (plugin, result, &local_error)) {
+		gs_app_set_state_recover (app_data->app);
+		finish_install_apps_op (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	gs_app_set_state (app_data->app, GS_APP_STATE_INSTALLED);
 
 	/* keep track */
 	g_hash_table_insert (self->installed_apps,
-			     g_strdup (gs_app_get_id (app)),
+			     g_strdup (gs_app_get_id (app_data->app)),
 			     GUINT_TO_POINTER (1));
-	g_hash_table_remove (self->available_apps, gs_app_get_id (app));
+	g_hash_table_remove (self->available_apps, gs_app_get_id (app_data->app));
 
-	return TRUE;
+	finish_install_apps_op (task, NULL);
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_install_apps_op (GTask  *task,
+                        GError *error)
+{
+	InstallAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while installing apps: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops > 0)
+		return;
+
+	/* Get the results of the parallel ops. */
+	if (data->saved_error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->saved_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_dummy_install_apps_finish (GsPlugin      *plugin,
+                                     GAsyncResult  *result,
+                                     GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -1161,6 +1310,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->refresh_metadata_finish = gs_plugin_dummy_refresh_metadata_finish;
 	plugin_class->list_distro_upgrades_async = gs_plugin_dummy_list_distro_upgrades_async;
 	plugin_class->list_distro_upgrades_finish = gs_plugin_dummy_list_distro_upgrades_finish;
+	plugin_class->install_apps_async = gs_plugin_dummy_install_apps_async;
+	plugin_class->install_apps_finish = gs_plugin_dummy_install_apps_finish;
 	plugin_class->update_apps_async = gs_plugin_dummy_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_dummy_update_apps_finish;
 }
