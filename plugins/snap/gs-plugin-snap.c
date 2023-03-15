@@ -1657,53 +1657,322 @@ progress_cb (SnapdClient *client, SnapdChange *change, gpointer deprecated, gpoi
 	gs_app_set_progress (app, (guint) (100 * done / total));
 }
 
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+typedef struct {
+	/* Input data. */
+	GsPluginInstallAppsFlags flags;
+	GsPluginProgressCallback progress_callback;
+	gpointer progress_user_data;
+
+	/* In-progress data. */
+	guint n_pending_ops;
+	GError *saved_error;  /* (owned) (nullable) */
+
+	/* For progress reporting. */
+	guint n_installs_started;
+} InstallAppsData;
+
+static void
+install_apps_data_free (InstallAppsData *data)
+{
+	/* Error should have been propagated by now, and all pending ops completed. */
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (InstallAppsData, install_apps_data_free)
+
+typedef struct {
+	GTask *task;  /* (owned) */
+	GsApp *app;  /* (owned) */
+	gchar *name;  /* (owned) (not nullable) */
+	gchar *channel;  /* (owned) (not nullable) */
+} InstallSingleAppData;
+
+static void
+install_single_app_data_free (InstallSingleAppData *data)
+{
+	g_clear_object (&data->app);
+	g_clear_object (&data->task);
+	g_free (data->name);
+	g_free (data->channel);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (InstallSingleAppData, install_single_app_data_free)
+
+static void install_progress_cb (SnapdClient *client,
+                                 SnapdChange *change,
+                                 gpointer     deprecated,
+                                 gpointer     user_data);
+static void install_app_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            gpointer      user_data);
+static void install_refresh_app_cb (GObject      *source_object,
+                                    GAsyncResult *result,
+                                    gpointer      user_data);
+static void finish_install_apps_op (GTask  *task,
+                                    GError *error);
+
+static void
+gs_plugin_snap_install_apps_async (GsPlugin                           *plugin,
+                                   GsAppList                          *apps,
+                                   GsPluginInstallAppsFlags            flags,
+                                   GsPluginProgressCallback            progress_callback,
+                                   gpointer                            progress_user_data,
+                                   GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                   gpointer                            app_needs_user_action_data,
+                                   GCancellable                       *cancellable,
+                                   GAsyncReadyCallback                 callback,
+                                   gpointer                            user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
+	g_autoptr(GTask) task = NULL;
+	InstallAppsData *data;
+	g_autoptr(InstallAppsData) data_owned = NULL;
+	gboolean interactive = flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE;
 	g_autoptr(SnapdClient) client = NULL;
-	const gchar *name, *channel;
-	SnapdInstallFlags flags = SNAPD_INSTALL_FLAGS_NONE;
-	gboolean result;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	/* We can only install apps we know of */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_install_apps_async);
 
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
+	data = data_owned = g_new0 (InstallAppsData, 1);
+	data->flags = flags;
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) install_apps_data_free);
 
-	name = gs_app_get_metadata_item (app, "snap::name");
-	channel = gs_app_get_branch (app);
+	if (flags & (GS_PLUGIN_INSTALL_APPS_FLAGS_NO_DOWNLOAD | GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY)) {
+		/* snap only seems to support downloading and applying installs
+		 * at the same time, rather than pre-downloading them and
+		 * applying them separately. */
+		g_autoptr(GsPluginEvent) event = NULL;
 
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+		g_set_error_literal (&local_error, G_IO_ERROR,
+				     G_IO_ERROR_NOT_SUPPORTED,
+				     "snap doesn’t support split download/apply");
 
-	if (g_strcmp0 (gs_app_get_metadata_item (app, "snap::confinement"), "classic") == 0)
-		flags |= SNAPD_INSTALL_FLAGS_CLASSIC;
-	result = snapd_client_install2_sync (client, flags, name, channel, NULL, progress_cb, app, cancellable, &error_local);
+		event = gs_plugin_event_new ("error", local_error,
+					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+		g_clear_error (&local_error);
+
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	client = get_client (self, interactive, &local_error);
+	if (client == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Start a load of operations in parallel to install the apps.
+	 *
+	 * When all installs are finished for all apps, finish_install_apps_op()
+	 * will return success/error for the overall #GTask. */
+	data->n_pending_ops = 1;
+	data->n_installs_started = 0;
+
+	for (guint i = 0; i < gs_app_list_length (apps); i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+		g_autoptr(InstallSingleAppData) app_data = NULL;
+		const gchar *name, *channel;
+		SnapdInstallFlags install_flags = SNAPD_INSTALL_FLAGS_NONE;
+
+		/* We can only install apps we know of */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+
+		name = gs_app_get_metadata_item (app, "snap::name");
+		channel = gs_app_get_branch (app);
+
+		app_data = g_new0 (InstallSingleAppData, 1);
+		app_data->task = g_object_ref (task);
+		app_data->app = g_object_ref (app);
+		app_data->name = g_strdup (name);
+		app_data->channel = g_strdup (channel);
+
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+
+		if (g_strcmp0 (gs_app_get_metadata_item (app, "snap::confinement"), "classic") == 0)
+			install_flags |= SNAPD_INSTALL_FLAGS_CLASSIC;
+
+		data->n_pending_ops++;
+		data->n_installs_started++;
+		snapd_client_install2_async (client,
+					     install_flags,
+					     name,
+					     channel,
+					     NULL  /* revision */,
+					     install_progress_cb,
+					     app_data,
+					     cancellable,
+					     install_app_cb,
+					     app_data  /* steal ownership */);
+		app_data = NULL;
+	}
+
+	finish_install_apps_op (task, NULL);
+}
+
+static void
+install_progress_cb (SnapdClient *client,
+                     SnapdChange *change,
+                     gpointer     deprecated,
+                     gpointer     user_data)
+{
+	InstallSingleAppData *app_data = user_data;
+	GTask *task = app_data->task;
+	GsPluginSnap *self = g_task_get_source_object (task);
+	InstallAppsData *data = g_task_get_task_data (task);
+	GPtrArray *tasks;
+	gint64 done = 0, total = 0;
+	guint percentage;
+
+	tasks = snapd_change_get_tasks (change);
+	for (guint i = 0; i < tasks->len; i++) {
+		SnapdTask *snap_task = tasks->pdata[i];
+
+		done += snapd_task_get_progress_done (snap_task);
+		total += snapd_task_get_progress_total (snap_task);
+	}
+
+	if (total > 0)
+		percentage = (guint) (100 * done / total);
+	else
+		percentage = GS_APP_PROGRESS_UNKNOWN;
+	gs_app_set_progress (app_data->app, percentage);
+
+	/* Basic progress reporting for the whole operation. If there’s more
+	 * than one app being installed, it reports the number of completed
+	 * installs. If there’s only one, it reports the same percentage as
+	 * above. */
+	if (data->progress_callback != NULL) {
+		guint overall_percentage;
+
+		if (data->n_installs_started <= 1)
+			overall_percentage = percentage;
+		else
+			overall_percentage = (100 * (data->n_installs_started - data->n_pending_ops)) / data->n_installs_started;
+
+		data->progress_callback (GS_PLUGIN (self), overall_percentage, data->progress_user_data);
+	}
+}
+
+static void
+install_app_cb (GObject      *source_object,
+                GAsyncResult *result,
+                gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(InstallSingleAppData) app_data = g_steal_pointer (&user_data);
+	GTask *task = app_data->task;
+	GsPluginSnap *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	InstallAppsData *data = g_task_get_task_data (task);
+	gboolean interactive = (data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
+
+	snapd_client_install2_finish (client, result, &local_error);
 
 	/* if already installed then just try to switch channel */
-	if (!result && g_error_matches (error_local, SNAPD_ERROR, SNAPD_ERROR_ALREADY_INSTALLED)) {
-		g_clear_error (&error_local);
-		result = snapd_client_refresh_sync (client, name, channel, progress_cb, app, cancellable, &error_local);
+	if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_ALREADY_INSTALLED)) {
+		g_clear_error (&local_error);
+		snapd_client_refresh_async (client,
+					    app_data->name,
+					    app_data->channel,
+					    install_progress_cb,
+					    app_data,
+					    cancellable,
+					    install_refresh_app_cb,
+					    app_data  /* steals ownership */);
+		app_data = NULL;
+		return;
+	} else if (local_error != NULL) {
+		g_autoptr(GsPluginEvent) event = NULL;
+
+		gs_app_set_state_recover (app_data->app);
+		snapd_error_convert (&local_error);
+
+		event = gs_plugin_event_new ("error", local_error,
+					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+		g_clear_error (&local_error);
+
+		finish_install_apps_op (task, g_steal_pointer (&local_error));
+		return;
 	}
 
-	if (!result) {
-		gs_app_set_state_recover (app);
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		snapd_error_convert (error);
-		return FALSE;
+	/* Installed! */
+	gs_app_set_state (app_data->app, GS_APP_STATE_INSTALLED);
+
+	finish_install_apps_op (task, NULL);
+}
+
+static void
+install_refresh_app_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(InstallSingleAppData) app_data = g_steal_pointer (&user_data);
+	GTask *task = app_data->task;
+	g_autoptr(GError) local_error = NULL;
+
+	if (!snapd_client_refresh_finish (client, result, &local_error)) {
+		gs_app_set_state_recover (app_data->app);
+		snapd_error_convert (&local_error);
+		finish_install_apps_op (task, g_steal_pointer (&local_error));
+		return;
 	}
 
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	/* Installed! */
+	gs_app_set_state (app_data->app, GS_APP_STATE_INSTALLED);
 
-	return TRUE;
+	finish_install_apps_op (task, NULL);
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_install_apps_op (GTask  *task,
+                        GError *error)
+{
+	InstallAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while installing apps: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops > 0)
+		return;
+
+	/* Get the results of the parallel ops. */
+	if (data->saved_error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->saved_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_snap_install_apps_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 // Check if an app is graphical by checking if it uses a known GUI interface.
@@ -2066,6 +2335,8 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	plugin_class->refine_finish = gs_plugin_snap_refine_finish;
 	plugin_class->list_apps_async = gs_plugin_snap_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_snap_list_apps_finish;
+	plugin_class->install_apps_async = gs_plugin_snap_install_apps_async;
+	plugin_class->install_apps_finish = gs_plugin_snap_install_apps_finish;
 	plugin_class->update_apps_async = gs_plugin_snap_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_snap_update_apps_finish;
 }
