@@ -49,7 +49,7 @@ appstreamcli metainfo-to-news ./data/metainfo/org.gnome.Software.metainfo.xml.in
 Commit the release:
 ```
 git add -p
-git commit -m "Release version ${new_version}"
+git commit -S -m "Release version ${new_version}"
 ```
 
 Build the release tarball:
