@@ -1,3 +1,9 @@
+Firstly, please search to see if someone has already reported the same issue as you:
+https://gitlab.gnome.org/GNOME/gnome-software/-/issues/?state=all
+
+If nobody has reported this issue yet, please provide the details below.
+
+
 Please describe the issue you’re experiencing:
 …
 
