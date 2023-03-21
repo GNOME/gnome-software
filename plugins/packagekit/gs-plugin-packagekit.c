@@ -89,6 +89,15 @@ static void gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self
 static gboolean gs_plugin_packagekit_refine_history_finish (GsPluginPackagekit  *self,
                                                             GAsyncResult        *result,
                                                             GError             **error);
+static void gs_plugin_packagekit_enable_repository_async (GsPlugin                      *plugin,
+                                                          GsApp                         *repository,
+                                                          GsPluginManageRepositoryFlags  flags,
+                                                          GCancellable                  *cancellable,
+                                                          GAsyncReadyCallback            callback,
+                                                          gpointer                       user_data);
+static gboolean gs_plugin_packagekit_enable_repository_finish (GsPlugin      *plugin,
+                                                               GAsyncResult  *result,
+                                                               GError       **error);
 static void gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
                                                    const gchar *key,
                                                    gpointer     user_data);
@@ -367,18 +376,15 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_app_origin_repo_enable (GsPluginPackagekit  *self,
-                                  PkTask              *task_enable_repo,
-                                  GsApp               *app,
-                                  GCancellable        *cancellable,
-                                  GError             **error)
+static GsApp *
+gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
+                                          GsApp               *app,
+                                          GError             **error)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsApp) repo_app = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(PkError) error_code = NULL;
 	const gchar *repo_id;
 
 	repo_id = gs_app_get_origin (app);
@@ -387,39 +393,31 @@ gs_plugin_app_origin_repo_enable (GsPluginPackagekit  *self,
 		                     GS_PLUGIN_ERROR,
 		                     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 		                     "origin not set");
-		return FALSE;
+		return NULL;
 	}
 
-	/* do sync call */
-	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
-	results = pk_client_repo_enable (PK_CLIENT (task_enable_repo),
-	                                 repo_id,
-	                                 TRUE,
-	                                 cancellable,
-	                                 gs_packagekit_helper_cb, helper,
-	                                 error);
-
-	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
-	if (results != NULL &&
-	    (error_code = pk_results_get_error_code (results)) != NULL &&
-	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
-		g_clear_error (error);
-	} else if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-		gs_utils_error_add_origin_id (error, app);
-		return FALSE;
+	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+	repo_app = g_hash_table_lookup (self->cached_sources, repo_id);
+	if (repo_app != NULL) {
+		g_object_ref (repo_app);
+	} else {
+		repo_app = gs_app_new (repo_id);
+		gs_app_set_management_plugin (repo_app, plugin);
+		gs_app_set_kind (repo_app, AS_COMPONENT_KIND_REPOSITORY);
+		gs_app_set_bundle_kind (repo_app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (repo_app, AS_COMPONENT_SCOPE_SYSTEM);
+		gs_app_add_quirk (repo_app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+		gs_plugin_packagekit_set_packaging_format (plugin, repo_app);
 	}
 
-	/* now that the repo is enabled, the app (not the repo!) moves from
-	 * UNAVAILABLE state to AVAILABLE */
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	g_clear_pointer (&locker, g_mutex_locker_free);
 
-	/* Construct a simple fake GsApp for the repository, used only by the signal handler */
-	repo_app = gs_app_new (repo_id);
-	gs_app_set_state (repo_app, GS_APP_STATE_INSTALLED);
-	gs_plugin_repository_changed (plugin, repo_app);
-
-	return TRUE;
+	return g_steal_pointer (&repo_app);
 }
+
+static void async_result_cb (GObject      *source_object,
+                             GAsyncResult *result,
+                             gpointer      user_data);
 
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
@@ -438,6 +436,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GPtrArray) array_package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -454,14 +453,34 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	/* Set up a #PkTask to handle the D-Bus calls to packagekitd. */
 	task_install = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, interactive);
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		/* enable the repo where the unavailable app is coming from */
-		if (!gs_plugin_app_origin_repo_enable (self, task_install, app, cancellable, error))
+		g_autoptr(GsApp) repo_app = NULL;
+		g_autoptr(GMainContext) context = g_main_context_new ();
+		g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
+		g_autoptr(GAsyncResult) result = NULL;
+
+		repo_app = gs_plugin_packagekit_dup_app_origin_repo (self, app, error);
+		if (repo_app == NULL)
 			return FALSE;
 
+		gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
+		gs_plugin_packagekit_enable_repository_async (plugin, repo_app,
+							      interactive ? GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE : GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_NONE,
+							      cancellable, async_result_cb, &result);
+
+		while (result == NULL)
+			g_main_context_iteration (NULL, TRUE);
+
+		if (!gs_plugin_packagekit_enable_repository_finish (plugin, result, error))
+			return FALSE;
+
+		/* now that the repo is enabled, the app (not the repo!) moves from
+		 * UNAVAILABLE state to AVAILABLE */
 		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+		gs_plugin_repository_changed (GS_PLUGIN (self), repo_app);
 
 		/* FIXME: this is a hack, to allow PK time to re-initialize
 		 * everything in order to match an actual result. The root cause
