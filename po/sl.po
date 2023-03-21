@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-03-14 12:39+0000\n"
-"PO-Revision-Date: 2023-03-20 23:23+0100\n"
+"POT-Creation-Date: 2023-03-20 22:23+0000\n"
+"PO-Revision-Date: 2023-03-21 08:15+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -32,7 +32,6 @@ msgid "Install and update apps"
 msgstr "Namesti in posodobi programe"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
-#, fuzzy
 msgid ""
 "Software allows you to find and install new apps and system extensions and "
 "remove existing installed apps."
@@ -74,7 +73,7 @@ msgstr "Okno posodobitev"
 msgid "The update details"
 msgstr "Podrobnosti posodobitve"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2200
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2222
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
@@ -296,7 +295,6 @@ msgstr ""
 "$XDG_DATA_HOME/swcatalog/xml."
 
 #: data/org.gnome.software.gschema.xml:135
-#, fuzzy
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
@@ -5262,14 +5260,14 @@ msgstr ""
 #: plugins/fwupd/gs-fwupd-app.c:66
 #, fuzzy
 msgid "System power is too low to perform the update"
-msgstr "Sistemska moč je prenizka za izvedbo posodobitve"
+msgstr "Moč baterije je prenizka za izvedbo posodobitve"
 
 #. TRANSLATORS: as in laptop battery power
 #: plugins/fwupd/gs-fwupd-app.c:70
 #, fuzzy, c-format
 msgid "System power is too low to perform the update (%u%%, requires %u%%)"
 msgstr ""
-"Sistemska moč je prenizka za izvedbo posodobitve (%u %%, potrebuje %u %%)"
+"Moč baterije je prenizka za izvedbo posodobitve (%u %%, potrebuje %u %%)"
 
 #. TRANSLATORS: for example, a Bluetooth mouse that is in powersave mode
 #: plugins/fwupd/gs-fwupd-app.c:76
@@ -5295,9 +5293,8 @@ msgstr "Naprava čaka na uveljavitev posodobitve"
 
 #. TRANSLATORS: as in, wired mains power for a laptop
 #: plugins/fwupd/gs-fwupd-app.c:95
-#, fuzzy
 msgid "Device requires AC power to be connected"
-msgstr "Naprava mora biti priključena na izmenično napajanje"
+msgstr "Naprava mora biti priključena na el. omrežje"
 
 #. TRANSLATORS: lid means "laptop top cover"
 #: plugins/fwupd/gs-fwupd-app.c:99
@@ -5476,7 +5473,7 @@ msgstr "Posodobitev modula GPU %s"
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
 #: plugins/fwupd/gs-fwupd-app.c:338
-#, fuzzy, c-format
+#, c-format
 msgid "%s Dock Update"
 msgstr "Posodobitev pogona %s"
 
