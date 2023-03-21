@@ -457,53 +457,16 @@ gs_plugin_app_install (GsPlugin *plugin,
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
-		/* get everything up front we need */
-		source_ids = gs_app_get_source_ids (app);
-		if (source_ids->len == 0) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "installing not available");
-			return FALSE;
-		}
-		package_ids = g_new0 (gchar *, 2);
-		package_ids[0] = g_strdup (g_ptr_array_index (source_ids, 0));
-
 		/* enable the repo where the unavailable app is coming from */
 		if (!gs_plugin_app_origin_repo_enable (self, task_install, app, cancellable, error))
 			return FALSE;
 
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 
 		/* FIXME: this is a hack, to allow PK time to re-initialize
 		 * everything in order to match an actual result. The root cause
 		 * is probably some kind of hard-to-debug race in the daemon. */
 		g_usleep (G_USEC_PER_SEC * 3);
-
-		/* actually install the package */
-		gs_packagekit_helper_add_app (helper, app);
-
-		results = pk_task_install_packages_sync (task_install,
-							 package_ids,
-							 cancellable,
-							 gs_packagekit_helper_cb, helper,
-							 error);
-
-		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-
-		/* state is known */
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-		/* if we remove the app again later, we should be able to
-		 * cancel the installation if we'd never installed it */
-		gs_app_set_allow_cancel (app, TRUE);
-
-		/* no longer valid */
-		gs_app_clear_source_ids (app);
-		return TRUE;
 	}
 
 	/* get the list of available package ids to install */
