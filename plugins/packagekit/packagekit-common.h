@@ -21,8 +21,10 @@ gboolean	gs_plugin_packagekit_add_results		(GsPlugin	*plugin,
 								 GsAppList	*list,
 								 PkResults	*results,
 								 GError		**error);
-gboolean	gs_plugin_packagekit_error_convert		(GError		**error);
+gboolean	gs_plugin_packagekit_error_convert		(GError		**error,
+								 GCancellable	*check_cancellable);
 gboolean	gs_plugin_packagekit_results_valid		(PkResults	*results,
+								 GCancellable	*check_cancellable,
 								 GError		**error);
 void		gs_plugin_packagekit_resolve_packages_app	(GsPlugin *plugin,
 								 GPtrArray *packages,

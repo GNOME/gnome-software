@@ -70,7 +70,8 @@ packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 }
 
 gboolean
-gs_plugin_packagekit_error_convert (GError **error)
+gs_plugin_packagekit_error_convert (GError **error,
+				    GCancellable *check_cancellable)
 {
 	GError *error_tmp;
 
@@ -96,6 +97,12 @@ gs_plugin_packagekit_error_convert (GError **error)
 	/* get a local version */
 	if (error_tmp->domain != PK_CLIENT_ERROR)
 		return FALSE;
+
+	if (g_cancellable_is_cancelled (check_cancellable)) {
+		error_tmp->domain = GS_PLUGIN_ERROR;
+		error_tmp->code = GS_PLUGIN_ERROR_CANCELLED;
+		return TRUE;
+	}
 
 	/* daemon errors */
 	if (error_tmp->code <= 0xff) {
@@ -173,13 +180,15 @@ gs_plugin_packagekit_error_convert (GError **error)
 }
 
 gboolean
-gs_plugin_packagekit_results_valid (PkResults *results, GError **error)
+gs_plugin_packagekit_results_valid (PkResults *results,
+				    GCancellable *check_cancellable,
+				    GError **error)
 {
 	g_autoptr(PkError) error_code = NULL;
 
 	/* method failed? */
 	if (results == NULL) {
-		gs_plugin_packagekit_error_convert (error);
+		gs_plugin_packagekit_error_convert (error, check_cancellable);
 		return FALSE;
 	}
 
@@ -190,7 +199,7 @@ gs_plugin_packagekit_results_valid (PkResults *results, GError **error)
 				     PK_CLIENT_ERROR,
 				     pk_error_get_code (error_code),
 				     pk_error_get_details (error_code));
-		gs_plugin_packagekit_error_convert (error);
+		gs_plugin_packagekit_error_convert (error, check_cancellable);
 		return FALSE;
 	}
 
