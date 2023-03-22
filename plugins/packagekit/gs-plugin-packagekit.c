@@ -319,7 +319,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 					   gs_packagekit_helper_cb, helper,
 					   error);
 
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 		g_prefix_error (error, "failed to get sources related: ");
 		return FALSE;
 	}
@@ -385,7 +385,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 					   gs_packagekit_helper_cb, helper,
 					   error);
 
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, error))
 		return FALSE;
 	locker = g_mutex_locker_new (&self->cached_sources_mutex);
 	if (self->cached_sources == NULL)
@@ -467,7 +467,7 @@ gs_plugin_app_origin_repo_enable (GsPluginPackagekit  *self,
 	    (error_code = pk_results_get_error_code (results)) != NULL &&
 	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
 		g_clear_error (error);
-	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
+	} else if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
 	}
@@ -552,7 +552,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 gs_packagekit_helper_cb, helper,
 							 error);
 
-		if (!gs_plugin_packagekit_results_valid (results, error)) {
+		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
@@ -621,7 +621,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 gs_packagekit_helper_cb, helper,
 							 error);
 
-		if (!gs_plugin_packagekit_results_valid (results, error)) {
+		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 			for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 				GsApp *addon = gs_app_list_index (addons, i);
 				if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING)
@@ -662,7 +662,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 						      gs_packagekit_helper_cb, helper,
 						      error);
 
-		if (!gs_plugin_packagekit_results_valid (results, error)) {
+		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
@@ -750,7 +750,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 						gs_packagekit_helper_cb, helper,
 						error);
 
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -828,7 +828,7 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 					 gs_packagekit_helper_cb, helper,
 					 error);
 
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, error))
 		return FALSE;
 
 	/* add results */
@@ -947,7 +947,7 @@ list_apps_cb (GObject      *source_object,
 
 	results = pk_client_generic_finish (client, result, &local_error);
 
-	if (!gs_plugin_packagekit_results_valid (results, &local_error) ||
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error) ||
 	    !gs_plugin_packagekit_add_results (plugin, list, results, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	} else {
@@ -1113,7 +1113,7 @@ resolve_packages_with_filter_cb (GObject      *source_object,
 
 	results = pk_client_generic_finish (client, result, &local_error);
 
-	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
 		g_prefix_error (&local_error, "failed to resolve package_ids: ");
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
@@ -1264,6 +1264,7 @@ gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
 
 static gboolean
 gs_plugin_systemd_update_cache (GsPluginPackagekit  *self,
+				GCancellable	    *cancellable,
                                 GError             **error)
 {
 	g_autoptr(GError) error_local = NULL;
@@ -1282,7 +1283,7 @@ gs_plugin_systemd_update_cache (GsPluginPackagekit  *self,
 				     PK_OFFLINE_ERROR_NO_DATA)) {
 			return TRUE;
 		}
-		gs_plugin_packagekit_error_convert (&error_local);
+		gs_plugin_packagekit_error_convert (&error_local, cancellable);
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_INVALID_FORMAT,
@@ -1538,7 +1539,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	/* re-read /var/lib/PackageKit/prepared-update so we know what packages
 	 * to mark as already downloaded and prepared for offline updates */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) &&
-	    !gs_plugin_systemd_update_cache (self, &local_error)) {
+	    !gs_plugin_systemd_update_cache (self, cancellable, &local_error)) {
 		refine_task_complete_operation_with_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -1792,7 +1793,7 @@ upgrade_system_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	results = pk_client_generic_finish (client, result, &local_error);
-	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (refine_task), &local_error)) {
 		g_prefix_error (&local_error, "failed to refine distro upgrade: ");
 		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
 		return;
@@ -1904,7 +1905,7 @@ search_files_cb (GObject      *source_object,
 
 	results = pk_client_generic_finish (client, result, &local_error);
 
-	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (refine_task), &local_error)) {
 		g_prefix_error (&local_error, "failed to search file %s: ", search_files_data->filename);
 		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
 		return;
@@ -1937,7 +1938,7 @@ get_update_detail_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	results = pk_client_generic_finish (client, result, &local_error);
-	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (refine_task), &local_error)) {
 		g_prefix_error (&local_error, "failed to get update details: ");
 		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
 		return;
@@ -1986,7 +1987,7 @@ get_details_cb (GObject      *source_object,
 
 	results = pk_client_generic_finish (client, result, &local_error);
 
-	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (refine_task), &local_error)) {
 		g_autoptr(GPtrArray) package_ids = app_list_get_package_ids (data->details_list, NULL, FALSE);
 		g_autofree gchar *package_ids_str = NULL;
 		/* NULL-terminate the array */
@@ -2032,7 +2033,7 @@ get_updates_cb (GObject      *source_object,
 
 	results = pk_client_generic_finish (client, result, &local_error);
 
-	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (refine_task), &local_error)) {
 		g_prefix_error (&local_error, "failed to get updates for urgency: ");
 		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
 		return;
@@ -2210,7 +2211,7 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 	}
 
 	/* Ignore errors here */
-	gs_plugin_systemd_update_cache (self, NULL);
+	gs_plugin_systemd_update_cache (self, cancellable, NULL);
 
 	g_task_return_boolean (task, TRUE);
 }
@@ -2292,7 +2293,7 @@ gs_plugin_packagekit_prepared_update_changed_cb (GFileMonitor      *monitor,
 	}
 
 	/* update UI */
-	gs_plugin_systemd_update_cache (self, NULL);
+	gs_plugin_systemd_update_cache (self, NULL, NULL);
 	gs_plugin_updates_changed (GS_PLUGIN (self));
 }
 
@@ -2412,7 +2413,7 @@ get_offline_update_permission_cb (GObject      *source_object,
 	}
 
 	/* get the list of currently downloaded packages */
-	if (!gs_plugin_systemd_update_cache (self, &local_error))
+	if (!gs_plugin_systemd_update_cache (self, g_task_get_cancellable (task), &local_error))
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	else
 		g_task_return_boolean (task, TRUE);
@@ -2630,7 +2631,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPluginPackagekit  *self,
 					     gs_packagekit_helper_cb, helper,
 					     error);
 
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
 	}
@@ -2704,7 +2705,7 @@ gs_plugin_packagekit_local_check_installed (GsPluginPackagekit  *self,
 	results = pk_client_resolve (PK_CLIENT (task_local), filter, (gchar **) names,
 				     cancellable, NULL, NULL, error);
 	if (results == NULL) {
-		gs_plugin_packagekit_error_convert (error);
+		gs_plugin_packagekit_error_convert (error, cancellable);
 		return FALSE;
 	}
 	packages = pk_results_get_package_array (results);
@@ -2775,7 +2776,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 					       gs_packagekit_helper_cb, helper,
 					       error);
 
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, error))
 		return FALSE;
 
 	/* get results */
@@ -2929,7 +2930,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 			return TRUE;
 		}
 
-		gs_plugin_packagekit_error_convert (&error_local);
+		gs_plugin_packagekit_error_convert (&error_local, cancellable);
 
 		g_set_error (error,
 		             GS_PLUGIN_ERROR,
@@ -2942,7 +2943,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	/* get the mtime of the results */
 	mtime = pk_offline_get_results_mtime (error);
 	if (mtime == 0) {
-		gs_plugin_packagekit_error_convert (error);
+		gs_plugin_packagekit_error_convert (error, cancellable);
 		return FALSE;
 	}
 
@@ -3069,7 +3070,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 				     gs_packagekit_helper_cb, helper,
 				     error);
 
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 		g_prefix_error (error, "failed to resolve package_ids: ");
 		return FALSE;
 	}
@@ -3444,7 +3445,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 					       gs_packagekit_helper_cb, helper,
 					       error);
 
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -3497,7 +3498,7 @@ gs_plugin_packagekit_enable_repository_ready_cb (GObject *source_object,
 	    (error_code = pk_results_get_error_code (results)) != NULL &&
 	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
 		g_clear_error (&local_error);
-	} else if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, &local_error)) {
+	} else if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
 		gs_app_set_state_recover (data->repository);
 		gs_utils_error_add_origin_id (&local_error, data->repository);
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -3591,7 +3592,7 @@ gs_plugin_packagekit_disable_repository_ready_cb (GObject *source_object,
 	    (error_code = pk_results_get_error_code (results)) != NULL &&
 	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
 		g_clear_error (&local_error);
-	} else if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, &local_error)) {
+	} else if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
 		gs_app_set_state_recover (data->repository);
 		gs_utils_error_add_origin_id (&local_error, data->repository);
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -3818,7 +3819,7 @@ download_get_updates_cb (GObject      *source_object,
 
 	results = pk_client_generic_finish (PK_CLIENT (task_update), result, &local_error);
 
-	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
 		finish_download (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -3864,7 +3865,7 @@ download_update_packages_cb (GObject      *source_object,
 
 	gs_app_list_override_progress (data->progress_list, GS_APP_PROGRESS_UNKNOWN);
 	if (results == NULL) {
-		gs_plugin_packagekit_error_convert (&local_error);
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 		finish_download (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -4050,7 +4051,7 @@ update_apps_trigger_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	if (!g_dbus_connection_call_finish (connection, result, &local_error)) {
-		gs_plugin_packagekit_error_convert (&local_error);
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -4120,7 +4121,7 @@ refresh_metadata_cb (GObject      *source_object,
 
 	results = pk_client_generic_finish (client, result, &local_error);
 
-	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	} else {
 		gs_plugin_updates_changed (plugin);
@@ -4157,7 +4158,7 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 	if (!pk_offline_cancel_with_flags (interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
 					   cancellable,
 					   error)) {
-		gs_plugin_packagekit_error_convert (error);
+		gs_plugin_packagekit_error_convert (error, cancellable);
 		return FALSE;
 	}
 
@@ -4184,7 +4185,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 						    interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
 						    cancellable,
 						    error)) {
-		gs_plugin_packagekit_error_convert (error);
+		gs_plugin_packagekit_error_convert (error, cancellable);
 		return FALSE;
 	}
 	return TRUE;
