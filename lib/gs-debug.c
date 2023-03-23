@@ -150,11 +150,11 @@ gs_log_writer_journald (GLogLevelFlags log_level,
 	case G_LOG_LEVEL_ERROR:
 	case G_LOG_LEVEL_CRITICAL:
 	case G_LOG_LEVEL_WARNING:
-	case G_LOG_LEVEL_INFO:
+	case G_LOG_LEVEL_MESSAGE:
 		/* important enough to force to the journal */
 		return g_log_writer_journald (log_level, fields, n_fields, user_data);
 		break;
-	case G_LOG_LEVEL_MESSAGE:
+	case G_LOG_LEVEL_INFO:
 	case G_LOG_LEVEL_DEBUG:
 		/* Not important enough. */
 	default:
