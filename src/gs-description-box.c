@@ -26,6 +26,10 @@
 
 #define MAX_COLLAPSED_LINES 4
 
+/* How many lines should be hidden at least, to not "save"
+   less space than the button height. */
+#define MIN_HIDDEN_LINES 3
+
 struct _GsDescriptionBox {
 	GtkWidget parent;
 	GtkWidget *box;
@@ -56,6 +60,7 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	GtkAllocation allocation;
 	PangoLayout *layout;
 	gint n_lines;
+	gboolean visible;
 	const gchar *text;
 
 	if (!box->text || !*(box->text)) {
@@ -96,10 +101,11 @@ gs_description_box_update_content (GsDescriptionBox *box)
 
 	layout = gtk_label_get_layout (box->label);
 	n_lines = pango_layout_get_line_count (layout);
+	visible = n_lines > MAX_COLLAPSED_LINES && n_lines - MAX_COLLAPSED_LINES >= MIN_HIDDEN_LINES;
 
-	gtk_widget_set_visible (GTK_WIDGET (box->button), n_lines > MAX_COLLAPSED_LINES);
+	gtk_widget_set_visible (GTK_WIDGET (box->button), visible);
 
-	if (box->is_collapsed && n_lines > MAX_COLLAPSED_LINES) {
+	if (box->is_collapsed && visible) {
 		PangoLayoutLine *line;
 		GString *str;
 		GSList *opened_markup = NULL;
