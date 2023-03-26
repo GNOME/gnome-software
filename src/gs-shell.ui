@@ -9,6 +9,10 @@
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
+      <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+      <attribute name="action">win.show-help-overlay</attribute>
+    </item>
+    <item>
       <attribute name="label" translatable="yes">_Preferences</attribute>
       <attribute name="action">app.prefs</attribute>
     </item>
@@ -41,6 +45,33 @@
           <object class="GtkShortcut">
             <property name="trigger">&lt;Control&gt;comma</property>
             <property name="action">action(app.prefs)</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcut">
+            <property name="trigger">&lt;Control&gt;period</property>
+            <property name="action">action(app.sources)</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcut">
+            <property name="trigger">&lt;Alt&gt;1</property>
+            <property name="action">action(app.set-mode)</property>
+            <property name="arguments">'overview'</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcut">
+            <property name="trigger">&lt;Alt&gt;2</property>
+            <property name="action">action(app.set-mode)</property>
+            <property name="arguments">'installed'</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcut">
+            <property name="trigger">&lt;Alt&gt;3</property>
+            <property name="action">action(app.set-mode)</property>
+            <property name="arguments">'updates'</property>
           </object>
         </child>
       </object>
