@@ -344,10 +344,10 @@ gs_page_notify_quirk_cb (GsApp *app, GParamSpec *pspec, GsPageHelper *helper)
 								    GS_APP_QUIRK_NEEDS_USER_ACTION));
 }
 
-static gboolean update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
-                                                 GsApp                 *app,
-                                                 AsScreenshot          *action_screenshot,
-                                                 gpointer               user_data);
+static void update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
+                                             GsApp                 *app,
+                                             AsScreenshot          *action_screenshot,
+                                             gpointer               user_data);
 
 void
 gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
@@ -383,7 +383,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					    helper);
 }
 
-static gboolean
+static void
 update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
                                  GsApp                 *app,
                                  AsScreenshot          *action_screenshot,
@@ -444,10 +444,6 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_page_update_app_response_cb), new_helper);
 	gs_shell_modal_dialog_present (priv->shell, GTK_WINDOW (dialog));
-
-	/* Cancel the job to allow us to wait for the user to interact with the
-	 * dialogue. It’ll be rescheduled in gs_page_update_app_response_cb() */
-	return FALSE;
 }
 
 static void
