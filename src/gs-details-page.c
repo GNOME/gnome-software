@@ -668,8 +668,12 @@ sort_by_packaging_format_preference (GsApp *app1,
 	index1 = gs_details_page_get_app_packaging_format_preference_index (self, app1);
 	index2 = gs_details_page_get_app_packaging_format_preference_index (self, app2);
 
-	if (index1 == index2)
-		return 0;
+	if (index1 == index2) {
+		g_autofree gchar *a1_origin = gs_app_dup_origin_ui (app1, TRUE);
+		g_autofree gchar *a2_origin = gs_app_dup_origin_ui (app2, TRUE);
+
+		return gs_utils_sort_strcmp (a1_origin, a2_origin);
+	}
 
 	/* Index 0 means unspecified packaging format in the preference array,
 	   thus move these at the end. */
@@ -771,9 +775,8 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		gs_app_get_state (self->app) != GS_APP_STATE_UPDATABLE &&
 		gs_app_get_state (self->app) != GS_APP_STATE_UPDATABLE_LIVE;
 
-	/* Sort the alternates by the user's packaging preferences */
-	if (self->packaging_format_preference != NULL)
-		gs_app_list_sort (list, sort_by_packaging_format_preference, self);
+	/* Sort the alternates by the user's packaging preferences and by origin name */
+	gs_app_list_sort (list, sort_by_packaging_format_preference, self);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -1974,19 +1977,6 @@ gs_details_page_reload (GsPage *page)
 	}
 }
 
-static gint
-origin_popover_list_sort_func (GtkListBoxRow *a,
-                               GtkListBoxRow *b,
-                               gpointer user_data)
-{
-	GsApp *a1 = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (a));
-	GsApp *a2 = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (b));
-	g_autofree gchar *a1_origin = gs_app_dup_origin_ui (a1, TRUE);
-	g_autofree gchar *a2_origin = gs_app_dup_origin_ui (a2, TRUE);
-
-	return gs_utils_sort_strcmp (a1_origin, a2_origin);
-}
-
 static void
 origin_popover_row_activated_cb (GtkListBox *list_box,
                                  GtkListBoxRow *row,
@@ -2307,10 +2297,6 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
 				 G_CALLBACK (gs_details_page_network_available_notify_cb),
 				 self, 0);
-
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->origin_popover_list_box),
-	                            origin_popover_list_sort_func,
-	                            NULL, NULL);
 	return TRUE;
 }
 
