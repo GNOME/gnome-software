@@ -389,21 +389,29 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
                                  AsScreenshot          *action_screenshot,
                                  gpointer               user_data)
 {
-	GsPageHelper *helper = user_data;
+	GsPageHelper *orig_helper = user_data, *new_helper;
 	GtkWidget *dialog;
 	g_autoptr(SoupSession) soup_session = NULL;
 	GtkWidget *ssimg;
 	g_autofree gchar *heading = NULL;
 	g_autofree gchar *escaped = NULL;
-	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+	GsPagePrivate *priv = gs_page_get_instance_private (orig_helper->page);
 
-	g_assert (helper->app == app);
+	g_assert (orig_helper->app == app);
+
+	/* Make a copy of the helper, because the original is freed in gs_page_app_installed_cb()
+	   before this dialog is closed by the user. */
+	new_helper = g_slice_new0 (GsPageHelper);
+	new_helper->app = g_object_ref (orig_helper->app);
+	new_helper->page = g_object_ref (orig_helper->page);
+	new_helper->cancellable = g_object_ref (orig_helper->cancellable);
+	new_helper->propagate_error = orig_helper->propagate_error;
 
 	/* TRANSLATORS: this is a prompt message, and
 	 * '%s' is an app summary, e.g. 'GNOME Clocks' */
-	heading = g_strdup_printf (_("Prepare %s"), gs_app_get_name (helper->app));
+	heading = g_strdup_printf (_("Prepare %s"), gs_app_get_name (orig_helper->app));
 	escaped = g_markup_escape_text (as_screenshot_get_caption (action_screenshot), -1);
-	dialog = adw_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW)),
+	dialog = adw_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (orig_helper->page), GTK_TYPE_WINDOW)),
 					 heading, escaped);
 	adw_message_dialog_set_body_use_markup (ADW_MESSAGE_DIALOG (dialog), TRUE);
 	adw_message_dialog_add_responses (ADW_MESSAGE_DIALOG (dialog),
@@ -413,11 +421,11 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
 					  NULL);
 
 	/* this will be enabled when the device is in the right mode */
-	helper->dialog_install = dialog;
-	helper->notify_quirk_id =
-		g_signal_connect (helper->app, "notify::quirk",
+	new_helper->dialog_install = dialog;
+	new_helper->notify_quirk_id =
+		g_signal_connect (new_helper->app, "notify::quirk",
 				  G_CALLBACK (gs_page_notify_quirk_cb),
-				  helper);
+				  new_helper);
 	adw_message_dialog_set_response_enabled (ADW_MESSAGE_DIALOG (dialog),
 						 "install", FALSE);
 
@@ -427,14 +435,14 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
 	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), action_screenshot);
 	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg),
-					helper->cancellable);
+					new_helper->cancellable);
 	gtk_widget_set_margin_start (ssimg, 24);
 	gtk_widget_set_margin_end (ssimg, 24);
 	adw_message_dialog_set_extra_child (ADW_MESSAGE_DIALOG (dialog), ssimg);
 
 	/* handle this async */
 	g_signal_connect (dialog, "response",
-			  G_CALLBACK (gs_page_update_app_response_cb), helper);
+			  G_CALLBACK (gs_page_update_app_response_cb), new_helper);
 	gs_shell_modal_dialog_present (priv->shell, GTK_WINDOW (dialog));
 
 	/* Cancel the job to allow us to wait for the user to interact with the
