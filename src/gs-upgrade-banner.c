@@ -26,6 +26,7 @@ typedef struct
 	GtkWidget	*button_upgrades_download;
 	GtkWidget	*button_upgrades_install;
 	GtkWidget	*button_upgrades_cancel;
+	GtkWidget	*button_upgrades_install_cancel;
 	GtkWidget	*label_upgrades_summary;
 	GtkWidget	*label_upgrades_title;
 	GtkWidget	*label_download_info;
@@ -101,6 +102,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 	 * AVAILABLE (available to download) to
 	 * INSTALLING (downloading packages for later installation) to
 	 * UPDATABLE (packages are downloaded and upgrade is ready to go)
+	 * PENDING_INSTALL (upgrade is preparing, will ask to reboot when finished)
 	 */
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_AVAILABLE:
@@ -118,6 +120,15 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_set_visible (priv->box_upgrades_download, FALSE);
 		gtk_widget_set_visible (priv->box_upgrades_downloading, FALSE);
 		gtk_widget_set_visible (priv->box_upgrades_install, TRUE);
+		gtk_widget_set_visible (priv->button_upgrades_install, TRUE);
+		gtk_widget_set_visible (priv->button_upgrades_install_cancel, FALSE);
+		break;
+	case GS_APP_STATE_PENDING_INSTALL:
+		gtk_widget_set_visible (priv->box_upgrades_download, FALSE);
+		gtk_widget_set_visible (priv->box_upgrades_downloading, FALSE);
+		gtk_widget_set_visible (priv->box_upgrades_install, TRUE);
+		gtk_widget_set_visible (priv->button_upgrades_install, FALSE);
+		gtk_widget_set_visible (priv->button_upgrades_install_cancel, TRUE);
 		break;
 	default:
 		g_critical ("Unexpected app state ‘%s’ of app ‘%s’",
@@ -316,6 +327,9 @@ gs_upgrade_banner_init (GsUpgradeBanner *self)
 	g_signal_connect (priv->button_upgrades_cancel, "clicked",
 	                  G_CALLBACK (cancel_button_cb),
 	                  self);
+	g_signal_connect (priv->button_upgrades_install_cancel, "clicked",
+	                  G_CALLBACK (cancel_button_cb),
+	                  self);
 }
 
 static void
@@ -356,6 +370,7 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_download);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_install);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_cancel);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_install_cancel);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_summary);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_download_info);
