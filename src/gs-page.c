@@ -425,7 +425,8 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
 				  G_CALLBACK (gs_page_notify_quirk_cb),
 				  new_helper);
 	adw_message_dialog_set_response_enabled (ADW_MESSAGE_DIALOG (dialog),
-						 "install", FALSE);
+						 "install",
+						 !gs_app_has_quirk (new_helper->app, GS_APP_QUIRK_NEEDS_USER_ACTION));
 
 	/* load screenshot */
 	if (as_screenshot_is_valid (action_screenshot)) {
