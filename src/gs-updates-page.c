@@ -998,6 +998,8 @@ upgrade_trigger_finished_cb (GObject *source,
 	GsUpdatesPage *self = (GsUpdatesPage *) user_data;
 	g_autoptr(GError) error = NULL;
 
+	g_clear_object (&self->cancellable_upgrade);
+
 	/* get the results */
 	if (!gs_plugin_loader_job_action_finish (self->plugin_loader, res, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
@@ -1020,12 +1022,15 @@ trigger_upgrade (GsUpdatesPage *self)
 		return;
 	}
 
+	g_clear_object (&self->cancellable_upgrade);
+	self->cancellable_upgrade = g_cancellable_new ();
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 					 "interactive", TRUE,
 					 "app", upgrade,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
+					    self->cancellable_upgrade,
 					    upgrade_trigger_finished_cb,
 					    self);
 }
