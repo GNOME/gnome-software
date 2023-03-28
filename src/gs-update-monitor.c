@@ -957,6 +957,31 @@ check_updates (GsUpdateMonitor *monitor)
 	/* check for language pack */
 	check_language_pack (monitor);
 
+	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
+	last_refreshed = g_date_time_new_from_unix_local (tmp);
+	if (last_refreshed != NULL) {
+		gint now_year, now_month, now_day, now_hour;
+		gint year, month, day;
+		g_autoptr(GDateTime) now = NULL;
+
+		now = g_date_time_new_now_local ();
+
+		g_date_time_get_ymd (now, &now_year, &now_month, &now_day);
+		now_hour = g_date_time_get_hour (now);
+
+		g_date_time_get_ymd (last_refreshed, &year, &month, &day);
+
+		/* check that it is the next day */
+		if (!((now_year > year) ||
+		      (now_year == year && now_month > month) ||
+		      (now_year == year && now_month == month && now_day > day)))
+			return;
+
+		/* ...and past 6am */
+		if (!(now_hour >= 6))
+			return;
+	}
+
 #ifdef HAVE_MOGWAI
 	refresh_on_metered = TRUE;
 #else
@@ -995,31 +1020,6 @@ check_updates (GsUpdateMonitor *monitor)
 		g_debug ("No power profile monitor support, so not doing power profile checks");
 	}
 #endif
-
-	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
-	last_refreshed = g_date_time_new_from_unix_local (tmp);
-	if (last_refreshed != NULL) {
-		gint now_year, now_month, now_day, now_hour;
-		gint year, month, day;
-		g_autoptr(GDateTime) now = NULL;
-
-		now = g_date_time_new_now_local ();
-
-		g_date_time_get_ymd (now, &now_year, &now_month, &now_day);
-		now_hour = g_date_time_get_hour (now);
-
-		g_date_time_get_ymd (last_refreshed, &year, &month, &day);
-
-		/* check that it is the next day */
-		if (!((now_year > year) ||
-		      (now_year == year && now_month > month) ||
-		      (now_year == year && now_month == month && now_day > day)))
-			return;
-
-		/* ...and past 6am */
-		if (!(now_hour >= 6))
-			return;
-	}
 
 	if (!should_download_updates (monitor)) {
 		get_updates (monitor);
