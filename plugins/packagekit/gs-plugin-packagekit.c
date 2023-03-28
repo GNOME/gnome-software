@@ -4197,13 +4197,17 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
+	gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
+
 	if (!pk_offline_trigger_upgrade_with_flags (PK_OFFLINE_ACTION_REBOOT,
 						    interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
 						    cancellable,
 						    error)) {
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		gs_plugin_packagekit_error_convert (error, cancellable);
 		return FALSE;
 	}
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 	return TRUE;
 }
 
