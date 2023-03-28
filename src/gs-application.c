@@ -1112,6 +1112,7 @@ gs_application_startup (GApplication *application)
 	g_application_withdraw_notification (application, "updates-downloaded");
 	g_application_withdraw_notification (application, "updates-installed");
 	g_application_withdraw_notification (application, "upgrades-available");
+	g_application_withdraw_notification (application, "upgrades-downloaded");
 	g_application_withdraw_notification (application, "offline-updates");
 	g_application_withdraw_notification (application, "eol");
 

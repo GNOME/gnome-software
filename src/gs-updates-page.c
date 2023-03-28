@@ -512,16 +512,19 @@ gs_updates_page_get_upgrades_cb (GObject *source_object,
 typedef struct {
 	GsApp		*app; /* (owned) */
 	GsUpdatesPage	*self; /* (owned) */
+	GsPluginJob	*job; /* (owned) */
 } GsPageHelper;
 
 static GsPageHelper *
 gs_page_helper_new (GsUpdatesPage *self,
-		    GsApp	 *app)
+		    GsApp	  *app,
+		    GsPluginJob   *job)
 {
 	GsPageHelper *helper;
 	helper = g_slice_new0 (GsPageHelper);
 	helper->self = g_object_ref (self);
 	helper->app = g_object_ref (app);
+	helper->job = g_object_ref (job);
 	return helper;
 }
 
@@ -529,6 +532,7 @@ static void
 gs_page_helper_free (GsPageHelper *helper)
 {
 	g_clear_object (&helper->app);
+	g_clear_object (&helper->job);
 	g_clear_object (&helper->self);
 	g_slice_free (GsPageHelper, helper);
 }
@@ -606,9 +610,9 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 
-	helper = gs_page_helper_new (self, app);
 	plugin_job = gs_plugin_job_refine_new_for_app (app, refine_flags);
 	gs_plugin_job_set_interactive (plugin_job, TRUE);
+	helper = gs_page_helper_new (self, app, plugin_job);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_updates_page_refine_system_finished_cb,
@@ -892,7 +896,18 @@ upgrade_download_finished_cb (GObject *source,
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
-		g_warning ("failed to upgrade-download: %s", error->message);
+		gs_plugin_loader_claim_job_error (plugin_loader,
+						  NULL,
+						  helper->job,
+						  error);
+	} else if (!gs_page_is_active_and_focused (GS_PAGE (helper->self))) {
+		g_autoptr(GNotification) notif = NULL;
+
+		notif = g_notification_new (_("Software Upgrades Downloaded"));
+		g_notification_set_body (notif, _("Software upgrades have been downloaded and are ready to be installed."));
+		g_notification_set_default_action_and_target (notif, "app.set-mode", "s", "updates");
+		/* last the notification for an hour */
+		gs_application_send_notification (GS_APPLICATION (g_application_get_default ()), "upgrades-downloaded", notif, 60);
 	}
 }
 
@@ -904,13 +919,13 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 	GsPageHelper *helper;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
+	g_application_withdraw_notification (g_application_get_default (), "upgrades-downloaded");
+
 	app = gs_upgrade_banner_get_app (upgrade_banner);
 	if (app == NULL) {
 		g_warning ("no upgrade available to download");
 		return;
 	}
-
-	helper = gs_page_helper_new (self, app);
 
 	if (self->cancellable_upgrade_download != NULL)
 		g_object_unref (self->cancellable_upgrade_download);
@@ -919,7 +934,9 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 					 "interactive", TRUE,
 					 "app", app,
+					 "propagate-error", TRUE,
 					 NULL);
+	helper = gs_page_helper_new (self, app, plugin_job);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_upgrade_download,
 					    upgrade_download_finished_cb,
