@@ -1159,7 +1159,8 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		/* updatable has to go into an action state */
 		if (state == GS_APP_STATE_UNKNOWN ||
 		    state == GS_APP_STATE_REMOVING ||
-		    state == GS_APP_STATE_INSTALLING)
+		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_PENDING_INSTALL)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_UPDATABLE_LIVE:
