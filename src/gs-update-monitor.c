@@ -852,6 +852,36 @@ refresh_cache_finished_cb (GObject *object,
 	get_updates (monitor);
 }
 
+static gboolean
+monitor_get_game_mode_is_active (GsUpdateMonitor *self)
+{
+	g_autoptr(GDBusProxy) proxy = NULL;
+	g_autoptr(GVariant) val = NULL;
+
+	/* This supports https://github.com/FeralInteractive/gamemode ;
+	   it's okay when it's not installed, nor running. */
+	proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
+					       G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
+#if GLIB_CHECK_VERSION(2, 72, 0)
+					       G_DBUS_PROXY_FLAGS_NO_MATCH_RULE |
+#endif
+					       G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+					       NULL,
+					       "com.feralinteractive.GameMode",
+					       "/com/feralinteractive/GameMode",
+					       "com.feralinteractive.GameMode",
+					       NULL,
+					       NULL);
+	if (proxy == NULL)
+		return FALSE;
+
+	val = g_dbus_proxy_get_cached_property (proxy, "ClientCount");
+	if (val != NULL)
+		return g_variant_get_int32 (val) > 0;
+
+	return FALSE;
+}
+
 typedef enum {
 	UP_DEVICE_LEVEL_UNKNOWN,
 	UP_DEVICE_LEVEL_NONE,
@@ -1020,6 +1050,11 @@ check_updates (GsUpdateMonitor *monitor)
 		g_debug ("No power profile monitor support, so not doing power profile checks");
 	}
 #endif
+
+	if (monitor_get_game_mode_is_active (monitor)) {
+		g_debug ("Not getting updates with enabled GameMode");
+		return;
+	}
 
 	if (!should_download_updates (monitor)) {
 		get_updates (monitor);
