@@ -66,6 +66,7 @@ gboolean	 gs_page_setup				(GsPage		*page,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_page_is_active			(GsPage		*page);
+gboolean	 gs_page_is_active_and_focused		(GsPage		*self);
 
 const gchar	*gs_page_get_title			(GsPage		*page);
 guint		 gs_page_get_counter			(GsPage		*page);
