@@ -785,8 +785,8 @@ gs_appstream_refine_app_updates (GsApp *app,
 			g_autoptr(XbNode) description_node = NULL;
 			g_autoptr(XbNode) issues_node = NULL;
 
-			/* skip the currently installed version and all below it */
-			if (version != NULL && as_vercmp_simple (version, release_version) >= 0)
+			/* use the first release description, then skip the currently installed version and all below it */
+			if (i != 0 && version != NULL && as_vercmp_simple (version, release_version) >= 0)
 				continue;
 
 			description_node = xb_node_query_first (release, "description", NULL);
