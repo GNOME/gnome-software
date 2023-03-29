@@ -792,6 +792,67 @@
 
                             <child>
                               <object class="AdwClamp">
+                                <property name="visible" bind-source="infobar_app_data" bind-property="visible" bind-flags="sync-create"/>
+                                <property name="maximum-size">860</property>
+                                <!-- ~⅔ of the maximum size. -->
+                                <property name="tightening-threshold">576</property>
+                                <property name="margin-start">12</property>
+                                <property name="margin-end">12</property>
+                                <child>
+                                  <object class="GtkBox" id="infobar_app_data">
+                                    <property name="orientation">horizontal</property>
+                                    <property name="spacing">4</property>
+                                    <child>
+                                      <object class="GtkLabel" id="infobar_app_data_label">
+                                        <property name="wrap">True</property>
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">True</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="infobar_app_data_clear_button">
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="halign">end</property>
+                                        <property name="hexpand">False</property>
+                                        <property name="valign">center</property>
+                                        <property name="tooltip-text" translatable="yes">Clear app data</property>
+                                        <property name="use_underline">True</property>
+                                        <signal name="clicked" handler="gs_details_page_app_data_clear_button_cb"/>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">horizontal</property>
+                                            <property name="spacing">4</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">user-trash-symbolic</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="halign">start</property>
+                                                <property name="valign">center</property>
+                                                <property name="use-underline">True</property>
+                                                <property name="label" translatable="yes">D_elete Data</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="card"/>
+                                      <class name="infobox"/>
+                                      <class name="info"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+
+                            <child>
+                              <object class="AdwClamp">
                                 <property name="maximum-size">860</property>
                                 <!-- ~⅔ of the maximum size. -->
                                 <property name="tightening-threshold">576</property>
@@ -1256,6 +1317,7 @@
       <widget name="infobar_details_app_norepo"/>
       <widget name="infobar_details_package_baseos"/>
       <widget name="infobar_details_repo"/>
+      <widget name="infobar_app_data"/>
       <widget name="box_license"/>
       <widget name="box_reviews"/>
     </widgets>
