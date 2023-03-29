@@ -391,8 +391,6 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
 {
 	GsPageHelper *orig_helper = user_data, *new_helper;
 	GtkWidget *dialog;
-	g_autoptr(SoupSession) soup_session = NULL;
-	GtkWidget *ssimg;
 	g_autofree gchar *heading = NULL;
 	g_autofree gchar *escaped = NULL;
 	GsPagePrivate *priv = gs_page_get_instance_private (orig_helper->page);
@@ -427,18 +425,24 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
 				  G_CALLBACK (gs_page_notify_quirk_cb),
 				  new_helper);
 	adw_message_dialog_set_response_enabled (ADW_MESSAGE_DIALOG (dialog),
-						 "install", FALSE);
+						 "install",
+						 !gs_app_has_quirk (new_helper->app, GS_APP_QUIRK_NEEDS_USER_ACTION));
 
 	/* load screenshot */
-	soup_session = gs_build_soup_session ();
-	ssimg = gs_screenshot_image_new (soup_session);
-	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), action_screenshot);
-	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);
-	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg),
-					new_helper->cancellable);
-	gtk_widget_set_margin_start (ssimg, 24);
-	gtk_widget_set_margin_end (ssimg, 24);
-	adw_message_dialog_set_extra_child (ADW_MESSAGE_DIALOG (dialog), ssimg);
+	if (as_screenshot_is_valid (action_screenshot)) {
+		g_autoptr(SoupSession) soup_session = NULL;
+		GtkWidget *ssimg;
+
+		soup_session = gs_build_soup_session ();
+		ssimg = gs_screenshot_image_new (soup_session);
+		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), action_screenshot);
+		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);
+		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg),
+						new_helper->cancellable);
+		gtk_widget_set_margin_start (ssimg, 24);
+		gtk_widget_set_margin_end (ssimg, 24);
+		adw_message_dialog_set_extra_child (ADW_MESSAGE_DIALOG (dialog), ssimg);
+	}
 
 	/* handle this async */
 	g_signal_connect (dialog, "response",
