@@ -1019,3 +1019,29 @@ gs_app_list_new (void)
 	list = g_object_new (GS_TYPE_APP_LIST, NULL);
 	return GS_APP_LIST (list);
 }
+
+/**
+ * gs_app_list_sized_new:
+ * @reserved_size: how many items preallocate
+ *
+ * Creates a new list with @reserved_size preallocated items.
+ * It's useful when it's known how many items will be stored
+ * int he list, to avoid reallocations.
+ *
+ * Returns: (transfer full): A newly created #GsAppList
+ *
+ * Since: 45
+ **/
+GsAppList *
+gs_app_list_sized_new (guint reserved_size)
+{
+	GsAppList *list;
+
+	list = gs_app_list_new ();
+	if (reserved_size > 0) {
+		g_ptr_array_unref (list->array);
+		list->array = g_ptr_array_new_full (reserved_size, g_object_unref);
+	}
+
+	return list;
+}
