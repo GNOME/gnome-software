@@ -44,6 +44,7 @@ struct _GsFlatpak {
 	FlatpakInstallation	*installation_noninteractive;  /* (owned) */
 	FlatpakInstallation	*installation_interactive;  /* (owned) */
 	GPtrArray		*installed_refs;  /* must be entirely replaced rather than updated internally */
+	GHashTable		*installed_updatable_refs;  /* gchar *ref_id ~> FlatpakInstalledRef; updatable refs by artificial ref ID */
 	GMutex			 installed_refs_mutex;
 	GHashTable		*broken_remotes;
 	GMutex			 broken_remotes_mutex;
@@ -632,6 +633,7 @@ gs_flatpak_internal_data_changed (GsFlatpak *self)
 	/* drop the installed refs cache */
 	locker = g_mutex_locker_new (&self->installed_refs_mutex);
 	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
+	g_clear_pointer (&self->installed_updatable_refs, g_hash_table_unref);
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	/* drop the remote title cache */
@@ -2198,6 +2200,7 @@ gs_flatpak_refresh (GsFlatpak *self,
 	/* drop the installed refs cache */
 	g_mutex_lock (&self->installed_refs_mutex);
 	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
+	g_clear_pointer (&self->installed_updatable_refs, g_hash_table_unref);
 	g_mutex_unlock (&self->installed_refs_mutex);
 
 	/* manually do this in case we created the first appstream file */
@@ -2403,6 +2406,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	g_autoptr(FlatpakInstalledRef) ref = NULL;
 	g_autoptr(GPtrArray) installed_refs = NULL;
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
+	gboolean is_updatable = FALSE;
 
 	/* already found */
 	if (gs_app_get_state (app) != GS_APP_STATE_UNKNOWN)
@@ -2430,9 +2434,53 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		}
 	}
 
+	if (self->installed_updatable_refs == NULL) {
+		g_autoptr(GPtrArray) xrefs = NULL;
+		xrefs = flatpak_installation_list_installed_refs_for_update (installation, cancellable, error);
+		if (xrefs == NULL) {
+			g_mutex_unlock (&self->installed_refs_mutex);
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+
+		self->installed_updatable_refs = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
+
+		for (guint i = 0; i < xrefs->len; i++) {
+			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
+			g_autofree gchar *id = NULL;
+			id = g_strconcat (flatpak_installed_ref_get_origin (xref),
+					  "/",
+					  flatpak_ref_get_name (FLATPAK_REF (xref)),
+					  "/",
+					  flatpak_ref_get_arch (FLATPAK_REF (xref)),
+					  "/",
+					  flatpak_ref_get_branch (FLATPAK_REF (xref)),
+					  NULL);
+			g_hash_table_insert (self->installed_updatable_refs, g_steal_pointer (&id), g_object_ref (xref));
+		}
+	}
+
+	if (g_hash_table_size (self->installed_updatable_refs) > 0) {
+		FlatpakInstalledRef *ref_tmp;
+		g_autofree gchar *id = NULL;
+		id = g_strconcat (gs_app_get_origin (app),
+				  "/",
+				  gs_flatpak_app_get_ref_name (app),
+				  "/",
+				  gs_flatpak_app_get_ref_arch (app),
+				  "/",
+				  gs_app_get_branch (app),
+				  NULL);
+		ref_tmp = g_hash_table_lookup (self->installed_updatable_refs, id);
+		if (ref_tmp != NULL) {
+			ref = g_object_ref (ref_tmp);
+			is_updatable = TRUE;
+		}
+	}
+
 	installed_refs = g_ptr_array_ref (self->installed_refs);
 
-	for (guint i = 0; i < installed_refs->len; i++) {
+	for (guint i = 0; ref == NULL && i < installed_refs->len; i++) {
 		FlatpakInstalledRef *ref_tmp = g_ptr_array_index (installed_refs, i);
 		const gchar *origin = flatpak_installed_ref_get_origin (ref_tmp);
 		const gchar *name = flatpak_ref_get_name (FLATPAK_REF (ref_tmp));
@@ -2452,7 +2500,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 			 gs_app_get_unique_id (app));
 		gs_flatpak_set_metadata_installed (self, app, ref, interactive, cancellable);
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			gs_app_set_state (app, is_updatable ? GS_APP_STATE_UPDATABLE_LIVE : GS_APP_STATE_INSTALLED);
 
 		/* flatpak only allows one installed app to be launchable */
 		if (flatpak_installed_ref_get_is_current (ref)) {
@@ -4562,6 +4610,7 @@ gs_flatpak_finalize (GObject *object)
 	g_object_unref (self->installation_noninteractive);
 	g_object_unref (self->installation_interactive);
 	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
+	g_clear_pointer (&self->installed_updatable_refs, g_hash_table_unref);
 	g_mutex_clear (&self->installed_refs_mutex);
 	g_object_unref (self->plugin);
 	g_hash_table_unref (self->broken_remotes);
@@ -4591,6 +4640,7 @@ gs_flatpak_init (GsFlatpak *self)
 
 	g_mutex_init (&self->installed_refs_mutex);
 	self->installed_refs = NULL;
+	self->installed_updatable_refs = NULL;
 	g_mutex_init (&self->broken_remotes_mutex);
 	self->broken_remotes = g_hash_table_new_full (g_str_hash, g_str_equal,
 						      g_free, NULL);
