@@ -91,6 +91,7 @@ enum {
 	SIGNAL_BASIC_AUTH_START,
 	SIGNAL_REPOSITORY_CHANGED,
 	SIGNAL_ASK_UNTRUSTED,
+	SIGNAL_SCHEDULE_REFRESH,
 	SIGNAL_LAST
 };
 
@@ -1948,6 +1949,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, ask_untrusted),
 			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_BOOLEAN, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
+	signals [SIGNAL_SCHEDULE_REFRESH] =
+		g_signal_new ("schedule-refresh",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, schedule_refresh),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0, G_TYPE_NONE);
 }
 
 static void
@@ -2183,4 +2191,20 @@ gs_plugin_get_system_bus_connection (GsPlugin *self)
 	g_return_val_if_fail (GS_IS_PLUGIN (self), NULL);
 
 	return priv->system_bus_connection;
+}
+
+/**
+ * gs_plugin_schedule_refresh:
+ * @plugin: a #GsPlugin
+ *
+ * Emits a signal to refresh the @plugin and returns immediately,
+ * not waiting for the result of the refresh call.
+ *
+ * Since: 45
+ **/
+void
+gs_plugin_schedule_refresh (GsPlugin *plugin)
+{
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_signal_emit (plugin, signals[SIGNAL_SCHEDULE_REFRESH], 0, NULL);
 }

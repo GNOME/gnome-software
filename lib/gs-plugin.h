@@ -238,7 +238,9 @@ struct _GsPluginClass
 								 GAsyncResult			*result,
 								 GError				**error);
 
-	gpointer		 padding[23];
+	void			(*schedule_refresh)		(GsPlugin		*plugin);
+
+	gpointer		 padding[22];
 };
 
 /* helpers */
@@ -348,5 +350,7 @@ gboolean	gs_plugin_ask_untrusted			(GsPlugin	*plugin,
 
 GDBusConnection	*gs_plugin_get_session_bus_connection	(GsPlugin	*self);
 GDBusConnection	*gs_plugin_get_system_bus_connection	(GsPlugin	*self);
+
+void		 gs_plugin_schedule_refresh		(GsPlugin *plugin);
 
 G_END_DECLS
