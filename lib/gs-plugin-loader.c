@@ -82,6 +82,8 @@ struct _GsPluginLoader
 
 	GDBusConnection		*session_bus_connection;  /* (owned); (not nullable) after setup */
 	GDBusConnection		*system_bus_connection;  /* (owned); (not nullable) after setup */
+
+	GCancellable		*refresh_cancellable; /* (owned) (nullable) */
 };
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
@@ -1487,6 +1489,41 @@ gs_plugin_loader_ask_untrusted_cb (GsPlugin *plugin,
 	return accepts;
 }
 
+static void
+gs_plugin_loader_refresh_done_cb (GObject *source_object,
+				  GAsyncResult *result,
+				  gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GCancellable *cancellable = user_data;
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, result, &local_error))
+		g_message ("Failed to refresh plugins: %s", local_error->message);
+
+	if (plugin_loader->refresh_cancellable == cancellable)
+		g_clear_object (&plugin_loader->refresh_cancellable);
+}
+
+static void
+gs_plugin_loader_schedule_refresh_cb (GsPlugin *plugin,
+				      GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GsPluginJob) refresh_job = NULL;
+
+	g_debug ("schedule refresh by plugin '%s'", gs_plugin_get_name (plugin));
+
+	g_cancellable_cancel (plugin_loader->refresh_cancellable);
+	g_clear_object (&plugin_loader->refresh_cancellable);
+	plugin_loader->refresh_cancellable = g_cancellable_new ();
+
+	refresh_job = gs_plugin_job_refresh_metadata_new (G_MAXUINT, GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
+
+	gs_plugin_loader_job_process_async (plugin_loader, refresh_job,
+					    plugin_loader->refresh_cancellable,
+					    gs_plugin_loader_refresh_done_cb, plugin_loader->refresh_cancellable);
+}
+
 static gboolean
 gs_plugin_loader_job_updates_changed_delay_cb (gpointer user_data)
 {
@@ -1608,6 +1645,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	g_signal_connect (plugin, "ask-untrusted",
 			  G_CALLBACK (gs_plugin_loader_ask_untrusted_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "schedule-refresh",
+			  G_CALLBACK (gs_plugin_loader_schedule_refresh_cb),
 			  plugin_loader);
 	gs_plugin_set_language (plugin, plugin_loader->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
@@ -2483,6 +2523,7 @@ gs_plugin_loader_dispose (GObject *object)
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
 	g_cancellable_cancel (plugin_loader->pending_apps_cancellable);
+	g_cancellable_cancel (plugin_loader->refresh_cancellable);
 
 	if (plugin_loader->plugins != NULL) {
 		/* Shut down all the plugins first. */
@@ -2523,6 +2564,7 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&plugin_loader->odrs_provider);
 	g_clear_object (&plugin_loader->setup_complete_cancellable);
 	g_clear_object (&plugin_loader->pending_apps_cancellable);
+	g_clear_object (&plugin_loader->refresh_cancellable);
 
 	g_clear_object (&plugin_loader->session_bus_connection);
 	g_clear_object (&plugin_loader->system_bus_connection);
