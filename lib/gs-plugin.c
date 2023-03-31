@@ -1475,6 +1475,39 @@ gs_plugin_cache_invalidate (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_cache_get_content:
+ * @plugin: a #GsPlugin
+ *
+ * Retrieve the cached #GsApp-s.
+ *
+ * Returns: (transfer full): a #GsAppList with all cached apps for the @plugin
+ *
+ * Since: 45
+ **/
+GsAppList *
+gs_plugin_cache_get_content (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	GsAppList *list;
+	GHashTableIter iter;
+	gpointer value;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+
+	locker = g_mutex_locker_new (&priv->cache_mutex);
+	list = gs_app_list_sized_new (g_hash_table_size (priv->cache));
+
+	g_hash_table_iter_init (&iter, priv->cache);
+	while (g_hash_table_iter_next (&iter, NULL, &value)) {
+		GsApp *app = value;
+		gs_app_list_add (list, app);
+	}
+
+	return list;
+}
+
+/**
  * gs_plugin_report_event:
  * @plugin: a #GsPlugin
  * @event: a #GsPluginEvent
