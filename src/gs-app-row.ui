@@ -250,6 +250,19 @@
                 </child>
               </object>
             </child>
+            <child>
+              <object class="GtkImage" id="update_critical_image">
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="icon-name">software-update-urgent-symbolic</property>
+                <property name="pixel-size">22</property>
+                <property name="visible">False</property>
+                <property name="tooltip-text" translatable="yes">Critical update</property>
+                <accessibility>
+                  <property name="label" translatable="yes">Critical update</property>
+                </accessibility>
+              </object>
+            </child>
           </object>
         </child>
       </object>

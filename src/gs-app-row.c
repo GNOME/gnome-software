@@ -28,6 +28,7 @@ typedef struct
 	GtkWidget	*version_arrow_label;
 	GtkWidget	*version_update_label;
 	GtkWidget	*system_updates_label; /* Only for "System Updates" app */
+	GtkWidget	*update_critical_image;
 	GtkWidget	*star;
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
@@ -432,6 +433,8 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	} else {
 		gtk_widget_set_visible (priv->system_updates_label, FALSE);
 	}
+
+	gtk_widget_set_visible (priv->update_critical_image, priv->show_update && gs_app_get_update_urgency (priv->app) >= AS_URGENCY_KIND_CRITICAL);
 
 	/* pixbuf */
 	icon = gs_app_get_icon_for_size (priv->app,
@@ -957,6 +960,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_arrow_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_update_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, system_updates_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, update_critical_image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, star);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_box);
