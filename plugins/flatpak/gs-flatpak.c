@@ -657,8 +657,7 @@ gs_flatpak_claim_changed_idle_cb (gpointer user_data)
 	GsFlatpak *self = user_data;
 
 	gs_flatpak_internal_data_changed (self);
-	gs_plugin_cache_invalidate (self->plugin);
-	gs_plugin_reload (self->plugin);
+	gs_plugin_schedule_refresh (self->plugin);
 
 	return G_SOURCE_REMOVE;
 }
