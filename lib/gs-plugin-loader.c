@@ -35,6 +35,7 @@
 #include "gs-utils.h"
 
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
+#define GS_PLUGIN_LOADER_INSTALLED_CHANGED_DELAY 3	/* s */
 #define GS_PLUGIN_LOADER_RELOAD_DELAY		5	/* s */
 
 struct _GsPluginLoader
@@ -68,6 +69,8 @@ struct _GsPluginLoader
 
 	guint			 updates_changed_id;
 	guint			 updates_changed_cnt;
+	guint			 installed_changed_id;
+	guint			 installed_changed_cnt;
 	guint			 reload_id;
 	GHashTable		*disallow_updates;	/* GsPlugin : const char *name */
 
@@ -107,6 +110,7 @@ enum {
 	SIGNAL_RELOAD,
 	SIGNAL_BASIC_AUTH_START,
 	SIGNAL_ASK_UNTRUSTED,
+	SIGNAL_INSTALLED_CHANGED,
 	SIGNAL_LAST
 };
 
@@ -1566,6 +1570,47 @@ gs_plugin_loader_job_updates_changed_cb (GsPlugin *plugin,
 }
 
 static gboolean
+gs_plugin_loader_job_installed_changed_delay_cb (gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+
+	/* notify shells */
+	g_debug ("installed-changed");
+	g_signal_emit (plugin_loader, signals[SIGNAL_INSTALLED_CHANGED], 0);
+	plugin_loader->installed_changed_id = 0;
+	plugin_loader->installed_changed_cnt = 0;
+
+	return FALSE;
+}
+
+static void
+gs_plugin_loader_installed_changed (GsPluginLoader *plugin_loader)
+{
+	if (plugin_loader->installed_changed_id != 0)
+		return;
+	plugin_loader->installed_changed_id =
+		g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
+					    GS_PLUGIN_LOADER_INSTALLED_CHANGED_DELAY,
+					    gs_plugin_loader_job_installed_changed_delay_cb,
+					    g_object_ref (plugin_loader),
+					    g_object_unref);
+}
+
+static void
+gs_plugin_loader_job_installed_changed_cb (GsPlugin *plugin,
+					   GsPluginLoader *plugin_loader)
+{
+	plugin_loader->installed_changed_cnt++;
+
+	/* Schedule emit of installed changed when no job is active.
+	   This helps to avoid a race condition when a plugin calls
+	   installed-changed at the end of the job, but the job is
+	   finished before the callback gets called in the main thread. */
+	if (!g_atomic_int_get (&plugin_loader->active_jobs))
+		gs_plugin_loader_installed_changed (plugin_loader);
+}
+
+static gboolean
 gs_plugin_loader_reload_delay_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
@@ -1648,6 +1693,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	g_signal_connect (plugin, "schedule-refresh",
 			  G_CALLBACK (gs_plugin_loader_schedule_refresh_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "installed-changed",
+			  G_CALLBACK (gs_plugin_loader_job_installed_changed_cb),
 			  plugin_loader);
 	gs_plugin_set_language (plugin, plugin_loader->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
@@ -2535,6 +2583,10 @@ gs_plugin_loader_dispose (GObject *object)
 		g_source_remove (plugin_loader->updates_changed_id);
 		plugin_loader->updates_changed_id = 0;
 	}
+	if (plugin_loader->installed_changed_id != 0) {
+		g_source_remove (plugin_loader->installed_changed_id);
+		plugin_loader->installed_changed_id = 0;
+	}
 	if (plugin_loader->network_changed_handler != 0) {
 		g_signal_handler_disconnect (plugin_loader->network_monitor,
 					     plugin_loader->network_changed_handler);
@@ -2693,6 +2745,11 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 			      G_TYPE_NONE, 0);
 	signals [SIGNAL_UPDATES_CHANGED] =
 		g_signal_new ("updates-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+	signals [SIGNAL_INSTALLED_CHANGED] =
+		g_signal_new ("installed-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
@@ -3537,6 +3594,8 @@ plugin_loader_task_freed_cb (gpointer user_data,
 		 * the signal emission now */
 		if (plugin_loader->updates_changed_cnt > 0)
 			gs_plugin_loader_updates_changed (plugin_loader);
+		if (plugin_loader->installed_changed_cnt > 0)
+			gs_plugin_loader_installed_changed (plugin_loader);
 	}
 }
 
