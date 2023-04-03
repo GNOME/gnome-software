@@ -771,6 +771,9 @@ gs_installed_page_setup (GsPage *page,
 	g_signal_connect (self->plugin_loader, "pending-apps-changed",
 			  G_CALLBACK (gs_installed_page_pending_apps_changed_cb),
 			  self);
+	g_signal_connect_object (self->plugin_loader, "installed-changed",
+				 G_CALLBACK (gs_installed_page_reload),
+				 self, G_CONNECT_SWAPPED);
 
 	self->cancellable = g_object_ref (cancellable);
 
