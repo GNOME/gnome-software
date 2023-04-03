@@ -2262,6 +2262,48 @@ gs_flatpak_find_installed_ref_for_app_locked (GsFlatpak *self,
 	return ref;
 }
 
+static void
+gs_flatpak_refresh_plugin_cache_locked (GsFlatpak *self)
+{
+	g_autoptr(GsAppList) list = NULL;
+	gboolean updates_changed = FALSE;
+
+	list = gs_plugin_cache_get_content (self->plugin);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		/* skip repositories, refine only apps */
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
+			continue;
+
+		if (gs_app_get_state (app) != GS_APP_STATE_INSTALLING &&
+		    gs_app_get_state (app) != GS_APP_STATE_REMOVING &&
+		    gs_app_get_state (app) != GS_APP_STATE_PENDING_INSTALL) {
+			g_autoptr(FlatpakInstalledRef) ref = NULL;
+			GsAppState state = GS_APP_STATE_UNKNOWN;
+			gboolean is_updatable = FALSE;
+
+			ref = gs_flatpak_find_installed_ref_for_app_locked (self, app, &is_updatable);
+			if (is_updatable)
+				state = GS_APP_STATE_UPDATABLE_LIVE;
+			else if (ref != NULL)
+				state = GS_APP_STATE_INSTALLED;
+
+			updates_changed = updates_changed || (gs_app_get_state (app) != state &&
+					  state == GS_APP_STATE_UPDATABLE_LIVE);
+
+			if (gs_app_get_state (app) != state) {
+				/* to be able to change to any state */
+				gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+
+				gs_app_set_state (app, state);
+			}
+		}
+	}
+
+	if (updates_changed)
+		gs_plugin_updates_changed (self->plugin);
+}
+
 gboolean
 gs_flatpak_refresh (GsFlatpak *self,
 		    guint64 cache_age_secs,
@@ -2302,6 +2344,17 @@ gs_flatpak_refresh (GsFlatpak *self,
 	/* update AppStream metadata */
 	if (!gs_flatpak_refresh_appstream (self, cache_age_secs, interactive, cancellable, error))
 		return FALSE;
+
+	g_mutex_lock (&self->installed_refs_mutex);
+
+	if (!gs_flatpak_ensure_installed_cache_locked (self, interactive, cancellable, error)) {
+		g_mutex_unlock (&self->installed_refs_mutex);
+		return FALSE;
+	}
+
+	gs_flatpak_refresh_plugin_cache_locked (self);
+
+	g_mutex_unlock (&self->installed_refs_mutex);
 
 	/* success */
 	return TRUE;
