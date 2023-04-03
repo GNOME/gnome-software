@@ -2267,6 +2267,7 @@ gs_flatpak_refresh_plugin_cache_locked (GsFlatpak *self)
 {
 	g_autoptr(GsAppList) list = NULL;
 	gboolean updates_changed = FALSE;
+	gboolean installed_changed = FALSE;
 
 	list = gs_plugin_cache_get_content (self->plugin);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -2288,10 +2289,12 @@ gs_flatpak_refresh_plugin_cache_locked (GsFlatpak *self)
 			else if (ref != NULL)
 				state = GS_APP_STATE_INSTALLED;
 
-			updates_changed = updates_changed || (gs_app_get_state (app) != state &&
-					  state == GS_APP_STATE_UPDATABLE_LIVE);
-
 			if (gs_app_get_state (app) != state) {
+				updates_changed = updates_changed || state == GS_APP_STATE_UPDATABLE_LIVE;
+				installed_changed = installed_changed ||
+						    state == GS_APP_STATE_INSTALLED ||
+						    gs_app_get_state (app) == GS_APP_STATE_INSTALLED;
+
 				/* to be able to change to any state */
 				gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 
@@ -2305,6 +2308,8 @@ gs_flatpak_refresh_plugin_cache_locked (GsFlatpak *self)
 
 	if (updates_changed)
 		gs_plugin_updates_changed (self->plugin);
+	if (installed_changed)
+		gs_plugin_installed_changed (self->plugin);
 }
 
 gboolean
