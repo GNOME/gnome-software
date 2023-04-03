@@ -2168,6 +2168,100 @@ gs_flatpak_add_updates (GsFlatpak *self,
 	return TRUE;
 }
 
+static gboolean
+gs_flatpak_ensure_installed_cache_locked (GsFlatpak *self,
+					  gboolean interactive,
+					  GCancellable *cancellable,
+					  GError **error)
+{
+	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
+
+	if (self->installed_refs == NULL) {
+		self->installed_refs = flatpak_installation_list_installed_refs (installation, cancellable, error);
+
+		if (self->installed_refs == NULL) {
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+	}
+
+	if (self->installed_updatable_refs == NULL) {
+		g_autoptr(GPtrArray) xrefs = NULL;
+		xrefs = flatpak_installation_list_installed_refs_for_update (installation, cancellable, error);
+		if (xrefs == NULL) {
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+
+		self->installed_updatable_refs = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
+
+		for (guint i = 0; i < xrefs->len; i++) {
+			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
+			g_autofree gchar *id = NULL;
+			id = g_strconcat (flatpak_installed_ref_get_origin (xref),
+					  "/",
+					  flatpak_ref_get_name (FLATPAK_REF (xref)),
+					  "/",
+					  flatpak_ref_get_arch (FLATPAK_REF (xref)),
+					  "/",
+					  flatpak_ref_get_branch (FLATPAK_REF (xref)),
+					  NULL);
+			g_hash_table_insert (self->installed_updatable_refs, g_steal_pointer (&id), g_object_ref (xref));
+		}
+	}
+
+	return TRUE;
+}
+
+static FlatpakInstalledRef * /* (transfer full) */
+gs_flatpak_find_installed_ref_for_app_locked (GsFlatpak *self,
+					      GsApp *app,
+					      gboolean *out_is_updatable)
+{
+	FlatpakInstalledRef *ref = NULL;
+
+	*out_is_updatable = FALSE;
+
+	if (self->installed_updatable_refs != NULL &&
+	    g_hash_table_size (self->installed_updatable_refs) > 0) {
+		FlatpakInstalledRef *ref_tmp;
+		g_autofree gchar *id = NULL;
+		id = g_strconcat (gs_app_get_origin (app),
+				  "/",
+				  gs_flatpak_app_get_ref_name (app),
+				  "/",
+				  gs_flatpak_app_get_ref_arch (app),
+				  "/",
+				  gs_app_get_branch (app),
+				  NULL);
+		ref_tmp = g_hash_table_lookup (self->installed_updatable_refs, id);
+		if (ref_tmp != NULL) {
+			*out_is_updatable = TRUE;
+			ref = g_object_ref (ref_tmp);
+		}
+	}
+
+	if (self->installed_refs == NULL)
+		return ref;
+
+	for (guint i = 0; ref == NULL && i < self->installed_refs->len; i++) {
+		FlatpakInstalledRef *ref_tmp = g_ptr_array_index (self->installed_refs, i);
+		const gchar *origin = flatpak_installed_ref_get_origin (ref_tmp);
+		const gchar *name = flatpak_ref_get_name (FLATPAK_REF (ref_tmp));
+		const gchar *arch = flatpak_ref_get_arch (FLATPAK_REF (ref_tmp));
+		const gchar *branch = flatpak_ref_get_branch (FLATPAK_REF (ref_tmp));
+		if (g_strcmp0 (origin, gs_app_get_origin (app)) == 0 &&
+		    g_strcmp0 (name, gs_flatpak_app_get_ref_name (app)) == 0 &&
+		    g_strcmp0 (arch, gs_flatpak_app_get_ref_arch (app)) == 0 &&
+		    g_strcmp0 (branch, gs_app_get_branch (app)) == 0) {
+			ref = g_object_ref (ref_tmp);
+			break;
+		}
+	}
+
+	return ref;
+}
+
 gboolean
 gs_flatpak_refresh (GsFlatpak *self,
 		    guint64 cache_age_secs,
@@ -2403,7 +2497,6 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
                                       GError **error)
 {
 	g_autoptr(FlatpakInstalledRef) ref = NULL;
-	g_autoptr(GPtrArray) installed_refs = NULL;
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 	gboolean is_updatable = FALSE;
 
@@ -2422,77 +2515,12 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	/* find the app using the origin and the ID */
 	g_mutex_lock (&self->installed_refs_mutex);
 
-	if (self->installed_refs == NULL) {
-		self->installed_refs = flatpak_installation_list_installed_refs (installation,
-								 cancellable, error);
-
-		if (self->installed_refs == NULL) {
-			g_mutex_unlock (&self->installed_refs_mutex);
-			gs_flatpak_error_convert (error);
-			return FALSE;
-		}
+	if (!gs_flatpak_ensure_installed_cache_locked (self, interactive, cancellable, error)) {
+		g_mutex_unlock (&self->installed_refs_mutex);
+		return FALSE;
 	}
 
-	if (self->installed_updatable_refs == NULL) {
-		g_autoptr(GPtrArray) xrefs = NULL;
-		xrefs = flatpak_installation_list_installed_refs_for_update (installation, cancellable, error);
-		if (xrefs == NULL) {
-			g_mutex_unlock (&self->installed_refs_mutex);
-			gs_flatpak_error_convert (error);
-			return FALSE;
-		}
-
-		self->installed_updatable_refs = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
-
-		for (guint i = 0; i < xrefs->len; i++) {
-			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
-			g_autofree gchar *id = NULL;
-			id = g_strconcat (flatpak_installed_ref_get_origin (xref),
-					  "/",
-					  flatpak_ref_get_name (FLATPAK_REF (xref)),
-					  "/",
-					  flatpak_ref_get_arch (FLATPAK_REF (xref)),
-					  "/",
-					  flatpak_ref_get_branch (FLATPAK_REF (xref)),
-					  NULL);
-			g_hash_table_insert (self->installed_updatable_refs, g_steal_pointer (&id), g_object_ref (xref));
-		}
-	}
-
-	if (g_hash_table_size (self->installed_updatable_refs) > 0) {
-		FlatpakInstalledRef *ref_tmp;
-		g_autofree gchar *id = NULL;
-		id = g_strconcat (gs_app_get_origin (app),
-				  "/",
-				  gs_flatpak_app_get_ref_name (app),
-				  "/",
-				  gs_flatpak_app_get_ref_arch (app),
-				  "/",
-				  gs_app_get_branch (app),
-				  NULL);
-		ref_tmp = g_hash_table_lookup (self->installed_updatable_refs, id);
-		if (ref_tmp != NULL) {
-			ref = g_object_ref (ref_tmp);
-			is_updatable = TRUE;
-		}
-	}
-
-	installed_refs = g_ptr_array_ref (self->installed_refs);
-
-	for (guint i = 0; ref == NULL && i < installed_refs->len; i++) {
-		FlatpakInstalledRef *ref_tmp = g_ptr_array_index (installed_refs, i);
-		const gchar *origin = flatpak_installed_ref_get_origin (ref_tmp);
-		const gchar *name = flatpak_ref_get_name (FLATPAK_REF (ref_tmp));
-		const gchar *arch = flatpak_ref_get_arch (FLATPAK_REF (ref_tmp));
-		const gchar *branch = flatpak_ref_get_branch (FLATPAK_REF (ref_tmp));
-		if (g_strcmp0 (origin, gs_app_get_origin (app)) == 0 &&
-		    g_strcmp0 (name, gs_flatpak_app_get_ref_name (app)) == 0 &&
-		    g_strcmp0 (arch, gs_flatpak_app_get_ref_arch (app)) == 0 &&
-		    g_strcmp0 (branch, gs_app_get_branch (app)) == 0) {
-			ref = g_object_ref (ref_tmp);
-			break;
-		}
-	}
+	ref = gs_flatpak_find_installed_ref_for_app_locked (self, app, &is_updatable);
 	g_mutex_unlock (&self->installed_refs_mutex);
 	if (ref != NULL) {
 		g_debug ("marking %s as installed with flatpak",
