@@ -2297,6 +2297,9 @@ gs_flatpak_refresh_plugin_cache_locked (GsFlatpak *self)
 
 				gs_app_set_state (app, state);
 			}
+
+			/* Set back the scope, in case other functions unset it (usually on runtimes) */
+			gs_plugin_refine_item_scope (self, app);
 		}
 	}
 
