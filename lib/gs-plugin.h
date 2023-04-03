@@ -239,8 +239,9 @@ struct _GsPluginClass
 								 GError				**error);
 
 	void			(*schedule_refresh)		(GsPlugin		*plugin);
+	void			(*installed_changed)		(GsPlugin		*plugin);
 
-	gpointer		 padding[22];
+	gpointer		 padding[21];
 };
 
 /* helpers */
@@ -326,6 +327,7 @@ gboolean	 gs_plugin_app_launch_filtered		(GsPlugin	*plugin,
 							 gpointer	user_data,
 							 GError		**error);
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
+void		 gs_plugin_installed_changed		(GsPlugin	*plugin);
 void		 gs_plugin_reload			(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 void		 gs_plugin_report_event			(GsPlugin	*plugin,

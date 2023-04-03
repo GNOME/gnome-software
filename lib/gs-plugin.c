@@ -92,6 +92,7 @@ enum {
 	SIGNAL_REPOSITORY_CHANGED,
 	SIGNAL_ASK_UNTRUSTED,
 	SIGNAL_SCHEDULE_REFRESH,
+	SIGNAL_INSTALLED_CHANGED,
 	SIGNAL_LAST
 };
 
@@ -1077,6 +1078,36 @@ gs_plugin_updates_changed (GsPlugin *plugin)
 }
 
 static gboolean
+gs_plugin_installed_changed_cb (gpointer user_data)
+{
+	GWeakRef *plugin_weak = user_data;
+	g_autoptr(GsPlugin) plugin = NULL;
+
+	plugin = g_weak_ref_get (plugin_weak);
+	if (plugin != NULL)
+		g_signal_emit (plugin, signals[SIGNAL_INSTALLED_CHANGED], 0);
+
+	return G_SOURCE_REMOVE;
+}
+
+/**
+ * gs_plugin_installed_changed:
+ * @plugin: a #GsPlugin
+ *
+ * Emit a signal that tells the plugin loader that the list of installed apps
+ * may have changed.
+ *
+ * Since: 45
+ **/
+void
+gs_plugin_installed_changed (GsPlugin *plugin)
+{
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, gs_plugin_installed_changed_cb,
+			 weak_ref_new (plugin), (GDestroyNotify) weak_ref_free);
+}
+
+static gboolean
 gs_plugin_reload_cb (gpointer user_data)
 {
 	GWeakRef *plugin_weak = user_data;
@@ -1931,6 +1962,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 		g_signal_new ("updates-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (GsPluginClass, updates_changed),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+
+	signals [SIGNAL_INSTALLED_CHANGED] =
+		g_signal_new ("installed-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, installed_changed),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
