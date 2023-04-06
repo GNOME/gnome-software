@@ -27,5 +27,8 @@ const gchar	*gs_repos_section_get_title		(GsReposSection		*self);
 const gchar	*gs_repos_section_get_sort_key		(GsReposSection		*self);
 void		 gs_repos_section_set_sort_key		(GsReposSection		*self,
 							 const gchar		*sort_key);
+gboolean	 gs_repos_section_get_related_loaded	(GsReposSection *self);
+void		 gs_repos_section_set_related_loaded	(GsReposSection *self,
+							 gboolean value);
 
 G_END_DECLS
