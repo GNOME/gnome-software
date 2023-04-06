@@ -269,9 +269,9 @@ gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 	if (tmp != NULL && *tmp != '\0') {
 		gchar *cnt;
 
-		/* Translators: The first '%s' is replaced with a text like '10 apps installed',
-		      the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'. */
-		cnt = g_strdup_printf (C_("repo-row", "%s • %s"), comment, tmp);
+		/* Translators: The first '%s' is replaced with installation kind, like in case of Flatpak 'User Installation',
+		      the second '%s' is replaced with a text like '10 apps installed'. */
+		cnt = g_strdup_printf (C_("repo-row", "%s • %s"), tmp, comment);
 		g_clear_pointer (&comment, g_free);
 		comment = cnt;
 	}
