@@ -98,6 +98,38 @@ app_tile_clicked (GsAppTile *tile, gpointer data)
 }
 
 static void
+flow_box_child_activate_cb (GtkFlowBoxChild *flowboxchild,
+			    gpointer user_data)
+{
+	GtkWidget *tile = gtk_flow_box_child_get_child (flowboxchild);
+	if (tile != NULL)
+		g_signal_emit_by_name (tile, "clicked", 0, NULL);
+}
+
+/* Each tile is in a GtkFlowBoxChild. The tile can be focused and activated,
+ * but the GtkFlowBoxChild can only be focused and not activated (by default).
+ * Tweak that to avoid tab navigation issues and visual artifacts. */
+static void
+setup_parent_flow_box_child (GsOverviewPage *self,
+			     GtkWidget *tile,
+			     GCallback clicked_cb)
+{
+	GtkWidget *child;
+
+	g_signal_connect_object (tile, "clicked", clicked_cb, self, 0);
+
+	g_assert (GTK_IS_FLOW_BOX_CHILD (gtk_widget_get_parent (tile)));
+
+	child = gtk_widget_get_parent (tile);
+	gtk_widget_add_css_class (child, "card");
+
+	gtk_widget_set_can_focus (tile, FALSE);
+
+	g_signal_connect_object (child, "activate",
+				 G_CALLBACK (flow_box_child_activate_cb), self, 0);
+}
+
+static void
 featured_carousel_app_clicked_cb (GsFeaturedCarousel *carousel,
                                   GsApp              *app,
                                   gpointer            user_data)
@@ -166,9 +198,8 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (app_tile_clicked), self);
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_curated), tile, -1);
+		setup_parent_flow_box_child (self, tile, G_CALLBACK (app_tile_clicked));
 	}
 	gtk_widget_set_visible (self->box_curated, TRUE);
 	gtk_widget_set_visible (self->curated_heading, TRUE);
@@ -207,7 +238,6 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	guint i;
 	GsApp *app;
 	GtkWidget *tile;
-	GtkWidget *child;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -236,17 +266,8 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (app_tile_clicked), self);
-		child = gtk_flow_box_child_new ();
-		/* Manually creating the child is needed to avoid having it be
-		 * focusable but non activatable, and then have the child
-		 * focusable and activatable, which is annoying and confusing.
-		 */
-		gtk_widget_set_can_focus (child, FALSE);
-		gtk_widget_set_visible (child, TRUE);
-		gtk_flow_box_child_set_child (GTK_FLOW_BOX_CHILD (child), tile);
-		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), child, -1);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), tile, -1);
+		setup_parent_flow_box_child (self, tile, G_CALLBACK (app_tile_clicked));
 	}
 	gtk_widget_set_visible (self->box_recent, TRUE);
 	gtk_widget_set_visible (self->recent_heading, TRUE);
@@ -345,9 +366,8 @@ gs_overview_page_get_deployment_featured_cb (GObject *source_object,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (app_tile_clicked), self);
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_deployment_featured), tile, -1);
+		setup_parent_flow_box_child (self, tile, G_CALLBACK (app_tile_clicked));
 	}
 	gtk_widget_set_visible (self->box_deployment_featured, TRUE);
 	gtk_widget_set_visible (self->deployment_featured_heading, TRUE);
@@ -419,8 +439,6 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 		if (gs_category_get_size (cat) == 0)
 			continue;
 		tile = gs_category_tile_new (cat);
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (category_tile_clicked), self);
 
 		if (gs_category_get_icon_name (cat) != NULL)
 			flowbox = GTK_FLOW_BOX (self->flowbox_categories);
@@ -428,7 +446,7 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 			flowbox = GTK_FLOW_BOX (self->flowbox_iconless_categories);
 
 		gtk_flow_box_insert (flowbox, tile, -1);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+		setup_parent_flow_box_child (self, tile, G_CALLBACK (category_tile_clicked));
 		added_cnt++;
 
 		/* we save these for the 'More...' buttons */
