@@ -280,6 +280,34 @@ compare_release_date_cb (gconstpointer aa,
 }
 
 static void
+flow_box_child_activate_cb (GtkFlowBoxChild *flowboxchild,
+			    gpointer user_data)
+{
+	GtkWidget *tile = gtk_flow_box_child_get_child (flowboxchild);
+	if (tile != NULL)
+		g_signal_emit_by_name (tile, "clicked", 0, NULL);
+}
+
+/* Each tile is in a GtkFlowBoxChild. The tile can be focused and activated,
+ * but the GtkFlowBoxChild can only be focused and not activated (by default).
+ * Tweak that to avoid tab navigation issues and visual artifacts. */
+static void
+setup_parent_flow_box_child (GsCategoryPage *self,
+			     GtkWidget *tile)
+{
+	GtkWidget *child;
+
+	g_assert (GTK_IS_FLOW_BOX_CHILD (gtk_widget_get_parent (tile)));
+
+	child = gtk_widget_get_parent (tile);
+	gtk_widget_add_css_class (child, "card");
+	gtk_widget_set_can_focus (tile, FALSE);
+
+	g_signal_connect_object (child, "activate",
+				 G_CALLBACK (flow_box_child_activate_cb), self, 0);
+}
+
+static void
 load_category_finish (LoadCategoryData *data)
 {
 	GsCategoryPage *self = data->page;
@@ -351,14 +379,14 @@ load_category_finish (LoadCategoryData *data)
 
 		if (flow_box != NULL) {
 			gtk_flow_box_insert (GTK_FLOW_BOX (flow_box), tile, -1);
-			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+			setup_parent_flow_box_child (self, tile);
 		}
 	}
 
 	for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
 		GtkWidget *tile = link->data;
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+		setup_parent_flow_box_child (self, tile);
 	}
 
 	g_slist_free (recently_updated);
