@@ -23,5 +23,7 @@ void		 gs_review_dialog_set_rating	(GsReviewDialog	*dialog,
 						 gint		 rating);
 const gchar	*gs_review_dialog_get_summary	(GsReviewDialog	*dialog);
 gchar		*gs_review_dialog_get_text	(GsReviewDialog	*dialog);
+void		 gs_review_dialog_set_error_text(GsReviewDialog	*dialog,
+						 const gchar	*error_text);
 
 G_END_DECLS

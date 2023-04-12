@@ -25,6 +25,8 @@ struct _GsReviewDialog
 {
 	AdwWindow	 parent_instance;
 
+	GtkWidget	*error_revealer;
+	GtkWidget	*error_label;
 	GtkWidget	*star;
 	GtkWidget	*label_rating_desc;
 	GtkWidget	*summary_entry;
@@ -172,6 +174,13 @@ gs_review_dialog_post_button_clicked_cb (GsReviewDialog *self)
 }
 
 static void
+gs_review_dialog_dismiss_error_cb (GtkButton *button,
+				   GsReviewDialog *self)
+{
+	gtk_revealer_set_reveal_child (GTK_REVEALER (self->error_revealer), FALSE);
+}
+
+static void
 gs_review_dialog_init (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
@@ -233,12 +242,16 @@ gs_review_dialog_class_init (GsReviewDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-review-dialog.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, error_revealer);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, error_label);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, star);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, label_rating_desc);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, summary_entry);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, text_view);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, cancel_button);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, post_button);
+
+	gtk_widget_class_bind_template_callback (widget_class, gs_review_dialog_dismiss_error_cb);
 }
 
 GtkWidget *
@@ -246,4 +259,15 @@ gs_review_dialog_new (void)
 {
 	return GTK_WIDGET (g_object_new (GS_TYPE_REVIEW_DIALOG,
 					 NULL));
+}
+
+void
+gs_review_dialog_set_error_text (GsReviewDialog *dialog,
+				 const gchar *error_text)
+{
+	g_return_if_fail (GS_IS_REVIEW_DIALOG (dialog));
+	g_return_if_fail (error_text != NULL);
+
+	gtk_label_set_text (GTK_LABEL (dialog->error_label), error_text);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), TRUE);
 }
