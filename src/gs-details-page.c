@@ -2211,8 +2211,11 @@ gs_details_page_review_send_cb (GtkDialog *dialog,
 					self->cancellable, &local_error);
 
 	if (local_error != NULL) {
-		g_warning ("failed to set review on %s: %s",
+		g_autofree gchar *tmp = NULL;
+		g_debug ("failed to submit review on '%s': %s",
 			   gs_app_get_id (self->app), local_error->message);
+		tmp = g_strdup_printf (_("Failed to submit review for “%s”: %s"), gs_app_get_name (self->app), local_error->message);
+		gs_review_dialog_set_error_text (rdialog, tmp);
 		return;
 	}
 
