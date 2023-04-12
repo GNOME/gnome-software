@@ -164,21 +164,37 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 		gtk_widget_add_css_class (dialog->post_button, "suggested-action");
 	else
 		gtk_widget_remove_css_class (dialog->post_button, "suggested-action");
+
+	/* hide any error when the content changes */
+	gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), FALSE);
 }
 
 static gboolean
 gs_review_dialog_timeout_cb (gpointer user_data)
 {
 	GsReviewDialog *dialog = GS_REVIEW_DIALOG (user_data);
+	gboolean child_been_revealed = gtk_revealer_get_reveal_child (GTK_REVEALER (dialog->error_revealer));
 	dialog->timer_id = 0;
 	gs_review_dialog_changed_cb (dialog);
+	/* Restore the error message, because it was not hidden due to a user
+	   action, but due to a timer here. */
+	if (child_been_revealed)
+		gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), child_been_revealed);
 	return FALSE;
 }
 
 static void
 gs_review_dialog_post_button_clicked_cb (GsReviewDialog *self)
 {
-	g_signal_emit (self, signals[SIGNAL_SEND], 0, NULL);
+	const gchar *error_text = gs_review_dialog_validate (self);
+
+	if (error_text != NULL) {
+		gs_review_dialog_set_error_text (self, error_text);
+	} else {
+		/* hide any error before send */
+		gtk_revealer_set_reveal_child (GTK_REVEALER (self->error_revealer), FALSE);
+		g_signal_emit (self, signals[SIGNAL_SEND], 0, NULL);
+	}
 }
 
 static void
