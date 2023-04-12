@@ -1653,7 +1653,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 
 	/* show the button only if the user never reviewed */
 	gtk_widget_set_visible (self->button_review, show_review_button);
-	if (gs_app_get_state (self->app) != GS_APP_STATE_INSTALLED) {
+	if (!gs_app_is_installed (self->app)) {
 		gtk_widget_set_visible (self->button_review, FALSE);
 		gtk_widget_set_sensitive (self->button_review, FALSE);
 		gtk_widget_set_sensitive (self->star, FALSE);
