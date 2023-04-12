@@ -111,16 +111,13 @@ gs_review_dialog_update_review_comment (GsReviewDialog *dialog)
 	gtk_label_set_label (GTK_LABEL (dialog->label_rating_desc), msg);
 }
 
-static void
-gs_review_dialog_changed_cb (GsReviewDialog *dialog)
+/* (nullable) - when NULL, all is okay */
+static const gchar *
+gs_review_dialog_validate (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
-	gboolean all_okay = TRUE;
 	const gchar *msg = NULL;
 	glong summary_length;
-
-	/* update review text */
-	gs_review_dialog_update_review_comment (dialog);
 
 	/* require rating, summary and long review */
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->text_view));
@@ -128,34 +125,45 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 	if (dialog->timer_id != 0) {
 		/* TRANSLATORS: the review can't just be copied and pasted */
 		msg = _("Please take more time writing the review");
-		all_okay = FALSE;
 	} else if (gs_star_widget_get_rating (GS_STAR_WIDGET (dialog->star)) == 0) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("Please choose a star rating");
-		all_okay = FALSE;
 	} else if (summary_length < SUMMARY_LENGTH_MIN) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The summary is too short");
-		all_okay = FALSE;
 	} else if (summary_length > SUMMARY_LENGTH_MAX) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The summary is too long");
-		all_okay = FALSE;
 	} else if (gtk_text_buffer_get_char_count (buffer) < DESCRIPTION_LENGTH_MIN) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The description is too short");
-		all_okay = FALSE;
 	} else if (gtk_text_buffer_get_char_count (buffer) > DESCRIPTION_LENGTH_MAX) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The description is too long");
-		all_okay = FALSE;
 	}
 
+	return msg;
+}
+
+static void
+gs_review_dialog_changed_cb (GsReviewDialog *dialog)
+{
+	const gchar *error_text;
+
+	/* update review text */
+	gs_review_dialog_update_review_comment (dialog);
+
+	error_text = gs_review_dialog_validate (dialog);
+
 	/* tell the user what's happening */
-	gtk_widget_set_tooltip_text (dialog->post_button, msg);
+	gtk_widget_set_tooltip_text (dialog->post_button, error_text);
 
 	/* can the user submit this? */
-	gtk_widget_set_sensitive (dialog->post_button, all_okay);
+	gtk_widget_set_receives_default (dialog->post_button, error_text == NULL);
+	if (error_text == NULL)
+		gtk_widget_add_css_class (dialog->post_button, "suggested-action");
+	else
+		gtk_widget_remove_css_class (dialog->post_button, "suggested-action");
 }
 
 static gboolean
