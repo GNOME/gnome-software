@@ -2185,21 +2185,14 @@ gs_details_page_app_launch_button_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
-gs_details_page_review_response_cb (GtkDialog *dialog,
-                                    gint response,
-                                    GsDetailsPage *self)
+gs_details_page_review_send_cb (GtkDialog *dialog,
+				GsDetailsPage *self)
 {
 	g_autofree gchar *text = NULL;
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(AsReview) review = NULL;
 	GsReviewDialog *rdialog = GS_REVIEW_DIALOG (dialog);
 	g_autoptr(GError) local_error = NULL;
-
-	/* not agreed */
-	if (response != GTK_RESPONSE_OK) {
-		gtk_window_destroy (GTK_WINDOW (dialog));
-		return;
-	}
 
 	review = as_review_new ();
 	as_review_set_summary (review, gs_review_dialog_get_summary (rdialog));
@@ -2234,8 +2227,8 @@ gs_details_page_write_review (GsDetailsPage *self)
 {
 	GtkWidget *dialog;
 	dialog = gs_review_dialog_new ();
-	g_signal_connect (dialog, "response",
-			  G_CALLBACK (gs_details_page_review_response_cb), self);
+	g_signal_connect (dialog, "send",
+			  G_CALLBACK (gs_details_page_review_send_cb), self);
 	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 }
 

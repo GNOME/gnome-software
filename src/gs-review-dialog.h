@@ -8,13 +8,14 @@
 
 #pragma once
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_REVIEW_DIALOG (gs_review_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsReviewDialog, gs_review_dialog, GS, REVIEW_DIALOG, GtkDialog)
+G_DECLARE_FINAL_TYPE (GsReviewDialog, gs_review_dialog, GS, REVIEW_DIALOG, AdwWindow)
 
 GtkWidget	*gs_review_dialog_new		(void);
 gint		 gs_review_dialog_get_rating	(GsReviewDialog	*dialog);
