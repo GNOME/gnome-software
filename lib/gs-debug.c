@@ -146,14 +146,24 @@ gs_log_writer_journald (GLogLevelFlags log_level,
                         gsize n_fields,
                         gpointer user_data)
 {
-	/* important enough to force to the journal */
+	GsDebug *debug = GS_DEBUG (user_data);
+
 	switch (log_level) {
 	case G_LOG_LEVEL_ERROR:
 	case G_LOG_LEVEL_CRITICAL:
 	case G_LOG_LEVEL_WARNING:
-	case G_LOG_LEVEL_INFO:
+	case G_LOG_LEVEL_MESSAGE:
+		/* important enough to force to the journal */
 		return g_log_writer_journald (log_level, fields, n_fields, user_data);
 		break;
+	case G_LOG_LEVEL_INFO:
+	case G_LOG_LEVEL_DEBUG:
+		/* Not important enough unless verbose mode has been explicitly
+		 * enabled. */
+		if (g_atomic_int_get (&debug->verbose))
+			return g_log_writer_journald (log_level, fields, n_fields, user_data);
+		else
+			return G_LOG_WRITER_HANDLED;
 	default:
 		break;
 	}
