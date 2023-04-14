@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-calendar master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-03-27 09:40+0000\n"
-"PO-Revision-Date: 2023-03-01 20:49+0100\n"
+"POT-Creation-Date: 2023-04-12 10:47+0000\n"
+"PO-Revision-Date: 2023-04-14 22:37+0200\n"
 "Last-Translator: Quentin PAGÈS\n"
 "Language-Team: Tot en òc\n"
 "Language: oc\n"
@@ -908,14 +908,14 @@ msgstr "Supression en cors"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:924
-#: src/gs-details-page.c:950 src/gs-details-page.ui:209 src/gs-page.c:420
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:927
+#: src/gs-details-page.c:953 src/gs-details-page.ui:209 src/gs-page.c:418
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Installar"
 
 #. TRANSLATORS: this is button text to remove the app
-#: src/gs-app-addon-row.ui:73 src/gs-page.c:555
+#: src/gs-app-addon-row.ui:73 src/gs-page.c:559
 msgid "_Uninstall"
 msgstr "_Desinstallar"
 
@@ -1531,7 +1531,7 @@ msgstr "Font : %s"
 msgid "Renamed from %s"
 msgstr "S'apelava %s"
 
-#: src/gs-app-row.ui:197 src/gs-app-tile.ui:50 src/gs-feature-tile.c:543
+#: src/gs-app-row.ui:197 src/gs-feature-tile.c:543
 msgctxt "Single app"
 msgid "Installed"
 msgstr "Installada"
@@ -1578,7 +1578,7 @@ msgstr "Autentificacion requerida"
 
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:12 src/gs-common.c:296 src/gs-common.c:697
-#: src/gs-details-page.ui:297 src/gs-page.c:418 src/gs-page.c:553
+#: src/gs-details-page.ui:297 src/gs-page.c:416 src/gs-page.c:557
 #: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:171
 #: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:18 src/gs-review-row.c:237
 #: src/gs-updates-page.c:847 src/gs-updates-page.c:864
@@ -2077,10 +2077,8 @@ msgstr "Installar lo logicial tèrç ?"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:236
-#, fuzzy
-#| msgid "Enable Third-Party Software Repository?"
 msgid "Enable Software Repository?"
-msgstr "Activar los depauses logicials tèrces ?"
+msgstr "Activar lo repertòri de Logicial ?"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:238 src/gs-repos-dialog.c:168
@@ -2168,13 +2166,10 @@ msgstr[1] "De mesas a jorn son estadas installadas sus aqueste sistèma"
 
 #. TRANSLATORS: we've just removed some apps
 #: src/gs-common.c:845
-#, fuzzy
-#| msgid "An application has been removed"
-#| msgid_plural "Applications have been removed"
 msgid "An app has been removed"
 msgid_plural "Apps have been removed"
 msgstr[0] "Una aplicacion es estada suprimida"
-msgstr[1] "D’aplicacions son estadas suprimidas"
+msgstr[1] "Mai d’una aplicacion son estadas suprimidas"
 
 #. TRANSLATORS: the new apps will not be run until we restart
 #: src/gs-common.c:851
@@ -2352,7 +2347,7 @@ msgstr "Preparacion…"
 msgid "Uninstalling…"
 msgstr "Desinstallacion…"
 
-#: src/gs-details-page.c:940
+#: src/gs-details-page.c:943
 msgid "_Restart"
 msgstr "_Reaviar"
 
@@ -2360,40 +2355,40 @@ msgstr "_Reaviar"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:964
+#: src/gs-details-page.c:967
 msgid "_Install…"
 msgstr "_Installar…"
 
-#: src/gs-details-page.c:1031
+#: src/gs-details-page.c:1034
 msgid "_Uninstall…"
 msgstr "_Desinstallar…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1175
+#: src/gs-details-page.c:1178
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s s’aficharà en anglés estatsunidenc"
 
-#: src/gs-details-page.c:1181
+#: src/gs-details-page.c:1184
 msgid "This app will appear in US English"
 msgstr "Aquesta aplicacion s’aficharà en anglés estatsunidenc"
 
-#: src/gs-details-page.c:1196 src/gs-details-page.ui:59
+#: src/gs-details-page.c:1199 src/gs-details-page.ui:59
 msgid "Help _Translate"
 msgstr "Ajudar a _traduire"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1260
+#: src/gs-details-page.c:1263
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Autras aplicacions de %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1637
+#: src/gs-details-page.c:1640
 msgid "You need internet access to write a review"
 msgstr "Un accès a Internet es indispensable per redigir una evaluacion"
 
-#: src/gs-details-page.c:1822 src/gs-details-page.c:1838
+#: src/gs-details-page.c:1825 src/gs-details-page.c:1841
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impossible de trobar « %s »"
@@ -2459,10 +2454,6 @@ msgid "No Software Repository Included"
 msgstr "Pas cap de depaus de logicials inclús"
 
 #: src/gs-details-page.ui:634
-#, fuzzy
-#| msgid ""
-#| "This application does not include a software repository. It will not be "
-#| "updated with new versions."
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -3244,20 +3235,20 @@ msgstr "L’utilizaire a refusat l’installacion"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:412
+#: src/gs-page.c:410
 #, c-format
 msgid "Prepare %s"
 msgstr "Preparar %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:527
+#: src/gs-page.c:531
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Volètz vertadièrament suprimir lo depaus %s ?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:531
+#: src/gs-page.c:535
 #, fuzzy, c-format
 #| msgid ""
 #| "All applications from %s will be uninstalled, and you will have to re-"
@@ -3271,13 +3262,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:539
+#: src/gs-page.c:543
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Volètz vertadièrament desinstallar %s ?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:542
+#: src/gs-page.c:546
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -3297,10 +3288,8 @@ msgstr ""
 "pas automaticament telecargadas sus connexion mobil o limitadas."
 
 #: src/gs-prefs-dialog.ui:19
-#, fuzzy
-#| msgid "Automatic Updates"
 msgid "Automatic _Updates"
-msgstr "Mesas a jorn automaticas"
+msgstr "Mesas a jorn _automaticas"
 
 #: src/gs-prefs-dialog.ui:20
 #, fuzzy
@@ -3319,12 +3308,10 @@ msgid "Automatic Update _Notifications"
 msgstr "Notificacions de mesa a jorn automatica"
 
 #: src/gs-prefs-dialog.ui:34
-#, fuzzy
-#| msgid "Show notifications when updates have been automatically installed."
 msgid "Show notifications when updates have been automatically installed"
 msgstr ""
 "Afichar de notificacions quand de mesas a jorn son estadas installadas "
-"automaticament."
+"automaticament"
 
 #: src/gs-prefs-dialog.ui:47
 msgid "Show Only _Free Apps"
@@ -3602,21 +3589,19 @@ msgstr "Resumit"
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: src/gs-review-dialog.ui:116
-#, fuzzy
-#| msgid "_Write Review"
 msgctxt "app review"
 msgid "Write a short review"
-msgstr "_Redigir una avaloracion"
+msgstr "_Redigir un avís cort"
 
 #: src/gs-review-dialog.ui:160
 #, fuzzy
 #| msgid ""
-#| "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
-#| "privacy\">privacy policy</a>."
+#| "Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
+#| "\">privacy policy</a>."
 msgid ""
-"Find what data is sent in our <a href=\"https://odrs.gnome.org/"
-"privacy\">privacy policy</a>. The full name attached to your account will be "
-"shown publicly."
+"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
+"\">privacy policy</a>. The full name attached to your account will be shown "
+"publicly."
 msgstr ""
 "Trobaretz la lista de las donadas transmesas dins nòstra <a href=\"https://"
 "odrs.gnome.org/privacy\">politica de confidencialitat</a>."
@@ -3693,8 +3678,6 @@ msgid "Remove…"
 msgstr "Suprimir…"
 
 #: src/gs-safety-context-dialog.c:143
-#, fuzzy
-#| msgid "Check that you trust the vendor, as the application isn’t sandboxed"
 msgid "Check that you trust the vendor, as the app isn’t sandboxed"
 msgstr ""
 "Verificatz que vos fisatz del vendeire, perque l’aplicacion es pas isolada"
@@ -4600,8 +4583,6 @@ msgstr "_Explorar"
 
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-shell.ui:286
-#, fuzzy
-#| msgid "_Installed"
 msgctxt "List of installed apps"
 msgid "_Installed"
 msgstr "_Installadas"
@@ -4623,10 +4604,8 @@ msgid "None"
 msgstr "Pas cap"
 
 #: src/gs-storage-context-dialog.c:139
-#, fuzzy
-#| msgid "App ID"
 msgid "App Data"
-msgstr "Identificant de l’aplicacion"
+msgstr "Donada d'aplicacion"
 
 #: src/gs-storage-context-dialog.c:140
 #, fuzzy
@@ -4718,11 +4697,8 @@ msgid "Installed on %s"
 msgstr "Installadas sus %s"
 
 #: src/gs-update-dialog.ui:77
-#, fuzzy
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "No Updates Installed"
-msgstr "Mesa a jorn logiciala installada"
+msgstr "Cap de mesa a jorn logiciala pas installada"
 
 #: src/gs-update-monitor.c:213
 msgid "Software Updates Are Out of Date"
@@ -5249,16 +5225,14 @@ msgstr "Flatpak es un component logicial per las aplicacions de burèus Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
 #: plugins/flatpak/gs-flatpak.c:318
-#, fuzzy, c-format
-#| msgid "System Updates"
+#, c-format
 msgid "System folder %s"
-msgstr "Mesas a jorn sistèma"
+msgstr "Dorsièr sistèma %s"
 
 #: plugins/flatpak/gs-flatpak.c:319 plugins/flatpak/gs-flatpak.c:320
-#, fuzzy, c-format
-#| msgid "Home folder"
+#, c-format
 msgid "Home subfolder %s"
-msgstr "Dorsièr personal"
+msgstr "Jos dorsièr personal %s"
 
 #: plugins/flatpak/gs-flatpak.c:321
 #, fuzzy
@@ -5275,10 +5249,9 @@ msgid "Desktop folder"
 msgstr "Repertòri del burèu"
 
 #: plugins/flatpak/gs-flatpak.c:323
-#, fuzzy, c-format
-#| msgid "Desktop Support"
+#, c-format
 msgid "Desktop subfolder %s"
-msgstr "Presa en carga burèu"
+msgstr "Jos dorsièr Burèu %s"
 
 #: plugins/flatpak/gs-flatpak.c:324
 msgid "Documents folder"
@@ -5295,11 +5268,9 @@ msgid "Music folder"
 msgstr "Repertòri de musica"
 
 #: plugins/flatpak/gs-flatpak.c:325
-#, fuzzy, c-format
-#| msgctxt "Menu of Audio & Video"
-#| msgid "Music Players"
+#, c-format
 msgid "Music subfolder %s"
-msgstr "Lectors de musica"
+msgstr "Jos dorsièr Musica %s"
 
 #: plugins/flatpak/gs-flatpak.c:326
 msgid "Pictures folder"
@@ -5308,26 +5279,25 @@ msgstr "Repertòri d'imatges"
 #: plugins/flatpak/gs-flatpak.c:326
 #, c-format
 msgid "Pictures subfolder %s"
-msgstr ""
+msgstr "Jos dorsièr Imatges %s"
 
 #: plugins/flatpak/gs-flatpak.c:327
 msgid "Public Share folder"
-msgstr ""
+msgstr "Dorsièr public partejat"
 
 #: plugins/flatpak/gs-flatpak.c:327
 #, c-format
 msgid "Public Share subfolder %s"
-msgstr ""
+msgstr "Dorsièr public partejat %s"
 
 #: plugins/flatpak/gs-flatpak.c:328
 msgid "Videos folder"
 msgstr "Repertòri de vidèos"
 
 #: plugins/flatpak/gs-flatpak.c:328
-#, fuzzy, c-format
-#| msgid "%s is suitable for %s"
+#, c-format
 msgid "Videos subfolder %s"
-msgstr "%s es adeqüat per %s"
+msgstr "Jos dorsièr Vidèos %s"
 
 #: plugins/flatpak/gs-flatpak.c:329
 msgid "Templates folder"
@@ -5336,7 +5306,7 @@ msgstr "Repertòri de modèls"
 #: plugins/flatpak/gs-flatpak.c:329
 #, c-format
 msgid "Templates subfolder %s"
-msgstr ""
+msgstr "Jos dorsièr Modèls %s"
 
 #: plugins/flatpak/gs-flatpak.c:330
 msgid "User cache folder"
@@ -5348,16 +5318,13 @@ msgid "User cache subfolder %s"
 msgstr ""
 
 #: plugins/flatpak/gs-flatpak.c:331
-#, fuzzy
-#| msgid "%s Configuration Update"
 msgid "User configuration folder"
-msgstr "%s mesa a jorn de configuracion"
+msgstr "Dorsièr de configuracion utilizaire"
 
 #: plugins/flatpak/gs-flatpak.c:331
-#, fuzzy, c-format
-#| msgid "%s Configuration Update"
+#, c-format
 msgid "User configuration subfolder %s"
-msgstr "%s mesa a jorn de configuracion"
+msgstr "Dorsièr de configuracion utilizaire %s"
 
 #: plugins/flatpak/gs-flatpak.c:332
 msgid "User data folder"
@@ -5369,10 +5336,8 @@ msgid "User data subfolder %s"
 msgstr ""
 
 #: plugins/flatpak/gs-flatpak.c:333
-#, fuzzy
-#| msgid "Home folder"
 msgid "User runtime folder"
-msgstr "Dorsièr personal"
+msgstr "Dorsièr personal d’environament d’execucion"
 
 #: plugins/flatpak/gs-flatpak.c:333
 #, c-format
@@ -5381,9 +5346,8 @@ msgstr ""
 
 #: plugins/flatpak/gs-flatpak.c:391
 #, fuzzy, c-format
-#| msgid "No File System Access"
 msgid "Filesystem access to %s"
-msgstr "Cap d’accès al sistèma de fichièrs"
+msgstr "Accès al sistèma de fichièrs a %s"
 
 #. TRANSLATORS: status text when downloading new metadata
 #: plugins/flatpak/gs-flatpak.c:1408
