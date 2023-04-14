@@ -1164,7 +1164,8 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	g_mutex_lock (&plugin_loader->pending_apps_mutex);
 	for (guint i = 0; plugin_loader->pending_apps != NULL && i < gs_app_list_length (plugin_loader->pending_apps); i++) {
 		GsApp *app = gs_app_list_index (plugin_loader->pending_apps, i);
-		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
+		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL &&
+		    gs_app_get_unique_id (app) != NULL) {
 			g_string_append (s, gs_app_get_unique_id (app));
 			g_string_append_c (s, '\t');
 			g_string_append (s, as_component_kind_to_string (gs_app_get_kind (app)));
@@ -2911,7 +2912,8 @@ gs_plugin_loader_pending_apps_refined_cb (GObject      *source,
 	for (guint i = 0; i < gs_app_list_length (old_queue); i++) {
 		GsApp *app = gs_app_list_index (old_queue, i);
 
-		if (gs_app_list_lookup (refined_queue, gs_app_get_unique_id (app)) == NULL)
+		if (gs_app_get_unique_id (app) == NULL ||
+		    gs_app_list_lookup (refined_queue, gs_app_get_unique_id (app)) == NULL)
 			remove_app_from_install_queue (plugin_loader, app);
 	}
 
