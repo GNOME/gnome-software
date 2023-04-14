@@ -69,6 +69,9 @@ gs_plugin_repos_init (GsPluginRepos *self)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+
+	/* need pkgname */
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 static void
