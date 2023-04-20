@@ -2675,13 +2675,18 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 static void
 gs_plugin_loader_allow_updates_recheck (GsPluginLoader *plugin_loader)
 {
+	gboolean changed;
+
 	if (g_settings_get_boolean (plugin_loader->settings, "allow-updates")) {
-		g_hash_table_remove (plugin_loader->disallow_updates, plugin_loader);
+		changed = g_hash_table_remove (plugin_loader->disallow_updates, plugin_loader);
 	} else {
-		g_hash_table_insert (plugin_loader->disallow_updates,
-				     (gpointer) plugin_loader,
-				     (gpointer) "GSettings");
+		changed = g_hash_table_insert (plugin_loader->disallow_updates,
+					       (gpointer) plugin_loader,
+					       (gpointer) "GSettings");
 	}
+
+	if (changed)
+		g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_ALLOW_UPDATES]);
 }
 
 static void
