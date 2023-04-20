@@ -309,6 +309,7 @@
                                             <property name="use-underline">True</property>
                                             <property name="icon-name">emblem-synchronizing-symbolic</property>
                                             <property name="badge-number" bind-source="updates_page" bind-property="counter" bind-flags="sync-create"/>
+                                            <property name="visible" bind-source="updates_page" bind-property="visible" bind-flags="sync-create"/>
                                             <property name="child">
                                               <object class="GsUpdatesPage" id="updates_page">
                                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
