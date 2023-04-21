@@ -78,9 +78,6 @@ gs_plugin_fedora_pkgdb_collections_init (GsPluginFedoraPkgdbCollections *self)
 	self->distros = g_ptr_array_new_with_free_func ((GDestroyNotify) _pkgdb_item_free);
 	self->settings = g_settings_new ("org.gnome.software");
 
-	/* require the GnomeSoftware::CpeName metadata */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "os-release");
-
 	/* old name */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "fedora-distro-upgrades");
 }
@@ -620,35 +617,6 @@ _ensure_cache_finish (GsPluginFedoraPkgdbCollections  *self,
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
-static PkgdbItem *
-_get_item_by_cpe_name (GPtrArray   *distros,
-                       const gchar *cpe_name)
-{
-	guint64 version;
-	g_auto(GStrv) split = NULL;
-
-	/* split up 'cpe:/o:fedoraproject:fedora:26' to sections */
-	split = g_strsplit (cpe_name, ":", -1);
-	if (g_strv_length (split) < 5) {
-		g_warning ("CPE invalid format: %s", cpe_name);
-		return NULL;
-	}
-
-	/* find the correct collection */
-	version = g_ascii_strtoull (split[4], NULL, 10);
-	if (version == 0) {
-		g_warning ("failed to parse CPE version: %s", split[4]);
-		return NULL;
-	}
-	for (guint i = 0; i < distros->len; i++) {
-		PkgdbItem *item = g_ptr_array_index (distros, i);
-		if (g_ascii_strcasecmp (item->name, split[3]) == 0 &&
-		    item->version == version)
-			return item;
-	}
-	return NULL;
-}
-
 static void list_distro_upgrades_cb (GObject      *source_object,
                                      GAsyncResult *result,
                                      gpointer      user_data);
@@ -711,30 +679,39 @@ gs_plugin_fedora_pkgdb_collections_list_distro_upgrades_finish (GsPlugin      *p
 }
 
 static gboolean
-refine_app (GPtrArray            *distros,
-            GsApp                *app,
-            GsPluginRefineFlags   flags,
-            GCancellable         *cancellable,
-            GError              **error)
+refine_app (GsPluginFedoraPkgdbCollections *self,
+            GPtrArray                      *distros,
+            GsApp                          *app,
+            GsPluginRefineFlags             flags,
+            GCancellable                   *cancellable,
+            GError                        **error)
 {
-	PkgdbItem *item;
-	const gchar *cpe_name;
+	PkgdbItem *item = NULL;
+	guint64 app_version = 0;
 
 	/* not for us */
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 		return TRUE;
 
-	/* not enough metadata */
-	cpe_name = gs_app_get_metadata_item (app, "GnomeSoftware::CpeName");
-	if (cpe_name == NULL)
+	if (gs_app_get_version (app) != NULL)
+		app_version = g_ascii_strtoull (gs_app_get_version (app), NULL, 10);
+
+	/* system updates and system upgrades are the same kind, only different version */
+	if (app_version != self->os_version)
 		return TRUE;
 
 	/* find item */
-	item = _get_item_by_cpe_name (distros, cpe_name);
-	if (item == NULL) {
-		g_warning ("did not find %s", cpe_name);
-		return TRUE;
+	for (guint i = 0; i < distros->len; i++) {
+		item = g_ptr_array_index (distros, i);
+		if (item->version == self->os_version &&
+		    g_ascii_strcasecmp (item->name, self->os_name) == 0)
+			break;
+		item = NULL;
 	}
+
+	/* no information for this release */
+	if (item == NULL)
+		return TRUE;
 
 	/* fix the state */
 	switch (item->status) {
@@ -812,7 +789,7 @@ refine_cb (GObject      *source_object,
 
 	for (guint i = 0; i < gs_app_list_length (data->list); i++) {
 		GsApp *app = gs_app_list_index (data->list, i);
-		if (!refine_app (distros, app, data->flags, cancellable, &local_error)) {
+		if (!refine_app (self, distros, app, data->flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
