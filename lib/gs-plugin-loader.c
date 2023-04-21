@@ -765,7 +765,6 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			switch (gs_plugin_job_get_action (helper->plugin_job)) {
 			case GS_PLUGIN_ACTION_GET_UPDATES:
 			case GS_PLUGIN_ACTION_GET_SOURCES:
-			case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 			case GS_PLUGIN_ACTION_GET_LANGPACKS:
 				mask_error = TRUE;
 				break;

@@ -2854,7 +2854,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 static gboolean
 gs_plugin_packagekit_convert_error (GError **error,
 				    PkErrorEnum error_enum,
-				    const gchar *details)
+				    const gchar *details,
+				    const gchar *prefix)
 {
 	switch (error_enum) {
 	case PK_ERROR_ENUM_PACKAGE_DOWNLOAD_FAILED:
@@ -2904,6 +2905,8 @@ gs_plugin_packagekit_convert_error (GError **error,
 				     details);
 		break;
 	}
+	if (prefix != NULL)
+		g_prefix_error_literal (error, prefix);
 	return FALSE;
 }
 
@@ -2917,7 +2920,9 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	guint i;
 	g_autoptr(GPtrArray) package_array = NULL;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GSettings) settings = NULL;
 	g_autoptr(PkResults) results = NULL;
+	gboolean is_new_result;
 	PkExitEnum exit_code;
 
 	/* get the results */
@@ -2947,6 +2952,12 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	settings = g_settings_new ("org.gnome.software");
+	/* Two seconds precision */
+	is_new_result = mtime > g_settings_get_uint64 (settings, "packagekit-historical-updates-timestamp") + 2;
+	if (is_new_result)
+		g_settings_set_uint64 (settings, "packagekit-historical-updates-timestamp", mtime);
+
 	/* only return results if successful */
 	exit_code = pk_results_get_exit_code (results);
 	if (exit_code != PK_EXIT_ENUM_SUCCESS) {
@@ -2961,9 +2972,14 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 			return FALSE;
 		}
 
+		/* Ignore previously shown errors */
+		if (!is_new_result)
+			return TRUE;
+
 		return gs_plugin_packagekit_convert_error (error,
 		                                           pk_error_get_code (error_code),
-		                                           pk_error_get_details (error_code));
+		                                           pk_error_get_details (error_code),
+							   _("Failed to install updates: "));
 	}
 
 	/* distro upgrade? */
