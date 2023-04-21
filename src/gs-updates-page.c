@@ -47,7 +47,7 @@ struct _GsUpdatesPage
 	GsPluginLoader		*plugin_loader;
 	GCancellable		*cancellable;
 	GCancellable		*cancellable_refresh;
-	GCancellable		*cancellable_upgrade_download;
+	GCancellable		*cancellable_upgrade;
 	GSettings		*settings;
 	GSettings		*desktop_settings;
 	gboolean		 cache_valid;
@@ -892,6 +892,8 @@ upgrade_download_finished_cb (GObject *source,
 	g_autoptr(GsPageHelper) helper = user_data;
 	g_autoptr(GError) error = NULL;
 
+	g_clear_object (&helper->self->cancellable_upgrade);
+
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
@@ -927,10 +929,9 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 		return;
 	}
 
-	if (self->cancellable_upgrade_download != NULL)
-		g_object_unref (self->cancellable_upgrade_download);
-	self->cancellable_upgrade_download = g_cancellable_new ();
-	g_debug ("Starting upgrade download with cancellable %p", self->cancellable_upgrade_download);
+	g_clear_object (&self->cancellable_upgrade);
+	self->cancellable_upgrade = g_cancellable_new ();
+	g_debug ("Starting upgrade download with cancellable %p", self->cancellable_upgrade);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 					 "interactive", TRUE,
 					 "app", app,
@@ -938,7 +939,7 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 					 NULL);
 	helper = gs_page_helper_new (self, app, plugin_job);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable_upgrade_download,
+					    self->cancellable_upgrade,
 					    upgrade_download_finished_cb,
 					    helper);
 }
@@ -997,6 +998,8 @@ upgrade_trigger_finished_cb (GObject *source,
 	GsUpdatesPage *self = (GsUpdatesPage *) user_data;
 	g_autoptr(GError) error = NULL;
 
+	g_clear_object (&self->cancellable_upgrade);
+
 	/* get the results */
 	if (!gs_plugin_loader_job_action_finish (self->plugin_loader, res, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
@@ -1019,12 +1022,15 @@ trigger_upgrade (GsUpdatesPage *self)
 		return;
 	}
 
+	g_clear_object (&self->cancellable_upgrade);
+	self->cancellable_upgrade = g_cancellable_new ();
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 					 "interactive", TRUE,
 					 "app", upgrade,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
+					    self->cancellable_upgrade,
 					    upgrade_trigger_finished_cb,
 					    self);
 }
@@ -1182,8 +1188,8 @@ static void
 gs_updates_page_upgrade_cancel_cb (GsUpgradeBanner *upgrade_banner,
                                    GsUpdatesPage *self)
 {
-	g_debug ("Cancelling upgrade download with %p", self->cancellable_upgrade_download);
-	g_cancellable_cancel (self->cancellable_upgrade_download);
+	g_debug ("Cancelling upgrade with %p", self->cancellable_upgrade);
+	g_cancellable_cancel (self->cancellable_upgrade);
 }
 
 static gboolean
@@ -1329,8 +1335,8 @@ gs_updates_page_dispose (GObject *object)
 
 	g_cancellable_cancel (self->cancellable_refresh);
 	g_clear_object (&self->cancellable_refresh);
-	g_cancellable_cancel (self->cancellable_upgrade_download);
-	g_clear_object (&self->cancellable_upgrade_download);
+	g_cancellable_cancel (self->cancellable_upgrade);
+	g_clear_object (&self->cancellable_upgrade);
 
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
 		if (self->sections[i] != NULL) {

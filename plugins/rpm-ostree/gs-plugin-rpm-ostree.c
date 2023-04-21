@@ -1548,11 +1548,17 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 		return TRUE;
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
+	gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
 
-	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error)) {
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		return FALSE;
+	}
+
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+		return FALSE;
+	}
 
 	/* construct new refspec based on the distro version we're upgrading to */
 	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/silverblue",
@@ -1575,14 +1581,17 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 						       &local_error)) {
 			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 				g_clear_error (&local_error);
-				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
+					gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 					return FALSE;
+				}
 				done = FALSE;
 				continue;
 			}
 			if (local_error)
 				g_propagate_error (error, g_steal_pointer (&local_error));
 			gs_rpmostree_error_convert (error);
+			gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 			return FALSE;
 		}
 	}
@@ -1599,9 +1608,12 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 			g_debug ("ignoring rpm-ostree error: %s", (*error)->message);
 			g_clear_error (error);
 		} else {
+			gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 			return FALSE;
 		}
 	}
+
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 
 	/* success */
 	return TRUE;
