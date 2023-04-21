@@ -120,6 +120,7 @@ struct _GsDetailsPage
 	AdwActionRow		*translate_row;
 	AdwActionRow		*report_an_issue_row;
 	AdwActionRow		*help_row;
+	AdwActionRow		*contact_row;
 	GtkWidget		*button_install;
 	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
@@ -1291,6 +1292,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	link_rows_visible = update_action_row_from_link (self->translate_row, self->app, AS_URL_KIND_TRANSLATE) || link_rows_visible;
 	link_rows_visible = update_action_row_from_link (self->report_an_issue_row, self->app, AS_URL_KIND_BUGTRACKER) || link_rows_visible;
 	link_rows_visible = update_action_row_from_link (self->help_row, self->app, AS_URL_KIND_HELP) || link_rows_visible;
+	link_rows_visible = update_action_row_from_link (self->contact_row, self->app, AS_URL_KIND_CONTACT) || link_rows_visible;
 
 	gtk_stack_set_visible_child_name (self->links_stack, link_rows_visible ? "links" : "empty");
 
@@ -2547,6 +2549,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translate_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, report_an_issue_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, help_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, contact_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_update);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
