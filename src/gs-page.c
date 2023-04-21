@@ -604,6 +604,29 @@ gs_page_is_active (GsPage *page)
 }
 
 /**
+ * gs_page_is_active_and_focused:
+ * @self: a #GsPage
+ *
+ * Similar to gs_page_is_active(), only verifies, that also the application
+ * window is visible and focused, aka the user interacts with the page.
+ *
+ * Returns: whether the page is active and focused
+ *
+ * Since: 45
+ **/
+gboolean
+gs_page_is_active_and_focused (GsPage *self)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (self);
+	g_return_val_if_fail (GS_IS_PAGE (self), FALSE);
+
+	return gs_page_is_active (self) &&
+	       priv->shell != NULL &&
+	       gtk_widget_get_visible (GTK_WIDGET (priv->shell)) &&
+	       gtk_window_is_active (GTK_WINDOW (priv->shell));
+}
+
+/**
  * gs_page_get_title:
  * @page: a #GsPage
  *

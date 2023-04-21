@@ -14,6 +14,7 @@
 
 #include "gs-app-list-private.h"
 #include "gs-app-row.h"
+#include "gs-application.h"
 #include "gs-page.h"
 #include "gs-common.h"
 #include "gs-progress-button.h"
@@ -401,16 +402,30 @@ _button_cancel_clicked_cb (GsUpdatesSection *self)
 static void
 _download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 {
-	g_autoptr(GsUpdatesSection) self = (GsUpdatesSection *) user_data;
+	g_autoptr(GsUpdatesSectionUpdateHelper) helper = user_data;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	GsUpdatesSection *self = helper->self;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
 	/* get result */
-	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
-		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("failed to download updates: %s", error->message);
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			gs_plugin_loader_claim_job_error (plugin_loader,
+							  NULL,
+							  helper->job,
+							  error);
+		}
+	} else if (!gs_page_is_active_and_focused (self->page)) {
+		g_autoptr(GNotification) notif = NULL;
+
+		notif = g_notification_new (_("Software Updates Downloaded"));
+		g_notification_set_body (notif, _("Software updates have been downloaded and are ready to be installed."));
+		g_notification_set_default_action_and_target (notif, "app.set-mode", "s", "updates");
+		/* last the notification for an hour */
+		gs_application_send_notification (GS_APPLICATION (g_application_get_default ()), "updates-downloaded", notif, 60);
 	}
 
 	g_clear_object (&self->cancellable);
@@ -422,14 +437,21 @@ _button_download_clicked_cb (GsUpdatesSection *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsUpdatesSectionUpdateHelper *helper;
+
+	g_application_withdraw_notification (g_application_get_default (), "updates-downloaded");
 
 	g_set_object (&self->cancellable, cancellable);
 	plugin_job = gs_plugin_job_update_apps_new (self->list,
 						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	gs_plugin_job_set_propagate_error (plugin_job, TRUE);
+	helper = g_new0 (GsUpdatesSectionUpdateHelper, 1);
+	helper->self = g_object_ref (self);
+	helper->job = g_object_ref (plugin_job);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
-					    (GAsyncReadyCallback) _download_finished_cb,
-					    g_object_ref (self));
+					    _download_finished_cb,
+					    helper);
 	_update_buttons (self);
 }
 
