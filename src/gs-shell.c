@@ -71,6 +71,7 @@ struct _GsShell
 	GsPluginLoader		*plugin_loader;
 	GtkWidget		*header_start_widget;
 	GtkWidget		*header_end_widget;
+	GtkWidget		*sub_header_end_widget;
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
@@ -107,6 +108,7 @@ struct _GsShell
 	GtkWidget		*button_events_dismiss;
 	GtkWidget		*label_events;
 	GtkWidget		*primary_menu;
+	GtkWidget		*sub_header;
 	GtkWidget		*sub_page_header_title;
 
 	gboolean		 activate_after_setup;
@@ -222,6 +224,29 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 
 	if (old_widget != NULL) {
 		adw_header_bar_remove (ADW_HEADER_BAR (shell->main_header), old_widget);
+		g_object_unref (old_widget);
+	}
+}
+
+static void
+gs_shell_set_sub_header_end_widget (GsShell *shell, GtkWidget *widget)
+{
+	GtkWidget *old_widget;
+
+	old_widget = shell->sub_header_end_widget;
+
+	if (shell->sub_header_end_widget == widget)
+		return;
+
+	if (widget != NULL) {
+		g_object_ref (widget);
+		adw_header_bar_pack_end (ADW_HEADER_BAR (shell->sub_header), widget);
+	}
+
+	shell->sub_header_end_widget = widget;
+
+	if (old_widget != NULL) {
+		adw_header_bar_remove (ADW_HEADER_BAR (shell->sub_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -528,6 +553,9 @@ stack_notify_visible_child_cb (GObject    *object,
 	case GS_SHELL_MODE_UPDATES:
 	case GS_SHELL_MODE_SEARCH:
 		gs_shell_set_header_end_widget (shell, widget);
+		break;
+	case GS_SHELL_MODE_EXTRAS:
+		gs_shell_set_sub_header_end_widget (shell, widget);
 		break;
 	default:
 		g_assert (widget == NULL);
@@ -2485,6 +2513,7 @@ gs_shell_dispose (GObject *object)
 	g_clear_object (&shell->plugin_loader);
 	g_clear_object (&shell->header_start_widget);
 	g_clear_object (&shell->header_end_widget);
+	g_clear_object (&shell->sub_header_end_widget);
 	g_clear_object (&shell->page);
 	g_clear_pointer (&shell->events_info_uri, g_free);
 	g_clear_pointer (&shell->events_more_info, g_free);
@@ -2635,6 +2664,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_dismiss);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, label_events);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_page_header_title);
 
 	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));

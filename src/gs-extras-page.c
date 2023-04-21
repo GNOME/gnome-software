@@ -63,6 +63,7 @@ struct _GsExtrasPage
 	GtkWidget		 *scrolledwindow;
 	GtkWidget		 *spinner;
 	GtkWidget		 *stack;
+	GtkWidget		 *button_install_all;
 };
 
 G_DEFINE_TYPE (GsExtrasPage, gs_extras_page, GS_TYPE_PAGE)
@@ -266,6 +267,14 @@ gs_extras_page_set_state (GsExtrasPage *self,
 	gs_extras_page_maybe_emit_installed_resources_done (self);
 }
 
+static gboolean
+gs_extras_page_can_install_app (GsApp *app)
+{
+	return gs_app_get_state (app) == GS_APP_STATE_AVAILABLE ||
+	       gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL ||
+	      (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE && gs_app_get_url_missing (app) == NULL);
+}
+
 static void
 app_row_button_clicked_cb (GsAppRow *app_row,
                            GsExtrasPage *self)
@@ -276,9 +285,7 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 	    gs_app_get_url_missing (app) != NULL) {
 		gs_shell_show_uri (self->shell,
 	                           gs_app_get_url_missing (app));
-	} else if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE ||
-	           gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL ||
-	           gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
+	} else if (gs_extras_page_can_install_app (app)) {
 		gs_page_install_app (GS_PAGE (self), app, GS_SHELL_INTERACTION_FULL,
 				     self->search_cancellable);
 	} else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
@@ -289,9 +296,70 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 }
 
 static void
+gs_extras_page_button_install_all_cb (GtkWidget *button,
+				      GsExtrasPage *self)
+{
+	for (GtkWidget *child = gtk_widget_get_first_child (self->list_box_results);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		GsApp *app;
+
+		/* Might be a separator from list_header_func(). */
+		if (!GS_IS_APP_ROW (child))
+			continue;
+
+		app = gs_app_row_get_app (GS_APP_ROW (child));
+
+		if (gs_extras_page_can_install_app (app)) {
+			gs_page_install_app (GS_PAGE (self), app, GS_SHELL_INTERACTION_FULL,
+					     self->search_cancellable);
+		}
+	}
+}
+
+static void
+gs_extras_page_app_notify_state_cb (GsApp *app,
+				    GParamSpec *param,
+				    GsExtrasPage *self)
+{
+	GtkWidget *child;
+	guint n_can_install = 0;
+
+	/* No need to insensitive the button, when it's not visible */
+	if (!gtk_widget_get_visible (self->button_install_all))
+		return;
+
+	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLING ||
+	    gs_app_get_state (app) == GS_APP_STATE_REMOVING) {
+		gtk_widget_set_sensitive (self->button_install_all, FALSE);
+		return;
+	}
+
+	for (child = gtk_widget_get_first_child (self->list_box_results);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		GsApp *existing_app;
+
+		/* Might be a separator from list_header_func(). */
+		if (!GS_IS_APP_ROW (child))
+			continue;
+
+		existing_app = gs_app_row_get_app (GS_APP_ROW (child));
+		if (gs_extras_page_can_install_app (existing_app)) {
+			n_can_install++;
+			if (n_can_install > 1)
+				break;
+		}
+	}
+
+	gtk_widget_set_sensitive (self->button_install_all, n_can_install > 1);
+}
+
+static void
 gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchData *search_data)
 {
 	GtkWidget *app_row, *child;
+	guint n_can_install = 0;
 
 	/* Don't add same app twice */
 	for (child = gtk_widget_get_first_child (self->list_box_results);
@@ -305,10 +373,15 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 
 		existing_app = gs_app_row_get_app (GS_APP_ROW (child));
 		if (app == existing_app) {
+			g_signal_handlers_disconnect_by_func (existing_app, G_CALLBACK (gs_extras_page_app_notify_state_cb), self);
 			gtk_list_box_remove (GTK_LIST_BOX (self->list_box_results), child);
-			break;
+		} else if (gs_extras_page_can_install_app (existing_app)) {
+			n_can_install++;
 		}
 	}
+
+	if (gs_extras_page_can_install_app (app))
+		n_can_install++;
 
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_colorful (GS_APP_ROW (app_row), TRUE);
@@ -319,13 +392,16 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 	g_signal_connect (app_row, "button-clicked",
 	                  G_CALLBACK (app_row_button_clicked_cb),
 	                  self);
+	g_signal_connect_object (app, "notify::state", G_CALLBACK (gs_extras_page_app_notify_state_cb), self, 0);
 
 	gtk_list_box_append (GTK_LIST_BOX (self->list_box_results), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_name,
 				    self->sizegroup_button_label,
 				    self->sizegroup_button_image);
-	gtk_widget_set_visible (app_row, TRUE);
+
+	gtk_widget_set_sensitive (self->button_install_all, TRUE);
+	gtk_widget_set_visible (self->button_install_all, n_can_install > 1);
 }
 
 static GsApp *
@@ -700,12 +776,15 @@ get_search_what_provides_cb (GObject *source_object,
 static void
 gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 {
+	GtkWidget *child;
 	guint i;
 
 	/* cancel any pending searches */
 	g_cancellable_cancel (self->search_cancellable);
 	g_clear_object (&self->search_cancellable);
 	self->search_cancellable = g_cancellable_new ();
+
+	gtk_widget_set_visible (self->button_install_all, FALSE);
 
 	if (array_search_data != NULL) {
 		if (self->array_search_data != NULL)
@@ -716,7 +795,14 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 	self->pending_search_cnt = 0;
 
 	/* remove old entries */
-	gs_widget_remove_all (self->list_box_results, (GsRemoveFunc) gtk_list_box_remove);
+	while ((child = gtk_widget_get_first_child (self->list_box_results)) != NULL) {
+		if (GS_IS_APP_ROW (child)) {
+			GsApp *app = gs_app_row_get_app (GS_APP_ROW (child));
+			g_signal_handlers_disconnect_by_func (app, G_CALLBACK (gs_extras_page_app_notify_state_cb), self);
+		}
+
+		gtk_list_box_remove (GTK_LIST_BOX (self->list_box_results), child);
+	}
 
 	/* set state as loading */
 	self->state = GS_EXTRAS_PAGE_STATE_LOADING;
@@ -1217,6 +1303,7 @@ gs_extras_page_setup (GsPage *page,
                       GError **error)
 {
 	GsExtrasPage *self = GS_EXTRAS_PAGE (page);
+	GtkWidget *box;
 
 	g_return_val_if_fail (GS_IS_EXTRAS_PAGE (self), TRUE);
 
@@ -1232,6 +1319,16 @@ gs_extras_page_setup (GsPage *page,
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_results),
 				    list_sort_func,
 				    self, NULL);
+
+	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+	gs_page_set_header_end_widget (GS_PAGE (self), box);
+	self->button_install_all = gtk_button_new_with_mnemonic (_("Install _All"));
+	gtk_widget_set_visible (self->button_install_all, FALSE);
+	gtk_box_prepend (GTK_BOX (box), self->button_install_all);
+	g_signal_connect (self->button_install_all, "clicked",
+			  G_CALLBACK (gs_extras_page_button_install_all_cb),
+			  self);
+
 	return TRUE;
 }
 
