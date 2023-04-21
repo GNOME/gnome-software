@@ -126,7 +126,7 @@ check_updates_kind (GsAppList *apps,
 
 		app = gs_app_list_index (apps, ii);
 
-		is_important = gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL;
+		is_important = gs_app_get_update_urgency (app) >= AS_URGENCY_KIND_CRITICAL;
 		has_important = has_important || is_important;
 
 		if (gs_app_is_downloaded (app))
@@ -565,7 +565,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		guint64 size_download_bytes;
 		GsSizeType size_download_type = gs_app_get_size_download (app, &size_download_bytes);
 
-		if (gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL &&
+		if (gs_app_get_update_urgency (app) >= AS_URGENCY_KIND_CRITICAL &&
 		    size_download_type == GS_SIZE_TYPE_VALID &&
 		    size_download_bytes > 0) {
 			security_timestamp = (guint64) g_get_monotonic_time ();

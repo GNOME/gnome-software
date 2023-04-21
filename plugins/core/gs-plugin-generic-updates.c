@@ -48,7 +48,8 @@ gs_plugin_generic_updates_merge_os_update (GsApp *app)
 }
 
 static GsApp *
-gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
+gs_plugin_generic_updates_get_os_update (GsPlugin *plugin,
+					 gboolean includes_critical)
 {
 	GsApp *app;
 	const gchar *id = "org.gnome.Software.OsUpdate";
@@ -73,7 +74,7 @@ gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
 	gs_app_set_description (app,
 				GS_APP_QUALITY_NORMAL,
 				gs_app_get_summary (app));
-	ic = g_themed_icon_new ("system-component-os-updates");
+	ic = g_themed_icon_new (includes_critical ? "software-update-urgent-symbolic" : "system-component-os-updates");
 	gs_app_add_icon (app, ic);
 	return app;
 }
@@ -89,6 +90,7 @@ gs_plugin_generic_updates_refine_async (GsPlugin            *plugin,
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsAppList) os_updates = gs_app_list_new ();
+	gboolean any_critical = FALSE;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_generic_updates_refine_async);
@@ -104,8 +106,10 @@ gs_plugin_generic_updates_refine_async (GsPlugin            *plugin,
 		GsApp *app_tmp = gs_app_list_index (list, i);
 		if (gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
-		if (gs_plugin_generic_updates_merge_os_update (app_tmp))
+		if (gs_plugin_generic_updates_merge_os_update (app_tmp)) {
 			gs_app_list_add (os_updates, app_tmp);
+			any_critical = any_critical || gs_app_get_update_urgency (app_tmp) >= AS_URGENCY_KIND_CRITICAL;
+		}
 	}
 	if (gs_app_list_length (os_updates) == 0) {
 		g_task_return_boolean (task, TRUE);
@@ -113,7 +117,7 @@ gs_plugin_generic_updates_refine_async (GsPlugin            *plugin,
 	}
 
 	/* create new meta object */
-	app = gs_plugin_generic_updates_get_os_update (plugin);
+	app = gs_plugin_generic_updates_get_os_update (plugin, any_critical);
 	for (guint i = 0; i < gs_app_list_length (os_updates); i++) {
 		GsApp *app_tmp = gs_app_list_index (os_updates, i);
 		gs_app_add_related (app, app_tmp);
