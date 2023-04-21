@@ -106,12 +106,22 @@ refresh_ui (GsRepoRow *row)
 static gboolean
 refresh_idle (gpointer user_data)
 {
-	g_autoptr(GsRepoRow) row = (GsRepoRow *) user_data;
-	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
+	g_autofree GWeakRef *weak_ref = user_data;
+	g_autoptr(GsRepoRow) row = NULL;
 
-	priv->refresh_idle_id = 0;
+	row = g_weak_ref_get (weak_ref);
+	if (row != NULL) {
+		GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
 
-	refresh_ui (row);
+		priv->refresh_idle_id = 0;
+
+		/* The row can be removed from the list box between scheduling the idle
+		   callback and dispatching it. */
+		if (gtk_widget_get_parent (GTK_WIDGET (row)) != NULL)
+			refresh_ui (row);
+	}
+
+	g_weak_ref_clear (weak_ref);
 
 	return G_SOURCE_REMOVE;
 }
@@ -120,10 +130,14 @@ static void
 repo_state_changed_cb (GsApp *repo, GParamSpec *pspec, GsRepoRow *row)
 {
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
+	GWeakRef *weak_ref;
 
 	if (priv->refresh_idle_id > 0)
 		return;
-	priv->refresh_idle_id = g_idle_add (refresh_idle, g_object_ref (row));
+
+	weak_ref = g_new0 (GWeakRef, 1);
+	g_weak_ref_init (weak_ref, row);
+	priv->refresh_idle_id = g_idle_add (refresh_idle, weak_ref);
 }
 
 static gchar *
