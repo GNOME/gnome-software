@@ -852,6 +852,36 @@ refresh_cache_finished_cb (GObject *object,
 	get_updates (monitor);
 }
 
+static gboolean
+monitor_get_game_mode_is_active (GsUpdateMonitor *self)
+{
+	g_autoptr(GDBusProxy) proxy = NULL;
+	g_autoptr(GVariant) val = NULL;
+
+	/* This supports https://github.com/FeralInteractive/gamemode ;
+	   it's okay when it's not installed, nor running. */
+	proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
+					       G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
+#if GLIB_CHECK_VERSION(2, 72, 0)
+					       G_DBUS_PROXY_FLAGS_NO_MATCH_RULE |
+#endif
+					       G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+					       NULL,
+					       "com.feralinteractive.GameMode",
+					       "/com/feralinteractive/GameMode",
+					       "com.feralinteractive.GameMode",
+					       NULL,
+					       NULL);
+	if (proxy == NULL)
+		return FALSE;
+
+	val = g_dbus_proxy_get_cached_property (proxy, "ClientCount");
+	if (val != NULL)
+		return g_variant_get_int32 (val) > 0;
+
+	return FALSE;
+}
+
 typedef enum {
 	UP_DEVICE_LEVEL_UNKNOWN,
 	UP_DEVICE_LEVEL_NONE,
@@ -957,6 +987,31 @@ check_updates (GsUpdateMonitor *monitor)
 	/* check for language pack */
 	check_language_pack (monitor);
 
+	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
+	last_refreshed = g_date_time_new_from_unix_local (tmp);
+	if (last_refreshed != NULL) {
+		gint now_year, now_month, now_day, now_hour;
+		gint year, month, day;
+		g_autoptr(GDateTime) now = NULL;
+
+		now = g_date_time_new_now_local ();
+
+		g_date_time_get_ymd (now, &now_year, &now_month, &now_day);
+		now_hour = g_date_time_get_hour (now);
+
+		g_date_time_get_ymd (last_refreshed, &year, &month, &day);
+
+		/* check that it is the next day */
+		if (!((now_year > year) ||
+		      (now_year == year && now_month > month) ||
+		      (now_year == year && now_month == month && now_day > day)))
+			return;
+
+		/* ...and past 6am */
+		if (!(now_hour >= 6))
+			return;
+	}
+
 #ifdef HAVE_MOGWAI
 	refresh_on_metered = TRUE;
 #else
@@ -996,29 +1051,9 @@ check_updates (GsUpdateMonitor *monitor)
 	}
 #endif
 
-	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
-	last_refreshed = g_date_time_new_from_unix_local (tmp);
-	if (last_refreshed != NULL) {
-		gint now_year, now_month, now_day, now_hour;
-		gint year, month, day;
-		g_autoptr(GDateTime) now = NULL;
-
-		now = g_date_time_new_now_local ();
-
-		g_date_time_get_ymd (now, &now_year, &now_month, &now_day);
-		now_hour = g_date_time_get_hour (now);
-
-		g_date_time_get_ymd (last_refreshed, &year, &month, &day);
-
-		/* check that it is the next day */
-		if (!((now_year > year) ||
-		      (now_year == year && now_month > month) ||
-		      (now_year == year && now_month == month && now_day > day)))
-			return;
-
-		/* ...and past 6am */
-		if (!(now_hour >= 6))
-			return;
+	if (monitor_get_game_mode_is_active (monitor)) {
+		g_debug ("Not getting updates with enabled GameMode");
+		return;
 	}
 
 	if (!should_download_updates (monitor)) {
