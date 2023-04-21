@@ -546,6 +546,75 @@
 
                             <child>
                               <object class="AdwClamp">
+                                <property name="visible" bind-source="infobar_details_eol" bind-property="visible" bind-flags="sync-create"/>
+                                <property name="maximum-size">860</property>
+                                <!-- ~⅔ of the maximum size. -->
+                                <property name="tightening-threshold">576</property>
+                                <property name="margin-start">12</property>
+                                <property name="margin-end">12</property>
+                                <child>
+                                  <object class="GtkBox" id="infobar_details_eol">
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">Stopped Receiving Updates</property>
+                                        <property name="wrap">True</property>
+                                        <style>
+                                          <class name="heading"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">This software is no longer receiving updates, including security fixes</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="card"/>
+                                      <class name="warning"/>
+                                      <class name="infobox"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+
+                            <child>
+                              <object class="AdwClamp">
+                                <property name="visible" bind-source="infobar_details_problems_label" bind-property="visible" bind-flags="sync-create"/>
+                                <property name="maximum-size">860</property>
+                                <!-- ~⅔ of the maximum size. -->
+                                <property name="tightening-threshold">576</property>
+                                <property name="margin-start">12</property>
+                                <property name="margin-end">12</property>
+                                <child>
+                                  <object class="GtkBox" id="infobar_details_problems">
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkLabel" id="infobar_details_problems_label">
+                                        <property name="justify">center</property>
+                                        <property name="label">Text is set in runtime</property>
+                                        <property name="wrap">True</property>
+                                        <style>
+                                          <class name="info"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="card"/>
+                                      <class name="infobox"/>
+                                      <class name="warning"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+
+                            <child>
+                              <object class="AdwClamp">
                                 <property name="visible" bind-source="label_webapp_warning" bind-property="visible" bind-flags="sync-create"/>
                                 <property name="maximum-size">860</property>
                                 <!-- ~⅔ of the maximum size. -->

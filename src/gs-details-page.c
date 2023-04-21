@@ -124,6 +124,8 @@ struct _GsDetailsPage
 	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
 	GsProgressButton	*button_cancel;
+	GtkWidget		*infobar_details_eol;
+	GtkWidget		*infobar_details_problems_label;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
@@ -1216,6 +1218,26 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	} else {
 		gtk_widget_set_visible (self->application_details_summary, FALSE);
 	}
+
+	tmp = gs_app_get_metadata_item (self->app, "GnomeSoftware::problems");
+	if (tmp == NULL || *tmp == '\0') {
+		/* Show runtime problems on the apps which use them, unless they have their own problems */
+		GsApp *runtime = gs_app_get_runtime (self->app);
+		if (runtime != NULL)
+			tmp = gs_app_get_metadata_item (runtime, "GnomeSoftware::problems");
+	}
+	gtk_label_set_text (GTK_LABEL (self->infobar_details_problems_label), (tmp != NULL && *tmp != '\0') ? tmp : "");
+	gtk_widget_set_visible (self->infobar_details_problems_label, tmp != NULL && *tmp != '\0');
+
+	tmp = gs_app_get_metadata_item (self->app, "GnomeSoftware::EolReason");
+	if (tmp == NULL || *tmp == '\0') {
+		/* Show runtime EOL on the apps which use them, unless they have their own EOL */
+		GsApp *runtime = gs_app_get_runtime (self->app);
+		if (runtime != NULL)
+			tmp = gs_app_get_metadata_item (runtime, "GnomeSoftware::EolReason");
+	}
+	/* ignore the provided EOL reason, which might not be localized */
+	gtk_widget_set_visible (self->infobar_details_eol, tmp != NULL && *tmp != '\0');
 
 	/* refresh buttons */
 	gs_details_page_refresh_buttons (self);
@@ -2529,6 +2551,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_update);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_cancel);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_eol);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_problems_label);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_norepo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_package_baseos);

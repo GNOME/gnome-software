@@ -534,6 +534,39 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 		if (warning->len > 0) {
 			gtk_label_set_text (GTK_LABEL (priv->label_warning), warning->str);
+			gtk_widget_set_tooltip_text (priv->label_warning, warning->str);
+			gtk_widget_set_visible (priv->label_warning, TRUE);
+		}
+	} else if (priv->show_installed) {
+		g_autofree gchar *warning_tmp = NULL;
+		const gchar *problems, *eol_reason;
+		problems = gs_app_get_metadata_item (priv->app, "GnomeSoftware::problems");
+		if (problems == NULL || *problems == '\0') {
+			/* Show runtime problems on the apps which use them, unless they have their own problems */
+			GsApp *runtime = gs_app_get_runtime (priv->app);
+			if (runtime != NULL)
+				problems = gs_app_get_metadata_item (runtime, "GnomeSoftware::problems");
+		}
+		eol_reason = gs_app_get_metadata_item (priv->app, "GnomeSoftware::EolReason");
+		if (eol_reason == NULL || *eol_reason == '\0') {
+			/* Show runtime EOL on the apps which use them, unless they have their own EOL */
+			GsApp *runtime = gs_app_get_runtime (priv->app);
+			if (runtime != NULL)
+				eol_reason = gs_app_get_metadata_item (runtime, "GnomeSoftware::EolReason");
+		}
+		if (eol_reason != NULL && *eol_reason != '\0') {
+			/* Replace user-provided non-localized string with a localized text */
+			eol_reason = _("Stopped Receiving Updates");
+			if (problems != NULL && *problems != '\0') {
+				warning_tmp = g_strconcat (problems, "\n", eol_reason, NULL);
+				problems = warning_tmp;
+			} else {
+				problems = eol_reason;
+			}
+		}
+		if (problems != NULL && *problems != '\0') {
+			gtk_label_set_text (GTK_LABEL (priv->label_warning), problems);
+			gtk_widget_set_tooltip_text (priv->label_warning, problems);
 			gtk_widget_set_visible (priv->label_warning, TRUE);
 		}
 	}
