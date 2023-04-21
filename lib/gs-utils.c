@@ -24,6 +24,7 @@
 #include <fnmatch.h>
 #include <math.h>
 #include <string.h>
+#include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 #include <json-glib/json-glib.h>
 
@@ -515,11 +516,11 @@ gboolean
 gs_utils_unlink (const gchar *filename, GError **error)
 {
 	if (g_unlink (filename) != 0) {
+		gint err = errno;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_DELETE_FAILED,
-			     "failed to delete %s",
-			     filename);
+			     _("Failed to delete file “%s”: %s"), filename, g_strerror (err));
 		return FALSE;
 	}
 	return TRUE;
@@ -546,20 +547,22 @@ gs_utils_rmtree_real (const gchar *directory, GError **error)
 				return FALSE;
 		} else {
 			if (g_unlink (src) != 0) {
+				gint err = errno;
 				g_set_error (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_DELETE_FAILED,
-					     "Failed to delete: %s", src);
+					     _("Failed to delete file “%s”: %s"), src, g_strerror (err));
 				return FALSE;
 			}
 		}
 	}
 
 	if (g_rmdir (directory) != 0) {
+		gint err = errno;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_DELETE_FAILED,
-			     "Failed to remove: %s", directory);
+			     _("Failed to delete directory “%s”: %s"), directory, g_strerror (err));
 		return FALSE;
 	}
 	return TRUE;
