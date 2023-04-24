@@ -1299,10 +1299,12 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
 	if (tmp != NULL && tmp[0] != '\0') {
+		g_autofree gchar *title = NULL;
 		gtk_label_set_label (GTK_LABEL (self->application_details_title), tmp);
 		gtk_widget_set_visible (self->application_details_title, TRUE);
 		/* Translators: %s is the user-visible app name */
-		adw_banner_set_title (self->translation_banner, g_strdup_printf (_("%s will appear in US English"), tmp));
+		title = g_strdup_printf (_("%s will appear in US English"), tmp);
+		adw_banner_set_title (self->translation_banner, title);
 	} else {
 		gtk_widget_set_visible (self->application_details_title, FALSE);
 	}

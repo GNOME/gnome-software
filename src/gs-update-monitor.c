@@ -1171,8 +1171,6 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
 	GsApp *app;
-	const gchar *message;
-	const gchar *title;
 	guint64 time_last_notified;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
@@ -1218,6 +1216,8 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		return;
 
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
+		g_autofree gchar *message = NULL;
+
 		/* TRANSLATORS: Notification title when we've done a distro upgrade */
 		notification = g_notification_new (_("System Upgrade Complete"));
 
@@ -1229,6 +1229,9 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		                           gs_app_get_version (app));
 		g_notification_set_body (notification, message);
 	} else {
+		const gchar *message;
+		const gchar *title;
+
 		/* TRANSLATORS: title when we've done offline updates */
 		title = ngettext ("Software Update Installed",
 				  "Software Updates Installed",
