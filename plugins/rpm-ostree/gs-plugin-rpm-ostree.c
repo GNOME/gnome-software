@@ -1603,7 +1603,7 @@ update_apps_thread_cb (GTask        *task,
 		return;
 	}
 
-	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+	for (guint i = 0; !self->update_triggered && i < gs_app_list_length (data->apps); i++) {
 		GsApp *app = gs_app_list_index (data->apps, i);
 		GsAppList *related = gs_app_get_related (app);
 
@@ -1616,7 +1616,7 @@ update_apps_thread_cb (GTask        *task,
 		}
 
 		/* try to trigger each related app */
-		for (guint j = 0; j < gs_app_list_length (related); j++) {
+		for (guint j = 0; !self->update_triggered && j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
 
 			if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
