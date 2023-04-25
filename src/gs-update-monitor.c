@@ -63,6 +63,7 @@ struct _GsUpdateMonitor {
 	guint		 check_daily_id;		/* every 3rd day */
 
 	gint64		 last_notification_time_usec;	/* to notify once per day only */
+	gint64		 last_get_updates;		/* used when automatic updates are off */
 };
 
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
@@ -1057,7 +1058,16 @@ check_updates (GsUpdateMonitor *monitor)
 	}
 
 	if (!should_download_updates (monitor)) {
-		get_updates (monitor);
+		gint64 now_secs;
+
+		/* cannot update "check-timestamp", because it corresponds
+		   to the cache refresh, not when only asking plugins what
+		   cached updates are available */
+		now_secs = g_get_real_time () / G_USEC_PER_SEC;
+		if ((now_secs - monitor->last_get_updates) >= SECONDS_IN_A_DAY) {
+			monitor->last_get_updates = now_secs;
+			get_updates (monitor);
+		}
 		return;
 	}
 
