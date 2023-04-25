@@ -827,7 +827,8 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
-	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+	/* will be downloaded, but the size is unknown */
+	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
@@ -866,7 +867,8 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
-	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+	/* will be downloaded, but the size is unknown */
+	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
@@ -1517,15 +1519,87 @@ update_apps_thread_cb (GTask        *task,
 
 	assert_in_worker (self);
 
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
+		GsPlugin *plugin = GS_PLUGIN (self);
+		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
+		g_autoptr(GVariant) options = NULL;
+		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+		gboolean done;
+
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		tp->app = g_object_ref (progress_app);
+		tp->plugin = g_object_ref (plugin);
+
+		options = make_rpmostree_options_variant (RPMOSTREE_OPTION_DOWNLOAD_ONLY);
+		done = FALSE;
+		while (!done) {
+			done = TRUE;
+			if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
+								options,
+								interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
+								-1  /* timeout */,
+								NULL /* fd list */,
+								&transaction_address,
+								NULL /* fd list out */,
+								cancellable,
+								&local_error)) {
+				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+					g_clear_error (&local_error);
+					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+						g_task_return_error (task, g_steal_pointer (&local_error));
+						return;
+					}
+					done = FALSE;
+					continue;
+				}
+				gs_rpmostree_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+
+		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
+		                                                 transaction_address,
+		                                                 tp,
+								 interactive,
+		                                                 cancellable,
+		                                                 &local_error)) {
+			gs_rpmostree_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+			GsApp *app = gs_app_list_index (data->apps, i);
+			GsAppList *related = gs_app_get_related (app);
+
+			if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY) &&
+			    gs_app_has_management_plugin (app, plugin))
+				gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+
+			for (guint j = 0; j < gs_app_list_length (related); j++) {
+				GsApp *app_tmp = gs_app_list_index (related, j);
+
+				if (gs_app_has_management_plugin (app_tmp, plugin))
+					gs_app_set_size_download (app_tmp, GS_SIZE_TYPE_VALID, 0);
+			}
+		}
+	}
+
 	/* Doing updates is only a case of triggering the deploy of a
 	 * pre-downloaded update, so there’s no need to bother with progress updates. */
 	if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY) {
 		g_task_return_boolean (task, TRUE);
-		return;
-	}
-
-	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
