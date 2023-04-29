@@ -176,7 +176,7 @@ gs_app_permissions_set_flags (GsAppPermissions *self,
 GsAppPermissionsFlags
 gs_app_permissions_get_flags (GsAppPermissions *self)
 {
-	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (self), GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
+	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (self), GS_APP_PERMISSIONS_FLAGS_NONE);
 
 	return self->flags;
 }
@@ -186,9 +186,9 @@ gs_app_permissions_get_flags (GsAppPermissions *self)
  * @self: a #GsAppPermissions
  * @flags: a #GsAppPermissionsFlags to add
  *
- * Add the @flags into the already set flags. The @flags cannot contain
- * #GS_APP_PERMISSIONS_FLAGS_NONE, neither cannot be #GS_APP_PERMISSIONS_FLAGS_UNKNOWN.
- * To set these two use gs_app_permissions_set_flags() instead.
+ * Add the @flags into the already set flags. The @flags cannot be
+ * #GS_APP_PERMISSIONS_FLAGS_NONE.
+ * To set that use gs_app_permissions_set_flags() instead.
  *
  * In case the current flags contain #GS_APP_PERMISSIONS_FLAGS_NONE, it's
  * automatically unset.
@@ -200,12 +200,11 @@ gs_app_permissions_add_flag (GsAppPermissions *self,
 			     GsAppPermissionsFlags flags)
 {
 	g_return_if_fail (GS_IS_APP_PERMISSIONS (self));
-	g_return_if_fail (flags != GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
-	g_return_if_fail ((flags & GS_APP_PERMISSIONS_FLAGS_NONE) == 0);
+	g_return_if_fail (flags != GS_APP_PERMISSIONS_FLAGS_NONE);
 
 	g_assert (!self->is_sealed);
 
-	self->flags = (self->flags & (~GS_APP_PERMISSIONS_FLAGS_NONE)) | flags;
+	self->flags = self->flags | flags;
 }
 
 /**
@@ -213,9 +212,9 @@ gs_app_permissions_add_flag (GsAppPermissions *self,
  * @self: a #GsAppPermissions
  * @flags: a #GsAppPermissionsFlags to remove
  *
- * Remove the @flags from the already set flags. The @flags cannot contain
- * #GS_APP_PERMISSIONS_FLAGS_NONE, neither cannot be #GS_APP_PERMISSIONS_FLAGS_UNKNOWN.
- * To set these two use gs_app_permissions_set_flags() instead.
+ * Remove the @flags from the already set flags. The @flags cannot be
+ * #GS_APP_PERMISSIONS_FLAGS_NONE.
+ * To set this use gs_app_permissions_set_flags() instead.
  *
  * In case the result of the removal would lead to no flag set the #GS_APP_PERMISSIONS_FLAGS_NONE
  * is set automatically.
@@ -227,15 +226,11 @@ gs_app_permissions_remove_flag (GsAppPermissions *self,
 				GsAppPermissionsFlags flags)
 {
 	g_return_if_fail (GS_IS_APP_PERMISSIONS (self));
-	g_return_if_fail (flags != GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
-	g_return_if_fail ((flags & GS_APP_PERMISSIONS_FLAGS_NONE) == 0);
+	g_return_if_fail (flags != GS_APP_PERMISSIONS_FLAGS_NONE);
 
 	g_assert (!self->is_sealed);
 
 	self->flags = (self->flags & (~flags));
-
-	if (!self->flags)
-		self->flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 }
 
 static guint

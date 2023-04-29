@@ -23,8 +23,7 @@ G_BEGIN_DECLS
  * Flags to indicate what permissions an app requires, at a high level.
  */
 typedef enum {
-	GS_APP_PERMISSIONS_FLAGS_UNKNOWN 		= 0,
-	GS_APP_PERMISSIONS_FLAGS_NONE			= 1 << 0,
+	GS_APP_PERMISSIONS_FLAGS_NONE			= 0,
 	GS_APP_PERMISSIONS_FLAGS_NETWORK 		= 1 << 1,
 	GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS   		= 1 << 2,
 	GS_APP_PERMISSIONS_FLAGS_SESSION_BUS		= 1 << 3,

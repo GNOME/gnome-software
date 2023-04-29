@@ -257,7 +257,7 @@ update_safety_tile (GsAppContextBar *self)
 	g_autofree gchar *description = NULL;
 	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GsAppPermissions) permissions = NULL;
-	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
+	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
 	 * based on app properties. */
@@ -268,18 +268,20 @@ update_safety_tile (GsAppContextBar *self)
 	permissions = gs_app_dup_permissions (self->app);
 	if (permissions != NULL)
 		perm_flags = gs_app_permissions_get_flags (permissions);
-	for (GsAppPermissionsFlags i = GS_APP_PERMISSIONS_FLAGS_NONE; i < GS_APP_PERMISSIONS_FLAGS_LAST; i <<= 1) {
+
+	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE) {
+		add_to_safety_rating (&chosen_rating, descriptions,
+				      SAFETY_SAFE,
+				      /* Translators: This indicates an app requires no permissions to run.
+				       * It’s used in a context tile, so should be short. */
+				      _("No permissions"));
+	}
+
+	for (GsAppPermissionsFlags i = (1 << 0); i < GS_APP_PERMISSIONS_FLAGS_LAST; i <<= 1) {
 		if (!(perm_flags & i))
 			continue;
 
 		switch (i) {
-		case GS_APP_PERMISSIONS_FLAGS_NONE:
-			add_to_safety_rating (&chosen_rating, descriptions,
-					      SAFETY_SAFE,
-					      /* Translators: This indicates an app requires no permissions to run.
-					       * It’s used in a context tile, so should be short. */
-					      _("No permissions"));
-			break;
 		case GS_APP_PERMISSIONS_FLAGS_NETWORK:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      /* This isn’t actually safe (network access can expand a local
@@ -390,7 +392,7 @@ update_safety_tile (GsAppContextBar *self)
 		}
 	}
 
-	/* Unknown permissions typically come from non-sandboxed packaging
+	/* Unknown permissions (`permissions == NULL`) typically come from non-sandboxed packaging
 	 * systems like RPM or DEB. Telling the user the software has unknown
 	 * permissions is unhelpful; it’s more relevant to say it’s not
 	 * sandboxed but is (or is not) packaged by a trusted vendor. They will
@@ -402,7 +404,7 @@ update_safety_tile (GsAppContextBar *self)
 	 * FIXME: We could do better by potentially adding a ‘trusted’ state
 	 * to indicate that something is probably safe, but isn’t sandboxed.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1451 */
-	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN &&
+	if (permissions == NULL &&
 	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
@@ -410,7 +412,7 @@ update_safety_tile (GsAppContextBar *self)
 				       * by the user’s distribution and is safe.
 				       * It’s used in a context tile, so should be short. */
 				      _("Reviewed by your distribution"));
-	else if (perm_flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
+	else if (permissions == NULL)
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_POTENTIALLY_UNSAFE,
 				      /* Translators: This indicates that an app has been packaged
