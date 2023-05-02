@@ -2,64 +2,85 @@
 <!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsReviewDialog" parent="GtkDialog">
-    <action-widgets>
-      <action-widget response="cancel">cancel_button</action-widget>
-      <action-widget response="ok" default="true">post_button</action-widget>
-    </action-widgets>
+  <template class="GsReviewDialog" parent="AdwWindow">
     <property name="title" translatable="yes" comments="Translators: Title of the dialog box where the users can write and publish their opinions about the apps.">Write a Review</property>
     <property name="modal">True</property>
     <property name="default_width">480</property>
     <property name="default_height">550</property>
     <property name="destroy_with_parent">True</property>
-    <property name="use_header_bar">1</property>
-    <child type="action">
-      <object class="GtkButton" id="cancel_button">
-        <property name="label" translatable="yes">_Cancel</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <property name="use_underline">True</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="post_button">
-        <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Send</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <property name="use_underline">True</property>
-        <property name="sensitive">False</property>
-      </object>
-    </child>
-    <child internal-child="content_area">
-      <object class="GtkBox" id="dialog-vbox">
+    <child>
+      <object class="GtkBox">
         <property name="orientation">vertical</property>
-        <property name="spacing">0</property>
-        <child internal-child="action_area">
-          <object class="GtkBox" id="dialog-action_area1">
+        <child>
+          <object class="AdwHeaderBar">
+            <property name="show_start_title_buttons">False</property>
+            <property name="show_end_title_buttons">False</property>
+            <property name="hexpand">True</property>
+            <property name="title-widget">
+              <object class="AdwWindowTitle">
+                <property name="title" bind-source="GsReviewDialog" bind-property="title" bind-flags="sync-create"/>
+              </object>
+            </property>
+            <child type="start">
+              <object class="GtkButton" id="cancel_button">
+                <property name="label" translatable="yes">_Cancel</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkButton" id="post_button">
+                <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Send</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_underline">True</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
-          <object class="AdwPreferencesPage">
+          <object class="GtkOverlay" id="overlay">
+            <property name="halign">fill</property>
+            <property name="valign">fill</property>
             <property name="vexpand">True</property>
-            <child>
-              <object class="AdwPreferencesGroup">
+            <child type="overlay">
+              <object class="GtkRevealer" id="error_revealer">
+                <property name="halign">center</property>
+                <property name="valign">start</property>
+                <property name="reveal-child">False</property>
                 <child>
                   <object class="GtkBox">
-                    <property name="orientation">vertical</property>
+                    <property name="orientation">horizontal</property>
                     <property name="spacing">6</property>
+                    <style>
+                      <class name="app-notification"/>
+                    </style>
                     <child>
-                      <object class="GsStarWidget" id="star">
-                        <property name="halign">center</property>
-                        <property name="icon-size">32</property>
-                        <property name="interactive">True</property>
+                      <object class="GtkLabel" id="error_label">
+                        <property name="halign">fill</property>
+                        <property name="hexpand">True</property>
+                        <property name="label">Some Title</property>
+                        <property name="wrap">True</property>
+                        <property name="wrap_mode">word-char</property>
+                        <property name="max_width_chars">60</property>
+                        <property name="margin_start">9</property>
+                        <property name="margin_end">9</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label_rating_desc">
+                      <object class="GtkButton" id="error_dismiss_button">
+                        <property name="halign">end</property>
+                        <property name="valign">start</property>
+                        <signal name="clicked" handler="gs_review_dialog_dismiss_error_cb"/>
                         <style>
-                          <class name="dim-label"/>
-                          <class name="smaller"/>
+                          <class name="flat"/>
                         </style>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="icon_name">window-close-symbolic</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -67,88 +88,27 @@
               </object>
             </child>
             <child>
-              <object class="AdwPreferencesGroup">
-                <property name="description" translatable="yes">What did you like about this app? Leaving your feedback along with your reasons for leaving a review is helpful for others.</property>
+              <object class="AdwPreferencesPage">
+                <property name="vexpand">True</property>
                 <child>
-                  <object class="GtkListBox">
-                    <property name="selection_mode">none</property>
-                    <property name="halign">fill</property>
-                    <property name="valign">start</property>
-                    <style>
-                      <class name="boxed-list"/>
-                    </style>
+                  <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="AdwEntryRow" id="summary_entry">
-                        <property name="activatable">False</property>
-                        <property name="focusable">False</property>
-                        <property name="title" translatable="yes">Review Summary</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBoxRow" id="review_row">
-                        <property name="activatable">False</property>
-                        <property name="focusable">False</property>
-                        <style>
-                          <class name="review-row"/>
-                        </style>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">6</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="orientation">vertical</property>
-                            <property name="vexpand">True</property>
-                            <child>
-                              <object class="GtkBox">
-                                <property name="valign">center</property>
-                                <property name="hexpand">False</property>
-                                <style>
-                                  <class name="header"/>
-                                </style>
-                                <child>
-                                  <object class="GtkBox" id="title_box">
-                                    <property name="orientation">vertical</property>
-                                    <property name="valign">center</property>
-                                    <property name="hexpand">True</property>
-                                    <style>
-                                      <class name="title"/>
-                                    </style>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <property name="ellipsize">none</property>
-                                        <property name="label" translatable="yes" context="app review" comments="Translators: This is where the users enter their opinions about the apps.">Write a short review</property>
-                                        <property name="lines">0</property>
-                                        <property name="mnemonic-widget">review_row</property>
-                                        <property name="wrap">True</property>
-                                        <property name="wrap-mode">word-char</property>
-                                        <property name="xalign">0</property>
-                                        <style>
-                                          <class name="dim-label"/>
-                                          <class name="title"/>
-                                        </style>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkImage" id="edit_icon">
-                                    <property name="valign">center</property>
-                                    <property name="can-target">False</property>
-                                    <property name="icon-name">document-edit-symbolic</property>
-                                    <style>
-                                      <class name="edit-icon"/>
-                                    </style>
-                                  </object>
-                                </child>
-                               </object>
-                            </child>
-                            <child>
-                              <object class="GtkTextView" id="text_view">
-                                <property name="can_focus">True</property>
-                                <property name="height-request">120</property>
-                                <property name="wrap-mode">word-char</property>
-                                <style>
-                                  <class name="review-textbox"/>
-                                </style>
-                              </object>
-                            </child>
+                          <object class="GsStarWidget" id="star">
+                            <property name="halign">center</property>
+                            <property name="icon-size">32</property>
+                            <property name="interactive">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_rating_desc">
+                            <style>
+                              <class name="dim-label"/>
+                              <class name="smaller"/>
+                            </style>
                           </object>
                         </child>
                       </object>
@@ -156,15 +116,106 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Find what data is sent in our &lt;a href="https://odrs.gnome.org/privacy"&gt;privacy policy&lt;/a&gt;. The full name attached to your account will be shown publicly.</property>
-                    <property name="margin-top">12</property>
-                    <property name="wrap">True</property>
-                    <property name="xalign">0</property>
-                    <property name="use-markup">True</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
+                  <object class="AdwPreferencesGroup">
+                    <property name="description" translatable="yes">What did you like about this app? Leaving your feedback along with your reasons for leaving a review is helpful for others.</property>
+                    <child>
+                      <object class="GtkListBox">
+                        <property name="selection_mode">none</property>
+                        <property name="halign">fill</property>
+                        <property name="valign">start</property>
+                        <style>
+                          <class name="boxed-list"/>
+                        </style>
+                        <child>
+                          <object class="AdwEntryRow" id="summary_entry">
+                            <property name="activatable">False</property>
+                            <property name="focusable">False</property>
+                            <property name="title" translatable="yes">Review Summary</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBoxRow" id="review_row">
+                            <property name="activatable">False</property>
+                            <property name="focusable">False</property>
+                            <style>
+                              <class name="review-row"/>
+                            </style>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <property name="vexpand">True</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="valign">center</property>
+                                    <property name="hexpand">False</property>
+                                    <style>
+                                      <class name="header"/>
+                                    </style>
+                                    <child>
+                                      <object class="GtkBox" id="title_box">
+                                        <property name="orientation">vertical</property>
+                                        <property name="valign">center</property>
+                                        <property name="hexpand">True</property>
+                                        <style>
+                                          <class name="title"/>
+                                        </style>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="ellipsize">none</property>
+                                            <property name="label" translatable="yes" context="app review" comments="Translators: This is where the users enter their opinions about the apps.">Write a short review</property>
+                                            <property name="lines">0</property>
+                                            <property name="mnemonic-widget">review_row</property>
+                                            <property name="wrap">True</property>
+                                            <property name="wrap-mode">word-char</property>
+                                            <property name="xalign">0</property>
+                                            <style>
+                                              <class name="dim-label"/>
+                                              <class name="title"/>
+                                            </style>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkImage" id="edit_icon">
+                                        <property name="valign">center</property>
+                                        <property name="can-target">False</property>
+                                        <property name="icon-name">document-edit-symbolic</property>
+                                        <style>
+                                          <class name="edit-icon"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                   </object>
+                                </child>
+                                <child>
+                                  <object class="GtkTextView" id="text_view">
+                                    <property name="can_focus">True</property>
+                                    <property name="height-request">120</property>
+                                    <property name="wrap-mode">word-char</property>
+                                    <style>
+                                      <class name="review-textbox"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Find what data is sent in our &lt;a href="https://odrs.gnome.org/privacy"&gt;privacy policy&lt;/a&gt;. The full name attached to your account will be shown publicly.</property>
+                        <property name="margin-top">12</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0</property>
+                        <property name="use-markup">True</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

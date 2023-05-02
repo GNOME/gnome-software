@@ -8,6 +8,7 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
@@ -22,17 +23,27 @@
 
 struct _GsReviewDialog
 {
-	GtkDialog	 parent_instance;
+	AdwWindow	 parent_instance;
 
+	GtkWidget	*error_revealer;
+	GtkWidget	*error_label;
 	GtkWidget	*star;
 	GtkWidget	*label_rating_desc;
 	GtkWidget	*summary_entry;
+	GtkWidget	*cancel_button;
 	GtkWidget	*post_button;
 	GtkWidget	*text_view;
 	guint		 timer_id;
 };
 
-G_DEFINE_TYPE (GsReviewDialog, gs_review_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsReviewDialog, gs_review_dialog, ADW_TYPE_WINDOW)
+
+enum {
+	SIGNAL_SEND,
+	SIGNAL_LAST
+};
+
+static guint signals[SIGNAL_LAST] = { 0 };
 
 gint
 gs_review_dialog_get_rating (GsReviewDialog *dialog)
@@ -100,16 +111,13 @@ gs_review_dialog_update_review_comment (GsReviewDialog *dialog)
 	gtk_label_set_label (GTK_LABEL (dialog->label_rating_desc), msg);
 }
 
-static void
-gs_review_dialog_changed_cb (GsReviewDialog *dialog)
+/* (nullable) - when NULL, all is okay */
+static const gchar *
+gs_review_dialog_validate (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
-	gboolean all_okay = TRUE;
 	const gchar *msg = NULL;
 	glong summary_length;
-
-	/* update review text */
-	gs_review_dialog_update_review_comment (dialog);
 
 	/* require rating, summary and long review */
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->text_view));
@@ -117,43 +125,83 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 	if (dialog->timer_id != 0) {
 		/* TRANSLATORS: the review can't just be copied and pasted */
 		msg = _("Please take more time writing the review");
-		all_okay = FALSE;
 	} else if (gs_star_widget_get_rating (GS_STAR_WIDGET (dialog->star)) == 0) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("Please choose a star rating");
-		all_okay = FALSE;
 	} else if (summary_length < SUMMARY_LENGTH_MIN) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The summary is too short");
-		all_okay = FALSE;
 	} else if (summary_length > SUMMARY_LENGTH_MAX) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The summary is too long");
-		all_okay = FALSE;
 	} else if (gtk_text_buffer_get_char_count (buffer) < DESCRIPTION_LENGTH_MIN) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The description is too short");
-		all_okay = FALSE;
 	} else if (gtk_text_buffer_get_char_count (buffer) > DESCRIPTION_LENGTH_MAX) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The description is too long");
-		all_okay = FALSE;
 	}
 
+	return msg;
+}
+
+static void
+gs_review_dialog_changed_cb (GsReviewDialog *dialog)
+{
+	const gchar *error_text;
+
+	/* update review text */
+	gs_review_dialog_update_review_comment (dialog);
+
+	error_text = gs_review_dialog_validate (dialog);
+
 	/* tell the user what's happening */
-	gtk_widget_set_tooltip_text (dialog->post_button, msg);
+	gtk_widget_set_tooltip_text (dialog->post_button, error_text);
 
 	/* can the user submit this? */
-	gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, all_okay);
+	gtk_widget_set_receives_default (dialog->post_button, error_text == NULL);
+	if (error_text == NULL)
+		gtk_widget_add_css_class (dialog->post_button, "suggested-action");
+	else
+		gtk_widget_remove_css_class (dialog->post_button, "suggested-action");
+
+	/* hide any error when the content changes */
+	gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), FALSE);
 }
 
 static gboolean
 gs_review_dialog_timeout_cb (gpointer user_data)
 {
 	GsReviewDialog *dialog = GS_REVIEW_DIALOG (user_data);
+	gboolean child_been_revealed = gtk_revealer_get_reveal_child (GTK_REVEALER (dialog->error_revealer));
 	dialog->timer_id = 0;
 	gs_review_dialog_changed_cb (dialog);
+	/* Restore the error message, because it was not hidden due to a user
+	   action, but due to a timer here. */
+	if (child_been_revealed)
+		gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), child_been_revealed);
 	return FALSE;
+}
+
+static void
+gs_review_dialog_post_button_clicked_cb (GsReviewDialog *self)
+{
+	const gchar *error_text = gs_review_dialog_validate (self);
+
+	if (error_text != NULL) {
+		gs_review_dialog_set_error_text (self, error_text);
+	} else {
+		/* hide any error before send */
+		gtk_revealer_set_reveal_child (GTK_REVEALER (self->error_revealer), FALSE);
+		g_signal_emit (self, signals[SIGNAL_SEND], 0, NULL);
+	}
+}
+
+static void
+gs_review_dialog_dismiss_error_cb (GtkButton *button,
+				   GsReviewDialog *self)
+{
+	gtk_revealer_set_reveal_child (GTK_REVEALER (self->error_revealer), FALSE);
 }
 
 static void
@@ -161,8 +209,6 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
 	gtk_widget_init_template (GTK_WIDGET (dialog));
-
-	gs_review_dialog_update_review_comment (dialog);
 
 	/* require the user to spend at least 30 seconds on writing a review */
 	dialog->timer_id = g_timeout_add_seconds (WRITING_TIME_MIN,
@@ -177,8 +223,12 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->text_view));
 	g_signal_connect_swapped (buffer, "changed",
 				  G_CALLBACK (gs_review_dialog_changed_cb), dialog);
+	g_signal_connect_swapped (dialog->cancel_button, "clicked",
+				  G_CALLBACK (gtk_window_destroy), dialog);
+	g_signal_connect_swapped (dialog->post_button, "clicked",
+				  G_CALLBACK (gs_review_dialog_post_button_clicked_cb), dialog);
 
-	gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, FALSE);
+	gs_review_dialog_changed_cb (dialog);
 }
 
 static void
@@ -200,19 +250,48 @@ gs_review_dialog_class_init (GsReviewDialogClass *klass)
 
 	object_class->dispose = gs_review_row_dispose;
 
+	/**
+	 * GsReviewDialog::send:
+	 * @self: the #GsReviewDialog
+	 *
+	 * Emitted when the user clicks on the Send button to send the review.
+	 *
+	 * Since: 45
+	 */
+	signals[SIGNAL_SEND] =
+		g_signal_new ("send",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0, G_TYPE_NONE);
+
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-review-dialog.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, error_revealer);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, error_label);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, star);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, label_rating_desc);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, summary_entry);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, text_view);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, cancel_button);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, post_button);
+
+	gtk_widget_class_bind_template_callback (widget_class, gs_review_dialog_dismiss_error_cb);
 }
 
 GtkWidget *
 gs_review_dialog_new (void)
 {
 	return GTK_WIDGET (g_object_new (GS_TYPE_REVIEW_DIALOG,
-					 "use-header-bar", TRUE,
 					 NULL));
+}
+
+void
+gs_review_dialog_set_error_text (GsReviewDialog *dialog,
+				 const gchar *error_text)
+{
+	g_return_if_fail (GS_IS_REVIEW_DIALOG (dialog));
+	g_return_if_fail (error_text != NULL);
+
+	gtk_label_set_text (GTK_LABEL (dialog->error_label), error_text);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), TRUE);
 }
