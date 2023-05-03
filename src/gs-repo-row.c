@@ -27,9 +27,14 @@ typedef struct
 	gboolean	 supports_remove;
 	gboolean	 supports_enable_disable;
 	gboolean	 always_allow_enable_disable;
+	gboolean	 related_loaded;
 } GsRepoRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsRepoRow, gs_repo_row, GTK_TYPE_LIST_BOX_ROW)
+
+typedef enum {
+	PROP_RELATED_LOADED = 1,
+} GsRepoRowProperty;
 
 enum {
 	SIGNAL_REMOVE_CLICKED,
@@ -37,6 +42,7 @@ enum {
 	SIGNAL_LAST
 };
 
+static GParamSpec *obj_props[PROP_RELATED_LOADED + 1] = { NULL, };
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static void
@@ -223,11 +229,36 @@ get_repo_installed_text (GsApp *repo)
 }
 
 static void
+refresh_comment_label (GsRepoRow *self)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
+	g_autofree gchar *comment = NULL;
+	const gchar *tmp;
+
+	if (priv->related_loaded)
+		comment = get_repo_installed_text (priv->repo);
+	else
+		comment = g_strdup (_("Checking installed software…"));
+
+	tmp = gs_app_get_metadata_item (priv->repo, "GnomeSoftware::InstallationKind");
+	if (tmp != NULL && *tmp != '\0') {
+		gchar *cnt;
+
+		/* Translators: The first '%s' is replaced with installation kind, like in case of Flatpak 'User Installation',
+		      the second '%s' is replaced with a text like '10 apps installed'. */
+		cnt = g_strdup_printf (C_("repo-row", "%s • %s"), tmp, comment);
+		g_clear_pointer (&comment, g_free);
+		comment = cnt;
+	}
+
+	gtk_label_set_label (GTK_LABEL (priv->comment_label), comment);
+}
+
+static void
 gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 {
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
 	g_autoptr(GsPlugin) plugin = NULL;
-	g_autofree gchar *comment = NULL;
 	const gchar *tmp;
 
 	g_assert (priv->repo == NULL);
@@ -264,20 +295,7 @@ gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 		}
 	}
 
-	comment = get_repo_installed_text (repo);
-	tmp = gs_app_get_metadata_item (priv->repo, "GnomeSoftware::InstallationKind");
-	if (tmp != NULL && *tmp != '\0') {
-		gchar *cnt;
-
-		/* Translators: The first '%s' is replaced with a text like '10 apps installed',
-		      the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'. */
-		cnt = g_strdup_printf (C_("repo-row", "%s • %s"), comment, tmp);
-		g_clear_pointer (&comment, g_free);
-		comment = cnt;
-	}
-
-	gtk_label_set_label (GTK_LABEL (priv->comment_label), comment);
-
+	refresh_comment_label (self);
 	refresh_ui (self);
 }
 
@@ -310,6 +328,42 @@ gs_repo_row_remove_button_clicked_cb (GtkWidget *button,
 		return;
 
 	g_signal_emit (row, signals[SIGNAL_REMOVE_CLICKED], 0);
+}
+
+static void
+gs_repo_row_get_property (GObject *object,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *pspec)
+{
+	GsRepoRow *self = GS_REPO_ROW (object);
+
+	switch ((GsRepoRowProperty) prop_id) {
+	case PROP_RELATED_LOADED:
+		g_value_set_boolean (value, gs_repo_row_get_related_loaded (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_repo_row_set_property (GObject *object,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *pspec)
+{
+	GsRepoRow *self = GS_REPO_ROW (object);
+
+	switch ((GsRepoRowProperty) prop_id) {
+	case PROP_RELATED_LOADED:
+		gs_repo_row_set_related_loaded (self, g_value_get_boolean (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -353,7 +407,25 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->get_property = gs_repo_row_get_property;
+	object_class->set_property = gs_repo_row_set_property;
 	object_class->dispose = gs_repo_row_dispose;
+
+	/**
+	 * GsRepoRow:related-loaded:
+	 *
+	 * Whether the related apps for this repo have been successfully
+	 * loaded. If so, the number of apps/installed apps is shown in
+	 * the row.
+	 *
+	 * Since: 45
+	 */
+	obj_props[PROP_RELATED_LOADED] =
+		g_param_spec_boolean ("related-loaded", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_REMOVE_CLICKED] =
 		g_signal_new ("remove-clicked",
@@ -492,4 +564,32 @@ gs_repo_row_emit_switch_clicked (GsRepoRow *self)
 		return;
 
 	g_signal_emit (self, signals[SIGNAL_SWITCH_CLICKED], 0);
+}
+
+gboolean
+gs_repo_row_get_related_loaded (GsRepoRow *self)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
+
+	g_return_val_if_fail (GS_IS_REPO_ROW (self), FALSE);
+
+	return priv->related_loaded;
+}
+
+void
+gs_repo_row_set_related_loaded (GsRepoRow *self,
+				gboolean value)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
+
+	g_return_if_fail (GS_IS_REPO_ROW (self));
+
+	if (!priv->related_loaded == !value)
+		return;
+
+	priv->related_loaded = value;
+
+	refresh_comment_label (self);
+
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_RELATED_LOADED]);
 }

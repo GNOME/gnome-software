@@ -31,5 +31,8 @@ void		 gs_repo_row_mark_busy			(GsRepoRow	*row);
 void		 gs_repo_row_unmark_busy		(GsRepoRow	*row);
 gboolean	 gs_repo_row_get_is_busy		(GsRepoRow	*row);
 void		 gs_repo_row_emit_switch_clicked	(GsRepoRow	*self);
+gboolean	 gs_repo_row_get_related_loaded		(GsRepoRow	*row);
+void		 gs_repo_row_set_related_loaded		(GsRepoRow	*row,
+							 gboolean	 value);
 
 G_END_DECLS

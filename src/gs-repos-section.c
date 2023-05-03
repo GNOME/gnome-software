@@ -20,9 +20,14 @@ struct _GsReposSection
 	GtkListBox		*list;
 	gchar			*sort_key;
 	gboolean		 always_allow_enable_disable;
+	gboolean		 related_loaded;
 };
 
 G_DEFINE_TYPE (GsReposSection, gs_repos_section, ADW_TYPE_PREFERENCES_GROUP)
+
+typedef enum {
+	PROP_RELATED_LOADED = 1,
+} GsReposSectionProperty;
 
 enum {
 	SIGNAL_REMOVE_CLICKED,
@@ -30,6 +35,7 @@ enum {
 	SIGNAL_LAST
 };
 
+static GParamSpec *obj_props[PROP_RELATED_LOADED + 1] = { NULL, };
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static void
@@ -77,6 +83,42 @@ _list_sort_func (GtkListBoxRow *a, GtkListBoxRow *b, gpointer user_data)
 }
 
 static void
+gs_repos_section_get_property (GObject *object,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *pspec)
+{
+	GsReposSection *self = GS_REPOS_SECTION (object);
+
+	switch ((GsReposSectionProperty) prop_id) {
+	case PROP_RELATED_LOADED:
+		g_value_set_boolean (value, gs_repos_section_get_related_loaded (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_repos_section_set_property (GObject *object,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *pspec)
+{
+	GsReposSection *self = GS_REPOS_SECTION (object);
+
+	switch ((GsReposSectionProperty) prop_id) {
+	case PROP_RELATED_LOADED:
+		gs_repos_section_set_related_loaded (self, g_value_get_boolean (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_repos_section_finalize (GObject *object)
 {
 	GsReposSection *self = GS_REPOS_SECTION (object);
@@ -91,7 +133,25 @@ gs_repos_section_class_init (GsReposSectionClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->get_property = gs_repos_section_get_property;
+	object_class->set_property = gs_repos_section_set_property;
 	object_class->finalize = gs_repos_section_finalize;
+
+	/**
+	 * GsReposSection:related-loaded:
+	 *
+	 * Whether the related apps for this repo section have been
+	 * successfully loaded. If so, the number of apps/installed
+	 * apps is shown in each row.
+	 *
+	 * Since: 45
+	 */
+	obj_props[PROP_RELATED_LOADED] =
+		g_param_spec_boolean ("related-loaded", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_REMOVE_CLICKED] =
 		g_signal_new ("remove-clicked",
@@ -167,7 +227,9 @@ gs_repos_section_add_repo (GsReposSection *self,
 		self->sort_key = g_strdup (gs_app_get_metadata_item (repo, "GnomeSoftware::SortKey"));
 
 	row = gs_repo_row_new (repo, self->always_allow_enable_disable);
-
+	g_object_bind_property (self, "related-loaded",
+				row, "related-loaded",
+				G_BINDING_SYNC_CREATE);
 	g_signal_connect (row, "remove-clicked",
 	                  G_CALLBACK (repo_remove_clicked_cb), self);
 	g_signal_connect (row, "switch-clicked",
@@ -195,4 +257,26 @@ gs_repos_section_set_sort_key (GsReposSection *self,
 		g_free (self->sort_key);
 		self->sort_key = g_strdup (sort_key);
 	}
+}
+
+gboolean
+gs_repos_section_get_related_loaded (GsReposSection *self)
+{
+	g_return_val_if_fail (GS_IS_REPOS_SECTION (self), FALSE);
+
+	return self->related_loaded;
+}
+
+void
+gs_repos_section_set_related_loaded (GsReposSection *self,
+				     gboolean value)
+{
+	g_return_if_fail (GS_IS_REPOS_SECTION (self));
+
+	if (!self->related_loaded == !value)
+		return;
+
+	self->related_loaded = value;
+
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_RELATED_LOADED]);
 }

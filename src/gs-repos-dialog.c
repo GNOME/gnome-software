@@ -393,7 +393,7 @@ add_repo (GsReposDialog *dialog,
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
 		g_hash_table_insert (dialog->sections, g_steal_pointer (&origin_ui), section);
-		gtk_widget_set_visible (section, TRUE);
+		gs_repos_section_set_related_loaded (GS_REPOS_SECTION (section), FALSE);
 	}
 
 	gs_repos_section_add_repo (GS_REPOS_SECTION (section), repo);
@@ -423,6 +423,106 @@ repos_dialog_compare_sections_cb (gconstpointer aa,
 
 	return g_strcmp0 (title_sort_key_a, title_sort_key_b);
 }
+typedef struct {
+	GsReposDialog *dialog; /* not owned */
+	GsAppList *list; /* owned */
+} RefineData;
+
+static void
+refine_data_free (RefineData *self)
+{
+	g_object_unref (self->list);
+	g_free (self);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(RefineData, refine_data_free)
+
+static void
+refine_sources_related_finish (GsReposDialog *dialog)
+{
+	GHashTableIter iter;
+	gpointer value;
+
+	g_hash_table_iter_init (&iter, dialog->sections);
+	while (g_hash_table_iter_next (&iter, NULL, &value)) {
+		if (GS_IS_REPOS_SECTION (value))
+			gs_repos_section_set_related_loaded (GS_REPOS_SECTION (value), TRUE);
+	}
+}
+
+static void
+refine_sources_related_cb (GObject *source_object,
+			   GAsyncResult *res,
+			   gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GsReposDialog *dialog = user_data;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_debug ("refine sources' related cancelled");
+			return;
+		} else {
+			g_warning ("failed to refine sources' related: %s", error->message);
+		}
+	}
+
+	refine_sources_related_finish (dialog);
+}
+
+static void
+refine_sources_cb (GObject *source_object,
+		   GAsyncResult *res,
+		   gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(RefineData) rd = user_data;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppList) related_list = NULL;
+
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_debug ("refine sources cancelled");
+		} else {
+			g_warning ("failed to refine sources: %s", error->message);
+			refine_sources_related_finish (rd->dialog);
+		}
+		return;
+	}
+
+	/* refine related apps with generic or unknown kind, thus the GsRepoRow can use proper data */
+	related_list = gs_app_list_new ();
+	for (guint j = 0; j < gs_app_list_length (rd->list); j++) {
+		GsApp *source = gs_app_list_index (rd->list, j);
+		GsAppList *related = gs_app_get_related (source);
+		for (guint i = 0; i < gs_app_list_length (related); i++) {
+			GsApp *app = gs_app_list_index (related, i);
+			if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN ||
+			    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC) {
+				gs_app_list_add (related_list, app);
+			}
+		}
+	}
+
+	if (gs_app_list_length (related_list) > 0) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		plugin_job = gs_plugin_job_refine_new (related_list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
+		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
+						    rd->dialog->cancellable,
+						    refine_sources_related_cb,
+						    rd->dialog);
+	} else {
+		refine_sources_related_finish (rd->dialog);
+	}
+}
 
 static void
 get_sources_cb (GsPluginLoader *plugin_loader,
@@ -432,8 +532,11 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppList) refine_list = NULL;
 	g_autoptr(GSList) other_repos = NULL;
 	g_autoptr(GList) sections = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	RefineData *rd;
 	AdwPreferencesGroup *added_section;
 	GHashTableIter iter;
 
@@ -469,11 +572,14 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
+	refine_list = gs_app_list_new ();
+
 	/* add each */
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		add_repo (dialog, app, &other_repos);
+		gs_app_list_add (refine_list, app);
 	}
 
 	sections = g_hash_table_get_values (dialog->sections);
@@ -539,6 +645,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 		section = GS_REPOS_SECTION (gs_repos_section_new (TRUE));
 		gs_repos_section_set_sort_key (section, "900");
+		gs_repos_section_set_related_loaded (section, FALSE);
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
 		gtk_widget_set_visible (GTK_WIDGET (section), TRUE);
@@ -546,6 +653,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		for (GSList *link = other_repos; link; link = g_slist_next (link)) {
 			GsApp *repo = link->data;
 			gs_repos_section_add_repo (section, repo);
+			gs_app_list_add (refine_list, repo);
 		}
 
 		/* use something unique, not clashing with the other section names */
@@ -555,6 +663,15 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
 					  ADW_PREFERENCES_GROUP (section));
 	}
+
+	rd = g_new0 (RefineData, 1);
+	rd->dialog = dialog;
+	rd->list = g_object_ref (refine_list);
+	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED);
+	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
+					    dialog->cancellable,
+					    refine_sources_cb,
+					    rd);
 }
 
 static void
@@ -564,8 +681,7 @@ reload_sources (GsReposDialog *dialog)
 
 	/* get the list of non-core software repositories */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
-					                 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
 					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
 					 NULL);
