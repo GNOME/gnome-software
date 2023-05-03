@@ -526,6 +526,7 @@ typedef struct {
 	GError *error;
 	GMainContext *context;
 	GsApp *app;
+	GsAppList *download_progress_list;
 	gboolean complete;
 	gboolean owner_changed;
 } TransactionProgress;
@@ -548,6 +549,7 @@ transaction_progress_free (TransactionProgress *self)
 	g_clear_error (&self->error);
 	g_main_context_unref (self->context);
 	g_clear_object (&self->app);
+	g_clear_object (&self->download_progress_list);
 	g_slice_free (TransactionProgress, self);
 }
 
@@ -557,6 +559,8 @@ static void
 transaction_progress_end (TransactionProgress *self)
 {
 	self->complete = TRUE;
+	if (self->download_progress_list)
+		gs_app_list_override_progress (self->download_progress_list, GS_APP_PROGRESS_UNKNOWN);
 	g_main_context_wakeup (self->context);
 }
 
@@ -611,7 +615,8 @@ on_transaction_progress (GDBusProxy *proxy,
 
 		if (tp->app != NULL)
 			gs_app_set_progress (tp->app, (guint) percentage);
-
+		if (tp->download_progress_list)
+			gs_app_list_override_progress (tp->download_progress_list, (guint) percentage);
 		if (tp->app != NULL && tp->plugin != NULL)
 			gs_plugin_status_update (tp->plugin, tp->app, GS_PLUGIN_STATUS_DOWNLOADING);
 	} else if (g_strcmp0 (signal_name, "Finished") == 0) {
@@ -1537,7 +1542,7 @@ update_apps_thread_cb (GTask        *task,
 			return;
 		}
 
-		tp->app = g_object_ref (progress_app);
+		tp->download_progress_list = g_object_ref (data->apps);
 		tp->plugin = g_object_ref (plugin);
 
 		options = make_rpmostree_options_variant (RPMOSTREE_OPTION_DOWNLOAD_ONLY);
@@ -1574,10 +1579,13 @@ update_apps_thread_cb (GTask        *task,
 								 interactive,
 		                                                 cancellable,
 		                                                 &local_error)) {
+			gs_app_list_override_progress (data->apps, GS_APP_PROGRESS_UNKNOWN);
 			gs_rpmostree_error_convert (&local_error);
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
+
+		gs_app_list_override_progress (data->apps, GS_APP_PROGRESS_UNKNOWN);
 
 		for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
 			GsApp *app = gs_app_list_index (data->apps, i);
