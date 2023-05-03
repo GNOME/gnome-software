@@ -44,6 +44,8 @@ struct _GsPluginLoader
 	gboolean		 setup_complete;
 	GCancellable		*setup_complete_cancellable;  /* (nullable) (owned) */
 
+	GThreadPool		*old_api_thread_pool;  /* (owned) */
+
 	GPtrArray		*plugins;
 	GPtrArray		*locations;
 	gchar			*language;
@@ -95,6 +97,8 @@ static void gs_plugin_loader_status_changed_cb (GsPlugin       *plugin,
 static void async_result_cb (GObject      *source_object,
                              GAsyncResult *result,
                              gpointer      user_data);
+static void gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
+                                                     gpointer user_data);
 
 G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
@@ -2536,6 +2540,9 @@ gs_plugin_loader_finalize (GObject *object)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
+	g_thread_pool_free (plugin_loader->old_api_thread_pool, TRUE, FALSE);
+	plugin_loader->old_api_thread_pool = NULL;
+
 	g_strfreev (plugin_loader->compatible_projects);
 	g_ptr_array_unref (plugin_loader->locations);
 	g_free (plugin_loader->language);
@@ -2722,7 +2729,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	plugin_loader->plugins = g_ptr_array_new_with_free_func (g_object_unref);
 	plugin_loader->pending_apps = NULL;
 	plugin_loader->queued_ops_pool = g_thread_pool_new (gs_plugin_loader_process_in_thread_pool_cb,
-						   NULL,
+						   plugin_loader,
 						   get_max_parallel_ops (),
 						   FALSE,
 						   NULL);
@@ -2735,6 +2742,16 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 							     (GEqualFunc) as_utils_data_id_equal,
 							     g_free,
 							     (GDestroyNotify) g_object_unref);
+
+	/* Set up a thread pool for running old-style jobs
+	 * FIXME: This will eventually disappear when all jobs are ported to
+	 * be subclasses of #GsPluginJob. */
+	plugin_loader->old_api_thread_pool = g_thread_pool_new_full (gs_plugin_loader_process_old_api_job_cb,
+								     plugin_loader,
+								     (GDestroyNotify) g_object_unref,
+								     20,
+								     FALSE,
+								     NULL);
 
 	/* get the job manager */
 	plugin_loader->job_manager = gs_job_manager_new ();
@@ -3070,17 +3087,17 @@ gs_plugin_loader_inherit_list_props (GsAppList *des_list,
 }
 
 static void
-gs_plugin_loader_process_thread_cb (GTask *task,
-				    gpointer object,
-				    gpointer task_data,
-				    GCancellable *cancellable)
+gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
+                                         gpointer user_data)
 {
+	g_autoptr(GTask) task = g_steal_pointer (&task_data);
 	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) g_task_get_task_data (task);
 	GsAppListFilterFlags dedupe_flags;
 	g_autoptr(GsAppList) list = g_object_ref (gs_plugin_job_get_list (helper->plugin_job));
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	gboolean add_to_pending_array = FALSE;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
@@ -3362,16 +3379,14 @@ gs_plugin_loader_process_in_thread_pool_cb (gpointer data,
 					    gpointer user_data)
 {
 	GTask *task = data;
-	gpointer source_object = g_task_get_source_object (task);
-	gpointer task_data = g_task_get_task_data (task);
-	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	GsPluginLoaderHelper *helper = g_task_get_task_data (task);
 	GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 
 	gs_ioprio_set (G_PRIORITY_LOW);
 
-	gs_plugin_loader_process_thread_cb (task, source_object, task_data, cancellable);
+	gs_plugin_loader_process_old_api_job_cb (g_object_ref (task), plugin_loader);
 
 	/* Clear any pending action set in gs_plugin_loader_schedule_task() */
 	if (app != NULL && gs_app_get_pending_action (app) == action)
@@ -3700,11 +3715,11 @@ job_process_cb (GTask *task)
 		gs_plugin_loader_schedule_task (plugin_loader, task);
 		return;
 	default:
-		break;
+		/* run in an unrestricted thread pool thread */
+		g_thread_pool_push (plugin_loader->old_api_thread_pool,
+				    g_object_ref (task), NULL);
+		return;
 	}
-
-	/* run in a thread */
-	g_task_run_in_thread (task, gs_plugin_loader_process_thread_cb);
 }
 
 /******************************************************************************/
