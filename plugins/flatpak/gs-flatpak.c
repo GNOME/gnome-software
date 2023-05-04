@@ -33,6 +33,7 @@
 #include <xmlb.h>
 
 #include "gs-appstream.h"
+#include "gs-app-private.h"
 #include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
 #include "gs-flatpak-transaction.h"
@@ -2802,6 +2803,7 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 	g_autoptr(GsAppList) addons_list = NULL;
 	g_autoptr(GPtrArray) installed_related_refs = NULL;
 	g_autoptr(GPtrArray) remote_related_refs = NULL;
+	g_autoptr(GPtrArray) remove_addons = NULL;
 	g_autofree gchar *ref = NULL;
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 	g_autoptr(GError) error_local = NULL;
@@ -2886,6 +2888,7 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 
 	g_clear_error (&error_local);
 
+	remove_addons = g_ptr_array_new_full (gs_app_list_length (addons_list), g_object_unref);
 	/* For each addon, if it is neither installed nor available, hide it
 	 * since it may be intended for a different version of the app. We
 	 * don't want to show both org.videolan.VLC.Plugin.bdj//3-19.08 and
@@ -2915,16 +2918,17 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 				found = TRUE;
 		}
 
-		if (!found) {
-			gs_app_add_quirk (app_addon, GS_APP_QUIRK_HIDE_EVERYWHERE);
-			g_debug ("hiding %s since it's not related to %s",
-				 addon_ref, gs_app_get_unique_id (app));
-		} else {
-			gs_app_remove_quirk (app_addon, GS_APP_QUIRK_HIDE_EVERYWHERE);
-			g_debug ("unhiding %s since it's related to %s",
-				 addon_ref, gs_app_get_unique_id (app));
-		}
+		if (!found)
+			g_ptr_array_add (remove_addons, g_object_ref (app_addon));
 	}
+
+	for (guint i = 0; i < remove_addons->len; i++) {
+		GsApp *addon = g_ptr_array_index (remove_addons, i);
+		g_debug ("removing addon '%s' from app '%s', because not related to it",
+			 gs_app_get_unique_id (addon), gs_app_get_unique_id (app));
+		gs_app_remove_addon (app, addon);
+	}
+
 	return TRUE;
 }
 
