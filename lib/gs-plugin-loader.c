@@ -3285,7 +3285,7 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 		for (guint j = 0; j < gs_app_list_length (list); j++) {
 			GsApp *app = gs_app_list_index (list, j);
-			if (gs_app_get_icons (app) == NULL) {
+			if (!gs_app_has_icons (app)) {
 				g_autoptr(GIcon) ic = NULL;
 				const gchar *icon_name;
 				if (gs_app_has_quirk (app, GS_APP_QUIRK_HAS_SOURCE))

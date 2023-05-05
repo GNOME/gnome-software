@@ -120,7 +120,7 @@ refine_app (GsPluginModalias     *self,
 	guint i;
 
 	/* not required */
-	if (gs_app_get_icons (app) != NULL)
+	if (gs_app_has_icons (app))
 		return TRUE;
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DRIVER)
 		return TRUE;

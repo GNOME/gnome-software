@@ -162,7 +162,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 			 "Longer multiline comment that does into detail.");
 	g_assert_true (gs_app_get_local_file (app) != NULL);
 	/* The app has an icon, but cannot be found since it is not installed */
-	g_assert_nonnull (gs_app_get_icons (app));
+	g_assert_true (gs_app_has_icons (app));
 	icon = gs_app_get_icon_for_size (app, 64, 1, NULL);
 	g_assert_null (icon);
 

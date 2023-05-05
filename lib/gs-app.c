@@ -1946,6 +1946,7 @@ gs_app_get_icon_for_size (GsApp       *app,
                           const gchar *fallback_icon_name)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	g_return_val_if_fail (size > 0, NULL);
@@ -1953,6 +1954,8 @@ gs_app_get_icon_for_size (GsApp       *app,
 
 	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s",
 		 gs_app_get_id (app), size, scale, fallback_icon_name);
+
+	locker = g_mutex_locker_new (&priv->mutex);
 
 	/* See if there’s an icon of the right size, or the first one which is too
 	 * big which could be scaled down. Note that the icons array may be
@@ -2045,17 +2048,82 @@ gs_app_get_action_screenshot (GsApp *app)
  *     or %NULL if there are no icons
  *
  * Since: 3.22
+ *
+ * Deprecated: 45: Use gs_app_dup_icons() or gs_app_has_icons() instead.
  **/
 GPtrArray *
 gs_app_get_icons (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
-	if (priv->icons != NULL && priv->icons->len == 0)
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->icons == NULL || priv->icons->len == 0)
 		return NULL;
 
 	return priv->icons;
+}
+
+/**
+ * gs_app_dup_icons:
+ * @app: a #GsApp
+ *
+ * Gets the icons for the application in a thread safe way.
+ *
+ * This will never return an empty array; it will always return either %NULL or
+ * a non-empty array.
+ *
+ * Returns: (transfer container) (element-type GIcon) (nullable): an array of icons,
+ *     or %NULL if there are no icons
+ *
+ * Since: 45
+ **/
+GPtrArray *
+gs_app_dup_icons (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	GPtrArray *copy;
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->icons == NULL || priv->icons->len == 0)
+		return NULL;
+
+	copy = g_ptr_array_new_full (priv->icons->len, g_object_unref);
+	for (guint i = 0; i < priv->icons->len; i++) {
+		g_ptr_array_add (copy, g_object_ref (g_ptr_array_index (priv->icons, i)));
+	}
+
+	return copy;
+}
+
+/**
+ * gs_app_has_icons:
+ * @app: a #GsApp
+ *
+ * Checks whether there are any icons set.
+ *
+ * Returns: %TRUE, when the @app has set any icons, %FALSE otherwise
+ *
+ * Since: 45
+ **/
+gboolean
+gs_app_has_icons (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	return priv->icons != NULL && priv->icons->len > 0;
 }
 
 static gint

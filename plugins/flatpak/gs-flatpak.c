@@ -1846,7 +1846,7 @@ gs_flatpak_update_remote_from_app (GsFlatpak     *self,
 	const gchar *branch;
 	const gchar *title, *homepage, *comment, *description;
 	const gchar *filter;
-	GPtrArray *icons;
+	g_autoptr(GPtrArray) icons = NULL;
 
 	flatpak_remote_set_disabled (xremote, FALSE);
 
@@ -1889,7 +1889,7 @@ gs_flatpak_update_remote_from_app (GsFlatpak     *self,
 	if (description != NULL)
 		flatpak_remote_set_description (xremote, description);
 
-	icons = gs_app_get_icons (app);
+	icons = gs_app_dup_icons (app);
 	for (guint i = 0; icons != NULL && i < icons->len; i++) {
 		GIcon *icon = g_ptr_array_index (icons, i);
 

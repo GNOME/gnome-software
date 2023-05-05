@@ -194,13 +194,13 @@ gs_icon_downloader_queue_app (GsIconDownloader *self,
 			      gboolean          interactive)
 {
 	g_autoptr(GTask) task = NULL;
-	GPtrArray *icons;
+	g_autoptr(GPtrArray) icons = NULL;
 	gboolean has_remote_icon = FALSE;
 
 	g_return_if_fail (GS_IS_ICON_DOWNLOADER (self));
 	g_return_if_fail (GS_IS_APP (app));
 
-	icons = gs_app_get_icons (app);
+	icons = gs_app_dup_icons (app);
 
 	for (guint j = 0; icons && j < icons->len; j++) {
 		has_remote_icon |= GS_IS_REMOTE_ICON (g_ptr_array_index (icons, j));
@@ -233,13 +233,13 @@ download_remote_icons_of_the_app_cb (GTask        *task,
 {
 	GsIconDownloader *self = GS_ICON_DOWNLOADER (source_object);
 	g_autoptr(GPtrArray) remote_icons = NULL;
-	GPtrArray *icons;
+	g_autoptr(GPtrArray) icons = NULL;
 	GsApp *app;
 
 	g_assert (gs_worker_thread_is_in_worker_context (self->worker));
 
 	app = GS_APP (task_data);
-	icons = gs_app_get_icons (app);
+	icons = gs_app_dup_icons (app);
 	remote_icons = g_ptr_array_new_full (icons ? icons->len : 0, g_object_unref);
 
 	for (guint j = 0; icons && j < icons->len; j++) {
