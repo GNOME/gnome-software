@@ -368,7 +368,7 @@ traverse_components_xpath_for_icons (GsApp *app,
 			icons = xb_node_query (component, "icon", 0, NULL);
 			traverse_component_icons (app, component, icons);
 
-			if (try_with_launchable && gs_app_get_icons (app) == NULL) {
+			if (try_with_launchable && !gs_app_has_icons (app)) {
 				const gchar *launchable_id = xb_node_query_text (component, "launchable[@type='desktop-id']", NULL);
 				if (launchable_id != NULL) {
 					g_autofree gchar *xpath2 = NULL;
@@ -396,7 +396,7 @@ gs_appstream_refine_icon (GsApp *app,
 	g_clear_pointer (&icons, g_ptr_array_unref);
 
 	/* If no icon found, try to inherit the icon from the .desktop file */
-	if (gs_app_get_icons (app) == NULL) {
+	if (!gs_app_has_icons (app)) {
 		g_autofree gchar *xpath = NULL;
 		const gchar *launchable_id = xb_node_query_text (component, "launchable[@type='desktop-id']", NULL);
 		if (launchable_id != NULL) {
@@ -1267,7 +1267,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set icon */
 	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) > 0 &&
-	    gs_app_get_icons (app) == NULL)
+	    !gs_app_has_icons (app))
 		gs_appstream_refine_icon (app, silo, component);
 
 	/* set categories */

@@ -598,7 +598,7 @@ refine_app (GsPluginEpiphany    *self,
 				icon_size = g_file_info_get_size (file_info);
 		}
 		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON &&
-		    gs_app_get_icons (app) == NULL &&
+		    !gs_app_has_icons (app) &&
 		    icon_path) {
 			g_autoptr(GIcon) icon = g_file_icon_new (icon_file);
 			g_autofree char *icon_dir = g_path_get_dirname (icon_path);

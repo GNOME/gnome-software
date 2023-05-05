@@ -576,7 +576,7 @@ refine_app (GsPluginDummy        *self,
 			gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "tmp");
 		if (gs_app_get_summary (app) == NULL)
 			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "tmp");
-		if (gs_app_get_icons (app) == NULL) {
+		if (!gs_app_has_icons (app)) {
 			g_autoptr(GIcon) ic = g_themed_icon_new ("drive-harddisk");
 			gs_app_add_icon (app, ic);
 		}

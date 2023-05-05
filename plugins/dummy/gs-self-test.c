@@ -410,7 +410,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_license (addon), ==,
 			 "LicenseRef-free=https://www.debian.org/");
 	/* The app has a non-existent icon */
-	g_assert_nonnull (gs_app_get_icons (addon));
+	g_assert_true (gs_app_has_icons (addon));
 	icon = gs_app_get_icon_for_size (addon, 48, 1, NULL);
 	g_assert_null (icon);
 }
