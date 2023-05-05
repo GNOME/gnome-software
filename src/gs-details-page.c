@@ -889,7 +889,8 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		    gs_app_get_scope (app) == gs_app_get_scope (self->app)) &&
 		    g_strcmp0 (gs_app_get_origin (app), gs_app_get_origin (self->app)) == 0 &&
 		    g_strcmp0 (gs_app_get_branch (app), gs_app_get_branch (self->app)) == 0 &&
-		    g_strcmp0 (gs_app_get_version (app), gs_app_get_version (self->app)) == 0)) {
+		    g_strcmp0 (gs_app_get_version (app), gs_app_get_version (self->app)) == 0 &&
+		    (self->app_local_file == NULL || self->app != self->app_local_file))) {
 			/* This can happen on reload of the page */
 			if (app != self->app) {
 				_set_app (self, app);
