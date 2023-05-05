@@ -385,7 +385,10 @@ GIcon		*gs_app_get_icon_for_size	(GsApp		*app,
 						 guint		 size,
 						 guint		 scale,
 						 const gchar	*fallback_icon_name);
+G_DEPRECATED_FOR(gs_app_dup_icons)
 GPtrArray	*gs_app_get_icons		(GsApp		*app);
+GPtrArray	*gs_app_dup_icons		(GsApp		*app);
+gboolean	 gs_app_has_icons		(GsApp		*app);
 void		 gs_app_add_icon		(GsApp		*app,
 						 GIcon		*icon);
 void		 gs_app_remove_all_icons	(GsApp		*app);
