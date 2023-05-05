@@ -2903,13 +2903,13 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 					     gs_flatpak_app_get_ref_name (app_addon),
 					     gs_flatpak_app_get_ref_arch (app_addon),
 					     gs_app_get_branch (app_addon));
-		for (guint j = 0; installed_related_refs && j < installed_related_refs->len; j++) {
+		for (guint j = 0; !found && installed_related_refs && j < installed_related_refs->len; j++) {
 			FlatpakRelatedRef *rel = g_ptr_array_index (installed_related_refs, j);
 			g_autofree char *rel_ref = flatpak_ref_format_ref (FLATPAK_REF (rel));
 			if (g_strcmp0 (addon_ref, rel_ref) == 0)
 				found = TRUE;
 		}
-		for (guint j = 0; remote_related_refs && j < remote_related_refs->len; j++) {
+		for (guint j = 0; !found && remote_related_refs && j < remote_related_refs->len; j++) {
 			FlatpakRelatedRef *rel = g_ptr_array_index (remote_related_refs, j);
 			g_autofree char *rel_ref = flatpak_ref_format_ref (FLATPAK_REF (rel));
 			if (g_strcmp0 (addon_ref, rel_ref) == 0)
