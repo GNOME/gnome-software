@@ -851,7 +851,8 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	/* add the local file to the list so that we can carry it over when
 	 * switching between alternates */
 	if (self->app_local_file != NULL) {
-		if (gs_app_get_state (self->app_local_file) != GS_APP_STATE_INSTALLED) {
+		if (gs_app_get_state (self->app_local_file) != GS_APP_STATE_INSTALLED &&
+		    gs_app_get_local_file (self->app_local_file) != NULL) {
 			GtkWidget *row = gs_origin_popover_row_new (self->app_local_file);
 			gtk_widget_set_visible (row, TRUE);
 			gtk_list_box_append (GTK_LIST_BOX (self->origin_popover_list_box), row);
