@@ -1831,6 +1831,9 @@ _set_app (GsDetailsPage *self, GsApp *app)
 {
 	GsJobManager *job_manager = gs_plugin_loader_get_job_manager (self->plugin_loader);
 
+	if (self->app == app)
+		return;
+
 	/* do not show all the reviews by default */
 	self->show_all_reviews = FALSE;
 
@@ -1854,10 +1857,10 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	g_object_notify (G_OBJECT (self), "title");
 
 	if (self->app == NULL) {
-		/* switch away from the details view that failed to load */
-		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
+		g_set_object (&self->app_cancellable, NULL);
 		return;
 	}
+
 	g_set_object (&self->app_cancellable, gs_app_get_cancellable (app));
 
 	self->job_manager_watch_id = gs_job_manager_add_watch (job_manager,
@@ -2057,7 +2060,7 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
-	g_clear_object (&self->app);
+	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
@@ -2075,7 +2078,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
-	g_clear_object (&self->app);
+	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
@@ -2516,17 +2519,7 @@ gs_details_page_dispose (GObject *object)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (object);
 
-	if (self->app != NULL) {
-		GsJobManager *job_manager = gs_plugin_loader_get_job_manager (self->plugin_loader);
-
-		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
-		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
-		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_allow_cancel_changed_cb,
-						      self);
-		gs_job_manager_remove_watch (job_manager, self->job_manager_watch_id);
-		self->job_manager_watch_id = 0;
-		g_clear_object (&self->app);
-	}
+	_set_app (self, NULL);
 
 	g_clear_pointer (&self->packaging_format_preference, g_strfreev);
 	g_clear_object (&self->origin_css_provider);
@@ -3027,7 +3020,7 @@ gs_details_page_set_metainfo (GsDetailsPage *self,
 	g_return_if_fail (G_IS_FILE (file));
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
-	g_clear_object (&self->app);
+	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
 	task = g_task_new (self, self->cancellable, gs_details_page_metainfo_ready_cb, NULL);
 	g_task_set_source_tag (task, gs_details_page_set_metainfo);
