@@ -2739,7 +2739,14 @@ narrow_to_halign (GBinding *binding, const GValue *from_value, GValue *to_value,
 static void
 gs_details_page_init (GsDetailsPage *self)
 {
+	g_type_ensure (GS_TYPE_APP_CONTEXT_BAR);
+	g_type_ensure (GS_TYPE_APP_VERSION_HISTORY_ROW);
+	g_type_ensure (GS_TYPE_DESCRIPTION_BOX);
+	g_type_ensure (GS_TYPE_LICENSE_TILE);
+	g_type_ensure (GS_TYPE_PROGRESS_BUTTON);
+	g_type_ensure (GS_TYPE_REVIEW_HISTOGRAM);
 	g_type_ensure (GS_TYPE_SCREENSHOT_CAROUSEL);
+	g_type_ensure (GS_TYPE_STAR_WIDGET);
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 

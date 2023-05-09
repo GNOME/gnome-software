@@ -981,6 +981,8 @@ gs_overview_page_init (GsOverviewPage *self)
 {
 	g_autofree gchar *tmp_label = NULL;
 
+	g_type_ensure (GS_TYPE_FEATURED_CAROUSEL);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->featured_carousel), NULL);

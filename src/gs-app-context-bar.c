@@ -815,6 +815,8 @@ tile_clicked_cb (GtkWidget *widget,
 static void
 gs_app_context_bar_init (GsAppContextBar *self)
 {
+	g_type_ensure (GS_TYPE_LOZENGE);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 

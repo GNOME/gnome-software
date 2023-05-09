@@ -98,6 +98,9 @@ gs_review_histogram_dispose (GObject *object)
 static void
 gs_review_histogram_init (GsReviewHistogram *histogram)
 {
+	g_type_ensure (GS_TYPE_REVIEW_BAR);
+	g_type_ensure (GS_TYPE_STAR_IMAGE);
+
 	gtk_widget_init_template (GTK_WIDGET (histogram));
 }
 

@@ -597,6 +597,8 @@ recently_updated_sort_cb (GtkFlowBoxChild *child1,
 static void
 gs_category_page_init (GsCategoryPage *self)
 {
+	g_type_ensure (GS_TYPE_FEATURED_CAROUSEL);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	/* Sort the recently updated apps by update date. */

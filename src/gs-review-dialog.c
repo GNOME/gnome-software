@@ -208,6 +208,9 @@ static void
 gs_review_dialog_init (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
+
+	g_type_ensure (GS_TYPE_STAR_WIDGET);
+
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	/* require the user to spend at least 30 seconds on writing a review */
