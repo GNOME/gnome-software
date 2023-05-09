@@ -1532,7 +1532,6 @@ update_apps_thread_cb (GTask        *task,
 	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
 		GsPlugin *plugin = GS_PLUGIN (self);
 		g_autofree gchar *transaction_address = NULL;
-		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 		gboolean done;
