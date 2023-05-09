@@ -63,6 +63,8 @@ static guint obj_signals[SIGNAL_GET_INVOLVED_ACTIVATED + 1] = { 0, };
 static void
 gs_license_tile_init (GsLicenseTile *self)
 {
+	g_type_ensure (GS_TYPE_LOZENGE);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 

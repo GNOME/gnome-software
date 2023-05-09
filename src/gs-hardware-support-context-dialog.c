@@ -760,6 +760,8 @@ app_notify_cb (GObject    *obj,
 static void
 gs_hardware_support_context_dialog_init (GsHardwareSupportContextDialog *self)
 {
+	g_type_ensure (GS_TYPE_LOZENGE);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 

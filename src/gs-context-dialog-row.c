@@ -73,6 +73,8 @@ css_class_for_importance (GsContextDialogRowImportance importance)
 static void
 gs_context_dialog_row_init (GsContextDialogRow *self)
 {
+	g_type_ensure (GS_TYPE_LOZENGE);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 #if ADW_CHECK_VERSION(1,2,0)

@@ -312,6 +312,8 @@ gs_update_dialog_dispose (GObject *object)
 static void
 gs_update_dialog_init (GsUpdateDialog *dialog)
 {
+	g_type_ensure (GS_TYPE_UPDATE_LIST);
+
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	dialog->cancellable = g_cancellable_new ();
