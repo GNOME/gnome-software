@@ -308,6 +308,24 @@ gs_updates_section_count_busy_apps (GsUpdatesSection *self)
 	return busy;
 }
 
+/* Hide progress buttons in the stack pages, to avoid gdk_frame_clock_paint_idle()
+ * being called even when the button is not visible.
+ *
+ * FIXME: This is a workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/1025 */
+static void
+_set_button_stack_visible_child (GsUpdatesSection *self,
+				 const gchar *child_name)
+{
+	if (self->button_cancel != NULL)
+		gtk_widget_set_visible (self->button_cancel, g_strcmp0 (child_name, "cancel") == 0);
+	if (self->button_download != NULL)
+		gtk_widget_set_visible (self->button_download, g_strcmp0 (child_name, "download") == 0);
+	if (self->button_update != NULL)
+		gtk_widget_set_visible (self->button_update, g_strcmp0 (child_name, "update") == 0);
+
+	gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), child_name);
+}
+
 static void
 _update_buttons (GsUpdatesSection *self)
 {
@@ -317,7 +335,7 @@ _update_buttons (GsUpdatesSection *self)
 	if (self->cancellable != NULL) {
 		gtk_widget_set_sensitive (self->button_cancel,
 					  !g_cancellable_is_cancelled (self->cancellable));
-		gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "cancel");
+		_set_button_stack_visible_child (self, "cancel");
 		gtk_widget_set_visible (GTK_WIDGET (self->button_stack), TRUE);
 		return;
 	}
@@ -330,16 +348,16 @@ _update_buttons (GsUpdatesSection *self)
 	if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE ||
 	    self->kind == GS_UPDATES_SECTION_KIND_OFFLINE) {
 		if (_all_offline_updates_downloaded (self))
-			gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "update");
+			_set_button_stack_visible_child (self, "update");
 		else
-			gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "download");
+			_set_button_stack_visible_child (self, "download");
 
 		gtk_widget_set_visible (GTK_WIDGET (self->button_stack), TRUE);
 		/* TRANSLATORS: This is the button for installing all
 		 * offline updates */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (self->button_update), _("_Restart & Update…"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
-		gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "update");
+		_set_button_stack_visible_child (self, "update");
 		gtk_widget_set_visible (GTK_WIDGET (self->button_stack), TRUE);
 		/* TRANSLATORS: This is the button for upgrading all
 		 * online-updatable apps */
