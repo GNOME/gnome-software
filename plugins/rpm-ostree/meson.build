@@ -4,7 +4,8 @@ rpmostree_generated = gnome.gdbus_codegen(
   'gs-rpmostree-generated',
   'org.projectatomic.rpmostree1.xml',
   interface_prefix : 'org.projectatomic.rpmostree1',
-  namespace : 'GsRPMOSTree'
+  namespace : 'GsRPMOSTree',
+  extra_args : [ '--glib-min-required=' + glib.version() ],
 )
 
 shared_module(

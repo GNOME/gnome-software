@@ -386,6 +386,7 @@ gs_plugin_epiphany_finalize (GObject *object)
 }
 
 static gboolean ensure_installed_apps_cache (GsPluginEpiphany  *self,
+					     gboolean           interactive,
 					     GCancellable      *cancellable,
 					     GError           **error);
 
@@ -668,6 +669,7 @@ generate_app_id_for_url (const gchar *url)
 /* Run in @worker */
 static gboolean
 ensure_installed_apps_cache (GsPluginEpiphany  *self,
+			     gboolean           interactive,
 			     GCancellable      *cancellable,
 			     GError           **error)
 {
@@ -683,6 +685,8 @@ ensure_installed_apps_cache (GsPluginEpiphany  *self,
 		return TRUE;
 
 	if (!gs_ephy_web_app_provider_call_get_installed_apps_sync (self->epiphany_proxy,
+								    interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
+								    -1  /* timeout */,
 								    &webapps,
 								    cancellable,
 								    error)) {
@@ -812,7 +816,7 @@ list_apps_thread_cb (GTask        *task,
 	}
 
 	/* Ensure the cache is up to date. */
-	if (!ensure_installed_apps_cache (self, cancellable, &local_error)) {
+	if (!ensure_installed_apps_cache (self, data->flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -906,11 +910,12 @@ refine_thread_cb (GTask        *task,
 	GsPluginRefineData *data = task_data;
 	GsPluginRefineFlags flags = data->flags;
 	GsAppList *list = data->list;
+	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
-	if (!ensure_installed_apps_cache (self, cancellable, &local_error)) {
+	if (!ensure_installed_apps_cache (self, interactive, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -1029,6 +1034,7 @@ gs_plugin_app_install (GsPlugin      *plugin,
 	g_autoptr(GVariant) icon_v = NULL;
 	GVariantBuilder opt_builder;
 	const int icon_sizes[] = {512, 192, 128, 1};
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
@@ -1070,7 +1076,7 @@ gs_plugin_app_install (GsPlugin      *plugin,
 					  "RequestInstallToken",
 					  g_variant_new ("(sva{sv})",
 							 name, icon_v, &opt_builder),
-					  G_DBUS_CALL_FLAGS_NONE,
+					  interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
 					  -1, cancellable, error);
 	if (token_v == NULL) {
 		gs_epiphany_error_convert (error);
@@ -1084,6 +1090,8 @@ gs_plugin_app_install (GsPlugin      *plugin,
 	g_variant_get (token_v, "(&s)", &token);
 	if (!gs_ephy_web_app_provider_call_install_sync (self->epiphany_proxy,
 							 url, name, token,
+							 interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
+							 -1  /* timeout */,
 							 &installed_app_id,
 							 cancellable,
 							 error)) {
@@ -1113,6 +1121,7 @@ gs_plugin_app_remove (GsPlugin      *plugin,
 	GsPluginEpiphany *self = GS_PLUGIN_EPIPHANY (plugin);
 	const char *installed_app_id;
 	const char *url;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
@@ -1130,6 +1139,8 @@ gs_plugin_app_remove (GsPlugin      *plugin,
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	if (!gs_ephy_web_app_provider_call_uninstall_sync (self->epiphany_proxy,
 							   installed_app_id,
+							   interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
+							   -1  /* timeout */,
 							   cancellable,
 							   error)) {
 		gs_epiphany_error_convert (error);

@@ -5,6 +5,7 @@ eos_updater_generated = gnome.gdbus_codegen(
   sources : ['com.endlessm.Updater.xml'],
   interface_prefix : 'com.endlessm.',
   namespace : 'GsEos',
+  extra_args : [ '--glib-min-required=' + glib.version() ],
 )
 
 shared_module(

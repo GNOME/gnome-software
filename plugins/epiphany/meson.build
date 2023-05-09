@@ -7,6 +7,7 @@ epiphany_generated = gnome.gdbus_codegen(
   sources : ['org.gnome.Epiphany.WebAppProvider.xml'],
   interface_prefix : 'org.gnome.Epiphany',
   namespace : 'GsEphy',
+  extra_args : [ '--glib-min-required=' + glib.version() ],
 )
 
 shared_module(
