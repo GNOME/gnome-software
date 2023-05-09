@@ -160,6 +160,9 @@ static void
 gs_review_dialog_init (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
+
+	g_type_ensure (GS_TYPE_STAR_WIDGET);
+
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	gs_review_dialog_update_review_comment (dialog);

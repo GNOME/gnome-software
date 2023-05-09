@@ -1391,6 +1391,8 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 static void
 gs_updates_page_init (GsUpdatesPage *self)
 {
+	g_type_ensure (GS_TYPE_UPGRADE_BANNER);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	self->state = GS_UPDATES_PAGE_STATE_STARTUP;

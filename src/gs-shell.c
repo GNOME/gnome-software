@@ -2679,6 +2679,16 @@ gs_shell_class_init (GsShellClass *klass)
 static void
 gs_shell_init (GsShell *shell)
 {
+	g_type_ensure (GS_TYPE_CATEGORY_PAGE);
+	g_type_ensure (GS_TYPE_DETAILS_PAGE);
+	g_type_ensure (GS_TYPE_EXTRAS_PAGE);
+	g_type_ensure (GS_TYPE_INSTALLED_PAGE);
+	g_type_ensure (GS_TYPE_LOADING_PAGE);
+	g_type_ensure (GS_TYPE_MODERATE_PAGE);
+	g_type_ensure (GS_TYPE_OVERVIEW_PAGE);
+	g_type_ensure (GS_TYPE_SEARCH_PAGE);
+	g_type_ensure (GS_TYPE_UPDATES_PAGE);
+
 	gtk_widget_init_template (GTK_WIDGET (shell));
 
 	gtk_search_bar_connect_entry (GTK_SEARCH_BAR (shell->search_bar), GTK_EDITABLE (shell->entry_search));

@@ -141,7 +141,11 @@ static void
 gs_review_row_init (GsReviewRow *row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
+
 	priv->network_available = TRUE;
+
+	g_type_ensure (GS_TYPE_STAR_WIDGET);
+
 	gtk_widget_init_template (GTK_WIDGET (row));
 }
 

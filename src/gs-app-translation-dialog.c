@@ -37,6 +37,7 @@
 #include "gs-app.h"
 #include "gs-app-translation-dialog.h"
 #include "gs-common.h"
+#include "gs-lozenge.h"
 
 struct _GsAppTranslationDialog
 {
@@ -118,6 +119,8 @@ button_clicked_cb (GtkButton *button,
 static void
 gs_app_translation_dialog_init (GsAppTranslationDialog *self)
 {
+	g_type_ensure (GS_TYPE_LOZENGE);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 
