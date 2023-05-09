@@ -310,7 +310,9 @@ gs_updates_section_count_busy_apps (GsUpdatesSection *self)
 }
 
 /* Hide progress buttons in the stack pages, to avoid gdk_frame_clock_paint_idle()
-   being called even when the button is not visible. */
+ * being called even when the button is not visible.
+ *
+ * FIXME: This is a workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/1025 */
 static void
 _set_button_stack_visible_child (GsUpdatesSection *self,
 				 const gchar *child_name)
