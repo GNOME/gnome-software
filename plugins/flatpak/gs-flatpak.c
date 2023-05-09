@@ -438,7 +438,18 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 	g_autoptr(GsAppPermissions) additional_permissions = gs_app_permissions_new ();
 	g_autoptr(GError) error_local = NULL;
 
-	old_bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, NULL);
+	old_bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, &error_local);
+	if (old_bytes == NULL) {
+		g_debug ("Failed to get metadata for app ‘%s’: %s",
+			 gs_app_get_id (app), error_local->message);
+		g_clear_error (&error_local);
+
+		/* Permissions are unknown */
+		g_clear_object (&additional_permissions);
+
+		goto finish;
+	}
+
 	old_keyfile = g_key_file_new ();
 	g_key_file_load_from_data (old_keyfile,
 	                           g_bytes_get_data (old_bytes, NULL),
@@ -490,6 +501,7 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 		}
 	}
 
+finish:
 	/* no new permissions set */
 	if (additional_permissions != NULL)
 		gs_app_permissions_seal (additional_permissions);
