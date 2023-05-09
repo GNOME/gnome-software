@@ -2005,6 +2005,8 @@ gs_app_get_icon_for_size (GsApp       *app,
 		}
 	}
 
+	g_clear_pointer (&locker, g_mutex_locker_free);
+
 	if (scale > 1) {
 		g_debug ("Retrying at scale 1");
 		return gs_app_get_icon_for_size (app, size, 1, fallback_icon_name);
