@@ -165,15 +165,15 @@ refine_app (GsPluginRewriteResource  *self,
 			g_autoptr(GMainContext) context = g_main_context_new ();
 			g_autoptr(GMainContextPusher) context_pusher = g_main_context_pusher_new (context);
 
-			gs_plugin_download_rewrite_resource_async (css,
-								   cancellable,
-								   async_result_cb,
-								   &result);
+			gs_download_rewrite_resource_async (css,
+							    cancellable,
+							    async_result_cb,
+							    &result);
 
 			while (result == NULL)
 				g_main_context_iteration (context, TRUE);
 
-			css_new = gs_plugin_download_rewrite_resource_finish (result, error);
+			css_new = gs_download_rewrite_resource_finish (result, error);
 			if (css_new == NULL)
 				return FALSE;
 			if (g_strcmp0 (css, css_new) != 0) {

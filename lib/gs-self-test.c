@@ -201,12 +201,12 @@ gs_plugin_download_rewrite_func (void)
 	}
 
 	/* test rewrite */
-	gs_plugin_download_rewrite_resource_async (resource, NULL, async_result_cb, &result);
+	gs_download_rewrite_resource_async (resource, NULL, async_result_cb, &result);
 
 	while (result == NULL)
 		g_main_context_iteration (context, TRUE);
 
-	css = gs_plugin_download_rewrite_resource_finish (result, &error);
+	css = gs_download_rewrite_resource_finish (result, &error);
 	g_assert_no_error (error);
 	g_assert (css != NULL);
 }
