@@ -22,13 +22,13 @@
                     <property name="valign">start</property>
                     <property name="margin-start">12</property>
                     <property name="margin-end">12</property>
-                    <property name="margin-top">0</property><!-- top margin provided by headings -->
-                    <property name="margin-bottom">24</property>
+                    <property name="margin-top">24</property>
+                    <property name="margin-bottom">0</property><!-- bottom margin provided by the sections -->
 
                     <child>
                       <object class="GsFeaturedCarousel" id="top_carousel">
                         <property name="height-request">318</property>
-                        <property name="margin_top">24</property>
+                        <property name="margin-bottom">24</property>
                         <signal name="app-clicked" handler="top_carousel_app_clicked_cb"/>
                       </object>
                     </child>
@@ -37,7 +37,6 @@
                       <object class="GtkLabel" id="featured_heading">
                         <property name="visible" bind-source="featured_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>
-                        <property name="margin_top">24</property>
                         <property name="label" translatable="yes" comments="Heading for featured apps on a category page">Editor’s Choice</property>
                         <style>
                           <class name="heading"/>
@@ -54,6 +53,7 @@
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
                         <property name="valign">start</property>
+                        <property name="margin-bottom">24</property>
                         <property name="selection-mode">none</property>
                         <accessibility>
                           <relation name="labelled-by">featured_heading</relation>
@@ -65,7 +65,6 @@
                       <object class="GtkLabel" id="recently_updated_heading">
                         <property name="visible" bind-source="recently_updated_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>
-                        <property name="margin_top">24</property>
                         <property name="label" translatable="yes" comments="Heading for recently updated apps on a category page">New &amp; Updated</property>
                         <style>
                           <class name="heading"/>
@@ -82,6 +81,7 @@
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
                         <property name="valign">start</property>
+                        <property name="margin-bottom">24</property>
                         <property name="selection-mode">none</property>
                         <accessibility>
                           <relation name="labelled-by">recently_updated_heading</relation>
@@ -93,7 +93,6 @@
                       <object class="GtkLabel" id="web_apps_heading">
                         <property name="visible" bind-source="web_apps_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>
-                        <property name="margin_top">24</property>
                         <property name="label" translatable="yes" comments="Heading for web apps on a category page">Picks from the Web</property>
                         <style>
                           <class name="heading"/>
@@ -110,6 +109,7 @@
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
                         <property name="valign">start</property>
+                        <property name="margin-bottom">24</property>
                         <property name="selection-mode">none</property>
                         <accessibility>
                           <relation name="labelled-by">web_apps_heading</relation>
@@ -121,7 +121,6 @@
                       <object class="GtkLabel" id="other_heading">
                         <property name="visible" bind-source="category_detail_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>
-                        <property name="margin_top">24</property>
                         <property name="label" translatable="yes" comments="Heading for the rest of the apps on a category page">Other Software</property>
                         <style>
                           <class name="heading"/>
@@ -137,6 +136,7 @@
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
                         <property name="valign">start</property>
+                        <property name="margin-bottom">24</property>
                         <property name="selection-mode">none</property>
                         <accessibility>
                           <relation name="labelled-by">other_heading</relation>
