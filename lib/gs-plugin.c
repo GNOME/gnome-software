@@ -1111,7 +1111,20 @@ gs_plugin_reload (GsPlugin *plugin)
 typedef struct {
 	GsPlugin	*plugin;
 	GsApp		*app;
+	GPtrArray	*async_results;  /* (owned) */
+	guint		*n_pending_downloads;  /* (unowned) */
 } GsPluginDownloadHelper;
+
+static void
+gs_plugin_download_helper_free (GsPluginDownloadHelper *helper)
+{
+	g_clear_object (&helper->plugin);
+	g_clear_object (&helper->app);
+	g_clear_pointer (&helper->async_results, g_ptr_array_unref);
+	g_free (helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginDownloadHelper, gs_plugin_download_helper_free)
 
 static void
 download_file_progress_cb (gsize    total_written_bytes,
@@ -1139,10 +1152,9 @@ async_result_cb (GObject      *source_object,
                  GAsyncResult *result,
                  gpointer      user_data)
 {
-	GAsyncResult **result_out = user_data;
+	g_autoptr(GsPluginDownloadHelper) helper = g_steal_pointer (&user_data);
 
-	g_assert (*result_out == NULL);
-	*result_out = g_object_ref (result);
+	g_ptr_array_add (helper->async_results, g_object_ref (result));
 	g_main_context_wakeup (g_main_context_get_thread_default ());
 }
 
@@ -1228,6 +1240,11 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 	guint start = 0;
 	g_autoptr(GString) resource_str = g_string_new (resource);
 	g_autoptr(GString) str = g_string_new (NULL);
+	g_autoptr(SoupSession) soup_session = NULL;
+	g_autoptr(GPtrArray) async_results = g_ptr_array_new_with_free_func (g_object_unref);
+	g_autoptr(GMainContext) context = g_main_context_new ();
+	g_autoptr(GMainContextPusher) context_pusher = g_main_context_pusher_new (context);
+	guint n_pending_downloads = 0;
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
 	g_return_val_if_fail (resource != NULL, NULL);
@@ -1289,10 +1306,27 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 					return NULL;
 
 				/* Download it if it doesn’t already exist */
-				if (!g_file_test (cachefn, G_FILE_TEST_EXISTS) &&
-				    !gs_plugin_download_file (plugin, app, unprefixed_uri, cachefn,
-							      cancellable, error)) {
-					return NULL;
+				if (!g_file_test (cachefn, G_FILE_TEST_EXISTS)) {
+					g_autoptr(GFile) output_file = NULL;
+					g_autoptr(GAsyncResult) result = NULL;
+					g_autoptr(GsPluginDownloadHelper) helper = NULL;
+
+					helper = g_new0 (GsPluginDownloadHelper, 1);
+					helper->plugin = g_object_ref (plugin);
+					helper->app = g_object_ref (app);
+					helper->async_results = g_ptr_array_ref (async_results);
+					helper->n_pending_downloads = &n_pending_downloads;
+
+					if (soup_session == NULL)
+						soup_session = gs_build_soup_session ();
+
+					/* Do the download. */
+					output_file = g_file_new_for_path (cachefn);
+					n_pending_downloads++;
+					gs_download_file_async (soup_session, unprefixed_uri, output_file,
+								G_PRIORITY_LOW,
+								download_file_progress_cb, helper,
+								cancellable, async_result_cb, helper);  /* transfer full */
 				}
 			}
 
@@ -1301,6 +1335,26 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 			start = 0;
 		}
 	}
+
+	/* Wait for all the downloads to finish. If any of them have failed,
+	 * don’t return the constructed string. */
+	while (n_pending_downloads > 0)
+		g_main_context_iteration (context, TRUE);
+
+	for (guint i = 0; i < async_results->len; i++) {
+		GAsyncResult *result = g_ptr_array_index (async_results, i);
+		g_autoptr(GError) local_error = NULL;
+
+		if (!gs_download_file_finish (soup_session, result, &local_error) &&
+		    !g_error_matches (local_error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+					     local_error->message);
+			return NULL;
+		}
+	}
+
 	return g_strdup (str->str);
 }
 
