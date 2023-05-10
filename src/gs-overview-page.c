@@ -25,6 +25,9 @@
  * 3-column layout. */
 #define N_TILES 12
 
+/* Even when asking for N_TILES apps, the curated apps can be less than N_TILES */
+#define MIN_CURATED_APPS 6
+
 struct _GsOverviewPage
 {
 	GsPage			 parent_instance;
@@ -183,7 +186,7 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 	}
 
 	/* not enough to show */
-	if (gs_app_list_length (list) < N_TILES) {
+	if (gs_app_list_length (list) < MIN_CURATED_APPS) {
 		g_warning ("Only %u apps for curated list, hiding",
 		           gs_app_list_length (list));
 		gtk_widget_set_visible (self->box_curated, FALSE);
@@ -191,7 +194,16 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 		goto out;
 	}
 
-	g_assert (gs_app_list_length (list) == N_TILES);
+	g_assert (gs_app_list_length (list) >= MIN_CURATED_APPS && gs_app_list_length (list) <= N_TILES);
+
+	/* Ensure as it has 2 and 3 as factors, so it will form an even
+	 * 2-column and 3-column layout. */
+	while (gs_app_list_length (list) > 0 &&
+	       ((gs_app_list_length (list) % 3) != 0 ||
+		(gs_app_list_length (list) % 2) != 0)) {
+		/* Remove the last app from the list */
+		gs_app_list_remove (list, gs_app_list_index (list, gs_app_list_length (list) - 1));
+	}
 
 	gs_widget_remove_all (self->box_curated, (GsRemoveFunc) gtk_flow_box_remove);
 
