@@ -44,6 +44,7 @@ G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
  * for the rationale behind the numbers */
 #define MAX_RECENTLY_UPDATED_APPS 12
 #define MIN_RECENTLY_UPDATED_APPS 50
+#define MIN_SECTION_APPS 3
 
 typedef enum {
 	PROP_CATEGORY = 1,
@@ -323,11 +324,30 @@ setup_parent_flow_box_child (GsCategoryPage *self,
 }
 
 static void
+move_to_flow_box (GsCategoryPage *self,
+		  GtkFlowBox *source,
+		  GtkFlowBox *destination)
+{
+	for (GtkFlowBoxChild *child = gtk_flow_box_get_child_at_index (source, 0);
+	     child != NULL;
+	     child = gtk_flow_box_get_child_at_index (source, 0)) {
+		GtkWidget *tile = gtk_flow_box_child_get_child (child);
+		g_object_ref (tile);
+		gtk_flow_box_remove (source, tile);
+		gtk_flow_box_insert (destination, tile, -1);
+		setup_parent_flow_box_child (self, tile);
+		g_object_unref (tile);
+	}
+}
+
+static void
 load_category_finish (LoadCategoryData *data)
 {
 	GsCategoryPage *self = data->page;
 	guint64 recently_updated_cutoff_secs;
 	guint64 n_recently_updated = 0;
+	guint64 n_featured = 0;
+	guint64 n_web_apps = 0;
 	guint64 picked_recently_updated = 0;
 	guint64 min_release_date = G_MAXUINT64;
 	GSList *recently_updated = NULL, *link;
@@ -375,6 +395,7 @@ load_category_finish (LoadCategoryData *data)
 				  G_CALLBACK (app_tile_clicked), self);
 
 		if (is_featured) {
+			n_featured++;
 			flow_box = self->featured_flow_box;
 		} else if (is_recently_updated) {
 			n_recently_updated++;
@@ -391,6 +412,7 @@ load_category_finish (LoadCategoryData *data)
 				min_release_date = gs_app_get_release_date (gs_app_tile_get_app (GS_APP_TILE (recently_updated->data)));
 			}
 		} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP) {
+			n_web_apps++;
 			flow_box = self->web_apps_flow_box;
 		}
 
@@ -400,13 +422,30 @@ load_category_finish (LoadCategoryData *data)
 		}
 	}
 
-	for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
-		GtkWidget *tile = link->data;
-		if (n_recently_updated >= MIN_RECENTLY_UPDATED_APPS)
+	/* If these sections end up being too empty (which looks odd), merge them into the main section.
+	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 */
+	if (n_featured < MIN_SECTION_APPS)
+		move_to_flow_box (self, GTK_FLOW_BOX (self->featured_flow_box), GTK_FLOW_BOX (self->category_detail_box));
+
+	if (n_web_apps < MIN_SECTION_APPS)
+		move_to_flow_box (self, GTK_FLOW_BOX (self->web_apps_flow_box), GTK_FLOW_BOX (self->category_detail_box));
+
+	/* Show 'Recently Updated' section only if there had been enough of them recognized.
+	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 */
+	if (n_recently_updated >= MIN_RECENTLY_UPDATED_APPS && picked_recently_updated >= MIN_SECTION_APPS) {
+		for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
+			GtkWidget *tile = link->data;
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
-		else
-			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, -1);
-		setup_parent_flow_box_child (self, tile);
+			setup_parent_flow_box_child (self, tile);
+		}
+	} else {
+		/* put them at the top */
+		recently_updated = g_slist_reverse (recently_updated);
+		for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
+			GtkWidget *tile = link->data;
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, 0);
+			setup_parent_flow_box_child (self, tile);
+		}
 	}
 
 	g_slist_free (recently_updated);
