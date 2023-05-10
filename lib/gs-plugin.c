@@ -1159,64 +1159,6 @@ async_result_cb (GObject      *source_object,
 }
 
 /**
- * gs_plugin_download_file:
- * @plugin: a #GsPlugin
- * @app: a #GsApp, or %NULL
- * @uri: a remote URI
- * @filename: a local filename
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Downloads data and saves it to a file.
- *
- * Returns: %TRUE for success
- *
- * Since: 3.22
- **/
-gboolean
-gs_plugin_download_file (GsPlugin *plugin,
-			 GsApp *app,
-			 const gchar *uri,
-			 const gchar *filename,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	g_autoptr(SoupSession) soup_session = NULL;
-	g_autoptr(GFile) output_file = NULL;
-	g_autoptr(GAsyncResult) result = NULL;
-	g_autoptr(GMainContext) context = g_main_context_new ();
-	g_autoptr(GMainContextPusher) context_pusher = g_main_context_pusher_new (context);
-	GsPluginDownloadHelper helper;
-	g_autoptr(GError) local_error = NULL;
-
-	helper.plugin = plugin;
-	helper.app = app;
-
-	soup_session = gs_build_soup_session ();
-
-	/* Do the download. */
-	output_file = g_file_new_for_path (filename);
-	gs_download_file_async (soup_session, uri, output_file,
-				G_PRIORITY_LOW,
-				download_file_progress_cb, &helper,
-				cancellable, async_result_cb, &result);
-
-	while (result == NULL)
-		g_main_context_iteration (context, TRUE);
-
-	if (!gs_download_file_finish (soup_session, result, &local_error) &&
-	    !g_error_matches (local_error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-				     local_error->message);
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-/**
  * gs_plugin_download_rewrite_resource:
  * @plugin: a #GsPlugin
  * @app: a #GsApp, or %NULL
