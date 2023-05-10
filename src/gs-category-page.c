@@ -40,7 +40,10 @@ struct _GsCategoryPage
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
-#define MAX_RECENTLY_UPDATED_APPS 18
+/* See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053
+ * for the rationale behind the numbers */
+#define MAX_RECENTLY_UPDATED_APPS 12
+#define MIN_RECENTLY_UPDATED_APPS 50
 
 typedef enum {
 	PROP_CATEGORY = 1,
@@ -325,6 +328,7 @@ load_category_finish (LoadCategoryData *data)
 	GsCategoryPage *self = data->page;
 	guint64 recently_updated_cutoff_secs;
 	guint64 n_recently_updated = 0;
+	guint64 picked_recently_updated = 0;
 	guint64 min_release_date = G_MAXUINT64;
 	GSList *recently_updated = NULL, *link;
 	g_autoptr(GsAppList) top_carousel_apps = NULL;
@@ -373,9 +377,10 @@ load_category_finish (LoadCategoryData *data)
 		if (is_featured) {
 			flow_box = self->featured_flow_box;
 		} else if (is_recently_updated) {
-			if (n_recently_updated < MAX_RECENTLY_UPDATED_APPS) {
+			n_recently_updated++;
+			if (picked_recently_updated < MAX_RECENTLY_UPDATED_APPS) {
 				recently_updated = g_slist_insert_sorted (recently_updated, tile, compare_release_date_cb);
-				n_recently_updated++;
+				picked_recently_updated++;
 				if (min_release_date > release_date)
 					min_release_date = release_date;
 				flow_box = NULL;
@@ -397,7 +402,10 @@ load_category_finish (LoadCategoryData *data)
 
 	for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
 		GtkWidget *tile = link->data;
-		gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
+		if (n_recently_updated >= MIN_RECENTLY_UPDATED_APPS)
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
+		else
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, -1);
 		setup_parent_flow_box_child (self, tile);
 	}
 
