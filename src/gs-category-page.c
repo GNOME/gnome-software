@@ -31,6 +31,7 @@ struct _GsCategoryPage
 	gboolean	 content_valid;
 
 	GtkWidget	*top_carousel;
+	GtkWidget	*other_heading;
 	GtkWidget	*category_detail_box;
 	GtkWidget	*scrolledwindow_category;
 	GtkWidget	*featured_flow_box;
@@ -458,6 +459,10 @@ load_category_finish (LoadCategoryData *data)
 	gtk_widget_set_visible (self->recently_updated_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->recently_updated_flow_box), 0) != NULL);
 	gtk_widget_set_visible (self->web_apps_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->web_apps_flow_box), 0) != NULL);
 	gtk_widget_set_visible (self->category_detail_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->category_detail_box), 0) != NULL);
+	gtk_widget_set_visible (self->other_heading, gtk_widget_get_visible (self->category_detail_box) && (
+				gtk_widget_get_visible (self->featured_flow_box) ||
+				gtk_widget_get_visible (self->recently_updated_flow_box) ||
+				gtk_widget_get_visible (self->web_apps_flow_box)));
 
 	self->content_valid = data->apps != NULL;
 
@@ -795,6 +800,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-page.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, top_carousel);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, other_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_flow_box);
