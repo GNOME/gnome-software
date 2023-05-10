@@ -211,11 +211,23 @@ static GsAppList *
 choose_top_carousel_apps (LoadCategoryData *data,
                           guint64           recently_updated_cutoff_secs)
 {
-	const guint n_top_carousel_apps = 5;
+	guint n_top_carousel_apps;
 	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GsAppList) top_carousel_apps = gs_app_list_new ();
 	guint top_carousel_seed;
 	g_autoptr(GRand) top_carousel_rand = NULL;
+
+	if (data->apps == NULL ||
+	    gs_app_list_length (data->apps) < 20) {
+		g_debug ("%u is not enough category apps, hiding top carousel", data->apps == NULL ? 0 : gs_app_list_length (data->apps));
+		return g_steal_pointer (&top_carousel_apps);
+	}
+
+	/* See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 for design rationale */
+	if (gs_app_list_length (data->apps) < 40)
+		n_top_carousel_apps = 3;
+	else
+		n_top_carousel_apps = 5;
 
 	/* The top carousel should contain @n_top_carousel_apps, taken from the
 	 * set of featured or recently updated apps which have hi-res icons.
@@ -227,7 +239,7 @@ choose_top_carousel_apps (LoadCategoryData *data,
 	top_carousel_rand = g_rand_new_with_seed (top_carousel_seed);
 	g_debug ("Top carousel seed: %u", top_carousel_seed);
 
-	for (guint i = 0; data->apps != NULL && i < gs_app_list_length (data->apps); i++) {
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
 		GsApp *app = gs_app_list_index (data->apps, i);
 		gboolean is_featured, is_recently_updated, is_hi_res;
 
@@ -243,7 +255,7 @@ choose_top_carousel_apps (LoadCategoryData *data,
 	/* If there aren’t enough candidate apps to populate the top carousel,
 	 * return an empty app list. */
 	if (candidates->len < n_top_carousel_apps) {
-		g_debug ("Only %u candidate apps for top carousel; returning empty", candidates->len);
+		g_debug ("Only %u candidate apps for top carousel, needed at least %u; returning empty", candidates->len, n_top_carousel_apps);
 		goto out;
 	}
 
