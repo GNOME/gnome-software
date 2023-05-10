@@ -130,6 +130,18 @@ gs_plugin_rewrite_resource_shutdown_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+
+	g_assert (*result_out == NULL);
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (g_main_context_get_thread_default ());
+}
+
 static gboolean
 refine_app (GsPluginRewriteResource  *self,
             GsApp                    *app,
@@ -149,15 +161,19 @@ refine_app (GsPluginRewriteResource  *self,
 		const gchar *css = gs_app_get_metadata_item (app, keys[i]);
 		if (css != NULL) {
 			g_autofree gchar *css_new = NULL;
-			g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (GS_PLUGIN (self)));
-			gs_app_set_summary_missing (app_dl,
-						    /* TRANSLATORS: status text when downloading */
-						    _("Downloading featured images…"));
-			css_new = gs_plugin_download_rewrite_resource (GS_PLUGIN (self),
-								       app,
-								       css,
-								       cancellable,
-								       error);
+			g_autoptr(GAsyncResult) result = NULL;
+			g_autoptr(GMainContext) context = g_main_context_new ();
+			g_autoptr(GMainContextPusher) context_pusher = g_main_context_pusher_new (context);
+
+			gs_plugin_download_rewrite_resource_async (css,
+								   cancellable,
+								   async_result_cb,
+								   &result);
+
+			while (result == NULL)
+				g_main_context_iteration (context, TRUE);
+
+			css_new = gs_plugin_download_rewrite_resource_finish (result, error);
 			if (css_new == NULL)
 				return FALSE;
 			if (g_strcmp0 (css, css_new) != 0) {

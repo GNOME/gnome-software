@@ -267,11 +267,12 @@ void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 const gchar	*name);
 
 /* helpers */
-gchar		*gs_plugin_download_rewrite_resource	(GsPlugin	*plugin,
-							 GsApp		*app,
-							 const gchar	*resource,
-							 GCancellable	*cancellable,
-							 GError		**error);
+void		 gs_plugin_download_rewrite_resource_async	(const gchar		*resource,
+								 GCancellable		*cancellable,
+								 GAsyncReadyCallback	 callback,
+								 gpointer		 user_data);
+gchar		*gs_plugin_download_rewrite_resource_finish	(GAsyncResult		 *result,
+								 GError			**error);
 
 gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
 							 const gchar	*distro_id);
