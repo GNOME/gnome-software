@@ -1204,50 +1204,6 @@ gs_plugin_download_file (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gchar *
-gs_plugin_download_rewrite_resource_uri (GsPlugin *plugin,
-					 GsApp *app,
-					 const gchar *uri,
-					 GCancellable *cancellable,
-					 GError **error)
-{
-	g_autofree gchar *cachefn = NULL;
-
-	/* local files */
-	if (g_str_has_prefix (uri, "file://"))
-		uri += 7;
-	if (g_str_has_prefix (uri, "/")) {
-		if (!g_file_test (uri, G_FILE_TEST_EXISTS)) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Failed to find file: %s", uri);
-			return NULL;
-		}
-		return g_strdup (uri);
-	}
-
-	/* get cache location */
-	cachefn = gs_utils_get_cache_filename ("cssresource", uri,
-					       GS_UTILS_CACHE_FLAG_WRITEABLE |
-					       GS_UTILS_CACHE_FLAG_USE_HASH |
-					       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
-					       error);
-	if (cachefn == NULL)
-		return NULL;
-
-	/* already exists */
-	if (g_file_test (cachefn, G_FILE_TEST_EXISTS))
-		return g_steal_pointer (&cachefn);
-
-	/* download */
-	if (!gs_plugin_download_file (plugin, app, uri, cachefn,
-				      cancellable, error)) {
-		return NULL;
-	}
-	return g_steal_pointer (&cachefn);
-}
-
 /**
  * gs_plugin_download_rewrite_resource:
  * @plugin: a #GsPlugin
@@ -1295,6 +1251,7 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 			guint len;
 			g_autofree gchar *cachefn = NULL;
 			g_autofree gchar *uri = NULL;
+			const char *unprefixed_uri;
 
 			/* remove optional single quotes */
 			if (resource[start] == '\'' || resource[start] == '"')
@@ -1305,13 +1262,40 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 			uri = g_strndup (resource + start, len);
 
 			/* download them to per-user cache */
-			cachefn = gs_plugin_download_rewrite_resource_uri (plugin,
-									   app,
-									   uri,
-									   cancellable,
-									   error);
-			if (cachefn == NULL)
-				return NULL;
+
+			/* local files */
+			if (g_str_has_prefix (uri, "file://"))
+				unprefixed_uri = uri + strlen ("file://");
+			else
+				unprefixed_uri = uri;
+
+			if (g_str_has_prefix (unprefixed_uri, "/")) {
+				if (!g_file_test (unprefixed_uri, G_FILE_TEST_EXISTS)) {
+					g_set_error (error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						     "Failed to find file: %s", unprefixed_uri);
+					return NULL;
+				}
+				cachefn = g_strdup (unprefixed_uri);
+			} else {
+				/* get cache location */
+				cachefn = gs_utils_get_cache_filename ("cssresource", unprefixed_uri,
+								       GS_UTILS_CACHE_FLAG_WRITEABLE |
+								       GS_UTILS_CACHE_FLAG_USE_HASH |
+								       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
+								       error);
+				if (cachefn == NULL)
+					return NULL;
+
+				/* Download it if it doesn’t already exist */
+				if (!g_file_test (cachefn, G_FILE_TEST_EXISTS) &&
+				    !gs_plugin_download_file (plugin, app, unprefixed_uri, cachefn,
+							      cancellable, error)) {
+					return NULL;
+				}
+			}
+
 			g_string_append_printf (str, "'file://%s'", cachefn);
 			g_string_append_c (str, resource[i]);
 			start = 0;
