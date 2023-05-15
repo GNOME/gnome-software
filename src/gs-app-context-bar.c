@@ -227,6 +227,7 @@ typedef enum
 	/* The code in this file relies on the fact that these enum values
 	 * numerically increase as they get more unsafe. */
 	SAFETY_SAFE,
+	SAFETY_PROBABLY_SAFE,
 	SAFETY_POTENTIALLY_UNSAFE,
 	SAFETY_UNSAFE
 } SafetyRating;
@@ -475,12 +476,19 @@ update_safety_tile (GsAppContextBar *self)
 		title = _("Safe");
 		css_class = "green";
 		break;
+	case SAFETY_PROBABLY_SAFE:
+		icon_name = "safety-symbolic";
+		/* Translators: The app is considered probably safe to install and run.
+		 * This is displayed in a context tile, so the string should be short. */
+		title = _("Probably Safe");
+		css_class = "yellow";
+		break;
 	case SAFETY_POTENTIALLY_UNSAFE:
 		icon_name = "dialog-question-symbolic";
 		/* Translators: The app is considered potentially unsafe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Potentially Unsafe");
-		css_class = "yellow";
+		css_class = "orange";
 		break;
 	case SAFETY_UNSAFE:
 		icon_name = "dialog-warning-symbolic";
@@ -498,7 +506,9 @@ update_safety_tile (GsAppContextBar *self)
 	gtk_label_set_text (self->tiles[SAFETY_TILE].description, description);
 
 	gtk_widget_remove_css_class (self->tiles[SAFETY_TILE].lozenge, "green");
+	gtk_widget_remove_css_class (self->tiles[SAFETY_TILE].lozenge, "grey");
 	gtk_widget_remove_css_class (self->tiles[SAFETY_TILE].lozenge, "yellow");
+	gtk_widget_remove_css_class (self->tiles[SAFETY_TILE].lozenge, "orange");
 	gtk_widget_remove_css_class (self->tiles[SAFETY_TILE].lozenge, "red");
 
 	gtk_widget_add_css_class (self->tiles[SAFETY_TILE].lozenge, css_class);
@@ -679,6 +689,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].description, description);
 
 	gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "green");
+	gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "grey");
 	gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "yellow");
 	gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "red");
 
