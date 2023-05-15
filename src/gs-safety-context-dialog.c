@@ -135,15 +135,25 @@ update_permissions_list (GsSafetyContextDialog *self)
 	 * FIXME: See the comment for GS_APP_PERMISSIONS_FLAGS_UNKNOWN in
 	 * gs-app-context-bar.c. */
 	if (permissions == NULL) {
-		add_permission_row (self->permissions_list, &chosen_rating,
-				    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "channel-insecure-symbolic",
-				    _("Provided by a third party"),
-				    _("Check that you trust the vendor, as the app isn’t sandboxed"),
-				    "channel-secure-symbolic",
-				    _("Reviewed by your distribution"),
-				    _("App isn’t sandboxed but the distribution has checked that it is not malicious"));
+		chosen_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
+
+		if (gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE)) {
+			add_permission_row (self->permissions_list, &chosen_rating,
+					    TRUE,
+					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
+					    "channel-secure-symbolic",
+					    _("Reviewed by your distribution"),
+					    _("App isn’t sandboxed but the distribution has checked that it is not malicious"),
+					    NULL, NULL, NULL);
+		} else {
+			add_permission_row (self->permissions_list, &chosen_rating,
+					    FALSE,
+					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+					    "channel-insecure-symbolic",
+					    _("Provided by a third party"),
+					    _("Check that you trust the vendor, as the app isn’t sandboxed"),
+					    NULL, NULL, NULL);
+		}
 	} else {
 		const GPtrArray *filesystem_read, *filesystem_full;
 
@@ -376,6 +386,13 @@ update_permissions_list (GsSafetyContextDialog *self)
 
 	/* Update the UI. */
 	switch (chosen_rating) {
+	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL:
+		icon_name = "safety-symbolic";
+		/* Translators: The app is considered privileged, aka provided by the distribution.
+		 * The placeholder is the app name. */
+		title = g_strdup_printf (_("%s is privileged"), gs_app_get_name (self->app));
+		css_class = "grey";
+		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
 		icon_name = "safety-symbolic";
 		/* Translators: The app is considered safe to install and run.

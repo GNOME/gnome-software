@@ -226,6 +226,7 @@ typedef enum
 {
 	/* The code in this file relies on the fact that these enum values
 	 * numerically increase as they get more unsafe. */
+	SAFETY_PRIVILEGED,
 	SAFETY_SAFE,
 	SAFETY_PROBABLY_SAFE,
 	SAFETY_POTENTIALLY_UNSAFE,
@@ -270,7 +271,9 @@ update_safety_tile (GsAppContextBar *self)
 	if (permissions != NULL)
 		perm_flags = gs_app_permissions_get_flags (permissions);
 
-	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE) {
+	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE &&
+	    (permissions != NULL ||
+	    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))) {
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
 				      /* Translators: This indicates an app requires no permissions to run.
@@ -393,34 +396,6 @@ update_safety_tile (GsAppContextBar *self)
 		}
 	}
 
-	/* Unknown permissions (`permissions == NULL`) typically come from non-sandboxed packaging
-	 * systems like RPM or DEB. Telling the user the software has unknown
-	 * permissions is unhelpful; it’s more relevant to say it’s not
-	 * sandboxed but is (or is not) packaged by a trusted vendor. They will
-	 * have (at least) done some basic checks to make sure the software is
-	 * not overtly malware. That doesn’t protect the user from exploitable
-	 * bugs in the software, but it does mean they’re not accidentally
-	 * installing something which is actively malicious.
-	 *
-	 * FIXME: We could do better by potentially adding a ‘trusted’ state
-	 * to indicate that something is probably safe, but isn’t sandboxed.
-	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1451 */
-	if (permissions == NULL &&
-	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))
-		add_to_safety_rating (&chosen_rating, descriptions,
-				      SAFETY_SAFE,
-				      /* Translators: This indicates that an app has been packaged
-				       * by the user’s distribution and is safe.
-				       * It’s used in a context tile, so should be short. */
-				      _("Reviewed by your distribution"));
-	else if (permissions == NULL)
-		add_to_safety_rating (&chosen_rating, descriptions,
-				      SAFETY_POTENTIALLY_UNSAFE,
-				      /* Translators: This indicates that an app has been packaged
-				       * by someone other than the user’s distribution, so might not be safe.
-				       * It’s used in a context tile, so should be short. */
-				      _("Provided by a third party"));
-
 	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
 	 * between closed source and open-source-but-not-FOSS software, even
 	 * though the code of the latter is technically publicly auditable. This
@@ -446,6 +421,35 @@ update_safety_tile (GsAppContextBar *self)
 				       * It’s used in a context tile, so should be short. */
 				      _("Software developer is verified"));
 
+	/* Unknown permissions (`permissions == NULL`) typically come from non-sandboxed packaging
+	 * systems like RPM or DEB. Telling the user the software has unknown
+	 * permissions is unhelpful; it’s more relevant to say it’s not
+	 * sandboxed but is (or is not) packaged by a trusted vendor. They will
+	 * have (at least) done some basic checks to make sure the software is
+	 * not overtly malware. That doesn’t protect the user from exploitable
+	 * bugs in the software, but it does mean they’re not accidentally
+	 * installing something which is actively malicious. */
+	if (permissions == NULL &&
+	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE)) {
+		/* Show as 'probably safe' when the app is considered safe until now and it's provided by the distribution */
+		if (chosen_rating == SAFETY_SAFE)
+			chosen_rating = SAFETY_PRIVILEGED;
+
+		add_to_safety_rating (&chosen_rating, descriptions,
+				      SAFETY_PRIVILEGED,
+				      /* Translators: This indicates that an app has been packaged
+				       * by the user’s distribution and is probably safe.
+				       * It’s used in a context tile, so should be short. */
+				      _("Reviewed by your distribution"));
+	} else if (permissions == NULL) {
+		add_to_safety_rating (&chosen_rating, descriptions,
+				      SAFETY_POTENTIALLY_UNSAFE,
+				      /* Translators: This indicates that an app has been packaged
+				       * by someone other than the user’s distribution, so might not be safe.
+				       * It’s used in a context tile, so should be short. */
+				      _("Provided by a third party"));
+	}
+
 	if (gs_app_get_metadata_item (self->app, "GnomeSoftware::EolReason") != NULL || (
 	    gs_app_get_runtime (self->app) != NULL &&
 	    gs_app_get_metadata_item (gs_app_get_runtime (self->app), "GnomeSoftware::EolReason") != NULL))
@@ -469,6 +473,13 @@ update_safety_tile (GsAppContextBar *self)
 
 	/* Update the UI. */
 	switch (chosen_rating) {
+	case SAFETY_PRIVILEGED:
+		icon_name = "safety-symbolic";
+		/* Translators: The app is considered privileged, aka provided by the distribution.
+		 * This is displayed in a context tile, so the string should be short. */
+		title = _("Privileged");
+		css_class = "grey";
+		break;
 	case SAFETY_SAFE:
 		icon_name = "safety-symbolic";
 		/* Translators: The app is considered safe to install and run.
