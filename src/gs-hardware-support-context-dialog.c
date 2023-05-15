@@ -718,12 +718,19 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 		title = g_strdup_printf (_("%s works on this device"), gs_app_get_name (self->app));
 		css_class = "green";
 		break;
+	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION:
+		icon_name = "app-installed-symbolic";
+		/* Translators: The app will possbily work on the current hardware.
+		 * The placeholder is the app name. */
+		title = g_strdup_printf (_("%s possibly works on this device"), gs_app_get_name (self->app));
+		css_class = "yellow";
+		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
 		icon_name = "dialog-question-symbolic";
 		/* Translators: The app may not work fully on the current hardware.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s will not work properly on this device"), gs_app_get_name (self->app));
-		css_class = "yellow";
+		css_class = "orange";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT:
 		icon_name = "dialog-warning-symbolic";
@@ -741,6 +748,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 
 	gtk_widget_remove_css_class (self->lozenge, "green");
 	gtk_widget_remove_css_class (self->lozenge, "yellow");
+	gtk_widget_remove_css_class (self->lozenge, "orange");
 	gtk_widget_remove_css_class (self->lozenge, "red");
 	gtk_widget_remove_css_class (self->lozenge, "grey");
 
