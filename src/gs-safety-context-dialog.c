@@ -383,12 +383,19 @@ update_permissions_list (GsSafetyContextDialog *self)
 		title = g_strdup_printf (_("%s is safe"), gs_app_get_name (self->app));
 		css_class = "green";
 		break;
+	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION:
+		icon_name = "safety-symbolic";
+		/* Translators: The app is considered probably safe to install and run.
+		 * The placeholder is the app name. */
+		title = g_strdup_printf (_("%s is probably safe"), gs_app_get_name (self->app));
+		css_class = "yellow";
+		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
 		icon_name = "dialog-question-symbolic";
 		/* Translators: The app is considered potentially unsafe to install and run.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is potentially unsafe"), gs_app_get_name (self->app));
-		css_class = "yellow";
+		css_class = "orange";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT:
 		icon_name = "dialog-warning-symbolic";
@@ -406,6 +413,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 
 	gtk_widget_remove_css_class (self->lozenge, "green");
 	gtk_widget_remove_css_class (self->lozenge, "yellow");
+	gtk_widget_remove_css_class (self->lozenge, "orange");
 	gtk_widget_remove_css_class (self->lozenge, "red");
 
 	gtk_widget_add_css_class (self->lozenge, css_class);
