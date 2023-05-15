@@ -1478,6 +1478,8 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	switch (gs_app_get_kind (self->app)) {
 	case AS_COMPONENT_KIND_DESKTOP_APP:
 		/* installing an app with a repo file */
+		gtk_widget_set_visible (GTK_WIDGET (self->context_bar), TRUE);
+		gtk_widget_set_visible (GTK_WIDGET (self->license_tile), TRUE);
 		gtk_widget_set_visible (self->infobar_details_app_repo,
 					gs_app_has_quirk (self->app,
 							  GS_APP_QUIRK_HAS_SOURCE) &&
@@ -1486,13 +1488,23 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		break;
 	case AS_COMPONENT_KIND_GENERIC:
 		/* installing a repo-release package */
+		gtk_widget_set_visible (GTK_WIDGET (self->context_bar), TRUE);
+		gtk_widget_set_visible (GTK_WIDGET (self->license_tile), TRUE);
 		gtk_widget_set_visible (self->infobar_details_app_repo, FALSE);
 		gtk_widget_set_visible (self->infobar_details_repo,
 					gs_app_has_quirk (self->app,
 							  GS_APP_QUIRK_HAS_SOURCE) &&
 					gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 		break;
+	case AS_COMPONENT_KIND_WEB_APP:
+		gtk_widget_set_visible (GTK_WIDGET (self->context_bar), TRUE);
+		gtk_widget_set_visible (GTK_WIDGET (self->license_tile), TRUE);
+		gtk_widget_set_visible (self->infobar_details_app_repo, FALSE);
+		gtk_widget_set_visible (self->infobar_details_repo, FALSE);
+		break;
 	default:
+		gtk_widget_set_visible (GTK_WIDGET (self->context_bar), FALSE);
+		gtk_widget_set_visible (GTK_WIDGET (self->license_tile), FALSE);
 		gtk_widget_set_visible (self->infobar_details_app_repo, FALSE);
 		gtk_widget_set_visible (self->infobar_details_repo, FALSE);
 		break;
