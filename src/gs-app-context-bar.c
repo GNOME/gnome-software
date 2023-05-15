@@ -289,7 +289,7 @@ update_safety_tile (GsAppContextBar *self)
 					       * vulnerability into a remotely exploitable one), but it’s
 					       * needed commonly enough that marking it as
 					       * %SAFETY_POTENTIALLY_UNSAFE is too noisy. */
-					      SAFETY_SAFE,
+					      SAFETY_PROBABLY_SAFE,
 					      /* Translators: This indicates an app uses the network.
 					       * It’s used in a context tile, so should be short. */
 					      _("Has network access"));

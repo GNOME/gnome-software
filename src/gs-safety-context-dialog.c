@@ -165,7 +165,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				     * vulnerability into a remotely exploitable one), but it’s
 				     * needed commonly enough that marking it as
 				     * %GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING is too noisy. */
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION,
 				    "network-wireless-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Network Access"),
