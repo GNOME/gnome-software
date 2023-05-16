@@ -194,7 +194,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SESSION_BUS) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "emblem-system-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Uses Session Services"),
@@ -221,7 +221,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_X11) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "desktop-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Legacy Windowing System"),
@@ -229,7 +229,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "dialog-warning-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Arbitrary Permissions"),
@@ -249,7 +249,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		 * read-only and writable access. */
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "folder-documents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Full File System Read/Write Access"),
@@ -258,7 +258,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_HOME_FULL) != 0 &&
 				     !(perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL)),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "user-home-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Home Folder Read/Write Access"),
@@ -267,7 +267,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ) != 0 &&
 				     !(perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL)),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "folder-documents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Full File System Read Access"),
@@ -277,7 +277,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_HOME_READ) != 0 &&
 				     !(perm_flags & (GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL |
 						     GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ))),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "user-home-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Home Folder Read Access"),
@@ -352,7 +352,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	 * of ‘auditable’ source code licenses. */
 	add_permission_row (self->permissions_list, &chosen_rating,
 			    !gs_app_get_license_is_free (self->app),
-			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION,
 			    "dialog-warning-symbolic",
 			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 			    _("Proprietary Code"),
@@ -376,7 +376,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    gs_app_get_metadata_item (self->app, "GnomeSoftware::EolReason") != NULL || (
 			    gs_app_get_runtime (self->app) != NULL &&
 			    gs_app_get_metadata_item (gs_app_get_runtime (self->app), "GnomeSoftware::EolReason") != NULL),
-			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 			    "dialog-warning-symbolic",
 			    /* Translators: This indicates an app uses an outdated SDK.
 			     * It’s used in a context tile, so should be short. */

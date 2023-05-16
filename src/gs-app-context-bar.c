@@ -306,7 +306,7 @@ update_safety_tile (GsAppContextBar *self)
 			break;
 		case GS_APP_PERMISSIONS_FLAGS_SESSION_BUS:
 			add_to_safety_rating (&chosen_rating, descriptions,
-					      SAFETY_UNSAFE,
+					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app uses D-Bus session services.
 					       * It’s used in a context tile, so should be short. */
 					      _("Uses session services"));
@@ -332,7 +332,7 @@ update_safety_tile (GsAppContextBar *self)
 				break;
 
 			add_to_safety_rating (&chosen_rating, descriptions,
-					      SAFETY_UNSAFE,
+					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 					       * It’s used in a context tile, so should be short. */
 					      _("Can read/write all your data"));
@@ -344,7 +344,7 @@ update_safety_tile (GsAppContextBar *self)
 				break;
 
 			add_to_safety_rating (&chosen_rating, descriptions,
-					      SAFETY_UNSAFE,
+					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 					       * It’s used in a context tile, so should be short. */
 					      _("Can read all your data"));
@@ -379,14 +379,14 @@ update_safety_tile (GsAppContextBar *self)
 			break;
 		case GS_APP_PERMISSIONS_FLAGS_X11:
 			add_to_safety_rating (&chosen_rating, descriptions,
-					      SAFETY_UNSAFE,
+					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app uses the X11 windowing system.
 					       * It’s used in a context tile, so should be short. */
 					      _("Uses a legacy windowing system"));
 			break;
 		case GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX:
 			add_to_safety_rating (&chosen_rating, descriptions,
-					      SAFETY_UNSAFE,
+					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can escape its sandbox.
 					       * It’s used in a context tile, so should be short. */
 					      _("Can acquire arbitrary permissions"));
@@ -403,7 +403,7 @@ update_safety_tile (GsAppContextBar *self)
 	 * of ‘auditable’ source code licenses. */
 	if (!gs_app_get_license_is_free (self->app))
 		add_to_safety_rating (&chosen_rating, descriptions,
-				      SAFETY_POTENTIALLY_UNSAFE,
+				      SAFETY_PROBABLY_SAFE,
 				      /* Translators: This indicates an app is not licensed under a free software license.
 				       * It’s used in a context tile, so should be short. */
 				      _("Proprietary code"));
@@ -454,7 +454,7 @@ update_safety_tile (GsAppContextBar *self)
 	    gs_app_get_runtime (self->app) != NULL &&
 	    gs_app_get_metadata_item (gs_app_get_runtime (self->app), "GnomeSoftware::EolReason") != NULL))
 		add_to_safety_rating (&chosen_rating, descriptions,
-				      SAFETY_UNSAFE,
+				      SAFETY_POTENTIALLY_UNSAFE,
 				      /* Translators: This indicates an app or its runtime reached its end of life.
 				       * It’s used in a context tile, so should be short. */
 				      _("Software no longer supported"));
