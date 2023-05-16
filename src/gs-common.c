@@ -1401,3 +1401,48 @@ gs_utils_get_app_data_dir (GsApp *app)
 
 	return NULL;
 }
+
+/**
+ * gs_utils_remove_app_data_dir:
+ * @app: a #GsApp
+ * @plugin_loader: a #GsPluginLoader where to pass any errors
+ *
+ * Removes @app's data dir, as returned from gs_utils_get_app_data_dir().
+ * The function does nothing when the app has no or unknown data dir.
+ * Any errors of the removal are passed to the @plugin_loader, while
+ * it's not an error when the directory does not exist.
+ *
+ * Returns: %TRUE, when @app's data dir had been successfully removed
+ *
+ * Since: 45
+ **/
+gboolean
+gs_utils_remove_app_data_dir (GsApp *app,
+			      GsPluginLoader *plugin_loader)
+{
+	g_autofree gchar *dir = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GError) error = NULL;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+
+	dir = gs_utils_get_app_data_dir (app);
+	if (dir == NULL)
+		return FALSE;
+
+	file = g_file_new_for_path (dir);
+	if (!g_file_trash (file, NULL, &error) &&
+	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED)) {
+		g_clear_error (&error);
+		gs_utils_rmtree (dir, &error);
+	}
+	if (error && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+		gs_utils_error_convert_gio (&error);
+		gs_plugin_loader_claim_error (plugin_loader,  NULL, GS_PLUGIN_ACTION_UNKNOWN,
+					      app, TRUE, error);
+		return FALSE;
+	}
+
+	return TRUE;
+}

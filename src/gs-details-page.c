@@ -563,27 +563,8 @@ gs_details_page_refresh_app_data_info (GsDetailsPage *self)
 static void
 gs_details_page_app_data_clear_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
-	g_autofree gchar *dir = NULL;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GError) error = NULL;
-
-	dir = gs_utils_get_app_data_dir (self->app);
-	if (dir == NULL)
-		return;
-
-	file = g_file_new_for_path (dir);
-	if (!g_file_trash (file, NULL, &error) &&
-	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED)) {
-		g_clear_error (&error);
-		gs_utils_rmtree (dir, &error);
-	}
-	if (error && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-		gs_utils_error_convert_gio (&error);
-		gs_plugin_loader_claim_error (self->plugin_loader,  NULL, GS_PLUGIN_ACTION_UNKNOWN,
-					      self->app, TRUE, error);
-	} else {
+	if (gs_utils_remove_app_data_dir (self->app, self->plugin_loader))
 		gs_details_page_refresh_app_data_info (self);
-	}
 }
 
 static void
