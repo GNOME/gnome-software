@@ -629,13 +629,13 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 			row = adw_action_row_new ();
 			g_object_set (row,
 				/* Translators: this is part of section about deleting app's data */
-				"title", _("_Move to trash"),
+				"title", _("_Delete"),
 				"title-lines", 1,
 				"title-selectable", FALSE,
 				"use-markup", FALSE,
 				"use-underline", TRUE,
 				"activatable-widget", check_delete,
-				"subtitle", _("Allows disk space to be saved"),
+				"subtitle", _("Permanently deletes data to save disk space"),
 				"subtitle-lines", 1,
 				NULL);
 			adw_action_row_add_prefix (ADW_ACTION_ROW (row), check_delete);
