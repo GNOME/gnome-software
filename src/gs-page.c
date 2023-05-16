@@ -202,7 +202,22 @@ gs_page_app_removed_cb (GObject *source,
 		return;
 	}
 	if (!ret) {
-		g_warning ("failed to uninstall: %s", error->message);
+		if (helper->propagate_error) {
+			if (helper->job != NULL)
+				gs_plugin_loader_claim_job_error (plugin_loader,
+								  NULL,
+								  helper->job,
+								  error);
+			else
+				gs_plugin_loader_claim_error (plugin_loader,
+							      NULL,
+							      helper->action,
+							      helper->app,
+							      helper->interaction == GS_SHELL_INTERACTION_FULL,
+							      error);
+		} else {
+			g_warning ("failed to uninstall %s: %s", gs_app_get_id (helper->app), error->message);
+		}
 		return;
 	}
 
@@ -472,9 +487,12 @@ gs_page_remove_app_response_cb (AdwMessageDialog *dialog,
 	} else {
 		plugin_job = gs_plugin_job_newv (helper->action,
 						 "interactive", TRUE,
+						 "propagate-error", helper->propagate_error,
 						 "app", helper->app,
 						 NULL);
 	}
+	g_assert (helper->job == NULL);
+	helper->job = g_object_ref (plugin_job);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    helper->cancellable,
 					    gs_page_app_removed_cb,
@@ -501,6 +519,8 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->propagate_error = TRUE;
+	helper->interaction = GS_SHELL_INTERACTION_FULL;
 	if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
