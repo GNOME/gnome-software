@@ -72,5 +72,6 @@ gchar		*gs_utils_format_size		(guint64 size_bytes,
 						 gboolean *out_is_markup);
 void		 gs_show_uri			(GtkWindow *parent,
 						 const char *uri);
+gchar		*gs_utils_get_app_data_dir	(GsApp *app);
 
 G_END_DECLS
