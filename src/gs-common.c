@@ -1370,3 +1370,74 @@ gs_show_uri (GtkWindow *parent,
 	gtk_show_uri (parent, uri, GDK_CURRENT_TIME);
 #endif
 }
+
+/**
+ * gs_utils_get_app_data_dir:
+ * @app: a #GsApp
+ *
+ * Returns @app's data directory, if known. It also checks
+ * whether the directory exists and returns %NULL, when not.
+ *
+ * Returns: (nullable) (transfer full): existing @app's data directory,
+ *    or #NULL, when not known or does not exist
+ *
+ * Since: 45
+ **/
+gchar *
+gs_utils_get_app_data_dir (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	if (gs_app_get_id (app) == NULL)
+		return NULL;
+
+	/* do this only for Flatpak for now */
+	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
+		g_autofree gchar *data_dir = g_build_filename (g_get_home_dir (), ".var", "app", gs_app_get_id (app), NULL);
+		if (g_file_test (data_dir, G_FILE_TEST_EXISTS))
+			return g_steal_pointer (&data_dir);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+/**
+ * gs_utils_remove_app_data_dir:
+ * @app: a #GsApp
+ * @plugin_loader: a #GsPluginLoader where to pass any errors
+ *
+ * Removes @app's data dir, as returned from gs_utils_get_app_data_dir().
+ * The function does nothing when the app has no or unknown data dir.
+ * Any errors of the removal are passed to the @plugin_loader, while
+ * it's not an error when the directory does not exist.
+ *
+ * Returns: %TRUE, when @app's data dir had been successfully removed
+ *
+ * Since: 45
+ **/
+gboolean
+gs_utils_remove_app_data_dir (GsApp *app,
+			      GsPluginLoader *plugin_loader)
+{
+	g_autofree gchar *dir = NULL;
+	g_autoptr(GError) error = NULL;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+
+	dir = gs_utils_get_app_data_dir (app);
+	if (dir == NULL)
+		return FALSE;
+
+	gs_utils_rmtree (dir, &error);
+
+	if (error != NULL && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+		gs_utils_error_convert_gio (&error);
+		gs_plugin_loader_claim_error (plugin_loader,  NULL, GS_PLUGIN_ACTION_UNKNOWN,
+					      app, TRUE, error);
+		return FALSE;
+	}
+
+	return TRUE;
+}

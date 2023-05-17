@@ -54,6 +54,7 @@ typedef struct {
 	GsPluginAction	 action;
 	GsShellInteraction interaction;
 	gboolean	 propagate_error;
+	gboolean	 remove_app_data_dir;
 	gulong		 app_needs_user_action_id;
 } GsPageHelper;
 
@@ -202,9 +203,27 @@ gs_page_app_removed_cb (GObject *source,
 		return;
 	}
 	if (!ret) {
-		g_warning ("failed to uninstall: %s", error->message);
+		if (helper->propagate_error) {
+			if (helper->job != NULL)
+				gs_plugin_loader_claim_job_error (plugin_loader,
+								  NULL,
+								  helper->job,
+								  error);
+			else
+				gs_plugin_loader_claim_error (plugin_loader,
+							      NULL,
+							      helper->action,
+							      helper->app,
+							      helper->interaction == GS_SHELL_INTERACTION_FULL,
+							      error);
+		} else {
+			g_warning ("failed to uninstall %s: %s", gs_app_get_id (helper->app), error->message);
+		}
 		return;
 	}
+
+	if (helper->remove_app_data_dir)
+		gs_utils_remove_app_data_dir (helper->app, plugin_loader);
 
 	/* the app removal needs system reboot, e.g. for rpm-ostree */
 	if (gs_app_has_quirk (helper->app, GS_APP_QUIRK_NEEDS_REBOOT)) {
@@ -472,14 +491,25 @@ gs_page_remove_app_response_cb (AdwMessageDialog *dialog,
 	} else {
 		plugin_job = gs_plugin_job_newv (helper->action,
 						 "interactive", TRUE,
+						 "propagate-error", helper->propagate_error,
 						 "app", helper->app,
 						 NULL);
 	}
+	g_assert (helper->job == NULL);
+	helper->job = g_object_ref (plugin_job);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    helper->cancellable,
 					    gs_page_app_removed_cb,
 					    helper);
 	g_steal_pointer (&helper);
+}
+
+static void
+check_delete_toggled_cb (GtkCheckButton *check_delete,
+			 gpointer user_data)
+{
+	gboolean *premove_app_data_dir = user_data;
+	*premove_app_data_dir = gtk_check_button_get_active (check_delete);
 }
 
 void
@@ -488,8 +518,13 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
 	GtkWidget *dialog;
+	GtkWidget *extra_child = NULL;
 	g_autofree gchar *message = NULL;
 	g_autofree gchar *title = NULL;
+	g_autofree gchar *app_data_dir = NULL;
+
+	g_return_if_fail (GS_IS_PAGE (page));
+	g_return_if_fail (GS_IS_APP (app));
 
 	/* Is the app actually removable? */
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY))
@@ -501,6 +536,8 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->propagate_error = TRUE;
+	helper->interaction = GS_SHELL_INTERACTION_FULL;
 	if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -538,14 +575,78 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					   gs_app_get_name (app));
 		break;
 	default:
+		app_data_dir = gs_utils_get_app_data_dir (app);
+
 		/* TRANSLATORS: this is a prompt message, and '%s' is an
 		 * app summary, e.g. 'GNOME Clocks' */
-		title = g_strdup_printf (_("Are you sure you want to uninstall %s?"),
+		title = g_strdup_printf (_("Uninstall %s?"),
 					 gs_app_get_name (app));
-		/* TRANSLATORS: longer dialog text */
-		message = g_strdup_printf (_("%s will be uninstalled, and you will "
-					     "have to install it to use it again."),
-					   gs_app_get_name (app));
+		if (app_data_dir != NULL) {
+			g_autofree gchar *group_title = NULL;
+			AdwPreferencesGroup *group;
+			GtkWidget *row;
+			GtkWidget *check_keep;
+			GtkWidget *check_delete;
+
+			group_title = g_markup_escape_text (_("App Settings & Data"), -1);
+
+			/* Translators: the '%s' is replaced with the app name */
+			message = g_strdup_printf (_("It will not be possible to use %s after removal."),
+						   gs_app_get_name (app));
+
+			extra_child = adw_preferences_group_new ();
+			g_object_set (extra_child,
+				"halign", GTK_ALIGN_FILL,
+				"hexpand", TRUE,
+				"width-request", 360,
+				"title", group_title,
+				NULL);
+			group = ADW_PREFERENCES_GROUP (extra_child);
+
+			check_keep = gtk_check_button_new ();
+			check_delete = gtk_check_button_new ();
+			gtk_check_button_set_group (GTK_CHECK_BUTTON (check_delete), GTK_CHECK_BUTTON (check_keep));
+			gtk_check_button_set_active (GTK_CHECK_BUTTON (check_keep), TRUE);
+
+			g_signal_connect (check_delete, "toggled",
+					  G_CALLBACK (check_delete_toggled_cb), &(helper->remove_app_data_dir));
+
+			row = adw_action_row_new ();
+			g_object_set (row,
+				/* Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data' */
+				"title", _("_Keep"),
+				"title-lines", 1,
+				"title-selectable", FALSE,
+				"use-markup", FALSE,
+				"use-underline", TRUE,
+				"activatable-widget", check_keep,
+				"subtitle", _("Allows restoring app settings and content"),
+				"subtitle-lines", 1,
+				NULL);
+			adw_action_row_add_prefix (ADW_ACTION_ROW (row), check_keep);
+			adw_preferences_group_add (group, row);
+
+			row = adw_action_row_new ();
+			g_object_set (row,
+				/* Translators: this is part of section about deleting app's data */
+				"title", _("_Delete"),
+				"title-lines", 1,
+				"title-selectable", FALSE,
+				"use-markup", FALSE,
+				"use-underline", TRUE,
+				"activatable-widget", check_delete,
+				"subtitle", _("Permanently deletes data to save disk space"),
+				"subtitle-lines", 1,
+				NULL);
+			adw_action_row_add_prefix (ADW_ACTION_ROW (row), check_delete);
+			adw_preferences_group_add (group, row);
+		} else {
+			/* TRANSLATORS: longer dialog text */
+			message = g_strdup_printf (_("It will not be possible to use %s after removal. "
+						     "App data and settings will be kept on disk, to allow "
+						     "restoring the app in the future."),
+						   gs_app_get_name (app));
+		}
 		break;
 	}
 
@@ -560,6 +661,8 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					  NULL);
 	adw_message_dialog_set_response_appearance (ADW_MESSAGE_DIALOG (dialog),
 						    "uninstall", ADW_RESPONSE_DESTRUCTIVE);
+	if (extra_child != NULL)
+		adw_message_dialog_set_extra_child (ADW_MESSAGE_DIALOG (dialog), extra_child);
 
 	/* handle this async */
 	g_signal_connect (dialog, "response",

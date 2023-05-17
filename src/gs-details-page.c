@@ -513,58 +513,40 @@ gs_details_page_notify_state_changed_cb (GsApp *app,
 	g_idle_add (gs_details_page_refresh_idle, g_object_ref (self));
 }
 
-/* (nullable) when does not know how to get the app data directory */
-static gchar *
-gs_details_page_get_app_data_directory (GsDetailsPage *self)
-{
-	if (self->app == NULL ||
-	    gs_app_get_id (self->app) == NULL)
-		return NULL;
-
-	/* do this only for Flatpak for now */
-	if (gs_app_get_bundle_kind (self->app) == AS_BUNDLE_KIND_FLATPAK)
-		return g_build_filename (g_get_home_dir (), ".var", "app", gs_app_get_id (self->app), NULL);
-
-	return NULL;
-}
-
 static void
 gs_details_page_refresh_app_data_info (GsDetailsPage *self)
 {
 	g_autofree gchar *dir = NULL;
-	gboolean visible = FALSE;
+	gboolean visible = TRUE;
+	AsBundleKind bundle_kind;
 
-	if (gs_app_is_installed (self->app)) {
+	if (self->app == NULL || gs_app_is_installed (self->app)) {
 		gtk_widget_set_visible (self->infobar_app_data, FALSE);
 		return;
 	}
 
-	dir = gs_details_page_get_app_data_directory (self);
+	dir = gs_utils_get_app_data_dir (self->app);
 	if (dir == NULL) {
 		gtk_widget_set_visible (self->infobar_app_data, FALSE);
 		return;
 	}
 
-	if (g_file_test (dir, G_FILE_TEST_EXISTS)) {
-		AsBundleKind bundle_kind = gs_app_get_bundle_kind (self->app);
+	bundle_kind = gs_app_get_bundle_kind (self->app);
 
-		/* Multiple remotes can provide the app, thus check whether
-		   any alternative is a flatpak and is installed. */
-		visible = TRUE;
+	/* Multiple remotes can provide the app, thus check whether
+	   any alternative is a flatpak and is installed. */
+	for (GtkWidget *child = gtk_widget_get_first_child (self->origin_popover_list_box);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		GsApp *alternative_app;
 
-		for (GtkWidget *child = gtk_widget_get_first_child (self->origin_popover_list_box);
-		     child != NULL;
-		     child = gtk_widget_get_next_sibling (child)) {
-			GsApp *alternative_app;
+		g_assert (GS_IS_ORIGIN_POPOVER_ROW (child));
 
-			g_assert (GS_IS_ORIGIN_POPOVER_ROW (child));
-
-			alternative_app = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (child));
-			if (gs_app_get_bundle_kind (alternative_app) == bundle_kind &&
-			    gs_app_is_installed (alternative_app)) {
-				visible = FALSE;
-				break;
-			}
+		alternative_app = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (child));
+		if (gs_app_get_bundle_kind (alternative_app) == bundle_kind &&
+		    gs_app_is_installed (alternative_app)) {
+			visible = FALSE;
+			break;
 		}
 	}
 
@@ -581,27 +563,8 @@ gs_details_page_refresh_app_data_info (GsDetailsPage *self)
 static void
 gs_details_page_app_data_clear_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
-	g_autofree gchar *dir = NULL;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GError) error = NULL;
-
-	dir = gs_details_page_get_app_data_directory (self);
-	if (dir == NULL)
-		return;
-
-	file = g_file_new_for_path (dir);
-	if (!g_file_trash (file, NULL, &error) &&
-	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED)) {
-		g_clear_error (&error);
-		gs_utils_rmtree (dir, &error);
-	}
-	if (error && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-		gs_utils_error_convert_gio (&error);
-		gs_plugin_loader_claim_error (self->plugin_loader,  NULL, GS_PLUGIN_ACTION_UNKNOWN,
-					      self->app, TRUE, error);
-	} else {
+	if (gs_utils_remove_app_data_dir (self->app, self->plugin_loader))
 		gs_details_page_refresh_app_data_info (self);
-	}
 }
 
 static void
