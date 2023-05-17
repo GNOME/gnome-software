@@ -138,6 +138,32 @@
                                 </child>
 
                                 <child>
+                                  <object class="GtkLabel" id="heading_all_apps">
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes" comments="Translators: This is a heading for a section with all available apps.">Available Apps</property>
+                                    <property name="margin-top">21</property>
+                                    <property name="margin-bottom">6</property>
+                                    <property name="visible">False</property>
+                                    <style>
+                                      <class name="heading"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkFlowBox" id="box_all_apps">
+                                    <property name="visible">False</property>
+                                    <property name="homogeneous">True</property>
+                                    <property name="column-spacing">14</property>
+                                    <property name="row-spacing">14</property>
+                                    <property name="valign">start</property>
+                                    <property name="selection-mode">none</property>
+                                    <accessibility>
+                                      <relation name="labelled-by">heading_all_apps</relation>
+                                    </accessibility>
+                                  </object>
+                                </child>
+
+                                <child>
                                   <object class="GtkLabel" id="iconless_categories_heading">
                                     <property name="xalign">0</property>
                                     <property name="label" translatable="yes" comments="Translators: This is a heading for a list of categories.">Other Categories</property>
