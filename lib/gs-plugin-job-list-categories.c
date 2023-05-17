@@ -155,8 +155,12 @@ gs_plugin_job_list_categories_run_async (GsPluginJob         *job,
 	categories = gs_category_manager_get_categories (gs_plugin_loader_get_category_manager (plugin_loader), &n_categories);
 	self->category_list = g_ptr_array_new_full (n_categories, (GDestroyNotify) g_object_unref);
 
-	for (gsize i = 0; i < n_categories; i++)
+	for (gsize i = 0; i < n_categories; i++) {
+		/* reset the sizes to 0, because the plugins just increment the current value */
+		gs_category_set_size (categories[i], 0);
+
 		g_ptr_array_add (self->category_list, g_object_ref (categories[i]));
+	}
 
 	/* run each plugin, keeping a counter of pending operations which is
 	 * initialised to 1 until all the operations are started */
