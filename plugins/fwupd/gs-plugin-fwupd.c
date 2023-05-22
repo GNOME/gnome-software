@@ -1640,8 +1640,30 @@ static void
 finish_update_apps_op (GTask  *task,
                        GError *error)
 {
+	GsPluginFwupd *self = g_task_get_source_object (task);
 	UpdateAppsData *data = g_task_get_task_data (task);
 	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	/* Report certain errors to the user directly. Any errors which we
+	 * return from the `update_apps_async()` vfunc are logged but not
+	 * displayed in the UI as the #GsPluginJobUpdateApps code can’t know
+	 * which errors are understandable by users and which aren’t. */
+	if (g_error_matches (error_owned, FWUPD_ERROR, FWUPD_ERROR_NEEDS_USER_ACTION)) {
+		g_autoptr(GError) event_error = NULL;
+		g_autoptr(GsPluginEvent) event = NULL;
+
+		event_error = g_error_copy (error_owned);
+		g_prefix_error_literal (&event_error, _("Firmware update could not be applied: "));
+		gs_plugin_fwupd_error_convert (&event_error);
+
+		event = gs_plugin_event_new ("app", self->app_current,
+					     "error", event_error,
+					     NULL);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+	}
 
 	if (error_owned != NULL && data->saved_error == NULL)
 		data->saved_error = g_steal_pointer (&error_owned);
