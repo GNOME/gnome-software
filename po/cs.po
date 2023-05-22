@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-03-16 13:07+0000\n"
-"PO-Revision-Date: 2023-03-16 12:54+0100\n"
+"POT-Creation-Date: 2023-04-22 09:07+0000\n"
+"PO-Revision-Date: 2023-05-05 12:50+0200\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -74,7 +74,7 @@ msgstr "Panel s aktualizacemi"
 msgid "The update details"
 msgstr "Podrobnosti o aktualizaci"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2222
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2247
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
@@ -832,14 +832,14 @@ msgstr "Odebírá se"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:924
-#: src/gs-details-page.c:950 src/gs-details-page.ui:209 src/gs-page.c:412
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:927
+#: src/gs-details-page.c:953 src/gs-details-page.ui:209 src/gs-page.c:418
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Instalovat"
 
 #. TRANSLATORS: this is button text to remove the app
-#: src/gs-app-addon-row.ui:73 src/gs-page.c:551
+#: src/gs-app-addon-row.ui:73 src/gs-page.c:559
 msgid "_Uninstall"
 msgstr "_Odinstalovat"
 
@@ -1448,7 +1448,7 @@ msgstr "Zdroj: %s"
 msgid "Renamed from %s"
 msgstr "Přejmenováno z %s"
 
-#: src/gs-app-row.ui:197 src/gs-app-tile.ui:50 src/gs-feature-tile.c:543
+#: src/gs-app-row.ui:197 src/gs-feature-tile.c:543
 msgctxt "Single app"
 msgid "Installed"
 msgstr "Nainstalováno"
@@ -1495,7 +1495,7 @@ msgstr "Vyžadováno přihlášení"
 
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:12 src/gs-common.c:296 src/gs-common.c:697
-#: src/gs-details-page.ui:297 src/gs-page.c:410 src/gs-page.c:549
+#: src/gs-details-page.ui:297 src/gs-page.c:416 src/gs-page.c:557
 #: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:171
 #: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:18 src/gs-review-row.c:237
 #: src/gs-updates-page.c:847 src/gs-updates-page.c:864
@@ -2228,11 +2228,11 @@ msgstr "Požadavek na dodatečné balíčky"
 msgid "Find in Software"
 msgstr "Najít v aplikaci Software"
 
-#: src/gs-description-box.c:87 src/gs-description-box.c:335
+#: src/gs-description-box.c:92 src/gs-description-box.c:341
 msgid "_Show More"
 msgstr "Zobrazit _více"
 
-#: src/gs-description-box.c:87
+#: src/gs-description-box.c:92
 msgid "_Show Less"
 msgstr "Zobrazit _méně"
 
@@ -2270,7 +2270,7 @@ msgstr "Připravuje se…"
 msgid "Uninstalling…"
 msgstr "Odinstalovává se…"
 
-#: src/gs-details-page.c:940
+#: src/gs-details-page.c:943
 msgid "_Restart"
 msgstr "_Restartovat"
 
@@ -2278,40 +2278,40 @@ msgstr "_Restartovat"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:964
+#: src/gs-details-page.c:967
 msgid "_Install…"
 msgstr "_Instalovat…"
 
-#: src/gs-details-page.c:1031
+#: src/gs-details-page.c:1034
 msgid "_Uninstall…"
 msgstr "_Odinstalovat…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1175
+#: src/gs-details-page.c:1207
 #, c-format
 msgid "%s will appear in US English"
 msgstr "Aplikace %s se zobrazí v americké angličtině"
 
-#: src/gs-details-page.c:1181
+#: src/gs-details-page.c:1213
 msgid "This app will appear in US English"
 msgstr "Tato aplikace se zobrazí v americké angličtině"
 
-#: src/gs-details-page.c:1196 src/gs-details-page.ui:59
+#: src/gs-details-page.c:1228 src/gs-details-page.ui:59
 msgid "Help _Translate"
 msgstr "_Pomoci přeložit"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1260
+#: src/gs-details-page.c:1292
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Co dalšího nabízí %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1637
+#: src/gs-details-page.c:1669
 msgid "You need internet access to write a review"
 msgstr "Abyste mohli napsat recenzi, musíte být připojeni k Internetu"
 
-#: src/gs-details-page.c:1822 src/gs-details-page.c:1838
+#: src/gs-details-page.c:1854 src/gs-details-page.c:1870
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nelze najít „%s“"
@@ -3064,14 +3064,14 @@ msgstr "Ponižování"
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:475
+#: src/gs-overview-page.c:493
 msgid "selected external sources"
 msgstr "vybraných externích zdrojů"
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:479
+#: src/gs-overview-page.c:497
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3085,23 +3085,23 @@ msgstr ""
 "Tyto repozitáře můžete později povolit v předvolbách Softwarových repozitářů."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:485
+#: src/gs-overview-page.c:503
 msgid "Enable Third Party Software Repositories?"
 msgstr "Povolit repozitáře softwaru třetích stran?"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:490
+#: src/gs-overview-page.c:508
 msgid "_Ignore"
 msgstr "_Ignorovat"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:492 src/gs-repos-dialog.c:173
+#: src/gs-overview-page.c:510 src/gs-repos-dialog.c:173
 msgid "_Enable"
 msgstr "_Povolit"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:985
+#: src/gs-overview-page.c:1003
 msgid "Explore"
 msgstr "Procházet"
 
@@ -3118,7 +3118,7 @@ msgstr "Ostatní kategorie"
 msgid "No App Data Found"
 msgstr "O aplikaci nebyly nalezeny žádné informace"
 
-#: lib/gs-plugin-loader.c:2771
+#: lib/gs-plugin-loader.c:2772
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "neznámá"
@@ -3134,20 +3134,20 @@ msgstr "Uživatel odmítl instalaci"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:404
+#: src/gs-page.c:410
 #, c-format
 msgid "Prepare %s"
 msgstr "Příprava aplikace %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:523
+#: src/gs-page.c:531
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Opravdu chcete odebrat repozitář %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:527
+#: src/gs-page.c:535
 #, c-format
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
@@ -3158,13 +3158,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:535
+#: src/gs-page.c:543
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Opravdu chcete odinstalovat %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:538
+#: src/gs-page.c:546
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -3309,7 +3309,7 @@ msgstr "Žádné repozitáře"
 #. TRANSLATORS: This string states how many apps have been
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of apps.
-#: src/gs-repo-row.c:161
+#: src/gs-repo-row.c:175
 #, c-format
 msgid "%u app installed"
 msgid_plural "%u apps installed"
@@ -3320,7 +3320,7 @@ msgstr[2] "Nainstalováno %u aplikací"
 #. TRANSLATORS: This string states how many add-ons have been
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of add-ons.
-#: src/gs-repo-row.c:169
+#: src/gs-repo-row.c:183
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -3334,7 +3334,7 @@ msgstr[2] "Nainstalováno %u doplňků"
 #. * that repo. The placeholder is the number of apps, and the translated
 #. * string will be substituted in for the first placeholder in the
 #. * string “%s and %s installed”.
-#: src/gs-repo-row.c:180
+#: src/gs-repo-row.c:194
 #, c-format
 msgid "%u app"
 msgid_plural "%u apps"
@@ -3348,7 +3348,7 @@ msgstr[2] "%u aplikací"
 #. * that repo. The placeholder is the number of add-ons, and the translated
 #. * string will be substituted in for the second placeholder in the
 #. * string “%s and %s installed”.
-#: src/gs-repo-row.c:189
+#: src/gs-repo-row.c:203
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -3369,7 +3369,7 @@ msgstr[2] "%u doplňků"
 #. *  - “2 apps and 1 add-on installed” - uses count 3
 #. *  - “4 apps and 5 add-ons installed” - uses count 9
 #.
-#: src/gs-repo-row.c:205
+#: src/gs-repo-row.c:219
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -3379,13 +3379,13 @@ msgstr[2] "%s a %s"
 
 #. Translators: The first '%s' is replaced with a text like '10 apps installed',
 #. the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'.
-#: src/gs-repo-row.c:260
+#: src/gs-repo-row.c:274
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
 msgstr "%s • %s"
 
-#: src/gs-repo-row.c:331
+#: src/gs-repo-row.c:345
 msgid "Remove"
 msgstr "Odebrat"
 
@@ -3738,7 +3738,7 @@ msgstr "Vůbec nemůže přistupovat k souborovému systému"
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:348
 msgid "Proprietary Code"
-msgstr "uzavřená"
+msgstr "Uzavřený kód"
 
 #: src/gs-safety-context-dialog.c:349
 msgid ""
@@ -3751,7 +3751,7 @@ msgstr ""
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:352
 msgid "Auditable Code"
-msgstr "otevřený kód"
+msgstr "Otevřený kód"
 
 #: src/gs-safety-context-dialog.c:353
 msgid ""
@@ -5038,12 +5038,12 @@ msgid "Run popular web applications in a browser"
 msgstr "Spouštějte populární webové aplikace v prohlížeči"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:257
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:254
 msgid "Downloading upgrade information…"
 msgstr "Stahují se informace o povýšení…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:405
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:402
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -5446,7 +5446,7 @@ msgstr "Aktualizace dokovacího zařízení pro %s"
 msgid "%s USB Dock Update"
 msgstr "Aktualizace USB dokovacího zařízení pro %s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1763
+#: plugins/fwupd/gs-plugin-fwupd.c:1766
 msgid "Firmware"
 msgstr "Firmware"
 
