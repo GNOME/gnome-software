@@ -357,11 +357,16 @@ plugin_update_apps_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	/* Forward cancellation errors, but ignore all other errors so
-	 * that other plugins don’t get blocked. */
+	 * that other plugins don’t get blocked.
+	 *
+	 * If plugins produce errors which should be reported to the user, they
+	 * should report them directly by calling gs_plugin_report_event().
+	 * #GsPluginJobUpdateApps cannot do this as it doesn’t know which errors
+	 * are interesting to the user and which are useless. */
 	if (!plugin_class->update_apps_finish (plugin, result, &local_error) &&
 	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
 	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
-		g_debug ("Plugin ‘%s‘ failed to update apps: %s",
+		g_debug ("Plugin ‘%s’ failed to update apps: %s",
 			 gs_plugin_get_name (plugin), local_error->message);
 		g_clear_error (&local_error);
 	}
