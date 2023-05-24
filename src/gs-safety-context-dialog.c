@@ -157,7 +157,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 					    NULL, NULL, NULL);
 		} else {
 			add_permission_row (self->permissions_list, &chosen_rating,
-					    FALSE,
+					    TRUE,
 					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 					    "channel-insecure-symbolic",
 					    _("Provided by a third party"),
