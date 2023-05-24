@@ -379,7 +379,7 @@ update_safety_tile (GsAppContextBar *self)
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can access data in the system unknown to the Software.
 					       * It’s used in a context tile, so should be short. */
-					      _("Can access arbitrary files"));
+					      _("Can access some specific files"));
 			break;
 		case GS_APP_PERMISSIONS_FLAGS_SETTINGS:
 			add_to_safety_rating (&chosen_rating, descriptions,
