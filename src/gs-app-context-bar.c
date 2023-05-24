@@ -234,6 +234,23 @@ typedef enum
 } SafetyRating;
 
 static void
+add_to_safety_rating_full (SafetyRating *chosen_rating,
+                           GPtrArray    *descriptions,
+                           SafetyRating  item_rating,
+                           const gchar  *item_description,
+                           gboolean      can_clear_descriptions)
+{
+	if (item_rating > *chosen_rating) {
+		if (can_clear_descriptions)
+			g_ptr_array_set_size (descriptions, 0);
+		*chosen_rating = item_rating;
+	}
+
+	if (item_rating == *chosen_rating)
+		g_ptr_array_add (descriptions, (gpointer) item_description);
+}
+
+static void
 add_to_safety_rating (SafetyRating *chosen_rating,
                       GPtrArray    *descriptions,
                       SafetyRating  item_rating,
@@ -243,13 +260,7 @@ add_to_safety_rating (SafetyRating *chosen_rating,
 	 * this item increases the @chosen_rating. This means the final list of
 	 * @descriptions will only be the items which caused @chosen_rating to
 	 * be so high. */
-	if (item_rating > *chosen_rating) {
-		g_ptr_array_set_size (descriptions, 0);
-		*chosen_rating = item_rating;
-	}
-
-	if (item_rating == *chosen_rating)
-		g_ptr_array_add (descriptions, (gpointer) item_description);
+	add_to_safety_rating_full (chosen_rating, descriptions, item_rating, item_description, TRUE);
 }
 
 static void
@@ -396,24 +407,6 @@ update_safety_tile (GsAppContextBar *self)
 		}
 	}
 
-	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
-	 * between closed source and open-source-but-not-FOSS software, even
-	 * though the code of the latter is technically publicly auditable. This
-	 * is because I don’t want to get into the business of maintaining lists
-	 * of ‘auditable’ source code licenses. */
-	if (!gs_app_get_license_is_free (self->app))
-		add_to_safety_rating (&chosen_rating, descriptions,
-				      SAFETY_PROBABLY_SAFE,
-				      /* Translators: This indicates an app is not licensed under a free software license.
-				       * It’s used in a context tile, so should be short. */
-				      _("Proprietary code"));
-	else
-		add_to_safety_rating (&chosen_rating, descriptions,
-				      SAFETY_SAFE,
-				      /* Translators: This indicates an app’s source code is freely available, so can be audited for security.
-				       * It’s used in a context tile, so should be short. */
-				      _("Auditable code"));
-
 	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED))
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
@@ -458,6 +451,33 @@ update_safety_tile (GsAppContextBar *self)
 				      /* Translators: This indicates an app or its runtime reached its end of life.
 				       * It’s used in a context tile, so should be short. */
 				      _("Software no longer supported"));
+
+	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
+	 * between closed source and open-source-but-not-FOSS software, even
+	 * though the code of the latter is technically publicly auditable. This
+	 * is because I don’t want to get into the business of maintaining lists
+	 * of ‘auditable’ source code licenses. */
+	if (gs_app_get_license_is_free (self->app)) {
+		add_to_safety_rating (&chosen_rating, descriptions,
+				      SAFETY_SAFE,
+				      /* Translators: This indicates an app’s source code is freely available, so can be audited for security.
+				       * It’s used in a context tile, so should be short. */
+				      _("Auditable code"));
+	} else {
+		SafetyRating use_rating = SAFETY_PROBABLY_SAFE;
+
+		/* Proprietary apps are one level worse (less safe) than whichever rating
+		   had been determined from the provided permissions. */
+		if (chosen_rating < SAFETY_UNSAFE && chosen_rating >= use_rating)
+			use_rating = chosen_rating + 1;
+
+		add_to_safety_rating_full (&chosen_rating, descriptions,
+					   use_rating,
+					   /* Translators: This indicates an app is not licensed under a free software license.
+					    * It’s used in a context tile, so should be short. */
+					   _("Proprietary code"),
+					   FALSE);
+	}
 
 	g_assert (descriptions->len > 0);
 

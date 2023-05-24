@@ -113,6 +113,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	g_autoptr(GsAppPermissions) permissions = NULL;
 	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 	GsContextDialogRowImportance chosen_rating;
+	GsContextDialogRowImportance license_rating;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
 	 * based on app properties. */
@@ -345,23 +346,6 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 	}
 
-	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
-	 * between closed source and open-source-but-not-FOSS software, even
-	 * though the code of the latter is technically publicly auditable. This
-	 * is because I don’t want to get into the business of maintaining lists
-	 * of ‘auditable’ source code licenses. */
-	add_permission_row (self->permissions_list, &chosen_rating,
-			    !gs_app_get_license_is_free (self->app),
-			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION,
-			    "dialog-warning-symbolic",
-			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-			    _("Proprietary Code"),
-			    _("The source code is not public, so it cannot be independently audited and might be unsafe"),
-			    "app-installed-symbolic",
-			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-			    _("Auditable Code"),
-			    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
-
 	add_permission_row (self->permissions_list, &chosen_rating,
 			    gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED),
 			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
@@ -383,6 +367,31 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    _("Insecure Dependencies"),
 			    _("Software or its dependencies are no longer supported and may be insecure"),
 			    NULL, NULL, NULL);
+
+	license_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION;
+	/* Proprietary apps are one level worse (less safe) than whichever rating
+	   had been determined from the provided permissions. */
+	if (!gs_app_get_license_is_free (self->app) &&
+	    chosen_rating < GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT &&
+	    chosen_rating >= license_rating)
+		license_rating = chosen_rating + 1;
+
+	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
+	 * between closed source and open-source-but-not-FOSS software, even
+	 * though the code of the latter is technically publicly auditable. This
+	 * is because I don’t want to get into the business of maintaining lists
+	 * of ‘auditable’ source code licenses. */
+	add_permission_row (self->permissions_list, &chosen_rating,
+			    !gs_app_get_license_is_free (self->app),
+			    license_rating,
+			    "dialog-warning-symbolic",
+			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+			    _("Proprietary Code"),
+			    _("The source code is not public, so it cannot be independently audited and might be unsafe"),
+			    "app-installed-symbolic",
+			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+			    _("Auditable Code"),
+			    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
 
 	/* Update the UI. */
 	switch (chosen_rating) {
