@@ -424,16 +424,29 @@ update_safety_tile (GsAppContextBar *self)
 	 * installing something which is actively malicious. */
 	if (permissions == NULL &&
 	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE)) {
+		/* It's a new key suggested at https://github.com/systemd/systemd/issues/27777 */
+		g_autofree gchar *name = g_get_os_info ("VENDOR_NAME");
+		g_autofree gchar *reviewed_by = NULL;
+		if (name == NULL) {
+			/* Translators: This indicates that an app has been packaged
+			 * by the user’s distribution and is probably safe.
+			 * It’s used in a context tile, so should be short. */
+			reviewed_by = g_strdup (_("Reviewed by OS distributor"));
+		} else {
+			/* Translators: This indicates that an app has been packaged
+			 * by the user’s distribution and is probably safe.
+			 * It’s used in a context tile, so should be short.
+			 * The '%s' is replaced by the distribution name. */
+			reviewed_by = g_strdup_printf (_("Reviewed by %s"), name);
+		}
+
 		/* Show as 'probably safe' when the app is considered safe until now and it's provided by the distribution */
 		if (chosen_rating == SAFETY_SAFE)
 			chosen_rating = SAFETY_PRIVILEGED;
 
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_PRIVILEGED,
-				      /* Translators: This indicates that an app has been packaged
-				       * by the user’s distribution and is probably safe.
-				       * It’s used in a context tile, so should be short. */
-				      _("Reviewed by your distribution"));
+				      reviewed_by);
 	} else if (permissions == NULL) {
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_POTENTIALLY_UNSAFE,

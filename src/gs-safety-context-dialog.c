@@ -139,11 +139,20 @@ update_permissions_list (GsSafetyContextDialog *self)
 		chosen_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
 
 		if (gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE)) {
+			/* It's a new key suggested at https://github.com/systemd/systemd/issues/27777 */
+			g_autofree gchar *name = g_get_os_info ("VENDOR_NAME");
+			g_autofree gchar *reviewed_by = NULL;
+			if (name == NULL) {
+				reviewed_by = g_strdup (_("Reviewed by OS distributor"));
+			} else {
+				/* Translators: The '%s' is replaced by the distribution name. */
+				reviewed_by = g_strdup_printf (_("Reviewed by %s"), name);
+			}
 			add_permission_row (self->permissions_list, &chosen_rating,
 					    TRUE,
 					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
 					    "channel-secure-symbolic",
-					    _("Reviewed by your distribution"),
+					    reviewed_by,
 					    _("App isn’t sandboxed but the distribution has checked that it is not malicious"),
 					    NULL, NULL, NULL);
 		} else {
