@@ -66,6 +66,25 @@
    Validate with `appstreamcli validate *.metainfo.xml`
   -->
   <releases>
+    <release date="2023-05-25" version="44.2" type="stable">
+      <description>
+        <p>This is a stable release with the following changes:</p>
+        <ul>
+          <li>Fix subsequent checking for updates if the first check after login fails</li>
+          <li>Fix checking for updates when automatic updates are disabled</li>
+          <li>Fix rare stall when many background jobs are running</li>
+          <li>Don’t download rpm-ostree updates when only checking if updates are available</li>
+          <li>Fix bug with listing flatpak addons when multiple flathub remotes are enabled</li>
+          <li>Fix duplicated sources in app details page when using an appstream URL</li>
+          <li>Reduce background resource consumption when idle</li>
+        </ul>
+        <p>This release also updates translations:</p>
+        <ul>
+          <li>Czech (Daniel Rusek)</li>
+          <li>Italian (Gianvito Cavasoli)</li>
+        </ul>
+      </description>
+    </release>
     <release date="2023-04-21" version="44.1" type="stable">
       <description>
         <p>This is a stable release with the following changes:</p>

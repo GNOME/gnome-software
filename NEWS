@@ -1,3 +1,20 @@
+Version 44.2
+~~~~~~~~~~~~
+Released: 2023-05-25
+
+This is a stable release with the following changes:
+ * Fix subsequent checking for updates if the first check after login fails
+ * Fix checking for updates when automatic updates are disabled
+ * Fix rare stall when many background jobs are running
+ * Don’t download rpm-ostree updates when only checking if updates are available
+ * Fix bug with listing flatpak addons when multiple flathub remotes are enabled
+ * Fix duplicated sources in app details page when using an appstream URL
+ * Reduce background resource consumption when idle
+
+This release also updates translations:
+ * Czech (Daniel Rusek)
+ * Italian (Gianvito Cavasoli)
+
 Version 44.1
 ~~~~~~~~~~~~
 Released: 2023-04-21
