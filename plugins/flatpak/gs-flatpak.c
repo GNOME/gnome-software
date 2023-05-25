@@ -200,24 +200,30 @@ gs_flatpak_claim_app_list (GsFlatpak *self,
 }
 
 static void
+gs_flatpak_set_runtime_kind_from_id (GsApp *app)
+{
+	const gchar *id = gs_app_get_id (app);
+	/* this is anything that's not an app, including locales
+	 * sources and debuginfo */
+	if (g_str_has_suffix (id, ".Locale")) {
+		gs_app_set_kind (app, AS_COMPONENT_KIND_LOCALIZATION);
+	} else if (g_str_has_suffix (id, ".Debug") ||
+		   g_str_has_suffix (id, ".Sources") ||
+		   g_str_has_prefix (id, "org.freedesktop.Platform.Icontheme.") ||
+		   g_str_has_prefix (id, "org.gtk.Gtk3theme.")) {
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+	} else {
+		gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
+	}
+}
+
+static void
 gs_flatpak_set_kind_from_flatpak (GsApp *app, FlatpakRef *xref)
 {
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
 		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	} else if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME) {
-		const gchar *id = gs_app_get_id (app);
-		/* this is anything that's not an app, including locales
-		 * sources and debuginfo */
-		if (g_str_has_suffix (id, ".Locale")) {
-			gs_app_set_kind (app, AS_COMPONENT_KIND_LOCALIZATION);
-		} else if (g_str_has_suffix (id, ".Debug") ||
-			   g_str_has_suffix (id, ".Sources") ||
-			   g_str_has_prefix (id, "org.freedesktop.Platform.Icontheme.") ||
-			   g_str_has_prefix (id, "org.gtk.Gtk3theme.")) {
-			gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
-		} else {
-			gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
-		}
+		gs_flatpak_set_runtime_kind_from_id (app);
 	}
 }
 
