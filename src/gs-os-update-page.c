@@ -145,20 +145,22 @@ create_app_row (GsApp *app)
 	              "ellipsize", PANGO_ELLIPSIZE_END,
 	              NULL);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_widget_set_hexpand (label, TRUE);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 	gtk_box_append (GTK_BOX (row), label);
 
 	if (gs_app_get_update_urgency (app) >= AS_URGENCY_KIND_CRITICAL) {
 		GtkWidget *image;
 
-		image = gtk_image_new_from_icon_name ("software-update-urgent-symbolic");
+		image = gtk_image_new_from_icon_name ("emblem-important-symbolic");
 		gtk_image_set_pixel_size (GTK_IMAGE (image), 16);
-		gtk_widget_set_margin_start (image, 6);
-		gtk_widget_set_margin_end (image, 6);
+		gtk_widget_set_halign (image, GTK_ALIGN_START);
 		gtk_widget_set_tooltip_text (image, _("Critical update"));
+		gtk_widget_set_hexpand (image, TRUE);
+		gtk_widget_add_css_class (image, "warning");
 		gtk_accessible_update_property (GTK_ACCESSIBLE (image), GTK_ACCESSIBLE_PROPERTY_LABEL, _("Critical update"), -1);
 		gtk_box_append (GTK_BOX (row), image);
+	} else {
+		gtk_widget_set_hexpand (label, TRUE);
 	}
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
