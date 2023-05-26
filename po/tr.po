@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-05-09 11:58+0000\n"
-"PO-Revision-Date: 2023-05-11 03:32+0300\n"
+"POT-Creation-Date: 2023-05-17 09:50+0000\n"
+"PO-Revision-Date: 2023-05-12 14:05+0300\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
 "Language: tr\n"
@@ -785,7 +785,7 @@ msgstr "Yaş Derecelendirmesi"
 msgid "How to contribute missing information"
 msgstr "Eksik bilgilere nasıl katkıda bulunulur"
 
-#: lib/gs-app.c:6325
+#: lib/gs-app.c:6327
 msgid "Local file"
 msgstr "Yerel dosya"
 
@@ -794,12 +794,12 @@ msgstr "Yerel dosya"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6344 src/gs-safety-context-dialog.c:443
+#: lib/gs-app.c:6346 src/gs-safety-context-dialog.c:443
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6421
+#: lib/gs-app.c:6423
 msgid "Package"
 msgstr "Paket"
 
@@ -831,14 +831,14 @@ msgstr "Kaldırılıyor"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1027
-#: src/gs-details-page.c:1053 src/gs-details-page.ui:209 src/gs-page.c:418
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:990
+#: src/gs-details-page.c:1016 src/gs-details-page.ui:209 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Kur"
 
 #. TRANSLATORS: this is button text to remove the app
-#: src/gs-app-addon-row.ui:73 src/gs-page.c:559
+#: src/gs-app-addon-row.ui:73 src/gs-page.c:660
 msgid "_Uninstall"
 msgstr "_Kaldır"
 
@@ -1503,7 +1503,7 @@ msgstr "Giriş Gerekiyor"
 
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:12 src/gs-common.c:296 src/gs-common.c:697
-#: src/gs-details-page.ui:297 src/gs-page.c:416 src/gs-page.c:557
+#: src/gs-details-page.ui:297 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:171
 #: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:26 src/gs-review-row.c:241
 #: src/gs-updates-page.c:853 src/gs-updates-page.c:870
@@ -1595,7 +1595,7 @@ msgstr "3B Grafik"
 #: lib/gs-desktop-data.c:27
 msgctxt "Menu of Graphics & Photography"
 msgid "Photography"
-msgstr "Fotoğrafçılık"
+msgstr "Fotoğrafçılık"
 
 #: lib/gs-desktop-data.c:30
 msgctxt "Menu of Graphics & Photography"
@@ -2261,12 +2261,12 @@ msgid "Uninstalling…"
 msgstr "Kaldırılıyor…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:574
+#: src/gs-details-page.c:556
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "%s kurulmamış, ancak yine de verisi var."
 
-#: src/gs-details-page.c:1043
+#: src/gs-details-page.c:1006
 msgid "_Restart"
 msgstr "_Yeniden Başlat"
 
@@ -2274,45 +2274,45 @@ msgstr "_Yeniden Başlat"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1067
+#: src/gs-details-page.c:1030
 msgid "_Install…"
 msgstr "_Kur…"
 
-#: src/gs-details-page.c:1134
+#: src/gs-details-page.c:1097
 msgid "_Uninstall…"
 msgstr "_Kaldır…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1308
+#: src/gs-details-page.c:1271
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s Amerikan İngilizcesinde görünecek"
 
-#: src/gs-details-page.c:1315
+#: src/gs-details-page.c:1278
 msgid "This app will appear in US English"
 msgstr "Bu uygulama Amerikan İngilizcesinde görünecek"
 
-#: src/gs-details-page.c:1350 src/gs-details-page.ui:59
+#: src/gs-details-page.c:1313 src/gs-details-page.ui:59
 msgid "Help _Translate"
 msgstr "Çeviriye _Yardım Et"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1415
+#: src/gs-details-page.c:1378
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Diğer %s Uygulamaları"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1793
+#: src/gs-details-page.c:1768
 msgid "You need internet access to write a review"
 msgstr "Değerlendirme yazmanız için İnternet erişimi gerekiyor"
 
-#: src/gs-details-page.c:1981 src/gs-details-page.c:1997
+#: src/gs-details-page.c:1956 src/gs-details-page.c:1972
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "“%s” bulunamıyor"
 
-#: src/gs-details-page.c:2344
+#: src/gs-details-page.c:2319
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "“%s” için yorum gönderilemedi: %s"
@@ -3135,30 +3135,30 @@ msgid "Unknown"
 msgstr "Bilinmeyen"
 
 #. TRANSLATORS: button text
-#: src/gs-page.c:92
+#: src/gs-page.c:93
 msgid "_OK"
 msgstr "_Tamam"
 
-#: src/gs-page.c:271
+#: src/gs-page.c:290
 msgid "User declined installation"
 msgstr "Kullanıcı kurulumu reddetti"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:410
+#: src/gs-page.c:429
 #, c-format
 msgid "Prepare %s"
 msgstr "%s Uygulamasını Hazırla"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:531
+#: src/gs-page.c:568
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "%s deposunu kaldırmak istediğinizden emin misiniz?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:535
+#: src/gs-page.c:572
 #, c-format
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
@@ -3169,17 +3169,49 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:543
+#: src/gs-page.c:582
+#, fuzzy, c-format
+#| msgid "Uninstall"
+msgid "Uninstall %s?"
+msgstr "Kaldır"
+
+#: src/gs-page.c:591
+msgid "App Settings & Data"
+msgstr ""
+
+#. Translators: the '%s' is replaced with the app name
+#: src/gs-page.c:594
 #, c-format
-msgid "Are you sure you want to uninstall %s?"
-msgstr "%s uygulamasını kaldırmak istediğinize emin misiniz?"
+msgid "It will not be possible to use %s after removal."
+msgstr ""
+
+#. Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'
+#: src/gs-page.c:617
+msgid "_Keep"
+msgstr ""
+
+#: src/gs-page.c:623
+msgid "Allows restoring app settings and content"
+msgstr ""
+
+#. Translators: this is part of section about deleting app's data
+#: src/gs-page.c:632
+#, fuzzy
+#| msgid "D_elete Data"
+msgid "_Delete"
+msgstr "Verileri _Sil"
+
+#: src/gs-page.c:638
+msgid "Permanently deletes data to save disk space"
+msgstr ""
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:546
+#: src/gs-page.c:645
 #, c-format
 msgid ""
-"%s will be uninstalled, and you will have to install it to use it again."
-msgstr "%s kaldırılacak ve yeniden kullanmanız için kurmanız gerekecek."
+"It will not be possible to use %s after removal. App data and settings will "
+"be kept on disk, to allow restoring the app in the future."
+msgstr ""
 
 #: src/gs-prefs-dialog.ui:5
 msgid "Preferences"
@@ -5015,7 +5047,7 @@ msgstr "Yeni özellikler ve düzeltmeler içeren %s güncellemesi."
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:1276
 msgid "EOS update service could not fetch and apply the update."
-msgstr "EOS güncelleme servisi güncelleme alamadı ve uygulayamadı."
+msgstr "EOS güncelleme hizmeti güncelleme alamadı ve uygulayamadı."
 
 #: plugins/epiphany/gs-plugin-epiphany.c:500
 #: plugins/epiphany/gs-plugin-epiphany.c:504
@@ -5541,3 +5573,12 @@ msgstr "Snap Desteği"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap, bir evrensel Linux paketidir"
+
+#, c-format
+#~ msgid "Are you sure you want to uninstall %s?"
+#~ msgstr "%s uygulamasını kaldırmak istediğinize emin misiniz?"
+
+#, c-format
+#~ msgid ""
+#~ "%s will be uninstalled, and you will have to install it to use it again."
+#~ msgstr "%s kaldırılacak ve yeniden kullanmanız için kurmanız gerekecek."
