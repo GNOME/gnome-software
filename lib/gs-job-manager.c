@@ -37,6 +37,7 @@
 
 #include "gs-enums.h"
 #include "gs-plugin-job.h"
+#include "gs-plugin-job-private.h"
 #include "gs-plugin-job-update-apps.h"
 #include "gs-plugin-types.h"
 #include "gs-utils.h"
@@ -231,6 +232,9 @@ struct _GsJobManager
 
 	GPtrArray *watches;  /* (owned) (element-type WatchData) (not nullable), protected by @mutex */
 	guint next_watch_id;  /* protected by @mutex */
+
+	GCond shutdown_cond;
+	gboolean shut_down; /* set to TRUE when being shut down */
 };
 
 G_DEFINE_TYPE (GsJobManager, gs_job_manager, G_TYPE_OBJECT)
@@ -256,6 +260,7 @@ gs_job_manager_finalize (GObject *object)
 
 	g_clear_pointer (&self->jobs, g_ptr_array_unref);
 	g_clear_pointer (&self->watches, g_ptr_array_unref);
+	g_cond_clear (&self->shutdown_cond);
 	g_mutex_clear (&self->mutex);
 
 	G_OBJECT_CLASS (gs_job_manager_parent_class)->finalize (object);
@@ -274,6 +279,7 @@ static void
 gs_job_manager_init (GsJobManager *self)
 {
 	g_mutex_init (&self->mutex);
+	g_cond_init (&self->shutdown_cond);
 	self->jobs = g_ptr_array_new_with_free_func (g_object_unref);
 	self->watches = g_ptr_array_new_with_free_func ((GDestroyNotify) watch_data_unref);
 	self->next_watch_id = 1;
@@ -358,6 +364,11 @@ gs_job_manager_add_job (GsJobManager *self,
 		}
 	}
 
+	if (self->shut_down) {
+		g_debug ("Adding job '%s' while being shut down", G_OBJECT_TYPE_NAME (job));
+		g_cond_broadcast (&self->shutdown_cond);
+	}
+
 	return TRUE;
 }
 
@@ -415,6 +426,10 @@ gs_job_manager_remove_job (GsJobManager *self,
 	}
 
 	g_signal_handlers_disconnect_by_func (job, job_completed_cb, self);
+
+	if (self->shut_down && self->jobs->len == 0)
+		g_cond_broadcast (&self->shutdown_cond);
+
 	return TRUE;
 }
 
@@ -604,4 +619,100 @@ gs_job_manager_remove_watch (GsJobManager *self,
 	}
 
 	g_critical ("Unknown watch ID %u in call to gs_job_manager_remove_watch()", watch_id);
+}
+
+static gpointer
+copy_job_cb (gconstpointer src,
+	     gpointer user_data)
+{
+	return g_object_ref ((gpointer) src);
+}
+
+static void
+gs_job_manager_shutdown_thread (GTask *task,
+				gpointer source_object,
+				gpointer task_data,
+				GCancellable *cancellable)
+{
+	GsJobManager *self = source_object;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	locker = g_mutex_locker_new (&self->mutex);
+
+	while (self->jobs->len > 0) {
+		g_autoptr(GPtrArray) jobs = g_ptr_array_copy (self->jobs, copy_job_cb, NULL);
+
+		g_clear_pointer (&locker, g_mutex_locker_free);
+
+		for (guint i = 0; i < jobs->len; i++) {
+			GsPluginJob *job = g_ptr_array_index (jobs, i);
+			gs_plugin_job_cancel (job);
+		}
+
+		locker = g_mutex_locker_new (&self->mutex);
+
+		g_clear_pointer (&jobs, g_ptr_array_unref);
+
+		g_cond_wait (&self->shutdown_cond, &self->mutex);
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+/**
+ * gs_job_manager_shutdown_async:
+ * @self: a #GsJobManager
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: (scope async): a callback to call when done
+ * @user_data: user data for the @callback
+ *
+ * Shuts down all running jobs. Once called, any following
+ * jobs are automatically cancelled too.
+ *
+ * Finish the call with gs_job_manager_shutdown_finish().
+ *
+ * Since: 45
+ **/
+void
+gs_job_manager_shutdown_async (GsJobManager *self,
+			       GCancellable *cancellable,
+			       GAsyncReadyCallback callback,
+			       gpointer user_data)
+{
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_JOB_MANAGER (self));
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_job_manager_shutdown_async);
+
+	locker = g_mutex_locker_new (&self->mutex);
+
+	self->shut_down = TRUE;
+
+	g_task_run_in_thread (task, gs_job_manager_shutdown_thread);
+}
+
+/**
+ * gs_job_manager_shutdown_finish:
+ * @self: a #GsJobManager
+ * @result: a #GAsyncResult
+ * @error: (out) (nullable): a reference to an #GError, or %NULL
+ *
+ * Finish the call of gs_job_manager_shutdown_async().
+ *
+ * Returns: %TRUE, when succeeded, or %FALSE on failure with the @error set
+ *
+ * Since: 45
+ **/
+gboolean
+gs_job_manager_shutdown_finish (GsJobManager *self,
+				GAsyncResult *result,
+				GError **error)
+{
+	g_return_val_if_fail (GS_IS_JOB_MANAGER (self), FALSE);
+	g_return_val_if_fail (g_task_is_valid (G_TASK (result), self), FALSE);
+
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
