@@ -34,5 +34,8 @@ GsPlugin		*gs_plugin_job_get_plugin		(GsPluginJob	*self);
 gchar			*gs_plugin_job_to_string		(GsPluginJob	*self);
 void			 gs_plugin_job_set_action		(GsPluginJob	*self,
 								 GsPluginAction	 action);
+void			 gs_plugin_job_set_cancellable		(GsPluginJob	*self,
+								 GCancellable	*cancellable);
+void			 gs_plugin_job_cancel			(GsPluginJob	*self);
 
 G_END_DECLS

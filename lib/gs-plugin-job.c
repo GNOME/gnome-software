@@ -29,6 +29,7 @@ typedef struct
 	GsAppList		*list;
 	GFile			*file;
 	gint64			 time_created;
+	GCancellable		*cancellable;
 } GsPluginJobPrivate;
 
 enum {
@@ -409,6 +410,7 @@ gs_plugin_job_finalize (GObject *obj)
 	g_clear_object (&priv->list);
 	g_clear_object (&priv->file);
 	g_clear_object (&priv->plugin);
+	g_clear_object (&priv->cancellable);
 
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
@@ -498,4 +500,50 @@ gs_plugin_job_init (GsPluginJob *self)
 			     GS_APP_LIST_FILTER_FLAG_KEY_VERSION;
 	priv->list = gs_app_list_new ();
 	priv->time_created = g_get_monotonic_time ();
+}
+
+/**
+ * gs_plugin_job_set_cancellable:
+ * @self: a #GsPluginJob
+ * @cancellable: (nullable) (transfer none): the cancellable to use
+ *
+ * Sets the #GCancellable which can be used with gs_plugin_job_cancel() to
+ * cancel the job.
+ *
+ * FIXME: This is only needed because #GsPluginLoader implements cancellation
+ * outside of the #GsPluginJob for old-style jobs. Once all #GsPluginJob
+ * subclasses implement `run_async()`, the #GCancellable passed to that can be
+ * stored internally in #GsPluginJob and cancelled from gs_plugin_job_cancel().
+ * Then this method will be removed.
+ *
+ * Since: 45
+ */
+void
+gs_plugin_job_set_cancellable (GsPluginJob *self,
+			       GCancellable *cancellable)
+{
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	g_set_object (&priv->cancellable, cancellable);
+}
+
+/**
+ * gs_plugin_job_cancel:
+ * @self: a #GsPluginJob
+ *
+ * Cancel the plugin job.
+ *
+ * Since: 45
+ */
+void
+gs_plugin_job_cancel (GsPluginJob *self)
+{
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+
+	g_cancellable_cancel (priv->cancellable);
 }
