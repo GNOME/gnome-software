@@ -121,6 +121,13 @@ appstream = dependency('appstream',
     'install-docs=false'
   ]
 )
+if appstream.type_name() == 'internal'
+else
+  if meson.get_compiler('c').has_header_symbol('appstream.h', 'AS_SEARCH_TOKEN_MATCH_MEDIATYPE', dependencies: appstream)
+    conf.set('HAVE_AS_SEARCH_TOKEN_MATCH_MEDIATYPE', '1')
+  endif
+endif
+
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxmlb_dep'])
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
