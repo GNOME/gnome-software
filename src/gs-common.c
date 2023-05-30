@@ -398,7 +398,7 @@ gs_utils_set_key_colors_in_css (const gchar *css,
 					 color->red * 255.f,
 					 color->green * 255.f,
 					 color->blue * 255.f);
-		as_gstring_replace (css_new, key, value);
+		gs_utils_gstring_replace (css_new, key, value);
 	}
 
 	return g_string_free (g_steal_pointer (&css_new), FALSE);

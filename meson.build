@@ -121,6 +121,27 @@ appstream = dependency('appstream',
     'install-docs=false'
   ]
 )
+if appstream.type_name() == 'internal'
+else
+  if meson.get_compiler('c').has_header_symbol('appstream.h', 'AS_SEARCH_TOKEN_MATCH_MEDIATYPE', dependencies: appstream)
+    conf.set('HAVE_AS_SEARCH_TOKEN_MATCH_MEDIATYPE', '1')
+  endif
+  if meson.get_compiler('c').has_header_symbol('appstream.h', 'AS_FORMAT_STYLE_CATALOG', dependencies: appstream)
+    conf.set('HAVE_AS_FORMAT_STYLE_CATALOG', '1')
+  endif
+  if meson.get_compiler('c').has_function('as_metadata_components_to_catalog', prefix: '#include <appstream.h>', dependencies: appstream)
+    conf.set('HAVE_AS_METADATA_COMPONENTS_TO_CATALOG', '1')
+  endif
+  if meson.get_compiler('c').links('''#include <appstream.h>
+      int main (void)
+      {
+         as_gstring_replace (NULL, "a", "b", 0);
+         return 0;
+      }''', name: 'as_gstring_replace() has four arguments', dependencies: appstream)
+    conf.set('HAVE_AS_GSTRING_REPLACE_WITH_FOUR_ARGS', '1')
+  endif
+endif
+
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxmlb_dep'])
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')

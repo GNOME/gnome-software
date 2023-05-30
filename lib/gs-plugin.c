@@ -1278,7 +1278,7 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
 	/* replace datadir */
-	as_gstring_replace (resource_str, "@datadir@", DATADIR);
+	gs_utils_gstring_replace (resource_str, "@datadir@", DATADIR);
 	resource = resource_str->str;
 
 	/* look in string for any url() links */

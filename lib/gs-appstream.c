@@ -1619,7 +1619,11 @@ gs_appstream_search (GsPlugin *plugin,
 		     GError **error)
 {
 	const Query queries[] = {
+		#ifdef HAVE_AS_SEARCH_TOKEN_MATCH_MEDIATYPE
+		{ AS_SEARCH_TOKEN_MATCH_MEDIATYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
+		#else
 		{ AS_SEARCH_TOKEN_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
+		#endif
 		{ AS_SEARCH_TOKEN_MATCH_PKGNAME,	"pkgname[text()~=stem(?)]" },
 		{ AS_SEARCH_TOKEN_MATCH_SUMMARY,	"summary[text()~=stem(?)]" },
 		{ AS_SEARCH_TOKEN_MATCH_NAME,	"name[text()~=stem(?)]" },

@@ -1071,7 +1071,7 @@ gs_odrs_provider_create_app_dummy (const gchar *id)
 	GsApp *app = gs_app_new (id);
 	g_autoptr(GString) str = NULL;
 	str = g_string_new (id);
-	as_gstring_replace (str, ".desktop", "");
+	gs_utils_gstring_replace (str, ".desktop", "");
 	g_string_prepend (str, "No description is available for ");
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Unknown App");
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "App not found");

@@ -414,7 +414,11 @@ gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 	if (bytes == NULL)
 		return NULL;
 
+	#ifdef HAVE_AS_FORMAT_STYLE_CATALOG
+	as_metadata_set_format_style (mdata, AS_FORMAT_STYLE_CATALOG);
+	#else
 	as_metadata_set_format_style (mdata, AS_FORMAT_STYLE_COLLECTION);
+	#endif
 	as_metadata_parse_bytes (mdata,
 				 bytes,
 				 AS_FORMAT_KIND_YAML,
@@ -424,7 +428,11 @@ gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 		return NULL;
 	}
 
+	#ifdef HAVE_AS_METADATA_COMPONENTS_TO_CATALOG
+	xml = as_metadata_components_to_catalog (mdata, AS_FORMAT_KIND_XML, &tmp_error);
+	#else
 	xml = as_metadata_components_to_collection (mdata, AS_FORMAT_KIND_XML, &tmp_error);
+	#endif
 	if (xml == NULL) {
 		// This API currently returns NULL if there is nothing to serialize, so we
 		// have to test if this is an error or not.
