@@ -1678,3 +1678,21 @@ gs_utils_app_sort_priority (GsApp    *app1,
 {
 	return gs_app_compare_priority (app1, app2);
 }
+
+/**
+ * gs_utils_gstring_replace:
+ * @str: a #GString to replace the text in
+ * @find: a text to find
+ * @replace: a text to replace the found text with
+ *
+ * Replaces all @find occurrences in @str with @replace.
+ *
+ * Since: 45
+ **/
+void
+gs_utils_gstring_replace (GString *str,
+			  const gchar *find,
+			  const gchar *replace)
+{
+	as_gstring_replace (str, find, replace);
+}

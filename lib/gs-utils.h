@@ -150,5 +150,8 @@ gint		 gs_utils_app_sort_match_value	(GsApp			*app1,
 gint		 gs_utils_app_sort_priority	(GsApp			*app1,
 						 GsApp			*app2,
 						 gpointer		 user_data);
+void		 gs_utils_gstring_replace	(GString		*str,
+						 const gchar		*find,
+						 const gchar		*replace);
 
 G_END_DECLS
