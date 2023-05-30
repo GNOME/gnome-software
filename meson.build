@@ -129,6 +129,9 @@ else
   if meson.get_compiler('c').has_header_symbol('appstream.h', 'AS_FORMAT_STYLE_CATALOG', dependencies: appstream)
     conf.set('HAVE_AS_FORMAT_STYLE_CATALOG', '1')
   endif
+  if meson.get_compiler('c').has_function('as_metadata_components_to_catalog', prefix: '#include <appstream.h>', dependencies: appstream)
+    conf.set('HAVE_AS_METADATA_COMPONENTS_TO_CATALOG', '1')
+  endif
 endif
 
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
