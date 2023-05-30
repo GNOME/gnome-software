@@ -200,24 +200,30 @@ gs_flatpak_claim_app_list (GsFlatpak *self,
 }
 
 static void
+gs_flatpak_set_runtime_kind_from_id (GsApp *app)
+{
+	const gchar *id = gs_app_get_id (app);
+	/* this is anything that's not an app, including locales
+	 * sources and debuginfo */
+	if (g_str_has_suffix (id, ".Locale")) {
+		gs_app_set_kind (app, AS_COMPONENT_KIND_LOCALIZATION);
+	} else if (g_str_has_suffix (id, ".Debug") ||
+		   g_str_has_suffix (id, ".Sources") ||
+		   g_str_has_prefix (id, "org.freedesktop.Platform.Icontheme.") ||
+		   g_str_has_prefix (id, "org.gtk.Gtk3theme.")) {
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+	} else {
+		gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
+	}
+}
+
+static void
 gs_flatpak_set_kind_from_flatpak (GsApp *app, FlatpakRef *xref)
 {
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
 		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	} else if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME) {
-		const gchar *id = gs_app_get_id (app);
-		/* this is anything that's not an app, including locales
-		 * sources and debuginfo */
-		if (g_str_has_suffix (id, ".Locale")) {
-			gs_app_set_kind (app, AS_COMPONENT_KIND_LOCALIZATION);
-		} else if (g_str_has_suffix (id, ".Debug") ||
-			   g_str_has_suffix (id, ".Sources") ||
-			   g_str_has_prefix (id, "org.freedesktop.Platform.Icontheme.") ||
-			   g_str_has_prefix (id, "org.gtk.Gtk3theme.")) {
-			gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
-		} else {
-			gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
-		}
+		gs_flatpak_set_runtime_kind_from_id (app);
 	}
 }
 
@@ -3686,6 +3692,36 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		if (new == NULL)
 			return FALSE;
 		gs_flatpak_claim_app (self, new);
+
+		/* The appstream plugin did not find the component in the plugin's cache,
+		   thus read the required info from the 'bundle' element. */
+		if (gs_flatpak_app_get_ref_name (new) == NULL ||
+		    gs_flatpak_app_get_ref_arch (new) == NULL) {
+			g_autoptr(GError) local_error2 = NULL;
+			const gchar *xref_str;
+			xref_str = xb_node_query_text (component, "bundle[@type='flatpak']", &local_error2);
+			if (xref_str != NULL) {
+				g_auto(GStrv) split = NULL;
+
+				/* get the kind/name/arch/branch */
+				split = g_strsplit (xref_str, "/", -1);
+				if (g_strv_length (split) == 4) {
+					if (g_ascii_strcasecmp (split[0], "app") == 0)
+						gs_app_set_kind (new, AS_COMPONENT_KIND_DESKTOP_APP);
+					else if (g_ascii_strcasecmp (split[0], "runtime") == 0)
+						gs_flatpak_set_runtime_kind_from_id (new);
+					gs_flatpak_app_set_ref_name (new, split[1]);
+					gs_flatpak_app_set_ref_arch (new, split[2]);
+					gs_app_set_branch (new, split[3]);
+				}
+			}
+		}
+
+		if (gs_flatpak_app_get_ref_name (new) == NULL ||
+		    gs_flatpak_app_get_ref_arch (new) == NULL) {
+			g_debug ("Failed to get ref info for '%s' from wildcard '%s', skipping it...", gs_app_get_id (new), id);
+			continue;
+		}
 
 		GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardRefineNewApp, "Flatpak (refine new app)", NULL);
 		if (!gs_flatpak_refine_app_unlocked (self, new, refine_flags, interactive, &locker, cancellable, error))
