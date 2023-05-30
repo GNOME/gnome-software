@@ -310,7 +310,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	/* join the description lines */
 	str = gs_app_row_get_description (app_row, &is_markup);
 	if (str != NULL) {
-		as_gstring_replace (str, "\n", " ");
+		gs_utils_gstring_replace (str, "\n", " ");
 		if (is_markup)
 			gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
 		else
