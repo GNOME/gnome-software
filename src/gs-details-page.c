@@ -1192,34 +1192,6 @@ gs_details_page_app_id_equal (GsApp *app1,
 }
 
 static void
-flow_box_child_activate_cb (GtkFlowBoxChild *flowboxchild,
-			    gpointer user_data)
-{
-	GtkWidget *tile = gtk_flow_box_child_get_child (flowboxchild);
-	if (tile != NULL)
-		g_signal_emit_by_name (tile, "clicked", 0, NULL);
-}
-
-/* Each tile is in a GtkFlowBoxChild. The tile can be focused and activated,
- * but the GtkFlowBoxChild can only be focused and not activated (by default).
- * Tweak that to avoid tab navigation issues and visual artifacts. */
-static void
-setup_parent_flow_box_child (GsDetailsPage *self,
-			     GtkWidget *tile)
-{
-	GtkWidget *child;
-
-	g_assert (GTK_IS_FLOW_BOX_CHILD (gtk_widget_get_parent (tile)));
-
-	child = gtk_widget_get_parent (tile);
-	gtk_widget_add_css_class (child, "card");
-	gtk_widget_set_can_focus (tile, FALSE);
-
-	g_signal_connect_object (child, "activate",
-				 G_CALLBACK (flow_box_child_activate_cb), self, 0);
-}
-
-static void
 gs_details_page_search_developer_apps_cb (GObject *source_object,
 					  GAsyncResult *result,
 					  gpointer user_data)
@@ -1249,7 +1221,6 @@ gs_details_page_search_developer_apps_cb (GObject *source_object,
 			GtkWidget *tile = gs_summary_tile_new (app);
 			g_signal_connect (tile, "clicked", G_CALLBACK (gs_details_page_app_tile_clicked), self);
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->box_developer_apps), tile, -1);
-			setup_parent_flow_box_child (self, tile);
 
 			n_added++;
 			if (n_added == N_DEVELOPER_APPS)
