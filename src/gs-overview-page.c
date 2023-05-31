@@ -96,12 +96,15 @@ gs_overview_page_invalidate (GsOverviewPage *self)
 }
 
 static void
-app_tile_clicked (GsAppTile *tile, gpointer data)
+app_activated_cb (GsOverviewPage *self, GsAppTile *tile)
 {
-	GsOverviewPage *self = GS_OVERVIEW_PAGE (data);
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
+
+	if (!app)
+		return;
+
 	gs_shell_show_app (self->shell, app);
 }
 
@@ -183,8 +186,6 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (app_tile_clicked), self);
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_curated), tile, -1);
 	}
 	gtk_widget_set_visible (self->box_curated, TRUE);
@@ -224,7 +225,6 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	guint i;
 	GsApp *app;
 	GtkWidget *tile;
-	GtkWidget *child;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -253,17 +253,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (app_tile_clicked), self);
-		child = gtk_flow_box_child_new ();
-		/* Manually creating the child is needed to avoid having it be
-		 * focusable but non activatable, and then have the child
-		 * focusable and activatable, which is annoying and confusing.
-		 */
-		gtk_widget_set_can_focus (child, FALSE);
-		gtk_widget_set_visible (child, TRUE);
-		gtk_flow_box_child_set_child (GTK_FLOW_BOX_CHILD (child), tile);
-		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), child, -1);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), tile, -1);
 	}
 	gtk_widget_set_visible (self->box_recent, TRUE);
 	gtk_widget_set_visible (self->recent_heading, TRUE);
@@ -362,8 +352,6 @@ gs_overview_page_get_deployment_featured_cb (GObject *source_object,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (app_tile_clicked), self);
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_deployment_featured), tile, -1);
 	}
 	gtk_widget_set_visible (self->box_deployment_featured, TRUE);
@@ -432,9 +420,8 @@ gs_overview_page_gather_apps_cb (GObject *source_object,
 }
 
 static void
-category_tile_clicked (GsCategoryTile *tile, gpointer data)
+category_activated_cb (GsOverviewPage *self, GsCategoryTile *tile)
 {
-	GsOverviewPage *self = GS_OVERVIEW_PAGE (data);
 	GsCategory *category;
 
 	category = gs_category_tile_get_category (tile);
@@ -497,8 +484,6 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 		if (gs_category_get_size (cat) == 0)
 			continue;
 		tile = gs_category_tile_new (cat);
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (category_tile_clicked), self);
 
 		if (gs_category_get_icon_name (cat) != NULL) {
 			found_apps_cnt += gs_category_get_size (cat);
@@ -507,7 +492,6 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 			flowbox = GTK_FLOW_BOX (self->flowbox_iconless_categories);
 
 		gtk_flow_box_insert (flowbox, tile, -1);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		added_cnt++;
 
 		/* we save these for the 'More...' buttons */
@@ -1207,6 +1191,8 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, stack_overview);
 	gtk_widget_class_bind_template_callback (widget_class, featured_carousel_app_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, category_activated_cb);
+	gtk_widget_class_bind_template_callback (widget_class, app_activated_cb);
 }
 
 GsOverviewPage *

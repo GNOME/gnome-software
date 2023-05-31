@@ -27,7 +27,7 @@
 
 struct _GsCategoryTile
 {
-	GtkButton	 parent_instance;
+	GtkFlowBoxChild	 parent_instance;
 
 	GsCategory	*category;  /* (owned) (not nullable) */
 	GtkWidget	*label;
@@ -35,7 +35,7 @@ struct _GsCategoryTile
 	GtkBox		*box;
 };
 
-G_DEFINE_TYPE (GsCategoryTile, gs_category_tile, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE (GsCategoryTile, gs_category_tile, GTK_TYPE_FLOW_BOX_CHILD)
 
 typedef enum {
 	PROP_CATEGORY = 1,

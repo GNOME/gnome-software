@@ -17,11 +17,11 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_APP_TILE (gs_app_tile_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsAppTile, gs_app_tile, GS, APP_TILE, GtkButton)
+G_DECLARE_DERIVABLE_TYPE (GsAppTile, gs_app_tile, GS, APP_TILE, GtkFlowBoxChild)
 
 struct _GsAppTileClass
 {
-	GtkButtonClass		parent_class;
+	GtkFlowBoxChildClass		parent_class;
 	void			 (*refresh)		(GsAppTile	*self);
 };
 

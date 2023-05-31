@@ -62,12 +62,15 @@ typedef enum {
 static guint obj_signals[SIGNAL_APP_CLICKED + 1] = { 0, };
 
 static void
-app_tile_clicked (GsAppTile *tile, gpointer data)
+app_activated_cb (GsCategoryPage *self, GsAppTile *tile)
 {
-	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
+
+	if (!app)
+		return;
+
 	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
@@ -102,8 +105,6 @@ gs_category_page_add_placeholders (GsCategoryPage *self,
 	for (guint i = 0; i < n_placeholders; ++i) {
 		GtkWidget *tile = gs_summary_tile_new (NULL);
 		gtk_flow_box_insert (flow_box, tile, -1);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-		gtk_widget_remove_css_class (tile, "activatable");
 	}
 
 	gtk_widget_set_visible (GTK_WIDGET (flow_box), TRUE);
@@ -364,8 +365,6 @@ load_category_finish (LoadCategoryData *data)
 		is_recently_updated = (release_date > recently_updated_cutoff_secs);
 
 		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (app_tile_clicked), self);
 
 		if (is_featured) {
 			n_featured++;
@@ -608,8 +607,8 @@ recently_updated_sort_cb (GtkFlowBoxChild *child1,
                           GtkFlowBoxChild *child2,
                           gpointer         user_data)
 {
-	GsSummaryTile *tile1 = GS_SUMMARY_TILE (gtk_flow_box_child_get_child (child1));
-	GsSummaryTile *tile2 = GS_SUMMARY_TILE (gtk_flow_box_child_get_child (child2));
+	GsSummaryTile *tile1 = GS_SUMMARY_TILE (child1);
+	GsSummaryTile *tile2 = GS_SUMMARY_TILE (child2);
 	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (tile1));
 	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (tile2));
 	guint64 release_date1 = 0, release_date2 = 0;
@@ -780,6 +779,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, web_apps_flow_box);
 
 	gtk_widget_class_bind_template_callback (widget_class, top_carousel_app_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, app_activated_cb);
 }
 
 GsCategoryPage *

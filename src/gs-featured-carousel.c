@@ -159,13 +159,13 @@ previous_button_clicked_cb (GtkButton *button,
 }
 
 static void
-app_tile_clicked_cb (GsAppTile *app_tile,
-                     gpointer   user_data)
+tile_clicked_cb (GsFeatureTile *tile,
+                 gpointer       user_data)
 {
 	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (user_data);
 	GsApp *app;
 
-	app = gs_app_tile_get_app (app_tile);
+	app = gs_feature_tile_get_app (tile);
 	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
@@ -381,7 +381,7 @@ gs_featured_carousel_set_apps (GsFeaturedCarousel *self,
 			gtk_widget_set_vexpand (tile, TRUE);
 			gtk_widget_set_can_focus (tile, FALSE);
 			g_signal_connect (tile, "clicked",
-					  G_CALLBACK (app_tile_clicked_cb), self);
+					  G_CALLBACK (tile_clicked_cb), self);
 			adw_carousel_append (self->carousel, tile);
 		}
 	} else  {

@@ -83,7 +83,7 @@ gs_feature_tile_layout_init (GsFeatureTileLayout *self)
 
 struct _GsFeatureTile
 {
-	GsAppTile	 parent_instance;
+	GtkButton	 parent_instance;
 	GtkWidget	*stack;
 	GtkWidget	*image;
 	GtkWidget	*title;
@@ -94,10 +94,17 @@ struct _GsFeatureTile
 	GtkCssProvider	*subtitle_provider;  /* (owned) (nullable) */
 	GArray		*key_colors_cache;  /* (unowned) (nullable) */
 	gboolean	 narrow_mode;
+	GsApp		*app;
 	guint		 refresh_id;
 };
 
-static void gs_feature_tile_refresh (GsAppTile *self);
+typedef enum {
+	PROP_APP = 1,
+} GsFeatureTileProperty;
+
+static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
+
+static void gs_feature_tile_refresh (GsFeatureTile *self);
 
 static gboolean
 gs_feature_tile_refresh_idle_cb (gpointer user_data)
@@ -106,9 +113,19 @@ gs_feature_tile_refresh_idle_cb (gpointer user_data)
 
 	tile->refresh_id = 0;
 
-	gs_feature_tile_refresh (GS_APP_TILE (tile));
+	gs_feature_tile_refresh (tile);
 
 	return G_SOURCE_REMOVE;
+}
+
+static void
+schedule_refresh (GsFeatureTile *self)
+{
+	/* Already pending */
+	if (self->refresh_id != 0)
+		return;
+
+	self->refresh_id = g_idle_add (gs_feature_tile_refresh_idle_cb, self);
 }
 
 static void
@@ -118,9 +135,9 @@ gs_feature_tile_layout_narrow_mode_changed_cb (GtkLayoutManager *layout_manager,
 {
 	GsFeatureTile *self = GS_FEATURE_TILE (user_data);
 
-	if (self->narrow_mode != narrow_mode && !self->refresh_id) {
+	if (self->narrow_mode != narrow_mode) {
 		self->narrow_mode = narrow_mode;
-		self->refresh_id = g_idle_add (gs_feature_tile_refresh_idle_cb, self);
+		schedule_refresh (self);
 	}
 }
 
@@ -136,23 +153,50 @@ typedef struct
 	gfloat contrast;  /* (0.047, 21] */
 } GsHSBC;
 
-G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
+G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GTK_TYPE_BUTTON)
 
 static void
 gs_feature_tile_dispose (GObject *object)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (object);
 
-	if (tile->refresh_id) {
-		g_source_remove (tile->refresh_id);
-		tile->refresh_id = 0;
-	}
+	gs_feature_tile_set_app (tile, NULL);
 
 	g_clear_object (&tile->tile_provider);
 	g_clear_object (&tile->title_provider);
 	g_clear_object (&tile->subtitle_provider);
 
 	G_OBJECT_CLASS (gs_feature_tile_parent_class)->dispose (object);
+}
+
+static void
+gs_feature_tile_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsFeatureTile *self = GS_FEATURE_TILE (object);
+
+	switch ((GsFeatureTileProperty) prop_id) {
+	case PROP_APP:
+		g_value_set_object (value, self->app);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_feature_tile_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	GsFeatureTile *self = GS_FEATURE_TILE (object);
+
+	switch ((GsFeatureTileProperty) prop_id) {
+	case PROP_APP:
+		gs_feature_tile_set_app (self, g_value_get_object (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 /* These are subjectively chosen. See below. */
@@ -305,10 +349,9 @@ wcag_contrast_find_brightness (const GsHSBC *foreground,
 }
 
 static void
-gs_feature_tile_refresh (GsAppTile *self)
+gs_feature_tile_refresh (GsFeatureTile *tile)
 {
-	GsFeatureTile *tile = GS_FEATURE_TILE (self);
-	GsApp *app = gs_app_tile_get_app (self);
+	GsApp *app = tile->app;
 	const gchar *markup = NULL;
 	g_autofree gchar *name = NULL;
 	g_autoptr(GIcon) icon = NULL;
@@ -321,9 +364,9 @@ gs_feature_tile_refresh (GsAppTile *self)
 
 	/* Set the narrow mode. */
 	if (tile->narrow_mode)
-		gtk_widget_add_css_class (GTK_WIDGET (self), "narrow");
+		gtk_widget_add_css_class (GTK_WIDGET (tile), "narrow");
 	else
-		gtk_widget_remove_css_class (GTK_WIDGET (self), "narrow");
+		gtk_widget_remove_css_class (GTK_WIDGET (tile), "narrow");
 
 	/* Update the icon. Try a 160px version if not in narrow mode, and it’s
 	 * available; otherwise use 128px. */
@@ -361,7 +404,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 	 * unnecessarily. The custom CSS is direction-dependent, and will be
 	 * reloaded when the direction changes. If RTL CSS isn’t set, fall back
 	 * to the LTR CSS. */
-	if (gtk_widget_get_direction (GTK_WIDGET (self)) == GTK_TEXT_DIR_RTL)
+	if (gtk_widget_get_direction (GTK_WIDGET (tile)) == GTK_TEXT_DIR_RTL)
 		markup = gs_app_get_metadata_item (app, "GnomeSoftware::FeatureTile-css-rtl");
 	if (markup == NULL)
 		markup = gs_app_get_metadata_item (app, "GnomeSoftware::FeatureTile-css");
@@ -421,7 +464,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 			 * that the text is legible.
 			 */
 #if GTK_CHECK_VERSION(4, 9, 2)
-			gtk_widget_get_color (GTK_WIDGET (self), &fg_rgba);
+			gtk_widget_get_color (GTK_WIDGET (tile), &fg_rgba);
 #else
 			context = gtk_widget_get_style_context (GTK_WIDGET (self));
 			fg_rgba_valid = gtk_style_context_lookup_color (context, "theme_fg_color", &fg_rgba);
@@ -562,7 +605,7 @@ gs_feature_tile_direction_changed (GtkWidget *widget, GtkTextDirection previous_
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
 
-	gs_feature_tile_refresh (GS_APP_TILE (tile));
+	gs_feature_tile_refresh (tile);
 }
 
 static void
@@ -576,7 +619,7 @@ gs_feature_tile_css_changed (GtkWidget         *widget,
 	 * changed. */
 	tile->key_colors_cache = NULL;
 
-	gs_feature_tile_refresh (GS_APP_TILE (tile));
+	gs_feature_tile_refresh (tile);
 
 	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->css_changed (widget, css_change);
 }
@@ -599,14 +642,30 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-	GsAppTileClass *app_tile_class = GS_APP_TILE_CLASS (klass);
 
 	object_class->dispose = gs_feature_tile_dispose;
+	object_class->get_property = gs_feature_tile_get_property;
+	object_class->set_property = gs_feature_tile_set_property;
 
 	widget_class->css_changed = gs_feature_tile_css_changed;
 	widget_class->direction_changed = gs_feature_tile_direction_changed;
 
-	app_tile_class->refresh = gs_feature_tile_refresh;
+	/**
+	 * GsFeatureTile:app:
+	 *
+	 * The app to display in this tile.
+	 *
+	 * Set this to %NULL to display a loading/empty tile.
+	 *
+	 * Since: 45
+	 */
+	obj_props[PROP_APP] =
+		g_param_spec_object ("app", "App",
+				     "The app to display in this tile.",
+				     GS_TYPE_APP,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-feature-tile.ui");
 
@@ -626,4 +685,54 @@ gs_feature_tile_new (GsApp *app)
 			     "vexpand", FALSE,
 			     "app", app,
 			     NULL);
+}
+
+/**
+ * gs_feature_tile_get_app:
+ * @self: a #GsFeatureTile
+ *
+ * Get the value of #GsFeatureTile:app.
+ *
+ * Returns: (nullable) (transfer none): the #GsFeatureTile:app property
+ *
+ * Since: 45
+ */
+GsApp *
+gs_feature_tile_get_app (GsFeatureTile *self)
+{
+	g_return_val_if_fail (GS_IS_FEATURE_TILE (self), NULL);
+	return self->app;
+}
+
+/**
+ * gs_feature_tile_set_app:
+ * @self: a #GsFeatureTile
+ * @app: (transfer none) (nullable): the new value for #GsFeatureTile:app
+ *
+ * Set the value of #GsFeatureTile:app.
+ *
+ * Since: 45
+ */
+void
+gs_feature_tile_set_app (GsFeatureTile *self, GsApp *app)
+{
+	g_return_if_fail (GS_IS_FEATURE_TILE (self));
+	g_return_if_fail (!app || GS_IS_APP (app));
+
+	/* cancel pending refresh */
+	g_clear_handle_id (&self->refresh_id, g_source_remove);
+
+	/* disconnect old app */
+	if (self->app != NULL)
+		g_signal_handlers_disconnect_by_func (self->app, schedule_refresh, self);
+
+	g_set_object (&self->app, app);
+
+	if (self->app != NULL) {
+		g_signal_connect_swapped (app, "notify",
+					  G_CALLBACK (schedule_refresh), self);
+		schedule_refresh (self);
+	}
+
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_APP]);
 }

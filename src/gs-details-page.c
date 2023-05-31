@@ -1154,13 +1154,15 @@ update_action_row_from_link (AdwActionRow *row,
 }
 
 static void
-gs_details_page_app_tile_clicked (GsAppTile *tile,
-				  gpointer user_data)
+app_activated_cb (GsDetailsPage *self, GsAppTile *tile)
 {
-	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
+
+	if (!app)
+		return;
+
 	g_signal_emit (self, signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
@@ -1219,7 +1221,6 @@ gs_details_page_search_developer_apps_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 		if (app != self->app && !gs_details_page_app_id_equal (app, self->app)) {
 			GtkWidget *tile = gs_summary_tile_new (app);
-			g_signal_connect (tile, "clicked", G_CALLBACK (gs_details_page_app_tile_clicked), self);
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->box_developer_apps), tile, -1);
 
 			n_added++;
@@ -2648,6 +2649,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_launch_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_data_clear_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, origin_popover_row_activated_cb);
+	gtk_widget_class_bind_template_callback (widget_class, app_activated_cb);
 }
 
 static gboolean
