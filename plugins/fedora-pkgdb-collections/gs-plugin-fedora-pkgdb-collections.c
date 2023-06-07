@@ -72,7 +72,7 @@ gs_plugin_fedora_pkgdb_collections_init (GsPluginFedoraPkgdbCollections *self)
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("disabling '%s' as we're not Fedora", gs_plugin_get_name (plugin));
+		g_debug ("disabling itself as we're not Fedora");
 		return;
 	}
 	self->distros = g_ptr_array_new_with_free_func ((GDestroyNotify) _pkgdb_item_free);

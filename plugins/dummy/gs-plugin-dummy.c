@@ -48,8 +48,7 @@ gs_plugin_dummy_init (GsPluginDummy *self)
 	GsPlugin *plugin = GS_PLUGIN (self);
 
 	if (g_getenv ("GS_SELF_TEST_DUMMY_ENABLE") == NULL) {
-		g_debug ("disabling '%s' as not in self test",
-			 gs_plugin_get_name (plugin));
+		g_debug ("disabling itself as not in self test");
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}

@@ -28,8 +28,7 @@ gs_plugin_dpkg_init (GsPluginDpkg *self)
 	GsPlugin *plugin = GS_PLUGIN (self);
 
 	if (!g_file_test (DPKG_DEB_BINARY, G_FILE_TEST_EXISTS)) {
-		g_debug ("disabling '%s' as no %s available",
-			 gs_plugin_get_name (plugin), DPKG_DEB_BINARY);
+		g_debug ("disabling itself as no %s available", DPKG_DEB_BINARY);
 		gs_plugin_set_enabled (plugin, FALSE);
 	}
 }
