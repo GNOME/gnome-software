@@ -1683,11 +1683,11 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 
 		/* generate query */
 		if (g_strv_length (split) == 1) {
-			xpath = g_strdup_printf ("components/component/categories/"
+			xpath = g_strdup_printf ("components/component[not(@merge)]/categories/"
 						 "category[text()='%s']/../..",
 						 split[0]);
 		} else if (g_strv_length (split) == 2) {
-			xpath = g_strdup_printf ("components/component/categories/"
+			xpath = g_strdup_printf ("components/component[not(@merge)]/categories/"
 						 "category[text()='%s']/../"
 						 "category[text()='%s']/../..",
 						 split[0], split[1]);
@@ -1729,11 +1729,11 @@ gs_appstream_count_component_for_groups (XbSilo      *silo,
 	g_autoptr(GError) error_local = NULL;
 
 	if (g_strv_length (split) == 1) { /* "all" group for a parent category */
-		xpath = g_strdup_printf ("components/component/categories/"
+		xpath = g_strdup_printf ("components/component[not(@merge)]/categories/"
 					 "category[text()='%s']/../..",
 					 split[0]);
 	} else if (g_strv_length (split) == 2) {
-		xpath = g_strdup_printf ("components/component/categories/"
+		xpath = g_strdup_printf ("components/component[not(@merge)]/categories/"
 					 "category[text()='%s']/../"
 					 "category[text()='%s']/../..",
 					 split[0], split[1]);
