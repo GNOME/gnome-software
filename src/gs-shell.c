@@ -99,14 +99,13 @@ struct _GsShell
 	GtkWidget		*search_bar;
 	GtkWidget		*button_back;
 	GtkWidget		*button_back2;
-	GtkWidget		*notification_event;
-	GtkWidget		*button_events_sources;
-	GtkWidget		*button_events_no_space;
-	GtkWidget		*button_events_network_settings;
-	GtkWidget		*button_events_restart_required;
-	GtkWidget		*button_events_more_info;
-	GtkWidget		*button_events_dismiss;
-	GtkWidget		*label_events;
+	GtkWidget		*toast_overlay;
+	AdwToast		*toast_events_sources;
+	AdwToast		*toast_events_no_space;
+	AdwToast		*toast_events_network_settings;
+	AdwToast		*toast_events_restart_required;
+	AdwToast		*toast_events_more_info;
+	AdwToast		*toast_events_no_button;
 	GtkWidget		*primary_menu;
 	GtkWidget		*sub_header;
 	GtkWidget		*sub_page_header_title;
@@ -661,33 +660,6 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 		gs_page_scroll_up (page);
 }
 
-static gboolean
-overlay_get_child_position_cb (GtkOverlay   *overlay,
-                               GtkWidget    *widget,
-                               GdkRectangle *allocation,
-                               gpointer      user_data)
-{
-	GsShell *self = GS_SHELL (user_data);
-	GtkRequisition overlay_natural_size;
-
-	/* Override the default position of the in-app notification overlay
-	 * to position it below the header bar. The overlay can’t easily be
-	 * moved in the widget hierarchy so it doesn’t have the header bar as
-	 * a child, since there are several header bars in different pages of
-	 * a AdwLeaflet. */
-	g_assert (gtk_widget_is_ancestor (self->main_header, GTK_WIDGET (overlay)));
-
-	gtk_widget_get_preferred_size (widget, NULL, &overlay_natural_size);
-
-	allocation->width = overlay_natural_size.width;
-	allocation->height = overlay_natural_size.height;
-
-	allocation->x = gtk_widget_get_width (GTK_WIDGET (overlay)) / 2 - overlay_natural_size.width / 2;
-	allocation->y = gtk_widget_get_height (GTK_WIDGET (self->main_header));
-
-	return TRUE;
-}
-
 static void
 gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell)
 {
@@ -736,13 +708,13 @@ save_back_entry (GsShell *shell)
 }
 
 static void
-gs_shell_plugin_events_sources_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_sources_cb (GsShell *shell)
 {
 	gs_shell_show_sources (shell);
 }
 
 static void
-gs_shell_plugin_events_no_space_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_no_space_cb (GsShell *shell)
 {
 	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async ("baobab", &error))
@@ -750,7 +722,7 @@ gs_shell_plugin_events_no_space_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-gs_shell_plugin_events_network_settings_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_network_settings_cb (GsShell *shell)
 {
 	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async ("gnome-control-center network", &error))
@@ -758,14 +730,14 @@ gs_shell_plugin_events_network_settings_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-gs_shell_plugin_events_more_info_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_more_info_cb (GsShell *shell)
 {
 	g_autoptr(GError) error = NULL;
 
 	/* Prefer detailed error message against origin's help URL */
 	if (shell->events_more_info != NULL) {
 		gs_utils_show_error_dialog_simple (GTK_WINDOW (shell),
-					    gtk_label_get_text (GTK_LABEL (shell->label_events)),
+					    adw_toast_get_title (shell->toast_events_more_info),
 					    shell->events_more_info);
 		return;
 	}
@@ -777,7 +749,7 @@ gs_shell_plugin_events_more_info_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-gs_shell_plugin_events_restart_required_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_restart_required_cb (GsShell *shell)
 {
 	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async (LIBEXECDIR "/gnome-software-restarter", &error))
@@ -1057,9 +1029,6 @@ main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 	g_application_withdraw_notification (g_application_get_default (),
 					     "install-resources");
 
-	/* clear any in-app notification */
-	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), FALSE);
-
 	/* release our hold on the download scheduler */
 #ifdef HAVE_MOGWAI
 	if (shell->scheduler != NULL) {
@@ -1152,37 +1121,25 @@ gs_shell_show_event_app_notify (GsShell *shell,
 				const gchar *title,
 				GsShellEventButtons buttons)
 {
-	/* set visible */
-	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), TRUE);
+	AdwToast *toast;
 
-	/* sources button */
-	gtk_widget_set_visible (shell->button_events_sources,
-				(buttons & GS_SHELL_EVENT_BUTTON_SOURCES) > 0);
+	/* Pick which toast to show */
+	if ((buttons & GS_SHELL_EVENT_BUTTON_SOURCES) > 0)
+		toast = shell->toast_events_sources;
+	else if ((buttons & GS_SHELL_EVENT_BUTTON_NO_SPACE) > 0 && gs_shell_has_disk_examination_app ())
+		toast = shell->toast_events_no_space;
+	else if ((buttons & GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS) > 0)
+		toast = shell->toast_events_network_settings;
+	else if ((buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) > 0)
+		toast = shell->toast_events_restart_required;
+	else if ((buttons & GS_SHELL_EVENT_BUTTON_MORE_INFO) > 0)
+		toast = shell->toast_events_more_info;
+	else
+		toast = shell->toast_events_no_button;
 
-	/* no-space button */
-	gtk_widget_set_visible (shell->button_events_no_space,
-				(buttons & GS_SHELL_EVENT_BUTTON_NO_SPACE) > 0 &&
-				gs_shell_has_disk_examination_app());
+	adw_toast_set_title (toast, title);
 
-	/* network settings button */
-	gtk_widget_set_visible (shell->button_events_network_settings,
-				(buttons & GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS) > 0);
-
-	/* restart button */
-	gtk_widget_set_visible (shell->button_events_restart_required,
-				(buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) > 0);
-
-	/* more-info button */
-	gtk_widget_set_visible (shell->button_events_more_info,
-				(buttons & GS_SHELL_EVENT_BUTTON_MORE_INFO) > 0);
-
-	/* dismiss button */
-	gtk_widget_set_visible (shell->button_events_dismiss,
-				(buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) == 0);
-
-	/* set title */
-	gtk_label_set_markup (GTK_LABEL (shell->label_events), title);
-	gtk_widget_set_visible (shell->label_events, title != NULL);
+	adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (shell->toast_overlay), toast);
 }
 
 void
@@ -2101,9 +2058,6 @@ gs_shell_rescan_events (GsShell *shell)
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE);
 		return;
 	}
-
-	/* nothing to show */
-	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), FALSE);
 }
 
 static void
@@ -2115,7 +2069,7 @@ gs_shell_events_notify_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_shell_plugin_event_dismissed_cb (GtkButton *button, GsShell *shell)
+gs_shell_plugin_event_dismissed_cb (GsShell *shell)
 {
 	guint i;
 	g_autoptr(GPtrArray) events = NULL;
@@ -2656,14 +2610,13 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back2);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, notification_event);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_sources);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_no_space);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_network_settings);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_restart_required);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_more_info);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_dismiss);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, label_events);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_overlay);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_events_sources);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_events_no_space);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_events_network_settings);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_events_restart_required);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_events_more_info);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_events_no_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_page_header_title);
@@ -2700,7 +2653,6 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_banner_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
-	gtk_widget_class_bind_template_callback (widget_class, overlay_get_child_position_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_details_page_metainfo_loaded_cb);
 	gtk_widget_class_bind_template_callback (widget_class, details_page_app_clicked_cb);
 
