@@ -1006,7 +1006,7 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 	if (is_unknown) {
 		/* Translators: It’s unknown what age rating this app has. The
 		 * placeholder is the app name. */
-		title = g_strdup_printf (("%s has an unknown age rating"), gs_app_get_name (self->app));
+		title = g_strdup_printf (_("%s has an unknown age rating"), gs_app_get_name (self->app));
 	} else {
 		guint age;
 
@@ -1029,7 +1029,7 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 		else if (age <= 12)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for children up to around age 12. The placeholder is the app name. */
-			title = g_strdup_printf (("%s is suitable for children"), gs_app_get_name (self->app));
+			title = g_strdup_printf (_("%s is suitable for children"), gs_app_get_name (self->app));
 		else if (age <= 18)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for people up to around age 18. The placeholder is the app name. */
