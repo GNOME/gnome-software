@@ -18,6 +18,7 @@ struct _GsFedoraThirdParty
 	gchar		*executable;
 	GHashTable	*repos; /* gchar *name ~> gchar *packaging format */
 	gint64		 last_update;
+	const gchar	*dnf_handler;
 };
 
 G_DEFINE_TYPE (GsFedoraThirdParty, gs_fedora_third_party, G_TYPE_OBJECT)
@@ -69,9 +70,14 @@ gs_fedora_third_party_init (GsFedoraThirdParty *self)
 }
 
 GsFedoraThirdParty *
-gs_fedora_third_party_new (void)
+gs_fedora_third_party_new (GsPluginLoader *plugin_loader)
 {
-	return g_object_new (GS_TYPE_FEDORA_THIRD_PARTY, NULL);
+	GsFedoraThirdParty *self = g_object_new (GS_TYPE_FEDORA_THIRD_PARTY, NULL);
+	if (gs_plugin_loader_get_enabled (plugin_loader, "packagekit"))
+		self->dnf_handler = "packagekit";
+	else if (gs_plugin_loader_get_enabled (plugin_loader, "rpm-ostree"))
+		self->dnf_handler = "rpm-ostree";
+	return self;
 }
 
 static gchar *
@@ -466,9 +472,10 @@ gs_fedora_third_party_list_sync (GsFedoraThirdParty *self,
 					g_auto(GStrv) tokens = g_strsplit (lines[ii], ",", 2);
 					if (tokens != NULL && tokens[0] != NULL && tokens[1] != NULL) {
 						const gchar *repo_type = tokens[0];
-						/* The 'dnf' means 'packagekit' here */
-						if (g_str_equal (repo_type, "dnf"))
-							repo_type = "packagekit";
+						/* Change the 'dnf' into an expected plugin name */
+						if (self->dnf_handler != NULL &&
+						    g_str_equal (repo_type, "dnf"))
+							repo_type = self->dnf_handler;
 						/* Hash them by name, which cannot clash between types */
 						g_hash_table_insert (repos, g_strdup (tokens[1]), g_strdup (repo_type));
 					}

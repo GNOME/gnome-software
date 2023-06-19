@@ -831,7 +831,6 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	dialog->third_party = gs_fedora_third_party_new ();
 	dialog->cancellable = g_cancellable_new ();
 	dialog->settings = g_settings_new ("org.gnome.software");
 	dialog->sections = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -872,6 +871,7 @@ gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 			       "transient-for", parent,
 			       "modal", TRUE,
 			       NULL);
+	dialog->third_party = gs_fedora_third_party_new (plugin_loader);
 	set_plugin_loader (dialog, plugin_loader);
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");
 	gtk_spinner_start (GTK_SPINNER (dialog->spinner));
