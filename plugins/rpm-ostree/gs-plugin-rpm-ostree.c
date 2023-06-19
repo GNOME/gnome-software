@@ -2936,6 +2936,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 			gs_app_set_state (app, is_enabled ? GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 			gs_app_set_name (app, GS_APP_QUALITY_LOWEST, description);
 			gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, description);
+			gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "200");
 			gs_app_set_origin_ui (app, _("Operating System (OSTree)"));
 		} else {
