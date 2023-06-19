@@ -318,6 +318,9 @@ gs_details_page_switch_to (GsPage *page)
 		return;
 	}
 
+	/* Always refresh other developer apps */
+	g_clear_pointer (&self->last_developer_name, g_free);
+
 	/* hide the alternates for now until the query is complete */
 	gtk_widget_set_visible (self->origin_box, FALSE);
 
@@ -916,6 +919,11 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 						    self->cancellable,
 						    gs_details_page_app_refine_cb,
 						    self);
+
+		/* To refresh also developer apps, to not have shown the same instance
+		   of the app in the flowbox, because it won't change the Details page
+		   when it is clicked. */
+		g_clear_pointer (&self->last_developer_name, g_free);
 
 		gs_details_page_refresh_all (self);
 	} else {
