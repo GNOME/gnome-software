@@ -439,12 +439,13 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 	/* get the results */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
+		g_autofree gchar *escaped_text = NULL;
 		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("updates-shell: failed to get updates: %s", error->message);
-		adw_status_page_set_description (ADW_STATUS_PAGE (self->updates_failed_page),
-						 error->message);
+		escaped_text = g_markup_escape_text (error->message, -1);
+		adw_status_page_set_description (ADW_STATUS_PAGE (self->updates_failed_page), escaped_text);
 		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
 		refresh_headerbar_updates_counter (self);
 		return;
@@ -723,6 +724,7 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 	/* get the results */
 	ret = gs_plugin_loader_job_action_finish (plugin_loader, res, &error);
 	if (!ret) {
+		g_autofree gchar *escaped_text = NULL;
 		/* user cancel */
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
@@ -730,8 +732,8 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 			return;
 		}
 		g_warning ("failed to refresh: %s", error->message);
-		adw_status_page_set_description (ADW_STATUS_PAGE (self->updates_failed_page),
-						 error->message);
+		escaped_text = g_markup_escape_text (error->message, -1);
+		adw_status_page_set_description (ADW_STATUS_PAGE (self->updates_failed_page), escaped_text);
 		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
 		return;
 	}
