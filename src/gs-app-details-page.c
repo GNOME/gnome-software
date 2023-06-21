@@ -160,6 +160,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	const gchar *update_details;
 	GdkDisplay *display;
 	g_autoptr (GtkIconPaintable) paintable = NULL;
+	g_autofree gchar *escaped_summary = NULL;
 
 	/* FIXME support app == NULL */
 
@@ -175,8 +176,9 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		update_details = _("No update description available.");
 	}
 	gtk_label_set_markup (GTK_LABEL (page->label_details), update_details);
+	escaped_summary = g_markup_escape_text (gs_app_get_summary (app), -1);
 	adw_status_page_set_title (ADW_STATUS_PAGE (page->status_page), gs_app_get_name (app));
-	adw_status_page_set_description (ADW_STATUS_PAGE (page->status_page), gs_app_get_summary (app));
+	adw_status_page_set_description (ADW_STATUS_PAGE (page->status_page), escaped_summary);
 
 	/* set the icon; fall back to 64px if 96px isn’t available, which sometimes
 	 * happens at 2× scale factor (hi-DPI) */

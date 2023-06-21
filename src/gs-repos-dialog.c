@@ -840,8 +840,8 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 
 	/* TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 	   %s gets replaced by the name of the actual distro, e.g. Fedora. */
-	label_empty_text = g_strdup_printf (_("These repositories supplement the default software provided by %s."),
-	                                    os_name);
+	label_empty_text = g_markup_printf_escaped (_("These repositories supplement the default software provided by %s."),
+						    os_name);
 	adw_status_page_set_description (ADW_STATUS_PAGE (dialog->status_empty), label_empty_text);
 }
 
