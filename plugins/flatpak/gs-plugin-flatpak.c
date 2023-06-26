@@ -1260,6 +1260,9 @@ update_apps_thread_cb (GTask        *task,
 			GsApp *app = gs_app_list_index (list_tmp, i);
 			g_autofree gchar *ref = NULL;
 
+			/* to have the state refreshed */
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+
 			ref = gs_flatpak_app_get_ref_display (app);
 			if (!gs_flatpak_refine_app (flatpak, app,
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
