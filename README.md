@@ -88,7 +88,7 @@ git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/main
 
 # Debugging
 
-Running with `--verbose` will give detailed logging information.
+See [the debugging documentation](./doc/debugging.md).
 
 # Maintainers
 
