@@ -295,7 +295,6 @@ gs_plugin_custom_list_apps_async (GsPlugin              *plugin,
   gs_app_set_origin_hostname (app, "http://www.teaching-example.org/");
   gs_app_add_category (app, "Game");
   gs_app_add_category (app, "ActionGame");
-  gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
   gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0-or-later and LGPL-2.1-or-later");
 
   /* use a stock icon */
@@ -337,13 +336,6 @@ gs_plugin_custom_list_apps_finish (GsPlugin      *plugin,
             <para>
               The origin is where the application originated from — usually
               this will be something like <emphasis>Fedora Updates</emphasis>.
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-              The <code>GS_APP_KUDO_INSTALLS_USER_DOCS</code> means we get the
-              blue "Documentation" award in the details page; there are many
-              kudos to award to deserving apps.
             </para>
           </listitem>
           <listitem>

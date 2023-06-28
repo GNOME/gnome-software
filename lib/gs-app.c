@@ -474,20 +474,10 @@ gs_app_kudos_to_string (guint64 kudos)
 		g_ptr_array_add (array, "recent-release");
 	if ((kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
 		g_ptr_array_add (array, "featured-recommended");
-	if ((kudos & GS_APP_KUDO_MODERN_TOOLKIT) > 0)
-		g_ptr_array_add (array, "modern-toolkit");
-	if ((kudos & GS_APP_KUDO_SEARCH_PROVIDER) > 0)
-		g_ptr_array_add (array, "search-provider");
-	if ((kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0)
-		g_ptr_array_add (array, "installs-user-docs");
-	if ((kudos & GS_APP_KUDO_USES_NOTIFICATIONS) > 0)
-		g_ptr_array_add (array, "uses-notifications");
 	if ((kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
 		g_ptr_array_add (array, "has-keywords");
 	if ((kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
 		g_ptr_array_add (array, "has-screenshots");
-	if ((kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
-		g_ptr_array_add (array, "high-contrast");
 	if ((kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
 		g_ptr_array_add (array, "hi-dpi-icon");
 	if ((kudos & GS_APP_KUDO_SANDBOXED) > 0)
@@ -5025,19 +5015,9 @@ gs_app_get_kudos_percentage (GsApp *app)
 		percentage += 20;
 	if ((priv->kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
 		percentage += 20;
-	if ((priv->kudos & GS_APP_KUDO_MODERN_TOOLKIT) > 0)
-		percentage += 20;
-	if ((priv->kudos & GS_APP_KUDO_SEARCH_PROVIDER) > 0)
-		percentage += 10;
-	if ((priv->kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0)
-		percentage += 10;
-	if ((priv->kudos & GS_APP_KUDO_USES_NOTIFICATIONS) > 0)
-		percentage += 20;
 	if ((priv->kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
 		percentage += 5;
 	if ((priv->kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
-		percentage += 20;
-	if ((priv->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
 		percentage += 20;
 	if ((priv->kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
 		percentage += 20;
