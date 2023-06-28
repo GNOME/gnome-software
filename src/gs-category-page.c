@@ -62,12 +62,15 @@ typedef enum {
 static guint obj_signals[SIGNAL_APP_CLICKED + 1] = { 0, };
 
 static void
-app_tile_clicked (GsAppTile *tile, gpointer data)
+app_activated_cb (GsCategoryPage *self, GsAppTile *tile)
 {
-	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
+
+	if (!app)
+		return;
+
 	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
@@ -102,8 +105,6 @@ gs_category_page_add_placeholders (GsCategoryPage *self,
 	for (guint i = 0; i < n_placeholders; ++i) {
 		GtkWidget *tile = gs_summary_tile_new (NULL);
 		gtk_flow_box_insert (flow_box, tile, -1);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-		gtk_widget_remove_css_class (tile, "activatable");
 	}
 
 	gtk_widget_set_visible (GTK_WIDGET (flow_box), TRUE);
@@ -297,34 +298,6 @@ compare_release_date_cb (gconstpointer aa,
 }
 
 static void
-flow_box_child_activate_cb (GtkFlowBoxChild *flowboxchild,
-			    gpointer user_data)
-{
-	GtkWidget *tile = gtk_flow_box_child_get_child (flowboxchild);
-	if (tile != NULL)
-		g_signal_emit_by_name (tile, "clicked", 0, NULL);
-}
-
-/* Each tile is in a GtkFlowBoxChild. The tile can be focused and activated,
- * but the GtkFlowBoxChild can only be focused and not activated (by default).
- * Tweak that to avoid tab navigation issues and visual artifacts. */
-static void
-setup_parent_flow_box_child (GsCategoryPage *self,
-			     GtkWidget *tile)
-{
-	GtkWidget *child;
-
-	g_assert (GTK_IS_FLOW_BOX_CHILD (gtk_widget_get_parent (tile)));
-
-	child = gtk_widget_get_parent (tile);
-	gtk_widget_add_css_class (child, "card");
-	gtk_widget_set_can_focus (tile, FALSE);
-
-	g_signal_connect_object (child, "activate",
-				 G_CALLBACK (flow_box_child_activate_cb), self, 0);
-}
-
-static void
 move_to_flow_box (GsCategoryPage *self,
 		  GtkFlowBox *source,
 		  GtkFlowBox *destination)
@@ -336,7 +309,7 @@ move_to_flow_box (GsCategoryPage *self,
 		g_object_ref (tile);
 		gtk_flow_box_remove (source, tile);
 		gtk_flow_box_insert (destination, tile, -1);
-		setup_parent_flow_box_child (self, tile);
+		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		g_object_unref (tile);
 	}
 }
@@ -392,8 +365,6 @@ load_category_finish (LoadCategoryData *data)
 		is_recently_updated = (release_date > recently_updated_cutoff_secs);
 
 		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (app_tile_clicked), self);
 
 		if (is_featured) {
 			n_featured++;
@@ -419,7 +390,7 @@ load_category_finish (LoadCategoryData *data)
 
 		if (flow_box != NULL) {
 			gtk_flow_box_insert (GTK_FLOW_BOX (flow_box), tile, -1);
-			setup_parent_flow_box_child (self, tile);
+			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		}
 	}
 
@@ -437,7 +408,7 @@ load_category_finish (LoadCategoryData *data)
 		for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
 			GtkWidget *tile = link->data;
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
-			setup_parent_flow_box_child (self, tile);
+			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		}
 	} else {
 		/* put them at the top */
@@ -445,7 +416,7 @@ load_category_finish (LoadCategoryData *data)
 		for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
 			GtkWidget *tile = link->data;
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, 0);
-			setup_parent_flow_box_child (self, tile);
+			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		}
 	}
 
@@ -636,8 +607,8 @@ recently_updated_sort_cb (GtkFlowBoxChild *child1,
                           GtkFlowBoxChild *child2,
                           gpointer         user_data)
 {
-	GsSummaryTile *tile1 = GS_SUMMARY_TILE (gtk_flow_box_child_get_child (child1));
-	GsSummaryTile *tile2 = GS_SUMMARY_TILE (gtk_flow_box_child_get_child (child2));
+	GsSummaryTile *tile1 = GS_SUMMARY_TILE (child1);
+	GsSummaryTile *tile2 = GS_SUMMARY_TILE (child2);
 	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (tile1));
 	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (tile2));
 	guint64 release_date1 = 0, release_date2 = 0;
@@ -808,6 +779,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, web_apps_flow_box);
 
 	gtk_widget_class_bind_template_callback (widget_class, top_carousel_app_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, app_activated_cb);
 }
 
 GsCategoryPage *

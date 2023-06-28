@@ -60,6 +60,7 @@
                                     <property name="min_children_per_line">1</property>
                                     <property name="max_children_per_line">3</property>
                                     <property name="selection_mode">none</property>
+                                    <signal name="child-activated" handler="category_activated_cb" swapped="yes"/>
                                   </object>
                                 </child>
 
@@ -80,6 +81,8 @@
                                     <property name="column-spacing">14</property>
                                     <property name="row-spacing">14</property>
                                     <property name="valign">start</property>
+                                    <property name="selection-mode">none</property>
+                                    <signal name="child-activated" handler="app_activated_cb" swapped="yes"/>
                                     <accessibility>
                                       <relation name="labelled-by">curated_heading</relation>
                                     </accessibility>
@@ -104,6 +107,7 @@
                                     <property name="row-spacing">14</property>
                                     <property name="valign">start</property>
                                     <property name="selection-mode">none</property>
+                                    <signal name="child-activated" handler="app_activated_cb" swapped="yes"/>
                                     <accessibility>
                                       <relation name="labelled-by">recent_heading</relation>
                                     </accessibility>
@@ -131,6 +135,7 @@
                                     <property name="min_children_per_line">2</property>
                                     <property name="max_children_per_line">3</property>
                                     <property name="selection_mode">none</property>
+                                    <signal name="child-activated" handler="app_activated_cb" swapped="yes"/>
                                     <accessibility>
                                       <relation name="labelled-by">deployment_featured_heading</relation>
                                     </accessibility>
@@ -182,6 +187,7 @@
                                     <property name="min_children_per_line">1</property>
                                     <property name="max_children_per_line">3</property>
                                     <property name="selection_mode">none</property>
+                                    <signal name="child-activated" handler="category_activated_cb" swapped="yes"/>
                                     <accessibility>
                                       <relation name="labelled-by">iconless_categories_heading</relation>
                                     </accessibility>

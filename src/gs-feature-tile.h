@@ -8,14 +8,20 @@
 
 #pragma once
 
-#include "gs-app-tile.h"
+#include <gtk/gtk.h>
+
+#include "gs-app.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_FEATURE_TILE (gs_feature_tile_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsFeatureTile, gs_feature_tile, GS, FEATURE_TILE, GsAppTile)
+G_DECLARE_FINAL_TYPE (GsFeatureTile, gs_feature_tile, GS, FEATURE_TILE, GtkButton)
 
 GtkWidget	*gs_feature_tile_new			(GsApp		*app);
+
+GsApp		*gs_feature_tile_get_app		(GsFeatureTile	*self);
+void		 gs_feature_tile_set_app		(GsFeatureTile	*self,
+							 GsApp		*app);
 
 G_END_DECLS

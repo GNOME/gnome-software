@@ -16,7 +16,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_CATEGORY_TILE (gs_category_tile_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsCategoryTile, gs_category_tile, GS, CATEGORY_TILE, GtkButton)
+G_DECLARE_FINAL_TYPE (GsCategoryTile, gs_category_tile, GS, CATEGORY_TILE, GtkFlowBoxChild)
 
 GtkWidget	*gs_category_tile_new			(GsCategory *cat);
 GsCategory      *gs_category_tile_get_category		(GsCategoryTile	*tile);

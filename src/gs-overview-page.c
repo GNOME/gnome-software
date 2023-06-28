@@ -96,45 +96,16 @@ gs_overview_page_invalidate (GsOverviewPage *self)
 }
 
 static void
-app_tile_clicked (GsAppTile *tile, gpointer data)
+app_activated_cb (GsOverviewPage *self, GsAppTile *tile)
 {
-	GsOverviewPage *self = GS_OVERVIEW_PAGE (data);
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
+
+	if (!app)
+		return;
+
 	gs_shell_show_app (self->shell, app);
-}
-
-static void
-flow_box_child_activate_cb (GtkFlowBoxChild *flowboxchild,
-			    gpointer user_data)
-{
-	GtkWidget *tile = gtk_flow_box_child_get_child (flowboxchild);
-	if (tile != NULL)
-		g_signal_emit_by_name (tile, "clicked", 0, NULL);
-}
-
-/* Each tile is in a GtkFlowBoxChild. The tile can be focused and activated,
- * but the GtkFlowBoxChild can only be focused and not activated (by default).
- * Tweak that to avoid tab navigation issues and visual artifacts. */
-static void
-setup_parent_flow_box_child (GsOverviewPage *self,
-			     GtkWidget *tile,
-			     GCallback clicked_cb)
-{
-	GtkWidget *child;
-
-	g_signal_connect_object (tile, "clicked", clicked_cb, self, 0);
-
-	g_assert (GTK_IS_FLOW_BOX_CHILD (gtk_widget_get_parent (tile)));
-
-	child = gtk_widget_get_parent (tile);
-	gtk_widget_add_css_class (child, "card");
-
-	gtk_widget_set_can_focus (tile, FALSE);
-
-	g_signal_connect_object (child, "activate",
-				 G_CALLBACK (flow_box_child_activate_cb), self, 0);
 }
 
 static void
@@ -216,7 +187,6 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_curated), tile, -1);
-		setup_parent_flow_box_child (self, tile, G_CALLBACK (app_tile_clicked));
 	}
 	gtk_widget_set_visible (self->box_curated, TRUE);
 	gtk_widget_set_visible (self->curated_heading, TRUE);
@@ -284,7 +254,6 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), tile, -1);
-		setup_parent_flow_box_child (self, tile, G_CALLBACK (app_tile_clicked));
 	}
 	gtk_widget_set_visible (self->box_recent, TRUE);
 	gtk_widget_set_visible (self->recent_heading, TRUE);
@@ -384,7 +353,6 @@ gs_overview_page_get_deployment_featured_cb (GObject *source_object,
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_deployment_featured), tile, -1);
-		setup_parent_flow_box_child (self, tile, G_CALLBACK (app_tile_clicked));
 	}
 	gtk_widget_set_visible (self->box_deployment_featured, TRUE);
 	gtk_widget_set_visible (self->deployment_featured_heading, TRUE);
@@ -418,7 +386,7 @@ decrement_gather_apps (GatherAppsData *data)
 
 		tile = gs_summary_tile_new (app);
 		gtk_flow_box_insert (GTK_FLOW_BOX (data->self->box_all_apps), tile, -1);
-		setup_parent_flow_box_child (data->self, tile, G_CALLBACK (app_tile_clicked));
+		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
 	data->self->empty = data->self->empty && gs_app_list_length (data->list) == 0;
@@ -452,9 +420,8 @@ gs_overview_page_gather_apps_cb (GObject *source_object,
 }
 
 static void
-category_tile_clicked (GsCategoryTile *tile, gpointer data)
+category_activated_cb (GsOverviewPage *self, GsCategoryTile *tile)
 {
-	GsOverviewPage *self = GS_OVERVIEW_PAGE (data);
 	GsCategory *category;
 
 	category = gs_category_tile_get_category (tile);
@@ -525,7 +492,6 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 			flowbox = GTK_FLOW_BOX (self->flowbox_iconless_categories);
 
 		gtk_flow_box_insert (flowbox, tile, -1);
-		setup_parent_flow_box_child (self, tile, G_CALLBACK (category_tile_clicked));
 		added_cnt++;
 
 		/* we save these for the 'More...' buttons */
@@ -1225,6 +1191,8 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, stack_overview);
 	gtk_widget_class_bind_template_callback (widget_class, featured_carousel_app_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, category_activated_cb);
+	gtk_widget_class_bind_template_callback (widget_class, app_activated_cb);
 }
 
 GsOverviewPage *

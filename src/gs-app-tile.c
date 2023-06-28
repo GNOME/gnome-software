@@ -17,7 +17,7 @@ typedef struct {
 	guint				 app_notify_idle_id;
 } GsAppTilePrivate;
 
-G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsAppTile, gs_app_tile, GTK_TYPE_BUTTON)
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsAppTile, gs_app_tile, GTK_TYPE_FLOW_BOX_CHILD)
 
 typedef enum {
 	PROP_APP = 1,
@@ -138,6 +138,11 @@ gs_app_tile_set_app (GsAppTile *self, GsApp *app)
 		klass->refresh (self);
 	}
 
+	if (app)
+		gtk_widget_add_css_class (GTK_WIDGET (self), "activatable");
+	else
+		gtk_widget_remove_css_class (GTK_WIDGET (self), "activatable");
+
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_APP]);
 }
 
@@ -173,4 +178,6 @@ gs_app_tile_init (GsAppTile *self)
 {
 	GsAppTilePrivate *priv = gs_app_tile_get_instance_private (self);
 	priv->app_notify_idle_id = 0;
+
+	gtk_widget_add_css_class (GTK_WIDGET (self), "card");
 }
