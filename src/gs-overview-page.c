@@ -1040,7 +1040,7 @@ gs_overview_page_setup (GsPage *page,
 	g_return_val_if_fail (GS_IS_OVERVIEW_PAGE (self), TRUE);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->third_party = gs_fedora_third_party_new ();
+	self->third_party = gs_fedora_third_party_new (plugin_loader);
 	self->cancellable = g_object_ref (cancellable);
 	self->category_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 						     g_free, (GDestroyNotify) g_object_unref);

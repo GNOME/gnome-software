@@ -11,6 +11,8 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+#include "gs-plugin-loader.h"
+
 G_BEGIN_DECLS
 
 #define GS_TYPE_FEDORA_THIRD_PARTY (gs_fedora_third_party_get_type ())
@@ -25,7 +27,7 @@ typedef enum _GsFedoraThirdPartyState {
 } GsFedoraThirdPartyState;
 
 GsFedoraThirdParty *
-		gs_fedora_third_party_new	(void);
+		gs_fedora_third_party_new	(GsPluginLoader		*plugin_loader);
 gboolean	gs_fedora_third_party_is_available
 						(GsFedoraThirdParty	*self);
 void		gs_fedora_third_party_invalidate(GsFedoraThirdParty	*self);
