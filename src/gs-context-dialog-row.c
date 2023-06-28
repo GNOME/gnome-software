@@ -61,8 +61,10 @@ css_class_for_importance (GsContextDialogRowImportance importance)
 		return "grey";
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
 		return "green";
-	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
+	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION:
 		return "yellow";
+	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
+		return "orange";
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT:
 		return "red";
 	default:

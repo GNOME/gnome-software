@@ -113,6 +113,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	g_autoptr(GsAppPermissions) permissions = NULL;
 	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 	GsContextDialogRowImportance chosen_rating;
+	GsContextDialogRowImportance license_rating;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
 	 * based on app properties. */
@@ -135,15 +136,34 @@ update_permissions_list (GsSafetyContextDialog *self)
 	 * FIXME: See the comment for GS_APP_PERMISSIONS_FLAGS_UNKNOWN in
 	 * gs-app-context-bar.c. */
 	if (permissions == NULL) {
-		add_permission_row (self->permissions_list, &chosen_rating,
-				    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "channel-insecure-symbolic",
-				    _("Provided by a third party"),
-				    _("Check that you trust the vendor, as the app isn’t sandboxed"),
-				    "channel-secure-symbolic",
-				    _("Reviewed by your distribution"),
-				    _("App isn’t sandboxed but the distribution has checked that it is not malicious"));
+		chosen_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
+
+		if (gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE)) {
+			/* It's a new key suggested at https://github.com/systemd/systemd/issues/27777 */
+			g_autofree gchar *name = g_get_os_info ("VENDOR_NAME");
+			g_autofree gchar *reviewed_by = NULL;
+			if (name == NULL) {
+				reviewed_by = g_strdup (_("Reviewed by OS distributor"));
+			} else {
+				/* Translators: The '%s' is replaced by the distribution name. */
+				reviewed_by = g_strdup_printf (_("Reviewed by %s"), name);
+			}
+			add_permission_row (self->permissions_list, &chosen_rating,
+					    TRUE,
+					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
+					    "channel-secure-symbolic",
+					    reviewed_by,
+					    _("App isn’t sandboxed but the distribution has checked that it is not malicious"),
+					    NULL, NULL, NULL);
+		} else {
+			add_permission_row (self->permissions_list, &chosen_rating,
+					    TRUE,
+					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+					    "channel-insecure-symbolic",
+					    _("Provided by a third party"),
+					    _("Check that you trust the vendor, as the app isn’t sandboxed"),
+					    NULL, NULL, NULL);
+		}
 	} else {
 		const GPtrArray *filesystem_read, *filesystem_full;
 
@@ -165,7 +185,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				     * vulnerability into a remotely exploitable one), but it’s
 				     * needed commonly enough that marking it as
 				     * %GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING is too noisy. */
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION,
 				    "network-wireless-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Network Access"),
@@ -184,7 +204,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SESSION_BUS) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "emblem-system-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Uses Session Services"),
@@ -211,7 +231,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_X11) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "desktop-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Legacy Windowing System"),
@@ -219,7 +239,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "dialog-warning-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Arbitrary Permissions"),
@@ -239,7 +259,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		 * read-only and writable access. */
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "folder-documents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Full File System Read/Write Access"),
@@ -248,7 +268,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_HOME_FULL) != 0 &&
 				     !(perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL)),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "user-home-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Home Folder Read/Write Access"),
@@ -257,7 +277,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ) != 0 &&
 				     !(perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL)),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "folder-documents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Full File System Read Access"),
@@ -267,7 +287,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_HOME_READ) != 0 &&
 				     !(perm_flags & (GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL |
 						     GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ))),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "user-home-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Home Folder Read Access"),
@@ -335,23 +355,6 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 	}
 
-	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
-	 * between closed source and open-source-but-not-FOSS software, even
-	 * though the code of the latter is technically publicly auditable. This
-	 * is because I don’t want to get into the business of maintaining lists
-	 * of ‘auditable’ source code licenses. */
-	add_permission_row (self->permissions_list, &chosen_rating,
-			    !gs_app_get_license_is_free (self->app),
-			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-			    "dialog-warning-symbolic",
-			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-			    _("Proprietary Code"),
-			    _("The source code is not public, so it cannot be independently audited and might be unsafe"),
-			    "app-installed-symbolic",
-			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-			    _("Auditable Code"),
-			    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
-
 	add_permission_row (self->permissions_list, &chosen_rating,
 			    gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED),
 			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
@@ -366,7 +369,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    gs_app_get_metadata_item (self->app, "GnomeSoftware::EolReason") != NULL || (
 			    gs_app_get_runtime (self->app) != NULL &&
 			    gs_app_get_metadata_item (gs_app_get_runtime (self->app), "GnomeSoftware::EolReason") != NULL),
-			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 			    "dialog-warning-symbolic",
 			    /* Translators: This indicates an app uses an outdated SDK.
 			     * It’s used in a context tile, so should be short. */
@@ -374,8 +377,40 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    _("Software or its dependencies are no longer supported and may be insecure"),
 			    NULL, NULL, NULL);
 
+	license_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION;
+	/* Proprietary apps are one level worse (less safe) than whichever rating
+	   had been determined from the provided permissions. */
+	if (!gs_app_get_license_is_free (self->app) &&
+	    chosen_rating < GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT &&
+	    chosen_rating >= license_rating)
+		license_rating = chosen_rating + 1;
+
+	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
+	 * between closed source and open-source-but-not-FOSS software, even
+	 * though the code of the latter is technically publicly auditable. This
+	 * is because I don’t want to get into the business of maintaining lists
+	 * of ‘auditable’ source code licenses. */
+	add_permission_row (self->permissions_list, &chosen_rating,
+			    !gs_app_get_license_is_free (self->app),
+			    license_rating,
+			    "dialog-warning-symbolic",
+			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+			    _("Proprietary Code"),
+			    _("The source code is not public, so it cannot be independently audited and might be unsafe"),
+			    "app-installed-symbolic",
+			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+			    _("Auditable Code"),
+			    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
+
 	/* Update the UI. */
 	switch (chosen_rating) {
+	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL:
+		icon_name = "safety-symbolic";
+		/* Translators: The app is considered privileged, aka provided by the distribution.
+		 * The placeholder is the app name. */
+		title = g_strdup_printf (_("%s is privileged"), gs_app_get_name (self->app));
+		css_class = "grey";
+		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
 		icon_name = "safety-symbolic";
 		/* Translators: The app is considered safe to install and run.
@@ -383,12 +418,19 @@ update_permissions_list (GsSafetyContextDialog *self)
 		title = g_strdup_printf (_("%s is safe"), gs_app_get_name (self->app));
 		css_class = "green";
 		break;
+	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION:
+		icon_name = "safety-symbolic";
+		/* Translators: The app is considered probably safe to install and run.
+		 * The placeholder is the app name. */
+		title = g_strdup_printf (_("%s is probably safe"), gs_app_get_name (self->app));
+		css_class = "yellow";
+		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
 		icon_name = "dialog-question-symbolic";
 		/* Translators: The app is considered potentially unsafe to install and run.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is potentially unsafe"), gs_app_get_name (self->app));
-		css_class = "yellow";
+		css_class = "orange";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT:
 		icon_name = "dialog-warning-symbolic";
@@ -406,6 +448,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 
 	gtk_widget_remove_css_class (self->lozenge, "green");
 	gtk_widget_remove_css_class (self->lozenge, "yellow");
+	gtk_widget_remove_css_class (self->lozenge, "orange");
 	gtk_widget_remove_css_class (self->lozenge, "red");
 
 	gtk_widget_add_css_class (self->lozenge, css_class);
