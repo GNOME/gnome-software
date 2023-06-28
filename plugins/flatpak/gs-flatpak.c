@@ -2414,6 +2414,7 @@ static gboolean
 gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
                                       GsApp *app,
                                       gboolean interactive,
+				      gboolean force_state_update,
                                       GCancellable *cancellable,
                                       GError **error)
 {
@@ -2422,7 +2423,8 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 
 	/* already found */
-	if (gs_app_get_state (app) != GS_APP_STATE_UNKNOWN)
+	if (!force_state_update &&
+	    gs_app_get_state (app) != GS_APP_STATE_UNKNOWN)
 		return TRUE;
 
 	/* need broken out metadata */
@@ -2468,7 +2470,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		g_debug ("marking %s as installed with flatpak",
 			 gs_app_get_unique_id (app));
 		gs_flatpak_set_metadata_installed (self, app, ref, interactive, cancellable);
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+		if (force_state_update || gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
 		/* flatpak only allows one installed app to be launchable */
@@ -2483,7 +2485,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	}
 
 	/* anything not installed just check the remote is still present */
-	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN &&
+	if ((force_state_update || gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) &&
 	    gs_app_get_origin (app) != NULL) {
 		g_autoptr(FlatpakRemote) xremote = NULL;
 		xremote = flatpak_installation_get_remote_by_name (installation,
@@ -2518,6 +2520,7 @@ gboolean
 gs_flatpak_refine_app_state (GsFlatpak *self,
                              GsApp *app,
                              gboolean interactive,
+			     gboolean force_state_update,
                              GCancellable *cancellable,
                              GError **error)
 {
@@ -2525,7 +2528,7 @@ gs_flatpak_refine_app_state (GsFlatpak *self,
 	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
 		return FALSE;
 
-	return gs_flatpak_refine_app_state_unlocked (self, app, interactive, cancellable, error);
+	return gs_flatpak_refine_app_state_unlocked (self, app, interactive, force_state_update, cancellable, error);
 }
 
 static GsApp *
@@ -2608,7 +2611,7 @@ gs_flatpak_create_runtime (GsFlatpak   *self,
 	gs_flatpak_app_set_ref_name (app, split[0]);
 	gs_flatpak_app_set_ref_arch (app, split[1]);
 
-	if (!gs_flatpak_refine_app_state_unlocked (self, app, interactive, NULL, &local_error))
+	if (!gs_flatpak_refine_app_state_unlocked (self, app, interactive, FALSE, NULL, &local_error))
 		g_debug ("Failed to refine state for runtime '%s': %s", gs_app_get_unique_id (app), local_error->message);
 
 	/* save in the cache */
@@ -3001,6 +3004,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 		if (!gs_flatpak_refine_app_state_unlocked (self,
 		                                           app_runtime,
 		                                           interactive,
+							   FALSE,
 		                                           cancellable,
 		                                           error))
 			return FALSE;
@@ -3445,6 +3449,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
                                 GsApp *app,
                                 GsPluginRefineFlags flags,
                                 gboolean interactive,
+				gboolean force_state_update,
                                 GRWLockReaderLocker **locker,
                                 GCancellable *cancellable,
                                 GError **error)
@@ -3472,7 +3477,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	}
 
 	/* check the installed state */
-	if (!gs_flatpak_refine_app_state_unlocked (self, app, interactive, cancellable, error)) {
+	if (!gs_flatpak_refine_app_state_unlocked (self, app, interactive, force_state_update, cancellable, error)) {
 		g_prefix_error (error, "failed to get state: ");
 		return FALSE;
 	}
@@ -3598,10 +3603,7 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 		if (state != gs_app_get_state (addon))
 			continue;
 
-		/* To have refined also the state  */
-		gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
-
-		if (!gs_flatpak_refine_app_unlocked (self, addon, flags, interactive, &locker, cancellable, &local_error)) {
+		if (!gs_flatpak_refine_app_unlocked (self, addon, flags, interactive, TRUE, &locker, cancellable, &local_error)) {
 			if (errors)
 				g_string_append_c (errors, '\n');
 			else
@@ -3628,6 +3630,7 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		       GsApp *app,
 		       GsPluginRefineFlags flags,
 		       gboolean interactive,
+		       gboolean force_state_update,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -3637,7 +3640,7 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
 		return FALSE;
 
-	return gs_flatpak_refine_app_unlocked (self, app, flags, interactive, &locker, cancellable, error);
+	return gs_flatpak_refine_app_unlocked (self, app, flags, interactive, force_state_update, &locker, cancellable, error);
 }
 
 gboolean
@@ -3722,7 +3725,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		}
 
 		GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardRefineNewApp, "Flatpak (refine new app)", NULL);
-		if (!gs_flatpak_refine_app_unlocked (self, new, refine_flags, interactive, &locker, cancellable, error))
+		if (!gs_flatpak_refine_app_unlocked (self, new, refine_flags, interactive, FALSE, &locker, cancellable, error))
 			return FALSE;
 		GS_PROFILER_END_SCOPED (FlatpakRefineWildcardRefineNewApp);
 

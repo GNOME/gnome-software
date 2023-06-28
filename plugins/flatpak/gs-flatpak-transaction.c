@@ -652,6 +652,8 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 	GsApp *app = _transaction_operation_get_app (operation);
 	const gchar *ref = flatpak_transaction_operation_get_ref (operation);
 
+	gs_app_set_state_recover (app);
+
 	if (g_error_matches (error, FLATPAK_ERROR, FLATPAK_ERROR_SKIPPED)) {
 		g_debug ("skipped to %s %s: %s",
 		         _flatpak_transaction_operation_type_to_string (operation_type),
