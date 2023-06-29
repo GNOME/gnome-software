@@ -1359,16 +1359,12 @@ void
 gs_show_uri (GtkWindow *parent,
 	     const char *uri)
 {
-#if GTK_CHECK_VERSION(4, 9, 3)
 	g_autoptr (GFile) file = NULL;
 	g_autoptr (GtkFileLauncher) launcher = NULL;
 
 	file = g_file_new_for_uri (uri);
 	launcher = gtk_file_launcher_new (file);
 	gtk_file_launcher_launch (launcher, parent, NULL, NULL, NULL);
-#else
-	gtk_show_uri (parent, uri, GDK_CURRENT_TIME);
-#endif
 }
 
 /**
