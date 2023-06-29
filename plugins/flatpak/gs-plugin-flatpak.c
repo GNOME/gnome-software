@@ -597,7 +597,7 @@ gs_plugin_flatpak_refine_app (GsPluginFlatpak      *self,
 		for (guint i = 0; i < self->installations->len; i++) {
 			GsFlatpak *flatpak_tmp = g_ptr_array_index (self->installations, i);
 			g_autoptr(GError) error_local = NULL;
-			if (gs_flatpak_refine_app_state (flatpak_tmp, app, interactive,
+			if (gs_flatpak_refine_app_state (flatpak_tmp, app, interactive, FALSE,
 							 cancellable, &error_local)) {
 				flatpak = flatpak_tmp;
 				break;
@@ -610,7 +610,7 @@ gs_plugin_flatpak_refine_app (GsPluginFlatpak      *self,
 	}
 	if (flatpak == NULL)
 		return TRUE;
-	return gs_flatpak_refine_app (flatpak, app, flags, interactive, cancellable, error);
+	return gs_flatpak_refine_app (flatpak, app, flags, interactive, FALSE, cancellable, error);
 }
 
 
@@ -1263,7 +1263,7 @@ update_apps_thread_cb (GTask        *task,
 			ref = gs_flatpak_app_get_ref_display (app);
 			if (!gs_flatpak_refine_app (flatpak, app,
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
-						    interactive,
+						    interactive, TRUE,
 						    cancellable, &local_error)) {
 				gs_flatpak_error_convert (&local_error);
 				g_warning ("Error refining app ‘%s’ after update: %s", ref, local_error->message);
@@ -1406,7 +1406,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 	if (!gs_flatpak_refine_app (flatpak, app,
 				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
-				    interactive,
+				    interactive, FALSE,
 				    cancellable, error)) {
 		g_prefix_error (error, "failed to run refine for %s: ", ref);
 		gs_flatpak_error_convert (error);
@@ -1632,7 +1632,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 	if (!gs_flatpak_refine_app (flatpak, app,
 				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
-				    interactive,
+				    interactive, FALSE,
 				    cancellable, error)) {
 		g_prefix_error (error, "failed to run refine for %s: ",
 				gs_app_get_unique_id (app));
