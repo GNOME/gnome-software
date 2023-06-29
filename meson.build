@@ -147,7 +147,7 @@ libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxm
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
 gmodule = dependency('gmodule-2.0')
 gtk = dependency('gtk4',
-  version : '>= 4.9.2',
+  version : '>= 4.10.0',
   fallback: ['gtk', 'gtk_dep'],
   default_options: [
       'build-examples=false',
