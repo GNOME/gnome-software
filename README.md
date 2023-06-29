@@ -75,7 +75,7 @@ $ XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS LD_LIBRARY_PATH=install/lib/x86_64-
 
 # Debugging
 
-Running with `--verbose` will give detailed logging information.
+See [the debugging documentation](./doc/debugging.md).
 
 # Maintainers
 

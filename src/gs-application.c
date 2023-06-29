@@ -140,7 +140,7 @@ gs_application_init (GsApplication *application)
 		{ "show-metainfo", '\0', 0, G_OPTION_ARG_FILENAME, NULL,
 		  _("Show a local metainfo or appdata file"), _("FILENAME") },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, NULL,
-		  _("Show verbose debugging information"), NULL },
+		  _("Enable verbose debugging output (from the running instance, if already running)"), NULL },
 		{ "autoupdate", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Installs any pending updates in the background"), NULL },
 		{ "prefs", 0, 0, G_OPTION_ARG_NONE, NULL,
