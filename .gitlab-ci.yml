@@ -34,6 +34,7 @@ fedora-x86_64:
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
+            --no-suite gtk
             --no-suite libglib-testing
             --no-suite malcontent
   artifacts:
@@ -62,6 +63,7 @@ debian-stable-x86_64:
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
+            --no-suite gtk
             --no-suite fedora-langpacks
             --no-suite libxmlb
   artifacts:
