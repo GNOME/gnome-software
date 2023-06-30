@@ -20,7 +20,7 @@ variables:
 
 fedora-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v12
+  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v13
   stage: build
   except:
     - tags
@@ -34,6 +34,7 @@ fedora-x86_64:
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
+            --no-suite gtk
             --no-suite libglib-testing
             --no-suite malcontent
   artifacts:
@@ -48,7 +49,7 @@ fedora-x86_64:
 
 debian-stable-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/debian-stable:v11
+  image: registry.gitlab.gnome.org/gnome/gnome-software/debian-stable:v12
   stage: build
   except:
     - tags
@@ -62,6 +63,7 @@ debian-stable-x86_64:
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
+            --no-suite gtk
             --no-suite fedora-langpacks
             --no-suite libxmlb
   artifacts:

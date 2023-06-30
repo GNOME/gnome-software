@@ -440,16 +440,10 @@ gs_feature_tile_refresh (GsFeatureTile *tile)
 		if (key_colors != tile->key_colors_cache) {
 			g_autoptr(GArray) colors = NULL;
 			GdkRGBA fg_rgba;
-#if !GTK_CHECK_VERSION(4, 9, 2)
-			gboolean fg_rgba_valid;
-#endif
 			GsHSBC fg_hsbc;
 			const GsHSBC *chosen_hsbc;
 			GsHSBC chosen_hsbc_modified;
 			gboolean use_chosen_hsbc = FALSE;
-#if !GTK_CHECK_VERSION(4, 9, 2)
-			GtkStyleContext *context;
-#endif
 
 			/* Look up the foreground colour for the feature tile,
 			 * which is the colour of the text. This should always
@@ -463,13 +457,7 @@ gs_feature_tile_refresh (GsFeatureTile *tile)
 			 * @min_abs_contrast contrast with the foreground, so
 			 * that the text is legible.
 			 */
-#if GTK_CHECK_VERSION(4, 9, 2)
 			gtk_widget_get_color (GTK_WIDGET (tile), &fg_rgba);
-#else
-			context = gtk_widget_get_style_context (GTK_WIDGET (self));
-			fg_rgba_valid = gtk_style_context_lookup_color (context, "theme_fg_color", &fg_rgba);
-			g_assert (fg_rgba_valid);
-#endif
 
 			gtk_rgb_to_hsv (fg_rgba.red, fg_rgba.green, fg_rgba.blue,
 					&fg_hsbc.hue, &fg_hsbc.saturation, &fg_hsbc.brightness);
