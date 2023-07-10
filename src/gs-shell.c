@@ -2339,10 +2339,6 @@ gs_shell_show_sources (GsShell *shell)
 {
 	GtkWidget *dialog;
 
-	/* use if available */
-	if (g_spawn_command_line_async ("software-properties-gtk", NULL))
-		return;
-
 	dialog = gs_repos_dialog_new (GTK_WINDOW (shell), shell->plugin_loader);
 	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
 }
