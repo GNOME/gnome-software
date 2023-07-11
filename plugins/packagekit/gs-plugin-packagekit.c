@@ -3871,6 +3871,14 @@ download_schedule_cb (GObject      *source_object,
 				     g_steal_pointer (&task));
 }
 
+static gboolean
+update_system_filter_cb (PkPackage *package,
+			 gpointer user_data)
+{
+	PkInfoEnum info = pk_package_get_info (package);
+	return info != PK_INFO_ENUM_OBSOLETING && info != PK_INFO_ENUM_REMOVING;
+}
+
 static void
 download_get_updates_cb (GObject      *source_object,
                          GAsyncResult *result,
@@ -3898,6 +3906,10 @@ download_get_updates_cb (GObject      *source_object,
 		finish_download (task, NULL);
 		return;
 	}
+
+	/* Include only packages which are not to be obsoleted nor removed,
+	   because these can cause failure due to unmet dependencies. */
+	pk_package_sack_remove_by_filter (sack, update_system_filter_cb, NULL);
 
 	package_ids = pk_package_sack_get_ids (sack);
 	for (guint i = 0; i < gs_app_list_length (data->download_list); i++) {
