@@ -101,6 +101,10 @@ show_relative_page (GsFeaturedCarousel *self,
 	if ((new_page == 0.0 && delta > 0) || (new_page == n_pages - 1 && delta < 0))
 		animate = FALSE;
 
+	/* Disable all animations if accessibility settings say so. */
+	if (!adw_get_enable_animations (GTK_WIDGET (self)))
+		animate = FALSE;
+
 	adw_carousel_scroll_to (self->carousel, new_page_widget, animate);
 }
 
