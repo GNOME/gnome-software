@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-05-26 23:07+0000\n"
-"PO-Revision-Date: 2023-05-30 14:10+0200\n"
+"POT-Creation-Date: 2023-06-20 05:18+0000\n"
+"PO-Revision-Date: 2023-06-22 17:24+0200\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -737,6 +737,13 @@ msgstr "Vše"
 msgid "?"
 msgstr "?"
 
+#. Translators: It’s unknown what age rating this app has. The
+#. * placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:1009
+#, c-format
+msgid "%s has an unknown age rating"
+msgstr "Aplikace %s má neznámé věkové hodnocení"
+
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:1020
@@ -757,6 +764,13 @@ msgstr "Aplikace %s je vhodná pro batolata"
 #, c-format
 msgid "%s is suitable for young children"
 msgstr "Aplikace %s je vhodná pro malé děti"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for children up to around age 12. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:1032
+#, c-format
+msgid "%s is suitable for children"
+msgstr "Aplikace %s je vhodná pro děti"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
@@ -1556,23 +1570,23 @@ msgstr "Významné"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:41 src/gs-overview-page.ui:69
+#: src/gs-category-page.ui:40 src/gs-overview-page.ui:69
 msgid "Editor’s Choice"
 msgstr "Výběr od distribuce"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:69 src/gs-overview-page.ui:92
+#: src/gs-category-page.ui:68 src/gs-overview-page.ui:92
 msgid "New & Updated"
 msgstr "Nové a aktualizované"
 
 #. Heading for web apps on a category page
-#: src/gs-category-page.ui:97
+#: src/gs-category-page.ui:96
 msgid "Picks from the Web"
 msgstr "Výběr z webových"
 
 #. Heading for the rest of the apps on a category page
-#: src/gs-category-page.ui:125
+#: src/gs-category-page.ui:123
 msgid "Other Software"
 msgstr "Ostatní"
 
@@ -3121,14 +3135,14 @@ msgstr "Ponižování"
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:493
+#: src/gs-overview-page.c:627
 msgid "selected external sources"
 msgstr "vybraných externích zdrojů"
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:497
+#: src/gs-overview-page.c:631
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3142,22 +3156,22 @@ msgstr ""
 "Tyto repozitáře můžete později povolit v předvolbách Softwarových repozitářů."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:503
+#: src/gs-overview-page.c:637
 msgid "Enable Third Party Software Repositories?"
 msgstr "Povolit repozitáře softwaru třetích stran?"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:508
+#: src/gs-overview-page.c:642
 msgid "_Ignore"
 msgstr "_Ignorovat"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:510 src/gs-repos-dialog.c:173
+#: src/gs-overview-page.c:644 src/gs-repos-dialog.c:173
 msgid "_Enable"
 msgstr "_Povolit"
 
-#: src/gs-overview-page.c:713
+#: src/gs-overview-page.c:847
 #, fuzzy
 #| msgid "the operating system"
 msgid "Available for your operating system"
@@ -3165,7 +3179,7 @@ msgstr "operačního systému"
 
 #. Translators: the '%s' is replaced with the distribution name, constructing
 #. for example: "Available for Fedora Linux"
-#: src/gs-overview-page.c:717
+#: src/gs-overview-page.c:851
 #, fuzzy, c-format
 #| msgid "Available software for %s"
 #| msgid_plural "Available software for %s"
@@ -3173,7 +3187,7 @@ msgid "Available for %s"
 msgstr "Dostupný software pro kodek %s"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:1010
+#: src/gs-overview-page.c:1144
 msgid "Explore"
 msgstr "Procházet"
 
@@ -3181,12 +3195,20 @@ msgstr "Procházet"
 msgid "Overview page"
 msgstr "Stránka s přehledem"
 
-#. Translators: This is a heading for a list of categories.
+#. Translators: This is a heading for a section with all available apps.
 #: src/gs-overview-page.ui:143
+#, fuzzy
+#| msgid "Available software for %s"
+#| msgid_plural "Available software for %s"
+msgid "Available Apps"
+msgstr "Dostupný software pro kodek %s"
+
+#. Translators: This is a heading for a list of categories.
+#: src/gs-overview-page.ui:169
 msgid "Other Categories"
 msgstr "Ostatní kategorie"
 
-#: src/gs-overview-page.ui:184
+#: src/gs-overview-page.ui:210
 msgid "No App Data Found"
 msgstr "O aplikaci nebyly nalezeny žádné informace"
 
@@ -5201,135 +5223,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak je systém pro provozování aplikací na Linuxu"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:319
+#: plugins/flatpak/gs-flatpak.c:325
 #, c-format
 msgid "System folder %s"
 msgstr "Systémová složka %s"
 
-#: plugins/flatpak/gs-flatpak.c:320 plugins/flatpak/gs-flatpak.c:321
+#: plugins/flatpak/gs-flatpak.c:326 plugins/flatpak/gs-flatpak.c:327
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Podsložka %s v domovské složce"
 
-#: plugins/flatpak/gs-flatpak.c:322
+#: plugins/flatpak/gs-flatpak.c:328
 msgid "Host system folders"
 msgstr "Složky hostitelského systému"
 
-#: plugins/flatpak/gs-flatpak.c:323
+#: plugins/flatpak/gs-flatpak.c:329
 msgid "Host system configuration from /etc"
 msgstr "Konfigurace hostitelského systému z /etc"
 
-#: plugins/flatpak/gs-flatpak.c:324
+#: plugins/flatpak/gs-flatpak.c:330
 msgid "Desktop folder"
 msgstr "Složka plochy"
 
-#: plugins/flatpak/gs-flatpak.c:324
+#: plugins/flatpak/gs-flatpak.c:330
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Podsložka %s ve složce plochy"
 
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:331
 msgid "Documents folder"
 msgstr "Složka dokumentů"
 
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:331
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Podsložka %s ve složce dokumentů"
 
-#: plugins/flatpak/gs-flatpak.c:326
+#: plugins/flatpak/gs-flatpak.c:332
 msgid "Music folder"
 msgstr "Složka hudby"
 
-#: plugins/flatpak/gs-flatpak.c:326
+#: plugins/flatpak/gs-flatpak.c:332
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Podsložka %s ve složce hudby"
 
-#: plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:333
 msgid "Pictures folder"
 msgstr "Složka obrázků"
 
-#: plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:333
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Podsložka %s ve složce obrázků"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:334
 msgid "Public Share folder"
 msgstr "Složka veřejně sdílených"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:334
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Podsložka %s ve složce veřejně sdílených"
 
-#: plugins/flatpak/gs-flatpak.c:329
+#: plugins/flatpak/gs-flatpak.c:335
 msgid "Videos folder"
 msgstr "Složka videí"
 
-#: plugins/flatpak/gs-flatpak.c:329
+#: plugins/flatpak/gs-flatpak.c:335
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Podsložka %s ve složce videí"
 
-#: plugins/flatpak/gs-flatpak.c:330
+#: plugins/flatpak/gs-flatpak.c:336
 msgid "Templates folder"
 msgstr "Složka šablon"
 
-#: plugins/flatpak/gs-flatpak.c:330
+#: plugins/flatpak/gs-flatpak.c:336
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Podsložka %s ve složce šablon"
 
-#: plugins/flatpak/gs-flatpak.c:331
+#: plugins/flatpak/gs-flatpak.c:337
 msgid "User cache folder"
 msgstr "Složka uživatelské mezipaměti"
 
-#: plugins/flatpak/gs-flatpak.c:331
+#: plugins/flatpak/gs-flatpak.c:337
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Podsložka %s ve složce uživatelské mezipaměti"
 
-#: plugins/flatpak/gs-flatpak.c:332
+#: plugins/flatpak/gs-flatpak.c:338
 msgid "User configuration folder"
 msgstr "Složka uživatelské konfigurace"
 
-#: plugins/flatpak/gs-flatpak.c:332
+#: plugins/flatpak/gs-flatpak.c:338
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Podsložka %s ve složce uživatelské konfigurace"
 
-#: plugins/flatpak/gs-flatpak.c:333
+#: plugins/flatpak/gs-flatpak.c:339
 msgid "User data folder"
 msgstr "Složka uživatelských dat"
 
-#: plugins/flatpak/gs-flatpak.c:333
+#: plugins/flatpak/gs-flatpak.c:339
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Podsložka %s ve složce uživatelských dat"
 
-#: plugins/flatpak/gs-flatpak.c:334
+#: plugins/flatpak/gs-flatpak.c:340
 msgid "User runtime folder"
 msgstr "Uživatelská složka pro běh aplikací"
 
-#: plugins/flatpak/gs-flatpak.c:334
+#: plugins/flatpak/gs-flatpak.c:340
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Podsložka %s v uživatelské složce pro běh aplikací"
 
-#: plugins/flatpak/gs-flatpak.c:392
+#: plugins/flatpak/gs-flatpak.c:398
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Přístup k souborovému systému v %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1419
+#: plugins/flatpak/gs-flatpak.c:1425
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Získávají se metadata Flatpak pro %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3603
+#: plugins/flatpak/gs-flatpak.c:3609
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Selhalo vylepšení doplňku „%s“: %s"
