@@ -20,8 +20,6 @@
  * This plugin rewrites the CSS of apps to refer to locally cached resources,
  * rather than HTTP/HTTPS URIs for images (for example).
  *
- * It uses a worker thread to download the resources.
- *
  * FIXME: Eventually this should move into the refine plugin job, as it needs
  * to execute after all other refine jobs (in order to see all the URIs which
  * they produce).
@@ -30,14 +28,9 @@
 struct _GsPluginRewriteResource
 {
 	GsPlugin	parent;
-
-	GsWorkerThread	*worker;  /* (owned) */
 };
 
 G_DEFINE_TYPE (GsPluginRewriteResource, gs_plugin_rewrite_resource, GS_TYPE_PLUGIN)
-
-#define assert_in_worker(self) \
-	g_assert (gs_worker_thread_is_in_worker_context (self->worker))
 
 static void
 gs_plugin_rewrite_resource_init (GsPluginRewriteResource *self)
@@ -46,149 +39,173 @@ gs_plugin_rewrite_resource_init (GsPluginRewriteResource *self)
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
+typedef struct {
+	GError *saved_error;  /* (owned) (nullable) */
+	guint n_pending_ops;
+
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec;
+#endif
+} RewriteResourcesData;
+
 static void
-gs_plugin_rewrite_resource_dispose (GObject *object)
+rewrite_resources_data_free (RewriteResourcesData *data)
 {
-	GsPluginRewriteResource *self = GS_PLUGIN_REWRITE_RESOURCE (object);
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
 
-	g_clear_object (&self->worker);
-
-	G_OBJECT_CLASS (gs_plugin_rewrite_resource_parent_class)->dispose (object);
+	g_free (data);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (RewriteResourcesData, rewrite_resources_data_free)
+
+typedef struct {
+	GTask *task;  /* (owned) (not nullable) */
+	GsApp *app;  /* (owned) (not nullable) */
+	const gchar *key;  /* (not nullable) */
+} OpData;
+
 static void
-gs_plugin_rewrite_resource_setup_async (GsPlugin            *plugin,
-                                        GCancellable        *cancellable,
-                                        GAsyncReadyCallback  callback,
-                                        gpointer             user_data)
+op_data_free (OpData *data)
 {
-	GsPluginRewriteResource *self = GS_PLUGIN_REWRITE_RESOURCE (plugin);
+	g_clear_object (&data->task);
+	g_clear_object (&data->app);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (OpData, op_data_free)
+
+static void rewrite_resource_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+static void finish_op (GTask  *task,
+                       GError *error);
+
+static void
+gs_rewrite_resources_async (GsAppList           *list,
+                            GCancellable        *cancellable,
+                            GAsyncReadyCallback  callback,
+                            gpointer             user_data)
+{
 	g_autoptr(GTask) task = NULL;
-
-	task = g_task_new (plugin, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_rewrite_resource_setup_async);
-
-	/* Start up a worker thread to process all the plugin’s function calls. */
-	self->worker = gs_worker_thread_new ("gs-plugin-rewrite-resource");
-
-	g_task_return_boolean (task, TRUE);
-}
-
-static gboolean
-gs_plugin_rewrite_resource_setup_finish (GsPlugin      *plugin,
-                                         GAsyncResult  *result,
-                                         GError       **error)
-{
-	return g_task_propagate_boolean (G_TASK (result), error);
-}
-
-static void shutdown_cb (GObject      *source_object,
-                         GAsyncResult *result,
-                         gpointer      user_data);
-
-static void
-gs_plugin_rewrite_resource_shutdown_async (GsPlugin            *plugin,
-                                           GCancellable        *cancellable,
-                                           GAsyncReadyCallback  callback,
-                                           gpointer             user_data)
-{
-	GsPluginRewriteResource *self = GS_PLUGIN_REWRITE_RESOURCE (plugin);
-	g_autoptr(GTask) task = NULL;
-
-	task = g_task_new (self, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_rewrite_resource_shutdown_async);
-
-	/* Stop the worker thread. */
-	gs_worker_thread_shutdown_async (self->worker, cancellable, shutdown_cb, g_steal_pointer (&task));
-}
-
-static void
-shutdown_cb (GObject      *source_object,
-             GAsyncResult *result,
-             gpointer      user_data)
-{
-	g_autoptr(GTask) task = G_TASK (user_data);
-	GsPluginRewriteResource *self = g_task_get_source_object (task);
-	g_autoptr(GsWorkerThread) worker = NULL;
+	RewriteResourcesData *data;
+	g_autoptr(RewriteResourcesData) data_owned = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	worker = g_steal_pointer (&self->worker);
+	task = g_task_new (NULL, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_rewrite_resources_async);
 
-	if (!gs_worker_thread_shutdown_finish (worker, result, &local_error)) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
+	data = data_owned = g_new0 (RewriteResourcesData, 1);
+	data->n_pending_ops = 1;  /* count setup as an operation */
+
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) rewrite_resources_data_free);
+
+#ifdef HAVE_SYSPROF
+	data->begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		const gchar *keys[] = {
+			"GnomeSoftware::FeatureTile-css",
+			"GnomeSoftware::UpgradeBanner-css",
+			NULL
+		};
+
+		/* Handle cancellation */
+		if (g_cancellable_set_error_if_cancelled (cancellable, &local_error))
+			break;
+
+		/* rewrite URIs */
+		for (gsize j = 0; keys[j] != NULL; j++) {
+			const gchar *css = gs_app_get_metadata_item (app, keys[j]);
+			g_autoptr(OpData) op_data = NULL;
+
+			if (css == NULL)
+				continue;
+
+			op_data = g_new0 (OpData, 1);
+			op_data->task = g_object_ref (task);
+			op_data->app = g_object_ref (app);
+			op_data->key = keys[j];
+
+			data->n_pending_ops++;
+			gs_download_rewrite_resource_async (css,
+							    cancellable,
+							    rewrite_resource_cb,
+							    g_steal_pointer (&op_data));
+		}
+	}
+
+	finish_op (task, g_steal_pointer (&local_error));
+}
+
+static void
+rewrite_resource_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	g_autoptr(OpData) op_data = g_steal_pointer (&user_data);
+	GTask *task = op_data->task;
+	g_autoptr(GError) local_error = NULL;
+	const gchar *css_old;
+	g_autofree gchar *css_new = NULL;
+
+	css_new = gs_download_rewrite_resource_finish (result, &local_error);
+
+	/* Successfully rewritten? */
+	css_old = gs_app_get_metadata_item (op_data->app, op_data->key);
+
+	if (css_new != NULL && g_strcmp0 (css_old, css_new) != 0) {
+		gs_app_set_metadata (op_data->app, op_data->key, NULL);
+		gs_app_set_metadata (op_data->app, op_data->key, css_new);
+	}
+
+	finish_op (task, g_steal_pointer (&local_error));
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_op (GTask  *task,
+           GError *error)
+{
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+	RewriteResourcesData *data = g_task_get_task_data (task);
+
+	if (error_owned != NULL && data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while rewriting resources: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops > 0)
+		return;
+
+	if (data->saved_error != NULL) {
+		g_task_return_error (task, g_steal_pointer (&data->saved_error));
 		return;
 	}
 
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
+
+	/* success */
 	g_task_return_boolean (task, TRUE);
+
+	GS_PROFILER_ADD_MARK (RewriteResources,
+			      data->begin_time_nsec,
+			      "RewriteResources",
+			      NULL);
 }
 
 static gboolean
-gs_plugin_rewrite_resource_shutdown_finish (GsPlugin      *plugin,
-                                            GAsyncResult  *result,
-                                            GError       **error)
+gs_rewrite_resources_finish (GAsyncResult  *result,
+                             GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
-
-static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
-{
-	GAsyncResult **result_out = user_data;
-
-	g_assert (*result_out == NULL);
-	*result_out = g_object_ref (result);
-	g_main_context_wakeup (g_main_context_get_thread_default ());
-}
-
-static gboolean
-refine_app (GsPluginRewriteResource  *self,
-            GsApp                    *app,
-            GsPluginRefineFlags       flags,
-            GCancellable             *cancellable,
-            GError                  **error)
-{
-	const gchar *keys[] = {
-		"GnomeSoftware::FeatureTile-css",
-		"GnomeSoftware::UpgradeBanner-css",
-		NULL };
-
-	assert_in_worker (self);
-
-	/* rewrite URIs */
-	for (guint i = 0; keys[i] != NULL; i++) {
-		const gchar *css = gs_app_get_metadata_item (app, keys[i]);
-		if (css != NULL) {
-			g_autofree gchar *css_new = NULL;
-			g_autoptr(GAsyncResult) result = NULL;
-			g_autoptr(GMainContext) context = g_main_context_new ();
-			g_autoptr(GMainContextPusher) context_pusher = g_main_context_pusher_new (context);
-
-			gs_download_rewrite_resource_async (css,
-							    cancellable,
-							    async_result_cb,
-							    &result);
-
-			while (result == NULL)
-				g_main_context_iteration (context, TRUE);
-
-			css_new = gs_download_rewrite_resource_finish (result, error);
-			if (css_new == NULL)
-				return FALSE;
-			if (g_strcmp0 (css, css_new) != 0) {
-				gs_app_set_metadata (app, keys[i], NULL);
-				gs_app_set_metadata (app, keys[i], css_new);
-			}
-		}
-	}
-	return TRUE;
-}
-
-static void refine_thread_cb (GTask        *task,
-                              gpointer      source_object,
-                              gpointer      task_data,
-                              GCancellable *cancellable);
 
 static void
 gs_plugin_rewrite_resource_refine_async (GsPlugin            *plugin,
@@ -200,41 +217,24 @@ gs_plugin_rewrite_resource_refine_async (GsPlugin            *plugin,
 {
 	GsPluginRewriteResource *self = GS_PLUGIN_REWRITE_RESOURCE (plugin);
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rewrite_resource_refine_async);
 
-	/* Queue a job for the refine. */
-	gs_worker_thread_queue (self->worker, interactive ? G_PRIORITY_DEFAULT : G_PRIORITY_LOW,
-				refine_thread_cb, g_steal_pointer (&task));
+	gs_rewrite_resources_async (list, cancellable, rewrite_resources_cb, g_steal_pointer (&task));
 }
 
-/* Run in @worker. */
 static void
-refine_thread_cb (GTask        *task,
-                  gpointer      source_object,
-                  gpointer      task_data,
-                  GCancellable *cancellable)
+rewrite_resources_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
 {
-	GsPluginRewriteResource *self = GS_PLUGIN_REWRITE_RESOURCE (source_object);
-	GsPluginRefineData *data = task_data;
-	GsAppList *list = data->list;
-	GsPluginRefineFlags flags = data->flags;
 	g_autoptr(GError) local_error = NULL;
 
-	assert_in_worker (self);
-
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-
-		if (!refine_app (self, app, flags, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
-	}
-
-	g_task_return_boolean (task, TRUE);
+	if (!gs_rewrite_resources_finish (result, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
 }
 
 static gboolean
@@ -248,15 +248,8 @@ gs_plugin_rewrite_resource_refine_finish (GsPlugin      *plugin,
 static void
 gs_plugin_rewrite_resource_class_init (GsPluginRewriteResourceClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
-	object_class->dispose = gs_plugin_rewrite_resource_dispose;
-
-	plugin_class->setup_async = gs_plugin_rewrite_resource_setup_async;
-	plugin_class->setup_finish = gs_plugin_rewrite_resource_setup_finish;
-	plugin_class->shutdown_async = gs_plugin_rewrite_resource_shutdown_async;
-	plugin_class->shutdown_finish = gs_plugin_rewrite_resource_shutdown_finish;
 	plugin_class->refine_async = gs_plugin_rewrite_resource_refine_async;
 	plugin_class->refine_finish = gs_plugin_rewrite_resource_refine_finish;
 }
