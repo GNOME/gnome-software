@@ -33,12 +33,17 @@
  * into the job will not be modified.
  *
  * Internally, the #GsPluginClass.refine_async() functions are called on all
- * the plugins in series, and in series with a call to
- * gs_odrs_provider_refine_async(). Once all of those calls are finished,
+ * the plugins in series, and in series with calls to
+ * gs_odrs_provider_refine_async() and gs_rewrite_resources_async().
+ * Once all of those calls are finished,
  * zero or more recursive calls to run_refine_internal_async() are made in
  * parallel to do a similar refine process on the addons, runtime and related
  * components for all the components in the input #GsAppList. The refine job is
  * complete once all these recursive calls complete.
+ *
+ * The call to gs_rewrite_resources_async() will rewrite the CSS of apps to
+ * refer to locally cached resources, rather than HTTP/HTTPS URIs for images
+ * (for example).
  *
  * FIXME: Ideally, the #GsPluginClass.refine_async() calls would happen in
  * parallel, but this cannot be the case until the results of the refine_async()
@@ -49,15 +54,16 @@
  *                                    run_async()
  *                                         |
  *                                         v
- *           /-----------------------+-------------+----------------\
- *           |                       |             |                |
- * plugin->refine_async()            |             |                |
- *           v             plugin->refine_async()  |                |
- *           |                       v             …                |
- *           |                       |             v  gs_odrs_provider_refine_async()
- *           |                       |             |                v
- *           |                       |             |                |
- *           \-----------------------+-------------+----------------/
+ *           /-----------------------+-------------+----------------+------------------------------\
+ *           |                       |             |                |                              |
+ * plugin->refine_async()            |             |                |                              |
+ *           v             plugin->refine_async()  |                |                              |
+ *           |                       v             …                |                              |
+ *           |                       |             v  gs_odrs_provider_refine_async()              |
+ *           |                       |             |                v                  gs_rewrite_resources_async()
+ *           |                       |             |                |                              v
+ *           |                       |             |                |                              |
+ *           \-----------------------+-------------+----------------+------------------------------/
  *                                         |
  *                            finish_refine_internal_op()
  *                                         |
@@ -224,6 +230,9 @@ static void plugin_refine_cb (GObject      *source_object,
 static void odrs_provider_refine_cb (GObject      *source_object,
                                      GAsyncResult *result,
                                      gpointer      user_data);
+static void rewrite_resources_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data);
 static void finish_refine_internal_op (GTask  *task,
                                        GError *error);
 static void recursive_internal_refine_cb (GObject      *source_object,
@@ -413,6 +422,24 @@ odrs_provider_refine_cb (GObject      *source_object,
 	finish_refine_internal_op (task, g_steal_pointer (&local_error));
 }
 
+static void
+rewrite_resources_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_rewrite_resources_finish (result, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("Rewriting resources failed when refine apps: %s",
+			 local_error->message);
+		g_clear_error (&local_error);
+	}
+	finish_refine_internal_op (task, g_steal_pointer (&local_error));
+}
+
 /* @error is (transfer full) if non-NULL */
 static void
 finish_refine_internal_op (GTask  *task,
@@ -484,7 +511,7 @@ finish_refine_internal_op (GTask  *task,
 	}
 
 	if (data->next_plugin_index == plugins->len) {
-		/* Avoid the ODRS refine being run multiple times. */
+		/* Avoid the ODRS and rewrite refines being run multiple times. */
 		data->next_plugin_index++;
 
 		/* Add ODRS data if needed */
@@ -501,13 +528,18 @@ finish_refine_internal_op (GTask  *task,
 			gs_odrs_provider_refine_async (odrs_provider, list, odrs_refine_flags,
 						       cancellable, odrs_provider_refine_cb, g_object_ref (task));
 		}
+
+		/* Rewrite app CSS if needed. */
+		data->n_pending_ops++;
+		gs_rewrite_resources_async (list, cancellable, rewrite_resources_cb, g_object_ref (task));
 	}
 
 	if (data->n_pending_ops > 0)
 		return;
 
 	/* At this point, all the plugin->refine() calls are complete and the
-	 * gs_odrs_provider_refine_async() call is also complete. If an error
+	 * gs_odrs_provider_refine_async() and gs_rewrite_resources_async()
+	 * calls are also complete. If an error
 	 * occurred during those calls, return with it now rather than
 	 * proceeding to the recursive calls below. */
 	if (data->error != NULL) {
