@@ -1178,6 +1178,8 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) > 0)
 		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) > 0)
+		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) > 0)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) > 0)
