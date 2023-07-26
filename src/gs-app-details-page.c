@@ -30,6 +30,7 @@
 
 typedef enum {
 	PROP_APP = 1,
+	PROP_PLUGIN_LOADER,
 	PROP_SHOW_BACK_BUTTON,
 	PROP_TITLE,
 } GsAppDetailsPageProperty;
@@ -55,7 +56,9 @@ struct _GsAppDetailsPage
 	GtkWidget	*status_page;
 	AdwWindowTitle	*window_title;
 
+	GsPluginLoader	*plugin_loader; /* (owned) */
 	GsApp		*app;  /* (owned) (nullable) */
+	GCancellable	*refine_cancellable; /* (owned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsAppDetailsPage, gs_app_details_page, GTK_TYPE_BOX)
@@ -153,14 +156,77 @@ populate_permissions_section (GsAppDetailsPage *page,
 }
 
 static void
+set_update_description (GsAppDetailsPage *self,
+			gboolean can_call_refine);
+
+static void
+refine_app_finished_cb (GObject *source_object,
+			GAsyncResult *res,
+			gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GsAppDetailsPage *self = user_data;
+	g_autoptr(GError) error = NULL;
+
+	g_clear_object (&self->refine_cancellable);
+
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_warning ("Failed to refine app: %s", error->message);
+		}
+		return;
+	}
+
+	set_update_description (self, FALSE);
+}
+
+static void
+set_update_description (GsAppDetailsPage *self,
+			gboolean can_call_refine)
+{
+	const gchar *update_details;
+
+	update_details = gs_app_get_update_details_markup (self->app);
+	if (update_details == NULL) {
+		if (self->plugin_loader == NULL || !can_call_refine ||
+		    gs_app_get_update_details_set (self->app)) {
+			/* TRANSLATORS: this is where the packager did not write
+			 * a description for the update */
+			update_details = _("No update description available.");
+		} else {
+			g_autoptr(GsPluginJob) plugin_job = NULL;
+
+			update_details = _("Loading update description, please wait…");
+			/* to not refine the app again, when there is no description */
+			gs_app_set_update_details_text (self->app, NULL);
+
+			g_assert (self->refine_cancellable == NULL);
+			self->refine_cancellable = g_cancellable_new ();
+			plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS);
+			gs_plugin_job_set_interactive (plugin_job, TRUE);
+			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+							    self->refine_cancellable,
+							    refine_app_finished_cb,
+							    self);
+		}
+	}
+	gtk_label_set_markup (GTK_LABEL (self->label_details), update_details);
+}
+
+static void
 set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 {
 	g_autoptr(GIcon) icon = NULL;
 	guint icon_size;
-	const gchar *update_details;
 	GdkDisplay *display;
 	g_autoptr (GtkIconPaintable) paintable = NULL;
 	g_autofree gchar *escaped_summary = NULL;
+
+	if (page->refine_cancellable != NULL) {
+		g_cancellable_cancel (page->refine_cancellable);
+		g_clear_object (&page->refine_cancellable);
+	}
 
 	/* FIXME support app == NULL */
 
@@ -169,13 +235,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_TITLE]);
 
 	/* set update header */
-	update_details = gs_app_get_update_details_markup (app);
-	if (update_details == NULL) {
-		/* TRANSLATORS: this is where the packager did not write
-		 * a description for the update */
-		update_details = _("No update description available.");
-	}
-	gtk_label_set_markup (GTK_LABEL (page->label_details), update_details);
+	set_update_description (page, TRUE);
 	escaped_summary = g_markup_escape_text (gs_app_get_summary (app), -1);
 	adw_status_page_set_title (ADW_STATUS_PAGE (page->status_page), gs_app_get_name (app));
 	adw_status_page_set_description (ADW_STATUS_PAGE (page->status_page), escaped_summary);
@@ -314,6 +374,11 @@ gs_app_details_page_dispose (GObject *object)
 {
 	GsAppDetailsPage *page = GS_APP_DETAILS_PAGE (object);
 
+	if (page->refine_cancellable)
+		g_cancellable_cancel (page->refine_cancellable);
+
+	g_clear_object (&page->refine_cancellable);
+	g_clear_object (&page->plugin_loader);
 	g_clear_object (&page->app);
 
 	G_OBJECT_CLASS (gs_app_details_page_parent_class)->dispose (object);
@@ -327,6 +392,9 @@ gs_app_details_page_get_property (GObject *object, guint prop_id, GValue *value,
 	switch ((GsAppDetailsPageProperty) prop_id) {
 	case PROP_APP:
 		g_value_set_object (value, gs_app_details_page_get_app (page));
+		break;
+	case PROP_PLUGIN_LOADER:
+		g_value_set_object (value, gs_app_details_page_get_plugin_loader (page));
 		break;
 	case PROP_SHOW_BACK_BUTTON:
 		g_value_set_boolean (value, gs_app_details_page_get_show_back_button (page));
@@ -348,6 +416,10 @@ gs_app_details_page_set_property (GObject *object, guint prop_id, const GValue *
 	switch ((GsAppDetailsPageProperty) prop_id) {
 	case PROP_APP:
 		gs_app_details_page_set_app (page, g_value_get_object (value));
+		break;
+	case PROP_PLUGIN_LOADER:
+		g_assert (page->plugin_loader == NULL);
+		page->plugin_loader = g_value_dup_object (value);
 		break;
 	case PROP_SHOW_BACK_BUTTON:
 		gs_app_details_page_set_show_back_button (page, g_value_get_boolean (value));
@@ -385,6 +457,20 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 		g_param_spec_object ("app", NULL, NULL,
 				     GS_TYPE_APP,
 				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppDetailsPage:plugin-loader: (nullable)
+	 *
+	 * A plugin loader to use to refine apps.
+	 *
+	 * If this is %NULL, no refine will be executed.
+	 *
+	 * Since: 45
+	 */
+	obj_props[PROP_PLUGIN_LOADER] =
+		g_param_spec_object ("plugin-loader", NULL, NULL,
+				     GS_TYPE_PLUGIN_LOADER,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsAppDetailsPage:show-back-button
@@ -441,14 +527,36 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 
 /**
  * gs_app_details_page_new:
+ * @plugin_loader: (nullable): a #GsPluginLoader
  *
  * Create a new #GsAppDetailsPage.
  *
  * Returns: (transfer full): a new #GsAppDetailsPage
- * Since: 41
+ * Since: 45
  */
 GtkWidget *
-gs_app_details_page_new (void)
+gs_app_details_page_new (GsPluginLoader *plugin_loader)
 {
-	return GTK_WIDGET (g_object_new (GS_TYPE_APP_DETAILS_PAGE, NULL));
+	g_return_val_if_fail (plugin_loader == NULL || GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return g_object_new (GS_TYPE_APP_DETAILS_PAGE,
+			     "plugin-loader", plugin_loader,
+			     NULL);
+}
+
+/**
+ * gs_app_details_page_get_plugin_loader:
+ * @page: a #GsAppDetailsPage
+ *
+ * Returns the #GsPluginLoader the @page was created with
+ *
+ * Returns: (transfer none) (nullable): the #GsPluginLoader the @page was created with
+ * Since: 45
+ **/
+GsPluginLoader	*
+gs_app_details_page_get_plugin_loader (GsAppDetailsPage	*page)
+{
+	g_return_val_if_fail (GS_IS_APP_DETAILS_PAGE (page), NULL);
+
+	return page->plugin_loader;
 }

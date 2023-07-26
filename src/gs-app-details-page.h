@@ -18,7 +18,8 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsAppDetailsPage, gs_app_details_page, GS, APP_DETAILS_PAGE, GtkBox)
 
-GtkWidget	*gs_app_details_page_new			(void);
+GtkWidget	*gs_app_details_page_new			(GsPluginLoader		*plugin_loader);
+GsPluginLoader	*gs_app_details_page_get_plugin_loader		(GsAppDetailsPage	*page);
 GsApp		*gs_app_details_page_get_app			(GsAppDetailsPage	*page);
 void		 gs_app_details_page_set_app			(GsAppDetailsPage	*page,
 								 GsApp			*app);

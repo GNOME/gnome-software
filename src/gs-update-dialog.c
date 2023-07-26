@@ -212,7 +212,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 				  G_CALLBACK (app_activated_cb), dialog);
 		gs_os_update_page_set_show_back_button (GS_OS_UPDATE_PAGE (page), dialog->showing_installed_updates);
 	} else {
-		page = gs_app_details_page_new ();
+		page = gs_app_details_page_new (dialog->plugin_loader);
 		gs_app_details_page_set_app (GS_APP_DETAILS_PAGE (page), app);
 	}
 
