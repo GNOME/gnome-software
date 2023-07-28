@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-07-10 11:59+0000\n"
-"PO-Revision-Date: 2023-07-29 02:37+0330\n"
+"POT-Creation-Date: 2023-07-28 23:07+0000\n"
+"PO-Revision-Date: 2023-07-29 02:59+0330\n"
 "Last-Translator: Danial Behzadi <dani.behzi@ubuntu.com>\n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -70,7 +70,7 @@ msgstr "تابلوی به‌روز رسانی‌ها"
 msgid "The update details"
 msgstr "جزییات به‌روز رسانی"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2283 src/gs-application.c:264
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2287 src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "پروژهٔ گنوم"
 
@@ -1032,6 +1032,8 @@ msgstr "نمایش یک پروندهٔ فراداده یا فرااطّلاعا�
 msgid ""
 "Enable verbose debugging output (from the running instance, if already running)"
 msgstr ""
+"به کار انداختن خروجی اشکال‌زدایی پرگو (از نمونهٔ در حال اجرا اگر هنوز در حال اجرا "
+"باشد)"
 
 #: src/gs-application.c:145
 msgid "Installs any pending updates in the background"
@@ -1460,15 +1462,15 @@ msgstr "تغییر نام از %s"
 msgid "Stopped Receiving Updates"
 msgstr "توقّف گرفتن به‌روز رسانی‌ها"
 
-#: src/gs-app-row.ui:202 src/gs-feature-tile.c:574
-msgctxt "Single app"
-msgid "Installed"
-msgstr "نصب شده"
-
-#: src/gs-app-row.ui:265 src/gs-app-row.ui:267 src/gs-os-update-page.c:159
+#: src/gs-app-row.ui:58 src/gs-app-row.ui:60 src/gs-os-update-page.c:157
 #: src/gs-os-update-page.c:160
 msgid "Critical update"
 msgstr "به‌روز رسانی بحرانی"
+
+#: src/gs-app-row.ui:227 src/gs-feature-tile.c:574
+msgctxt "Single app"
+msgid "Installed"
+msgstr "نصب شده"
 
 #. Translators: The placeholder is an app name
 #: src/gs-app-translation-dialog.c:68
@@ -2268,7 +2270,7 @@ msgstr "حذف کردن نصب…"
 #: src/gs-details-page.c:559
 #, c-format
 msgid "%s is not installed, but it still has data present."
-msgstr ""
+msgstr "%s نصب نشده؛ ولی هنوز داده‌هایی دارد."
 
 #: src/gs-details-page.c:1014
 msgid "_Restart"
@@ -2353,7 +2355,7 @@ msgstr "افزودنی‌ها"
 
 #: src/gs-details-page.ui:571
 msgid "This software is no longer receiving updates, including security fixes"
-msgstr ""
+msgstr "این نرم‌افزار دیگر به‌روز رسانی نمی‌گیرد؛ حتا رفع اشکال‌های امنیتی"
 
 #: src/gs-details-page.ui:632
 msgid "This app can only be used when there is an active internet connection."
@@ -2992,17 +2994,6 @@ msgid "Automatic Updates Paused"
 msgstr "به‌روز رسانی‌های خودکار مکث شدند"
 
 #: src/gs-metered-data-dialog.ui:9
-#, fuzzy
-#| msgid ""
-#| "The current network is metered. Metered connections have data limits or charges "
-#| "associated with them. To save data, automatic updates have therefore been "
-#| "paused.\n"
-#| "\n"
-#| "Automatic updates will be resumed when an un­metered network becomes available. "
-#| "Until then, it is still possible to manually install updates.\n"
-#| "\n"
-#| "Alternatively, if the current network has been in­correctly identified as being "
-#| "metered, this setting can be changed."
 msgid ""
 "The current network is metered. Metered connections have data limits or charges "
 "associated with them. To save data, automatic updates have therefore been paused.\n"
@@ -3045,26 +3036,26 @@ msgstr "آزمایشی"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:262
+#: src/gs-os-update-page.c:264
 msgid "Additions"
 msgstr "افزودنی"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:266
+#: src/gs-os-update-page.c:268
 msgid "Removals"
 msgstr "برداشتنی"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:270
+#: src/gs-os-update-page.c:272
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "به‌روز رسانی"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:274
+#: src/gs-os-update-page.c:276
 msgid "Downgrades"
 msgstr "پایین‌بری"
 
@@ -3194,7 +3185,7 @@ msgstr "داده‌ها و تنظمبات کاره"
 #: src/gs-page.c:594
 #, c-format
 msgid "It will not be possible to use %s after removal."
-msgstr ""
+msgstr "پس از برداشتن %s دیگر قابل استفاده نیست."
 
 #. Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'
 #: src/gs-page.c:617
@@ -3203,7 +3194,7 @@ msgstr "_نگه‌داشتن"
 
 #: src/gs-page.c:623
 msgid "Allows restoring app settings and content"
-msgstr ""
+msgstr "اجازهٔ بازگردانی محتوا و تنظمیات کاره را می‌دهد"
 
 #. Translators: this is part of section about deleting app's data
 #: src/gs-page.c:632
@@ -3212,7 +3203,7 @@ msgstr "_حذف"
 
 #: src/gs-page.c:638
 msgid "Permanently deletes data to save disk space"
-msgstr ""
+msgstr "داده‌ها را برای ذخیرهٔ فضای دیسک به صورت همیشگی حذف می‌کند"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:645
@@ -3221,6 +3212,8 @@ msgid ""
 "It will not be possible to use %s after removal. App data and settings will be "
 "kept on disk, to allow restoring the app in the future."
 msgstr ""
+"پس از برداشتن %s دیگر قابل استفاده نیست. تنظیمات و داده‌های کاره روی دیسک نگه داشته "
+"خواهند شد تا اجازهٔ بازگردانی کاره در آینده را بدهد."
 
 #: src/gs-prefs-dialog.ui:5
 msgid "Preferences"
@@ -5021,14 +5014,14 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:68
+#: plugins/core/gs-plugin-generic-updates.c:67
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3227
 msgid "System Updates"
 msgstr "به‌روز رسانی‌های سامانه"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:73
+#: plugins/core/gs-plugin-generic-updates.c:72
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3232
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
