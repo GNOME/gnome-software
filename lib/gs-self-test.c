@@ -170,12 +170,25 @@ gs_utils_error_func (void)
 }
 
 static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+
+	g_assert (*result_out == NULL);
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (g_main_context_get_thread_default ());
+}
+
+static void
 gs_plugin_download_rewrite_func (void)
 {
 	g_autofree gchar *css = NULL;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GDBusConnection) bus_connection = NULL;
-	g_autoptr(GsPlugin) plugin = NULL;
+	g_autoptr(GAsyncResult) result = NULL;
+	g_autoptr(GMainContext) context = g_main_context_new ();
+	g_autoptr(GMainContextPusher) context_pusher = g_main_context_pusher_new (context);
 	const gchar *resource = "background:\n"
 				" url('file://" DATADIR "/gnome-software/featured-maps.png')\n"
 				" url('file://" DATADIR "/gnome-software/featured-maps-bg.png')\n"
@@ -188,16 +201,12 @@ gs_plugin_download_rewrite_func (void)
 	}
 
 	/* test rewrite */
-	bus_connection = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
-	g_assert_no_error (error);
+	gs_download_rewrite_resource_async (resource, NULL, async_result_cb, &result);
 
-	plugin = gs_plugin_new (bus_connection, bus_connection);
-	gs_plugin_set_name (plugin, "self-test");
-	css = gs_plugin_download_rewrite_resource (plugin,
-						   NULL, /* app */
-						   resource,
-						   NULL,
-						   &error);
+	while (result == NULL)
+		g_main_context_iteration (context, TRUE);
+
+	css = gs_download_rewrite_resource_finish (result, &error);
 	g_assert_no_error (error);
 	g_assert (css != NULL);
 }

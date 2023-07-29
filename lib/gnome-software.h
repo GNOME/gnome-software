@@ -40,5 +40,6 @@
 #include <gs-plugin-vfuncs.h>
 #include <gs-profiler.h>
 #include <gs-remote-icon.h>
+#include <gs-rewrite-resources.h>
 #include <gs-utils.h>
 #include <gs-worker-thread.h>

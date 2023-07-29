@@ -868,3 +868,208 @@ gs_download_file_finish (SoupSession   *soup_session,
 
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
+
+typedef struct {
+	guint n_pending_downloads;
+	GError *saved_error;  /* (nullable) (owned) */
+	GString *rewritten_resource;  /* (owned) */
+} DownloadRewriteData;
+
+static void
+download_rewrite_data_free (DownloadRewriteData *data)
+{
+	g_clear_error (&data->saved_error);
+	if (data->rewritten_resource != NULL)
+		g_string_free (data->rewritten_resource, TRUE);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (DownloadRewriteData, download_rewrite_data_free)
+
+static void download_rewrite_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+static void finish_download_rewrite (GTask  *task,
+                                     GError *error);
+
+/**
+ * gs_download_rewrite_resource_async:
+ * @resource: the CSS resource
+ * @cancellable: a #GCancellable, or %NULL
+ * @callback: a #GAsyncReadyCallback
+ * @user_data: data to pass to @callback
+ *
+ * Downloads remote assets and rewrites a CSS resource to use cached local URIs.
+ *
+ * Since: 45
+ **/
+void
+gs_download_rewrite_resource_async (const gchar         *resource,
+                                    GCancellable        *cancellable,
+                                    GAsyncReadyCallback  callback,
+                                    gpointer             user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(DownloadRewriteData) data_owned = NULL;
+	DownloadRewriteData *data;
+	guint start = 0;
+	g_autoptr(GString) resource_str = g_string_new (resource);
+	g_autoptr(SoupSession) soup_session = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	g_return_if_fail (resource != NULL);
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	task = g_task_new (NULL, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_download_rewrite_resource_async);
+
+	data = data_owned = g_new0 (DownloadRewriteData, 1);
+	data->n_pending_downloads = 1;  /* start with 1 to represent the string rewrite */
+	data->rewritten_resource = g_string_new ("");
+
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) download_rewrite_data_free);
+
+	/* replace datadir */
+	gs_utils_gstring_replace (resource_str, "@datadir@", DATADIR);
+	resource = resource_str->str;
+
+	/* look in string for any url() links */
+	for (guint i = 0; resource[i] != '\0'; i++) {
+		if (i > 4 && strncmp (resource + i - 4, "url(", 4) == 0) {
+			start = i;
+			continue;
+		}
+		if (start == 0) {
+			g_string_append_c (data->rewritten_resource, resource[i]);
+			continue;
+		}
+		if (resource[i] == ')') {
+			guint len;
+			g_autofree gchar *cachefn = NULL;
+			g_autofree gchar *uri = NULL;
+			const char *unprefixed_uri;
+
+			/* remove optional single quotes */
+			if (resource[start] == '\'' || resource[start] == '"')
+				start++;
+			len = i - start;
+			if (i > 0 && (resource[i - 1] == '\'' || resource[i - 1] == '"'))
+				len--;
+			uri = g_strndup (resource + start, len);
+
+			/* download them to per-user cache */
+
+			/* local files */
+			if (g_str_has_prefix (uri, "file://"))
+				unprefixed_uri = uri + strlen ("file://");
+			else
+				unprefixed_uri = uri;
+
+			if (g_str_has_prefix (unprefixed_uri, "/")) {
+				if (!g_file_test (unprefixed_uri, G_FILE_TEST_EXISTS)) {
+					g_set_error (&local_error,
+						     G_IO_ERROR,
+						     G_IO_ERROR_NOT_FOUND,
+						     "Failed to find file: %s", unprefixed_uri);
+					finish_download_rewrite (task, g_steal_pointer (&local_error));
+					return;
+				}
+				cachefn = g_strdup (unprefixed_uri);
+			} else {
+				/* get cache location */
+				cachefn = gs_utils_get_cache_filename ("cssresource", unprefixed_uri,
+								       GS_UTILS_CACHE_FLAG_WRITEABLE |
+								       GS_UTILS_CACHE_FLAG_USE_HASH |
+								       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
+								       &local_error);
+				if (cachefn == NULL) {
+					finish_download_rewrite (task, g_steal_pointer (&local_error));
+					return;
+				}
+
+				/* Download it if it doesn’t already exist */
+				if (!g_file_test (cachefn, G_FILE_TEST_EXISTS)) {
+					g_autoptr(GFile) output_file = NULL;
+
+					if (soup_session == NULL)
+						soup_session = gs_build_soup_session ();
+
+					/* Do the download. */
+					output_file = g_file_new_for_path (cachefn);
+					data->n_pending_downloads++;
+					gs_download_file_async (soup_session, unprefixed_uri, output_file,
+								G_PRIORITY_LOW,
+								NULL, NULL,
+								cancellable,
+								download_rewrite_cb, g_object_ref (task));
+				}
+			}
+
+			g_string_append_printf (data->rewritten_resource, "'file://%s'", cachefn);
+			g_string_append_c (data->rewritten_resource, resource[i]);
+			start = 0;
+		}
+	}
+
+	finish_download_rewrite (task, NULL);
+}
+
+static void
+download_rewrite_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	SoupSession *soup_session = SOUP_SESSION (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_download_file_finish (soup_session, result, &local_error) &&
+	    g_error_matches (local_error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
+		/* Ignore cache matches. */
+		g_clear_error (&local_error);
+	}
+
+	finish_download_rewrite (task, g_steal_pointer (&local_error));
+}
+
+/* @error is (transfer full) if non-%NULL. */
+static void
+finish_download_rewrite (GTask  *task,
+                         GError *error)
+{
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+	DownloadRewriteData *data = g_task_get_task_data (task);
+
+	g_assert (data->n_pending_downloads > 0);
+	data->n_pending_downloads--;
+
+	if (data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while downloading resources: %s", error_owned->message);
+
+	if (data->n_pending_downloads == 0) {
+		if (data->saved_error != NULL)
+			g_task_return_error (task, g_steal_pointer (&data->saved_error));
+		else
+			g_task_return_pointer (task, g_string_free (g_steal_pointer (&data->rewritten_resource), FALSE), g_free);
+	}
+}
+
+/**
+ * gs_download_rewrite_resource_finish:
+ * @result: a #GAsyncResult
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish a download/rewrite operation started with
+ * gs_download_rewrite_resource_async().
+ *
+ * Returns: the rewritten CSS
+ * Since: 45
+ */
+gchar *
+gs_download_rewrite_resource_finish (GAsyncResult  *result,
+                                            GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
+}

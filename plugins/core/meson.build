@@ -85,19 +85,6 @@ shared_module(
 )
 
 shared_module(
-  'gs_plugin_rewrite-resource',
-  sources : 'gs-plugin-rewrite-resource.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : plugin_libs,
-)
-
-shared_module(
   'gs_plugin_os-release',
   sources : 'gs-plugin-os-release.c',
   include_directories : [

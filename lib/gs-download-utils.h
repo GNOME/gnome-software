@@ -85,4 +85,11 @@ gboolean	gs_download_file_finish		(SoupSession   *soup_session,
 						 GAsyncResult  *result,
 						 GError       **error);
 
+void		 gs_download_rewrite_resource_async	(const gchar		*resource,
+							 GCancellable		*cancellable,
+							 GAsyncReadyCallback	 callback,
+							 gpointer		 user_data);
+gchar		*gs_download_rewrite_resource_finish	(GAsyncResult		 *result,
+							 GError			**error);
+
 G_END_DECLS
