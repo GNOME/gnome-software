@@ -3896,6 +3896,16 @@ download_get_updates_cb (GObject      *source_object,
 	results = pk_client_generic_finish (PK_CLIENT (task_update), result, &local_error);
 
 	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
+		if (local_error->domain == PK_CLIENT_ERROR) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			event = gs_plugin_event_new ("error", local_error,
+						     NULL);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			if (data->interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_report_event (g_task_get_source_object (task), event);
+		}
 		finish_download (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -3945,6 +3955,16 @@ download_update_packages_cb (GObject      *source_object,
 
 	gs_app_list_override_progress (data->progress_list, GS_APP_PROGRESS_UNKNOWN);
 	if (results == NULL) {
+		if (local_error->domain == PK_CLIENT_ERROR) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			event = gs_plugin_event_new ("error", local_error,
+						     NULL);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			if (data->interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_report_event (g_task_get_source_object (task), event);
+		}
 		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 		finish_download (task, g_steal_pointer (&local_error));
 		return;
