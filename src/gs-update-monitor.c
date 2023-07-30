@@ -786,8 +786,7 @@ get_updates (GsUpdateMonitor *monitor,
 	/* NOTE: this doesn't actually do any network access */
 	g_debug ("Getting updates");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,

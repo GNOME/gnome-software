@@ -92,6 +92,7 @@ typedef struct
 	gchar			*update_version;
 	gchar			*update_version_ui;
 	gchar			*update_details_markup;
+	gboolean		 update_details_set;
 	AsUrgencyKind		 update_urgency;
 	GsAppPermissions        *update_permissions;
 	GWeakRef		 management_plugin_weak;  /* (element-type GsPlugin) */
@@ -3300,6 +3301,7 @@ gs_app_set_update_details_markup (GsApp *app,
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
+	priv->update_details_set = TRUE;
 	_g_set_str (&priv->update_details_markup, markup);
 }
 
@@ -3323,6 +3325,7 @@ gs_app_set_update_details_text (GsApp *app,
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
+	priv->update_details_set = TRUE;
 	if (text == NULL) {
 		_g_set_str (&priv->update_details_markup, NULL);
 	} else {
@@ -3330,6 +3333,27 @@ gs_app_set_update_details_text (GsApp *app,
 		g_free (priv->update_details_markup);
 		priv->update_details_markup = markup;
 	}
+}
+
+/**
+ * gs_app_get_update_details_set:
+ * @app: a #GsApp
+ *
+ * Returns whether update details for the @app had been set. It does
+ * not matter whether it was set to %NULL or an actual text.
+ *
+ * Returns: whether update details for the @app had been set
+ *
+ * Since: 45
+ **/
+gboolean
+gs_app_get_update_details_set (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	locker = g_mutex_locker_new (&priv->mutex);
+	return priv->update_details_set;
 }
 
 /**

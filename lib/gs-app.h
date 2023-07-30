@@ -363,6 +363,7 @@ void		 gs_app_set_update_details_markup
 						 const gchar	*markup);
 void		 gs_app_set_update_details_text	(GsApp		*app,
 						 const gchar	*text);
+gboolean	 gs_app_get_update_details_set	(GsApp		*app);
 AsUrgencyKind	 gs_app_get_update_urgency	(GsApp		*app);
 void		 gs_app_set_update_urgency	(GsApp		*app,
 						 AsUrgencyKind	 update_urgency);

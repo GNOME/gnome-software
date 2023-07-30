@@ -155,7 +155,7 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
 					 NULL);
@@ -212,7 +212,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 				  G_CALLBACK (app_activated_cb), dialog);
 		gs_os_update_page_set_show_back_button (GS_OS_UPDATE_PAGE (page), dialog->showing_installed_updates);
 	} else {
-		page = gs_app_details_page_new ();
+		page = gs_app_details_page_new (dialog->plugin_loader);
 		gs_app_details_page_set_app (GS_APP_DETAILS_PAGE (page), app);
 	}
 
