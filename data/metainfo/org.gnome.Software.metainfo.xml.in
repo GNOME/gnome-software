@@ -66,10 +66,34 @@
    Validate with `appstreamcli validate *.metainfo.xml`
   -->
   <releases>
-    <!--
-      UNRELEASED: to be included in the next 45.x release:
-       - Stop using the software repositories dialog provided by the distribution, and always use GNOME Software’s inbuilt dialog; this will affect Debian and Ubuntu
-    -->
+    <release date="2023-07-30" version="45~beta" type="development">
+      <description>
+        <p>This is an unstable release with the following changes:</p>
+        <ul>
+          <li>Improve error notifications from failed GPG checks</li>
+          <li>Disable animations in the UI according to the user’s accessibility settings</li>
+          <li>Fix applying updates which require some packages to be removed to satisfy dependencies</li>
+          <li>Stop using the software repositories dialog provided by the distribution, and always use GNOME Software’s inbuilt dialog; this will affect Debian and Ubuntu</li>
+        </ul>
+        <p>This release also updates translations:</p>
+        <ul>
+          <li>Belarusian (Vasil Pupkin)</li>
+          <li>Chinese (China) (Luming Zh)</li>
+          <li>Czech (Daniel Rusek)</li>
+          <li>English (United Kingdom) (Bruce Cowan)</li>
+          <li>French (Guillaume Bernard)</li>
+          <li>Friulian (Fabio Tomat)</li>
+          <li>Georgian (Ekaterine Papava)</li>
+          <li>Greek, Modern (1453-) (Efstathios Iosifidis)</li>
+          <li>Hebrew (Yosef Or Boczko)</li>
+          <li>Hungarian (Balázs Úr)</li>
+          <li>Lithuanian (Aurimas Černius)</li>
+          <li>Persian (Danial Behzadi)</li>
+          <li>Turkish (Sabri Ünal)</li>
+          <li>Ukrainian (Yuri Chornoivan)</li>
+        </ul>
+      </description>
+    </release>
     <release date="2023-06-30" version="45~alpha" type="development">
       <description>
         <p>This is an unstable release with the following changes:</p>
