@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-07-21 14:39+0000\n"
-"PO-Revision-Date: 2023-07-28 08:40+0300\n"
+"POT-Creation-Date: 2023-07-30 16:48+0000\n"
+"PO-Revision-Date: 2023-08-01 15:54+0300\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
 "Language-Team: Hebrew <yoseforb@gmail.com>\n"
 "Language: he\n"
@@ -785,7 +785,7 @@ msgstr "דירוג גיל מומלץ"
 msgid "How to contribute missing information"
 msgstr "איך לתרום מידע חסר"
 
-#: lib/gs-app.c:6307
+#: lib/gs-app.c:6331
 msgid "Local file"
 msgstr "קובץ מקומי"
 
@@ -794,12 +794,12 @@ msgstr "קובץ מקומי"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6326 src/gs-safety-context-dialog.c:486
+#: lib/gs-app.c:6350 src/gs-safety-context-dialog.c:486
 #, c-format
 msgid "%s (%s)"
 msgstr "‏%s ‏(%s)"
 
-#: lib/gs-app.c:6403
+#: lib/gs-app.c:6427
 msgid "Package"
 msgstr "חבילה"
 
@@ -842,100 +842,104 @@ msgstr "ה_תקנה"
 msgid "_Uninstall"
 msgstr "ה_סרת התקנה"
 
-#: src/gs-app-details-page.c:68
+#: src/gs-app-details-page.c:71
 msgid "Network"
 msgstr "רשת"
 
-#: src/gs-app-details-page.c:68
+#: src/gs-app-details-page.c:71
 msgid "Can communicate over the network"
 msgstr "ניתן לתקשר על גבי הרשת"
 
-#: src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:72
 msgid "System Services"
 msgstr "שירותי מערכת"
 
-#: src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:72
 msgid "Can access D-Bus services on the system bus"
 msgstr "ניתן לגשת לשירות D-Bus על ערוץ המערכת"
 
-#: src/gs-app-details-page.c:70
+#: src/gs-app-details-page.c:73
 msgid "Session Services"
 msgstr "שירותי הפעלה"
 
-#: src/gs-app-details-page.c:70
+#: src/gs-app-details-page.c:73
 msgid "Can access D-Bus services on the session bus"
 msgstr "ניתן לגשת לשירות D-Bus על ערוץ הפעלה"
 
-#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
 msgid "Devices"
 msgstr "התקנים"
 
-#: src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:74
 msgid "Can access arbitrary devices such as webcams"
 msgstr "רשאי לגשת להתקנים שונים כמו מצלמות רשת"
 
-#: src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:75
 msgid "Can access system device files"
 msgstr "ניתן לגשת לקובצי התקן המערכת"
 
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:77
 msgid "Home folder"
 msgstr "תיקיית הבית"
 
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:151
+#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:81 src/gs-app-details-page.c:154
 msgid "Can view, edit and create files"
 msgstr "ניתן לצפות, לערוך וליצור קבצים"
 
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:76
-#: src/gs-app-details-page.c:79 src/gs-app-details-page.c:146
+#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:82 src/gs-app-details-page.c:149
 msgid "Can view files"
 msgstr "ניתן לצפות בקבצים"
 
-#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
 msgid "File system"
 msgstr "מערכת קבצים"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
-#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:81 src/gs-app-details-page.c:82
 msgid "Downloads folder"
 msgstr "תיקיית הורדות"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:83
 msgid "Settings"
 msgstr "הגדרות"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:83
 msgid "Can view and change any settings"
 msgstr "ניתן לצפות ולשנות הגדרות"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:84
 msgid "Legacy display system"
 msgstr "מערכת תצוגה מיושנת"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:84
 msgid "Uses an old, insecure display system"
 msgstr "משתמש במערכת תצוגה מיושנת ולא בטוחה"
 
-#: src/gs-app-details-page.c:82
+#: src/gs-app-details-page.c:85
 msgid "Sandbox escape"
 msgstr "עקיפת ארגז חול"
 
-#: src/gs-app-details-page.c:82
+#: src/gs-app-details-page.c:85
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "יכול לצאת מארגז החול ולעקוף הגבלות אחרות"
 
-#. FIXME support app == NULL
-#. set window title
-#: src/gs-app-details-page.c:168
-msgid "Update Details"
-msgstr "פרטי עדכון"
-
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:176
+#: src/gs-app-details-page.c:196
 msgid "No update description available."
 msgstr "אין תיאור זמין לעדכון."
+
+#: src/gs-app-details-page.c:200
+msgid "Loading update description, please wait…"
+msgstr "טוען את פרטי העדכון, נא להמתין…"
+
+#. FIXME support app == NULL
+#. set window title
+#: src/gs-app-details-page.c:234
+msgid "Update Details"
+msgstr "פרטי עדכון"
 
 #: src/gs-app-details-page.ui:25 src/gs-os-update-page.ui:25
 #: src/gs-shell.ui:349 src/gs-shell.ui:440
@@ -1534,7 +1538,7 @@ msgstr "נדרשת התחברות"
 #: src/gs-details-page.ui:297 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:171
 #: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:26 src/gs-review-row.c:241
-#: src/gs-updates-page.c:855 src/gs-updates-page.c:872
+#: src/gs-updates-page.c:853 src/gs-updates-page.c:870
 #: src/gs-upgrade-banner.ui:201
 msgid "_Cancel"
 msgstr "_ביטול"
@@ -4751,34 +4755,34 @@ msgid "Software Upgrade Available"
 msgstr "שדרוג תכנה זמין"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1209
+#: src/gs-update-monitor.c:1208
 msgid "Software Updates Failed"
 msgstr "עדכון התכנה נכשל"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1211
+#: src/gs-update-monitor.c:1210
 msgid "An important operating system update failed to be installed."
 msgstr "התקנת עדכוני מערכת חשובים נכשלה."
 
-#: src/gs-update-monitor.c:1212
+#: src/gs-update-monitor.c:1211
 msgid "Show Details"
 msgstr "הצגת פרטים"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1236
+#: src/gs-update-monitor.c:1235
 msgid "System Upgrade Complete"
 msgstr "עדכון המערכת הושלם"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1241
+#: src/gs-update-monitor.c:1240
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "ברוך בואך אל %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1250
+#: src/gs-update-monitor.c:1249
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "הותקן עדכון תכנה"
@@ -4787,7 +4791,7 @@ msgstr[2] "הותקנו עדכוני תכנה"
 msgstr[3] "הותקנו עדכוני תכנה"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1254
+#: src/gs-update-monitor.c:1253
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "הותקן עדכון חשוב למערכת הפעלה."
@@ -4800,30 +4804,30 @@ msgstr[3] "הותקנו עדכונים חשובים למערכת הפעלה."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1265
+#: src/gs-update-monitor.c:1264
 msgctxt "updates"
 msgid "Review"
 msgstr "ביקורת"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1315
+#: src/gs-update-monitor.c:1314
 msgid "Failed To Update"
 msgstr "העדכון נכשל"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1320
+#: src/gs-update-monitor.c:1319
 msgid "The system was already up to date."
 msgstr "המערכת כבר היתה עדכנית."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1325
+#: src/gs-update-monitor.c:1324
 msgid "The update was cancelled."
 msgstr "העדכון בוטל."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1330
+#: src/gs-update-monitor.c:1329
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -4832,20 +4836,20 @@ msgstr ""
 "ואחר כך לנסות שוב."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1335
+#: src/gs-update-monitor.c:1334
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr "היתה בעיית אבטחה עם העדכון. נא להתייעץ עם ספק התכנה שלך למידע נוסף."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1340
+#: src/gs-update-monitor.c:1339
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "לא היה מספיק מקום פנוי בכונן הקשיח שלך. נא לפנות מקום ולנסות שוב."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1344
+#: src/gs-update-monitor.c:1343
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -4881,50 +4885,50 @@ msgid "Your operating system has stopped receiving critical software updates"
 msgstr "מערכת ההפעלה שלך הפסיקה לקבל עדכוני תכנה חיוניים."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:851
+#: src/gs-updates-page.c:849
 msgid "Charges May Apply"
 msgstr "עשויים לחול חיובים"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:853
+#: src/gs-updates-page.c:851
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
 msgstr "בדיקת עדכונים תוך שימוש בפס רחב נייד עשויה לשאת בחיובים נוספים."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:857
+#: src/gs-updates-page.c:855
 msgid "Check _Anyway"
 msgstr "_לבדוק בכל מקרה"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:868
+#: src/gs-updates-page.c:866
 msgid "No Network"
 msgstr "אין רשת"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:870
+#: src/gs-updates-page.c:868
 msgid "Internet access is required to check for updates."
 msgstr "צריכה להיות גישה לאינטרנט כדי לבדוק אם יש עדכונים."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:874
+#: src/gs-updates-page.c:872
 msgid "Network _Settings"
 msgstr "ה_גדרות רשת"
 
-#: src/gs-updates-page.c:912
+#: src/gs-updates-page.c:910
 msgid "Software Upgrades Downloaded"
 msgstr "שדרוג תכנה הורד"
 
-#: src/gs-updates-page.c:913
+#: src/gs-updates-page.c:911
 msgid "Software upgrades have been downloaded and are ready to be installed."
 msgstr "שדרוגי תכנה הורדו זה מכבר ומוכנים להתקנה."
 
-#: src/gs-updates-page.c:1262
+#: src/gs-updates-page.c:1260
 msgid "Check for updates"
 msgstr "בדיקת עדכונים"
 
-#: src/gs-updates-page.c:1298
+#: src/gs-updates-page.c:1296
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "עדכונים"
@@ -5120,11 +5124,6 @@ msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
 msgstr "עדכוני מערכת כלליים, כגון אבטחה או תיקוני תקלות לרבות שיפורי ביצועים."
-
-#. TRANSLATORS: status text when downloading
-#: plugins/core/gs-plugin-rewrite-resource.c:155
-msgid "Downloading featured images…"
-msgstr "מוריד תמונות מומלצות…"
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
 #: plugins/eos-updater/gs-plugin-eos-updater.c:688
@@ -5616,7 +5615,7 @@ msgstr ""
 msgid "Packages"
 msgstr "חבילות"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3034
+#: plugins/packagekit/gs-plugin-packagekit.c:3036
 msgid "Failed to install updates: "
 msgstr "התקנת עדכונים נכשלה: "
 
@@ -5636,6 +5635,9 @@ msgstr "תמיכה ב־Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוקס"
+
+#~ msgid "Downloading featured images…"
+#~ msgstr "מוריד תמונות מומלצות…"
 
 #~ msgid "Show verbose debugging information"
 #~ msgstr "Show verbose debugging information"
