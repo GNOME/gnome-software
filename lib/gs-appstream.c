@@ -1091,6 +1091,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	guint64 timestamp;
 	g_autoptr(GPtrArray) bundles = NULL;
 	g_autoptr(GPtrArray) launchables = NULL;
+	g_autoptr(XbQuery) compatible_query = NULL;
 	g_autoptr(XbNode) req = NULL;
 
 	/* The 'plugin' can be NULL, when creating app for --show-metainfo */
@@ -1098,10 +1099,12 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
 	g_return_val_if_fail (XB_IS_NODE (component), FALSE);
 
+       compatible_query = xb_silo_lookup_query (silo,
+						"requires/id[@type='id']"
+						"[text()='org.gnome.Software.desktop']");
+
 	/* is compatible */
-	req = xb_node_query_first (component,
-				   "requires/id[@type='id']"
-				   "[text()='org.gnome.Software.desktop']", NULL);
+	req = xb_node_query_first_full (component, compatible_query, NULL);
 	if (req != NULL) {
 		gint rc = as_vercmp_simple (xb_node_get_attr (req, "version"),
 					    PACKAGE_VERSION);
@@ -1538,6 +1541,7 @@ gs_appstream_do_search (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
 	g_autoptr(GPtrArray) components = NULL;
+	g_autoptr(XbQuery) components_query = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
@@ -1547,20 +1551,18 @@ gs_appstream_do_search (GsPlugin *plugin,
 
 	/* add some weighted queries */
 	for (guint i = 0; queries[i].xpath != NULL; i++) {
-		g_autoptr(GError) error_query = NULL;
-		g_autoptr(XbQuery) query = xb_query_new (silo, queries[i].xpath, &error_query);
+		g_autoptr(XbQuery) query = xb_silo_lookup_query (silo, queries[i].xpath);
 		if (query != NULL) {
 			GsAppstreamSearchHelper *helper = g_new0 (GsAppstreamSearchHelper, 1);
 			helper->match_value = queries[i].match_value;
 			helper->query = g_steal_pointer (&query);
 			g_ptr_array_add (array, helper);
-		} else {
-			g_debug ("ignoring: %s", error_query->message);
 		}
 	}
 
 	/* get all components */
-	components = xb_silo_query (silo, "components/component", 0, &error_local);
+	components_query = xb_silo_lookup_query (silo, "components/component");
+	components = xb_silo_query_full (silo, components_query, &error_local);
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
