@@ -1482,6 +1482,7 @@ gs_appstream_do_search (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(XbQuery) components_query = NULL;
+	g_autoptr(XbQuery) extends_query = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
@@ -1506,6 +1507,9 @@ gs_appstream_do_search (GsPlugin *plugin,
 	if (components == NULL) {
 		return TRUE;
 	}
+
+	extends_query = xb_silo_lookup_query(silo, "extends");
+
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
 		guint16 match_value = gs_appstream_silo_search_component (array, component, values);
@@ -1531,7 +1535,7 @@ gs_appstream_do_search (GsPlugin *plugin,
 				g_autoptr(GPtrArray) extends = NULL;
 
 				/* add the parent app as a wildcard, to be refined later */
-				extends = xb_node_query (component, "extends", 0, NULL);
+				extends = xb_node_query_full (component, extends_query, NULL);
 				for (guint jj = 0; extends && jj < extends->len; jj++) {
 					XbNode *extend = g_ptr_array_index (extends, jj);
 					g_autoptr(GsApp) app2 = NULL;
