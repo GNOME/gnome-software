@@ -419,20 +419,15 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 				GError **error)
 {
 	g_autofree gchar *xpath = NULL;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) addons = NULL;
 	g_autoptr(GsAppList) addons_list = NULL;
 
 	/* get all components */
 	xpath = g_strdup_printf ("components/component/extends[text()='%s']/..",
 				 gs_app_get_id (app));
-	addons = xb_silo_query (silo, xpath, 0, &error_local);
-	if (addons == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	addons = xb_silo_query (silo, xpath, 0, NULL);
+	if (addons == NULL)
+		return TRUE;
 
 	addons_list = gs_app_list_new ();
 
@@ -459,17 +454,12 @@ gs_appstream_refine_add_images (GsApp *app,
 				gboolean *out_any_added,
 				GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) images = NULL;
 
 	/* get all components */
-	images = xb_node_query (screenshot, "image", 0, &error_local);
-	if (images == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	images = xb_node_query (screenshot, "image", 0, NULL);
+	if (images == NULL)
+		return TRUE;
 	for (guint i = 0; i < images->len; i++) {
 		XbNode *image = g_ptr_array_index (images, i);
 		g_autoptr(AsImage) im = as_image_new ();
@@ -493,16 +483,11 @@ gs_appstream_refine_add_videos (GsApp *app,
 				gboolean *out_any_added,
 				GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) videos = NULL;
 
-	videos = xb_node_query (screenshot, "video", 0, &error_local);
-	if (videos == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	videos = xb_node_query (screenshot, "video", 0, NULL);
+	if (videos == NULL)
+		return TRUE;
 	for (guint i = 0; i < videos->len; i++) {
 		XbNode *video = g_ptr_array_index (videos, i);
 		g_autoptr(AsVideo) vid = as_video_new ();
@@ -522,17 +507,12 @@ gs_appstream_refine_add_videos (GsApp *app,
 static gboolean
 gs_appstream_refine_add_screenshots (GsApp *app, XbNode *component, GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) screenshots = NULL;
 
 	/* get all components */
-	screenshots = xb_node_query (component, "screenshots/screenshot", 0, &error_local);
-	if (screenshots == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	screenshots = xb_node_query (component, "screenshots/screenshot", 0, NULL);
+	if (screenshots == NULL)
+		return TRUE;
 	for (guint i = 0; i < screenshots->len; i++) {
 		XbNode *screenshot = g_ptr_array_index (screenshots, i);
 		g_autoptr(AsScreenshot) ss = as_screenshot_new ();
@@ -555,17 +535,12 @@ gs_appstream_refine_add_screenshots (GsApp *app, XbNode *component, GError **err
 static gboolean
 gs_appstream_refine_add_provides (GsApp *app, XbNode *component, GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) provides = NULL;
 
 	/* get all components */
-	provides = xb_node_query (component, "provides/*", 0, &error_local);
-	if (provides == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	provides = xb_node_query (component, "provides/*", 0, NULL);
+	if (provides == NULL)
+		return TRUE;
 	for (guint i = 0; i < provides->len; i++) {
 		AsProvidedKind kind;
 		const gchar *element_name;
@@ -658,16 +633,12 @@ gs_appstream_is_recent_release (XbNode *component)
 static gboolean
 gs_appstream_copy_metadata (GsApp *app, XbNode *component, GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) values = NULL;
 
 	/* get all components */
-	values = xb_node_query (component, "custom/value", 0, &error_local);
+	values = xb_node_query (component, "custom/value", 0, NULL);
 	if (values == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
+		return TRUE;
 	}
 	for (guint i = 0; i < values->len; i++) {
 		XbNode *value = g_ptr_array_index (values, i);
@@ -689,7 +660,6 @@ gs_appstream_refine_app_updates (GsApp *app,
 {
 	AsUrgencyKind urgency_best = AS_URGENCY_KIND_UNKNOWN;
 	g_autofree gchar *xpath = NULL;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GHashTable) installed = g_hash_table_new (g_str_hash, g_str_equal);
 	g_autoptr(GPtrArray) releases_inst = NULL;
 	g_autoptr(GPtrArray) releases = NULL;
@@ -702,13 +672,8 @@ gs_appstream_refine_app_updates (GsApp *app,
 	/* find out which releases are already installed */
 	xpath = g_strdup_printf ("component/id[text()='%s']/../releases/*[@version]",
 				 gs_app_get_id (app));
-	releases_inst = xb_silo_query (silo, xpath, 0, &error_local);
-	if (releases_inst == NULL) {
-		if (!g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-			g_propagate_error (error, g_steal_pointer (&error_local));
-			return FALSE;
-		}
-	} else {
+	releases_inst = xb_silo_query (silo, xpath, 0, NULL);
+	if (releases_inst != NULL) {
 		for (guint i = 0; i < releases_inst->len; i++) {
 			XbNode *release = g_ptr_array_index (releases_inst, i);
 			g_hash_table_insert (installed,
@@ -716,16 +681,11 @@ gs_appstream_refine_app_updates (GsApp *app,
 					     (gpointer) release);
 		}
 	}
-	g_clear_error (&error_local);
 
 	/* get all components */
-	releases = xb_node_query (component, "releases/*", 0, &error_local);
-	if (releases == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	releases = xb_node_query (component, "releases/*", 0, NULL);
+	if (releases == NULL)
+		return TRUE;
 	for (guint i = 0; i < releases->len; i++) {
 		XbNode *release = g_ptr_array_index (releases, i);
 		const gchar *version = xb_node_get_attr (release, "version");
@@ -819,18 +779,13 @@ gs_appstream_refine_app_updates (GsApp *app,
 static gboolean
 gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) version_history = NULL; /* (element-type AsRelease) */
 	g_autoptr(GPtrArray) releases = NULL; /* (element-type XbNode) */
 
 	/* get all components */
-	releases = xb_node_query (component, "releases/*", 0, &error_local);
-	if (releases == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	releases = xb_node_query (component, "releases/*", 0, NULL);
+	if (releases == NULL)
+		return TRUE;
 
 	version_history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	for (guint i = 0; i < releases->len; i++) {
@@ -927,7 +882,6 @@ gs_appstream_refine_app_content_rating (GsApp *app,
 					GError **error)
 {
 	g_autoptr(AsContentRating) cr = as_content_rating_new ();
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) content_attributes = NULL;
 	const gchar *content_rating_kind = NULL;
 
@@ -946,20 +900,15 @@ gs_appstream_refine_app_content_rating (GsApp *app,
 	 * `<content_rating type="*"/>`) is OK: it means that all attributes have
 	 * value `none`, as per the
 	 * [OARS semantics](https://github.com/hughsie/oars/blob/HEAD/specification/oars-1.1.md) */
-	content_attributes = xb_node_query (content_rating, "content_attribute", 0, &error_local);
-	if (content_attributes == NULL &&
-	    g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-		g_clear_error (&error_local);
-	} else if (content_attributes == NULL) {
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	content_attributes = xb_node_query (content_rating, "content_attribute", 0, NULL);
 
-	for (guint i = 0; content_attributes != NULL && i < content_attributes->len; i++) {
-		XbNode *content_attribute = g_ptr_array_index (content_attributes, i);
-		as_content_rating_add_attribute (cr,
-						 xb_node_get_attr (content_attribute, "id"),
-						 as_content_rating_value_from_string (xb_node_get_text (content_attribute)));
+	if (content_attributes != NULL) {
+		for (guint i = 0; i < content_attributes->len; i++) {
+			XbNode *content_attribute = g_ptr_array_index (content_attributes, i);
+			as_content_rating_add_attribute (cr,
+							 xb_node_get_attr (content_attribute, "id"),
+							 as_content_rating_value_from_string (xb_node_get_text (content_attribute)));
+		}
 	}
 
 	gs_app_set_content_rating (app, cr);
@@ -972,15 +921,11 @@ gs_appstream_refine_app_content_ratings (GsApp *app,
 					 GError **error)
 {
 	g_autoptr(GPtrArray) content_ratings = NULL;
-	g_autoptr(GError) error_local = NULL;
 
 	/* find any content ratings */
-	content_ratings = xb_node_query (component, "content_rating", 0, &error_local);
+	content_ratings = xb_node_query (component, "content_rating", 0, NULL);
 	if (content_ratings == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
+		return TRUE;
 	}
 	for (guint i = 0; i < content_ratings->len; i++) {
 		XbNode *content_rating = g_ptr_array_index (content_ratings, i);
@@ -1059,15 +1004,11 @@ gs_appstream_refine_app_relations (GsApp     *app,
 
 	for (gsize i = 0; i < G_N_ELEMENTS (relation_types); i++) {
 		g_autoptr(GPtrArray) relations = NULL;
-		g_autoptr(GError) error_local = NULL;
 
 		/* find any instances of this @element_name */
-		relations = xb_node_query (component, relation_types[i].element_name, 0, &error_local);
-		if (relations == NULL &&
-		    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-			g_propagate_error (error, g_steal_pointer (&error_local));
-			return FALSE;
-		}
+		relations = xb_node_query (component, relation_types[i].element_name, 0, NULL);
+		if (relations == NULL)
+			return TRUE;
 
 		for (guint j = 0; relations != NULL && j < relations->len; j++) {
 			XbNode *relation = g_ptr_array_index (relations, j);
@@ -1538,7 +1479,6 @@ gs_appstream_do_search (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(XbQuery) components_query = NULL;
@@ -1562,12 +1502,9 @@ gs_appstream_do_search (GsPlugin *plugin,
 
 	/* get all components */
 	components_query = xb_silo_lookup_query (silo, "components/component");
-	components = xb_silo_query_full (silo, components_query, &error_local);
+	components = xb_silo_query_full (silo, components_query, NULL);
 	if (components == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
+		return TRUE;
 	}
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
@@ -1695,7 +1632,6 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 		g_autofree gchar *xpath = NULL;
 		g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
 		g_autoptr(GPtrArray) components = NULL;
-		g_autoptr(GError) error_local = NULL;
 
 		/* generate query */
 		if (g_strv_length (split) == 1) {
@@ -1708,12 +1644,9 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 						 "category[text()='%s']/../..",
 						 split[0], split[1]);
 		}
-		components = xb_silo_query (silo, xpath, 0, &error_local);
+		components = xb_silo_query (silo, xpath, 0, NULL);
 		if (components == NULL) {
-			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-				continue;
-			g_propagate_error (error, g_steal_pointer (&error_local));
-			return FALSE;
+			continue;
 		}
 
 		/* create app */
@@ -1742,7 +1675,6 @@ gs_appstream_count_component_for_groups (XbSilo      *silo,
 	g_autofree gchar *xpath = NULL;
 	g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
 	g_autoptr(GPtrArray) array = NULL;
-	g_autoptr(GError) error_local = NULL;
 
 	if (g_strv_length (split) == 1) { /* "all" group for a parent category */
 		xpath = g_strdup_printf ("components/component[not(@merge)]/categories/"
@@ -1757,14 +1689,8 @@ gs_appstream_count_component_for_groups (XbSilo      *silo,
 		return 0;
 	}
 
-	array = xb_silo_query (silo, xpath, limit, &error_local);
-	if (array == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return 0;
-		g_warning ("%s", error_local->message);
-		return 0;
-	}
-	return array->len;
+	array = xb_silo_query (silo, xpath, limit, NULL);
+	return array ? array->len : 0;
 }
 
 /* we're not actually adding categories here, we're just setting the number of
@@ -1845,7 +1771,6 @@ gs_appstream_add_popular (XbSilo *silo,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
@@ -1855,13 +1780,9 @@ gs_appstream_add_popular (XbSilo *silo,
 	array = xb_silo_query (silo,
 			       "components/component/kudos/"
 			       "kudo[text()='GnomeSoftware::popular']/../..",
-			       0, &error_local);
-	if (array == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+			       0, NULL);
+	if (array == NULL)
+		return TRUE;
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		XbNode *component = g_ptr_array_index (array, i);
@@ -1885,7 +1806,6 @@ gs_appstream_add_recent (GsPlugin *plugin,
 {
 	guint64 now = (guint64) g_get_real_time () / G_USEC_PER_SEC, max_future_timestamp;
 	g_autofree gchar *xpath = NULL;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
@@ -1896,13 +1816,10 @@ gs_appstream_add_recent (GsPlugin *plugin,
 	xpath = g_strdup_printf ("components/component/releases/"
 				 "release[@timestamp>%" G_GUINT64_FORMAT "]/../..",
 				 now - age);
-	array = xb_silo_query (silo, xpath, 0, &error_local);
-	if (array == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	array = xb_silo_query (silo, xpath, 0, NULL);
+	if (array == NULL)
+		return TRUE;
+
 	/* This is to cover mistakes when the release date is set in the future,
 	   to not have it picked for too long. */
 	max_future_timestamp = now + (3 * 24 * 60 * 60);
@@ -1931,7 +1848,6 @@ gs_appstream_add_alternates (XbSilo *silo,
 			     GError **error)
 {
 	GPtrArray *sources = gs_app_get_sources (app);
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) ids = NULL;
 	g_autoptr(GString) xpath = g_string_new (NULL);
 
@@ -1965,13 +1881,9 @@ gs_appstream_add_alternates (XbSilo *silo,
 	}
 
 	/* do a big query, and return all the unique results */
-	ids = xb_silo_query (silo, xpath->str, 0, &error_local);
-	if (ids == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	ids = xb_silo_query (silo, xpath->str, 0, NULL);
+	if (ids == NULL)
+		return TRUE;
 	for (guint i = 0; i < ids->len; i++) {
 		XbNode *n = g_ptr_array_index (ids, i);
 		g_autoptr(GsApp) app2 = NULL;
@@ -1994,20 +1906,15 @@ gs_appstream_add_featured_with_query (XbSilo *silo,
 				      GCancellable *cancellable,
 				      GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
 	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
 
 	/* find out how many packages are in each category */
-	array = xb_silo_query (silo, query, 0, &error_local);
-	if (array == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	array = xb_silo_query (silo, query, 0, NULL);
+	if (array == NULL)
+		return TRUE;
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		XbNode *component = g_ptr_array_index (array, i);
