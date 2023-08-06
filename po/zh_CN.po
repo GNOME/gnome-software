@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software 41\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-07-11 15:51+0000\n"
-"PO-Revision-Date: 2023-07-13 19:33+0800\n"
+"POT-Creation-Date: 2023-08-04 14:51+0000\n"
+"PO-Revision-Date: 2023-08-05 16:18+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese - China <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -82,7 +82,7 @@ msgstr "更新面板"
 msgid "The update details"
 msgstr "更新详情"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2287
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2311
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "GNOME 项目"
@@ -777,7 +777,7 @@ msgstr "年龄分级"
 msgid "How to contribute missing information"
 msgstr "如何贡献缺失的信息"
 
-#: lib/gs-app.c:6307
+#: lib/gs-app.c:6331
 msgid "Local file"
 msgstr "本地文件"
 
@@ -786,12 +786,12 @@ msgstr "本地文件"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6326 src/gs-safety-context-dialog.c:486
+#: lib/gs-app.c:6350 src/gs-safety-context-dialog.c:486
 #, c-format
 msgid "%s (%s)"
 msgstr "%s（%s）"
 
-#: lib/gs-app.c:6403
+#: lib/gs-app.c:6427
 msgid "Package"
 msgstr "软件包"
 
@@ -834,100 +834,104 @@ msgstr "安装(_I)"
 msgid "_Uninstall"
 msgstr "卸载(_U)"
 
-#: src/gs-app-details-page.c:68
+#: src/gs-app-details-page.c:71
 msgid "Network"
 msgstr "网络"
 
-#: src/gs-app-details-page.c:68
+#: src/gs-app-details-page.c:71
 msgid "Can communicate over the network"
 msgstr "可以通过网络进行通信"
 
-#: src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:72
 msgid "System Services"
 msgstr "系统服务"
 
-#: src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:72
 msgid "Can access D-Bus services on the system bus"
 msgstr "可以访问在系统总线上访问 D-Bus 服务"
 
-#: src/gs-app-details-page.c:70
+#: src/gs-app-details-page.c:73
 msgid "Session Services"
 msgstr "会话服务"
 
-#: src/gs-app-details-page.c:70
+#: src/gs-app-details-page.c:73
 msgid "Can access D-Bus services on the session bus"
 msgstr "可以在会话总线上访问 D-Bus 服务"
 
-#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
 msgid "Devices"
 msgstr "设备"
 
-#: src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:74
 msgid "Can access arbitrary devices such as webcams"
 msgstr "可访问任意设备如摄像头"
 
-#: src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:75
 msgid "Can access system device files"
 msgstr "可访问系统设备文件"
 
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:77
 msgid "Home folder"
 msgstr "主目录"
 
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:151
+#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:81 src/gs-app-details-page.c:154
 msgid "Can view, edit and create files"
 msgstr "可以查看、编辑和创建文件"
 
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:76
-#: src/gs-app-details-page.c:79 src/gs-app-details-page.c:146
+#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:82 src/gs-app-details-page.c:149
 msgid "Can view files"
 msgstr "可以查看文件"
 
-#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
 msgid "File system"
 msgstr "文件系统"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
-#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:81 src/gs-app-details-page.c:82
 msgid "Downloads folder"
 msgstr "下载文件夹"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:83
 msgid "Settings"
 msgstr "设置"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:83
 msgid "Can view and change any settings"
 msgstr "可以查看和更改任意设置"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:84
 msgid "Legacy display system"
 msgstr "过时显示系统"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:84
 msgid "Uses an old, insecure display system"
 msgstr "使用旧式、不安全的显示系统"
 
-#: src/gs-app-details-page.c:82
+#: src/gs-app-details-page.c:85
 msgid "Sandbox escape"
 msgstr "沙箱逃逸"
 
-#: src/gs-app-details-page.c:82
+#: src/gs-app-details-page.c:85
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "可以逃脱沙箱并绕过任何其他限制"
 
-#. FIXME support app == NULL
-#. set window title
-#: src/gs-app-details-page.c:168
-msgid "Update Details"
-msgstr "更新详情"
-
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:176
+#: src/gs-app-details-page.c:196
 msgid "No update description available."
 msgstr "没有可用的更新描述。"
+
+#: src/gs-app-details-page.c:200
+msgid "Loading update description, please wait…"
+msgstr "正在加载更新描述，请稍等…"
+
+#. FIXME support app == NULL
+#. set window title
+#: src/gs-app-details-page.c:234
+msgid "Update Details"
+msgstr "更新详情"
 
 #: src/gs-app-details-page.ui:25 src/gs-os-update-page.ui:25
 #: src/gs-shell.ui:349 src/gs-shell.ui:440
@@ -1529,7 +1533,7 @@ msgstr "需要登录"
 #: src/gs-details-page.ui:297 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:171
 #: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:26 src/gs-review-row.c:241
-#: src/gs-updates-page.c:855 src/gs-updates-page.c:872
+#: src/gs-updates-page.c:853 src/gs-updates-page.c:870
 #: src/gs-upgrade-banner.ui:201
 msgid "_Cancel"
 msgstr "取消(_C)"
@@ -4655,40 +4659,40 @@ msgid "Software Upgrade Available"
 msgstr "有可用的软件升级"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1209
+#: src/gs-update-monitor.c:1208
 msgid "Software Updates Failed"
 msgstr "软件更新失败"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1211
+#: src/gs-update-monitor.c:1210
 msgid "An important operating system update failed to be installed."
 msgstr "重要的操作系统更新安装失败。"
 
-#: src/gs-update-monitor.c:1212
+#: src/gs-update-monitor.c:1211
 msgid "Show Details"
 msgstr "显示详细信息"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1236
+#: src/gs-update-monitor.c:1235
 msgid "System Upgrade Complete"
 msgstr "系统升级完成"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1241
+#: src/gs-update-monitor.c:1240
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "欢迎使用 %s %s！"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1250
+#: src/gs-update-monitor.c:1249
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "软件更新已安装"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1254
+#: src/gs-update-monitor.c:1253
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "重要的操作系统更新已安装。"
@@ -4698,50 +4702,50 @@ msgstr[0] "重要的操作系统更新已安装。"
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1265
+#: src/gs-update-monitor.c:1264
 msgctxt "updates"
 msgid "Review"
 msgstr "回顾"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1315
+#: src/gs-update-monitor.c:1314
 msgid "Failed To Update"
 msgstr "更新失败"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1320
+#: src/gs-update-monitor.c:1319
 msgid "The system was already up to date."
 msgstr "该系统已是最新的。"
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1325
+#: src/gs-update-monitor.c:1324
 msgid "The update was cancelled."
 msgstr "更新被取消。"
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1330
+#: src/gs-update-monitor.c:1329
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
 msgstr "需要互联网连接但是未发现有效连接。请确认您有接入互联网并在此尝试。"
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1335
+#: src/gs-update-monitor.c:1334
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr "本次更新有安全性问题。请联系您的软件提供商以获取更多信息。"
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1340
+#: src/gs-update-monitor.c:1339
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "没有足够的磁盘空间。请释放一些空间后再试一次。"
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1344
+#: src/gs-update-monitor.c:1343
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -4777,50 +4781,50 @@ msgid "Your operating system has stopped receiving critical software updates"
 msgstr "您的操作系统已停止接收关键软件更新"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:851
+#: src/gs-updates-page.c:849
 msgid "Charges May Apply"
 msgstr "可能需要收费"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:853
+#: src/gs-updates-page.c:851
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
 msgstr "使用移动宽带检查更新可能会花费流量。"
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:857
+#: src/gs-updates-page.c:855
 msgid "Check _Anyway"
 msgstr "依然检查(_A)"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:868
+#: src/gs-updates-page.c:866
 msgid "No Network"
 msgstr "无网络连接"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:870
+#: src/gs-updates-page.c:868
 msgid "Internet access is required to check for updates."
 msgstr "检查更新需要可访问网络。"
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:874
+#: src/gs-updates-page.c:872
 msgid "Network _Settings"
 msgstr "网络设置(_S)"
 
-#: src/gs-updates-page.c:912
+#: src/gs-updates-page.c:910
 msgid "Software Upgrades Downloaded"
 msgstr "软件升级已下载"
 
-#: src/gs-updates-page.c:913
+#: src/gs-updates-page.c:911
 msgid "Software upgrades have been downloaded and are ready to be installed."
 msgstr "软件升级已下载并且已准备好安装。"
 
-#: src/gs-updates-page.c:1262
+#: src/gs-updates-page.c:1260
 msgid "Check for updates"
 msgstr "检查更新"
 
-#: src/gs-updates-page.c:1298
+#: src/gs-updates-page.c:1296
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "更新"
@@ -5015,11 +5019,6 @@ msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
 msgstr "常规系统更新，比如安全或缺陷修复和性能提升。"
-
-#. TRANSLATORS: status text when downloading
-#: plugins/core/gs-plugin-rewrite-resource.c:155
-msgid "Downloading featured images…"
-msgstr "正在下载特别推荐的图像…"
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
 #: plugins/eos-updater/gs-plugin-eos-updater.c:688
@@ -5505,7 +5504,7 @@ msgstr ""
 msgid "Packages"
 msgstr "软件包"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3034
+#: plugins/packagekit/gs-plugin-packagekit.c:3036
 msgid "Failed to install updates: "
 msgstr "安装更新失败："
 
@@ -5525,6 +5524,9 @@ msgstr "Snap 支持"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap 是个通用的 Linux 程序包"
+
+#~ msgid "Downloading featured images…"
+#~ msgstr "正在下载特别推荐的图像…"
 
 #~ msgid "Show verbose debugging information"
 #~ msgstr "显示详细的调试信息"
