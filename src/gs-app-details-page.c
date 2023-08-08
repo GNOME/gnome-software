@@ -51,6 +51,7 @@ struct _GsAppDetailsPage
 	GtkWidget	*back_button;
 	GtkWidget	*header_bar;
 	GtkWidget	*label_details;
+	GtkWidget	*spinner_details;
 	GtkWidget	*permissions_section;
 	GtkWidget	*permissions_section_list;
 	GtkWidget	*status_page;
@@ -190,29 +191,41 @@ set_update_description (GsAppDetailsPage *self,
 	const gchar *update_details;
 
 	update_details = gs_app_get_update_details_markup (self->app);
-	if (update_details == NULL) {
-		if (self->plugin_loader == NULL || !can_call_refine ||
-		    gs_app_get_update_details_set (self->app)) {
-			/* TRANSLATORS: this is where the packager did not write
-			 * a description for the update */
-			update_details = _("No update description available.");
-		} else {
-			g_autoptr(GsPluginJob) plugin_job = NULL;
+	if (update_details == NULL && self->plugin_loader != NULL &&
+	    can_call_refine && !gs_app_get_update_details_set (self->app)) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
 
-			update_details = _("Loading update description, please wait…");
-			/* to not refine the app again, when there is no description */
-			gs_app_set_update_details_text (self->app, NULL);
+		/* to not refine the app again, when there is no description */
+		gs_app_set_update_details_text (self->app, NULL);
 
-			g_assert (self->refine_cancellable == NULL);
-			self->refine_cancellable = g_cancellable_new ();
-			plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS);
-			gs_plugin_job_set_interactive (plugin_job, TRUE);
-			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-							    self->refine_cancellable,
-							    refine_app_finished_cb,
-							    self);
-		}
+		/* Keep the label visible, to have allocated proper height for the row,
+		   thus the row does not resize when the details are on-line text only.
+		   It will resize when the details are multiple lines of text. */
+		gtk_label_set_text (GTK_LABEL (self->label_details), "");
+		gtk_widget_set_visible (self->spinner_details, TRUE);
+		gtk_spinner_start (GTK_SPINNER (self->spinner_details));
+
+		g_assert (self->refine_cancellable == NULL);
+		self->refine_cancellable = g_cancellable_new ();
+		plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS);
+		gs_plugin_job_set_interactive (plugin_job, TRUE);
+		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+						    self->refine_cancellable,
+						    refine_app_finished_cb,
+						    self);
+
+		return;
 	}
+
+	gtk_spinner_stop (GTK_SPINNER (self->spinner_details));
+	gtk_widget_set_visible (self->spinner_details, FALSE);
+
+	if (update_details == NULL || *update_details == '\0') {
+		/* TRANSLATORS: this is where the packager did not write
+		 * a description for the update */
+		update_details = _("No update description available.");
+	}
+
 	gtk_label_set_markup (GTK_LABEL (self->label_details), update_details);
 }
 
@@ -537,6 +550,7 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, back_button);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, header_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, label_details);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_list);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, status_page);
