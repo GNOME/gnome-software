@@ -1472,6 +1472,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
                                    gpointer             user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GHashTable) resolve_list_apps = g_hash_table_new (NULL, NULL);
 	g_autoptr(GsAppList) resolve_list = gs_app_list_new ();
 	g_autoptr(GsAppList) update_details_list = gs_app_list_new ();
 	g_autoptr(GsAppList) details_list = gs_app_list_new ();
@@ -1532,6 +1533,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		     gs_plugin_refine_requires_package_id (app, flags) ||
 		     gs_plugin_refine_requires_origin (app, flags) ||
 		     gs_plugin_refine_requires_version (app, flags))) {
+			g_hash_table_add (resolve_list_apps, app);
 			gs_app_list_add (resolve_list, app);
 		}
 
@@ -1645,6 +1647,9 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			tmp = gs_app_get_id (app);
 			if (tmp == NULL)
 				continue;
+			/* The information will be added within the resolve_list operation */
+			if (g_hash_table_contains (resolve_list_apps, app))
+				continue;
 			switch (gs_app_get_kind (app)) {
 			case AS_COMPONENT_KIND_DESKTOP_APP:
 				fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
@@ -1715,6 +1720,10 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			GsApp *app = gs_app_list_index (repos_list, i);
 			GPtrArray *sources;
 			const gchar *filename;
+
+			/* The information will be added within the resolve_list operation */
+			if (g_hash_table_contains (resolve_list_apps, app))
+				continue;
 
 			filename = gs_app_get_metadata_item (app, "repos::repo-filename");
 
