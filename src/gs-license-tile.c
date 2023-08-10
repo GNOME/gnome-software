@@ -126,7 +126,19 @@ gs_license_tile_refresh (GsLicenseTile *self)
 							 "You can contribute and help make it even better."),
 							 license_spdx);
 		}
-	} else {
+	} else if (gs_app_get_license (self->app) == NULL) {
+		title = _("Unknown License");
+		css_class = "grey";
+		lozenge_icon_names[0] = "hand-open-symbolic";
+		lozenge_icon_names[1] = "dialog-warning-symbolic";
+		lozenge_icon_names[2] = "community-none-symbolic";
+		get_involved_visible = FALSE;
+		get_involved_label = _("_Learn More");
+
+		description = g_strdup (_("This software does not specify what license it is developed under, and may be proprietary. It may be insecure in ways that are hard to detect, and it may change without oversight."
+					  "\n\n"
+					  "You may or may not be able to contribute to this software."));
+	} else if (g_ascii_strncasecmp (gs_app_get_license (self->app), "LicenseRef-proprietary", strlen ("LicenseRef-proprietary")) == 0) {
 		title = _("Proprietary");
 		css_class = "yellow";
 		lozenge_icon_names[0] = "hand-open-symbolic";
@@ -138,6 +150,35 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		description = g_strdup (_("This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight."
 					  "\n\n"
 					  "You may not be able to contribute to this software."));
+	} else {
+		const gchar *license_spdx;
+		g_autofree gchar *license_url = NULL;
+
+		license_spdx = gs_app_get_license (self->app);
+		license_url = as_get_license_url (license_spdx);
+
+		title = _("Special License");
+		css_class = "yellow";
+		lozenge_icon_names[0] = "hand-open-symbolic";
+		lozenge_icon_names[1] = "dialog-warning-symbolic";
+		lozenge_icon_names[2] = "community-none-symbolic";
+		get_involved_visible = FALSE;
+		get_involved_label = _("_Learn More");
+
+		if (license_url != NULL) {
+			/* Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license. */
+			description = g_strdup_printf (_("This software is developed under the special license <a href=\"%s\">%s</a>."
+							  "\n\n"
+							  "You may or may not be able to contribute to this software."),
+							 license_url,
+							 license_spdx);
+		} else {
+			/* Translators: The placeholder here is the name of a software license. */
+			description = g_strdup_printf (_("This software is developed under the special license “%s”."
+							  "\n\n"
+							  "You may or may not be able to contribute to this software."),
+							 license_spdx);
+		}
 	}
 
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenges); i++) {
