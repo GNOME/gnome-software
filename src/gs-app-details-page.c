@@ -54,6 +54,7 @@ struct _GsAppDetailsPage
 	GtkWidget	*permissions_section;
 	GtkWidget	*permissions_section_list;
 	GtkWidget	*status_page;
+	GtkWidget	*status_page_clamp;
 	AdwWindowTitle	*window_title;
 
 	GsPluginLoader	*plugin_loader; /* (owned) */
@@ -433,7 +434,24 @@ gs_app_details_page_set_property (GObject *object, guint prop_id, const GValue *
 static void
 gs_app_details_page_init (GsAppDetailsPage *page)
 {
+	GtkWidget *widget;
+
 	gtk_widget_init_template (GTK_WIDGET (page));
+
+	/* The "icon-dropshadow" cannot be applied on the top widget, because
+	   it influences also GtkSpinner drawing. The AdwStatusPage does not
+	   provide access to the internal GtkImage widget, which this CSS class
+	   is for, thus do this workaround to set the CSS class on an upper widget
+	   in the AdwStatusPage hierarchy.
+	 *
+	 * FIXME: See https://gitlab.gnome.org/GNOME/libadwaita/-/issues/718 */
+	widget = gtk_widget_get_prev_sibling (page->status_page_clamp);
+	if (widget == NULL)
+		widget = gtk_widget_get_next_sibling (page->status_page_clamp);
+	if (widget != NULL)
+		gtk_widget_add_css_class (widget, "icon-dropshadow");
+	else
+		g_warning ("%s: Failed to find sibling for 'icon-dropshadow'", G_STRFUNC);
 }
 
 static void
@@ -521,6 +539,7 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_list);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, status_page);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, status_page_clamp);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, window_title);
 	gtk_widget_class_bind_template_callback (widget_class, back_clicked_cb);
 }
