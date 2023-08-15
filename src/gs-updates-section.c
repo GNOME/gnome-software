@@ -482,6 +482,11 @@ _button_update_all_clicked_cb (GsUpdatesSection *self)
 
 	helper->self = g_object_ref (self);
 
+	if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE ||
+	    self->kind == GS_UPDATES_SECTION_KIND_OFFLINE) {
+		helper->do_reboot = TRUE;
+	}
+
 	/* look at each app in turn */
 	for (guint i = 0; (!helper->do_reboot || !helper->do_reboot_notification) && i < gs_app_list_length (self->list); i++) {
 		GsApp *app = gs_app_list_index (self->list, i);
