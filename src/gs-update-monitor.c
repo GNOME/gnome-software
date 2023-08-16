@@ -1217,7 +1217,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* no results */
 	if (gs_app_list_length (apps) == 0) {
 		g_debug ("no historical updates; withdrawing notification");
-		gs_application_withdraw_notification (monitor->application, "updates-available");
+		gs_application_withdraw_notification (monitor->application, "offline-updates");
 		return;
 	}
 
@@ -1293,7 +1293,7 @@ cleanup_notifications_cb (gpointer user_data)
 					    monitor);
 
 	/* wait until first check to show */
-	gs_application_withdraw_notification (monitor->application, "updates-available");
+	gs_application_withdraw_notification (monitor->application, "offline-updates");
 
 	monitor->cleanup_notifications_id = 0;
 	return G_SOURCE_REMOVE;
