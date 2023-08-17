@@ -1867,7 +1867,7 @@ gs_appstream_add_recent (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	guint64 now = (guint64) g_get_real_time () / G_USEC_PER_SEC;
+	guint64 now = (guint64) g_get_real_time () / G_USEC_PER_SEC, max_future_timestamp;
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
@@ -1887,17 +1887,22 @@ gs_appstream_add_recent (GsPlugin *plugin,
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
+	/* This is to cover mistakes when the release date is set in the future,
+	   to not have it picked for too long. */
+	max_future_timestamp = now + (3 * 24 * 60 * 60);
 	for (guint i = 0; i < array->len; i++) {
 		XbNode *component = g_ptr_array_index (array, i);
-		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
-		guint64 timestamp;
-		if (app == NULL)
-			return FALSE;
+		g_autoptr(GsApp) app = NULL;
+		guint64 timestamp = component_get_release_timestamp (component);
 		/* set the release date */
-		timestamp = component_get_release_timestamp (component);
-		if (timestamp != G_MAXUINT64)
+		if (timestamp != G_MAXUINT64 && timestamp < max_future_timestamp) {
+			app = gs_appstream_create_app (plugin, silo, component, error);
+			if (app == NULL)
+				return FALSE;
+
 			gs_app_set_release_date (app, timestamp);
-		gs_app_list_add (list, app);
+			gs_app_list_add (list, app);
+		}
 	}
 	return TRUE;
 }
