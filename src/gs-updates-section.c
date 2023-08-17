@@ -482,12 +482,17 @@ _button_update_all_clicked_cb (GsUpdatesSection *self)
 
 	helper->self = g_object_ref (self);
 
+	if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE ||
+	    self->kind == GS_UPDATES_SECTION_KIND_OFFLINE) {
+		helper->do_reboot = TRUE;
+	}
+
 	/* look at each app in turn */
-	for (guint i = 0; i < gs_app_list_length (self->list); i++) {
+	for (guint i = 0; (!helper->do_reboot || !helper->do_reboot_notification) && i < gs_app_list_length (self->list); i++) {
 		GsApp *app = gs_app_list_index (self->list, i);
-		if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE)
+		if (!helper->do_reboot && gs_app_get_state (app) == GS_APP_STATE_UPDATABLE)
 			helper->do_reboot = TRUE;
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT))
+		if (!helper->do_reboot_notification && gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT))
 			helper->do_reboot_notification = TRUE;
 	}
 
