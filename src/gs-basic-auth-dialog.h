@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 #include "gnome-software-private.h"
 
@@ -18,7 +18,7 @@ typedef void (*GsBasicAuthCallback) (const gchar *user, const gchar *password, g
 
 #define GS_TYPE_BASIC_AUTH_DIALOG (gs_basic_auth_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, GS, BASIC_AUTH_DIALOG, GtkWindow)
+G_DECLARE_FINAL_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, GS, BASIC_AUTH_DIALOG, AdwWindow)
 
 GtkWidget	*gs_basic_auth_dialog_new		(GtkWindow		*parent,
 							 const gchar		*remote,
