@@ -18,11 +18,9 @@
         <signal name="notify::visible-child" handler="leaflet_child_transition_cb" swapped="no"/>
         <signal name="notify::child-transition-running" handler="leaflet_child_transition_cb" swapped="no"/>
         <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <child>
+          <object class="AdwToolbarView">
+            <child type="top">
               <object class="AdwHeaderBar">
-                <property name="valign">start</property>
                 <property name="show_start_title_buttons">True</property>
                 <property name="show_end_title_buttons">True</property>
                 <property name="title-widget">
@@ -32,7 +30,7 @@
                 </property>
               </object>
             </child>
-            <child>
+            <property name="content">
               <object class="GtkStack" id="stack">
                 <property name="transition_duration">300</property>
 
@@ -99,7 +97,7 @@
                 </child>
 
               </object>
-            </child>
+            </property>
           </object>
         </child>
       </object>
