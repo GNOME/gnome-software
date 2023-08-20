@@ -502,17 +502,11 @@
           <object class="AdwViewStackPage">
             <property name="name">loading</property>
             <property name="child">
-              <object class="GtkOverlay">
-                <child type="overlay">
-                  <object class="GtkHeaderBar">
-                    <property name="show_title_buttons">True</property>
-                    <property name="valign">start</property>
-                    <style>
-                      <class name="flat"/>
-                    </style>
-                  </object>
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
                 </child>
-                <child>
+                <property name="content">
                   <object class="GtkWindowHandle">
                     <child>
                       <object class="GsLoadingPage" id="loading_page">
@@ -520,7 +514,7 @@
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </property>
           </object>
