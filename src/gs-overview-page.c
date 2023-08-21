@@ -48,7 +48,6 @@ struct _GsOverviewPage
 
 	GtkWidget		*dialog_third_party;
 	GtkWidget		*featured_carousel;
-	GtkWidget		*box_overview;
 	GtkWidget		*box_curated;
 	GtkWidget		*box_recent;
 	GtkWidget		*box_deployment_featured;
@@ -1069,7 +1068,6 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-overview-page.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, featured_carousel);
-	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_overview);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_curated);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_recent);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_deployment_featured);
