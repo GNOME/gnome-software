@@ -20,7 +20,6 @@
 
 #include "config.h"
 
-#include <adwaita.h>
 #include <glib/gi18n.h>
 
 #include "gs-os-update-page.h"
@@ -36,17 +35,14 @@ typedef enum {
 
 typedef enum {
 	PROP_APP = 1,
-	PROP_SHOW_BACK_BUTTON,
-	PROP_TITLE,
 } GsOsUpdatePageProperty;
 
 enum {
 	SIGNAL_APP_ACTIVATED,
-	SIGNAL_BACK_CLICKED,
 	SIGNAL_LAST
 };
 
-static GParamSpec *obj_props[PROP_TITLE + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
 
 static guint signals[SIGNAL_LAST] = { 0 };
 
@@ -54,18 +50,15 @@ struct _GsOsUpdatePage
 {
 	GtkBox		 parent_instance;
 
-	GtkWidget	*back_button;
 	GtkWidget	*description_group;
 	GtkWidget	*page;
-	GtkWidget	*header_bar;
-	AdwWindowTitle	*window_title;
 
 	GsApp		*app;  /* (owned) (nullable) */
 	GtkWidget	*list_boxes[GS_OS_UPDATE_PAGE_SECTION_LAST];
 	GtkWidget	*groups[GS_OS_UPDATE_PAGE_SECTION_LAST];
 };
 
-G_DEFINE_TYPE (GsOsUpdatePage, gs_os_update_page, GTK_TYPE_BOX)
+G_DEFINE_TYPE (GsOsUpdatePage, gs_os_update_page, ADW_TYPE_NAVIGATION_PAGE)
 
 static void
 row_activated_cb (GtkListBox *list_box,
@@ -352,7 +345,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 	}
 
 	if (app) {
-		adw_window_title_set_title (page->window_title, gs_app_get_name (app));
+		adw_navigation_page_set_title (ADW_NAVIGATION_PAGE (page), gs_app_get_name (app));
 		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->description_group), gs_app_get_description (app));
 
 		/* add new apps */
@@ -368,61 +361,11 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 			gtk_list_box_append (GTK_LIST_BOX (page->list_boxes[section]), row);
 		}
 	} else {
-		adw_window_title_set_title (page->window_title, NULL);
+		adw_navigation_page_set_title (ADW_NAVIGATION_PAGE (page), NULL);
 		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->description_group), NULL);
 	}
 
 	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APP]);
-	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_TITLE]);
-}
-
-/**
- * gs_os_update_page_get_show_back_button:
- * @page: a #GsOsUpdatePage
- *
- * Get the value of #GsOsUpdatePage:show-back-button.
- *
- * Returns: whether to show the back button
- *
- * Since: 42.1
- */
-gboolean
-gs_os_update_page_get_show_back_button (GsOsUpdatePage *page)
-{
-	g_return_val_if_fail (GS_IS_OS_UPDATE_PAGE (page), FALSE);
-	return gtk_widget_get_visible (page->back_button);
-}
-
-/**
- * gs_os_update_page_set_show_back_button:
- * @page: a #GsOsUpdatePage
- * @show_back_button: whether to show the back button
- *
- * Set the value of #GsOsUpdatePage:show-back-button.
- *
- * Since: 42.1
- */
-void
-gs_os_update_page_set_show_back_button (GsOsUpdatePage *page,
-					gboolean show_back_button)
-{
-	g_return_if_fail (GS_IS_OS_UPDATE_PAGE (page));
-
-	show_back_button = !!show_back_button;
-
-	if (gtk_widget_get_visible (page->back_button) == show_back_button)
-		return;
-
-	gtk_widget_set_visible (page->back_button, show_back_button);
-
-	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_SHOW_BACK_BUTTON]);
-}
-
-static void
-back_clicked_cb (GtkWidget *widget,
-		 GsOsUpdatePage *page)
-{
-	g_signal_emit (page, signals[SIGNAL_BACK_CLICKED], 0);
 }
 
 static void
@@ -444,12 +387,6 @@ gs_os_update_page_get_property (GObject *object, guint prop_id, GValue *value, G
 	case PROP_APP:
 		g_value_set_object (value, gs_os_update_page_get_app (page));
 		break;
-	case PROP_SHOW_BACK_BUTTON:
-		g_value_set_boolean (value, gs_os_update_page_get_show_back_button (page));
-		break;
-	case PROP_TITLE:
-		g_value_set_string (value, adw_window_title_get_title (page->window_title));
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -464,9 +401,6 @@ gs_os_update_page_set_property (GObject *object, guint prop_id, const GValue *va
 	switch ((GsOsUpdatePageProperty) prop_id) {
 	case PROP_APP:
 		gs_os_update_page_set_app (page, g_value_get_object (value));
-		break;
-	case PROP_SHOW_BACK_BUTTON:
-		gs_os_update_page_set_show_back_button (page, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -509,30 +443,6 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 				     GS_TYPE_APP,
 				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
-	/**
-	 * GsOsUpdatePage:show-back-button
-	 *
-	 * Whether to show the back button.
-	 *
-	 * Since: 42.1
-	 */
-	obj_props[PROP_SHOW_BACK_BUTTON] =
-		g_param_spec_boolean ("show-back-button", NULL, NULL,
-				     FALSE,
-				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
-
-	/**
-	 * GsOsUpdatePage:title
-	 *
-	 * Read-only window title.
-	 *
-	 * Since: 42
-	 */
-	obj_props[PROP_TITLE] =
-		g_param_spec_string ("title", NULL, NULL,
-				     NULL,
-				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
-
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	/**
@@ -551,29 +461,10 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 			      0, NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 1, GS_TYPE_APP);
 
-	/**
-	 * GsOsUpdatePage::back-clicked:
-	 * @self: a #GsOsUpdatePage
-	 *
-	 * Emitted when the back button got activated and the #GsUpdateDialog
-	 * containing this page is expected to go back.
-	 *
-	 * Since: 42.1
-	 */
-	signals[SIGNAL_BACK_CLICKED] =
-		g_signal_new ("back-clicked",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      0, NULL, NULL, g_cclosure_marshal_generic,
-			      G_TYPE_NONE, 0);
-
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-os-update-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, back_button);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, description_group);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, page);
-	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, header_bar);
-	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, window_title);
-	gtk_widget_class_bind_template_callback (widget_class, back_clicked_cb);
 }
 
 /**
