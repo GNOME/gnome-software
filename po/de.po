@@ -16,16 +16,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-09-22 16:06+0000\n"
-"PO-Revision-Date: 2022-10-08 18:37+0200\n"
-"Last-Translator: Jürgen Benvenuti <gastornis@posteo.org>\n"
+"POT-Creation-Date: 2023-04-05 09:15+0000\n"
+"PO-Revision-Date: 2023-08-21 20:18+0200\n"
+"Last-Translator: Tim Sabsch <tim@sabsch.com>\n"
 "Language-Team: German - Germany <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.3.2\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21
 #: src/org.gnome.Software.desktop.in:3
@@ -80,7 +80,7 @@ msgstr "Seite mit Aktualisierungen"
 msgid "The update details"
 msgstr "Details zur Aktualisierung"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2043
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2134
 #: src/gs-application.c:256
 msgid "The GNOME Project"
 msgstr "Das GNOME-Projekt"
@@ -348,32 +348,32 @@ msgstr ""
 "speichert"
 
 #. TRANSLATORS: tool that is used when moving profiles system-wide
-#: gs-install-appstream/gs-install-appstream.c:143
+#: gs-install-appstream/gs-install-appstream.c:185
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "GNOME-Software systemweiter AppStream-Installer"
 
-#: gs-install-appstream/gs-install-appstream.c:145
+#: gs-install-appstream/gs-install-appstream.c:187
 msgid "Failed to parse command line arguments"
 msgstr "Befehlszeilenargumente konnten nicht gelesen werden"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: gs-install-appstream/gs-install-appstream.c:152
+#: gs-install-appstream/gs-install-appstream.c:194
 msgid "You need to specify exactly one filename"
 msgstr "Sie müssen genau einen Dateinamen angeben"
 
 #. TRANSLATORS: only able to install files as root
-#: gs-install-appstream/gs-install-appstream.c:159
+#: gs-install-appstream/gs-install-appstream.c:201
 msgid "This program can only be used by the root user"
 msgstr "Dieses Programm kann nur durch den root-Benutzer ausgeführt werden"
 
 #. TRANSLATORS: error details
-#: gs-install-appstream/gs-install-appstream.c:167
+#: gs-install-appstream/gs-install-appstream.c:209
 #, c-format
 msgid "Failed to validate content type: %s"
 msgstr "Inhaltstyp konnte nicht bestätigt werden: %s"
 
 #. TRANSLATORS: error details
-#: gs-install-appstream/gs-install-appstream.c:178
+#: gs-install-appstream/gs-install-appstream.c:220
 #, c-format
 msgid "Failed to move: %s"
 msgstr "Konnte nicht verschoben werden: %s"
@@ -806,7 +806,7 @@ msgstr "Altersfreigabe"
 msgid "How to contribute missing information"
 msgstr "So fügen Sie fehlende Informationen hinzu"
 
-#: lib/gs-app.c:6175
+#: lib/gs-app.c:6178
 msgid "Local file"
 msgstr "Lokale Datei"
 
@@ -815,12 +815,12 @@ msgstr "Lokale Datei"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6194 src/gs-safety-context-dialog.c:439
+#: lib/gs-app.c:6197 src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6271
+#: lib/gs-app.c:6274
 msgid "Package"
 msgstr "Paket"
 
@@ -1102,7 +1102,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:277 src/gs-shell.c:2149
+#: src/gs-application.c:277 src/gs-shell.c:2156
 msgid "About Software"
 msgstr "Info zu Software"
 
@@ -2266,12 +2266,12 @@ msgstr "Deinstallieren …"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:870 src/gs-details-page.c:896
+#: src/gs-details-page.c:873 src/gs-details-page.c:899
 #: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Installieren"
 
-#: src/gs-details-page.c:886
+#: src/gs-details-page.c:889
 msgid "_Restart"
 msgstr "_Neu starten"
 
@@ -2279,24 +2279,24 @@ msgstr "_Neu starten"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:910
+#: src/gs-details-page.c:913
 msgid "_Install…"
 msgstr "_Installieren …"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1187
+#: src/gs-details-page.c:1190
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Andere Anwendungen von %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1570
+#: src/gs-details-page.c:1573
 msgid "You need internet access to write a review"
 msgstr ""
 "Sie brauchen eine Verbindung mit dem Internet, um eine Bewertung abgeben zu "
 "können"
 
-#: src/gs-details-page.c:1732 src/gs-details-page.c:1748
+#: src/gs-details-page.c:1737 src/gs-details-page.c:1753
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "»%s« konnte nicht gefunden werden"
@@ -2431,17 +2431,17 @@ msgid "_Help"
 msgstr "_Hilfe"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:908
+#: src/gs-details-page.ui:907
 msgid "_Write Review"
 msgstr "_Rezension schreiben"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:945
+#: src/gs-details-page.ui:944
 msgid "All Reviews"
 msgstr "Alle Rezensionen"
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:244
+#: lib/gs-external-appstream-utils.c:272
 msgid "Downloading extra metadata files…"
 msgstr "Zusätzliche Metadaten-Dateien werden heruntergeladen …"
 
@@ -3111,7 +3111,7 @@ msgstr "Andere Kategorien"
 msgid "No Application Data Found"
 msgstr "Keine Anwendungsdaten gefunden"
 
-#: lib/gs-plugin-loader.c:2825
+#: lib/gs-plugin-loader.c:2837
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Unbekannt"
@@ -4325,62 +4325,62 @@ msgstr "Entfernen von %s nicht möglich"
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Starten von %s fehlgeschlagen: %s ist nicht installiert"
 
+#. TRANSLATORS: we failed to get a proper error code
+#: src/gs-shell.c:1841 src/gs-shell.c:1857 src/gs-shell.c:1905
+#: src/gs-shell.c:1943 src/gs-shell.c:1996
+msgid "Sorry, something went wrong"
+msgstr "Hoppla! Etwas ist schief gegangen"
+
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1839 src/gs-shell.c:1887 src/gs-shell.c:1925
-#: src/gs-shell.c:1968
+#: src/gs-shell.c:1846 src/gs-shell.c:1894 src/gs-shell.c:1932
+#: src/gs-shell.c:1975
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Es ist nicht genug freier Speicher vorhanden. Bitte schaffen Sie ein "
 "bisschen Platz und versuchen Sie es anschließend erneut"
 
-#. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1850 src/gs-shell.c:1898 src/gs-shell.c:1936
-#: src/gs-shell.c:1989
-msgid "Sorry, something went wrong"
-msgstr "Hoppla! Etwas ist schief gegangen"
-
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1881
+#: src/gs-shell.c:1888
 msgid "Failed to install file: not supported"
 msgstr "Installation der Datei schlug fehl: nicht unterstützt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1884
+#: src/gs-shell.c:1891
 msgid "Failed to install file: authentication failed"
 msgstr "Installation der Datei schlug fehl: Legitimierung fehlgeschlagen"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1919
+#: src/gs-shell.c:1926
 msgid "Failed to install: not supported"
 msgstr "Installation schlug fehl: nicht unterstützt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1922
+#: src/gs-shell.c:1929
 msgid "Failed to install: authentication failed"
 msgstr "Installation schlug fehl: Legitimierung fehlgeschlagen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1963
+#: src/gs-shell.c:1970
 #, c-format
 msgid "Unable to contact %s"
 msgstr "%s kann nicht kontaktiert werden"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1973
+#: src/gs-shell.c:1980
 msgid "Software needs to be restarted to use new plugins."
 msgstr ""
 "GNOME Software muss neu gestartet werden, um die neuen Erweiterungen "
 "einzubinden."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1977
+#: src/gs-shell.c:1984
 msgid "AC power is required"
 msgstr "Netzanschluss benötigt"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1980
+#: src/gs-shell.c:1987
 msgid "The battery level is too low"
 msgstr "Der Akkustand ist zu niedrig"
 
@@ -4873,7 +4873,7 @@ msgstr "Aktualisierungen werden automatisch verwaltet."
 #. * offline updates
 #: src/gs-updates-section.c:312
 msgid "Restart & Update"
-msgstr "Neu starten und Aktualisierungen installieren"
+msgstr "Neu starten und aktualisieren"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
@@ -5187,19 +5187,19 @@ msgstr "Benutzerinstallation"
 msgid "System Installation"
 msgstr "Systeminstallation"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1037
+#: plugins/flatpak/gs-plugin-flatpak.c:1038
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Erweiterung »%s« konnte nicht zur Installation hinzugefügt werden: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1051
+#: plugins/flatpak/gs-plugin-flatpak.c:1052
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr ""
 "Erweiterung »%s« konnte nicht zur Deinstallation hinzugefügt werden: %s"
 
 # Remote entspricht hier der Flatpak-Terminologie
-#: plugins/flatpak/gs-plugin-flatpak.c:1317
+#: plugins/flatpak/gs-plugin-flatpak.c:1318
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5411,7 +5411,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Pakete"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2690
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2696
 msgid "Operating System (OSTree)"
 msgstr "Betriebssystem (OSTree)"
 
