@@ -84,6 +84,13 @@
       </object>
     </child>
     <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 550sp</condition>
+        <setter object="main_header" property="title-widget"/>
+        <setter object="sidebar_switcher" property="reveal">True</setter>
+      </object>
+    </child>
+    <child>
       <object class="AdwViewStack" id="stack_loading">
         <property name="width-request">318</property>
         <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
@@ -221,7 +228,6 @@
                                       <object class="AdwHeaderBar" id="main_header">
                                         <property name="hexpand">True</property>
                                         <property name="show-end-title-buttons">True</property>
-                                        <property name="centering-policy">loose</property>
                                         <child type="start">
                                           <object class="GtkToggleButton" id="search_button">
                                             <property name="can_focus">True</property>
@@ -252,12 +258,12 @@
                                             </style>
                                           </object>
                                         </child>
-                                        <child type="title">
-                                          <object class="AdwViewSwitcherTitle" id="title_switcher">
+                                        <property name="title-widget">
+                                          <object class="AdwViewSwitcher">
                                             <property name="stack">stack_main</property>
-                                            <property name="title" bind-source="GsShell" bind-property="title" bind-flags="sync-create"/>
+                                            <property name="policy">wide</property>
                                           </object>
-                                        </child>
+                                        </property>
                                       </object>
                                     </child>
 
@@ -352,7 +358,6 @@
                                     </property>
                                     <child type="bottom">
                                       <object class="AdwViewSwitcherBar" id="sidebar_switcher">
-                                        <property name="reveal" bind-source="title_switcher" bind-property="title-visible" bind-flags="sync-create"/>
                                         <property name="stack">stack_main</property>
                                       </object>
                                     </child>
