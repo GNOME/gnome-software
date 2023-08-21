@@ -3,19 +3,18 @@
   <requires lib="gtk+" version="3.10"/>
   <template class="GsOsUpdatePage" parent="AdwNavigationPage">
     <property name="child">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
+      <object class="AdwToolbarView">
+        <child type="top">
           <object class="AdwHeaderBar"/>
         </child>
-        <child>
+        <property name="content">
           <object class="AdwPreferencesPage" id="page">
             <property name="vexpand">True</property>
             <child>
               <object class="AdwPreferencesGroup" id="description_group" />
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </property>
   </template>
