@@ -2847,7 +2847,7 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 	/* only save this if the data is sufficiently high quality */
 	if (quality <= priv->license_quality)
 		return;
-	if (license == NULL)
+	if (license == NULL || *license == '\0')
 		return;
 	priv->license_quality = quality;
 
