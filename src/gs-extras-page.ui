@@ -48,11 +48,14 @@
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">never</property>
                 <property name="vscrollbar_policy">automatic</property>
+                <style>
+                  <class name="list-page"/>
+                </style>
                 <child>
                   <object class="AdwClamp">
-                    <property name="maximum-size">860</property>
+                    <property name="maximum-size">600</property>
                     <!-- ~⅔ of the maximum size. -->
-                    <property name="tightening-threshold">576</property>
+                    <property name="tightening-threshold">400</property>
                     <child>
                       <object class="GtkBox" id="box_results">
                         <property name="orientation">vertical</property>
@@ -61,6 +64,9 @@
                             <property name="can_focus">True</property>
                             <property name="selection_mode">none</property>
                             <property name="valign">start</property>
+                            <style>
+                              <class name="boxed-list"/>
+                            </style>
                           </object>
                         </child>
                         <child>
