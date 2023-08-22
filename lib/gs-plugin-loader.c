@@ -3629,6 +3629,8 @@ job_process_cb (GTask *task)
 	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
 	action = gs_plugin_job_get_action (plugin_job);
 
+	gs_plugin_job_set_cancellable (plugin_job, cancellable);
+
 	/* If the job provides a more specific async run function, use that.
 	 *
 	 * FIXME: This will eventually go away when

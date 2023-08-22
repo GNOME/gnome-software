@@ -35,6 +35,13 @@ GPtrArray	*gs_job_manager_get_pending_jobs_for_app	(GsJobManager	*self,
 gboolean	 gs_job_manager_app_has_pending_job_type	(GsJobManager	*self,
 								 GsApp		*app,
 								 GType		 pending_job_type);
+void		 gs_job_manager_shutdown_async			(GsJobManager	*self,
+								 GCancellable	*cancellable,
+								 GAsyncReadyCallback callback,
+								 gpointer	 user_data);
+gboolean	 gs_job_manager_shutdown_finish			(GsJobManager	*self,
+								 GAsyncResult	*result,
+								 GError		**error);
 
 /**
  * GsJobManagerJobCallback:

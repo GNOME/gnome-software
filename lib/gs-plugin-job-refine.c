@@ -814,6 +814,7 @@ run_cb (GObject      *source_object,
 	/* Delayed error handling. */
 	if (local_error != NULL) {
 		gs_utils_error_convert_gio (&local_error);
+		g_signal_emit_by_name (G_OBJECT (self), "completed");
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}

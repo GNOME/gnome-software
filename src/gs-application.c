@@ -338,12 +338,31 @@ reboot_activated (GSimpleAction *action,
 }
 
 static void
+job_manager_shutdown_ready_cb (GObject *source_object,
+			       GAsyncResult *result,
+			       gpointer user_data)
+{
+	g_autoptr(GsApplication) self = user_data;
+	g_autoptr(GError) error = NULL;
+
+	if (!gs_job_manager_shutdown_finish (GS_JOB_MANAGER (source_object), result, &error))
+		g_warning ("Failed to shutdown jobs: %s", error->message);
+	else
+		g_debug ("Job manager shutdown finished, going to quit the application.");
+
+	g_application_quit (G_APPLICATION (self));
+}
+
+static void
 shutdown_activated (GSimpleAction *action,
 		    GVariant      *parameter,
 		    gpointer       data)
 {
-	GsApplication *app = GS_APPLICATION (data);
-	g_application_quit (G_APPLICATION (app));
+	GsApplication *self = GS_APPLICATION (data);
+	GsJobManager *job_manager = gs_plugin_loader_get_job_manager (self->plugin_loader);
+
+	g_debug ("Initiating shutdown of the job manager from %s()", G_STRFUNC);
+	gs_job_manager_shutdown_async (job_manager, NULL, job_manager_shutdown_ready_cb, g_object_ref (self));
 }
 
 static void offline_update_get_app_cb (GObject      *source_object,
@@ -411,16 +430,18 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 static void
 quit_activated (GSimpleAction *action,
 		GVariant      *parameter,
-		gpointer       app)
+		gpointer       user_data)
 {
+	GsApplication *self = GS_APPLICATION (user_data);
+	GsJobManager *job_manager;
 	GApplicationFlags flags;
 	GList *windows;
 	GtkWidget *window;
 
-	flags = g_application_get_flags (app);
+	flags = g_application_get_flags (G_APPLICATION (self));
 
 	if (flags & G_APPLICATION_IS_SERVICE) {
-		windows = gtk_application_get_windows (GTK_APPLICATION (app));
+		windows = gtk_application_get_windows (GTK_APPLICATION (self));
 		if (windows) {
 			window = windows->data;
 			gtk_widget_set_visible (window, FALSE);
@@ -429,7 +450,10 @@ quit_activated (GSimpleAction *action,
 		return;
 	}
 
-	g_application_quit (G_APPLICATION (app));
+	job_manager = gs_plugin_loader_get_job_manager (self->plugin_loader);
+
+	g_debug ("Initiating shutdown of the job manager from %s()", G_STRFUNC);
+	gs_job_manager_shutdown_async (job_manager, NULL, job_manager_shutdown_ready_cb, g_object_ref (self));
 }
 
 static void
