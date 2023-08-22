@@ -51,9 +51,11 @@ struct _GsAppDetailsPage
 	GtkWidget	*back_button;
 	GtkWidget	*header_bar;
 	GtkWidget	*label_details;
+	GtkWidget	*spinner_details;
 	GtkWidget	*permissions_section;
 	GtkWidget	*permissions_section_list;
 	GtkWidget	*status_page;
+	GtkWidget	*status_page_clamp;
 	AdwWindowTitle	*window_title;
 
 	GsPluginLoader	*plugin_loader; /* (owned) */
@@ -168,15 +170,16 @@ refine_app_finished_cb (GObject *source_object,
 	GsAppDetailsPage *self = user_data;
 	g_autoptr(GError) error = NULL;
 
-	g_clear_object (&self->refine_cancellable);
-
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_clear_object (&self->refine_cancellable);
 			g_warning ("Failed to refine app: %s", error->message);
 		}
 		return;
 	}
+
+	g_clear_object (&self->refine_cancellable);
 
 	set_update_description (self, FALSE);
 }
@@ -188,29 +191,41 @@ set_update_description (GsAppDetailsPage *self,
 	const gchar *update_details;
 
 	update_details = gs_app_get_update_details_markup (self->app);
-	if (update_details == NULL) {
-		if (self->plugin_loader == NULL || !can_call_refine ||
-		    gs_app_get_update_details_set (self->app)) {
-			/* TRANSLATORS: this is where the packager did not write
-			 * a description for the update */
-			update_details = _("No update description available.");
-		} else {
-			g_autoptr(GsPluginJob) plugin_job = NULL;
+	if (update_details == NULL && self->plugin_loader != NULL &&
+	    can_call_refine && !gs_app_get_update_details_set (self->app)) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
 
-			update_details = _("Loading update description, please wait…");
-			/* to not refine the app again, when there is no description */
-			gs_app_set_update_details_text (self->app, NULL);
+		/* to not refine the app again, when there is no description */
+		gs_app_set_update_details_text (self->app, NULL);
 
-			g_assert (self->refine_cancellable == NULL);
-			self->refine_cancellable = g_cancellable_new ();
-			plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS);
-			gs_plugin_job_set_interactive (plugin_job, TRUE);
-			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-							    self->refine_cancellable,
-							    refine_app_finished_cb,
-							    self);
-		}
+		/* Keep the label visible, to have allocated proper height for the row,
+		   thus the row does not resize when the details are on-line text only.
+		   It will resize when the details are multiple lines of text. */
+		gtk_label_set_text (GTK_LABEL (self->label_details), "");
+		gtk_widget_set_visible (self->spinner_details, TRUE);
+		gtk_spinner_start (GTK_SPINNER (self->spinner_details));
+
+		g_assert (self->refine_cancellable == NULL);
+		self->refine_cancellable = g_cancellable_new ();
+		plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS);
+		gs_plugin_job_set_interactive (plugin_job, TRUE);
+		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+						    self->refine_cancellable,
+						    refine_app_finished_cb,
+						    self);
+
+		return;
 	}
+
+	gtk_spinner_stop (GTK_SPINNER (self->spinner_details));
+	gtk_widget_set_visible (self->spinner_details, FALSE);
+
+	if (update_details == NULL || *update_details == '\0') {
+		/* TRANSLATORS: this is where the packager did not write
+		 * a description for the update */
+		update_details = _("No update description available.");
+	}
+
 	gtk_label_set_markup (GTK_LABEL (self->label_details), update_details);
 }
 
@@ -433,7 +448,24 @@ gs_app_details_page_set_property (GObject *object, guint prop_id, const GValue *
 static void
 gs_app_details_page_init (GsAppDetailsPage *page)
 {
+	GtkWidget *widget;
+
 	gtk_widget_init_template (GTK_WIDGET (page));
+
+	/* The "icon-dropshadow" cannot be applied on the top widget, because
+	   it influences also GtkSpinner drawing. The AdwStatusPage does not
+	   provide access to the internal GtkImage widget, which this CSS class
+	   is for, thus do this workaround to set the CSS class on an upper widget
+	   in the AdwStatusPage hierarchy.
+	 *
+	 * FIXME: See https://gitlab.gnome.org/GNOME/libadwaita/-/issues/718 */
+	widget = gtk_widget_get_prev_sibling (page->status_page_clamp);
+	if (widget == NULL)
+		widget = gtk_widget_get_next_sibling (page->status_page_clamp);
+	if (widget != NULL)
+		gtk_widget_add_css_class (widget, "icon-dropshadow");
+	else
+		g_warning ("%s: Failed to find sibling for 'icon-dropshadow'", G_STRFUNC);
 }
 
 static void
@@ -518,9 +550,11 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, back_button);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, header_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, label_details);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_list);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, status_page);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, status_page_clamp);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, window_title);
 	gtk_widget_class_bind_template_callback (widget_class, back_clicked_cb);
 }
