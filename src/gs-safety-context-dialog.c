@@ -539,7 +539,7 @@ sanitize_license_text_cb (GBinding *binding,
 
 	if (license == NULL)
 		/* Translators: This is used for "License    Unknown" */
-		g_value_set_string (to_value, _("Unknown"));
+		g_value_set_string (to_value, C_("Unknown license", "Unknown"));
 	else if (g_ascii_strncasecmp (license, "LicenseRef-proprietary", strlen ("LicenseRef-proprietary")) == 0)
 		/* Translators: This is used for "License    Proprietary" */
 		g_value_set_string (to_value, _("Proprietary"));
