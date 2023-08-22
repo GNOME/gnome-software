@@ -2796,7 +2796,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
-	g_autofree gchar *license_spdx = NULL;
 	g_auto(GStrv) files = NULL;
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GPtrArray) array = NULL;
@@ -2881,8 +2880,18 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
 	gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, pk_details_get_size (item));
 	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
-	license_spdx = as_license_to_spdx_id (pk_details_get_license (item));
-	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, license_spdx);
+	if (pk_details_get_license (item) != NULL &&
+	    g_ascii_strcasecmp (pk_details_get_license (item), "unknown") != 0) {
+		g_autofree gchar *license_spdx = NULL;
+		license_spdx = as_license_to_spdx_id (pk_details_get_license (item));
+		if (license_spdx != NULL && g_ascii_strcasecmp (license_spdx, "unknown") == 0) {
+			g_clear_pointer (&license_spdx, g_free);
+			license_spdx = g_strdup (pk_details_get_license (item));
+			if (license_spdx != NULL)
+				g_strstrip (license_spdx);
+		}
+		gs_app_set_license (app, GS_APP_QUALITY_LOWEST, license_spdx);
+	}
 	add_quirks_from_package_name (app, split[PK_PACKAGE_ID_NAME]);
 
 	/* is already installed? */

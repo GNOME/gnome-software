@@ -522,9 +522,17 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 		if (details == NULL)
 			continue;
 
-		if (gs_app_get_license (app) == NULL) {
+		if (gs_app_get_license (app) == NULL &&
+		    pk_details_get_license (details) != NULL &&
+		    g_ascii_strcasecmp (pk_details_get_license (details), "unknown") != 0) {
 			g_autofree gchar *license_spdx = NULL;
 			license_spdx = as_license_to_spdx_id (pk_details_get_license (details));
+			if (license_spdx != NULL && g_ascii_strcasecmp (license_spdx, "unknown") == 0) {
+				g_clear_pointer (&license_spdx, g_free);
+				license_spdx = g_strdup (pk_details_get_license (details));
+				if (license_spdx != NULL)
+					g_strstrip (license_spdx);
+			}
 			if (license_spdx != NULL) {
 				gs_app_set_license (app,
 						    GS_APP_QUALITY_LOWEST,
