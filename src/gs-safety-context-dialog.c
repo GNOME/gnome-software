@@ -378,29 +378,41 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    NULL, NULL, NULL);
 
 	license_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION;
-	/* Proprietary apps are one level worse (less safe) than whichever rating
-	   had been determined from the provided permissions. */
-	if (!gs_app_get_license_is_free (self->app) &&
-	    chosen_rating < GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT &&
-	    chosen_rating >= license_rating)
-		license_rating = chosen_rating + 1;
 
-	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
-	 * between closed source and open-source-but-not-FOSS software, even
-	 * though the code of the latter is technically publicly auditable. This
-	 * is because I don’t want to get into the business of maintaining lists
-	 * of ‘auditable’ source code licenses. */
-	add_permission_row (self->permissions_list, &chosen_rating,
-			    !gs_app_get_license_is_free (self->app),
-			    license_rating,
-			    "dialog-warning-symbolic",
-			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-			    _("Proprietary Code"),
-			    _("The source code is not public, so it cannot be independently audited and might be unsafe"),
-			    "app-installed-symbolic",
-			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-			    _("Auditable Code"),
-			    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
+	if (gs_app_get_license (self->app) == NULL) {
+		add_permission_row (self->permissions_list, &chosen_rating,
+				    TRUE,
+				    license_rating,
+				    "dialog-warning-symbolic",
+				    /* Translators: This indicates an app does not specify which license it's developed under. */
+				    _("Unknown License"),
+				    _("This software does not specify what license it is developed under, and may be proprietary"),
+				    NULL, NULL, NULL);
+	} else {
+		/* Proprietary apps are one level worse (less safe) than whichever rating
+		   had been determined from the provided permissions. */
+		if (!gs_app_get_license_is_free (self->app) &&
+		    chosen_rating < GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT &&
+		    chosen_rating >= license_rating)
+			license_rating = chosen_rating + 1;
+
+		/* Is the code FOSS and hence inspectable? This doesn’t distinguish
+		 * between closed source and open-source-but-not-FOSS software, even
+		 * though the code of the latter is technically publicly auditable. This
+		 * is because I don’t want to get into the business of maintaining lists
+		 * of ‘auditable’ source code licenses. */
+		add_permission_row (self->permissions_list, &chosen_rating,
+				    !gs_app_get_license_is_free (self->app),
+				    license_rating,
+				    "dialog-warning-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("Proprietary Code"),
+				    _("The source code is not public, so it cannot be independently audited and might be unsafe"),
+				    "app-installed-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("Auditable Code"),
+				    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
+	}
 
 	/* Update the UI. */
 	switch (chosen_rating) {
@@ -515,6 +527,26 @@ app_notify_related_cb (GObject    *obj,
 	GsSafetyContextDialog *self = GS_SAFETY_CONTEXT_DIALOG (user_data);
 
 	update_sdk (self);
+}
+
+static gboolean
+sanitize_license_text_cb (GBinding *binding,
+			  const GValue *from_value,
+			  GValue *to_value,
+			  gpointer user_data)
+{
+	const gchar *license = g_value_get_string (from_value);
+
+	if (license == NULL)
+		/* Translators: This is used for "License    Unknown" */
+		g_value_set_string (to_value, _("Unknown"));
+	else if (g_ascii_strncasecmp (license, "LicenseRef-proprietary", strlen ("LicenseRef-proprietary")) == 0)
+		/* Translators: This is used for "License    Proprietary" */
+		g_value_set_string (to_value, _("Proprietary"));
+	else
+		g_value_set_string (to_value, license);
+
+	return TRUE;
 }
 
 static void
@@ -686,7 +718,8 @@ gs_safety_context_dialog_set_app (GsSafetyContextDialog *self,
 
 		self->app_notify_handler_related = g_signal_connect (self->app, "notify::related", G_CALLBACK (app_notify_related_cb), self);
 
-		self->license_label_binding = g_object_bind_property (self->app, "license", self->license_label, "label", G_BINDING_SYNC_CREATE);
+		self->license_label_binding = g_object_bind_property_full (self->app, "license", self->license_label, "label", G_BINDING_SYNC_CREATE,
+									   sanitize_license_text_cb, NULL, NULL, NULL);
 		self->source_label_binding = g_object_bind_property (self->app, "origin-ui", self->source_label, "label", G_BINDING_SYNC_CREATE);
 	}
 
