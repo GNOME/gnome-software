@@ -592,6 +592,7 @@ static void
 gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_tile,
 							GsDetailsPage *self)
 {
+	g_autofree gchar *license_url = NULL;
 	const gchar *uri = NULL;
 
 	if (gs_app_get_license_is_free (self->app)) {
@@ -601,15 +602,21 @@ gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_t
 		if (uri == NULL)
 			uri = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
 	} else {
-		/* Page to explain the differences between FOSS and proprietary
-		 * software. This is a page on the gnome-software wiki for now,
-		 * so that we can update the content independently of the release
-		 * cycle. Likely, we will link to a more authoritative source
-		 * to explain the differences.
-		 * Ultimately, we could ship a user manual page to explain the
-		 * differences (so that it’s available offline), but that’s too
-		 * much work for right now. */
-		uri = "https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/Software-licensing";
+		license_url = as_get_license_url (gs_app_get_license (self->app));
+
+		if (license_url != NULL && *license_url != '\0') {
+			uri = license_url;
+		} else {
+			/* Page to explain the differences between FOSS and proprietary
+			 * software. This is a page on the gnome-software wiki for now,
+			 * so that we can update the content independently of the release
+			 * cycle. Likely, we will link to a more authoritative source
+			 * to explain the differences.
+			 * Ultimately, we could ship a user manual page to explain the
+			 * differences (so that it’s available offline), but that’s too
+			 * much work for right now. */
+			uri = "https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/Software-licensing";
+		}
 	}
 
 	gs_shell_show_uri (self->shell, uri);
