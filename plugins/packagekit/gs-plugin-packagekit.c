@@ -1337,30 +1337,39 @@ refine_task_complete_operation_with_error (GTask  *refine_task,
 
 typedef struct {
 	GTask *refine_task;  /* (owned) (not nullable) */
-	GsApp *app;  /* (owned) (not nullable) */
-	gchar *filename;  /* (owned) (not nullable) */
+	GsApp *app; /* (owned) (nullable) for single file query */
+	GsAppList *app_list;  /* (owned) (nullable) for multifile query */
+	GHashTable *source_to_app; /* (owned) (nullable) for multifile query */
 } SearchFilesData;
 
 static void
 search_files_data_free (SearchFilesData *data)
 {
-	g_free (data->filename);
 	g_clear_object (&data->app);
+	g_clear_object (&data->app_list);
 	g_clear_object (&data->refine_task);
+	g_clear_pointer (&data->source_to_app, g_hash_table_unref);
 	g_free (data);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (SearchFilesData, search_files_data_free)
 
 static SearchFilesData *
-search_files_data_new_operation (GTask       *refine_task,
-                                 GsApp       *app,
-                                 const gchar *filename)
+search_files_data_new_operation (GTask *refine_task,
+				 GsApp *app,
+				 GsAppList *app_list,
+				 GHashTable *source_to_app)
 {
 	g_autoptr(SearchFilesData) data = g_new0 (SearchFilesData, 1);
+	g_assert ((app != NULL && app_list == NULL && source_to_app == NULL) ||
+		  (app == NULL && app_list != NULL && source_to_app != NULL));
 	data->refine_task = refine_task_add_operation (refine_task);
-	data->app = g_object_ref (app);
-	data->filename = g_strdup (filename);
+	if (app) {
+		data->app = g_object_ref (app);
+	} else {
+		data->app_list = g_object_ref (app_list);
+		data->source_to_app = g_hash_table_ref (source_to_app);
+	}
 
 	return g_steal_pointer (&data);
 }
@@ -1424,6 +1433,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
                                    gpointer             user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GHashTable) resolve_list_apps = g_hash_table_new (NULL, NULL);
 	g_autoptr(GsAppList) resolve_list = gs_app_list_new ();
 	g_autoptr(GsAppList) update_details_list = gs_app_list_new ();
 	g_autoptr(GsAppList) details_list = gs_app_list_new ();
@@ -1434,6 +1444,15 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	RefineData *data_unowned = NULL;
 	g_autoptr(GError) local_error = NULL;
 	guint n_considered = 0;
+
+	/* Searches for multiple files are broken for PackageKit’s apt backend
+	 * in 1.2.6 and earlier.
+	 * See https://github.com/PackageKit/PackageKit/pull/649 */
+#if PK_CHECK_VERSION(1, 2, 7)
+	gboolean is_pk_apt_backend_broken = FALSE;
+#else
+	gboolean is_pk_apt_backend_broken = TRUE;
+#endif
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_refine_async);
@@ -1478,6 +1497,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		     gs_plugin_refine_requires_package_id (app, flags) ||
 		     gs_plugin_refine_requires_origin (app, flags) ||
 		     gs_plugin_refine_requires_version (app, flags))) {
+			g_hash_table_add (resolve_list_apps, app);
 			gs_app_list_add (resolve_list, app);
 		}
 
@@ -1593,12 +1613,14 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 
 	/* set the package-id for an installed desktop file */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) != 0) {
+		g_autoptr(GPtrArray) to_array = g_ptr_array_new_with_free_func (g_free);
+		g_autoptr(GHashTable) source_to_app = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
+		g_autoptr(GsPackagekitHelper) helper = NULL;
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			g_autofree gchar *fn = NULL;
 			GsApp *app = gs_app_list_index (list, i);
+			GPtrArray *sources;
 			const gchar *tmp;
-			const gchar *to_array[] = { NULL, NULL };
-			g_autoptr(GsPackagekitHelper) helper = NULL;
 
 			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
@@ -1609,6 +1631,9 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 				continue;
 			tmp = gs_app_get_id (app);
 			if (tmp == NULL)
+				continue;
+			/* The information will be added within the resolve_list operation */
+			if (g_hash_table_contains (resolve_list_apps, app))
 				continue;
 			switch (gs_app_get_kind (app)) {
 			case AS_COMPONENT_KIND_DESKTOP_APP:
@@ -1631,40 +1656,100 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 				continue;
 			}
 
-			helper = gs_packagekit_helper_new (plugin);
-			to_array[0] = fn;
-			gs_packagekit_helper_add_app (helper, app);
+			sources = gs_app_get_sources (app);
+			if (!is_pk_apt_backend_broken && sources->len > 0) {
+				/* do a batch query and match by the source (aka package name), if available */
+				g_ptr_array_add (to_array, g_strdup (fn));
+				if (helper == NULL)
+					helper = gs_packagekit_helper_new (plugin);
+				gs_packagekit_helper_add_app (helper, app);
+
+				for (guint jj = 0; jj < sources->len; jj++) {
+					const gchar *source = g_ptr_array_index (sources, jj);
+					g_hash_table_insert (source_to_app, g_strdup (source), g_object_ref (app));
+				}
+			} else {
+				/* otherwise do a query with a single file only */
+				const gchar *single_array[] = { NULL, NULL };
+				g_autoptr(GsPackagekitHelper) single_helper = NULL;
+				single_array[0] = fn;
+				single_helper = gs_packagekit_helper_new (plugin);
+				gs_packagekit_helper_add_app (single_helper, app);
+				pk_client_search_files_async (data_unowned->client_refine,
+							      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
+							      (gchar **) single_array,
+							      cancellable,
+							      gs_packagekit_helper_cb, refine_task_add_progress_data (task, single_helper),
+							      search_files_cb,
+							      search_files_data_new_operation (task, app, NULL, NULL));
+			}
+		}
+		if (to_array->len > 0) {
+			g_ptr_array_add (to_array, NULL);
 			pk_client_search_files_async (data_unowned->client_refine,
 						      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
-						      (gchar **) to_array,
+						      (gchar **) to_array->pdata,
 						      cancellable,
 						      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						      search_files_cb,
-						      search_files_data_new_operation (task, app, fn));
+						      search_files_data_new_operation (task, NULL, list, source_to_app));
 		}
 	}
 
 	/* Refine repo package names */
-	for (guint i = 0; i < gs_app_list_length (repos_list); i++) {
-		GsApp *app = gs_app_list_index (repos_list, i);
-		const gchar *filename;
-		const gchar *to_array[] = { NULL, NULL };
-		g_autoptr(GsPackagekitHelper) helper = NULL;
+	if (gs_app_list_length (repos_list) > 0) {
+		g_autoptr(GPtrArray) to_array = g_ptr_array_new_full (gs_app_list_length (repos_list) + 1, g_free);
+		g_autoptr(GHashTable) source_to_app = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
+		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+		for (guint i = 0; i < gs_app_list_length (repos_list); i++) {
+			GsApp *app = gs_app_list_index (repos_list, i);
+			GPtrArray *sources;
+			const gchar *filename;
 
-		filename = gs_app_get_metadata_item (app, "repos::repo-filename");
+			/* The information will be added within the resolve_list operation */
+			if (g_hash_table_contains (resolve_list_apps, app))
+				continue;
 
-		/* set the source package name for an installed .repo file */
-		helper = gs_packagekit_helper_new (plugin);
-		to_array[0] = filename;
-		gs_packagekit_helper_add_app (helper, app);
+			filename = gs_app_get_metadata_item (app, "repos::repo-filename");
 
-		pk_client_search_files_async (data_unowned->client_refine,
-					      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
-					      (gchar **) to_array,
-					      cancellable,
-					      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
-					      search_files_cb,
-					      search_files_data_new_operation (task, app, filename));
+			sources = gs_app_get_sources (app);
+			if (!is_pk_apt_backend_broken && sources->len > 0) {
+				/* do a batch query and match by the source (aka package name), if available */
+				g_ptr_array_add (to_array, g_strdup (filename));
+				gs_packagekit_helper_add_app (helper, app);
+
+				for (guint jj = 0; jj < sources->len; jj++) {
+					const gchar *source = g_ptr_array_index (sources, jj);
+					g_hash_table_insert (source_to_app, g_strdup (source), g_object_ref (app));
+				}
+			} else {
+				/* otherwise do a query with a single file only */
+				const gchar *single_array[] = { NULL, NULL };
+				g_autoptr(GsPackagekitHelper) single_helper = NULL;
+				single_array[0] = filename;
+				single_helper = gs_packagekit_helper_new (plugin);
+				gs_packagekit_helper_add_app (single_helper, app);
+				pk_client_search_files_async (data_unowned->client_refine,
+							      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
+							      (gchar **) single_array,
+							      cancellable,
+							      gs_packagekit_helper_cb, refine_task_add_progress_data (task, single_helper),
+							      search_files_cb,
+							      search_files_data_new_operation (task, app, NULL, NULL));
+			}
+		}
+
+		if (to_array->len > 0) {
+			g_ptr_array_add (to_array, NULL);
+
+			pk_client_search_files_async (data_unowned->client_refine,
+						      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
+						      (gchar **) to_array->pdata,
+						      cancellable,
+						      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
+						      search_files_cb,
+						      search_files_data_new_operation (task, NULL, repos_list, source_to_app));
+		}
 	}
 
 	/* any update details missing? */
@@ -1960,20 +2045,42 @@ search_files_cb (GObject      *source_object,
 	results = pk_client_generic_finish (client, result, &local_error);
 
 	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (refine_task), &local_error)) {
-		g_prefix_error (&local_error, "failed to search file %s: ", search_files_data->filename);
+		g_prefix_error_literal (&local_error, "failed to search files: ");
 		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
-	if (packages->len == 1) {
-		PkPackage *package;
-		package = g_ptr_array_index (packages, 0);
-		gs_plugin_packagekit_set_metadata_from_package (GS_PLUGIN (self), search_files_data->app, package);
+	if (search_files_data->app != NULL) {
+		if (packages->len == 1) {
+			PkPackage *package;
+			package = g_ptr_array_index (packages, 0);
+			gs_plugin_packagekit_set_metadata_from_package (GS_PLUGIN (self), search_files_data->app, package);
+		} else {
+			g_debug ("%s: Failed to find one package for %s, [%u]", G_STRFUNC,
+				 gs_app_get_id (search_files_data->app), packages->len);
+
+		}
 	} else {
-		g_debug ("Failed to find one package for %s, %s, [%u]",
-			 gs_app_get_id (search_files_data->app), search_files_data->filename, packages->len);
+		for (guint ii = 0; ii < packages->len; ii++) {
+			PkPackage *package = g_ptr_array_index (packages, ii);
+			GsApp *app;
+			if (pk_package_get_name (package) == NULL)
+				continue;
+			app = g_hash_table_lookup (search_files_data->source_to_app, pk_package_get_name (package));
+			if (app != NULL)
+				gs_plugin_packagekit_set_metadata_from_package (GS_PLUGIN (self), app, package);
+			else
+				g_debug ("%s: Failed to find app for package id '%s'", G_STRFUNC, pk_package_get_id (package));
+		}
+
+		if (packages->len != gs_app_list_length (search_files_data->app_list)) {
+			g_debug ("%s: Failed to find package data for each of %u apps, received %u packages instead",
+				 G_STRFUNC, gs_app_list_length (search_files_data->app_list), packages->len);
+		} else {
+			g_debug ("%s: Received package data for all %u apps", G_STRFUNC, packages->len);
+		}
 	}
 
 	refine_task_complete_operation (refine_task);
