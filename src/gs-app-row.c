@@ -985,6 +985,9 @@ gs_app_row_init (GsAppRow *app_row)
 	priv->show_description = TRUE;
 	priv->show_installed = TRUE;
 
+	g_type_ensure (GS_TYPE_PROGRESS_BUTTON);
+	g_type_ensure (GS_TYPE_STAR_WIDGET);
+
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
 	g_signal_connect (priv->button, "clicked",

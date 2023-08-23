@@ -693,6 +693,8 @@ gs_updates_section_app_state_changed_cb (GsAppList *list,
 static void
 gs_updates_section_init (GsUpdatesSection *self)
 {
+	g_type_ensure (GS_TYPE_PROGRESS_BUTTON);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	self->list = gs_app_list_new ();
