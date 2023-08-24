@@ -538,5 +538,6 @@ void		 gs_app_set_has_translations	(GsApp		*app,
 gboolean	 gs_app_is_downloaded		(GsApp		*app);
 
 GsAppIconsState	 gs_app_get_icons_state		(GsApp		*app);
+gboolean	 gs_app_is_application		(GsApp		*app);
 
 G_END_DECLS
