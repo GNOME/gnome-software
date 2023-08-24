@@ -1624,14 +1624,22 @@ gs_appstream_search (GsPlugin *plugin,
 		#else
 		{ AS_SEARCH_TOKEN_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
 		#endif
+		/* Search once with a tokenize-and-casefold operator (`~=`) to support casefolded
+		 * full-text search, then again using substring matching (`contains()`), to
+		 * support prefix matching. Only do the prefix matches on a few fields, and at a
+		 * lower priority, otherwise things will get confusing.
+		 * 
+		 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2277 */
 		{ AS_SEARCH_TOKEN_MATCH_PKGNAME,	"pkgname[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_PKGNAME / 2,	"pkgname[contains(text(),stem(?))]" },
 		{ AS_SEARCH_TOKEN_MATCH_SUMMARY,	"summary[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_NAME,	"name[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_NAME,		"name[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_NAME / 2,	"name[contains(text(),stem(?))]" },
 		{ AS_SEARCH_TOKEN_MATCH_KEYWORD,	"keywords/keyword[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_ID,	"id[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_ID,	"launchable[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_ORIGIN,	"../components[@origin~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_NONE,	NULL }
+		{ AS_SEARCH_TOKEN_MATCH_ID,		"id[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_ID,		"launchable[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_ORIGIN,		"../components[@origin~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_NONE,		NULL }
 	};
 
 	return gs_appstream_do_search (plugin, silo, values, queries, list, cancellable, error);
