@@ -752,6 +752,21 @@ sort_by_packaging_format_preference (GsApp *app1,
 	return index1 - index2;
 }
 
+static void
+gs_details_page_refresh_screenshots (GsDetailsPage *self)
+{
+	if (self->app != NULL) {
+		gboolean is_online = gs_plugin_loader_get_network_available (self->plugin_loader);
+		gboolean has_screenshots;
+
+		gs_screenshot_carousel_load_screenshots (GS_SCREENSHOT_CAROUSEL (self->screenshot_carousel), self->app, is_online, NULL);
+		has_screenshots = gs_screenshot_carousel_get_has_screenshots (GS_SCREENSHOT_CAROUSEL (self->screenshot_carousel));
+		gtk_widget_set_visible (self->screenshot_carousel, has_screenshots);
+	} else {
+		gtk_widget_set_visible (self->screenshot_carousel, FALSE);
+	}
+}
+
 static void _set_app (GsDetailsPage *self, GsApp *app);
 
 static void
@@ -932,6 +947,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		   when it is clicked. */
 		g_clear_pointer (&self->last_developer_name, g_free);
 
+		gs_details_page_refresh_screenshots (self);
 		gs_details_page_refresh_all (self);
 	} else {
 		gs_details_page_refresh_app_data_info (self);
@@ -1872,8 +1888,6 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job1 = NULL;
 	g_autoptr(GsPluginJob) plugin_job2 = NULL;
-	gboolean is_online = gs_plugin_loader_get_network_available (self->plugin_loader);
-	gboolean has_screenshots;
 
 	/* print what we've got */
 	tmp = gs_app_to_string (self->app);
@@ -1881,9 +1895,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 
 	/* update UI */
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_READY);
-	gs_screenshot_carousel_load_screenshots (GS_SCREENSHOT_CAROUSEL (self->screenshot_carousel), self->app, is_online, NULL);
-	has_screenshots = gs_screenshot_carousel_get_has_screenshots (GS_SCREENSHOT_CAROUSEL (self->screenshot_carousel));
-	gtk_widget_set_visible (self->screenshot_carousel, has_screenshots);
+	gs_details_page_refresh_screenshots (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_all (self);
 	gs_details_page_update_origin_button (self, FALSE);
