@@ -115,6 +115,7 @@ struct _GsDetailsPage
 	GtkWidget		*screenshot_carousel;
 	GtkWidget		*button_details_launch;
 	GtkStack		*links_stack;
+	GtkWidget		*label_no_metadata_info;
 	AdwActionRow		*project_website_row;
 	AdwActionRow		*donate_row;
 	AdwActionRow		*translate_row;
@@ -126,10 +127,12 @@ struct _GsDetailsPage
 	GtkWidget		*button_remove;
 	GsProgressButton	*button_cancel;
 	GtkWidget		*infobar_details_eol;
+	GtkWidget		*label_eol;
 	GtkWidget		*infobar_details_problems_label;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
+	GtkWidget		*label_package_baseos;
 	GtkWidget		*infobar_details_repo;
 	GtkWidget		*infobar_app_data;
 	GtkWidget		*infobar_app_data_label;
@@ -1278,7 +1281,10 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 	tmp = gs_app_get_summary (self->app);
 	if (tmp != NULL && tmp[0] != '\0') {
-		adw_banner_set_title (self->translation_banner, _("This app will appear in US English"));
+		if (gs_app_is_application (self->app))
+			adw_banner_set_title (self->translation_banner, _("This app will appear in US English"));
+		else
+			adw_banner_set_title (self->translation_banner, _("This software will appear in US English"));
 		gtk_label_set_label (GTK_LABEL (self->application_details_summary), tmp);
 		gtk_widget_set_visible (self->application_details_summary, TRUE);
 	} else {
@@ -1867,6 +1873,16 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::pending-action",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
+
+	if (gs_app_is_application (self->app)) {
+		gtk_label_set_text (GTK_LABEL (self->label_eol), _("This app is no longer receiving updates, including security fixes"));
+		gtk_label_set_text (GTK_LABEL (self->label_package_baseos), _("This app is already provided by your distribution and should not be replaced."));
+		gtk_label_set_text (GTK_LABEL (self->label_no_metadata_info), _("This app doesn’t provide any links to a website, code repository or issue tracker."));
+	} else {
+		gtk_label_set_text (GTK_LABEL (self->label_eol), _("This software is no longer receiving updates, including security fixes"));
+		gtk_label_set_text (GTK_LABEL (self->label_package_baseos), _("This software is already provided by your distribution and should not be replaced."));
+		gtk_label_set_text (GTK_LABEL (self->label_no_metadata_info), _("This software doesn’t provide any links to a website, code repository or issue tracker."));
+	}
 }
 
 static gboolean
@@ -2607,6 +2623,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, screenshot_carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_launch);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, links_stack);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_no_metadata_info);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, project_website_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, donate_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translate_row);
@@ -2618,10 +2635,12 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_cancel);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_eol);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_eol);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_problems_label);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_norepo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_package_baseos);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_package_baseos);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_app_data);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_app_data_label);
