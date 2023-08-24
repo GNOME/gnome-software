@@ -85,12 +85,15 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	const gchar *title, *css_class;
 	const gchar *lozenge_icon_names[3];
 	g_autofree gchar *description = NULL;
+	gboolean is_application;
 	gboolean get_involved_visible;
 	const gchar *get_involved_label;
 
 	/* Widget behaviour is undefined if the app is unspecified. */
 	if (self->app == NULL)
 		return;
+
+	is_application = gs_app_is_application (self->app);
 
 	if (gs_app_get_license_is_free (self->app)) {
 		const gchar *license_spdx;
@@ -112,7 +115,22 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		license_spdx = gs_app_get_license (self->app);
 		license_url = as_get_license_url (license_spdx);
 
-		if (license_url != NULL) {
+		if (is_application) {
+			if (license_url != NULL) {
+				/* Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license. */
+				description = g_strdup_printf (_("This app is developed in the open by a community of volunteers, and released under the <a href=\"%s\">%s license</a>."
+								 "\n\n"
+								 "You can contribute and help make it even better."),
+								 license_url,
+								 license_spdx);
+			} else {
+				/* Translators: The placeholder here is the name of a software license. */
+				description = g_strdup_printf (_("This app is developed in the open by a community of volunteers, and released under the %s license."
+								 "\n\n"
+								 "You can contribute and help make it even better."),
+								 license_spdx);
+			}
+		} else if (license_url != NULL) {
 			/* Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license. */
 			description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the <a href=\"%s\">%s license</a>."
 							 "\n\n"
@@ -135,9 +153,15 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		get_involved_visible = FALSE;
 		get_involved_label = _("_Learn More");
 
-		description = g_strdup (_("This software does not specify what license it is developed under, and may be proprietary. It may be insecure in ways that are hard to detect, and it may change without oversight."
-					  "\n\n"
-					  "You may or may not be able to contribute to this software."));
+		if (is_application) {
+			description = g_strdup (_("This app does not specify what license it is developed under, and may be proprietary. It may be insecure in ways that are hard to detect, and it may change without oversight."
+						  "\n\n"
+						  "You may or may not be able to contribute to this app."));
+		} else {
+			description = g_strdup (_("This software does not specify what license it is developed under, and may be proprietary. It may be insecure in ways that are hard to detect, and it may change without oversight."
+						  "\n\n"
+						  "You may or may not be able to contribute to this software."));
+		}
 	} else if (g_ascii_strncasecmp (gs_app_get_license (self->app), "LicenseRef-proprietary", strlen ("LicenseRef-proprietary")) == 0) {
 		title = _("Proprietary");
 		css_class = "yellow";
@@ -147,9 +171,15 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		get_involved_visible = TRUE;
 		get_involved_label = _("_Learn More");
 
-		description = g_strdup (_("This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight."
-					  "\n\n"
-					  "You may not be able to contribute to this software."));
+		if (is_application) {
+			description = g_strdup (_("This app is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight."
+						  "\n\n"
+						  "You may not be able to contribute to this app."));
+		} else {
+			description = g_strdup (_("This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight."
+						  "\n\n"
+						  "You may not be able to contribute to this software."));
+		}
 	} else {
 		const gchar *license_spdx;
 		g_autofree gchar *license_url = NULL;
@@ -165,7 +195,22 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		get_involved_visible = FALSE;
 		get_involved_label = _("_Learn More");
 
-		if (license_url != NULL) {
+		if (is_application) {
+			if (license_url != NULL) {
+				/* Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license. */
+				description = g_strdup_printf (_("This app is developed under the special license <a href=\"%s\">%s</a>."
+								  "\n\n"
+								  "You may or may not be able to contribute to this app."),
+								 license_url,
+								 license_spdx);
+			} else {
+				/* Translators: The placeholder here is the name of a software license. */
+				description = g_strdup_printf (_("This app is developed under the special license “%s”."
+								  "\n\n"
+								  "You may or may not be able to contribute to this app."),
+								 license_spdx);
+			}
+		} else if (license_url != NULL) {
 			/* Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license. */
 			description = g_strdup_printf (_("This software is developed under the special license <a href=\"%s\">%s</a>."
 							  "\n\n"

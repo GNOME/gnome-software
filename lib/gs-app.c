@@ -6912,3 +6912,23 @@ gs_app_set_icons_state (GsApp           *app,
 	priv->icons_state = icons_state;
 	gs_app_queue_notify (app, obj_props[PROP_ICONS_STATE]);
 }
+
+/**
+ * gs_app_is_application:
+ * @app: a #GsApp
+ *
+ * Returns whether the @app is an application, not a "generic" software.
+ *
+ * Returns: whether the @app is an application, not a "generic" software
+ *
+ * Since: 45
+ **/
+gboolean
+gs_app_is_application (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return priv->kind == AS_COMPONENT_KIND_DESKTOP_APP ||
+	       priv->kind == AS_COMPONENT_KIND_CONSOLE_APP ||
+	       priv->kind == AS_COMPONENT_KIND_WEB_APP;
+}

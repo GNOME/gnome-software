@@ -386,6 +386,8 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    "dialog-warning-symbolic",
 				    /* Translators: This indicates an app does not specify which license it's developed under. */
 				    _("Unknown License"),
+				    gs_app_is_application (self->app) ?
+				    _("This app does not specify what license it is developed under, and may be proprietary") :
 				    _("This software does not specify what license it is developed under, and may be proprietary"),
 				    NULL, NULL, NULL);
 	} else {
