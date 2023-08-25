@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-08-22 22:55+0000\n"
-"PO-Revision-Date: 2023-08-23 03:45+0330\n"
+"POT-Creation-Date: 2023-08-24 18:02+0000\n"
+"PO-Revision-Date: 2023-08-25 15:16+0330\n"
 "Last-Translator: Danial Behzadi <dani.behzi@ubuntu.com>\n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -780,7 +780,7 @@ msgstr "پروندهٔ محلّی"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6350 src/gs-safety-context-dialog.c:498
+#: lib/gs-app.c:6350 src/gs-safety-context-dialog.c:500
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
@@ -793,17 +793,17 @@ msgstr "بسته"
 msgid "Pending"
 msgstr "در انتظار"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:459 src/gs-details-page.c:387
+#: src/gs-app-addon-row.c:99 src/gs-app-row.c:459 src/gs-details-page.c:390
 msgid "Pending install"
 msgstr "منتظر نصب"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:463 src/gs-details-page.c:394
+#: src/gs-app-addon-row.c:103 src/gs-app-row.c:463 src/gs-details-page.c:397
 msgid "Pending remove"
 msgstr "منتظر برداشتن"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:208 src/gs-details-page.c:380
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:208 src/gs-details-page.c:383
 msgid "Installing"
 msgstr "نصب کردن"
 
@@ -817,8 +817,8 @@ msgstr "برداشتن"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1005
-#: src/gs-details-page.c:1031 src/gs-details-page.ui:209 src/gs-page.c:437
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1024
+#: src/gs-details-page.c:1050 src/gs-details-page.ui:209 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_نصب"
@@ -1080,7 +1080,7 @@ msgid "A nice way to manage the software on your system."
 msgstr "راهی خوب برای مدیریت نرم‌افزارهای سامانه‌تان."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:507
+#: src/gs-application.c:531
 msgid "Sorry! There are no details for that application."
 msgstr "متأسفانه هیچ جزییاتی برای این برنامه وجود ندارد."
 
@@ -2238,47 +2238,47 @@ msgstr "_نمایش بیش‌تر"
 msgid "_Show Less"
 msgstr "_نمایش کم‌تر"
 
-#: src/gs-details-page.c:375
+#: src/gs-details-page.c:378
 msgid "Removing…"
 msgstr "در حال برداشتن…"
 
-#: src/gs-details-page.c:385
+#: src/gs-details-page.c:388
 msgid "Requires restart to finish install"
 msgstr "نیازمند آغاز دوباره برای پایان نصب"
 
-#: src/gs-details-page.c:392
+#: src/gs-details-page.c:395
 msgid "Requires restart to finish remove"
 msgstr "نیازمند آغاز دوباره برای پایان برداشتن"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:409
+#: src/gs-details-page.c:412
 msgid "Pending installation…"
 msgstr "نصب منتظر…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:415
+#: src/gs-details-page.c:418
 msgid "Pending update…"
 msgstr "به‌روز رسانی منتظر…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:429
+#: src/gs-details-page.c:432
 msgid "Preparing…"
 msgstr "آماده سازی…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:432
+#: src/gs-details-page.c:435
 msgid "Uninstalling…"
 msgstr "حذف کردن نصب…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:559
+#: src/gs-details-page.c:562
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "%s نصب نشده؛ ولی هنوز داده‌هایی دارد."
 
-#: src/gs-details-page.c:1021
+#: src/gs-details-page.c:1040
 msgid "_Restart"
 msgstr "_آغاز دوباره"
 
@@ -2286,45 +2286,77 @@ msgstr "_آغاز دوباره"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1045
+#: src/gs-details-page.c:1064
 msgid "_Install…"
 msgstr "_نصب…"
 
-#: src/gs-details-page.c:1112
+#: src/gs-details-page.c:1131
 msgid "_Uninstall…"
 msgstr "_حذف نصب…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1258
+#: src/gs-details-page.c:1277
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s به انگلیسی آمریکایی نشان داده خواهد شد"
 
-#: src/gs-details-page.c:1265
+#: src/gs-details-page.c:1285
 msgid "This app will appear in US English"
 msgstr "این کاره به انگلیسی آمریکایی نشان داده خواهد شد"
 
-#: src/gs-details-page.c:1300 src/gs-details-page.ui:59
+#: src/gs-details-page.c:1287
+msgid "This software will appear in US English"
+msgstr "این نرم‌افزار به انگلیسی آمریکایی نشان داده خواهد شد"
+
+#: src/gs-details-page.c:1322 src/gs-details-page.ui:59
 msgid "Help _Translate"
 msgstr "کمک به _ترجمه"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1365
+#: src/gs-details-page.c:1387
 #, c-format
 msgid "Other Apps by %s"
 msgstr "دیگر کاره‌ها از %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1755
+#: src/gs-details-page.c:1777
 msgid "You need internet access to write a review"
 msgstr "برای نوشتن بازبینی، نیاز به دسترسی به اینترنت دارید"
 
-#: src/gs-details-page.c:1943 src/gs-details-page.c:1959
+#: src/gs-details-page.c:1878
+msgid "This app is no longer receiving updates, including security fixes"
+msgstr "این کاره دیگر به‌روز رسانی نمی‌گیرد؛ حتا رفع اشکال‌های امنیتی"
+
+#: src/gs-details-page.c:1879
+msgid "This app is already provided by your distribution and should not be replaced."
+msgstr "این کاره از پیش به دست توزیعتان فراهم شده و نباید جایگزین شود."
+
+#: src/gs-details-page.c:1880
+msgid ""
+"This app doesn’t provide any links to a website, code repository or issue tracker."
+msgstr "این کاره هیچ پیوندی به پایگاه وب، مخزن کد یا ردیاب مشکل ندارد."
+
+#: src/gs-details-page.c:1882
+msgid "This software is no longer receiving updates, including security fixes"
+msgstr "این نرم‌افزار دیگر به‌روز رسانی نمی‌گیرد؛ حتا رفع اشکال‌های امنیتی"
+
+#: src/gs-details-page.c:1883
+msgid ""
+"This software is already provided by your distribution and should not be replaced."
+msgstr "این برنامه از پیش به دست توزیعتان فراهم شده و نباید جایگزین شود."
+
+#: src/gs-details-page.c:1884
+msgid ""
+"This software doesn’t provide any links to a website, code repository or issue "
+"tracker."
+msgstr "این نرم‌افزار هیچ پیوندی به پایگاه وب، مخزن کد یا ردیاب مشکل ندارد."
+
+#: src/gs-details-page.c:1971 src/gs-details-page.c:1987
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "امکان یافتن «%s» نبود"
 
-#: src/gs-details-page.c:2306
+#: src/gs-details-page.c:2334
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "شکست در ثبت بازبینی برای «%s«: %s"
@@ -2359,10 +2391,6 @@ msgstr "در حال بارگیری"
 msgid "Add-ons"
 msgstr "افزودنی‌ها"
 
-#: src/gs-details-page.ui:571
-msgid "This software is no longer receiving updates, including security fixes"
-msgstr "این نرم‌افزار دیگر به‌روز رسانی نمی‌گیرد؛ حتا رفع اشکال‌های امنیتی"
-
 #: src/gs-details-page.ui:632
 msgid "This app can only be used when there is an active internet connection."
 msgstr "این کاره تنها زمانی که یک اتّصال فعّال اینترنتی داشته باشید، قابل استفاده است."
@@ -2389,11 +2417,6 @@ msgid ""
 "versions."
 msgstr ""
 "این کاره دارای یک مخزن نرم‌افزاری نیست و به نگارش‌های جدید به‌روز رسانی نخواهد شد."
-
-#: src/gs-details-page.ui:731
-msgid ""
-"This software is already provided by your distribution and should not be replaced."
-msgstr "این برنامه از پیش به دست توزیعتان فراهم شده و نباید جایگزین شود."
 
 #. Translators: a repository file used for installing software has been discovered.
 #: src/gs-details-page.ui:762
@@ -2422,12 +2445,6 @@ msgstr "_حذف داده‌ها"
 #: src/gs-details-page.ui:913
 msgid "No Metadata"
 msgstr "بدون فراداده"
-
-#: src/gs-details-page.ui:922
-msgid ""
-"This software doesn’t provide any links to a website, code repository or issue "
-"tracker."
-msgstr "این نرم‌افزار هیچ پیوندی به پایگاه وب، مخزن کد یا ردیاب مشکل ندارد."
 
 #: src/gs-details-page.ui:950
 msgid "Project _Website"
@@ -2924,16 +2941,44 @@ msgstr "کاره‌های وب"
 msgid "System Apps"
 msgstr "کاره‌های سامانه"
 
-#: src/gs-license-tile.c:99
+#: src/gs-license-tile.c:102
 msgid "Community Built"
 msgstr "ساخت اجتماع"
 
-#: src/gs-license-tile.c:110 src/gs-license-tile.ui:98
+#: src/gs-license-tile.c:113 src/gs-license-tile.ui:98
 msgid "_Get Involved"
 msgstr "_درگیر شدن"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
-#: src/gs-license-tile.c:117
+#: src/gs-license-tile.c:121
+#, c-format
+msgid ""
+"This app is developed in the open by a community of volunteers, and released under "
+"the <a href=\"%s\">%s license</a>.\n"
+"\n"
+"You can contribute and help make it even better."
+msgstr ""
+"این کاره به صورت آزاد به دست اجتماعی از داوطلبان توسعه یافته و با <a "
+"href=\"%s\">پروانهٔ %s</a> منتشر شده.\n"
+"\n"
+"می‌توانید در بهتر از این کردنش، مشارکت و یاری کنید."
+
+#. Translators: The placeholder here is the name of a software license.
+#: src/gs-license-tile.c:128
+#, c-format
+msgid ""
+"This app is developed in the open by a community of volunteers, and released under "
+"the %s license.\n"
+"\n"
+"You can contribute and help make it even better."
+msgstr ""
+"این کاره به صورت آزاد به دست اجتماعی از داوطلبان توسعه یافته و با پروانهٔ %s منتشر "
+"شده.\n"
+"\n"
+"می‌توانید در بهتر از این کردنش، مشارکت و یاری کنید."
+
+#. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
+#: src/gs-license-tile.c:135
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and released "
@@ -2947,7 +2992,7 @@ msgstr ""
 "می‌توانید در بهتر از این کردنش، مشارکت و یاری کنید."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-license-tile.c:124
+#: src/gs-license-tile.c:142
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and released "
@@ -2961,15 +3006,28 @@ msgstr ""
 "می‌توانید در بهتر از این کردنش، مشارکت و یاری کنید."
 
 #. Translators: This indicates an app does not specify which license it's developed under.
-#: src/gs-license-tile.c:130 src/gs-safety-context-dialog.c:388
+#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:388
 msgid "Unknown License"
 msgstr "پروانهٔ ناشناخته"
 
-#: src/gs-license-tile.c:136 src/gs-license-tile.c:148 src/gs-license-tile.c:166
+#: src/gs-license-tile.c:154 src/gs-license-tile.c:172 src/gs-license-tile.c:196
 msgid "_Learn More"
 msgstr "_بیش‌تر بدانید"
 
-#: src/gs-license-tile.c:138
+#: src/gs-license-tile.c:157
+msgid ""
+"This app does not specify what license it is developed under, and may be "
+"proprietary. It may be insecure in ways that are hard to detect, and it may change "
+"without oversight.\n"
+"\n"
+"You may or may not be able to contribute to this app."
+msgstr ""
+"این کاره مشخّص نمی‌کند با چه پروانه‌ای توسعه داده شده و ممکن است مالکیتی باشد، به "
+"روش‌هایی که تشخیصشان دشوار است ناامن بوده و بدون نظارت تغییر کند.\n"
+"\n"
+"ممکن است امکان مشارکت در این کاره را داشته یا نداشته باشید."
+
+#: src/gs-license-tile.c:161
 msgid ""
 "This software does not specify what license it is developed under, and may be "
 "proprietary. It may be insecure in ways that are hard to detect, and it may change "
@@ -2983,11 +3041,25 @@ msgstr ""
 "ممکن است امکان مشارکت در این نرم‌افزار را داشته یا نداشته باشید."
 
 #. Translators: This is used for "License    Proprietary"
-#: src/gs-license-tile.c:142 src/gs-safety-context-dialog.c:545
+#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:547
 msgid "Proprietary"
 msgstr "مالکیتی"
 
-#: src/gs-license-tile.c:150
+#: src/gs-license-tile.c:175
+msgid ""
+"This app is not developed in the open, so only its developers know how it works. "
+"It may be insecure in ways that are hard to detect, and it may change without "
+"oversight.\n"
+"\n"
+"You may not be able to contribute to this app."
+msgstr ""
+"این کاره به صورت آزاد توسعه نیافته، پس فقط توسعه‌دهندگانش می‌دانند چگونه کار می‌کند. "
+"این کاره ممکن است به روش‌هایی که تشخیصشان دشوار است ناامن بوده و بدون نظارت تغییر "
+"کند.\n"
+"\n"
+"ممکن است قادر به مشارکت در این کاره نباشید."
+
+#: src/gs-license-tile.c:179
 msgid ""
 "This software is not developed in the open, so only its developers know how it "
 "works. It may be insecure in ways that are hard to detect, and it may change "
@@ -3001,12 +3073,36 @@ msgstr ""
 "\n"
 "ممکن است قادر به مشارکت در این نرم‌افزار نباشید."
 
-#: src/gs-license-tile.c:160
+#: src/gs-license-tile.c:190
 msgid "Special License"
 msgstr "پروانهٔ خاص"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
-#: src/gs-license-tile.c:170
+#: src/gs-license-tile.c:201
+#, c-format
+msgid ""
+"This app is developed under the special license <a href=\"%s\">%s</a>.\n"
+"\n"
+"You may or may not be able to contribute to this app."
+msgstr ""
+"این کاره با پروانهٔ خاص <a href=\"%s\">%s</a> توسعه داده شده.\n"
+"\n"
+"ممکن است امکان مشارکت در این کاره را داشته یا نداشته باشید."
+
+#. Translators: The placeholder here is the name of a software license.
+#: src/gs-license-tile.c:208
+#, c-format
+msgid ""
+"This app is developed under the special license “%s”.\n"
+"\n"
+"You may or may not be able to contribute to this app."
+msgstr ""
+"این کاره با پروانهٔ خاص «%s» توسعه داده شده.\n"
+"\n"
+"ممکن است امکان مشارکت در این کاره را داشته یا نداشته باشید."
+
+#. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
+#: src/gs-license-tile.c:215
 #, c-format
 msgid ""
 "This software is developed under the special license <a href=\"%s\">%s</a>.\n"
@@ -3018,7 +3114,7 @@ msgstr ""
 "ممکن است امکان مشارکت در این نرم‌افزار را داشته یا نداشته باشید."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-license-tile.c:177
+#: src/gs-license-tile.c:222
 #, c-format
 msgid ""
 "This software is developed under the special license “%s”.\n"
@@ -3825,7 +3921,13 @@ msgstr "نیازمندی‌های ناامن"
 msgid "Software or its dependencies are no longer supported and may be insecure"
 msgstr "نرم‌افزار یا نیازمندی‌هایش دیگر پشتیبانی نمی‌شوند و شاید ناامن باشند"
 
-#: src/gs-safety-context-dialog.c:389
+#: src/gs-safety-context-dialog.c:390
+msgid ""
+"This app does not specify what license it is developed under, and may be "
+"proprietary"
+msgstr "این کارع مشخّص نمی‌کند با چه پروانه‌ای توسعه داده شده و ممکن است مالکیتی باشد"
+
+#: src/gs-safety-context-dialog.c:391
 msgid ""
 "This software does not specify what license it is developed under, and may be "
 "proprietary"
@@ -3833,11 +3935,11 @@ msgstr ""
 "این نرم‌افزار مشخّص نمی‌کند با چه پروانه‌ای توسعه داده شده و ممکن است مالکیتی باشد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:409
+#: src/gs-safety-context-dialog.c:411
 msgid "Proprietary Code"
 msgstr "کد مالکیتی"
 
-#: src/gs-safety-context-dialog.c:410
+#: src/gs-safety-context-dialog.c:412
 msgid ""
 "The source code is not public, so it cannot be independently audited and might be "
 "unsafe"
@@ -3845,11 +3947,11 @@ msgstr ""
 "کد منبع عمومی نیست، پس نمی‌تواند مستقلانه بررسی شود و به صورت بالقوه ناامن است"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:413
+#: src/gs-safety-context-dialog.c:415
 msgid "Auditable Code"
 msgstr "کد بازرسی‌پذیر"
 
-#: src/gs-safety-context-dialog.c:414
+#: src/gs-safety-context-dialog.c:416
 msgid ""
 "The source code is public and can be independently audited, which makes the app "
 "more likely to be safe"
@@ -3859,41 +3961,41 @@ msgstr ""
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:423
+#: src/gs-safety-context-dialog.c:425
 #, c-format
 msgid "%s is privileged"
 msgstr "%s ممتاز است"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:430
+#: src/gs-safety-context-dialog.c:432
 #, c-format
 msgid "%s is safe"
 msgstr "%s امن است"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:437
+#: src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s is probably safe"
 msgstr "%s احتمالاً امن است"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:444
+#: src/gs-safety-context-dialog.c:446
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s بالقوه ناامن است"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:451
+#: src/gs-safety-context-dialog.c:453
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s ناامن است"
 
 #. Translators: This is used for "License    Unknown"
-#: src/gs-safety-context-dialog.c:542
+#: src/gs-safety-context-dialog.c:544
 msgctxt "Unknown license"
 msgid "Unknown"
 msgstr "ناشناخته"
@@ -5574,7 +5676,7 @@ msgstr ""
 msgid "Packages"
 msgstr "بسته‌ها"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3045
+#: plugins/packagekit/gs-plugin-packagekit.c:3152
 msgid "Failed to install updates: "
 msgstr "شکست در نصب به‌روز رسانی‌ها: "
 
