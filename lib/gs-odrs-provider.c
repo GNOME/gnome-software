@@ -541,9 +541,17 @@ _gs_app_get_reviewable_ids (GsApp *app)
 		items = as_provided_get_items (prov);
 		for (guint j = 0; j < items->len; j++) {
 			const gchar *value = (const gchar *) g_ptr_array_index (items, j);
+			guint k;
 			if (value == NULL)
 				continue;
-			g_ptr_array_add (ids, g_strdup (value));
+			for (k = 0; k < ids->len; k++) {
+				const gchar *existing_id = g_ptr_array_index (ids, k);
+				if (g_strcmp0 (existing_id, value) == 0)
+					break;
+			}
+			/* when `k` is less than `ids->len`, then a match was found, thus skip a duplicate */
+			if (k == ids->len)
+				g_ptr_array_add (ids, g_strdup (value));
 		}
 	}
 	return ids;
