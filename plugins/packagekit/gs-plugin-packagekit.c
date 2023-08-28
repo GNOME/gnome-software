@@ -1338,15 +1338,14 @@ refine_task_complete_operation_with_error (GTask  *refine_task,
 typedef struct {
 	GTask *refine_task;  /* (owned) (not nullable) */
 	GsApp *app; /* (owned) (nullable) for single file query */
-	GsAppList *app_list;  /* (owned) (nullable) for multifile query */
 	GHashTable *source_to_app; /* (owned) (nullable) for multifile query */
+	guint n_expected_results;
 } SearchFilesData;
 
 static void
 search_files_data_free (SearchFilesData *data)
 {
 	g_clear_object (&data->app);
-	g_clear_object (&data->app_list);
 	g_clear_object (&data->refine_task);
 	g_clear_pointer (&data->source_to_app, g_hash_table_unref);
 	g_free (data);
@@ -1357,18 +1356,18 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (SearchFilesData, search_files_data_free)
 static SearchFilesData *
 search_files_data_new_operation (GTask *refine_task,
 				 GsApp *app,
-				 GsAppList *app_list,
-				 GHashTable *source_to_app)
+				 GHashTable *source_to_app,
+				 guint n_expected_results)
 {
 	g_autoptr(SearchFilesData) data = g_new0 (SearchFilesData, 1);
-	g_assert ((app != NULL && app_list == NULL && source_to_app == NULL) ||
-		  (app == NULL && app_list != NULL && source_to_app != NULL));
+	g_assert ((app != NULL && source_to_app == NULL) ||
+		  (app == NULL && source_to_app != NULL));
 	data->refine_task = refine_task_add_operation (refine_task);
 	if (app) {
 		data->app = g_object_ref (app);
 	} else {
-		data->app_list = g_object_ref (app_list);
 		data->source_to_app = g_hash_table_ref (source_to_app);
+		data->n_expected_results = n_expected_results;
 	}
 
 	return g_steal_pointer (&data);
@@ -1681,7 +1680,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 							      cancellable,
 							      gs_packagekit_helper_cb, refine_task_add_progress_data (task, single_helper),
 							      search_files_cb,
-							      search_files_data_new_operation (task, app, NULL, NULL));
+							      search_files_data_new_operation (task, app, NULL, 0));
 			}
 		}
 		if (to_array->len > 0) {
@@ -1692,7 +1691,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 						      cancellable,
 						      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						      search_files_cb,
-						      search_files_data_new_operation (task, NULL, list, source_to_app));
+						      search_files_data_new_operation (task, NULL, source_to_app, to_array->len - 1));
 		}
 	}
 
@@ -1735,7 +1734,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 							      cancellable,
 							      gs_packagekit_helper_cb, refine_task_add_progress_data (task, single_helper),
 							      search_files_cb,
-							      search_files_data_new_operation (task, app, NULL, NULL));
+							      search_files_data_new_operation (task, app, NULL, 0));
 			}
 		}
 
@@ -1748,7 +1747,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 						      cancellable,
 						      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						      search_files_cb,
-						      search_files_data_new_operation (task, NULL, repos_list, source_to_app));
+						      search_files_data_new_operation (task, NULL, source_to_app, to_array->len - 1));
 		}
 	}
 
@@ -2075,9 +2074,9 @@ search_files_cb (GObject      *source_object,
 				g_debug ("%s: Failed to find app for package id '%s'", G_STRFUNC, pk_package_get_id (package));
 		}
 
-		if (packages->len != gs_app_list_length (search_files_data->app_list)) {
+		if (packages->len != search_files_data->n_expected_results) {
 			g_debug ("%s: Failed to find package data for each of %u apps, received %u packages instead",
-				 G_STRFUNC, gs_app_list_length (search_files_data->app_list), packages->len);
+				 G_STRFUNC, search_files_data->n_expected_results, packages->len);
 		} else {
 			g_debug ("%s: Received package data for all %u apps", G_STRFUNC, packages->len);
 		}
