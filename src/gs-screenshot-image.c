@@ -347,10 +347,11 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	guint status_code;
 
 #if SOUP_CHECK_VERSION(3, 0, 0)
+	g_autoptr(GBytes) bytes = NULL;
 	SoupMessage *msg;
 
-	stream = soup_session_send_finish (SOUP_SESSION (source_object), result, &error);
-	if (stream == NULL) {
+	bytes = soup_session_send_and_read_finish (SOUP_SESSION (source_object), result, &error);
+	if (bytes == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_warning ("Failed to download screenshot: %s", error->message);
 			/* Reset the width request, thus the image shrinks when the window width is small */
@@ -417,7 +418,9 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		return;
 	}
 
-#if !SOUP_CHECK_VERSION(3, 0, 0)
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	stream = g_memory_input_stream_new_from_bytes (bytes);
+#else
 	/* create a buffer with the data */
 	stream = g_memory_input_stream_new_from_data (msg->response_body->data,
 						      msg->response_body->length,
@@ -808,8 +811,8 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* send async */
 #if SOUP_CHECK_VERSION(3, 0, 0)
 	ssimg->cancellable = g_cancellable_new ();
-	soup_session_send_async (ssimg->session, ssimg->message, G_PRIORITY_DEFAULT, ssimg->cancellable,
-				 gs_screenshot_image_complete_cb, g_object_ref (ssimg));
+	soup_session_send_and_read_async (ssimg->session, ssimg->message, G_PRIORITY_DEFAULT, ssimg->cancellable,
+					  gs_screenshot_image_complete_cb, g_object_ref (ssimg));
 #else
 	soup_session_queue_message (ssimg->session,
 				    g_object_ref (ssimg->message) /* transfer full */,
