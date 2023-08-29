@@ -476,29 +476,27 @@ update_safety_tile (GsAppContextBar *self)
 				      /* Translators: This indicates an app’s source code is freely available, so can be audited for security.
 				       * It’s used in a context tile, so should be short. */
 				      _("Auditable code"));
+	} else if (gs_app_get_license (self->app) == NULL) {
+		add_to_safety_rating_full (&chosen_rating, descriptions,
+					   SAFETY_PRIVILEGED,
+					   /* Translators: This indicates an app does not specify which license it's developed under.
+					    * It’s used in a context tile, so should be short. */
+					   _("Unknown license"),
+					   FALSE);
+	} else if (g_ascii_strncasecmp (gs_app_get_license (self->app), "LicenseRef-proprietary", strlen ("LicenseRef-proprietary")) == 0) {
+		add_to_safety_rating_full (&chosen_rating, descriptions,
+					   SAFETY_PROBABLY_SAFE,
+					   /* Translators: This indicates an app is not licensed under a free software license.
+					    * It’s used in a context tile, so should be short. */
+					   _("Proprietary code"),
+					   FALSE);
 	} else {
-		SafetyRating use_rating = SAFETY_PROBABLY_SAFE;
-
-		if (gs_app_get_license (self->app) == NULL) {
-			add_to_safety_rating_full (&chosen_rating, descriptions,
-						   use_rating,
-						   /* Translators: This indicates an app does not specify which license it's developed under.
-						    * It’s used in a context tile, so should be short. */
-						   _("Unknown license"),
-						   FALSE);
-		} else {
-			/* Proprietary apps are one level worse (less safe) than whichever rating
-			   had been determined from the provided permissions. */
-			if (chosen_rating < SAFETY_UNSAFE && chosen_rating >= use_rating)
-				use_rating = chosen_rating + 1;
-
-			add_to_safety_rating_full (&chosen_rating, descriptions,
-						   use_rating,
-						   /* Translators: This indicates an app is not licensed under a free software license.
-						    * It’s used in a context tile, so should be short. */
-						   _("Proprietary code"),
-						   FALSE);
-		}
+		add_to_safety_rating_full (&chosen_rating, descriptions,
+					   SAFETY_PROBABLY_SAFE,
+					   /* Translators: This indicates an app is not licensed under a free software license.
+					    * It’s used in a context tile, so should be short. */
+					   _("Special license"),
+					   FALSE);
 	}
 
 	g_assert (descriptions->len > 0);
