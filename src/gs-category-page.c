@@ -48,12 +48,12 @@ G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 #define MIN_SECTION_APPS 3
 
 #define validate_app_buckets() \
-	n_total_apps = n_carousel_apps + n_featured_apps + n_recently_updated + n_web_apps + n_other_apps; \
-	print_app_bucket_stats (self, n_carousel_apps, n_featured_apps, n_recently_updated, n_web_apps, n_other_apps, n_category_apps); \
+	n_total_apps = n_carousel_apps + n_featured_apps + n_recently_updated_apps + n_web_apps + n_other_apps; \
+	print_app_bucket_stats (self, n_carousel_apps, n_featured_apps, n_recently_updated_apps, n_web_apps, n_other_apps, n_category_apps); \
 	\
 	g_assert (n_total_apps == n_category_apps); \
 	g_assert (n_featured_apps == 0 || n_featured_apps == featured_app_tiles->len); \
-	g_assert (n_recently_updated == 0 || n_recently_updated == recently_updated_app_tiles->len); \
+	g_assert (n_recently_updated_apps == 0 || n_recently_updated_apps == recently_updated_app_tiles->len); \
 	g_assert (n_web_apps == 0 || n_web_apps == web_app_tiles->len); \
 	g_assert (n_other_apps == 0 || n_other_apps == other_app_tiles->len); \
 
@@ -464,7 +464,7 @@ static void
 print_app_bucket_stats (GsCategoryPage *self,
 			guint64 n_carousel_apps,
 			guint64 n_featured_apps,
-			guint64 n_recently_updated,
+			guint64 n_recently_updated_apps,
 			guint64 n_web_apps,
 			guint64 n_other_apps,
 			guint64 n_total_apps)
@@ -472,7 +472,7 @@ print_app_bucket_stats (GsCategoryPage *self,
 	g_debug ("[%s] Carousel apps: %" G_GUINT64_FORMAT ", Featured apps: %" G_GUINT64_FORMAT ", Recent apps: %" G_GUINT64_FORMAT ", "
                  "Web apps: %" G_GUINT64_FORMAT ", Other apps: %" G_GUINT64_FORMAT ", Total apps: %" G_GUINT64_FORMAT,
                  gs_category_get_name (self->category),
-                 n_carousel_apps, n_featured_apps, n_recently_updated,
+                 n_carousel_apps, n_featured_apps, n_recently_updated_apps,
                  n_web_apps, n_other_apps, n_total_apps);
 }
 
@@ -481,7 +481,7 @@ load_category_finish (LoadCategoryData *data)
 {
 	GsCategoryPage *self = data->page;
 	guint64 recently_updated_cutoff_secs;
-	guint64 n_recently_updated = 0;
+	guint64 n_recently_updated_apps = 0;
 	guint64 n_featured_apps = 0;
 	guint64 n_web_apps = 0;
 	guint64 n_carousel_apps = 0;
@@ -544,7 +544,7 @@ load_category_finish (LoadCategoryData *data)
 			n_featured_apps++;
 			g_ptr_array_add (featured_app_tiles, tile);
 		} else if (is_recently_updated) {
-			n_recently_updated++;
+			n_recently_updated_apps++;
 			g_ptr_array_add (recently_updated_app_tiles, tile);
 		} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP) {
 			n_web_apps++;
@@ -578,13 +578,13 @@ load_category_finish (LoadCategoryData *data)
 
 	/* Show 'New & Updated' section only if there had been enough of them recognized.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 */
-	if (n_recently_updated > 0) {
-		if (n_recently_updated < MIN_RECENTLY_UPDATED_APPS) {
+	if (n_recently_updated_apps > 0) {
+		if (n_recently_updated_apps < MIN_RECENTLY_UPDATED_APPS) {
 			g_debug ("\tOnly %" G_GUINT64_FORMAT " recent apps, needed at least %d; moving apps to others",
-				 n_recently_updated, MIN_RECENTLY_UPDATED_APPS);
+				 n_recently_updated_apps, MIN_RECENTLY_UPDATED_APPS);
 			g_ptr_array_extend_and_steal (other_app_tiles, g_steal_pointer (&recently_updated_app_tiles));
-			n_other_apps += n_recently_updated;
-			n_recently_updated = 0;
+			n_other_apps += n_recently_updated_apps;
+			n_recently_updated_apps = 0;
 		} else {
 			guint n_apps_to_move;
 
@@ -592,12 +592,12 @@ load_category_finish (LoadCategoryData *data)
 			   data will be actually useful */
 			g_ptr_array_sort (recently_updated_app_tiles, release_date_gptrarray_sort_func);
 
-			g_assert (n_recently_updated >= MAX_RECENTLY_UPDATED_APPS);
-			n_apps_to_move = n_recently_updated - MAX_RECENTLY_UPDATED_APPS;
+			g_assert (n_recently_updated_apps >= MAX_RECENTLY_UPDATED_APPS);
+			n_apps_to_move = n_recently_updated_apps - MAX_RECENTLY_UPDATED_APPS;
 
 			if (n_apps_to_move > 0) {
 				g_debug ("\tAlready %" G_GUINT64_FORMAT " recent apps, needed at most %d; moving %u apps to others",
-					 n_recently_updated, MAX_RECENTLY_UPDATED_APPS, n_apps_to_move);
+					 n_recently_updated_apps, MAX_RECENTLY_UPDATED_APPS, n_apps_to_move);
 
 				for (guint j = 0; j < n_apps_to_move; j++) {
 					/* keep removing at the same index */
@@ -605,7 +605,7 @@ load_category_finish (LoadCategoryData *data)
 					g_ptr_array_add (other_app_tiles, tile);
 				}
 
-				n_recently_updated -= n_apps_to_move;
+				n_recently_updated_apps -= n_apps_to_move;
 				n_other_apps += n_apps_to_move;
 			}
 		}
@@ -622,7 +622,7 @@ load_category_finish (LoadCategoryData *data)
 
 	/* Show each of the flow boxes only if they have apps. */
 	gtk_widget_set_visible (self->featured_flow_box, n_featured_apps > 0);
-	gtk_widget_set_visible (self->recently_updated_flow_box, n_recently_updated > 0);
+	gtk_widget_set_visible (self->recently_updated_flow_box, n_recently_updated_apps > 0);
 	gtk_widget_set_visible (self->web_apps_flow_box, n_web_apps > 0);
 	gtk_widget_set_visible (self->category_detail_box, n_other_apps > 0);
 
