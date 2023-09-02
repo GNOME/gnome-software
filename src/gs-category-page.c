@@ -43,8 +43,8 @@ G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
 /* See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053
  * for the rationale behind the numbers */
-#define MAX_RECENTLY_UPDATED_APPS 12
-#define MIN_RECENTLY_UPDATED_APPS 50
+#define MAX_RECENT_APPS_TO_DISPLAY 12
+#define MIN_RECENT_APPS_REQUIRED 50
 #define MIN_SECTION_APPS 3
 
 #define validate_app_buckets() \
@@ -579,9 +579,9 @@ load_category_finish (LoadCategoryData *data)
 	/* Show 'New & Updated' section only if there had been enough of them recognized.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 */
 	if (n_recently_updated_apps > 0) {
-		if (n_recently_updated_apps < MIN_RECENTLY_UPDATED_APPS) {
+		if (n_recently_updated_apps < MIN_RECENT_APPS_REQUIRED) {
 			g_debug ("\tOnly %" G_GUINT64_FORMAT " recent apps, needed at least %d; moving apps to others",
-				 n_recently_updated_apps, MIN_RECENTLY_UPDATED_APPS);
+				 n_recently_updated_apps, MIN_RECENT_APPS_REQUIRED);
 			g_ptr_array_extend_and_steal (other_app_tiles, g_steal_pointer (&recently_updated_app_tiles));
 			n_other_apps += n_recently_updated_apps;
 			n_recently_updated_apps = 0;
@@ -592,16 +592,16 @@ load_category_finish (LoadCategoryData *data)
 			   data will be actually useful */
 			g_ptr_array_sort (recently_updated_app_tiles, release_date_gptrarray_sort_func);
 
-			g_assert (n_recently_updated_apps >= MAX_RECENTLY_UPDATED_APPS);
-			n_apps_to_move = n_recently_updated_apps - MAX_RECENTLY_UPDATED_APPS;
+			g_assert (n_recently_updated_apps >= MAX_RECENT_APPS_TO_DISPLAY);
+			n_apps_to_move = n_recently_updated_apps - MAX_RECENT_APPS_TO_DISPLAY;
 
 			if (n_apps_to_move > 0) {
 				g_debug ("\tAlready %" G_GUINT64_FORMAT " recent apps, needed at most %d; moving %u apps to others",
-					 n_recently_updated_apps, MAX_RECENTLY_UPDATED_APPS, n_apps_to_move);
+					 n_recently_updated_apps, MAX_RECENT_APPS_TO_DISPLAY, n_apps_to_move);
 
 				for (guint j = 0; j < n_apps_to_move; j++) {
 					/* keep removing at the same index */
-					tile = g_ptr_array_steal_index_fast (recently_updated_app_tiles, MAX_RECENTLY_UPDATED_APPS);
+					tile = g_ptr_array_steal_index_fast (recently_updated_app_tiles, MAX_RECENT_APPS_TO_DISPLAY);
 					g_ptr_array_add (other_app_tiles, tile);
 				}
 
@@ -666,7 +666,7 @@ gs_category_page_load_category (GsCategoryPage *self)
 		gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), NULL);
 		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
 						   MIN (30, gs_category_get_size (self->subcategory)));
-		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENTLY_UPDATED_APPS);
+		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENT_APPS_TO_DISPLAY);
 		gtk_widget_set_visible (self->top_carousel, TRUE);
 		gtk_widget_set_visible (self->category_detail_box, TRUE);
 		gtk_widget_set_visible (self->recently_updated_flow_box, TRUE);
