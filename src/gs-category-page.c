@@ -431,7 +431,16 @@ populate_flow_boxes (GsCategoryPage *self,
 	/* Populate recently updated flowbox */
 	if (recently_updated_app_tiles) {
 		for (i = 0; i < recently_updated_app_tiles->len; i++) {
+			guint64 release_date;
+			g_autofree gchar *release_date_tooltip = NULL;
 			tile = g_ptr_array_index (recently_updated_app_tiles, i);
+
+			/* Shows the latest release date of the app in
+			   relative format (e.g. "10 days ago") on hover. */
+			release_date = gs_app_get_release_date (gs_app_tile_get_app (GS_APP_TILE (tile)));
+			release_date_tooltip = gs_utils_time_to_string (release_date);
+			gtk_widget_set_tooltip_text (tile, release_date_tooltip);
+
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
 			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		}
