@@ -47,6 +47,16 @@ G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 #define MIN_RECENTLY_UPDATED_APPS 50
 #define MIN_SECTION_APPS 3
 
+#define validate_app_buckets() \
+	n_total_apps = n_carousel_apps + n_featured_apps + n_recently_updated + n_web_apps + n_other_apps; \
+	print_app_bucket_stats (self, n_carousel_apps, n_featured_apps, n_recently_updated, n_web_apps, n_other_apps, n_category_apps); \
+	\
+	g_assert (n_total_apps == n_category_apps); \
+	g_assert (n_featured_apps == 0 || n_featured_apps == featured_app_tiles->len); \
+	g_assert (n_recently_updated == 0 || n_recently_updated == recently_updated_app_tiles->len); \
+	g_assert (n_web_apps == 0 || n_web_apps == web_app_tiles->len); \
+	g_assert (n_other_apps == 0 || n_other_apps == other_app_tiles->len); \
+
 typedef enum {
 	PROP_CATEGORY = 1,
 	/* Override properties: */
@@ -545,14 +555,7 @@ load_category_finish (LoadCategoryData *data)
 		}
 	}
 
-	n_total_apps = n_carousel_apps + n_featured_apps + n_recently_updated + n_web_apps + n_other_apps;
-	print_app_bucket_stats (self, n_carousel_apps, n_featured_apps, n_recently_updated, n_web_apps, n_other_apps, n_category_apps);
-
-	g_assert (n_total_apps == n_category_apps);
-	g_assert (n_featured_apps == 0 || n_featured_apps == featured_app_tiles->len);
-	g_assert (n_recently_updated == 0 || n_recently_updated == recently_updated_app_tiles->len);
-	g_assert (n_web_apps == 0 || n_web_apps == web_app_tiles->len);
-	g_assert (n_other_apps == 0 || n_other_apps == other_app_tiles->len);
+	validate_app_buckets ();
 
 	/* If these sections end up being too empty (which looks odd), merge them into the main section.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 */
@@ -608,14 +611,7 @@ load_category_finish (LoadCategoryData *data)
 		}
 	}
 
-	n_total_apps = n_carousel_apps + n_featured_apps + n_recently_updated + n_web_apps + n_other_apps;
-	print_app_bucket_stats (self, n_carousel_apps, n_featured_apps, n_recently_updated, n_web_apps, n_other_apps, n_category_apps);
-
-	g_assert (n_total_apps == n_category_apps);
-	g_assert (n_featured_apps == 0 || n_featured_apps == featured_app_tiles->len);
-	g_assert (n_recently_updated == 0 || n_recently_updated == recently_updated_app_tiles->len);
-	g_assert (n_web_apps == 0 || n_web_apps == web_app_tiles->len);
-	g_assert (n_other_apps == 0 || n_other_apps == other_app_tiles->len);
+	validate_app_buckets ();
 
 	/* Populate all flowboxes. */
 	populate_flow_boxes (self, featured_app_tiles, recently_updated_app_tiles, web_app_tiles, other_app_tiles);
