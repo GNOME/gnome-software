@@ -451,6 +451,22 @@ populate_flow_boxes (GsCategoryPage *self,
 }
 
 static void
+print_app_bucket_stats (GsCategoryPage *self,
+			guint64 n_carousel_apps,
+			guint64 n_featured_apps,
+			guint64 n_recently_updated,
+			guint64 n_web_apps,
+			guint64 n_other_apps,
+			guint64 n_total_apps)
+{
+	g_debug ("[%s] Carousel apps: %" G_GUINT64_FORMAT ", Featured apps: %" G_GUINT64_FORMAT ", Recent apps: %" G_GUINT64_FORMAT ", "
+                 "Web apps: %" G_GUINT64_FORMAT ", Other apps: %" G_GUINT64_FORMAT ", Total apps: %" G_GUINT64_FORMAT,
+                 gs_category_get_name (self->category),
+                 n_carousel_apps, n_featured_apps, n_recently_updated,
+                 n_web_apps, n_other_apps, n_total_apps);
+}
+
+static void
 load_category_finish (LoadCategoryData *data)
 {
 	GsCategoryPage *self = data->page;
@@ -530,6 +546,7 @@ load_category_finish (LoadCategoryData *data)
 	}
 
 	n_total_apps = n_carousel_apps + n_featured_apps + n_recently_updated + n_web_apps + n_other_apps;
+	print_app_bucket_stats (self, n_carousel_apps, n_featured_apps, n_recently_updated, n_web_apps, n_other_apps, n_category_apps);
 
 	g_assert (n_total_apps == n_category_apps);
 	g_assert (n_featured_apps == 0 || n_featured_apps == featured_app_tiles->len);
@@ -592,6 +609,7 @@ load_category_finish (LoadCategoryData *data)
 	}
 
 	n_total_apps = n_carousel_apps + n_featured_apps + n_recently_updated + n_web_apps + n_other_apps;
+	print_app_bucket_stats (self, n_carousel_apps, n_featured_apps, n_recently_updated, n_web_apps, n_other_apps, n_category_apps);
 
 	g_assert (n_total_apps == n_category_apps);
 	g_assert (n_featured_apps == 0 || n_featured_apps == featured_app_tiles->len);
