@@ -2250,7 +2250,9 @@ plugin_setup_cb (GObject      *source_object,
 	GsPlugin *plugin = GS_PLUGIN (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
+#ifdef HAVE_SYSPROF
 	SetupData *data = g_task_get_task_data (task);
+#endif
 
 	g_assert (GS_PLUGIN_GET_CLASS (plugin)->setup_finish != NULL);
 
