@@ -242,8 +242,9 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsUpdatesSectionUpdateHelper, _update_helper_free)
 static void
 _cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
-	GsUpdatesSection *self = GS_UPDATES_SECTION (user_data);
+	g_autoptr(GsUpdatesSection) self = GS_UPDATES_SECTION (g_steal_pointer (&user_data));
 	g_autoptr(GError) error = NULL;
+
 	if (!gs_plugin_loader_job_action_finish (self->plugin_loader, res, &error)) {
 		g_warning ("failed to cancel trigger: %s", error->message);
 		return;
@@ -253,7 +254,7 @@ _cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_dat
 static void
 _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
-	GsUpdatesSection *self = GS_UPDATES_SECTION (user_data);
+	g_autoptr(GsUpdatesSection) self = GS_UPDATES_SECTION (g_steal_pointer (&user_data));
 	g_autoptr(GError) error = NULL;
 	GsApp *app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -267,15 +268,20 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	else if (error != NULL)
 		g_warning ("Calling reboot failed: %s", error->message);
 
-	/* cancel trigger */
-	app = gs_app_list_index (self->list, 0);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL,
-					 "app", app,
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    gs_app_get_cancellable (app),
-					    _cancel_trigger_failed_cb,
-					    self);
+	/* Cancel trigger. The app list might have changed while this async
+	 * function was in flight. If so, ignore it. */
+	if (self->list != NULL && gs_app_list_length (self->list) > 0) {
+		app = gs_app_list_index (self->list, 0);
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL,
+						 "app", app,
+						 NULL);
+		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+						    gs_app_get_cancellable (app),
+						    _cancel_trigger_failed_cb,
+						    g_object_ref (self));
+	} else {
+		g_debug ("App list changed while waiting for reboot; not cancelling reboot trigger.");
+	}
 }
 
 static gboolean
@@ -390,7 +396,7 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 
 	/* trigger reboot if any app was not updatable live */
 	if (helper->do_reboot) {
-		gs_utils_invoke_reboot_async (NULL, _reboot_failed_cb, self);
+		gs_utils_invoke_reboot_async (NULL, _reboot_failed_cb, g_object_ref (self));
 
 	/* when we are not doing an offline update, show a notification
 	 * if any app requires a reboot */
