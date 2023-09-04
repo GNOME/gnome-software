@@ -1216,13 +1216,9 @@ gs_plugin_systemd_update_cache (GsPluginPackagekit  *self,
 				     PK_OFFLINE_ERROR_NO_DATA)) {
 			return TRUE;
 		}
-		gs_plugin_packagekit_error_convert (&error_local, cancellable);
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "Failed to get prepared IDs: %s",
-			     error_local->message);
-		return FALSE;
+		g_debug ("Failed to get prepared IDs: %s", error_local->message);
+		/* Ignore errors returned here, they are not crucial, the plugin can work without it too */
+		return TRUE;
 	}
 
 	/* Build the new table, stealing all the elements from @package_ids. */
