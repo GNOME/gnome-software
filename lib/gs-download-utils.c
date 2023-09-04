@@ -371,6 +371,10 @@ open_input_stream_cb (GObject      *source_object,
 						      "Failed to download ‘%s’: %s",
 						      data->uri, str->str));
 			return;
+		} else if (local_error != NULL) {
+			g_prefix_error (&local_error, "Failed to download ‘%s’: ", data->uri);
+			finish_download (task, g_steal_pointer (&local_error));
+			return;
 		}
 
 		g_assert (input_stream != NULL);
