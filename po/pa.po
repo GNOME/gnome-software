@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-08-28 15:09+0000\n"
-"PO-Revision-Date: 2023-08-30 20:03-0700\n"
+"POT-Creation-Date: 2023-09-04 14:56+0000\n"
+"PO-Revision-Date: 2023-09-05 05:46-0700\n"
 "Last-Translator: A S Alam <aalam@satluj.org>\n"
 "Language-Team: Punjabi <kde-i18n-doc@kde.org>\n"
 "Language: pa\n"
@@ -71,7 +71,7 @@ msgstr "ਅੱਪਡੇਟ ਪੈਨਲ"
 msgid "The update details"
 msgstr "ਅੱਪਡੇਟ ਦੇ ਵੇਰਵੇ"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2311
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2352
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "ਗਨੋਮ ਪਰੋਜੈੱਕਟ"
@@ -233,8 +233,6 @@ msgstr ""
 "ਅਧਿਕਾਰਿਤ ਰਿਪੋਜ਼ਟਰੀਆਂ ਦੀ ਸੂਚੀ, ਜਿਹਨਾਂ ਨੂੰ 3ਜੀ ਧਿਰ ਨਹੀਂ ਮੰਨਿਆ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ"
 
 #: data/org.gnome.software.gschema.xml:90
-#| msgid ""
-#| "A list of official repositories that should not be considered 3rd party"
 msgid "A list of required repositories that cannot be disabled or removed"
 msgstr ""
 "ਚਾਹੀਦੀਆਂ ਰਿਪੋਜ਼ਟਰੀਆਂ ਦੀ ਸੂਚੀ, ਜਿਹਨਾਂ ਨੂੰ ਅਸਮਰੱਥ ਕੀਤਾ ਜਾਂ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ"
@@ -292,7 +290,6 @@ msgstr ""
 "ਜਾ ਸਕਦਾ ਹੈ।"
 
 #: data/org.gnome.software.gschema.xml:131
-#| msgid "Install the AppStream files to a system-wide location for all users"
 msgid ""
 "Install the AppStream files to a system-wide location for all users. If "
 "false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
@@ -432,12 +429,12 @@ msgstr "ਸ਼ਰਾਬ"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:186
 msgid "No information regarding references to alcohol"
-msgstr "ਸ਼ਰਾਬੀ ਪੀਣ ਬਾਰੇ ਕੋਈ ਜਾਣਕਾਰੀ ਨਹੀਂ ਦਿੱਤੀ"
+msgstr "ਸ਼ਰਾਬੀ ਪੀਣ ਦੇ ਹਵਾਲਿਆਂ ਬਾਰੇ ਕੋਈ ਜਾਣਕਾਰੀ ਨਹੀਂ ਦਿੱਤੀ"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:194
 msgid "Narcotics"
-msgstr ""
+msgstr "ਨਸ਼ੀਲੇ ਪਦਾਰਥ"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:196
@@ -478,7 +475,7 @@ msgstr "ਜਿਨਸੀ ਕਿਸਮ ਦੇ ਹਵਾਲੇ ਜਾਂ ਵਰਣ�
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:234
 msgid "Profanity"
-msgstr ""
+msgstr "ਗਾਲਾਂ ਕੱਢਣਾ"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:236
@@ -671,11 +668,11 @@ msgstr ""
 
 #: src/gs-age-rating-context-dialog.c:498
 msgid "Does not include ads or monetary transactions"
-msgstr ""
+msgstr "ਇਸ਼ਤਿਹਾਰ ਜਾਂ ਪੈਸੇ ਦਾ ਲੈਣ-ਦੇਣ ਸ਼ਾਮਲ ਨਹੀਂ ਹੈ"
 
 #: src/gs-age-rating-context-dialog.c:500
 msgid "Does not include sex or nudity"
-msgstr ""
+msgstr "ਜਿਨਸੀ ਸੰਬੰਧ ਜਾਂ ਨੰਗੇਜ਼ ਸ਼ਾਮਲ ਨਹੀਂ ਹੈ"
 
 #: src/gs-age-rating-context-dialog.c:502
 msgid "Does not include uncontrolled chat functionality"
@@ -736,7 +733,7 @@ msgstr "?"
 #: src/gs-age-rating-context-dialog.c:1010
 #, c-format
 msgid "%s has an unknown age rating"
-msgstr ""
+msgstr "%s ਲਈ ਅਣਪਛਾਤਾ ਉਮਰ ਦਰਜਾ ਹੈ"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
@@ -886,7 +883,6 @@ msgid "Devices"
 msgstr "ਡਿਵਾਈਸ"
 
 #: src/gs-app-details-page.c:76
-#| msgid "Can access system device files"
 msgid "Can access arbitrary devices such as webcams"
 msgstr "ਮਨਮਰਜ਼ੀ ਦੇ ਡਿਵਾਈਸ ਜਿਵੇਂ ਕਿ ਵੈੱਬਕੈਮ ਲਈ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ"
 
@@ -1056,7 +1052,7 @@ msgstr "ਇਸ ਕਾਰਵਾਈ ਲਈ ਉਮੀਦ ਕੀਤੇ ਤਾਲਮ�
 
 #: src/gs-application.c:141
 msgid "Show a local metainfo or appdata file"
-msgstr ""
+msgstr "ਲੋਕਲ ਮੇਟਾ-ਜਾਣਕਾਰੀ ਜਾਂ ਐਪ-ਡਾਟਾ ਫ਼ਾਇਲ ਵੇਖਾਓ"
 
 #: src/gs-application.c:143
 msgid ""
@@ -1114,11 +1110,10 @@ msgstr "ਅਫ਼ਸੋਸ! ਉਸ ਐਪਲੀਕੇਸ਼ਨ ਲਈ ਕੋਈ ਵ
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:162 src/gs-storage-context-dialog.c:133
 msgid "Installed Size"
-msgstr "ਇੰਸਟਾਲ ਹੋਇਆ ਸਾਈਜ਼"
+msgstr "ਇੰਸਟਾਲ ਲਈ ਆਕਾਰ"
 
 #: src/gs-app-context-bar.c:165
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of data and %s of cache"
 msgstr "ਡਾਟਾ %s ਅਤੇ ਕੈਸ਼ %s ਦੇ ਸਮੇਤ ਹੈ"
 
@@ -1148,7 +1143,7 @@ msgstr "ਕਿਸੇ ਹੋਰ ਵਾਧੂ ਸਿਸਟਮ ਡਾਊਨਲੋ�
 
 #: src/gs-app-context-bar.c:193
 msgid "Needs an unknown size of additional system downloads"
-msgstr ""
+msgstr "ਅਣਪਛਾਤੇ ਆਕਾਰ ਦੇ ਹੋਰ ਸਿਸਟਮ ਡਾਊਨਲੋਡ ਚਾਹੀਦੇ ਹਨ"
 
 #. Translators: The placeholder is for a size string,
 #. * such as ‘150 MB’ or ‘1.5 GB’.
@@ -1227,28 +1222,24 @@ msgstr "ਤੁਹਾਡੇ ਡਾਊਨਲੋਡਾਂ ਨੂੰ ਪੜ੍ਹ �
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:382
-#| msgid "Can access system device files"
 msgid "Can access some specific files"
 msgstr "ਕੁਝ ਖਾਸ ਫ਼ਾਇਲਾਂ ਲਈ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:389 src/gs-safety-context-dialog.c:254
-#| msgid "Can view and change any settings"
 msgid "Can access and change user settings"
 msgstr "ਵਰਤੋਂਕਾਰ ਸੈਟਿੰਗਾਂ ਲਈ ਪਹੁੰਚ ਕਰ ਅਤੇ ਬਦਲ ਸਕਦੀ ਹੈ"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:396 src/gs-safety-context-dialog.c:238
-#| msgid "Uses an old, insecure display system"
 msgid "Uses a legacy windowing system"
 msgstr "ਪੁਰਾਣਾ ਵਿੰਡੋ ਸਿਸਟਮ ਵਰਤਦੀ ਹੈ"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:403 src/gs-safety-context-dialog.c:246
-#| msgid "Requires additional permissions"
 msgid "Can acquire arbitrary permissions"
 msgstr "ਮਨਮਰਜ਼ੀ ਦੀਆਂ ਇਜਾਜ਼ਤਾਂ ਲੈ ਸਕਦੀ ਹੈ"
 
@@ -1297,7 +1288,6 @@ msgstr "ਆਡਿਟਯੋਗ ਕੋਡ"
 #. Translators: This indicates an app does not specify which license it's developed under.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:487
-#| msgid "Unknown Software License"
 msgid "Unknown license"
 msgstr "ਅਣਪਛਾਤਾ ਲਸੰਸ"
 
@@ -1402,7 +1392,7 @@ msgstr "ਗੇਮਪੈਡ ਚਾਹੀਦਾ ਹੈ"
 
 #: src/gs-app-context-bar.c:687
 msgid "Requires a gamepad to play"
-msgstr ""
+msgstr "ਖੇਡਣ ਲਈ ਗੇਮ-ਪੈਡ ਦੀ ਲੋੜ ਹੈ"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
@@ -1526,6 +1516,11 @@ msgid ""
 "This means that while it’s not yet available in your language, you can get "
 "involved and help translate it yourself."
 msgstr ""
+"%s ਨੂੰ ਵਲੰਟੀਅਰਾਂ ਦੀ ਕੌਮਾਂਤਰੀ ਕਮਿਊਨਟੀ ਵਲੋਂ ਡਿਜ਼ਾਇਨ ਕੀਤਾ, ਵਿਕਾਸ ਅਤੇ ਉਲੱਥਾ ਕੀਤਾ"
+" ਗਿਆ ਹੈ।\n"
+"\n"
+"ਸੋ ਜੇ ਇਹ ਹਾਲੇ ਤੁਹਾਡੀ ਭਾਸ਼ਾ ਵਿੱਚ ਮੌਜੂਦ ਨਾ ਹੋਵੇ ਤਾਂ ਤੁਸੀਂ ਇਸ ਦਾ ਖੁਦ ਉਲੱਥਾ ਕਰਨ ਲਈ"
+" ਮਦਦ ਕਰਕੇ ਹਿੱਸਾ ਪਾ ਸਕਦਾ ਹੋ।"
 
 #: src/gs-app-translation-dialog.ui:5
 msgid "Translations"
@@ -1567,7 +1562,6 @@ msgstr "ਵਰਤੋਂਕਾਰ"
 
 #. Translators: Placeholder text for a login entry.
 #: src/gs-basic-auth-dialog.ui:73
-#| msgid "_Password"
 msgid "Password"
 msgstr "ਪਾਸਵਰਡ"
 
@@ -1619,7 +1613,6 @@ msgstr "1 ਤੋਂ %u ਲਈ ਕੋਈ ਨੰਬਰ ਦਿਓ: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
 #: lib/gs-cmd.c:283
-#| msgid "Choose an application:"
 msgid "Choose an app:"
 msgstr "ਐਪ ਚੁਣੋ:"
 
@@ -2011,7 +2004,6 @@ msgstr "ਤਬਦੀਲੀਆਂ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁ�
 #. TRANSLATORS: this is the body of a notification that an app
 #. * has been successfully installed
 #: src/gs-common.c:77
-#| msgid "Application is ready to be used."
 msgid "App is ready to be used."
 msgstr "ਐਪ ਵਰਤਣ ਲਈ ਤਿਆਰ ਹੈ।"
 
@@ -2038,7 +2030,6 @@ msgstr "ਚਲਾਓ"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:230
-#| msgid "Install Unsigned Software?"
 msgid "Install Software?"
 msgstr "ਸਾਫ਼ਟਵੇਅਰ ਇੰਸਟਾਲ ਕਰਨਾ ਹੈ?"
 
@@ -2049,7 +2040,6 @@ msgstr "ਸੁਤੰਤਰ-ਧਿਰ ਸਾਫਟਵੇਅਰ ਇੰਸਟਾਲ
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:236
-#| msgid "Enable Third-Party Software Repository?"
 msgid "Enable Software Repository?"
 msgstr "ਸਾਫ਼ਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਸਮਰੱਥ ਕਰਨੀ ਹੈ?"
 
@@ -2100,13 +2090,11 @@ msgstr ""
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
 #: src/gs-common.c:299
-#| msgid "Don’t Warn Again"
 msgid "Don’t _Warn Again"
 msgstr "ਮੁੜ ਚੇਤਾਵਨੀ ਨਾ ਦਿਓ(_W)"
 
 #. TRANSLATORS: button text
 #: src/gs-common.c:308
-#| msgid "Enable and Install"
 msgid "Enable and _Install"
 msgstr "ਸਮਰੱਥ ਤੇ ਇੰਸਟਾਲ ਕਰੋ(_I)"
 
@@ -2140,8 +2128,6 @@ msgstr[1] "ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕੀਤੇ ਜਾ ਚੁੱ�
 
 #. TRANSLATORS: we've just removed some apps
 #: src/gs-common.c:845
-#| msgid "An application has been removed"
-#| msgid_plural "Applications have been removed"
 msgid "An app has been removed"
 msgid_plural "Apps have been removed"
 msgstr[0] "ਐਪ ਨੂੰ ਹਟਾਇਆ ਗਿਆ ਹੈ"
@@ -2218,7 +2204,6 @@ msgstr "%s %s"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:291
-#| msgid "web app"
 msgid "An app"
 msgstr "ਐਪ"
 
@@ -2343,7 +2328,6 @@ msgid "_Install…"
 msgstr "...ਇੰਸਟਾਲ ਕਰੋ(_I)"
 
 #: src/gs-details-page.c:1131
-#| msgid "_Uninstall"
 msgid "_Uninstall…"
 msgstr "…ਅਣ-ਇੰਸਟਾਲ(_U)"
 
@@ -2358,9 +2342,6 @@ msgid "This app will appear in US English"
 msgstr "ਇਹ ਐਪ ਅਮਰੀਕੀ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਦਿਖਾਈ ਦੇਵੇਗੀ"
 
 #: src/gs-details-page.c:1287
-#| msgid ""
-#| "This software is not available in your language and will appear in US "
-#| "English."
 msgid "This software will appear in US English"
 msgstr "ਇਹ ਸਾਫ਼ਟਵੇਅਰ ਅਮਰੀਕੀ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਦਿਖਾਈ ਦੇਵੇਗਾ"
 
@@ -2385,15 +2366,11 @@ msgstr ""
 "ਇਹ ਐਪ ਕੋਈ ਵੀ ਅੱਪਡੇਟ, ਜਿਸ ਵਿੱਚ ਸੁਰੱਖਿਆ ਸੁਧਾਰ ਵੀ ਸ਼ਾਮਲ ਹਨ, ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰੇਗੀ"
 
 #: src/gs-details-page.c:1879
-#| msgid ""
-#| "This software is already provided by your distribution and should not be "
-#| "replaced."
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "ਇਹ ਐਪ ਪਹਿਲਾਂ ਹੀ ਤੁਹਾਡੀ ਡਿਸਟ੍ਰਿਬਿਊਸ਼ਨ ਵਲੋਂ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ ਅਤੇ ਬਦਲਣਾ ਨਹੀਂ"
-" ਚਾਹੀਦਾ "
-"ਹੈ।"
+" ਚਾਹੀਦਾ ਹੈ।"
 
 #: src/gs-details-page.c:1880
 msgid ""
@@ -2432,7 +2409,6 @@ msgstr "“%s” ਲੱਭਣ ਲਈ ਅਸਮਰੱਥ"
 
 #: src/gs-details-page.c:2334
 #, c-format
-#| msgid "Failed to refine addon ‘%s’: %s"
 msgid "Failed to submit review for “%s”: %s"
 msgstr "“%s” ਲਈ ਪੜਤਾਲ ਭੇਜਣ ਲਈ ਅਸਫ਼ਲ ਹੈ: %s"
 
@@ -2441,7 +2417,6 @@ msgid "Details page"
 msgstr "ਵੇਰਵਿਆਂ ਦਾ ਸਫ਼ਾ"
 
 #: src/gs-details-page.ui:39
-#| msgid "Loading application details…"
 msgid "Loading app details…"
 msgstr "…ਐਪ ਵੇਰਵੇ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
 
@@ -2468,9 +2443,6 @@ msgid "Add-ons"
 msgstr "ਐਡ-ਆਨ"
 
 #: src/gs-details-page.ui:632
-#| msgid ""
-#| "This application can only be used when there is an active internet "
-#| "connection."
 msgid "This app can only be used when there is an active internet connection."
 msgstr "ਇਸ ਐਪ ਨੂੰ ਕੇਵਲ ਤਾਂ ਹੀ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਜਦੋਂ ਇੰਟਰਨੈੱਟ ਕੁਨੈਕਸ਼ਨ ਚਾਲੂ ਹੈ"
 
@@ -2479,9 +2451,6 @@ msgid "Software Repository Included"
 msgstr "ਸਾਫਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਸਮੇਤ"
 
 #: src/gs-details-page.ui:665
-#| msgid ""
-#| "This application includes a software repository which provides updates, "
-#| "as well as access to other software."
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2494,9 +2463,6 @@ msgid "No Software Repository Included"
 msgstr "ਕੋਈ ਸਾਫਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਸ਼ਾਮਿਲ ਨਹੀਂ ਹੈ"
 
 #: src/gs-details-page.ui:703
-#| msgid ""
-#| "This application does not include a software repository. It will not be "
-#| "updated with new versions."
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2525,7 +2491,6 @@ msgid "Clear app data"
 msgstr "ਐਪ ਡਾਟਾ ਮਿਟਾਓ"
 
 #: src/gs-details-page.ui:837
-#| msgid "Delete Design"
 msgid "D_elete Data"
 msgstr "ਡਾਟੇ ਨੂੰ ਹਟਾਓ(_e)"
 
@@ -2555,14 +2520,12 @@ msgstr "ਮਦਦ(_H)"
 
 #. Translators: This is a verb, used on a button to ‘contact the developer’
 #: src/gs-details-page.ui:1035
-#| msgid "Contact Details"
 msgctxt "verb"
 msgid "_Contact"
 msgstr "ਸੰਪਰਕ(_C)"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
 #: src/gs-details-page.ui:1129
-#| msgid "_Write Review"
 msgid "Write R_eview"
 msgstr "ਪੜਤਾਲ ਲਿਖੋ(_e)"
 
@@ -2627,7 +2590,6 @@ msgstr "ਵੈੱਬਸਾਈਟ ਉੱਤੇ"
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:430
 #, c-format
-#| msgid "No applications are available that provide the file %s."
 msgid "No apps are available that provide the file %s."
 msgstr "%s ਫਾਇਲ ਦੇਣ ਵਾਲੀ ਕੋਈ ਵੀ ਐਪ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।"
 
@@ -2635,9 +2597,6 @@ msgstr "%s ਫਾਇਲ ਦੇਣ ਵਾਲੀ ਕੋਈ ਵੀ ਐਪ ਉਪਲ
 #. * hyperlink with the "on the website" text
 #: src/gs-extras-page.c:434 src/gs-extras-page.c:445 src/gs-extras-page.c:456
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get missing "
-#| "applications might be found %s."
 msgid ""
 "Information about %s, as well as options for how to get missing apps might "
 "be found %s."
@@ -2649,7 +2608,6 @@ msgstr ""
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:441 src/gs-extras-page.c:463
 #, c-format
-#| msgid "No applications are available for %s support."
 msgid "No apps are available for %s support."
 msgstr "%s ਸਹਿਯੋਗ ਲਈ ਕੋਈ ਐਪ ਮੌਜੂਦ ਹੈ।"
 
@@ -2664,16 +2622,13 @@ msgstr "%s ਮੌਜੂਦ ਨਹੀਂ ਹੈ।"
 #. * hyperlink with the "on the website" text
 #: src/gs-extras-page.c:467
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get an application "
-#| "that can support this format might be found %s."
 msgid ""
 "Information about %s, as well as options for how to get an app that can "
 "support this format might be found %s."
 msgstr ""
 "%s ਬਾਰੇ ਜਾਣਕਾਰੀ ਦੇ ਨਾਲ ਨਾਲ ਚੋਣਾਂ ਦਿਓ ਕਿ ਕਿਵੇਂ ਐਪ ਲਈ ਜਾ ਸਕਦੀ ਹੈ, ਜੋ ਕਿ ਇਸ"
-" ਫਾਰਮੈਟ "
-"ਲਈ ਸਹਾਇਕ ਹੋ ਸਕਦੀ ਹੈ %s।"
+" ਫਾਰਮੈਟ ਲਈ "
+"ਸਹਾਇਕ ਹੋ ਸਕਦੀ ਹੈ %s।"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
@@ -2793,7 +2748,6 @@ msgid "%s file format"
 msgstr "%s ਫਾਇਲ ਫਾਰਮੈਟ"
 
 #: src/gs-extras-page.c:1325
-#| msgid "_Install All"
 msgid "Install _All"
 msgstr "ਸਭ ਨੂੰ ਇੰਸਟਾਲ ਕਰੋ(_A)"
 
@@ -2825,7 +2779,7 @@ msgstr "ਡੈਸਕਟਾਪ ਸਹਿਯੋਗ"
 #: src/gs-hardware-support-context-dialog.c:577
 #: src/gs-hardware-support-context-dialog.c:586
 msgid "Supports being used on a large screen"
-msgstr ""
+msgstr "ਵੱਡੀ ਸਕਰੀਨ ਉੱਤੇ ਵਰਤਣੇ ਜਾਣ ਲਈ ਸਹਾਇਕ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:579
 msgid "Desktop Support Unknown"
@@ -2833,7 +2787,7 @@ msgstr "ਡੈਸਕਟਾਪ ਸਹਿਯੋਗ ਅਣਪਛਾਤਾ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:580
 msgid "Not enough information to know if large screens are supported"
-msgstr ""
+msgstr "ਵੱਡੀਆਂ ਸਕਰੀਨਾਂ ਲਈ ਸਹਿਯੋਗ ਹੋਣ ਬਾਰੇ ਲੋੜੀਂਦੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਹੈ।"
 
 #: src/gs-hardware-support-context-dialog.c:583
 msgid "Requires a large screen"
@@ -2855,7 +2809,7 @@ msgstr "ਮੋਬਾਇਲ ਸਹਿਯੋਗ"
 #: src/gs-hardware-support-context-dialog.c:597
 #: src/gs-hardware-support-context-dialog.c:606
 msgid "Supports being used on a small screen"
-msgstr ""
+msgstr "ਛੋਟੀ ਸਕਰੀਨ ਉੱਤੇ ਵਰਤਣੇ ਜਾਣ ਲਈ ਸਹਾਇਕ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:599
 msgid "Mobile Support Unknown"
@@ -2863,7 +2817,7 @@ msgstr "ਮੋਬਾਇਲ ਸਹਿਯੋਗ ਅਣਪਛਾਤਾ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:600
 msgid "Not enough information to know if small screens are supported"
-msgstr ""
+msgstr "ਛੋਟੀਆਂ ਸਕਰੀਨਾਂ ਲਈ ਸਹਿਯੋਗ ਹੋਣ ਬਾਰੇ ਲੋੜੀਂਦੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਹੈ।"
 
 #: src/gs-hardware-support-context-dialog.c:603
 msgid "Requires a small screen"
@@ -2888,7 +2842,7 @@ msgstr "ਕੀਬੋਰਡ ਸਹਿਯੋਗ ਅਣਪਛਾਤਾ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:636
 msgid "Not enough information to know if keyboards are supported"
-msgstr ""
+msgstr "ਕੀਬੋਰਡਾਂ ਲਈ ਸਹਿਯੋਗ ਹੋਣ ਬਾਰੇ ਲੋੜੀਂਦੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਹੈ।"
 
 #: src/gs-hardware-support-context-dialog.c:638
 msgid "Keyboard Required"
@@ -2924,6 +2878,7 @@ msgstr "ਮਾਊਸ ਮੋਬਾਇਲ ਸਹਿਯੋਗ ਅਣਪਛਾਤਾ
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
+"ਮਾਊਸ ਅਤੇ ਪੁਆਇੰਟਿੰਗ ਡਿਵਾਈਸਾਂ ਨਾਲ ਸਹਿਯੋਗ ਹੋਣ ਬਾਰੇ ਲੋੜੀਂਦੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਹੈ।"
 
 #: src/gs-hardware-support-context-dialog.c:658
 msgid "Mouse Required"
@@ -2931,7 +2886,7 @@ msgstr "ਮਾਊਸ ਚਾਹੀਦਾ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:662
 msgid "Supports mice and pointing devices"
-msgstr ""
+msgstr "ਮਾਊਸ ਅਤੇ ਪੁਆਇੰਟਿੰਗ ਡਿਵਾਈਸਾਂ ਲਈ ਸਹਾਇਕ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:664
 msgid "Mouse Not Supported"
@@ -2939,7 +2894,7 @@ msgstr "ਮਾਊਸ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:665
 msgid "Cannot be used with a mouse or pointing device"
-msgstr ""
+msgstr "ਮਾਊਸ ਜਾਂ ਪੁਆਇੰਟਿੰਗ ਡਿਵਾਈਸ ਨਾਲ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:672
 #: src/gs-hardware-support-context-dialog.c:681
@@ -2952,10 +2907,9 @@ msgstr "ਟੱਚ-ਸਕਰੀਨ ਸਹਿਯੋਗ ਅਣਪਛਾਤਾ ਹ�
 
 #: src/gs-hardware-support-context-dialog.c:676
 msgid "Not enough information to know if touchscreens are supported"
-msgstr ""
+msgstr "ਟੱਚ ਸਕਰੀਨਾਂ ਲਈ ਸਹਿਯੋਗ ਹੋਣ ਬਾਰੇ ਲੋੜੀਂਦੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਹੈ।"
 
 #: src/gs-hardware-support-context-dialog.c:678
-#| msgid "Login Required"
 msgid "Touchscreen Required"
 msgstr "ਟੱਚ-ਸਕਰੀਨ ਚਾਹੀਦੀ ਹੈ"
 
@@ -2972,17 +2926,14 @@ msgid "Cannot be used with a touchscreen"
 msgstr "ਟੱਚ-ਸਕਰੀਨ ਨਾਲ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:698
-#| msgid "Login Required"
 msgid "Gamepad Required"
 msgstr "ਗੇਮਪੈਡ ਚਾਹੀਦਾ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:699
-#| msgid "Requires Restart"
 msgid "Requires a gamepad"
 msgstr "ਗੇਮ-ਪੈਡ ਦੀ ਲੋੜ ਹੈ"
 
 #: src/gs-hardware-support-context-dialog.c:701
-#| msgid "Snap Support"
 msgid "Gamepad Support"
 msgstr "ਗੇਮਪੈਡ ਸਹਿਯੋਗ"
 
@@ -3008,7 +2959,6 @@ msgstr "%s ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਕੰਮ ਕਰਦੀ ਹੈ"
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:725
 #, c-format
-#| msgid "%s probably works on this device"
 msgid "%s possibly works on this device"
 msgstr "%s ਸੰਭਵ ਤੌਰ ਉੱਤੇ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਕੰਮ ਕਰਦੀ ਹੈ"
 
@@ -3052,18 +3002,16 @@ msgid "Apps"
 msgstr "ਐਪਾਂ"
 
 #: src/gs-installed-page.ui:95
-#| msgid "Web Apps Support"
 msgid "Web Apps"
 msgstr "ਵੈੱਬ ਐਪਾਂ"
 
 #: src/gs-installed-page.ui:115
-#| msgid "System Applications"
 msgid "System Apps"
 msgstr "ਸਿਸਟਮ ਐਪਾਂ"
 
 #: src/gs-license-tile.c:102
 msgid "Community Built"
-msgstr "ਕਮਿਊਨਟੀ ਵਲੋਂ ਬਿਲਟ"
+msgstr "ਕਮਿਊਨਟੀ ਵਲੋਂ ਤਿਆਰ ਕੀਤੇ"
 
 #: src/gs-license-tile.c:113 src/gs-license-tile.ui:98
 msgid "_Get Involved"
@@ -3078,6 +3026,10 @@ msgid ""
 "\n"
 "You can contribute and help make it even better."
 msgstr ""
+"ਇਸ ਐਪ ਨੂੰ ਵਲੰਟੀਅਰ ਦੀ ਕਮਿਊਨਟੀ ਵਲੋਂ ਆਜ਼ਾਦ ਰੂਪ ਵਿੱਚ ਤਿਆਰ ਕੀਤਾ ਹੈ ਗਿਆ ਹੈ ਅਤੇ  <a"
+" href=\"%s\">%s</a> ਲਸੰਸ ਅਧੀਨ ਜਾਰੀ ਕੀਤਾ ਹੈ।\n"
+"\n"
+"ਤੁਸੀਂ ਯੋਗਦਾਨ ਪਾ ਕੇ ਇਸ ਨੂੰ ਹੋਰ ਬੇਹਤਰ ਬਣਾ ਸਕਦੇ ਹੋ।"
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:128
@@ -3088,6 +3040,10 @@ msgid ""
 "\n"
 "You can contribute and help make it even better."
 msgstr ""
+"ਇਸ ਐਪ ਨੂੰ ਵਲੰਟੀਅਰ ਦੀ ਕਮਿਊਨਟੀ ਵਲੋਂ ਆਜ਼ਾਦ ਰੂਪ ਵਿੱਚ ਤਿਆਰ ਕੀਤਾ ਹੈ ਗਿਆ ਹੈ ਅਤੇ  %s"
+" ਲਸੰਸ ਅਧੀਨ ਜਾਰੀ ਕੀਤਾ ਹੈ।\n"
+"\n"
+"ਤੁਸੀਂ ਯੋਗਦਾਨ ਪਾ ਕੇ ਇਸ ਨੂੰ ਹੋਰ ਬੇਹਤਰ ਬਣਾ ਸਕਦੇ ਹੋ।"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:135
@@ -3098,6 +3054,10 @@ msgid ""
 "\n"
 "You can contribute and help make it even better."
 msgstr ""
+"ਇਸ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਵਲੰਟੀਅਰ ਦੀ ਕਮਿਊਨਟੀ ਵਲੋਂ ਆਜ਼ਾਦ ਰੂਪ ਵਿੱਚ ਤਿਆਰ ਕੀਤਾ ਹੈ ਗਿਆ ਹੈ ਅਤੇ"
+" <a href=\"%s\">%s ਲਸੰਸ</a> ਅਧੀਨ ਜਾਰੀ ਕੀਤਾ ਹੈ।\n"
+"\n"
+"ਤੁਸੀਂ ਯੋਗਦਾਨ ਪਾ ਕੇ ਇਸ ਨੂੰ ਹੋਰ ਬੇਹਤਰ ਬਣਾ ਸਕਦੇ ਹੋ।"
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:142
@@ -3108,10 +3068,13 @@ msgid ""
 "\n"
 "You can contribute and help make it even better."
 msgstr ""
+"ਇਸ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਵਲੰਟੀਅਰ ਦੀ ਕਮਿਊਨਟੀ ਵਲੋਂ ਆਜ਼ਾਦ ਰੂਪ ਵਿੱਚ ਤਿਆਰ ਕੀਤਾ ਹੈ ਗਿਆ ਹੈ ਅਤੇ"
+" %s ਲਸੰਸ ਅਧੀਨ ਜਾਰੀ ਕੀਤਾ ਹੈ।\n"
+"\n"
+"ਤੁਸੀਂ ਯੋਗਦਾਨ ਪਾ ਕੇ ਇਸ ਨੂੰ ਹੋਰ ਬੇਹਤਰ ਬਣਾ ਸਕਦੇ ਹੋ।"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:388
-#| msgid "Unknown Software License"
 msgid "Unknown License"
 msgstr "ਅਣਪਛਾਤਾ ਲਸੰਸ"
 
@@ -3128,6 +3091,11 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
+"ਇਹ ਐਪ ਨੇ ਦਰਸਾਇਆ ਨਹੀਂ ਹੈ ਕਿ ਕਿਹੜੇ ਲਸੰਸ ਅਧੀਨ ਇਸ ਨੂੰ ਡਿਵੈਲਪ ਕੀਤਾ ਗਿਆ ਹੈ, ਸ਼ਾਇਦ ਇਹ"
+" ਪਰੋਪ੍ਰੈਟਰੀ ਹੋਵੇ। ਇਹ ਅਜਿਹੇ ਢੰਗ ਨਾਲ ਅਸੁਰੱਖਿਅਤ ਵੀ ਹੋ ਸਕਦਾ ਹੈ, ਜਿਸ ਦਾ ਪਤਾ ਲਗਾਉਣਾ"
+" ਔਖਾ ਹੋਵੇ ਅਤੇ ਇਸ ਨੂੰ ਬਿਨਾਂ ਦੱਸੇ ਬਦਲਿਆ ਵੀ ਜਾ ਸਕਦਾ ਹੈ।\n"
+"\n"
+"ਇਸ ਐਪ ਲਈ ਤੁਸੀਂ ਯੋਗਦਾਨ ਪਾ ਵੀ ਸਕਦੇ ਹੋ ਅਤੇ ਨਹੀਂ ਵੀ।"
 
 #: src/gs-license-tile.c:161
 msgid ""
@@ -3137,6 +3105,11 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
+"ਇਹ ਸਾਫ਼ਟਵੇਅਰ ਨੇ ਦਰਸਾਇਆ ਨਹੀਂ ਹੈ ਕਿ ਕਿਹੜੇ ਲਸੰਸ ਅਧੀਨ ਇਸ ਨੂੰ ਡਿਵੈਲਪ ਕੀਤਾ ਗਿਆ ਹੈ,"
+" ਸ਼ਾਇਦ ਇਹ ਪਰੋਪ੍ਰੈਟਰੀ ਹੋਵੇ। ਇਹ ਅਜਿਹੇ ਢੰਗ ਨਾਲ ਅਸੁਰੱਖਿਅਤ ਵੀ ਹੋ ਸਕਦਾ ਹੈ, ਜਿਸ ਦਾ"
+" ਪਤਾ ਲਗਾਉਣਾ ਔਖਾ ਹੋਵੇ ਅਤੇ ਇਸ ਨੂੰ ਬਿਨਾਂ ਦੱਸੇ ਬਦਲਿਆ ਵੀ ਜਾ ਸਕਦਾ ਹੈ।\n"
+"\n"
+"ਇਸ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਤੁਸੀਂ ਯੋਗਦਾਨ ਪਾ ਵੀ ਸਕਦੇ ਹੋ ਅਤੇ ਨਹੀਂ ਵੀ।"
 
 #. Translators: This is used for "License    Proprietary"
 #: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:547
@@ -3151,6 +3124,11 @@ msgid ""
 "\n"
 "You may not be able to contribute to this app."
 msgstr ""
+"ਇਹ ਐਪ ਨੂੰ ਖੁੱਲ੍ਹੇ ਰੂਪ ਵਿੱਚ ਤਿਆਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ, ਸੋ ਡਿਵੈਲਪਰ ਹੀ ਜਾਣੇ ਕਿ ਇਹ"
+" ਕਿੱਦਾਂ ਕੰਮ ਕਰਦਾ ਹੈ। ਇਹ ਅਜਿਹੇ ਢੰਗ ਨਾਲ ਅਸੁਰੱਖਿਅਤ ਵੀ ਹੋ ਸਕਦਾ ਹੈ, ਜਿਸ ਦਾ ਪਤਾ"
+" ਲਗਾਉਣਾ ਔਖਾ ਹੋਵੇ ਅਤੇ ਇਸ ਨੂੰ ਬਿਨਾਂ ਦੱਸੇ ਬਦਲਿਆ ਵੀ ਜਾ ਸਕਦਾ ਹੈ।\n"
+"\n"
+"ਇਸ ਐਪ ਲਈ ਤੁਸੀਂ ਯੋਗ ਨਹੀਂ ਵੀ ਪਾ ਸਕਦੇ ਹੋ।"
 
 #: src/gs-license-tile.c:179
 msgid ""
@@ -3160,9 +3138,13 @@ msgid ""
 "\n"
 "You may not be able to contribute to this software."
 msgstr ""
+"ਇਹ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਖੁੱਲ੍ਹੇ ਰੂਪ ਵਿੱਚ ਤਿਆਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ, ਸੋ ਡਿਵੈਲਪਰ ਹੀ ਜਾਣੇ ਕਿ ਇਹ"
+" ਕਿੱਦਾਂ ਕੰਮ ਕਰਦਾ ਹੈ। ਇਹ ਅਜਿਹੇ ਢੰਗ ਨਾਲ ਅਸੁਰੱਖਿਅਤ ਵੀ ਹੋ ਸਕਦਾ ਹੈ, ਜਿਸ ਦਾ ਪਤਾ"
+" ਲਗਾਉਣਾ ਔਖਾ ਹੋਵੇ ਅਤੇ ਇਸ ਨੂੰ ਬਿਨਾਂ ਦੱਸੇ ਬਦਲਿਆ ਵੀ ਜਾ ਸਕਦਾ ਹੈ।\n"
+"\n"
+"ਇਸ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਤੁਸੀਂ ਯੋਗ ਨਹੀਂ ਵੀ ਪਾ ਸਕਦੇ ਹੋ।"
 
 #: src/gs-license-tile.c:190
-#| msgid "License"
 msgid "Special License"
 msgstr "ਖਾਸ ਲਸੰਸ"
 
@@ -3232,16 +3214,6 @@ msgid "Automatic Updates Paused"
 msgstr "ਆਪਣੇ-ਆਪ ਅੱਪਡੇਟ ਵਿਰਾਮ ਕੀਤੇ"
 
 #: src/gs-metered-data-dialog.ui:9
-#| msgid ""
-#| "The current network is metered. Metered connections have data limits or "
-#| "charges associated with them. To save data, automatic updates have "
-#| "therefore been paused.\n"
-#| "\n"
-#| "Automatic updates will be resumed when an un­metered network becomes "
-#| "available. Until then, it is still possible to manually install updates.\n"
-#| "\n"
-#| "Alternatively, if the current network has been in­correctly identified as "
-#| "being metered, this setting can be changed."
 msgid ""
 "The current network is metered, so it may have data limits or charges "
 "associated with it. To save data, automatic updates have been paused.\n"
@@ -3250,8 +3222,8 @@ msgid ""
 "changed in Settings."
 msgstr ""
 "ਮੌਜੂਦਾ ਨੈੱਟਵਰਕ ਮੀਟਰ ਵਾਲਾ ਹੈ, ਇਸਕਰਕੇ ਕਨੈਕਸ਼ਨ ਲਈ ਡਾਟਾ ਹੱਦ ਹੋ ਸਕਦੀ ਹੈ ਜਾਂ ਉਹਨਾਂ"
-" ਨਾਲ ਖ਼ਰਚੇ ਹੋ ਸਕਦੇ "
-"ਹਨ। ਡਾਟਾ ਬਚਾਉਣ ਲਈ ਆਟੋਮੈਟਿਕ ਅੱਪਡੇਟਾਂ ਨੂੰ ਰੋਕ ਦਿੱਤਾ ਗਿਆ ਹੈ।\n"
+" ਨਾਲ ਖ਼ਰਚੇ ਹੋ "
+"ਸਕਦੇ ਹਨ। ਡਾਟਾ ਬਚਾਉਣ ਲਈ ਆਟੋਮੈਟਿਕ ਅੱਪਡੇਟਾਂ ਨੂੰ ਰੋਕ ਦਿੱਤਾ ਗਿਆ ਹੈ।\n"
 "\n"
 "ਜੇ ਨੈੱਟਵਰਕ ਨੂੰ ਗਲਤੀ ਨਾਲ ਮੀਟਰ ਵਾਲੇ ਵਜੋਂ ਪਛਾਣਿਆ ਗਿਆ ਹੈ ਤਾਂ ਇਸ ਸੈਟਿੰਗਾਂ ਨੂੰ"
 " ਬਦਲਿਆ ਜਾ ਸਕਦਾ ਹੈ।"
@@ -3314,8 +3286,6 @@ msgstr "ਚੁਣੇ ਬਾਹਰੀ ਸਰੋਤ"
 #. Repositories Preferences is an item from Software's main menu.
 #: src/gs-overview-page.c:596
 #, c-format
-#| msgid ""
-#| "Provides access to additional software, including web browsers and games."
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included.\n"
@@ -3344,7 +3314,6 @@ msgid "_Enable"
 msgstr "ਸਮਰੱਥ ਕਰੋ(_E)"
 
 #: src/gs-overview-page.c:812
-#| msgid "the operating system"
 msgid "Available for your operating system"
 msgstr "ਤੁਹਾਡੇ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਲਈ ਮੌਜੂਦ ਹੈ"
 
@@ -3352,8 +3321,6 @@ msgstr "ਤੁਹਾਡੇ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਲਈ ਮ�
 #. for example: "Available for Fedora Linux"
 #: src/gs-overview-page.c:816
 #, c-format
-#| msgid "Available software for %s"
-#| msgid_plural "Available software for %s"
 msgid "Available for %s"
 msgstr "%s ਲਈ ਮੌਜੂਦ"
 
@@ -3368,7 +3335,6 @@ msgstr "ਸਾਰ ਸਫ਼ਾ"
 
 #. Translators: This is a heading for a section with all available apps.
 #: src/gs-overview-page.ui:146
-#| msgid "%s Available"
 msgid "Available Apps"
 msgstr "ਐਪਾਂ ਮੌਜੂਦ ਹਨ"
 
@@ -3378,18 +3344,16 @@ msgid "Other Categories"
 msgstr "ਹੋਰ ਕੈਟਾਗਰੀਆਂ"
 
 #: src/gs-overview-page.ui:214
-#| msgid "No Application Data Found"
 msgid "No App Data Found"
 msgstr "ਕੋਈ ਐਪ ਡਾਟਾ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: lib/gs-plugin-loader.c:2793
+#: lib/gs-plugin-loader.c:2795
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "ਅਣਪਛਾਤਾ"
 
 #. TRANSLATORS: button text
 #: src/gs-page.c:93
-#| msgid "OK"
 msgid "_OK"
 msgstr "ਠੀਕ ਹੈ(_O)"
 
@@ -3414,27 +3378,22 @@ msgstr "ਕੀ ਤੁਸੀਂ %s ਰਿਪੋਜ਼ਟਰੀ ਨੂੰ ਹਟਾ�
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:572
 #, c-format
-#| msgid ""
-#| "All applications from %s will be uninstalled, and you will have to re-"
-#| "install the repository to use them again."
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
 "repository to use them again."
 msgstr ""
 "%s ਤੋਂ ਸਭ ਐਪ ਨੂੰ ਅਣ-ਇੰਸਟਾਲ ਕੀਤਾ ਜਾਵੇਗਾ ਅਤੇ ਤੁਹਾਨੂੰ ਇਹਨਾਂ ਨੂੰ ਵਰਤਣ ਲਈ ਰਿਪੋਜ਼ਟਰੀ"
-" ਤੋਂ ਮੁੜ-"
-"ਇੰਸਟਾਲ ਕਰਨਾ ਪਵੇਗਾ।"
+" ਤੋਂ ਮੁੜ-ਇੰਸਟਾਲ "
+"ਕਰਨਾ ਪਵੇਗਾ।"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
 #: src/gs-page.c:582
 #, c-format
-#| msgid "Uninstall"
 msgid "Uninstall %s?"
 msgstr "%s ਨੂੰ ਅਣ-ਇੰਸਟਾਲ ਕਰਨਾ ਹੈ?"
 
 #: src/gs-page.c:591
-#| msgid "Application Data"
 msgid "App Settings & Data"
 msgstr "ਐਪ ਸੈਟਿੰਗਾਂ ਤੇ ਡਾਟਾ"
 
@@ -3470,29 +3429,27 @@ msgid ""
 "be kept on disk, to allow restoring the app in the future."
 msgstr ""
 "ਹਟਾਉਣ ਦੇ ਬਾਅਦ %s ਨੂੰ ਵਰਤਣਾ ਸੰਭਵ ਨਹੀਂ ਹੋਵੇਗਾ। ਐਪ ਡਾਟਾ ਅਤੇ ਸੈਟਿਂਗਾਂ ਨੂੰ ਡਿਸਕ"
-" ਉੱਤੇ ਰੱਖਿਆ ਜਾਵੇਗਾ, ਜਿਸ ਨਾਲ ਭਵਿੱਖ ਵਿੱਚ ਐਪ ਨੂੰ ਬਹਾਲ ਕਰਨਾ ਸੰਭਵ ਹੋਵੇਗਾ।"
+" ਉੱਤੇ ਰੱਖਿਆ ਜਾਵੇਗਾ, "
+"ਜਿਸ ਨਾਲ ਭਵਿੱਖ ਵਿੱਚ ਐਪ ਨੂੰ ਬਹਾਲ ਕਰਨਾ ਸੰਭਵ ਹੋਵੇਗਾ।"
 
 #: src/gs-prefs-dialog.ui:5
 msgid "Preferences"
 msgstr "ਪਸੰਦਾਂ"
 
 #: src/gs-prefs-dialog.ui:16
-#| msgid ""
-#| "Automatic updates are disabled when on mobile or metered connections."
 msgid ""
 "To avoid charges and network caps, software updates are not automatically "
 "downloaded on mobile or metered connections."
 msgstr ""
 "ਖਰਚਿਆਂ ਅਤੇ ਨੈੱਟਵਰਕ ਪਾਬੰਦੀਆਂ ਤੋਂ ਬਚਣ ਲਈ, ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਡੇਟ ਮੋਬਾਇਲ ਜਾਂ ਮੀਟਰ ਵਾਲੇ"
-" ਕਨੈਕਸ਼ਨਾਂ ਉੱਤੇ ਆਟੋਮੈਟਿਕ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੇ ਜਾਣਗੇ।"
+" ਕਨੈਕਸ਼ਨਾਂ ਉੱਤੇ "
+"ਆਟੋਮੈਟਿਕ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੇ ਜਾਣਗੇ।"
 
 #: src/gs-prefs-dialog.ui:19
-#| msgid "Automatic Updates"
 msgid "Automatic _Updates"
 msgstr "ਆਪਣੇ-ਆਪ ਅੱਪਡੇਟ ਕਰੋ(_U)"
 
 #: src/gs-prefs-dialog.ui:20
-#| msgid "Installs any pending updates in the background"
 msgid ""
 "Downloads and installs software updates in the background, when possible"
 msgstr ""
@@ -3500,12 +3457,10 @@ msgstr ""
 " ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
 
 #: src/gs-prefs-dialog.ui:33
-#| msgid "Automatic Update Notifications"
 msgid "Automatic Update _Notifications"
 msgstr "ਆਪਣੇ-ਆਪ ਅੱਪਡੇਟ ਸੂਚਨਾਵਾਂ(_N)"
 
 #: src/gs-prefs-dialog.ui:34
-#| msgid "Show notifications when updates have been automatically installed."
 msgid "Show notifications when updates have been automatically installed"
 msgstr "ਜਦੋਂ ਅੱਪਡੇਟਾਂ ਨੂੰ ਆਪਣੇ-ਆਪ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾ ਚੁੱਕਾ ਹੋਵੇ ਤਾਂ ਸੂਚਨਾਵਾਂ ਵੇਖਾਓ"
 
@@ -3521,16 +3476,13 @@ msgstr "ਸਿਰਫ਼ ਮੁਕਤ ਲਸੰਸ ਵਾਲੀਆਂ ਐਪਾਂ �
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
 #: src/gs-removal-dialog.c:96
 #, c-format
-#| msgid ""
-#| "Some of the currently installed software is not compatible with %s. If "
-#| "you continue, the following will be automatically removed during the "
-#| "upgrade:"
 msgid ""
 "Installed software is incompatible with %s, and will be automatically "
 "removed during upgrade."
 msgstr ""
 "ਇੰਸਟਾਲ ਹੋਏ ਸਾਫ਼ਟਵੇਅਰ %s ਨਾਲ ਮਾਫ਼ਕ ਨਹੀਂ ਹਨ ਅਤੇ ਅੱਪਗਰੇਡ ਕਰਨ ਦੇ ਦੌਰਾਨ ਅੱਗੇ ਦਿੱਤੇ"
-" ਆਪਣੇ-ਆਪ ਹਟਾਏ ਜਾਣਗੇ।"
+" ਆਪਣੇ-ਆਪ ਹਟਾਏ "
+"ਜਾਣਗੇ।"
 
 #: src/gs-removal-dialog.ui:7
 msgid "Incompatible Software"
@@ -3543,9 +3495,6 @@ msgstr "ਅੱਪਗਰੇਡ(_U)"
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
 #: src/gs-repos-dialog.c:241
 #, c-format
-#| msgid ""
-#| "Software that has been installed from this repository will no longer "
-#| "receive updates, including security fixes."
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
 msgstr "“%s“ ਤੋਂ ਇੰਸਟਾਲ ਕੀਤੇ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਅੱਪਡੇਟ ਰੋਕ ਦਿੱਤੇ ਜਾਣਗੇ।"
@@ -3587,7 +3536,6 @@ msgstr "ਹੋਰ ਜਾਣਕਾਰੀ"
 #. "Additional repositories from selected third parties - more information."
 #: src/gs-repos-dialog.c:628
 #, c-format
-#| msgid "Access additional software from selected third party sources."
 msgid "Additional repositories from selected third parties — %s."
 msgstr "ਚੁਣੇ ਗਏ ਤੀਜੀ ਧਿਰ ਸਰੋਤਾਂ ਤੋਂ ਵਧੀਕ ਰਿਪੋਜ਼ਟਰੀਆਂ — %s।"
 
@@ -3733,7 +3681,7 @@ msgstr "ਇਸ ਨਾਲ ਪਿਆਰ ਹੈ"
 #. *		No star has been clicked yet
 #: src/gs-review-dialog.c:109
 msgid "Select a Star to Leave a Rating"
-msgstr ""
+msgstr "ਦਰਜਾ ਦੇਣ ਲਈ ਤਾਰਾ ਚੁਣੋ"
 
 #. TRANSLATORS: the review can't just be copied and pasted
 #: src/gs-review-dialog.c:127
@@ -3780,6 +3728,8 @@ msgid ""
 "What did you like about this app? Leaving your feedback along with your "
 "reasons for leaving a review is helpful for others."
 msgstr ""
+"ਇਸ ਐਪ ਬਾਰੇ ਤੁਹਾਨੂੰ ਕੀ ਚੰਗਾ ਲੱਗਾ? ਤੁਹਾਡੀ ਪੜਤਾਲ ਲਈ ਕਾਰਨਾਂ ਦੇ ਨਾਲ ਤੁਹਾਡੀ ਫ਼ੀਡਬੈਕ"
+" ਹੋਰਾਂ ਲਈ ਮਦਦਗਾਰ ਸਾਬਤ ਹੁੰਦੀ ਹੈ।"
 
 #: src/gs-review-dialog.ui:133
 msgid "Review Summary"
@@ -3792,9 +3742,6 @@ msgid "Write a short review"
 msgstr "ਸੰਖੇਪ ਜਿਹੀ ਪੜਤਾਲ ਲਿਖੋ"
 
 #: src/gs-review-dialog.ui:209
-#| msgid ""
-#| "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
-#| "privacy\">privacy policy</a>."
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
 "privacy\">privacy policy</a>. The full name attached to your account will be "
@@ -3937,7 +3884,7 @@ msgstr "ਵਰਤੋਂਕਾਰ ਡਿਵਾਈਸ ਪਹੁੰਚ"
 
 #: src/gs-safety-context-dialog.c:219
 msgid "Can access devices such as webcams or gaming controllers"
-msgstr ""
+msgstr "ਵੈੱਬ-ਕੈਮ ਜਾਂ ਗੇਮਿੰਗ ਕੰਟਰੋਲਰ ਵਰਗੇ ਡਿਵਾਈਸ ਲਈ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:222
@@ -3946,7 +3893,7 @@ msgstr "ਕਿਸੇ ਵਰਤੋਂਕਾਰ ਡਿਵਾਈਸ ਲਈ ਪਹ�
 
 #: src/gs-safety-context-dialog.c:223
 msgid "Cannot access devices such as webcams or gaming controllers"
-msgstr ""
+msgstr "ਵੈੱਬ-ਕੈਮ ਜਾਂ ਗੇਮਿੰਗ ਕੰਟਰੋਲਰ ਵਰਗੇ ਡਿਵਾਈਸ ਲਈ ਪਹੁੰਚ ਕਰ ਨਹੀਂ ਸਕਦੀ ਹੈ"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:229
@@ -3954,10 +3901,11 @@ msgid "System Device Access"
 msgstr "ਸਿਸਟਮ ਡਿਵਾਈਸ ਪਹੁੰਚ"
 
 #: src/gs-safety-context-dialog.c:230
-#, fuzzy
 #| msgid "Can access system device files"
 msgid "Can access system devices which require elevated permissions"
-msgstr "ਸਿਸਟਮ ਡਿਵਾਈਸ ਫਾਇਲਾਂ ਲਈ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ"
+msgstr ""
+"ਸਿਸਟਮ ਡਿਵਾਈਸ ਲਈ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ, ਜਿਹਨਾਂ ਲਈ ਉੱਚੇ ਪੱਧਰ ਦੀਆਂ ਇਜਾਜ਼ਤਾਂ ਚਾਹੀਦੀਆਂ"
+" ਹਨ।"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:237
@@ -3966,7 +3914,6 @@ msgstr "ਪੁਰਾਣਾ ਵਿੰਡੋਇੰਗ ਸਿਸਟਮ"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:245
-#| msgid "Permissions"
 msgid "Arbitrary Permissions"
 msgstr "ਮਨਮਰਜ਼ੀ ਦੀਆਂ ਇਜਾਜ਼ਤਾਂ"
 
@@ -4054,7 +4001,7 @@ msgstr "ਐਪ ਡਿਵੈਲਪਰ ਨੂੰ ਤਸਦੀਕ ਕੀਤਾ ਹ�
 
 #: src/gs-safety-context-dialog.c:365
 msgid "The developer of this app has been verified to be who they say they are"
-msgstr ""
+msgstr "ਇਸ ਐਪ ਦੇ ਡਿਵੈਲਪਰ ਨੂੰ ਜੋ ਉਹ ਹਨ, ਲਈ ਤਸਦੀਕ ਕੀਤਾ ਗਿਆ ਹੈ"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
@@ -4066,18 +4013,23 @@ msgstr "ਨਾ-ਸੁਰੱਖਿਅਤ ਨਿਰਭਰਤਾਵਾਂ"
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
+"ਸਾਫ਼ਟਵੇਅਰ ਜਾਂ ਇਸ ਦੀਆਂ ਨਿਰਭਰਤਾਵਾਂ ਹੁਣ ਸਹਾਇਕ ਨਹੀਂ ਹਨ ਅਤੇ ਅਸੁਰੱਖਿਅਤ ਹੋ ਸਕਦੀਆਂ ਹਨ"
 
 #: src/gs-safety-context-dialog.c:390
 msgid ""
 "This app does not specify what license it is developed under, and may be "
 "proprietary"
 msgstr ""
+"ਇਹ ਐਪ ਨੇ ਦਰਸਾਇਆ ਨਹੀਂ ਹੈ ਕਿ ਕਿਹੜੇ ਲਸੰਸ ਅਧੀਨ ਇਸ ਨੂੰ ਡਿਵੈਲਪ ਕੀਤਾ ਗਿਆ ਹੈ, ਸ਼ਾਇਦ ਇਹ"
+" ਪਰੋਪ੍ਰੈਟਰੀ ਹੋਵੇ।"
 
 #: src/gs-safety-context-dialog.c:391
 msgid ""
 "This software does not specify what license it is developed under, and may "
 "be proprietary"
 msgstr ""
+"ਇਹ ਸਾਫ਼ਟਵੇਅਰ ਨੇ ਦਰਸਾਇਆ ਨਹੀਂ ਹੈ ਕਿ ਕਿਹੜੇ ਲਸੰਸ ਅਧੀਨ ਇਸ ਨੂੰ ਡਿਵੈਲਪ ਕੀਤਾ ਗਿਆ ਹੈ,"
+" ਸ਼ਾਇਦ ਇਹ ਪਰੋਪ੍ਰੈਟਰੀ ਹੋਵੇ।"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:411
@@ -4103,7 +4055,8 @@ msgid ""
 "app more likely to be safe"
 msgstr ""
 "ਸਰੋਤ ਕੋਡ ਜਨਤਕ ਹੈ ਅਤੇ ਕਿਸੇ ਵੀ ਸੁਤੰਤਰ ਧਿਰ ਵਲੋਂ ਜਾਂਚਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਜਿਸ ਨਾਲ ਐਪ"
-" ਵੱਧ ਸੁਰੱਖਿਅਤ ਹੋਣ ਦੀ ਸੰਭਾਵਨਾ ਹੈ"
+" ਵੱਧ ਸੁਰੱਖਿਅਤ ਹੋਣ "
+"ਦੀ ਸੰਭਾਵਨਾ ਹੈ"
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * The placeholder is the app name.
@@ -4142,8 +4095,6 @@ msgstr "%s ਅਸੁਰੱਖਿਅਤ"
 
 #. Translators: This is used for "License    Unknown"
 #: src/gs-safety-context-dialog.c:544
-#| msgctxt "Distribution name"
-#| msgid "Unknown"
 msgctxt "Unknown license"
 msgid "Unknown"
 msgstr "ਅਣਪਛਾਤਾ"
@@ -4760,7 +4711,6 @@ msgid "Search apps"
 msgstr "ਐਪਾਂ ਲਈ ਖੋਜ"
 
 #: src/gs-shell.ui:257
-#| msgid "Automatic Updates Paused"
 msgid "Metered network ‒ automatic updates paused"
 msgstr "ਮੀਟਰ ਵਾਲਾ ਕਨੈਕਸ਼ਨ - ਆਪਣੇ-ਆਪ ਅੱਪਡੇਟ ਵਿਰਾਮ ਕੀਤੇ"
 
@@ -4798,7 +4748,6 @@ msgid "App Data"
 msgstr "ਐਪ ਡਾਟਾ"
 
 #: src/gs-storage-context-dialog.c:140
-#| msgid "Data created by you in the application"
 msgid "Data needed for the app to run"
 msgstr "ਐਪ ਚਲਾਉਣ ਲਈ ਡਾਟਾ ਚਾਹੀਦਾ ਹੈ"
 
@@ -4807,7 +4756,6 @@ msgid "User Data"
 msgstr "ਵਰਤੋਂਕਾਰ ਡਾਟਾ"
 
 #: src/gs-storage-context-dialog.c:146
-#| msgid "Data created by you in the application"
 msgid "Data created by you in the app"
 msgstr "ਤੁਹਾਡੇ ਵਲੋਂ ਐਪ ਵਿਚ ਬਣਾਇਆ ਗਿਆ ਡਾਟਾ"
 
@@ -4829,7 +4777,7 @@ msgstr "ਨਿਰਭਰਤਾਵਾਂ ਚਾਹੀਦੀਆਂ ਹਨ"
 
 #: src/gs-storage-context-dialog.c:178
 msgid "Shared system components required by this app"
-msgstr ""
+msgstr "ਇਸ ਐਪ ਰਾਹੀਂ ਸਾਂਝੇ ਕੀਤੇ ਸਿਸਟਮ ਭਾਗ ਚਾਹੀਦੇ ਹਨ"
 
 #: src/gs-storage-context-dialog.c:188
 msgctxt "Download size"
@@ -5117,7 +5065,6 @@ msgstr "%s %s ਲਈ ਗੰਭੀਰ ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਡੇਟ
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
 #: src/gs-updates-page.c:579
-#| msgid "Your operating system is no longer supported."
 msgid "Your operating system has stopped receiving critical software updates"
 msgstr "ਤੁਹਾਡੇ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਨੂੰ ਗੰਭੀਰ ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਡੇਟ ਮਿਲਣੇ ਰੁਕ ਗਏ ਹਨ"
 
@@ -5160,7 +5107,6 @@ msgid "Software Upgrades Downloaded"
 msgstr "ਸਾਫਟਵੇਅਰ ਅੱਪਗਰੇਡ ਡਾਊਨਲੋਡ ਕੀਤਾ ਹੈ"
 
 #: src/gs-updates-page.c:911
-#| msgid "Software updates are waiting and ready to be installed."
 msgid "Software upgrades have been downloaded and are ready to be installed."
 msgstr ""
 "ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਗਰੇਡਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਚੁੱਕਾ ਹੈ ਅਤੇ ਇੰਸਟਾਲ ਹੋਣ ਲਈ ਤਿਆਰ ਹਨ।"
@@ -5198,9 +5144,6 @@ msgid "Use Mobile Data?"
 msgstr "ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਣਾ ਹੈ?"
 
 #: src/gs-updates-page.ui:219
-#| msgid ""
-#| "Checking for updates when using mobile broadband could cause you to incur "
-#| "charges"
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
@@ -5249,7 +5192,6 @@ msgid "Software Updates Downloaded"
 msgstr "ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕੀਤੇ"
 
 #: src/gs-updates-section.c:443
-#| msgid "Software updates are waiting and ready to be installed."
 msgid "Software updates have been downloaded and are ready to be installed."
 msgstr ""
 "ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਡੇਟਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਚੁੱਕਾ ਹੈ ਅਤੇ ਇੰਸਟਾਲ ਹੋਣ ਲਈ ਤਿਆਰ ਹਨ।"
@@ -5335,13 +5277,11 @@ msgstr "ਅੱਪਗਰੇਡ ਕਰਨ ਪਹਿਲਾਂ ਆਪਣੇ ਡਾ�
 
 #: lib/gs-utils.c:523 lib/gs-utils.c:554
 #, c-format
-#| msgid "Failed to refine addon ‘%s’: %s"
 msgid "Failed to delete file “%s”: %s"
 msgstr "“%s” ਫ਼ਾਇਲ ਹਟਾਉਣ ਲਈ ਅਸਫ਼ਲ ਹੈ: %s"
 
 #: lib/gs-utils.c:565
 #, c-format
-#| msgid "Failed to refine addon ‘%s’: %s"
 msgid "Failed to delete directory “%s”: %s"
 msgstr "ਡਾਇਰੈਕਟਰੀ “%s” ਹਟਾਉਣ ਵਿੱਚ ਫੇਲ੍ਹ: %s"
 
@@ -5576,6 +5516,9 @@ msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
 "Remove the filter and repeat the install. Detailed error: %s"
 msgstr ""
+"ਰਿਮੋਟ “%s”  “%s” ਦੇ ਇੰਸਟਾਲ ਦੀ ਮਨਜ਼ੂਰੀ ਨਹੀਂ ਦਿੰਦਾ ਹੈ, ਸੰਭਵ ਹੈ ਕਿ ਇਸਦੇ ਫ਼ਿਲਟਰ"
+" ਕਰਕੇ।"
+"ਫ਼ਿਲਟਰ ਹਟਾਓ ਅਤੇ ਇੰਸਟਾਲ ਕਰਨ ਦੀ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਵੇਰਵੇ ਸਮੇਤ ਗਲਤੀ: %s"
 
 #. TRANSLATORS: as in laptop battery power
 #: plugins/fwupd/gs-fwupd-app.c:66
@@ -5617,7 +5560,6 @@ msgstr "ਡਿਵਾਈਸ ਨੂੰ ਏਸੀ ਪਾਵਰ ਨਾਲ ਕਨੈ�
 
 #. TRANSLATORS: lid means "laptop top cover"
 #: plugins/fwupd/gs-fwupd-app.c:99
-#| msgid "Device cannot be used during update."
 msgid "Device cannot be used while the lid is closed"
 msgstr "ਡਿਵਾਈਸ ਦਾ ਕਵਰ ਬੰਦ ਹੋਣ ਦੌਰਾਨ ਇਸ ਨੂੰ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ"
 
@@ -5832,7 +5774,6 @@ msgid ""
 msgstr ""
 
 #: plugins/packagekit/gs-packagekit-task.c:152
-#| msgid "Find in Software"
 msgid "Download Unsigned Software?"
 msgstr "ਬਿਨਾਂ-ਦਸਤਖਤੀ ਕੀਤੇ ਸਾਫਟਵੇਅਰ ਡਾਊਨਲੋਡ ਕਰਨੇ ਹਨ?"
 
@@ -5843,7 +5784,6 @@ msgid ""
 msgstr ""
 
 #: plugins/packagekit/gs-packagekit-task.c:157
-#| msgid "Find in Software"
 msgid "Update Unsigned Software?"
 msgstr "ਗ਼ੈਰ-ਦਸਤਖਤੀ ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?"
 
@@ -5859,7 +5799,7 @@ msgstr ""
 msgid "Packages"
 msgstr "ਪੈਕੇਜ"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3152
+#: plugins/packagekit/gs-plugin-packagekit.c:3147
 msgid "Failed to install updates: "
 msgstr "ਅੱਪਡੇਟਾਂ ਨੂੰ ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਫ਼ੇਲ੍ਹ: "
 
