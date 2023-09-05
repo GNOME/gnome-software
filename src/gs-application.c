@@ -136,7 +136,7 @@ gs_application_init (GsApplication *application)
 		  _("Open a local package file"), _("FILENAME") },
 		{ "interaction", '\0', 0, G_OPTION_ARG_STRING, NULL,
 		  _("The kind of interaction expected for this action: either "
-		    "‘none’, ‘notify’, or ‘full’"), NULL },
+		    "‘none’, ‘notify’, or ‘full’"), _("INTERACTION") },
 		{ "show-metainfo", '\0', 0, G_OPTION_ARG_FILENAME, NULL,
 		  _("Show a local metainfo or appdata file"), _("FILENAME") },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, NULL,
