@@ -150,7 +150,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		lozenge_icon_names[0] = "hand-open-symbolic";
 		lozenge_icon_names[1] = "dialog-warning-symbolic";
 		lozenge_icon_names[2] = "community-none-symbolic";
-		get_involved_visible = FALSE;
+		get_involved_visible = TRUE;
 		get_involved_label = _("_Learn More");
 
 		if (is_application) {
@@ -218,6 +218,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 							 license_url,
 							 license_spdx);
 		} else {
+			get_involved_visible = TRUE;
 			/* Translators: The placeholder here is the name of a software license. */
 			description = g_strdup_printf (_("This software is developed under the special license “%s”."
 							  "\n\n"
