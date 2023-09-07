@@ -89,5 +89,8 @@ gboolean	 gs_shell_get_is_narrow		(GsShell	*shell);
 void		 gs_shell_show_metainfo		(GsShell	*shell,
 						 GFile		*file);
 GsAppQueryLicenseType gs_shell_get_query_license_type (GsShell	*self);
+GsAppQueryDeveloperVerifiedType
+		 gs_shell_get_query_developer_verified_type
+						(GsShell	*self);
 
 G_END_DECLS
