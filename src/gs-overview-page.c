@@ -250,8 +250,18 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	gs_widget_remove_all (self->box_recent, (GsRemoveFunc) gtk_flow_box_remove);
 
 	for (i = 0; i < gs_app_list_length (list); i++) {
+		guint64 release_date;
+		g_autofree gchar *release_date_tooltip = NULL;
+
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
+
+		/* Shows the latest release date of the app in
+		   relative format (e.g. "10 days ago") on hover. */
+		release_date = gs_app_get_release_date (app);
+		release_date_tooltip = gs_utils_time_to_string (release_date);
+		gtk_widget_set_tooltip_text (tile, release_date_tooltip);
+
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), tile, -1);
 	}
 	gtk_widget_set_visible (self->box_recent, TRUE);
