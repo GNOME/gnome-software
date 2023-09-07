@@ -95,6 +95,7 @@ struct _GsDetailsPage
 	gchar		       **packaging_format_preference; /* (owned) */
 	GtkWidget		*app_reviews_dialog;
 	GtkCssProvider		*origin_css_provider; /* (nullable) (owned) */
+	GtkCssProvider		*developer_verified_image_css_provider; /* (nullable) (owned) */
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
 								packaging format when the alternatives are found */
 	gboolean		 is_narrow;
@@ -140,7 +141,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_progress_status;
 	GsAppContextBar		*context_bar;
 	GtkLabel		*developer_name_label;
-	GtkImage		*developer_verified_image;
+	GtkWidget		*developer_verified_image;
 	GtkWidget		*label_failed;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_featured_review;
@@ -307,6 +308,7 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 		css = g_strdup_printf ("color: @%s;\n", packaging_base_css_color);
 
 	gs_utils_widget_set_css (self->origin_packaging_image, &self->origin_css_provider, css);
+	gs_utils_widget_set_css (self->developer_verified_image, &self->developer_verified_image_css_provider, css);
 }
 
 static void
@@ -2522,6 +2524,7 @@ gs_details_page_dispose (GObject *object)
 
 	g_clear_pointer (&self->packaging_format_preference, g_strfreev);
 	g_clear_object (&self->origin_css_provider);
+	g_clear_object (&self->developer_verified_image_css_provider);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app_reviews_dialog);
 	g_clear_object (&self->plugin_loader);
