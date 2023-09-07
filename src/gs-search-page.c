@@ -309,6 +309,7 @@ gs_search_page_load (GsSearchPage *self)
 				  "sort-func", gs_search_page_sort_cb,
 				  "sort-user-data", self,
 				  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+				  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,

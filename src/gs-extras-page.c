@@ -831,6 +831,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			query = gs_app_query_new ("provides-files", provides_files,
 						  "refine-flags", refine_flags,
 						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+						  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query,
@@ -863,6 +864,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 						  "provides-type", search_data->search_provides_type,
 						  "refine-flags", refine_flags,
 						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+						  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query,

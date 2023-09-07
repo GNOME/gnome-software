@@ -1400,6 +1400,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 						  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID,
 						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+						  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query,
@@ -1942,6 +1943,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 				  "filter-func", gs_details_page_filter_origin,
 				  "sort-func", gs_utils_app_sort_priority,
 				  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+				  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 				  NULL);
 	plugin_job2 = gs_plugin_job_list_apps_new (query,
 						   GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
