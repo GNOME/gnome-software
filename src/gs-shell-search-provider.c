@@ -180,6 +180,8 @@ execute_search (GsShellSearchProvider  *self,
 				  "sort-func", gs_shell_search_provider_sort_cb,
 				  "sort-user-data", self,
 				  "license-type", g_settings_get_boolean (settings, "show-only-free-apps") ? GS_APP_QUERY_LICENSE_FOSS : GS_APP_QUERY_LICENSE_ANY,
+				  "developer-verified-type", g_settings_get_boolean (settings, "show-only-verified-apps") ?
+							     GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY : GS_APP_QUERY_DEVELOPER_VERIFIED_ANY,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 
