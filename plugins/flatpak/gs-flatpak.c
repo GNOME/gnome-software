@@ -289,6 +289,7 @@ perms_from_metadata (GKeyFile *keyfile)
 			{ "host", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },
 			{ "host:rw", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },
 			{ "host:ro", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ },
+			{ "xdg-config/kdeglobals:ro", GS_APP_PERMISSIONS_FLAGS_NONE },  /* ignore this; all KDE apps need it */
 			{ "xdg-download", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL },
 			{ "xdg-download:rw", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL },
 			{ "xdg-download:ro", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ },
