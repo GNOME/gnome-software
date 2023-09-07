@@ -72,5 +72,8 @@ const gchar	*gs_page_get_title			(GsPage		*page);
 guint		 gs_page_get_counter			(GsPage		*page);
 GtkAdjustment	*gs_page_get_vadjustment		(GsPage		*page);
 GsAppQueryLicenseType gs_page_get_query_license_type	(GsPage		*self);
+GsAppQueryDeveloperVerifiedType
+		 gs_page_get_query_developer_verified_type
+							(GsPage		*self);
 
 G_END_DECLS
