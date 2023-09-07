@@ -1160,6 +1160,12 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			gs_app_remove_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
 	}
 
+	tmp = gs_app_get_metadata_item (app, "flathub::verification::verified");
+	if (g_strcmp0 (tmp, "true") == 0)
+		gs_app_add_quirk (app, GS_APP_QUIRK_DEVELOPER_VERIFIED);
+	else
+		gs_app_remove_quirk (app, GS_APP_QUIRK_DEVELOPER_VERIFIED);
+
 	/* try to detect old-style AppStream 'override'
 	 * files without the merge attribute */
 	if (xb_node_query_text (component, "name", NULL) == NULL &&
