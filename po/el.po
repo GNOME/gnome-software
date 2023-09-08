@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-08-01 12:55+0000\n"
-"PO-Revision-Date: 2023-08-02 20:59+0300\n"
+"POT-Creation-Date: 2023-09-06 14:54+0000\n"
+"PO-Revision-Date: 2023-09-09 02:05+0300\n"
 "Last-Translator: Efstathios Iosifidis <eiosifidis@gnome.org>\n"
 "Language-Team: Greek, Modern (1453-) <gnome-el-list@gnome.org>\n"
 "Language: el\n"
@@ -74,7 +74,7 @@ msgstr "Πίνακας ενημερώσεων"
 msgid "The update details"
 msgstr "Λεπτομέρειες ενημέρωσης"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2311
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2352
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "Το έργο GNOME"
@@ -831,7 +831,7 @@ msgstr "Τοπικό αρχείο"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6350 src/gs-safety-context-dialog.c:486
+#: lib/gs-app.c:6350 src/gs-safety-context-dialog.c:500
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
@@ -844,17 +844,17 @@ msgstr "Πακέτο"
 msgid "Pending"
 msgstr "Εκκρεμεί"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:459 src/gs-details-page.c:387
+#: src/gs-app-addon-row.c:99 src/gs-app-row.c:459 src/gs-details-page.c:390
 msgid "Pending install"
 msgstr "Εκκρεμεί εγκατάσταση"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:463 src/gs-details-page.c:394
+#: src/gs-app-addon-row.c:103 src/gs-app-row.c:463 src/gs-details-page.c:397
 msgid "Pending remove"
 msgstr "Εκκρεμεί αφαίρεση"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:208 src/gs-details-page.c:380
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:208 src/gs-details-page.c:383
 msgid "Installing"
 msgstr "Εγκαθίσταται"
 
@@ -868,8 +868,8 @@ msgstr "Αφαίρεση"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:998
-#: src/gs-details-page.c:1024 src/gs-details-page.ui:209 src/gs-page.c:437
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1028
+#: src/gs-details-page.c:1054 src/gs-details-page.ui:209 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "Ε_γκατάσταση"
@@ -879,103 +879,99 @@ msgstr "Ε_γκατάσταση"
 msgid "_Uninstall"
 msgstr "_Απεγκατάσταση"
 
-#: src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:73
 msgid "Network"
 msgstr "Δίκτυο"
 
-#: src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:73
 msgid "Can communicate over the network"
 msgstr "Δυνατότητα επικοινωνίας μέσω δικτύου"
 
-#: src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:74
 msgid "System Services"
 msgstr "Υπηρεσίες συστήματος"
 
-#: src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:74
 msgid "Can access D-Bus services on the system bus"
 msgstr "Δυνατότητα πρόσβασης στις υπηρεσίες D-Bus στο δίαυλο συστήματος"
 
-#: src/gs-app-details-page.c:73
+#: src/gs-app-details-page.c:75
 msgid "Session Services"
 msgstr "Υπηρεσίες συνεδρίας"
 
-#: src/gs-app-details-page.c:73
+#: src/gs-app-details-page.c:75
 msgid "Can access D-Bus services on the session bus"
 msgstr "Δυνατότητα πρόσβασης στις υπηρεσίες D-Bus στο δίαυλο συνεδρίας"
 
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:77
 msgid "Devices"
 msgstr "Συσκευές"
 
-#: src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:76
 msgid "Can access arbitrary devices such as webcams"
 msgstr "Δυνατότητα πρόσβασης σε αυθαίρετες συσκευές, όπως κάμερες"
 
-#: src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:77
 msgid "Can access system device files"
 msgstr "Δυνατότητα πρόσβασης αρχείων συσκευών συστήματος"
 
-#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
 msgid "Home folder"
 msgstr "Προσωπικός φάκελος"
 
-#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:78
-#: src/gs-app-details-page.c:81 src/gs-app-details-page.c:154
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:83 src/gs-app-details-page.c:156
 msgid "Can view, edit and create files"
 msgstr "Δυνατότητα προβολής, επεξεργασίας και δημιουργίας αρχείων"
 
-#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:79
-#: src/gs-app-details-page.c:82 src/gs-app-details-page.c:149
+#: src/gs-app-details-page.c:79 src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:84 src/gs-app-details-page.c:151
 msgid "Can view files"
 msgstr "Δυνατότητα προβολής αρχείων"
 
-#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:80 src/gs-app-details-page.c:81
 msgid "File system"
 msgstr "Σύστημα αρχείων"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
-#: src/gs-app-details-page.c:81 src/gs-app-details-page.c:82
+#: src/gs-app-details-page.c:83 src/gs-app-details-page.c:84
 msgid "Downloads folder"
 msgstr "Φάκελος λήψεων"
 
-#: src/gs-app-details-page.c:83
+#: src/gs-app-details-page.c:85
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: src/gs-app-details-page.c:83
+#: src/gs-app-details-page.c:85
 msgid "Can view and change any settings"
 msgstr "Δυνατότητα προβολής και αλλαγής οποιονδήποτε ρυθμίσεων"
 
-#: src/gs-app-details-page.c:84
+#: src/gs-app-details-page.c:86
 msgid "Legacy display system"
 msgstr "Σύστημα προβολής παλαιού τύπου"
 
-#: src/gs-app-details-page.c:84
+#: src/gs-app-details-page.c:86
 msgid "Uses an old, insecure display system"
 msgstr "Χρησιμοποιεί ένα παλιό, ανασφαλές σύστημα προβολής"
 
-#: src/gs-app-details-page.c:85
+#: src/gs-app-details-page.c:87
 msgid "Sandbox escape"
 msgstr "Αποφυγή φιλτραρισματος"
 
-#: src/gs-app-details-page.c:85
+#: src/gs-app-details-page.c:87
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr ""
 "Μπορεί να ξεφύγει από το φιλτράρισμα και να παρακάμψει άλλους περιορισμούς"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:196
+#: src/gs-app-details-page.c:226
 msgid "No update description available."
 msgstr "Μη διαθέσιμη περιγραφή της ενημέρωσης."
 
-#: src/gs-app-details-page.c:200
-msgid "Loading update description, please wait…"
-msgstr "Γίνεται φόρτωση περιγραφής ενημέρωσης, παρακαλώ περιμένετε…"
-
 #. FIXME support app == NULL
 #. set window title
-#: src/gs-app-details-page.c:234
+#: src/gs-app-details-page.c:249
 msgid "Update Details"
 msgstr "Λεπτομέρειες ενημέρωσης"
 
@@ -984,7 +980,7 @@ msgstr "Λεπτομέρειες ενημέρωσης"
 msgid "Go back"
 msgstr "Επιστροφή"
 
-#: src/gs-app-details-page.ui:48 src/gs-app-row.c:518
+#: src/gs-app-details-page.ui:47 src/gs-app-row.c:518
 msgid "Requires additional permissions"
 msgstr "Απαιτεί πρόσθετα δικαιώματα"
 
@@ -1147,7 +1143,7 @@ msgid "A nice way to manage the software on your system."
 msgstr "Ένας ωραίος τρόπος για τη διαχείριση του λογισμικού στο σύστημά σας."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:507
+#: src/gs-application.c:531
 msgid "Sorry! There are no details for that application."
 msgstr "Συγγνώμη! Δεν υπάρχουν λεπτομέρειες γι' αυτή την εφαρμογή."
 
@@ -1330,9 +1326,15 @@ msgstr "Το λογισμικό δεν υποστηρίζεται πλέον"
 msgid "Auditable code"
 msgstr "Ελεγχόμενος κώδικας"
 
+#. Translators: This indicates an app does not specify which license it's developed under.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:487
+msgid "Unknown license"
+msgstr "Άγνωστη άδεια"
+
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:491
+#: src/gs-app-context-bar.c:499
 msgid "Proprietary code"
 msgstr "Ιδιοταγής κώδικας"
 
@@ -1350,116 +1352,116 @@ msgstr "Ιδιοταγής κώδικας"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:505 src/gs-app-context-bar.c:788
+#: src/gs-app-context-bar.c:514 src/gs-app-context-bar.c:797
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:513
+#: src/gs-app-context-bar.c:522
 msgid "Privileged"
 msgstr "Προνομιούχο"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:520
+#: src/gs-app-context-bar.c:529
 msgid "Safe"
 msgstr "Ασφαλές"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:527
+#: src/gs-app-context-bar.c:536
 msgid "Probably Safe"
 msgstr "Μάλλον ασφαλές"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:534
+#: src/gs-app-context-bar.c:543
 msgid "Potentially Unsafe"
 msgstr "Πιθανώς επισφαλές"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:541
+#: src/gs-app-context-bar.c:550
 msgid "Unsafe"
 msgstr "Επισφαλές"
 
-#: src/gs-app-context-bar.c:619 src/gs-app-context-bar.c:651
+#: src/gs-app-context-bar.c:628 src/gs-app-context-bar.c:660
 #: src/gs-hardware-support-context-dialog.c:602
 msgid "Mobile Only"
 msgstr "Μόνο για κινητό"
 
-#: src/gs-app-context-bar.c:620
+#: src/gs-app-context-bar.c:629
 msgid "Only works on a small screen"
 msgstr "Λειτουργία μόνο σε μικρή οθόνη"
 
-#: src/gs-app-context-bar.c:625 src/gs-app-context-bar.c:658
-#: src/gs-app-context-bar.c:665 src/gs-app-context-bar.c:715
-#: src/gs-app-context-bar.c:720 src/gs-hardware-support-context-dialog.c:582
+#: src/gs-app-context-bar.c:634 src/gs-app-context-bar.c:667
+#: src/gs-app-context-bar.c:674 src/gs-app-context-bar.c:724
+#: src/gs-app-context-bar.c:729 src/gs-hardware-support-context-dialog.c:582
 msgid "Desktop Only"
 msgstr "Μόνο για επιτραπέζιους υπολογιστές"
 
-#: src/gs-app-context-bar.c:626
+#: src/gs-app-context-bar.c:635
 msgid "Only works on a large screen"
 msgstr "Λειτουργία μόνο σε μεγάλη οθόνη"
 
-#: src/gs-app-context-bar.c:630 src/gs-hardware-support-context-dialog.c:620
+#: src/gs-app-context-bar.c:639 src/gs-hardware-support-context-dialog.c:620
 msgid "Screen Size Mismatch"
 msgstr "Αναντιστοιχία μεγέθους οθόνης"
 
-#: src/gs-app-context-bar.c:631 src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:640 src/gs-hardware-support-context-dialog.c:621
 msgid "Doesn’t support your current screen size"
 msgstr "Η τρέχουσα διάσταση οθόνης δεν υποστηρίζεται"
 
-#: src/gs-app-context-bar.c:652 src/gs-hardware-support-context-dialog.c:673
+#: src/gs-app-context-bar.c:661 src/gs-hardware-support-context-dialog.c:673
 #: src/gs-hardware-support-context-dialog.c:679
 msgid "Requires a touchscreen"
 msgstr "Απαιτείται οθόνη αφής"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-app-context-bar.c:668 src/gs-hardware-support-context-dialog.c:633
 #: src/gs-hardware-support-context-dialog.c:639
 msgid "Requires a keyboard"
 msgstr "Απαιτείται πληκτρολόγιο"
 
-#: src/gs-app-context-bar.c:666
+#: src/gs-app-context-bar.c:675
 msgid "Requires a mouse"
 msgstr "Απαιτείται ποντίκι"
 
-#: src/gs-app-context-bar.c:677
+#: src/gs-app-context-bar.c:686
 msgid "Gamepad Needed"
 msgstr "Απαιτείται χειριστήριο"
 
-#: src/gs-app-context-bar.c:678
+#: src/gs-app-context-bar.c:687
 msgid "Requires a gamepad to play"
 msgstr "Απαιτείται χειριστήριο παιχνιδιών"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:702
+#: src/gs-app-context-bar.c:711
 msgid "Adaptive"
 msgstr "Προσαρμόσιμο"
 
-#: src/gs-app-context-bar.c:703
+#: src/gs-app-context-bar.c:712
 msgid "Works on phones, tablets and desktops"
 msgstr "Λειτουργία σε κινητά, ταμπλέτες και επιτραπέζιους υπολογιστές"
 
-#: src/gs-app-context-bar.c:716
+#: src/gs-app-context-bar.c:725
 msgid "Probably requires a keyboard or mouse"
 msgstr "Πιθανώς απαιτείται πληκτρολόγιο ή ποντίκι"
 
-#: src/gs-app-context-bar.c:721
+#: src/gs-app-context-bar.c:730
 msgid "Works on desktops and laptops"
 msgstr "Λειτουργία σε επιτραπέζιους και φορητούς υπολογιστές"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:763
+#: src/gs-app-context-bar.c:772
 msgid "Contains no age-inappropriate content"
 msgstr "Δεν περιέχει ακατάλληλο για ηλικία περιεχόμενο"
 
-#: src/gs-app-context-bar.c:811
+#: src/gs-app-context-bar.c:820
 msgid "No age rating information available"
 msgstr "Μη διαθέσιμες πληροφορίες βαθμολόγησης ηλικίας"
 
@@ -1625,13 +1627,13 @@ msgstr "Δημοφιλέστερο"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:40 src/gs-overview-page.ui:70
+#: src/gs-category-page.ui:40 src/gs-overview-page.ui:68
 msgid "Editor’s Choice"
 msgstr "Επιλογές συντακτών"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:69 src/gs-overview-page.ui:95
+#: src/gs-category-page.ui:69 src/gs-overview-page.ui:93
 msgid "New & Updated"
 msgstr "Νέες & ενημερωμένες"
 
@@ -2317,47 +2319,47 @@ msgstr "Εμ_φάνιση περισσότερων"
 msgid "_Show Less"
 msgstr "Εμ_φάνιση λιγότερων"
 
-#: src/gs-details-page.c:375
+#: src/gs-details-page.c:378
 msgid "Removing…"
 msgstr "Αφαιρείται…"
 
-#: src/gs-details-page.c:385
+#: src/gs-details-page.c:388
 msgid "Requires restart to finish install"
 msgstr "Απαιτεί επανεκκίνηση για ολοκλήρωση της εγκατάστασης"
 
-#: src/gs-details-page.c:392
+#: src/gs-details-page.c:395
 msgid "Requires restart to finish remove"
 msgstr "Απαιτεί επανεκκίνηση για ολοκλήρωση της αφαίρεσης"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:409
+#: src/gs-details-page.c:412
 msgid "Pending installation…"
 msgstr "Εκκρεμεί εγκατάσταση…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:415
+#: src/gs-details-page.c:418
 msgid "Pending update…"
 msgstr "Εκκρεμής ενημέρωση…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:429
+#: src/gs-details-page.c:432
 msgid "Preparing…"
 msgstr "Προετοιμάζεται…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:432
+#: src/gs-details-page.c:435
 msgid "Uninstalling…"
 msgstr "Γίνεται απεγκατάσταση…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:559
+#: src/gs-details-page.c:562
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "Το %s δεν είναι εγκατεστημένο, αλλά εξακολουθεί να έχει δεδομένα."
 
-#: src/gs-details-page.c:1014
+#: src/gs-details-page.c:1044
 msgid "_Restart"
 msgstr "_Επανεκκίνηση"
 
@@ -2365,45 +2367,92 @@ msgstr "_Επανεκκίνηση"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1038
+#: src/gs-details-page.c:1068
 msgid "_Install…"
 msgstr "Ε_γκατάσταση…"
 
-#: src/gs-details-page.c:1105
+#: src/gs-details-page.c:1135
 msgid "_Uninstall…"
 msgstr "_Απεγκατάσταση…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1251
+#: src/gs-details-page.c:1281
 #, c-format
 msgid "%s will appear in US English"
 msgstr "Το %s θα εμφανιστεί στα Αγγλικά των ΗΠΑ"
 
-#: src/gs-details-page.c:1258
+#: src/gs-details-page.c:1289
 msgid "This app will appear in US English"
 msgstr "Αυτή η εφαρμογή θα εμφανίζεται στα Αγγλικά των ΗΠΑ"
 
-#: src/gs-details-page.c:1293 src/gs-details-page.ui:59
+#: src/gs-details-page.c:1291
+msgid "This software will appear in US English"
+msgstr "Αυτό το λογισμικό θα εμφανιστεί στα Αγγλικά των ΗΠΑ"
+
+#: src/gs-details-page.c:1326 src/gs-details-page.ui:59
 msgid "Help _Translate"
 msgstr "Βοήθεια στη _μετάφραση"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1358
+#: src/gs-details-page.c:1391
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Άλλες εφαρμογές από %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1748
+#: src/gs-details-page.c:1781
 msgid "You need internet access to write a review"
 msgstr "Απαιτείται σύνδεση στο διαδίκτυο για να γράψετε μια κριτική"
 
-#: src/gs-details-page.c:1936 src/gs-details-page.c:1952
+#: src/gs-details-page.c:1882
+msgid "This app is no longer receiving updates, including security fixes"
+msgstr ""
+"Αυτή η εφαρμογή δεν λαμβάνει πλέον ενημερώσεις, συμπεριλαμβανομένων των "
+"επιδιορθώσεων ασφαλείας"
+
+#: src/gs-details-page.c:1883
+msgid ""
+"This app is already provided by your distribution and should not be replaced."
+msgstr ""
+"Αυτή η εφαρμογή παρέχεται ήδη από τη διανομή σας και δεν πρέπει να "
+"αντικατασταθεί."
+
+#: src/gs-details-page.c:1884
+msgid ""
+"This app doesn’t provide any links to a website, code repository or issue "
+"tracker."
+msgstr ""
+"Αυτή η εφαρμογή δεν παρέχει συνδέσμους προς ιστότοπο, αποθετήριο κώδικα ή "
+"ιχνηλάτη προβλημάτων."
+
+#: src/gs-details-page.c:1886
+msgid "This software is no longer receiving updates, including security fixes"
+msgstr ""
+"Αυτό το λογισμικό δεν λαμβάνει πλέον ενημερώσεις, συμπεριλαμβανομένων των "
+"επιδιορθώσεων ασφαλείας"
+
+#: src/gs-details-page.c:1887
+msgid ""
+"This software is already provided by your distribution and should not be "
+"replaced."
+msgstr ""
+"Αυτό το λογισμικό παρέχεται ήδη από τη διανομή σας και δεν πρέπει να "
+"αντικατασταθεί."
+
+#: src/gs-details-page.c:1888
+msgid ""
+"This software doesn’t provide any links to a website, code repository or "
+"issue tracker."
+msgstr ""
+"Η εφαρμογή αυτή δεν παρέχει συνδέσμους σε ιστότοπο, αποθετήριο κώδικα ή "
+"ιχνηλάτη σφαλμάτων."
+
+#: src/gs-details-page.c:1975 src/gs-details-page.c:1991
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Αδύνατη η εύρεση του «%s»"
 
-#: src/gs-details-page.c:2299
+#: src/gs-details-page.c:2338
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Αποτυχία υποβολής κριτικής για το «%s»: %s"
@@ -2438,12 +2487,6 @@ msgstr "Γίνεται λήψη"
 msgid "Add-ons"
 msgstr "Πρόσθετα"
 
-#: src/gs-details-page.ui:571
-msgid "This software is no longer receiving updates, including security fixes"
-msgstr ""
-"Αυτό το λογισμικό δεν λαμβάνει πλέον ενημερώσεις, συμπεριλαμβανομένων των "
-"επιδιορθώσεων ασφαλείας"
-
 #: src/gs-details-page.ui:632
 msgid "This app can only be used when there is an active internet connection."
 msgstr ""
@@ -2474,14 +2517,6 @@ msgstr ""
 "Αυτή η εφαρμογή δεν περιλαμβάνει αποθετήριο λογισμικού. Δεν θα ενημερωθεί με "
 "νέες εκδόσεις."
 
-#: src/gs-details-page.ui:731
-msgid ""
-"This software is already provided by your distribution and should not be "
-"replaced."
-msgstr ""
-"Αυτό το λογισμικό παρέχεται ήδη από τη διανομή σας και δεν πρέπει να "
-"αντικατασταθεί."
-
 #. Translators: a repository file used for installing software has been discovered.
 #: src/gs-details-page.ui:762
 msgid "Software Repository Identified"
@@ -2510,14 +2545,6 @@ msgstr "_Διαγραφή δεδομένων"
 #: src/gs-details-page.ui:913
 msgid "No Metadata"
 msgstr "Δεν υπάρχουν μεταδεδομένα"
-
-#: src/gs-details-page.ui:922
-msgid ""
-"This software doesn’t provide any links to a website, code repository or "
-"issue tracker."
-msgstr ""
-"Η εφαρμογή αυτή δεν παρέχει συνδέσμους σε ιστότοπο, αποθετήριο κώδικα ή "
-"ιχνηλάτη σφαλμάτων."
 
 #: src/gs-details-page.ui:950
 msgid "Project _Website"
@@ -3032,16 +3059,44 @@ msgstr "Εφαρμογές Ιστού"
 msgid "System Apps"
 msgstr "Εφαρμογές συστήματος"
 
-#: src/gs-license-tile.c:99
+#: src/gs-license-tile.c:102
 msgid "Community Built"
 msgstr "Χτισμένα από την Κοινότητα"
 
-#: src/gs-license-tile.c:110 src/gs-license-tile.ui:98
+#: src/gs-license-tile.c:113 src/gs-license-tile.ui:98
 msgid "_Get Involved"
 msgstr "_Συνείσφερε"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
-#: src/gs-license-tile.c:117
+#: src/gs-license-tile.c:121
+#, c-format
+msgid ""
+"This app is developed in the open by a community of volunteers, and released "
+"under the <a href=\"%s\">%s license</a>.\n"
+"\n"
+"You can contribute and help make it even better."
+msgstr ""
+"Αυτή η εφαρμογή αναπτύσσεται ανοιχτά από μια κοινότητα εθελοντών και "
+"κυκλοφορεί με την <a href=\"%s\">άδεια %s</a>.\n"
+"\n"
+"Μπορείτε να συνεισφέρετε και να βοηθήσετε να γίνει ακόμα καλύτερο."
+
+#. Translators: The placeholder here is the name of a software license.
+#: src/gs-license-tile.c:128
+#, c-format
+msgid ""
+"This app is developed in the open by a community of volunteers, and released "
+"under the %s license.\n"
+"\n"
+"You can contribute and help make it even better."
+msgstr ""
+"Αυτή η εφαρμογή αναπτύσσεται ανοιχτά από μια κοινότητα εθελοντών και "
+"κυκλοφορεί με την άδεια %s.\n"
+"\n"
+"Μπορείτε να συνεισφέρετε και να βοηθήσετε να γίνει ακόμα καλύτερο."
+
+#. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
+#: src/gs-license-tile.c:135
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
@@ -3055,7 +3110,7 @@ msgstr ""
 "Μπορείτε να συνεισφέρετε και να βοηθήσετε για να γίνει ακόμα καλύτερο."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-license-tile.c:124
+#: src/gs-license-tile.c:142
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
@@ -3068,15 +3123,65 @@ msgstr ""
 "\n"
 "Μπορείτε να συνεισφέρετε και να βοηθήσετε για να γίνει ακόμα καλύτερο."
 
-#: src/gs-license-tile.c:130
-msgid "Proprietary"
-msgstr "Ιδιοταγές"
+#. Translators: This indicates an app does not specify which license it's developed under.
+#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:388
+msgid "Unknown License"
+msgstr "Άγνωστη άδεια"
 
-#: src/gs-license-tile.c:136
+#: src/gs-license-tile.c:154 src/gs-license-tile.c:172
+#: src/gs-license-tile.c:196
 msgid "_Learn More"
 msgstr "_Μάθετε περισσότερα"
 
-#: src/gs-license-tile.c:138
+#: src/gs-license-tile.c:157
+msgid ""
+"This app does not specify what license it is developed under, and may be "
+"proprietary. It may be insecure in ways that are hard to detect, and it may "
+"change without oversight.\n"
+"\n"
+"You may or may not be able to contribute to this app."
+msgstr ""
+"Αυτή η εφαρμογή δεν προσδιορίζει με ποια άδεια έχει αναπτυχθεί και μπορεί να "
+"είναι ιδιόκτητο. Μπορεί να είναι ανασφαλές με τρόπους που είναι δύσκολο να "
+"εντοπιστούν και μπορεί να αλλάξει χωρίς επίβλεψη.\n"
+"\n"
+"Μπορεί να μπορείτε ή να μην μπορείτε να συνεισφέρετε σε αυτήν την εφαρμογή."
+
+#: src/gs-license-tile.c:161
+msgid ""
+"This software does not specify what license it is developed under, and may "
+"be proprietary. It may be insecure in ways that are hard to detect, and it "
+"may change without oversight.\n"
+"\n"
+"You may or may not be able to contribute to this software."
+msgstr ""
+"Αυτό το λογισμικό δεν προσδιορίζει με ποια άδεια έχει αναπτυχθεί και μπορεί "
+"να είναι ιδιόκτητο. Μπορεί να είναι ανασφαλές με τρόπους που είναι δύσκολο "
+"να εντοπιστούν και μπορεί να αλλάξει χωρίς επίβλεψη.\n"
+"\n"
+"Μπορεί να μπορείτε ή να μην μπορείτε να συνεισφέρετε σε αυτό το λογισμικό."
+
+#. Translators: This is used for "License    Proprietary"
+#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:547
+msgid "Proprietary"
+msgstr "Ιδιοταγές"
+
+#: src/gs-license-tile.c:175
+msgid ""
+"This app is not developed in the open, so only its developers know how it "
+"works. It may be insecure in ways that are hard to detect, and it may change "
+"without oversight.\n"
+"\n"
+"You may not be able to contribute to this app."
+msgstr ""
+"Αυτή η εφαρμογή δεν έχει αναπτυχθεί ανοιχτά, επομένως μόνο οι "
+"προγραμματιστές της γνωρίζουν πώς λειτουργεί. Μπορεί να είναι ανασφαλές με "
+"τρόπους που είναι δύσκολο να εντοπιστούν και μπορεί να αλλάξει χωρίς "
+"επίβλεψη.\n"
+"\n"
+"Ενδέχεται να μην μπορείτε να συνεισφέρετε σε αυτήν την εφαρμογή."
+
+#: src/gs-license-tile.c:179
 msgid ""
 "This software is not developed in the open, so only its developers know how "
 "it works. It may be insecure in ways that are hard to detect, and it may "
@@ -3089,6 +3194,59 @@ msgstr ""
 "δύσκολο να ανιχνευτεί, ενώ μπορεί να αλλάξει χωρίς επίβλεψη.\n"
 "\n"
 "Μπορεί να μην είναι εφικτό να συνεισφέρετε στο λογισμικό αυτό."
+
+#: src/gs-license-tile.c:190
+msgid "Special License"
+msgstr "Ειδική άδεια"
+
+#. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
+#: src/gs-license-tile.c:201
+#, c-format
+msgid ""
+"This app is developed under the special license <a href=\"%s\">%s</a>.\n"
+"\n"
+"You may or may not be able to contribute to this app."
+msgstr ""
+"Αυτή η εφαρμογή έχει αναπτυχθεί με την ειδική άδεια <a href=\"%s\">%s</a>.\n"
+"\n"
+"Μπορεί να μπορείτε ή να μην μπορείτε να συνεισφέρετε σε αυτήν την εφαρμογή."
+
+#. Translators: The placeholder here is the name of a software license.
+#: src/gs-license-tile.c:208
+#, c-format
+msgid ""
+"This app is developed under the special license “%s”.\n"
+"\n"
+"You may or may not be able to contribute to this app."
+msgstr ""
+"Αυτή η εφαρμογή έχει αναπτυχθεί με την ειδική άδεια \"%s\".\n"
+"\n"
+"Μπορεί να μπορείτε ή να μην μπορείτε να συνεισφέρετε σε αυτήν την εφαρμογή."
+
+#. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
+#: src/gs-license-tile.c:215
+#, c-format
+msgid ""
+"This software is developed under the special license <a href=\"%s\">%s</a>.\n"
+"\n"
+"You may or may not be able to contribute to this software."
+msgstr ""
+"Αυτό το λογισμικό έχει αναπτυχθεί με την ειδική άδεια <a href=\"%s\">%s</"
+"a>.\n"
+"\n"
+"Μπορεί να μπορείτε ή να μην μπορείτε να συνεισφέρετε σε αυτό το λογισμικό."
+
+#. Translators: The placeholder here is the name of a software license.
+#: src/gs-license-tile.c:223
+#, c-format
+msgid ""
+"This software is developed under the special license “%s”.\n"
+"\n"
+"You may or may not be able to contribute to this software."
+msgstr ""
+"Αυτό το λογισμικό έχει αναπτυχθεί με την ειδική άδεια «%s».\n"
+"\n"
+"Μπορεί να μπορείτε ή να μην μπορείτε να συνεισφέρετε σε αυτό το λογισμικό."
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
@@ -3109,28 +3267,20 @@ msgstr "Αυτόματες ενημερώσεις σε παύση"
 
 #: src/gs-metered-data-dialog.ui:9
 msgid ""
-"The current network is metered. Metered connections have data limits or "
-"charges associated with them. To save data, automatic updates have therefore "
-"been paused.\n"
+"The current network is metered, so it may have data limits or charges "
+"associated with it. To save data, automatic updates have been paused.\n"
 "\n"
-"Automatic updates will be resumed when an unmetered network becomes "
-"available. Until then, it is still possible to manually install updates.\n"
-"\n"
-"Alternatively, if the current network has been incorrectly identified as "
-"being metered, this setting can be changed."
+"If the network has been incorrectly identified as metered, this can be "
+"changed in Settings."
 msgstr ""
-"Το τρέχον δίκτυο μετράται. Οι μετρήσιμες συνδέσεις έχουν όρια δεδομένων ή "
-"χρεώσεις που σχετίζονται με αυτές. Για να γλιτώσετε δεδομένα, οι αυτόματες "
-"ενημερώσεις έχουν διακοπεί.\n"
+"Το τρέχον δίκτυο μετράται, επομένως μπορεί να έχει όρια δεδομένων ή χρεώσεις "
+"που σχετίζονται με αυτό. Για να γλιτώσετε δεδομένα, οι αυτόματες ενημερώσεις "
+"έχουν διακοπεί.\n"
 "\n"
-"Οι αυτόματες ενημερώσεις θα συνεχιστούν όταν γίνει διαθέσιμο ένα μη "
-"μετρήσιμο δίκτυο. Μέχρι τότε, εξακολουθεί να είναι δυνατή η χειροκίνητη "
-"εγκατάσταση ενημερώσεων.\n"
-"\n"
-"Εναλλακτικά, αν το τρέχον δίκτυο έχει αναγνωριστεί εσφαλμένα ως μετρήσιμο, η "
-"ρύθμιση αυτή μπορεί να αλλάξει."
+"Εάν το δίκτυο έχει αναγνωριστεί εσφαλμένα ως μετρημένο, αυτό μπορεί να "
+"αλλάξει στις Ρυθμίσεις."
 
-#: src/gs-metered-data-dialog.ui:17
+#: src/gs-metered-data-dialog.ui:15
 msgid "Open Network _Settings"
 msgstr "Άνοιγμα _ρυθμίσεων δικτύου"
 
@@ -3179,14 +3329,14 @@ msgstr "Υποβαθμίσεις"
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:593
+#: src/gs-overview-page.c:592
 msgid "selected external sources"
 msgstr "επιλεγμένες εξωτερικές πηγές"
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:597
+#: src/gs-overview-page.c:596
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3201,34 +3351,34 @@ msgstr ""
 "Αποθετηρίων Λογισμικού."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:603
+#: src/gs-overview-page.c:602
 msgid "Enable Third Party Software Repositories?"
 msgstr "Να ενεργοποιηθούν τα αποθετήρια λογισμικού τρίτων;"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:608
+#: src/gs-overview-page.c:607
 msgid "_Ignore"
 msgstr "Α_γνόηση"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:610 src/gs-repos-dialog.c:173
+#: src/gs-overview-page.c:609 src/gs-repos-dialog.c:173
 msgid "_Enable"
 msgstr "_Ενεργοποίηση"
 
-#: src/gs-overview-page.c:813
+#: src/gs-overview-page.c:812
 msgid "Available for your operating system"
 msgstr "Διαθέσιμο για το λειτουργικό σας σύστημα"
 
 #. Translators: the '%s' is replaced with the distribution name, constructing
 #. for example: "Available for Fedora Linux"
-#: src/gs-overview-page.c:817
+#: src/gs-overview-page.c:816
 #, c-format
 msgid "Available for %s"
 msgstr "Διαθέσιμο για %s"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:1110
+#: src/gs-overview-page.c:1109
 msgid "Explore"
 msgstr "Εξερεύνηση"
 
@@ -3237,20 +3387,20 @@ msgid "Overview page"
 msgstr "Σελίδα επισκόπησης"
 
 #. Translators: This is a heading for a section with all available apps.
-#: src/gs-overview-page.ui:148
+#: src/gs-overview-page.ui:146
 msgid "Available Apps"
 msgstr "Διαθέσιμες εφαρμογές"
 
 #. Translators: This is a heading for a list of categories.
-#: src/gs-overview-page.ui:174
+#: src/gs-overview-page.ui:172
 msgid "Other Categories"
 msgstr "Άλλες κατηγορίες"
 
-#: src/gs-overview-page.ui:216
+#: src/gs-overview-page.ui:214
 msgid "No App Data Found"
 msgstr "Δε βρέθηκαν δεδομένα εφαρμογής"
 
-#: lib/gs-plugin-loader.c:2793
+#: lib/gs-plugin-loader.c:2795
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Άγνωστη"
@@ -3936,12 +4086,28 @@ msgstr ""
 "Το λογισμικό ή οι εξαρτήσεις του δεν υποστηρίζονται πλέον και ίσως είναι "
 "επισφαλείς"
 
+#: src/gs-safety-context-dialog.c:390
+msgid ""
+"This app does not specify what license it is developed under, and may be "
+"proprietary"
+msgstr ""
+"Αυτή η εφαρμογή δεν προσδιορίζει με ποια άδεια έχει αναπτυχθεί και μπορεί να "
+"είναι ιδιόκτητο"
+
+#: src/gs-safety-context-dialog.c:391
+msgid ""
+"This software does not specify what license it is developed under, and may "
+"be proprietary"
+msgstr ""
+"Αυτό το λογισμικό δεν προσδιορίζει με ποια άδεια έχει αναπτυχθεί και μπορεί "
+"να είναι ιδιόκτητο"
+
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:398
+#: src/gs-safety-context-dialog.c:411
 msgid "Proprietary Code"
 msgstr "Ιδιοταγής κώδικας"
 
-#: src/gs-safety-context-dialog.c:399
+#: src/gs-safety-context-dialog.c:412
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3950,11 +4116,11 @@ msgstr ""
 "και πιθανώς να είναι επισφαλής"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:402
+#: src/gs-safety-context-dialog.c:415
 msgid "Auditable Code"
 msgstr "Ελεγχόμενος κώδικας"
 
-#: src/gs-safety-context-dialog.c:403
+#: src/gs-safety-context-dialog.c:416
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3964,38 +4130,44 @@ msgstr ""
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:411
+#: src/gs-safety-context-dialog.c:425
 #, c-format
 msgid "%s is privileged"
 msgstr "Το %s είναι προνομιούχο"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:418
+#: src/gs-safety-context-dialog.c:432
 #, c-format
 msgid "%s is safe"
 msgstr "Το %s είναι ασφαλές"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:425
+#: src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s is probably safe"
 msgstr "Το %s είναι πιθανώς επισφαλές"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:432
+#: src/gs-safety-context-dialog.c:446
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "Το %s είναι πιθανώς επισφαλές"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:439
+#: src/gs-safety-context-dialog.c:453
 #, c-format
 msgid "%s is unsafe"
 msgstr "Το %s είναι επισφαλές"
+
+#. Translators: This is used for "License    Unknown"
+#: src/gs-safety-context-dialog.c:544
+msgctxt "Unknown license"
+msgid "Unknown"
+msgstr "'Αγνωστο"
 
 #. Translators: This is the title of the dialog which contains information about the permissions of an app
 #: src/gs-safety-context-dialog.ui:5
@@ -4036,36 +4208,36 @@ msgstr "Χωρίς στιγμιότυπα οθόνης"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:359 src/gs-screenshot-image.c:416
-#: src/gs-screenshot-image.c:620
+#: src/gs-screenshot-image.c:360 src/gs-screenshot-image.c:417
+#: src/gs-screenshot-image.c:623
 msgid "Screenshot not found"
 msgstr "Δεν βρέθηκε στιγμιότυπο"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:435
+#: src/gs-screenshot-image.c:438
 msgid "Failed to load image"
 msgstr "Αποτυχία φόρτωσης εικόνας"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:648
+#: src/gs-screenshot-image.c:651
 msgid "Screenshot size not found"
 msgstr "Δεν βρέθηκε μέγεθος στιγμιοτύπου"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:730
+#: src/gs-screenshot-image.c:733
 msgid "Could not create cache"
 msgstr "Αδυναμία δημιουργίας λανθάνουσας μνήμης"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:744
+#: src/gs-screenshot-image.c:747
 msgid "Screenshot not valid"
 msgstr "Άκυρο στιγμιότυπο οθόνης"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:794
+#: src/gs-screenshot-image.c:797
 msgid "Screenshot not available"
 msgstr "Μη διαθέσιμο στιγμιότυπο οθόνης"
 
@@ -5124,25 +5296,25 @@ msgstr ""
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:514
+#: src/gs-updates-section.c:519
 msgid "Integrated Firmware"
 msgstr "Ενσωματωμένο υλικολογισμικό"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:519
+#: src/gs-updates-section.c:524
 msgid "Requires Restart"
 msgstr "Απαιτεί επανεκκίνηση"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:524
+#: src/gs-updates-section.c:529
 msgid "App Updates"
 msgstr "Ενημερώσεις εφαρμογής"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:529
+#: src/gs-updates-section.c:534
 msgid "Device Firmware"
 msgstr "Υλικολογισμικό συσκευής"
 
@@ -5746,7 +5918,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Πακέτα"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3036
+#: plugins/packagekit/gs-plugin-packagekit.c:3147
 msgid "Failed to install updates: "
 msgstr "Αποτυχία εγκατάστασης ενημερώσεων: "
 
@@ -5766,6 +5938,9 @@ msgstr "Υποστήριξη Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Το snap είναι ένα καθολικό πακέτο του Linux"
+
+#~ msgid "Loading update description, please wait…"
+#~ msgstr "Γίνεται φόρτωση περιγραφής ενημέρωσης, παρακαλώ περιμένετε…"
 
 #~ msgid "Downloading featured images…"
 #~ msgstr "Λήψη δημοφιλέστερων εικόνων…"
@@ -6163,9 +6338,6 @@ msgstr "Το snap είναι ένα καθολικό πακέτο του Linux"
 #~ "Αυτό σημαίνει ότι το λογισμικό ανήκει σε ένα άτομο ή σε μια εταιρεία. "
 #~ "Υπάρχουν συχνά περιορισμοί στη χρήση του και συνήθως πηγαίος του κώδικας "
 #~ "είναι κλειστός."
-
-#~ msgid "Unknown Software License"
-#~ msgstr "Άγνωστη άδεια λογισμικού"
 
 #~ msgid "The license terms of this software are unknown."
 #~ msgstr "Οι όροι άδειας αυτού του λογισμικού είναι άγνωστοι."
