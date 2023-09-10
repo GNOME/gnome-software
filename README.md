@@ -2,7 +2,7 @@
 
 # Software
 
-[Software](https://wiki.gnome.org/Apps/Software) allows users to easily find,
+[Software](https://apps.gnome.org/Software) allows users to easily find,
 discover and install apps. It also keeps their OS, apps and devices up to date
 without them having to think about it, and gives them confidence that their
 system is up to date. It supports popular distributions, subject to those
