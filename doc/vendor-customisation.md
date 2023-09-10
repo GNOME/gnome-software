@@ -19,12 +19,12 @@ necessarily complete*. It will be added to over time as different customisations
 are refreshed and updated.
 
 If there is a supported customisation method which is not in this document,
-please [submit a merge request](https://gitlab.gnome.org/GNOME/gnome-software/-/merge_requests/new)
+please [submit a merge request](https://gitlab.gnome.org/GNOME/gnome-software/-/merge_requests/)
 to document it.
 
 Likewise, if your distribution would like to customise gnome-software in a way
 which isn’t currently supported, please
-[open a new issue](https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new?issue%5Bmilestone_id%5D=)
+[open a new issue](https://gitlab.gnome.org/GNOME/gnome-software/-/issues/)
 to discuss it. We don’t guarantee to implement anything, and customisations are
 limited to adding branding in specific areas.
 
