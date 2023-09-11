@@ -1424,9 +1424,11 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		const gchar *version = gs_app_get_version_ui (self->app);
 		if (version == NULL || *version == '\0')
 			gtk_widget_set_visible (self->list_box_version_history, FALSE);
-		else
+		else {
 			gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (self->row_latest_version),
 							     version, gs_app_get_release_date (self->app), NULL);
+			gtk_widget_set_visible (self->list_box_version_history, TRUE);
+		}
 	} else {
 		AsRelease *latest_version = g_ptr_array_index (version_history, 0);
 		const gchar *version = gs_app_get_version_ui (self->app);
@@ -1442,6 +1444,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 							     version, gs_app_get_release_date (self->app),
 							     same_version ? as_release_get_description (latest_version) : NULL);
 		}
+		gtk_widget_set_visible (self->list_box_version_history, TRUE);
 	}
 
 	gtk_widget_set_visible (self->version_history_button, version_history != NULL && version_history->len > 1);
