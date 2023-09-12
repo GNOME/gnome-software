@@ -310,7 +310,7 @@ app_name_flowbox_sort_func (GtkFlowBoxChild *child1,
 	if (app2 == NULL)
 		return -1;
 
-	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
+	return gs_utils_app_sort_name (app1, app2, NULL);
 }
 
 static gint
@@ -333,7 +333,7 @@ release_date_sort_func (GsAppTile *tile1,
 	release_date2 = gs_app_get_release_date (app2);
 
 	if (release_date1 == release_date2)
-		return g_utf8_collate (gs_app_get_name (app1), gs_app_get_name (app2));
+		return gs_utils_app_sort_name (app1, app2, NULL);
 
 	return release_date1 < release_date2 ? 1 : -1;
 }
