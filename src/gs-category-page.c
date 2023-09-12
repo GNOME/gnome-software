@@ -94,17 +94,6 @@ top_carousel_app_clicked_cb (GsFeaturedCarousel *carousel,
 	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
-static gint
-_max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	gint name_sort = gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
-
-	if (name_sort != 0)
-		return name_sort;
-
-	return gs_app_get_rating (app1) - gs_app_get_rating (app2);
-}
-
 static void
 gs_category_page_add_placeholders (GsCategoryPage *self,
                                    GtkFlowBox     *flow_box,
@@ -724,7 +713,6 @@ gs_category_page_load_category (GsCategoryPage *self)
 
 		featured_query = gs_app_query_new ("category", featured_subcat,
 						   "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
-						   "sort-func", gs_utils_app_sort_name,
 						   "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 						   NULL);
 		featured_plugin_job = gs_plugin_job_list_apps_new (featured_query,
@@ -745,7 +733,6 @@ gs_category_page_load_category (GsCategoryPage *self)
 						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
 				       "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 						       GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-				       "sort-func", _max_results_sort_cb,
 				       "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 				       NULL);
 	main_plugin_job = gs_plugin_job_list_apps_new (main_query,
