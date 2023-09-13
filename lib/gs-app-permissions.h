@@ -19,6 +19,8 @@ G_BEGIN_DECLS
  *   such as webcams or gaming controllers.
  * @GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES: App can access non-physical
  *   privileged system devices, such as `/dev/shm` or `/dev/kvm` (Since: 44)
+ * @GS_APP_PERMISSIONS_FLAGS_SCREEN: App can access screen contents
+ *   without asking, e.g. by reading Pipewire ScreenCast streams (Since: 46)
  *
  * Flags to indicate what permissions an app requires, at a high level.
  */
@@ -39,6 +41,7 @@ typedef enum {
 	GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX		= 1 << 13,
 	GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER	= 1 << 14,
 	GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES		= 1 << 15,
+	GS_APP_PERMISSIONS_FLAGS_SCREEN			= 1 << 16,
 	GS_APP_PERMISSIONS_FLAGS_LAST  /*< skip >*/
 } GsAppPermissionsFlags;
 

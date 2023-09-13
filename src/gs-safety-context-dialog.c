@@ -230,6 +230,14 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can access system devices which require elevated permissions"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SCREEN) != 0,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+				    "screen-privacy-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("Screen Contents Access"),
+				    _("Can access the contents of the screen or other windows"),
+				    NULL, NULL, NULL);
+		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_X11) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "desktop-symbolic",
