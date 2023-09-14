@@ -12,6 +12,7 @@
 #include <glib/gi18n.h>
 #include <gnome-software.h>
 
+#include "gs-profiler.h"
 #include "gs-rewrite-resources.h"
 
 /*

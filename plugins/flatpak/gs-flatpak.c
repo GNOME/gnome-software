@@ -38,6 +38,7 @@
 #include "gs-flatpak.h"
 #include "gs-flatpak-transaction.h"
 #include "gs-flatpak-utils.h"
+#include "gs-profiler.h"
 
 struct _GsFlatpak {
 	GObject			 parent_instance;

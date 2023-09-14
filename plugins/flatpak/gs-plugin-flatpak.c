@@ -36,6 +36,7 @@
 #include "gs-flatpak-transaction.h"
 #include "gs-flatpak-utils.h"
 #include "gs-metered.h"
+#include "gs-profiler.h"
 #include "gs-worker-thread.h"
 
 #include "gs-plugin-flatpak.h"
