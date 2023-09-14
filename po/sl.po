@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2023-09-09 14:05+0000\n"
-"PO-Revision-Date: 2023-09-11 00:15+0200\n"
+"PO-Revision-Date: 2023-09-14 20:11+0200\n"
 "Last-Translator: Matej Urbančič <mateju@src.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.3.2\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21 src/org.gnome.Software.desktop.in:3
 msgid "Software"
@@ -638,7 +638,7 @@ msgstr "?"
 #: src/gs-age-rating-context-dialog.c:1010
 #, c-format
 msgid "%s has an unknown age rating"
-msgstr ""
+msgstr "Program %s nima podatka o starostni omejitvi"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
@@ -664,10 +664,9 @@ msgstr "Progam %s je primeren za majhne otroke"
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 12. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:1033
-#, fuzzy, c-format
-#| msgid "%s is suitable for young children"
+#, c-format
 msgid "%s is suitable for children"
-msgstr "Progam %s je primeren za majhne otroke"
+msgstr "Progam %s je primeren za otroke"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
@@ -953,7 +952,7 @@ msgstr "Pokaži krajevne metapodatke oziroma datoteko appdata"
 
 #: src/gs-application.c:143
 msgid "Enable verbose debugging output (from the running instance, if already running)"
-msgstr ""
+msgstr "Omogoči podroben izpis razhroščevanja (iz delujočega primerka, če je že zagnan)"
 
 #: src/gs-application.c:145
 msgid "Installs any pending updates in the background"
@@ -1146,10 +1145,8 @@ msgstr "Razvijalec programa je preverjen"
 #. * by the user’s distribution and is probably safe.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:434 src/gs-safety-context-dialog.c:146
-#, fuzzy
-#| msgid "Reviewed by your distribution"
 msgid "Reviewed by OS distributor"
-msgstr "Usklajeno z paketi distribucije"
+msgstr "Usklajeno s ponudnikom distribucije"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
@@ -1157,10 +1154,9 @@ msgstr "Usklajeno z paketi distribucije"
 #. * The '%s' is replaced by the distribution name.
 #. Translators: The '%s' is replaced by the distribution name.
 #: src/gs-app-context-bar.c:440 src/gs-safety-context-dialog.c:149
-#, fuzzy, c-format
-#| msgid "Reviews"
+#, c-format
 msgid "Reviewed by %s"
-msgstr "Mnenja"
+msgstr "Usklajeno s %s"
 
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
@@ -1216,7 +1212,7 @@ msgstr "; "
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:522
 msgid "Privileged"
-msgstr ""
+msgstr "Posebna dovoljenja"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
@@ -1228,7 +1224,7 @@ msgstr "Varno"
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:536
 msgid "Probably Safe"
-msgstr ""
+msgstr "Verjetno varno"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
@@ -2851,27 +2847,19 @@ msgstr "_Sodelujte"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:121
-#, fuzzy, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and released under the <a href=\"%s\">%s license</a>.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This app is developed in the open by a community of volunteers, and released under the <a href=\"%s\">%s license</a>.\n"
 "\n"
 "You can contribute and help make it even better."
 msgstr ""
-"Ta programska oprema je odprtokodna in jo razvija skupnost prostovoljcev, objavljena pa je pod posebnimi <a href=\"%s\">%spogoji</a>..\n"
+"Ta programska oprema je odprtokodna in jo razvija skupnost prostovoljcev, objavljena pa je pod pogoji dovoljenja <a href=\"%s\">%s</a>..\n"
 "\n"
-"Vsakdo lahko sodeluje pri zasnovi in razvoju, če se za to odloči."
+"Vsakdo lahko sodeluje pri zasnovi in razvoju."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:128
-#, fuzzy, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This app is developed in the open by a community of volunteers, and released under the %s license.\n"
 "\n"
@@ -2879,7 +2867,7 @@ msgid ""
 msgstr ""
 "Ta programska oprema je odprtokodna in jo razvija skupnost prostovoljcev, objavljena pa je z dovoljenjem %s.\n"
 "\n"
-"Vsakdo lahko sodeluje pri zasnovi in razvoju, če se za to odloči."
+"Vsakdo lahko sodeluje pri zasnovi in razvoju."
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:135
@@ -2915,34 +2903,24 @@ msgid "_Learn More"
 msgstr "_Več podrobnosti"
 
 #: src/gs-license-tile.c:157
-#, fuzzy
-#| msgid ""
-#| "This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight.\n"
-#| "\n"
-#| "You may not be able to contribute to this software."
 msgid ""
 "This app does not specify what license it is developed under, and may be proprietary. It may be insecure in ways that are hard to detect, and it may change without oversight.\n"
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
-"Razvoj te programske kode ni odprt za javnost, zato le razvijalci programa vedo, kako deluje. Morda so določene omejitve uporabe, prav tako je težko ugotoviti, ali je programska oprema zares varna. Delovanje programa se lahko kadarkoli tudi spremeni.\n"
+"Za ta program ni navedeno, pod pogoji katerega dovoljenja je objavljena, in je lahko zaščiten z lastništvom. Lahko je nezanesljiv na načine, ki jih je težko odkriti, in se lahko spreminja brez nadzora.\n"
 "\n"
 "K tej programski opremi najverjetneje ni mogoče prispevati, niti ne vplivati na razvoj."
 
 #: src/gs-license-tile.c:161
-#, fuzzy
-#| msgid ""
-#| "This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight.\n"
-#| "\n"
-#| "You may not be able to contribute to this software."
 msgid ""
 "This software does not specify what license it is developed under, and may be proprietary. It may be insecure in ways that are hard to detect, and it may change without oversight.\n"
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
-"Razvoj te programske kode ni odprt za javnost, zato le razvijalci programa vedo, kako deluje. Morda so določene omejitve uporabe, prav tako je težko ugotoviti, ali je programska oprema zares varna. Delovanje programa se lahko kadarkoli tudi spremeni.\n"
+"Pri tej programski opremi ni navedeno pod pogoji katerega dovoljenja je objavljena in je lahko zaščitena z lastništvom. Lahko je nezanesljiva na načine, ki jih je težko odkriti, in se lahko spreminja brez nadzora.\n"
 "\n"
-"K tej programski opremi najverjetneje ni mogoče prispevati, niti ne vplivati na razvoj."
+"Pri razvoju te programske opreme morda je, morda ni mogoče sodelovati."
 
 #. Translators: This is used for "License    Proprietary"
 #: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:547
@@ -2950,19 +2928,14 @@ msgid "Proprietary"
 msgstr "Lastniško"
 
 #: src/gs-license-tile.c:175
-#, fuzzy
-#| msgid ""
-#| "This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight.\n"
-#| "\n"
-#| "You may not be able to contribute to this software."
 msgid ""
 "This app is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight.\n"
 "\n"
 "You may not be able to contribute to this app."
 msgstr ""
-"Razvoj te programske kode ni odprt za javnost, zato le razvijalci programa vedo, kako deluje. Morda so določene omejitve uporabe, prav tako je težko ugotoviti, ali je programska oprema zares varna. Delovanje programa se lahko kadarkoli tudi spremeni.\n"
+"Program ni prosta programska oprema, zato delovanje poznajo le razvijalci. Morda je nezanesljiva na načine, ki jih je težko odkriti, in se lahko spreminja brez nadzora.\n"
 "\n"
-"K tej programski opremi najverjetneje ni mogoče prispevati, niti ne vplivati na razvoj."
+"Pri razvoju tega programa morda je, morda ni mogoče sodelovati."
 
 #: src/gs-license-tile.c:179
 msgid ""
@@ -2986,6 +2959,9 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
+"Program je objavljen pod pogoji posebnega dovoljenja <a href=\"%s\">%s</a>.\n"
+"\n"
+"Morda je, morda ni mogoče sodelovati pri razvoju tega programa"
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:208
@@ -2995,22 +2971,21 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
+"Program je objavljen pod pogoji dovoljenja »%s«.\n"
+"\n"
+"Morda je, morda ni mogoče sodelovati pri razvoju tega programa."
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:215
-#, fuzzy, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and released under the <a href=\"%s\">%s license</a>.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This software is developed under the special license <a href=\"%s\">%s</a>.\n"
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
-"Ta programska oprema je odprtokodna in jo razvija skupnost prostovoljcev, objavljena pa je pod posebnimi <a href=\"%s\">%spogoji</a>..\n"
+"Ta programska oprema je objavljena pod pogoji dovoljenja <a href=\"%s\">%s</a>..\n"
 "\n"
-"Vsakdo lahko sodeluje pri zasnovi in razvoju, če se za to odloči."
+"Pri razvoju te programske opreme morda je, morda ni mogoče sodelovati."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:223
@@ -3020,6 +2995,9 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
+"Programska oprema je objavljena pod pogoji dovoljenja »%s«.\n"
+"\n"
+"Morda je, morda ni mogoče sodelovati pri razvoju tega programa"
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
@@ -3039,13 +3017,6 @@ msgid "Automatic Updates Paused"
 msgstr "Samodejno posodabljanje je v premoru"
 
 #: src/gs-metered-data-dialog.ui:9
-#, fuzzy
-#| msgid ""
-#| "The current network is metered. Metered connections have data limits or charges associated with them. To save data, automatic updates have therefore been paused.\n"
-#| "\n"
-#| "Automatic updates will be resumed when an un­metered network becomes available. Until then, it is still possible to manually install updates.\n"
-#| "\n"
-#| "Alternatively, if the current network has been in­correctly identified as being metered, this setting can be changed."
 msgid ""
 "The current network is metered, so it may have data limits or charges associated with it. To save data, automatic updates have been paused.\n"
 "\n"
@@ -3053,7 +3024,7 @@ msgid ""
 msgstr ""
 "Trenutno uporabljeno omrežje je plačljivo. Tovrstne povezave imajo omejitve dostopa do podatkov, ali pa so z dostopom povezani stroški. Samodejne posodobitve so zato zadržane.\n"
 "\n"
-"Samodejne posodobitve bodo omogočene, ko bo na voljo druga povezava, do takrat pa je posodobitve mogoče začeti ročno.\n"
+"Če je omrežje prepoznano napačno, je mogoče to spremeniti v nastavitvah.\n"
 "\n"
 "V primeru, da je vrsta omrežja zaznana napačno in uporaba ni povezana z dodatnimi stroški, je nastavitev mogoče tudi spremeniti."
 
@@ -3223,7 +3194,7 @@ msgstr "Podatki in nastavitve programa"
 #: src/gs-page.c:594
 #, c-format
 msgid "It will not be possible to use %s after removal."
-msgstr ""
+msgstr "Po odstranitvi programa %s ne bo mogoče uporabljati."
 
 #. Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'
 #: src/gs-page.c:617
@@ -3232,7 +3203,7 @@ msgstr "_Ohrani"
 
 #: src/gs-page.c:623
 msgid "Allows restoring app settings and content"
-msgstr ""
+msgstr "Omogoča obnavljanje nastavitev in vsebine programa"
 
 #. Translators: this is part of section about deleting app's data
 #: src/gs-page.c:632
@@ -3241,13 +3212,13 @@ msgstr "_Izbriši"
 
 #: src/gs-page.c:638
 msgid "Permanently deletes data to save disk space"
-msgstr ""
+msgstr "Trajno izbriše podatke za prihranek prostora na disku"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:645
 #, c-format
 msgid "It will not be possible to use %s after removal. App data and settings will be kept on disk, to allow restoring the app in the future."
-msgstr ""
+msgstr "Po odstranitvi %s ne bo mogoče uporabljati. Podatki in nastavitve programa bodo ostali shranjeni na disku, da ga bo mogoče v prihodnosti obnoviti."
 
 #: src/gs-prefs-dialog.ui:5
 msgid "Preferences"
@@ -3810,11 +3781,11 @@ msgstr "Programska oprema ali kateri od odvisnih paketov ni več podprta in najv
 
 #: src/gs-safety-context-dialog.c:390
 msgid "This app does not specify what license it is developed under, and may be proprietary"
-msgstr ""
+msgstr "Za program ni navedeno, pod pogoji katerega dovoljenja je bil razvit, in je lahko lastniška."
 
 #: src/gs-safety-context-dialog.c:391
 msgid "This software does not specify what license it is developed under, and may be proprietary"
-msgstr ""
+msgstr "Za programsko opremo ni navedeno, pod pogoji katerega dovoljenja je bila razvita, in je lahko lastniška."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:411
@@ -3839,7 +3810,7 @@ msgstr "Izvorna koda je javno dostopna in jo je mogoče skrbno pregledati, kar n
 #: src/gs-safety-context-dialog.c:425
 #, c-format
 msgid "%s is privileged"
-msgstr ""
+msgstr "Program %s ima dodeljena posebna dovoljenja"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
