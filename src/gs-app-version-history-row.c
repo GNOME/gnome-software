@@ -162,8 +162,10 @@ gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 
 	if (version_date_string == NULL)
 		gtk_widget_set_visible (row->version_date_label, FALSE);
-	else
+	else {
 		gtk_label_set_label (GTK_LABEL (row->version_date_label), version_date_string);
+		gtk_widget_set_visible (row->version_date_label, TRUE);
+	}
 
 	if (version_date_string_tooltip != NULL)
 		gtk_widget_set_tooltip_text (row->version_date_label, version_date_string_tooltip);
