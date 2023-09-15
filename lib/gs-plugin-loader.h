@@ -64,6 +64,8 @@ GsAppList	*gs_plugin_loader_get_pending		(GsPluginLoader	*plugin_loader);
 gboolean	 gs_plugin_loader_get_allow_updates	(GsPluginLoader	*plugin_loader);
 gboolean	 gs_plugin_loader_get_network_available	(GsPluginLoader *plugin_loader);
 gboolean	 gs_plugin_loader_get_network_metered	(GsPluginLoader *plugin_loader);
+gboolean	 gs_plugin_loader_get_power_saver	(GsPluginLoader *plugin_loader);
+gboolean	 gs_plugin_loader_get_game_mode		(GsPluginLoader *plugin_loader);
 gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
 							 const gchar	*function_name);
 
