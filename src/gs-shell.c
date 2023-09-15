@@ -260,6 +260,10 @@ gs_shell_refresh_auto_updates_ui (GsShell *shell)
 	if (gs_plugin_loader_get_network_metered (shell->plugin_loader))
 		flags |= GS_UPDATES_PAUSED_BANNER_FLAGS_METERED;
 #endif
+	if (gs_plugin_loader_get_power_saver (shell->plugin_loader))
+		flags |= GS_UPDATES_PAUSED_BANNER_FLAGS_POWER_SAVER;
+	if (gs_plugin_loader_get_game_mode (shell->plugin_loader))
+		flags |= GS_UPDATES_PAUSED_BANNER_FLAGS_GAME_MODE;
 
 	gs_updates_paused_banner_set_flags (GS_UPDATES_PAUSED_BANNER (shell->updates_paused_banner),
 					    flags);

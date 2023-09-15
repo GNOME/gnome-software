@@ -50,6 +50,10 @@ details_button_clicked_cb (GsUpdatesPausedBanner *self)
 		body = g_string_append (body, _("\n• The current network connection is metered"));
 	if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_NO_LARGE_DOWNLOADS)
 		body = g_string_append (body, _("\n• The current network connection prohibits large downloads"));
+	if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_POWER_SAVER)
+		body = g_string_append (body, _("\n• Power saver mode is active"));
+	if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_GAME_MODE)
+		body = g_string_append (body, _("\n• Game mode is active"));
 
 	label = gtk_label_new (body->str);
 	gtk_label_set_wrap (GTK_LABEL (label), TRUE);
@@ -81,6 +85,10 @@ update_banner_title (GsUpdatesPausedBanner *self)
 			title = _("Network connection is metered - software updates paused");
 		else if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_NO_LARGE_DOWNLOADS)
 			title = _("Network connection prohibits large downloads - software updates paused");
+		else if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_POWER_SAVER)
+			title = _("Power saver mode is active - software updates paused");
+		else if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_GAME_MODE)
+			title = _("Game mode is active - software updates paused");
 		else
 			g_assert_not_reached ();
 	}
