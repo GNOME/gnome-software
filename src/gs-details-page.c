@@ -1969,6 +1969,8 @@ gs_details_page_load_stage1_cb (GObject *source,
 			g_warning ("failed to refine %s: %s",
 				   gs_app_get_id (self->app),
 				   error->message);
+		} else {
+			return;
 		}
 	}
 	if (gs_app_get_kind (self->app) == AS_COMPONENT_KIND_UNKNOWN ||
