@@ -1422,7 +1422,20 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 
 	gtk_widget_set_visible (GTK_WIDGET (self->developer_name_label), tmp != NULL);
-	gtk_widget_set_visible (GTK_WIDGET (self->developer_verified_image), gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
+	gtk_widget_set_visible (self->developer_verified_image, gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
+
+	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED)) {
+		g_autofree gchar *tooltip = NULL;
+
+		if (tmp != NULL)
+			/* Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id */
+			tooltip = g_strdup_printf (_("Developer %s has proven the ownership of %s"), tmp, gs_app_get_id (self->app));
+		else
+			/* Translators: the %s is replaced with the app id */
+			tooltip = g_strdup_printf (_("Developer has proven the ownership of %s"), gs_app_get_id (self->app));
+
+		gtk_widget_set_tooltip_text (self->developer_verified_image, tooltip);
+	}
 
 	/* set version history */
 	version_history = gs_app_get_version_history (self->app);
