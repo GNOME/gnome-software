@@ -258,6 +258,10 @@ perms_from_metadata (GKeyFile *keyfile)
 	    !g_strv_contains ((const gchar * const*)strv, "fallback-x11") &&
 	    g_strv_contains ((const gchar * const*)strv, "x11"))
 		flags |= GS_APP_PERMISSIONS_FLAGS_X11;
+	/* "fallback-x11" without "wayland" means X11 */
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "fallback-x11") &&
+	    !g_strv_contains ((const gchar * const*)strv, "wayland"))
+		flags |= GS_APP_PERMISSIONS_FLAGS_X11;
 	g_strfreev (strv);
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "devices", NULL, NULL);
