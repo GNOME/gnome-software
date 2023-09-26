@@ -4,34 +4,61 @@
   <template class="GsPrefsDialog" parent="AdwPreferencesWindow">
     <property name="title" translatable="yes">Preferences</property>
     <property name="default_width">610</property>
-    <property name="default_height">370</property>
+    <property name="default_height">-1</property>
     <property name="search_enabled">False</property>
-    <style>
-      <class name="preferences"/>
-    </style>
     <child>
       <object class="AdwPreferencesPage">
+        <property name="margin-bottom">12</property>
         <child>
           <object class="AdwPreferencesGroup">
-            <property name="description" translatable="yes">To avoid charges and network caps, software updates are not automatically downloaded on mobile or metered connections.</property>
+            <property name="title" translatable="yes">Software Updates</property>
+            <property name="header-suffix">
+              <object class="GtkMenuButton" id="updates_info_button">
+                <property name="icon-name">help-about-symbolic</property>
+                <property name="popover">updates_info_popover</property>
+                <style>
+                  <class name="flat"/>
+                </style>
+              </object>
+            </property>
             <child>
               <object class="AdwActionRow" id="automatic_updates_row">
-                <property name="title" translatable="yes">Automatic _Updates</property>
-                <property name="subtitle" translatable="yes">Downloads and installs software updates in the background, when possible</property>
+                <property name="title" translatable="yes">_Automatic</property>
+                <property name="subtitle" translatable="yes">Automatically checks for and downloads updates</property>
                 <property name="subtitle_lines">0</property>
-                <property name="activatable_widget">switch_updates</property>
+                <property name="activatable_widget">automatic_updates_radio</property>
                 <property name="use_underline">True</property>
-                <child>
-                  <object class="GtkSwitch" id="switch_updates">
+                <child type="prefix">
+                  <object class="GtkCheckButton" id="automatic_updates_radio">
                     <property name="valign">center</property>
+                    <property name="active">True</property>
                   </object>
                 </child>
               </object>
             </child>
             <child>
+              <object class="AdwActionRow" id="manual_updates_row">
+                <property name="title" translatable="yes">_Manual</property>
+                <property name="subtitle" translatable="yes">Checking for and downloading updates must be done manually</property>
+                <property name="subtitle_lines">0</property>
+                <property name="activatable_widget">manual_updates_radio</property>
+                <property name="use_underline">True</property>
+                <child type="prefix">
+                  <object class="GtkCheckButton" id="manual_updates_radio">
+                    <property name="valign">center</property>
+                    <property name="group">automatic_updates_radio</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <child>
               <object class="AdwActionRow" id="automatic_update_notifications_row">
                 <property name="title" translatable="yes">Automatic Update _Notifications</property>
-                <property name="subtitle" translatable="yes">Show notifications when updates have been automatically installed</property>
+                <property name="subtitle" translatable="yes">Notifies when updates have been automatically installed</property>
                 <property name="subtitle_lines">0</property>
                 <property name="activatable_widget">switch_updates_notify</property>
                 <property name="use_underline">True</property>
@@ -42,10 +69,15 @@
                 </child>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Explore Pages</property>
             <child>
               <object class="AdwActionRow" id="show_only_free_apps_row">
-                <property name="title" translatable="yes">Show Only _Free Apps</property>
-                <property name="subtitle" translatable="yes">Show only freely licensed apps and hide any proprietary apps</property>
+                <property name="title" translatable="yes">Only Show _Free Software</property>
+                <property name="subtitle" translatable="yes">Hide proprietary software when browsing and searching</property>
                 <property name="subtitle_lines">0</property>
                 <property name="activatable_widget">switch_free_apps</property>
                 <property name="use_underline">True</property>
@@ -61,4 +93,21 @@
       </object>
     </child>
   </template>
+  <object class="GtkPopover" id="updates_info_popover">
+    <property name="position">bottom</property>
+    <property name="visible">False</property>
+    <property name="child">
+      <object class="GtkLabel">
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="margin-top">18</property>
+        <property name="margin-bottom">18</property>
+        <property name="label" translatable="yes">Checking for and downloading updates uses data and power. Automatic update features are therefore paused when on metered network connections and when power saver is on.</property>
+        <property name="justify">center</property>
+        <property name="wrap">True</property>
+        <property name="width-chars">40</property>
+        <property name="max-width-chars">40</property>
+      </object>
+    </property>
+  </object>
 </interface>
