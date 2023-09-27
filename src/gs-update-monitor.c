@@ -538,7 +538,6 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	g_autoptr(DownloadUpdatesData) download_updates_data = (DownloadUpdatesData *) user_data;
 	GsUpdateMonitor *monitor = download_updates_data->monitor;
 	guint64 security_timestamp = 0;
-	guint64 security_timestamp_old = 0;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
 	gboolean should_download;
@@ -563,9 +562,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		return;
 	}
 
-	/* find security updates, or clear timestamp if there are now none */
-	g_settings_get (monitor->settings,
-			"security-timestamp", "x", &security_timestamp_old);
+	/* find security updates */
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
 		guint64 size_download_bytes;
@@ -574,11 +571,11 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		if (gs_app_get_update_urgency (app) >= AS_URGENCY_KIND_CRITICAL &&
 		    size_download_type == GS_SIZE_TYPE_VALID &&
 		    size_download_bytes > 0) {
-			security_timestamp = (guint64) g_get_monotonic_time ();
+			security_timestamp = (guint64) g_get_real_time ();
 			break;
 		}
 	}
-	if (security_timestamp_old != security_timestamp) {
+	if (security_timestamp > 0) {
 		g_settings_set (monitor->settings,
 				"security-timestamp", "x", security_timestamp);
 	}
@@ -588,7 +585,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	should_download = should_download_updates (monitor);
 
 	if (should_download &&
-	    (security_timestamp_old != security_timestamp ||
+	    (security_timestamp > 0 ||
 	    check_if_timestamp_more_than_days_ago (monitor, "install-timestamp", 14))) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		g_autoptr(UpdateAppsData) data = NULL;
