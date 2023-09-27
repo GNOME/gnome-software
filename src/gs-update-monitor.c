@@ -540,6 +540,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	guint64 security_timestamp = 0;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
+	gboolean install_timestamp_outdated;
 	gboolean should_download;
 
 	/* get result */
@@ -583,10 +584,9 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	g_debug ("got %u updates", gs_app_list_length (apps));
 
 	should_download = should_download_updates (monitor);
+	install_timestamp_outdated = check_if_timestamp_more_than_days_ago (monitor, "install-timestamp", 14);
 
-	if (should_download &&
-	    (security_timestamp > 0 ||
-	    check_if_timestamp_more_than_days_ago (monitor, "install-timestamp", 14))) {
+	if (should_download && (security_timestamp > 0 || install_timestamp_outdated)) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		g_autoptr(UpdateAppsData) data = NULL;
 
@@ -602,7 +602,11 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		data->monitor = g_object_ref (monitor);
 		data->job = g_object_ref (plugin_job);
 
-		g_debug ("Getting updates");
+		g_debug ("Getting updates, because%s%s%s", security_timestamp > 0 ?
+			 " security timestamp changed" : "", (security_timestamp > 0 && install_timestamp_outdated) ?
+			 " and" : "",
+			 install_timestamp_outdated ?
+			 " install timestamp is more than 14 days ago" : "");
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
 						    monitor->refresh_cancellable,
