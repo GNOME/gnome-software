@@ -230,7 +230,7 @@ if get_option('eos_updater')
 endif
 
 if get_option('fwupd')
-  fwupd = dependency('fwupd', version : '>= 1.5.6')
+  fwupd = dependency('fwupd', version : '>= 1.6.2')
 endif
 
 if get_option('flatpak')
