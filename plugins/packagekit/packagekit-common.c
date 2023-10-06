@@ -107,8 +107,6 @@ gs_plugin_packagekit_error_convert (GError **error,
 	/* daemon errors */
 	if (error_tmp->code <= 0xff) {
 		switch (error_tmp->code) {
-		case PK_CLIENT_ERROR_CANNOT_START_DAEMON:
-		case PK_CLIENT_ERROR_INVALID_FILE:
 		case PK_CLIENT_ERROR_NOT_SUPPORTED:
 			error_tmp->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
 			break;
@@ -131,6 +129,8 @@ gs_plugin_packagekit_error_convert (GError **error,
 		case PK_ERROR_ENUM_TRANSACTION_CANCELLED:
 			error_tmp->code = GS_PLUGIN_ERROR_CANCELLED;
 			break;
+		case PK_CLIENT_ERROR_CANNOT_START_DAEMON:
+		case PK_CLIENT_ERROR_INVALID_FILE:
 		default:
 			error_tmp->code = GS_PLUGIN_ERROR_FAILED;
 			break;
@@ -139,9 +139,7 @@ gs_plugin_packagekit_error_convert (GError **error,
 	/* backend errors */
 	} else {
 		switch (error_tmp->code - 0xff) {
-		case PK_ERROR_ENUM_INVALID_PACKAGE_FILE:
 		case PK_ERROR_ENUM_NOT_SUPPORTED:
-		case PK_ERROR_ENUM_PACKAGE_INSTALL_BLOCKED:
 			error_tmp->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
 			break;
 		case PK_ERROR_ENUM_NO_CACHE:
@@ -170,6 +168,8 @@ gs_plugin_packagekit_error_convert (GError **error,
 		case PK_ERROR_ENUM_TRANSACTION_CANCELLED:
 			error_tmp->code = GS_PLUGIN_ERROR_CANCELLED;
 			break;
+		case PK_ERROR_ENUM_INVALID_PACKAGE_FILE:
+		case PK_ERROR_ENUM_PACKAGE_INSTALL_BLOCKED:
 		default:
 			error_tmp->code = GS_PLUGIN_ERROR_FAILED;
 			break;
