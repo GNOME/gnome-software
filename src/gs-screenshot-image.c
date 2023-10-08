@@ -293,13 +293,13 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
 	if (images->len > 1)
 		return TRUE;
 
-	if (width == AS_IMAGE_THUMBNAIL_WIDTH &&
-	    height == AS_IMAGE_THUMBNAIL_HEIGHT) {
-		width = AS_IMAGE_NORMAL_WIDTH;
-		height = AS_IMAGE_NORMAL_HEIGHT;
+	if (width == GS_IMAGE_THUMBNAIL_WIDTH &&
+	    height == GS_IMAGE_THUMBNAIL_HEIGHT) {
+		width = GS_IMAGE_NORMAL_WIDTH;
+		height = GS_IMAGE_NORMAL_HEIGHT;
 	} else {
-		width = AS_IMAGE_THUMBNAIL_WIDTH;
-		height = AS_IMAGE_THUMBNAIL_HEIGHT;
+		width = GS_IMAGE_THUMBNAIL_WIDTH;
+		height = GS_IMAGE_THUMBNAIL_HEIGHT;
 	}
 
 	width *= ssimg->scale;
@@ -591,16 +591,30 @@ gs_screenshot_image_get_url (GsScreenshotImage *ssimg)
 	} else if (as_screenshot_get_media_kind (ssimg->screenshot) == AS_SCREENSHOT_MEDIA_KIND_IMAGE) {
 		AsImage *im;
 
+#if AS_CHECK_VERSION(1, 0, 0)
+		im = as_screenshot_get_image (ssimg->screenshot,
+					      ssimg->width,
+					      ssimg->height,
+					      ssimg->scale);
+#else
 		im = as_screenshot_get_image (ssimg->screenshot,
 					      ssimg->width * ssimg->scale,
 					      ssimg->height * ssimg->scale);
+#endif
 
 		/* if we've failed to load a HiDPI image, fallback to LoDPI */
 		if (im == NULL && ssimg->scale > 1) {
 			ssimg->scale = 1;
+#if AS_CHECK_VERSION(1, 0, 0)
+			im = as_screenshot_get_image (ssimg->screenshot,
+						      ssimg->width,
+						      ssimg->height,
+						      1);
+#else
 			im = as_screenshot_get_image (ssimg->screenshot,
 						      ssimg->width,
 						      ssimg->height);
+#endif
 		}
 
 		if (im)
@@ -707,15 +721,22 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	 * smaller version of it straight away */
 	if (!ssimg->showing_image &&
 	    as_screenshot_get_media_kind (ssimg->screenshot) == AS_SCREENSHOT_MEDIA_KIND_IMAGE &&
-	    ssimg->width > AS_IMAGE_THUMBNAIL_WIDTH &&
-	    ssimg->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
+	    ssimg->width > GS_IMAGE_THUMBNAIL_WIDTH &&
+	    ssimg->height > GS_IMAGE_THUMBNAIL_HEIGHT) {
 		const gchar *url_thumb;
 		g_autofree gchar *basename_thumb = NULL;
 		g_autofree gchar *cache_kind_thumb = NULL;
 		AsImage *im;
+#if AS_CHECK_VERSION(1, 0, 0)
 		im = as_screenshot_get_image (ssimg->screenshot,
-					      AS_IMAGE_THUMBNAIL_WIDTH * ssimg->scale,
-					      AS_IMAGE_THUMBNAIL_HEIGHT * ssimg->scale);
+					      GS_IMAGE_THUMBNAIL_WIDTH,
+					      GS_IMAGE_THUMBNAIL_HEIGHT,
+					      ssimg->scale);
+#else
+		im = as_screenshot_get_image (ssimg->screenshot,
+					      GS_IMAGE_THUMBNAIL_WIDTH * ssimg->scale,
+					      GS_IMAGE_THUMBNAIL_HEIGHT * ssimg->scale);
+#endif
 		url_thumb = as_image_get_url (im);
 		basename_thumb = gs_screenshot_get_cachefn_for_url (url_thumb);
 		cache_kind_thumb = g_build_filename ("screenshots", "112x63", NULL);

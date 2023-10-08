@@ -1011,8 +1011,11 @@ gs_appstream_refine_app_relation (GsApp           *app,
 			as_relation_set_item_kind (relation, AS_RELATION_ITEM_KIND_CONTROL);
 			as_relation_set_value_control_kind (relation, as_control_kind_from_string (xb_node_get_text (child)));
 		} else if (g_str_equal (item_kind, "display_length")) {
-			AsDisplayLengthKind display_length_kind;
 			const gchar *compare;
+			const gchar *side;
+#if !AS_CHECK_VERSION(1, 0, 0)
+			AsDisplayLengthKind display_length_kind;
+#endif
 
 			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length */
 			as_relation_set_item_kind (relation, AS_RELATION_ITEM_KIND_DISPLAY_LENGTH);
@@ -1020,15 +1023,21 @@ gs_appstream_refine_app_relation (GsApp           *app,
 			compare = xb_node_get_attr (child, "compare");
 			as_relation_set_compare (relation, (compare != NULL) ? as_relation_compare_from_string (compare) : AS_RELATION_COMPARE_GE);
 
+#if AS_CHECK_VERSION(1, 0, 0)
+			side = xb_node_get_attr (child, "side");
+			as_relation_set_display_side_kind (relation, (side != NULL) ? as_display_side_kind_from_string (side) : AS_DISPLAY_SIDE_KIND_SHORTEST);
+			as_relation_set_value_px (relation, xb_node_get_text_as_uint (child));
+#else
 			display_length_kind = as_display_length_kind_from_string (xb_node_get_text (child));
 			if (display_length_kind != AS_DISPLAY_LENGTH_KIND_UNKNOWN) {
 				/* Ignore the `side` attribute */
 				as_relation_set_value_display_length_kind (relation, display_length_kind);
 			} else {
-				const gchar *side = xb_node_get_attr (child, "side");
+				side = xb_node_get_attr (child, "side");
 				as_relation_set_display_side_kind (relation, (side != NULL) ? as_display_side_kind_from_string (side) : AS_DISPLAY_SIDE_KIND_SHORTEST);
 				as_relation_set_value_px (relation, xb_node_get_text_as_uint (child));
 			}
+#endif
 		} else {
 			g_debug ("Relation type ‘%s’ not currently supported for %s; ignoring",
 				 item_kind, gs_app_get_id (app));
@@ -1472,7 +1481,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 }
 
 typedef struct {
-	AsSearchTokenMatch	 match_value;
+	guint16			 match_value;
 	XbQuery			*query;
 } GsAppstreamSearchHelper;
 
@@ -1522,7 +1531,7 @@ gs_appstream_silo_search_component (GPtrArray *array, XbNode *component, const g
 }
 
 typedef struct {
-	AsSearchTokenMatch	match_value;
+	guint16			match_value;
 	const gchar		*xpath;
 } Query;
 
@@ -1539,6 +1548,11 @@ gs_appstream_do_search (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
+#if AS_CHECK_VERSION(1, 0, 0)
+	const guint16 component_id_weight = as_utils_get_tag_search_weight ("id");
+#else
+	const guint16 component_id_weight = AS_SEARCH_TOKEN_MATCH_ID;
+#endif
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
 	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
@@ -1585,7 +1599,7 @@ gs_appstream_do_search (GsPlugin *plugin,
 			 * Drop the ID token from it as it’s the highest
 			 * numeric value but isn’t visible to the user in the
 			 * UI, which leads to confusing results ordering. */
-			gs_app_set_match_value (app, match_value & (~AS_SEARCH_TOKEN_MATCH_ID));
+			gs_app_set_match_value (app, match_value & (~component_id_weight));
 			gs_app_list_add (list, app);
 
 			if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON) {
@@ -1624,18 +1638,32 @@ gs_appstream_search (GsPlugin *plugin,
 		     GCancellable *cancellable,
 		     GError **error)
 {
+#if AS_CHECK_VERSION(1, 0, 0)
+	guint16 pkgname_weight = as_utils_get_tag_search_weight ("pkgname");
+	guint16 name_weight = as_utils_get_tag_search_weight ("name");
+	guint16 id_weight = as_utils_get_tag_search_weight ("id");
 	const Query queries[] = {
-		#ifdef HAVE_AS_SEARCH_TOKEN_MATCH_MEDIATYPE
-		{ AS_SEARCH_TOKEN_MATCH_MEDIATYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
-		#else
-		{ AS_SEARCH_TOKEN_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
-		#endif
+		{ as_utils_get_tag_search_weight ("mediatype"),	"provides/mediatype[text()~=stem(?)]" },
 		/* Search once with a tokenize-and-casefold operator (`~=`) to support casefolded
 		 * full-text search, then again using substring matching (`contains()`), to
 		 * support prefix matching. Only do the prefix matches on a few fields, and at a
 		 * lower priority, otherwise things will get confusing.
-		 * 
+		 *
 		 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2277 */
+		{ pkgname_weight,				"pkgname[text()~=stem(?)]" },
+		{ pkgname_weight / 2,				"pkgname[contains(text(),stem(?))]" },
+		{ as_utils_get_tag_search_weight ("summary"),	"summary[text()~=stem(?)]" },
+		{ name_weight,					"name[text()~=stem(?)]" },
+		{ name_weight / 2,				"name[contains(text(),stem(?))]" },
+		{ as_utils_get_tag_search_weight ("keyword"),	"keywords/keyword[text()~=stem(?)]" },
+		{ id_weight,					"id[text()~=stem(?)]" },
+		{ id_weight,					"launchable[text()~=stem(?)]" },
+		{ as_utils_get_tag_search_weight ("origin"),	"../components[@origin~=stem(?)]" },
+		{ 0,						NULL }
+	};
+#else
+	const Query queries[] = {
+		{ AS_SEARCH_TOKEN_MATCH_MEDIATYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
 		{ AS_SEARCH_TOKEN_MATCH_PKGNAME,	"pkgname[text()~=stem(?)]" },
 		{ AS_SEARCH_TOKEN_MATCH_PKGNAME / 2,	"pkgname[contains(text(),stem(?))]" },
 		{ AS_SEARCH_TOKEN_MATCH_SUMMARY,	"summary[text()~=stem(?)]" },
@@ -1647,6 +1675,7 @@ gs_appstream_search (GsPlugin *plugin,
 		{ AS_SEARCH_TOKEN_MATCH_ORIGIN,		"../components[@origin~=stem(?)]" },
 		{ AS_SEARCH_TOKEN_MATCH_NONE,		NULL }
 	};
+#endif
 
 	return gs_appstream_do_search (plugin, silo, values, queries, list, cancellable, error);
 }
@@ -1659,11 +1688,21 @@ gs_appstream_search_developer_apps (GsPlugin *plugin,
 				    GCancellable *cancellable,
 				    GError **error)
 {
+#if AS_CHECK_VERSION(1, 0, 0)
+	const Query queries[] = {
+		{ as_utils_get_tag_search_weight ("pkgname"), "developer/name[text()~=stem(?)]" },
+		{ as_utils_get_tag_search_weight ("summary"), "project_group[text()~=stem(?)]" },
+		/* for legacy support */
+		{ as_utils_get_tag_search_weight ("pkgname"), "developer_name[text()~=stem(?)]" },
+		{ 0,					      NULL }
+	};
+#else
 	const Query queries[] = {
 		{ AS_SEARCH_TOKEN_MATCH_PKGNAME,	"developer_name[text()~=stem(?)]" },
 		{ AS_SEARCH_TOKEN_MATCH_SUMMARY,	"project_group[text()~=stem(?)]" },
 		{ AS_SEARCH_TOKEN_MATCH_NONE,		NULL }
 	};
+#endif
 
 	return gs_appstream_do_search (plugin, silo, values, queries, list, cancellable, error);
 }

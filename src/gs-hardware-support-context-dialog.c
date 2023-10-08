@@ -461,6 +461,7 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 			AsRelationCompare comparator = as_relation_get_compare (relation);
 			Range current_display_comparand, relation_comparand;
 
+#if !AS_CHECK_VERSION(1, 0, 0)
 			/* From https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length */
 			Range display_lengths[] = {
 				[AS_DISPLAY_LENGTH_KIND_XSMALL] = { 0, 360 },
@@ -469,6 +470,7 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 				[AS_DISPLAY_LENGTH_KIND_LARGE] = { 1024, 3840 },
 				[AS_DISPLAY_LENGTH_KIND_XLARGE] = { 3840, G_MAXUINT },
 			};
+#endif
 
 			any_display_relations_set = TRUE;
 
@@ -485,11 +487,14 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 			case AS_DISPLAY_SIDE_KIND_LAST:
 			default:
 				current_display_comparand.min = current_display_comparand.max = MAX (current_screen_size.width, current_screen_size.height);
+#if !AS_CHECK_VERSION(1, 0, 0)
 				relation_comparand.min = display_lengths[as_relation_get_value_display_length_kind (relation)].min;
 				relation_comparand.max = display_lengths[as_relation_get_value_display_length_kind (relation)].max;
+#endif
 				break;
 			}
 
+#if !AS_CHECK_VERSION(1, 0, 0)
 			if (evaluate_display_comparison (display_lengths[AS_DISPLAY_LENGTH_KIND_SMALL], comparator, relation_comparand)) {
 				*mobile_relation_kind_out = max_relation_kind (*mobile_relation_kind_out, as_relation_get_kind (relation));
 				*mobile_match_out = TRUE;
@@ -499,6 +504,7 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 				*desktop_relation_kind_out = max_relation_kind (*desktop_relation_kind_out, as_relation_get_kind (relation));
 				*desktop_match_out = TRUE;
 			}
+#endif
 
 			if (evaluate_display_comparison (current_display_comparand, comparator, relation_comparand)) {
 				*current_relation_kind_out = max_relation_kind (*current_relation_kind_out, as_relation_get_kind (relation));

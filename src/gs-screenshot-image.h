@@ -21,6 +21,13 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsScreenshotImage, gs_screenshot_image, GS, SCREENSHOT_IMAGE, GtkWidget)
 
+#define GS_IMAGE_LARGE_HEIGHT		423
+#define GS_IMAGE_LARGE_WIDTH		752
+#define GS_IMAGE_NORMAL_HEIGHT		351
+#define GS_IMAGE_NORMAL_WIDTH		624
+#define GS_IMAGE_THUMBNAIL_HEIGHT	63
+#define GS_IMAGE_THUMBNAIL_WIDTH 	112
+
 GtkWidget	*gs_screenshot_image_new		(SoupSession		*session);
 
 AsScreenshot	*gs_screenshot_image_get_screenshot	(GsScreenshotImage	*ssimg);

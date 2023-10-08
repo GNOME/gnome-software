@@ -1694,9 +1694,9 @@ gs_utils_gstring_replace (GString *str,
 			  const gchar *find,
 			  const gchar *replace)
 {
-	#ifdef HAVE_AS_GSTRING_REPLACE_WITH_FOUR_ARGS
+#if AS_CHECK_VERSION(1, 0, 0)
 	as_gstring_replace (str, find, replace, 0);
-	#else
-	as_gstring_replace (str, find, replace);
-	#endif
+#else
+	as_gstring_replace2 (str, find, replace, 0);
+#endif
 }

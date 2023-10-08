@@ -141,8 +141,8 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 		gtk_widget_set_can_focus (gtk_widget_get_first_child (ssimg), FALSE);
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      AS_IMAGE_NORMAL_WIDTH,
-					      AS_IMAGE_NORMAL_HEIGHT);
+					      GS_IMAGE_NORMAL_WIDTH,
+					      GS_IMAGE_NORMAL_HEIGHT);
 		gtk_widget_add_css_class (ssimg, "screenshot-image-main");
 		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), cancellable);
 

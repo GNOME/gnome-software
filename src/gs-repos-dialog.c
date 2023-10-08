@@ -154,7 +154,11 @@ enable_repo (GsReposDialog *dialog,
 		g_autoptr(GError) error = NULL;
 
 		/* convert from AppStream markup */
+#if AS_CHECK_VERSION(1, 0, 0)
+		message = as_markup_convert (gs_app_get_agreement (repo), AS_MARKUP_KIND_TEXT, &error);
+#else
 		message = as_markup_convert_simple (gs_app_get_agreement (repo), &error);
+#endif
 		if (message == NULL) {
 			/* failed, so just try and show the original markup */
 			message = g_strdup (gs_app_get_agreement (repo));

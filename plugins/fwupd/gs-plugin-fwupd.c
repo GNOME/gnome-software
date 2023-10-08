@@ -727,7 +727,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 				g_autofree gchar *desc = NULL;
 				if (fwupd_release_get_description (rel) == NULL)
 					continue;
+#if AS_CHECK_VERSION(1, 0, 0)
+				desc = as_markup_convert (fwupd_release_get_description (rel), AS_MARKUP_KIND_TEXT, NULL);
+#else
 				desc = as_markup_convert_simple (fwupd_release_get_description (rel), NULL);
+#endif
 				if (desc == NULL)
 					continue;
 				g_string_append_printf (update_desc,
