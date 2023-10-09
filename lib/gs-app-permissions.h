@@ -21,6 +21,7 @@ G_BEGIN_DECLS
  *   privileged system devices, such as `/dev/shm` or `/dev/kvm` (Since: 44)
  * @GS_APP_PERMISSIONS_FLAGS_SCREEN: App can access screen contents
  *   without asking, e.g. by reading Pipewire ScreenCast streams (Since: 46)
+ * @GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES: App can access input devices, under `/dev/input` (Since: 46)
  *
  * Flags to indicate what permissions an app requires, at a high level.
  */
@@ -42,6 +43,7 @@ typedef enum {
 	GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER	= 1 << 14,
 	GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES		= 1 << 15,
 	GS_APP_PERMISSIONS_FLAGS_SCREEN			= 1 << 16,
+	GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES		= 1 << 17,
 	GS_APP_PERMISSIONS_FLAGS_LAST  /*< skip >*/
 } GsAppPermissionsFlags;
 
