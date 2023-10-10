@@ -50,6 +50,7 @@
 #include "gs-plugin-job-private.h"
 #include "gs-plugin-job-refresh-metadata.h"
 #include "gs-plugin-types.h"
+#include "gs-profiler.h"
 #include "gs-odrs-provider.h"
 #include "gs-utils.h"
 
