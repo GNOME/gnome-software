@@ -298,7 +298,8 @@ perms_from_metadata (GKeyFile *keyfile)
 			{ "xdg-download", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL },
 			{ "xdg-download:rw", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL },
 			{ "xdg-download:ro", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ },
-			{ "xdg-data/flatpak/overrides:create", GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX }
+			{ "xdg-data/flatpak/overrides:create", GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX },
+			{ "xdg-run/pipewire-0", GS_APP_PERMISSIONS_FLAGS_SCREEN | GS_APP_PERMISSIONS_FLAGS_DEVICES },  /* see https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2329 */
 		};
 		guint filesystems_hits = 0;
 		guint strv_len = g_strv_length (strv);

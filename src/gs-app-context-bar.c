@@ -336,6 +336,13 @@ update_safety_tile (GsAppContextBar *self)
 					       * It’s used in a context tile, so should be short. */
 					      _("Can access system devices"));
 			break;
+		case GS_APP_PERMISSIONS_FLAGS_SCREEN:
+			add_to_safety_rating (&chosen_rating, descriptions,
+					      SAFETY_POTENTIALLY_UNSAFE,
+					      /* Translators: This indicates an app can access the screen/display contents.
+					       * It’s used in a context tile, so should be short. */
+					      _("Can access screen contents"));
+			break;
 		case GS_APP_PERMISSIONS_FLAGS_HOME_FULL:
 		case GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL:
 			/* Don’t add twice. */
