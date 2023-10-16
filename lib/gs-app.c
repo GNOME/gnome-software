@@ -1894,6 +1894,8 @@ get_icon_theme (void)
 			g_auto(GStrv) dirs = g_strsplit (test_search_path, ":", -1);
 			gtk_icon_theme_set_search_path (theme, (const char * const *) dirs);
 		}
+
+		gtk_icon_theme_add_resource_path (theme, "/org/gnome/Software/icons/");
 	}
 
 	return theme;
@@ -4813,28 +4815,15 @@ calculate_key_colors (GsApp *app)
 			if (path != NULL) {
 				pb_small = gdk_pixbuf_new_from_file_at_size (path, 32, 32, NULL);
 			} else {
-				g_autoptr(GskRenderNode) render_node = NULL;
-				g_autoptr(GtkSnapshot) snapshot = NULL;
-				cairo_surface_t *surface;
-				cairo_t *cr;
-
-				surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 32, 32);
-				cr = cairo_create (surface);
-
-				/* TODO: this can be done entirely on the GPU using shaders */
-				snapshot = gtk_snapshot_new ();
-				gdk_paintable_snapshot (GDK_PAINTABLE (icon_paintable),
-							GDK_SNAPSHOT (snapshot),
-							32.0,
-							32.0);
-
-				render_node = gtk_snapshot_free_to_node (g_steal_pointer (&snapshot));
-				gsk_render_node_draw (render_node, cr);
-
-				pb_small = gdk_pixbuf_get_from_surface (surface, 0, 0, 32, 32);
-
-				cairo_surface_destroy (surface);
-				cairo_destroy (cr);
+				const gchar *const *names = g_themed_icon_get_names (G_THEMED_ICON (icon_small));
+				for (guint i = 0; names != NULL && names[i] != NULL && pb_small == NULL; i++) {
+					g_autoptr(GError) local_error = NULL;
+					g_autofree gchar *resource_path = NULL;
+					resource_path = g_strconcat ("/org/gnome/Software/icons/scalable/apps/", names[i], ".svg", NULL);
+					pb_small = gdk_pixbuf_new_from_resource (resource_path, &local_error);
+					if (pb_small == NULL)
+						g_warning ("Failed to load icon from resource '%s': %s", resource_path, local_error != NULL ? local_error->message : "Unknown error");
+				}
 			}
 		}
 
