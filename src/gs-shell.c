@@ -680,8 +680,8 @@ overlay_get_child_position_cb (GtkOverlay   *overlay,
 	allocation->width = overlay_natural_size.width;
 	allocation->height = overlay_natural_size.height;
 
-	allocation->x = gtk_widget_get_allocated_width (GTK_WIDGET (overlay)) / 2 - overlay_natural_size.width / 2;
-	allocation->y = gtk_widget_get_allocated_height (GTK_WIDGET (self->main_header));
+	allocation->x = gtk_widget_get_width (GTK_WIDGET (overlay)) / 2 - overlay_natural_size.width / 2;
+	allocation->y = gtk_widget_get_height (GTK_WIDGET (self->main_header));
 
 	return TRUE;
 }
@@ -2539,20 +2539,19 @@ static gboolean
 allocation_changed_cb (gpointer user_data)
 {
 	GsShell *shell = GS_SHELL (user_data);
-	GtkAllocation allocation;
+	gint width;
 	gboolean is_narrow;
 
-	gtk_widget_get_allocation (GTK_WIDGET (shell), &allocation);
-
-	is_narrow = allocation.width <= NARROW_WIDTH_THRESHOLD;
+	width = gtk_widget_get_width (GTK_WIDGET (shell));
+	is_narrow = width <= NARROW_WIDTH_THRESHOLD;
 
 	if (shell->is_narrow != is_narrow) {
 		shell->is_narrow = is_narrow;
 		g_object_notify_by_pspec (G_OBJECT (shell), obj_props[PROP_IS_NARROW]);
 	}
 
-	if (shell->allocation_width != allocation.width) {
-		shell->allocation_width = allocation.width;
+	if (shell->allocation_width != width) {
+		shell->allocation_width = width;
 		g_object_notify_by_pspec (G_OBJECT (shell), obj_props[PROP_ALLOCATION_WIDTH]);
 	}
 

@@ -210,7 +210,11 @@ gs_css_validate_part (GsCss *self, const gchar *markup, GError **error)
 	gtk_style_context_add_provider_for_display (gdk_display_get_default (),
 						    GTK_STYLE_PROVIDER (provider),
 						    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	#if GTK_CHECK_VERSION(4, 12, 0)
+	gtk_css_provider_load_from_string (provider, str->str);
+	#else
 	gtk_css_provider_load_from_data (provider, str->str, -1);
+	#endif
 	if (error_parse != NULL) {
 		if (error != NULL)
 			*error = g_error_copy (error_parse);
