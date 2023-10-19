@@ -107,6 +107,8 @@
         <property name="wrap">True</property>
         <property name="max-width-chars">50</property>
         <property name="valign">center</property>
+        <!--This is a hack so the popover contents can be read by the screen reader. See https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/1891-->
+        <property name="selectable" bind-source="updates_info_popover" bind-property="visible" bind-flags="invert-boolean">True</property>
       </object>
     </property>
   </object>
