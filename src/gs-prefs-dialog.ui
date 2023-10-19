@@ -98,15 +98,17 @@
     <property name="visible">False</property>
     <property name="child">
       <object class="GtkLabel">
+        <property name="halign">center</property>
         <property name="margin-start">6</property>
         <property name="margin-end">6</property>
-        <property name="margin-top">18</property>
-        <property name="margin-bottom">18</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
         <property name="label" translatable="yes">Checking for and downloading updates uses data and power. Automatic update features are therefore paused when on metered network connections and when power saver is on.</property>
-        <property name="justify">center</property>
         <property name="wrap">True</property>
-        <property name="width-chars">40</property>
-        <property name="max-width-chars">40</property>
+        <property name="max-width-chars">50</property>
+        <property name="valign">center</property>
+        <!--This is a hack so the popover contents can be read by the screen reader. See https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/1891-->
+        <property name="selectable" bind-source="updates_info_popover" bind-property="visible" bind-flags="invert-boolean">True</property>
       </object>
     </property>
   </object>
