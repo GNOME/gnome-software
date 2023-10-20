@@ -43,6 +43,25 @@ gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer use
 		GsPluginStatus plugin_status = packagekit_status_enum_to_plugin_status (status);
 		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
 			gs_plugin_status_update (plugin, app, plugin_status);
+
+		/* If we’re installing or removing a package, this may
+		 * invalidate a previously-returned pending OS upgrade’s list of
+		 * packages.
+		 *
+		 * FIXME: We can’t currently emit a more specific signal on the
+		 * OS upgrade’s #GsApp, because it’s built by the
+		 * fedora-pkgdb-collections plugin rather than the PackageKit
+		 * plugin. The functionality from fedora-pkgdb-collections would
+		 * have to be merged into PackageKit so the right #GsApp is
+		 * accessible to modify its download state.
+		 * */
+		if ((plugin_status == GS_PLUGIN_STATUS_INSTALLING ||
+		     plugin_status == GS_PLUGIN_STATUS_REMOVING) &&
+		    (app == NULL ||
+		     (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM &&
+		      gs_app_get_id (app) != NULL))) {
+			gs_plugin_updates_changed (plugin);
+		}
 	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
 		gint percentage = pk_progress_get_percentage (progress);
 		if (app != NULL && percentage >= 0 && percentage <= 100)

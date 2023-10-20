@@ -1156,21 +1156,6 @@ gs_updates_page_status_changed_cb (GsPluginLoader *plugin_loader,
                                    GsPluginStatus status,
                                    GsUpdatesPage *self)
 {
-	switch (status) {
-	case GS_PLUGIN_STATUS_INSTALLING:
-	case GS_PLUGIN_STATUS_REMOVING:
-		if (app == NULL ||
-		    (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM &&
-		     gs_app_get_id (app) != NULL)) {
-			/* if we do a install or remove then make sure all new
-			 * packages are downloaded */
-			gs_updates_page_invalidate_downloaded_upgrade (self);
-		}
-		break;
-	default:
-		break;
-	}
-
 	gs_updates_page_update_ui_state (self);
 }
 
