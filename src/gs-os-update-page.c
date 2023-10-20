@@ -285,7 +285,6 @@ static void
 create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 {
 	page->list_boxes[section] = gtk_list_box_new ();
-	gtk_list_box_set_show_separators (GTK_LIST_BOX (page->list_boxes[section]), TRUE);
 	gtk_list_box_set_selection_mode (GTK_LIST_BOX (page->list_boxes[section]),
 	                                 GTK_SELECTION_NONE);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (page->list_boxes[section]),
@@ -298,7 +297,7 @@ create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 
 	/* make rounded edges */
 	gtk_widget_set_overflow (page->list_boxes[section], GTK_OVERFLOW_HIDDEN);
-	gtk_widget_add_css_class (page->list_boxes[section], "card");
+	gtk_widget_add_css_class (page->list_boxes[section], "boxed-list");
 }
 
 /**
