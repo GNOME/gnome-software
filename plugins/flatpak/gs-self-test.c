@@ -1630,6 +1630,9 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_UNAVAILABLE);
+
+	/* to not have deleted the "flatpak/tests/app-update/repo" content */
+	unlink (repo_path);
 }
 
 static void
