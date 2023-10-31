@@ -85,6 +85,8 @@ gboolean	gs_flatpak_refine_wildcard	(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GsPluginRefineFlags	 flags,
 						 gboolean		 interactive,
+						 GHashTable		**inout_components_by_id,
+						 GHashTable		**inout_components_by_bundle,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_launch		(GsFlatpak		*self,
