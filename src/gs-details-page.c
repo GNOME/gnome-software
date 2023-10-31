@@ -2970,13 +2970,13 @@ gs_details_page_metainfo_thread (GTask *task,
 
 	component = g_ptr_array_index (nodes, 0);
 
-	app = gs_appstream_create_app (NULL, silo, component, &error);
+	app = gs_appstream_create_app (NULL, silo, component, NULL, AS_COMPONENT_SCOPE_UNKNOWN, &error);
 	if (app == NULL) {
 		g_task_return_error (task, g_steal_pointer (&error));
 		return;
 	}
 
-	if (!gs_appstream_refine_app (NULL, app, silo, component, GS_DETAILS_PAGE_REFINE_FLAGS, &error)) {
+	if (!gs_appstream_refine_app (NULL, app, silo, component, GS_DETAILS_PAGE_REFINE_FLAGS, NULL, NULL, AS_COMPONENT_SCOPE_UNKNOWN, &error)) {
 		g_task_return_error (task, g_steal_pointer (&error));
 		return;
 	}

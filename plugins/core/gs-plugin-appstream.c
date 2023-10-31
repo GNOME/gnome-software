@@ -1109,7 +1109,7 @@ gs_plugin_refine_from_id (GsPluginAppstream    *self,
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
 		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo,
-					      component, flags, error))
+					      component, flags, NULL, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error))
 			return FALSE;
 		gs_plugin_appstream_set_compulsory_quirk (app, component);
 	}
@@ -1159,7 +1159,7 @@ gs_plugin_refine_from_pkgname (GsPluginAppstream    *self,
 			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
 		}
-		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo, component, flags, error))
+		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo, component, flags, NULL, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error))
 			return FALSE;
 		gs_plugin_appstream_set_compulsory_quirk (app, component);
 	}
@@ -1316,13 +1316,13 @@ refine_wildcard (GsPluginAppstream    *self,
 		g_autoptr(GsApp) new = NULL;
 
 		/* new app */
-		new = gs_appstream_create_app (GS_PLUGIN (self), self->silo, component, error);
+		new = gs_appstream_create_app (GS_PLUGIN (self), self->silo, component, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error);
 		if (new == NULL)
 			return FALSE;
 		gs_app_set_scope (new, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_subsume_metadata (new, app);
 		if (!gs_appstream_refine_app (GS_PLUGIN (self), new, self->silo, component,
-					      refine_flags, error))
+					      refine_flags, NULL, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error))
 			return FALSE;
 		gs_plugin_appstream_set_compulsory_quirk (new, component);
 

@@ -17,7 +17,12 @@
 #define	GS_APPSTREAM_MAX_SCREENSHOTS	5
 
 GsApp *
-gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GError **error)
+gs_appstream_create_app (GsPlugin *plugin,
+			 XbSilo *silo,
+			 XbNode *component,
+			 const gchar *appstream_source_file,
+			 AsComponentScope default_scope,
+			 GError **error)
 {
 	GsApp *app;
 	g_autoptr(GsApp) app_new = NULL;
@@ -31,7 +36,7 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 	/* refine enough to get the unique ID */
 	if (!gs_appstream_refine_app (plugin, app_new, silo, component,
 				      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
-				      error))
+				      NULL, appstream_source_file, default_scope, error))
 		return NULL;
 
 	/* never add wildcard apps to the plugin cache, and only add to
@@ -165,12 +170,12 @@ gs_appstream_format_description (XbNode *description_node,
 			if (escaped != NULL)
 				g_string_append_printf (str, "%s\n\n", escaped);
 		} else if (g_strcmp0 (xb_node_get_element (n), "ul") == 0) {
-			g_autoptr(GPtrArray) children = xb_node_get_children (n);
-
-			for (guint i = 0; i < children->len; i++) {
-				XbNode *nc = g_ptr_array_index (children, i);
-				if (g_strcmp0 (xb_node_get_element (nc), "li") == 0) {
-					g_autofree gchar *escaped = gs_appstream_format_description_text (nc);
+			g_autoptr(XbNode) child = NULL;
+			g_autoptr(XbNode) next = NULL;
+			for (child = xb_node_get_child (n); child != NULL; g_object_unref (child), child = g_steal_pointer (&next)) {
+				next = xb_node_get_next (child);
+				if (g_strcmp0 (xb_node_get_element (child), "li") == 0) {
+					g_autofree gchar *escaped = gs_appstream_format_description_text (child);
 
 					/* Treat a self-closing `<li/>` as an empty
 					 * list element (equivalent to `<li></li>`).
@@ -181,11 +186,13 @@ gs_appstream_format_description (XbNode *description_node,
 			}
 			g_string_append (str, "\n");
 		} else if (g_strcmp0 (xb_node_get_element (n), "ol") == 0) {
-			g_autoptr(GPtrArray) children = xb_node_get_children (n);
-			for (guint i = 0; i < children->len; i++) {
-				XbNode *nc = g_ptr_array_index (children, i);
-				if (g_strcmp0 (xb_node_get_element (nc), "li") == 0) {
-					g_autofree gchar *escaped = gs_appstream_format_description_text (nc);
+			g_autoptr(XbNode) child = NULL;
+			g_autoptr(XbNode) next = NULL;
+			guint i = 0;
+			for (child = xb_node_get_child (n); child != NULL; i++, g_object_unref (child), child = g_steal_pointer (&next)) {
+				next = xb_node_get_next (child);
+				if (g_strcmp0 (xb_node_get_element (child), "li") == 0) {
+					g_autofree gchar *escaped = gs_appstream_format_description_text (child);
 
 					/* Treat self-closing elements as with `<ul>` above. */
 					g_string_append_printf (str, " %u. %s\n",
@@ -313,102 +320,40 @@ gs_appstream_new_icon (XbNode *component, XbNode *n, AsIconKind icon_kind, guint
 }
 
 static void
-app_add_icon (GsApp  *app,
-              AsIcon *as_icon)
+traverse_components_for_icons (GsApp *app,
+			       GPtrArray *components)
 {
-	g_autoptr(GIcon) icon = gs_icon_new_for_appstream_icon (as_icon);
-	if (icon != NULL)
-		gs_app_add_icon (app, icon);
-}
-
-static void
-traverse_component_icons (GsApp *app,
-			  XbNode *component,
-			  GPtrArray *icons)
-{
-	if (!icons)
+	if (components == NULL)
 		return;
 
-	/* This code deliberately does *not* check that the icon files or theme
-	 * icons exist, as that would mean doing disk I/O for all the apps in
-	 * the appstream file, regardless of whether the calling code is
-	 * actually going to use the icons. Better to add all the possible icons
-	 * and let the calling code check which ones exist, if it needs to. */
-	for (guint i = 0; i < icons->len; i++) {
-		XbNode *icon_node = g_ptr_array_index (icons, i);
-		g_autoptr(AsIcon) icon = NULL;
-		const gchar *icon_kind_str = xb_node_get_attr (icon_node, "type");
-		AsIconKind icon_kind = as_icon_kind_from_string (icon_kind_str);
+	for (guint i = 0; i < components->len; i++) {
+		XbNode *component = g_ptr_array_index (components, i);
+		g_autoptr(XbNode) child = NULL;
+		g_autoptr(XbNode) next = NULL;
+		for (child = xb_node_get_child (component); child != NULL; g_object_unref (child), child = g_steal_pointer (&next)) {
+			next = xb_node_get_next (child);
+			if (g_strcmp0 (xb_node_get_element (child), "icon") == 0) {
+				/* This code deliberately does *not* check that the icon files or theme
+				 * icons exist, as that would mean doing disk I/O for all the apps in
+				 * the appstream file, regardless of whether the calling code is
+				 * actually going to use the icons. Better to add all the possible icons
+				 * and let the calling code check which ones exist, if it needs to. */
+				g_autoptr(AsIcon) as_icon = NULL;
+				g_autoptr(GIcon) gicon = NULL;
+				const gchar *icon_kind_str = xb_node_get_attr (child, "type");
+				AsIconKind icon_kind = as_icon_kind_from_string (icon_kind_str);
 
-		if (icon_kind == AS_ICON_KIND_UNKNOWN) {
-			g_debug ("unknown icon kind ‘%s’", icon_kind_str);
-			continue;
-		}
-
-		icon = gs_appstream_new_icon (component, icon_node, icon_kind, 0);
-		app_add_icon (app, icon);
-	}
-}
-
-static void
-traverse_components_xpath_for_icons (GsApp *app,
-				     XbSilo *silo,
-				     const gchar *xpath,
-				     gboolean try_with_launchable)
-{
-	g_autoptr(GPtrArray) components = NULL;
-	g_autoptr(GError) local_error = NULL;
-
-	components = xb_silo_query (silo, xpath, 0, &local_error);
-	if (components) {
-		for (guint i = 0; i < components->len; i++) {
-			g_autoptr(GPtrArray) icons = NULL;  /* (element-type XbNode) */
-			XbNode *component = g_ptr_array_index (components, i);
-			g_autofree gchar *xml = xb_node_export (component, 0, NULL);
-			icons = xb_node_query (component, "icon", 0, NULL);
-			traverse_component_icons (app, component, icons);
-
-			if (try_with_launchable && !gs_app_has_icons (app)) {
-				const gchar *launchable_id = xb_node_query_text (component, "launchable[@type='desktop-id']", NULL);
-				if (launchable_id != NULL) {
-					g_autofree gchar *xpath2 = NULL;
-
-					/* Inherit the icon from the .desktop file */
-					xpath2 = g_strdup_printf ("/component[@type='desktop-application']/launchable[@type='desktop-id'][text()='%s']/..",
-								  launchable_id);
-					traverse_components_xpath_for_icons (app, silo, xpath2, FALSE);
+				if (icon_kind == AS_ICON_KIND_UNKNOWN) {
+					g_debug ("unknown icon kind ‘%s’", icon_kind_str);
+					continue;
 				}
+
+				as_icon = gs_appstream_new_icon (component, child, icon_kind, 0);
+				gicon = gs_icon_new_for_appstream_icon (as_icon);
+				if (gicon != NULL)
+					gs_app_add_icon (app, gicon);
 			}
 		}
-	}
-}
-
-static void
-gs_appstream_refine_icon (GsApp *app,
-			  XbSilo *silo,
-			  XbNode *component)
-{
-	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GPtrArray) icons = NULL;  /* (element-type XbNode) */
-
-	icons = xb_node_query (component, "icon", 0, &local_error);
-	traverse_component_icons (app, component, icons);
-	g_clear_pointer (&icons, g_ptr_array_unref);
-
-	/* If no icon found, try to inherit the icon from the .desktop file */
-	if (!gs_app_has_icons (app)) {
-		g_autofree gchar *xpath = NULL;
-		const gchar *launchable_id = xb_node_query_text (component, "launchable[@type='desktop-id']", NULL);
-		if (launchable_id != NULL) {
-			xpath = g_strdup_printf ("/component[@type='desktop-application']/launchable[@type='desktop-id'][text()='%s']/..",
-						 launchable_id);
-			traverse_components_xpath_for_icons (app, silo, xpath, FALSE);
-			g_clear_pointer (&xpath, g_free);
-		}
-
-		xpath = g_strdup_printf ("/component[@type='desktop-application']/launchable[@type='desktop-id'][text()='%s']/..",
-					 gs_app_get_id (app));
-		traverse_components_xpath_for_icons (app, silo, xpath, FALSE);
 	}
 }
 
@@ -416,6 +361,8 @@ static gboolean
 gs_appstream_refine_add_addons (GsPlugin *plugin,
 				GsApp *app,
 				XbSilo *silo,
+				const gchar *appstream_source_file,
+				AsComponentScope default_scope,
 				GError **error)
 {
 	g_autofree gchar *xpath = NULL;
@@ -440,7 +387,7 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 		XbNode *addon = g_ptr_array_index (addons, i);
 		g_autoptr(GsApp) addon_app = NULL;
 
-		addon_app = gs_appstream_create_app (plugin, silo, addon, error);
+		addon_app = gs_appstream_create_app (plugin, silo, addon, appstream_source_file, default_scope, error);
 		if (addon_app == NULL)
 			return FALSE;
 
@@ -449,168 +396,6 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 
 	gs_app_add_addons (app, addons_list);
 
-	return TRUE;
-}
-
-static gboolean
-gs_appstream_refine_add_images (GsApp *app,
-				AsScreenshot *ss,
-				XbNode *screenshot,
-				gboolean *out_any_added,
-				GError **error)
-{
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPtrArray) images = NULL;
-
-	/* get all components */
-	images = xb_node_query (screenshot, "image", 0, &error_local);
-	if (images == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-	for (guint i = 0; i < images->len; i++) {
-		XbNode *image = g_ptr_array_index (images, i);
-		g_autoptr(AsImage) im = as_image_new ();
-		as_image_set_height (im, xb_node_get_attr_as_uint (image, "height"));
-		as_image_set_width (im, xb_node_get_attr_as_uint (image, "width"));
-		as_image_set_kind (im, as_image_kind_from_string (xb_node_get_attr (image, "type")));
-		as_image_set_url (im, xb_node_get_text (image));
-		as_screenshot_add_image (ss, im);
-	}
-
-	*out_any_added = *out_any_added || images->len > 0;
-
-	/* success */
-	return TRUE;
-}
-
-static gboolean
-gs_appstream_refine_add_videos (GsApp *app,
-				AsScreenshot *ss,
-				XbNode *screenshot,
-				gboolean *out_any_added,
-				GError **error)
-{
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPtrArray) videos = NULL;
-
-	videos = xb_node_query (screenshot, "video", 0, &error_local);
-	if (videos == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-	for (guint i = 0; i < videos->len; i++) {
-		XbNode *video = g_ptr_array_index (videos, i);
-		g_autoptr(AsVideo) vid = as_video_new ();
-		as_video_set_height (vid, xb_node_get_attr_as_uint (video, "height"));
-		as_video_set_width (vid, xb_node_get_attr_as_uint (video, "width"));
-		as_video_set_codec_kind (vid, as_video_codec_kind_from_string (xb_node_get_attr (video, "codec")));
-		as_video_set_container_kind (vid, as_video_container_kind_from_string (xb_node_get_attr (video, "container")));
-		as_video_set_url (vid, xb_node_get_text (video));
-		as_screenshot_add_video (ss, vid);
-	}
-
-	*out_any_added = *out_any_added || videos->len > 0;
-
-	return TRUE;
-}
-
-static gboolean
-gs_appstream_refine_add_screenshots (GsApp *app, XbNode *component, GError **error)
-{
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPtrArray) screenshots = NULL;
-
-	/* get all components */
-	screenshots = xb_node_query (component, "screenshots/screenshot", 0, &error_local);
-	if (screenshots == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-	for (guint i = 0; i < screenshots->len; i++) {
-		XbNode *screenshot = g_ptr_array_index (screenshots, i);
-		g_autoptr(AsScreenshot) ss = as_screenshot_new ();
-		gboolean any_added = FALSE;
-		if (!gs_appstream_refine_add_images (app, ss, screenshot, &any_added, error) ||
-		    !gs_appstream_refine_add_videos (app, ss, screenshot, &any_added, error))
-			return FALSE;
-		if (any_added)
-			gs_app_add_screenshot (app, ss);
-	}
-
-	/* FIXME: move into no refine flags section? */
-	if (screenshots ->len > 0)
-		gs_app_add_kudo (app, GS_APP_KUDO_HAS_SCREENSHOTS);
-
-	/* success */
-	return TRUE;
-}
-
-static gboolean
-gs_appstream_refine_add_provides (GsApp *app, XbNode *component, GError **error)
-{
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPtrArray) provides = NULL;
-
-	/* get all components */
-	provides = xb_node_query (component, "provides/*", 0, &error_local);
-	if (provides == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-	for (guint i = 0; i < provides->len; i++) {
-		AsProvidedKind kind;
-		const gchar *element_name;
-		XbNode *provide = g_ptr_array_index (provides, i);
-		element_name = xb_node_get_element (provide);
-
-		/* try the simple case */
-		kind = as_provided_kind_from_string (element_name);
-		if (kind == AS_PROVIDED_KIND_UNKNOWN) {
-			/* try the complex cases */
-
-			if (g_strcmp0 (element_name, "library") == 0) {
-				kind = AS_PROVIDED_KIND_LIBRARY;
-			} else if (g_strcmp0 (element_name, "binary") == 0) {
-				kind = AS_PROVIDED_KIND_BINARY;
-			} else if (g_strcmp0 (element_name, "firmware") == 0) {
-				const gchar *fw_type = xb_node_get_attr (provide, "type");
-				if (g_strcmp0 (fw_type, "runtime") == 0)
-					kind = AS_PROVIDED_KIND_FIRMWARE_RUNTIME;
-				else if (g_strcmp0 (fw_type, "flashed") == 0)
-					kind = AS_PROVIDED_KIND_FIRMWARE_FLASHED;
-			} else if (g_strcmp0 (element_name, "python3") == 0) {
-				kind = AS_PROVIDED_KIND_PYTHON;
-			} else if (g_strcmp0 (element_name, "dbus") == 0) {
-				const gchar *dbus_type = xb_node_get_attr (provide, "type");
-				if (g_strcmp0 (dbus_type, "system") == 0)
-					kind = AS_PROVIDED_KIND_DBUS_SYSTEM;
-				else if ((g_strcmp0 (dbus_type, "user") == 0) || (g_strcmp0 (dbus_type, "session") == 0))
-					kind = AS_PROVIDED_KIND_DBUS_USER;
-			}
-		}
-
-		if (kind == AS_PROVIDED_KIND_UNKNOWN ||
-		    xb_node_get_text (provide) == NULL) {
-			/* give up */
-			g_debug ("ignoring unknown or empty provided item type:'%s' value:'%s'", element_name, xb_node_get_text (provide));
-			continue;
-		}
-
-		gs_app_add_provided_item (app,
-					  kind,
-					  xb_node_get_text (provide));
-	}
-
-	/* success */
 	return TRUE;
 }
 
@@ -679,202 +464,6 @@ gs_appstream_copy_metadata (GsApp *app, XbNode *component, GError **error)
 	return TRUE;
 }
 
-static gboolean
-gs_appstream_refine_app_updates (GsApp *app,
-				 XbSilo *silo,
-				 XbNode *component,
-				 GError **error)
-{
-	AsUrgencyKind urgency_best = AS_URGENCY_KIND_UNKNOWN;
-	g_autofree gchar *xpath = NULL;
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GHashTable) installed = g_hash_table_new (g_str_hash, g_str_equal);
-	g_autoptr(GPtrArray) releases_inst = NULL;
-	g_autoptr(GPtrArray) releases = NULL;
-	g_autoptr(GPtrArray) updates_list = g_ptr_array_new ();
-
-	/* only for UPDATABLE apps */
-	if (!gs_app_is_updatable (app))
-		return TRUE;
-
-	/* find out which releases are already installed */
-	xpath = g_strdup_printf ("component/id[text()='%s']/../releases/*[@version]",
-				 gs_app_get_id (app));
-	releases_inst = xb_silo_query (silo, xpath, 0, &error_local);
-	if (releases_inst == NULL) {
-		if (!g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-			g_propagate_error (error, g_steal_pointer (&error_local));
-			return FALSE;
-		}
-	} else {
-		for (guint i = 0; i < releases_inst->len; i++) {
-			XbNode *release = g_ptr_array_index (releases_inst, i);
-			g_hash_table_insert (installed,
-					     (gpointer) xb_node_get_attr (release, "version"),
-					     (gpointer) release);
-		}
-	}
-	g_clear_error (&error_local);
-
-	/* get all components */
-	releases = xb_node_query (component, "releases/*", 0, &error_local);
-	if (releases == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-	for (guint i = 0; i < releases->len; i++) {
-		XbNode *release = g_ptr_array_index (releases, i);
-		const gchar *version = xb_node_get_attr (release, "version");
-		g_autoptr(XbNode) description = NULL;
-		AsUrgencyKind urgency_tmp;
-
-		/* ignore releases with no version */
-		if (version == NULL)
-			continue;
-
-		/* already installed */
-		if (g_hash_table_lookup (installed, version) != NULL)
-			continue;
-
-		/* limit this to three versions backwards if there has never
-		 * been a detected installed version */
-		if (g_hash_table_size (installed) == 0 && i >= 3)
-			break;
-
-		/* use the 'worst' urgency, e.g. critical over enhancement */
-		urgency_tmp = as_urgency_kind_from_string (xb_node_get_attr (release, "urgency"));
-		if (urgency_tmp > urgency_best)
-			urgency_best = urgency_tmp;
-
-		/* add updates with a description */
-		description = xb_node_query_first (release, "description", NULL);
-		if (description == NULL)
-			description = xb_node_query_first (release, "issues", NULL);
-		if (description == NULL)
-			continue;
-		g_ptr_array_add (updates_list, release);
-	}
-
-	/* only set if known */
-	if (urgency_best != AS_URGENCY_KIND_UNKNOWN)
-		gs_app_set_update_urgency (app, urgency_best);
-
-	/* no prefix on each release */
-	if (updates_list->len == 1) {
-		XbNode *release = g_ptr_array_index (updates_list, 0);
-		g_autoptr(XbNode) description_node = NULL;
-		g_autoptr(XbNode) issues_node = NULL;
-		g_autofree gchar *desc = NULL;
-		description_node = xb_node_query_first (release, "description", NULL);
-		issues_node = xb_node_query_first (release, "issues", NULL);
-		desc = gs_appstream_format_description (description_node, issues_node);
-		gs_app_set_update_details_markup (app, desc);
-
-	/* get the descriptions with a version prefix */
-	} else if (updates_list->len > 1) {
-		const gchar *version = gs_app_get_version (app);
-		g_autoptr(GString) update_desc = g_string_new ("");
-		for (guint i = 0; i < updates_list->len; i++) {
-			XbNode *release = g_ptr_array_index (updates_list, i);
-			const gchar *release_version = xb_node_get_attr (release, "version");
-			g_autofree gchar *desc = NULL;
-			g_autoptr(XbNode) description_node = NULL;
-			g_autoptr(XbNode) issues_node = NULL;
-
-			/* use the first release description, then skip the currently installed version and all below it */
-			if (i != 0 && version != NULL && as_vercmp_simple (version, release_version) >= 0)
-				continue;
-
-			description_node = xb_node_query_first (release, "description", NULL);
-			issues_node = xb_node_query_first (release, "issues", NULL);
-			desc = gs_appstream_format_description (description_node, issues_node);
-			g_string_append_printf (update_desc,
-						"Version %s:\n%s\n\n",
-						xb_node_get_attr (release, "version"),
-						desc);
-		}
-
-		/* remove trailing newlines */
-		if (update_desc->len > 2)
-			g_string_truncate (update_desc, update_desc->len - 2);
-		if (update_desc->len > 0)
-			gs_app_set_update_details_markup (app, update_desc->str);
-	}
-
-	/* if there is no already set update version use the newest */
-	if (gs_app_get_update_version (app) == NULL &&
-	    updates_list->len > 0) {
-		XbNode *release = g_ptr_array_index (updates_list, 0);
-		gs_app_set_update_version (app, xb_node_get_attr (release, "version"));
-	}
-
-	/* success */
-	return TRUE;
-}
-
-static gboolean
-gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError **error)
-{
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPtrArray) version_history = NULL; /* (element-type AsRelease) */
-	g_autoptr(GPtrArray) releases = NULL; /* (element-type XbNode) */
-
-	/* get all components */
-	releases = xb_node_query (component, "releases/*", 0, &error_local);
-	if (releases == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-
-	version_history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	for (guint i = 0; i < releases->len; i++) {
-		XbNode *release_node = g_ptr_array_index (releases, i);
-		const gchar *version = xb_node_get_attr (release_node, "version");
-		g_autoptr(XbNode) description_node = NULL;
-		g_autoptr(XbNode) issues_node = NULL;
-		g_autofree gchar *description = NULL;
-		guint64 timestamp;
-		const gchar *date_str;
-		g_autoptr(AsRelease) release = NULL;
-		g_autofree char *timestamp_xpath = NULL;
-
-		/* ignore releases with no version */
-		if (version == NULL)
-			continue;
-
-		timestamp_xpath = g_strdup_printf ("releases/release[%u]", i+1);
-		timestamp = xb_node_query_attr_as_uint (component, timestamp_xpath, "timestamp", NULL);
-		date_str = xb_node_query_attr (component, timestamp_xpath, "date", NULL);
-
-		/* include updates with or without a description */
-		description_node = xb_node_query_first (release_node, "description", NULL);
-		issues_node = xb_node_query_first (release_node, "issues", NULL);
-		if (description_node != NULL || issues_node != NULL)
-			description = gs_appstream_format_description (description_node, issues_node);
-
-		release = as_release_new ();
-		as_release_set_version (release, version);
-		if (timestamp != G_MAXUINT64)
-			as_release_set_timestamp (release, timestamp);
-		else if (date_str != NULL)  /* timestamp takes precedence over date */
-			as_release_set_date (release, date_str);
-		if (description != NULL)
-			as_release_set_description (release, description, NULL);
-
-		g_ptr_array_add (version_history, g_steal_pointer (&release));
-	}
-
-	if (version_history->len > 0)
-		gs_app_set_version_history (app, version_history);
-
-	/* success */
-	return TRUE;
-}
-
 /**
  * _gs_utils_locale_has_translations:
  * @locale: A locale, e.g. `en_GB` or `uz_UZ.utf8@cyrillic`
@@ -917,75 +506,6 @@ gs_appstream_is_valid_project_group (const gchar *project_group)
 	if (project_group == NULL)
 		return FALSE;
 	return as_utils_is_desktop_environment (project_group);
-}
-
-static gboolean
-gs_appstream_refine_app_content_rating (GsApp *app,
-					XbNode *content_rating,
-					GError **error)
-{
-	g_autoptr(AsContentRating) cr = as_content_rating_new ();
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPtrArray) content_attributes = NULL;
-	const gchar *content_rating_kind = NULL;
-
-	/* get kind */
-	content_rating_kind = xb_node_get_attr (content_rating, "type");
-	/* we only really expect/support OARS 1.0 and 1.1 */
-	if (content_rating_kind == NULL ||
-	    (g_strcmp0 (content_rating_kind, "oars-1.0") != 0 &&
-	     g_strcmp0 (content_rating_kind, "oars-1.1") != 0)) {
-		return TRUE;
-	}
-
-	as_content_rating_set_kind (cr, content_rating_kind);
-
-	/* get attributes; no attributes being found (i.e.
-	 * `<content_rating type="*"/>`) is OK: it means that all attributes have
-	 * value `none`, as per the
-	 * [OARS semantics](https://github.com/hughsie/oars/blob/HEAD/specification/oars-1.1.md) */
-	content_attributes = xb_node_query (content_rating, "content_attribute", 0, &error_local);
-	if (content_attributes == NULL &&
-	    g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-		g_clear_error (&error_local);
-	} else if (content_attributes == NULL) {
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-
-	for (guint i = 0; content_attributes != NULL && i < content_attributes->len; i++) {
-		XbNode *content_attribute = g_ptr_array_index (content_attributes, i);
-		as_content_rating_add_attribute (cr,
-						 xb_node_get_attr (content_attribute, "id"),
-						 as_content_rating_value_from_string (xb_node_get_text (content_attribute)));
-	}
-
-	gs_app_set_content_rating (app, cr);
-	return TRUE;
-}
-
-static gboolean
-gs_appstream_refine_app_content_ratings (GsApp *app,
-					 XbNode *component,
-					 GError **error)
-{
-	g_autoptr(GPtrArray) content_ratings = NULL;
-	g_autoptr(GError) error_local = NULL;
-
-	/* find any content ratings */
-	content_ratings = xb_node_query (component, "content_rating", 0, &error_local);
-	if (content_ratings == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-	for (guint i = 0; i < content_ratings->len; i++) {
-		XbNode *content_rating = g_ptr_array_index (content_ratings, i);
-		if (!gs_appstream_refine_app_content_rating (app, content_rating, error))
-			return FALSE;
-	}
-	return TRUE;
 }
 
 static gboolean
@@ -1036,6 +556,20 @@ gs_appstream_refine_app_relation (GsApp           *app,
 				as_relation_set_value_px (relation, xb_node_get_text_as_uint (child));
 			}
 #endif
+		} else if (g_str_equal (item_kind, "id")) {
+			if (kind == AS_RELATION_KIND_REQUIRES &&
+			    g_strcmp0 (xb_node_get_attr (child, "type"), "id") == 0 &&
+			    g_strcmp0 (xb_node_get_text (child), "org.gnome.Software.desktop") == 0) {
+				/* is compatible */
+				gint rc = as_vercmp_simple (xb_node_get_attr (child, "version"), PACKAGE_VERSION);
+				if (rc > 0) {
+					g_set_error (error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						     "not for this gnome-software");
+					return FALSE;
+				}
+			}
 		} else {
 			g_debug ("Relation type ‘%s’ not currently supported for %s; ignoring",
 				 item_kind, gs_app_get_id (app));
@@ -1048,42 +582,103 @@ gs_appstream_refine_app_relation (GsApp           *app,
 	return TRUE;
 }
 
-static gboolean
-gs_appstream_refine_app_relations (GsApp     *app,
-                                   XbNode    *component,
-                                   GError   **error)
+static void
+gs_appstream_find_description_and_issues_nodes (XbNode *release_node,
+						XbNode **out_description_node, /* (out) (transfer full) */
+						XbNode **out_issues_node) /* (out) (transfer full) */
 {
-	const struct {
-		const gchar *element_name;
-		AsRelationKind relation_kind;
-	} relation_types[] = {
-#if AS_CHECK_VERSION(0, 15, 0)
-		{ "supports", AS_RELATION_KIND_SUPPORTS },
-#endif
-		{ "recommends", AS_RELATION_KIND_RECOMMENDS },
-		{ "requires", AS_RELATION_KIND_REQUIRES },
-	};
+	g_autoptr(XbNode) child = NULL;
+	g_autoptr(XbNode) next = NULL;
+	g_autoptr(XbNode) description_node = NULL;
+	g_autoptr(XbNode) issues_node = NULL;
 
-	for (gsize i = 0; i < G_N_ELEMENTS (relation_types); i++) {
-		g_autoptr(GPtrArray) relations = NULL;
-		g_autoptr(GError) error_local = NULL;
-
-		/* find any instances of this @element_name */
-		relations = xb_node_query (component, relation_types[i].element_name, 0, &error_local);
-		if (relations == NULL &&
-		    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-			g_propagate_error (error, g_steal_pointer (&error_local));
-			return FALSE;
-		}
-
-		for (guint j = 0; relations != NULL && j < relations->len; j++) {
-			XbNode *relation = g_ptr_array_index (relations, j);
-			if (!gs_appstream_refine_app_relation (app, relation, relation_types[i].relation_kind, error))
-				return FALSE;
+	for (child = xb_node_get_child (release_node);
+	     child != NULL && (description_node == NULL || issues_node == NULL);
+	     g_object_unref (child), child = g_steal_pointer (&next)) {
+		next = xb_node_get_next (child);
+		if (description_node == NULL && g_strcmp0 (xb_node_get_element (child), "description") == 0) {
+			description_node = g_object_ref (child);
+		} else if (issues_node == NULL && g_strcmp0 (xb_node_get_element (child), "issues") == 0) {
+			issues_node = g_object_ref (child);
 		}
 	}
 
-	return TRUE;
+	if (out_description_node)
+		*out_description_node = g_steal_pointer (&description_node);
+	if (out_issues_node)
+		*out_issues_node = g_steal_pointer (&issues_node);
+}
+
+typedef enum {
+	ELEMENT_KIND_UNKNOWN = -1,
+	ELEMENT_KIND_BUNDLE,
+	ELEMENT_KIND_CATEGORIES,
+	ELEMENT_KIND_CONTENT_RATING,
+	ELEMENT_KIND_CUSTOM,
+	ELEMENT_KIND_DESCRIPTION,
+	ELEMENT_KIND_DEVELOPER_NAME,
+	ELEMENT_KIND_ICON,
+	ELEMENT_KIND_ID,
+	ELEMENT_KIND_INFO,
+	ELEMENT_KIND_KEYWORDS,
+	ELEMENT_KIND_KUDOS,
+	ELEMENT_KIND_LANGUAGES,
+	ELEMENT_KIND_LAUNCHABLE,
+	ELEMENT_KIND_METADATA_LICENSE,
+	ELEMENT_KIND_NAME,
+	ELEMENT_KIND_PKGNAME,
+	ELEMENT_KIND_PROJECT_GROUP,
+	ELEMENT_KIND_PROJECT_LICENSE,
+	ELEMENT_KIND_PROVIDES,
+	ELEMENT_KIND_RECOMMENDS,
+	ELEMENT_KIND_RELEASES,
+	ELEMENT_KIND_REQUIRES,
+	ELEMENT_KIND_SCREENSHOTS,
+	ELEMENT_KIND_SUMMARY,
+	ELEMENT_KIND_SUPPORTS,
+	ELEMENT_KIND_URL
+} ElementKind;
+
+/* This is not for speed, but to not accidentally have checked for the element name twice in the block */
+static ElementKind
+gs_appstream_get_element_kind (const gchar *element_name)
+{
+	struct {
+		const gchar *name;
+		ElementKind kind;
+	} kinds[] = {
+		{ "bundle", ELEMENT_KIND_BUNDLE },
+		{ "categories", ELEMENT_KIND_CATEGORIES },
+		{ "content_rating", ELEMENT_KIND_CONTENT_RATING },
+		{ "custom", ELEMENT_KIND_CUSTOM },
+		{ "description", ELEMENT_KIND_DESCRIPTION },
+		{ "developer_name", ELEMENT_KIND_DEVELOPER_NAME },
+		{ "icon", ELEMENT_KIND_ICON },
+		{ "id", ELEMENT_KIND_ID },
+		{ "info", ELEMENT_KIND_INFO },
+		{ "keywords", ELEMENT_KIND_KEYWORDS },
+		{ "kudos", ELEMENT_KIND_KUDOS },
+		{ "languages", ELEMENT_KIND_LANGUAGES },
+		{ "launchable", ELEMENT_KIND_LAUNCHABLE },
+		{ "metadata_license", ELEMENT_KIND_METADATA_LICENSE },
+		{ "name", ELEMENT_KIND_NAME },
+		{ "pkgname", ELEMENT_KIND_PKGNAME },
+		{ "project_group", ELEMENT_KIND_PROJECT_GROUP },
+		{ "project_license", ELEMENT_KIND_PROJECT_LICENSE },
+		{ "provides", ELEMENT_KIND_PROVIDES },
+		{ "recommends", ELEMENT_KIND_RECOMMENDS },
+		{ "releases", ELEMENT_KIND_RELEASES },
+		{ "requires", ELEMENT_KIND_REQUIRES },
+		{ "screenshots", ELEMENT_KIND_SCREENSHOTS },
+		{ "summary", ELEMENT_KIND_SUMMARY },
+		{ "supports", ELEMENT_KIND_SUPPORTS },
+		{ "url", ELEMENT_KIND_URL }
+	};
+	for (guint i = 0; i < G_N_ELEMENTS (kinds); i++) {
+		if (g_strcmp0 (element_name, kinds[i].name) == 0)
+			return kinds[i].kind;
+	}
+	return ELEMENT_KIND_UNKNOWN;
 }
 
 gboolean
@@ -1092,33 +687,32 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 XbSilo *silo,
 			 XbNode *component,
 			 GsPluginRefineFlags refine_flags,
+			 GHashTable *installed_by_desktopid,
+			 const gchar *appstream_source_file,
+			 AsComponentScope default_scope,
 			 GError **error)
 {
 	const gchar *tmp;
-	guint64 timestamp;
+	gboolean has_name = FALSE, has_metadata_license = FALSE;
+	gboolean had_icons, had_sources;
+	gboolean locale_has_translations = FALSE;
 	g_autoptr(GPtrArray) bundles = NULL;
 	g_autoptr(GPtrArray) launchables = NULL;
-	g_autoptr(XbNode) req = NULL;
+	g_autoptr(GPtrArray) legacy_pkgnames = NULL;
+	g_autoptr(XbNode) launchable_desktop_id = NULL;
+	g_autoptr(XbNode) child = NULL;
+	g_autoptr(XbNode) next = NULL;
 
 	/* The 'plugin' can be NULL, when creating app for --show-metainfo */
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
 	g_return_val_if_fail (XB_IS_NODE (component), FALSE);
 
-	/* is compatible */
-	req = xb_node_query_first (component,
-				   "requires/id[@type='id']"
-				   "[text()='org.gnome.Software.desktop']", NULL);
-	if (req != NULL) {
-		gint rc = as_vercmp_simple (xb_node_get_attr (req, "version"),
-					    PACKAGE_VERSION);
-		if (rc > 0) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "not for this gnome-software");
-			return FALSE;
-		}
+	had_icons = gs_app_has_icons (app);
+	had_sources = gs_app_get_sources (app)->len > 0;
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0) {
+		tmp = setlocale (LC_MESSAGES, NULL);
+		locale_has_translations = _gs_utils_locale_has_translations (tmp);
 	}
 
 	/* set id kind */
@@ -1173,306 +767,734 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	else
 		gs_app_remove_quirk (app, GS_APP_QUIRK_DEVELOPER_VERIFIED);
 
-	/* try to detect old-style AppStream 'override'
-	 * files without the merge attribute */
-	if (xb_node_query_text (component, "name", NULL) == NULL &&
-	    xb_node_query_text (component, "metadata_license", NULL) == NULL) {
-		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
-	}
+	legacy_pkgnames = g_ptr_array_new_with_free_func (g_object_unref);
 
-	/* set id */
-	tmp = xb_node_query_text (component, "id", NULL);
-	if (tmp != NULL && gs_app_get_id (app) == NULL)
-		gs_app_set_id (app, tmp);
+	for (child = xb_node_get_child (component); child != NULL; g_object_unref (child), child = g_steal_pointer (&next)) {
+		next = xb_node_get_next (child);
 
-	/* set source */
-	tmp = xb_node_query_text (component, "info/filename", NULL);
-	if (tmp == NULL)
-		tmp = xb_node_query_text (component, "../info/filename", NULL);
-	if (tmp != NULL && gs_app_get_metadata_item (app, "appstream::source-file") == NULL) {
-		gs_app_set_metadata (app, "appstream::source-file", tmp);
-	}
+		switch (gs_appstream_get_element_kind (xb_node_get_element (child))) {
+		default:
+		case ELEMENT_KIND_UNKNOWN:
+			break;
+		case ELEMENT_KIND_BUNDLE:
+			if (!had_sources) {
+				const gchar *kind = xb_node_get_attr (child, "type");
+				const gchar *bundle_id = xb_node_get_text (child);
 
-	/* set scope */
-	tmp = xb_node_query_text (component, "../info/scope", NULL);
-	if (tmp != NULL)
-		gs_app_set_scope (app, as_component_scope_from_string (tmp));
-
-	/* set content rating */
-	if (TRUE) {
-		if (!gs_appstream_refine_app_content_ratings (app, component, error))
-			return FALSE;
-	}
-
-	/* recommends/requires
-	 * FIXME: Technically this could do with a more specific refine flag,
-	 * but essentially the relations are used on the details page and so
-	 * are the permissions. It would be good to eliminate refine flags at
-	 * some point in the future. */
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
-		if (!gs_appstream_refine_app_relations (app, component, error))
-			return FALSE;
-	}
-
-	/* set name */
-	tmp = xb_node_query_text (component, "name", NULL);
-	if (tmp != NULL)
-		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, tmp);
-
-	/* set summary */
-	tmp = xb_node_query_text (component, "summary", NULL);
-	if (tmp != NULL)
-		gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, tmp);
-
-	/* add urls */
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) {
-		g_autoptr(GPtrArray) urls = NULL;
-		urls = xb_node_query (component, "url", 0, NULL);
-		if (urls != NULL) {
-			for (guint i = 0; i < urls->len; i++) {
-				XbNode *url = g_ptr_array_index (urls, i);
-				const gchar *kind = xb_node_get_attr (url, "type");
-				if (kind == NULL)
+				if (bundle_id == NULL || kind == NULL)
 					continue;
-				gs_app_set_url (app,
-						as_url_kind_from_string (kind),
-						xb_node_get_text (url));
-			}
-		}
-	}
 
-	/* add launchables */
-	launchables = xb_node_query (component, "launchable", 0, NULL);
-	if (launchables != NULL) {
-		for (guint i = 0; i < launchables->len; i++) {
-			XbNode *launchable = g_ptr_array_index (launchables, i);
-			const gchar *kind = xb_node_get_attr (launchable, "type");
+				gs_app_add_source (app, bundle_id);
+				gs_app_set_bundle_kind (app, as_bundle_kind_from_string (kind));
+
+				/* get the type/name/arch/branch */
+				if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
+					g_auto(GStrv) split = g_strsplit (bundle_id, "/", -1);
+					if (g_strv_length (split) != 4) {
+						g_set_error (error,
+							     GS_PLUGIN_ERROR,
+							     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+							     "invalid ID %s for a flatpak ref",
+							     bundle_id);
+						return FALSE;
+					}
+
+					/* we only need the branch for the unique ID */
+					gs_app_set_branch (app, split[3]);
+				}
+			}
+			break;
+		case ELEMENT_KIND_CATEGORIES:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES) != 0) {
+				g_autoptr(XbNode) cat_child = NULL;
+				g_autoptr(XbNode) cat_next = NULL;
+				for (cat_child = xb_node_get_child (child); cat_child != NULL; g_object_unref (cat_child), cat_child = g_steal_pointer (&cat_next)) {
+					cat_next = xb_node_get_next (cat_child);
+					if (g_strcmp0 (xb_node_get_element (cat_child), "category") == 0) {
+						tmp = xb_node_get_text (cat_child);
+						if (tmp != NULL) {
+							gs_app_add_category (app, tmp);
+
+							/* Special case: We used to use the `Blacklisted`
+							 * category to hide apps from their .desktop
+							 * file or appdata. We now use a quirk for that.
+							 * This special case can be removed when all
+							 * appstream files no longer use the `Blacklisted`
+							 * category (including external-appstream files
+							 * put together by distributions). */
+							if (g_strcmp0 (tmp, "Blacklisted") == 0)
+								gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
+
+							if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+							    !gs_app_has_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED) &&
+							   g_strcmp0 (tmp, "Featured") == 0)
+								gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
+						}
+					}
+				}
+			}
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+			    !gs_app_has_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED)) {
+				g_autoptr(XbNode) cat_child = NULL;
+				g_autoptr(XbNode) cat_next = NULL;
+				for (cat_child = xb_node_get_child (child); cat_child != NULL; g_object_unref (cat_child), cat_child = g_steal_pointer (&cat_next)) {
+					cat_next = xb_node_get_next (cat_child);
+					if (g_strcmp0 (xb_node_get_element (cat_child), "category") == 0) {
+						tmp = xb_node_get_text (cat_child);
+						if (g_strcmp0 (tmp, "Featured") == 0) {
+							gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
+							break;
+						}
+					}
+				}
+			}
+			break;
+		case ELEMENT_KIND_CONTENT_RATING: {
+			g_autoptr(AsContentRating) content_rating = gs_app_dup_content_rating (app);
+			if (content_rating == NULL) {
+				g_autoptr(GPtrArray) content_attributes = NULL;
+				const gchar *content_rating_kind = NULL;
+
+				/* get kind */
+				content_rating_kind = xb_node_get_attr (child, "type");
+				/* we only really expect/support OARS 1.0 and 1.1 */
+				if (g_strcmp0 (content_rating_kind, "oars-1.0") == 0 ||
+				    g_strcmp0 (content_rating_kind, "oars-1.1") == 0) {
+					g_autoptr(AsContentRating) cr = NULL;
+					g_autoptr(XbNode) cr_child = NULL;
+					g_autoptr(XbNode) cr_next = NULL;
+					for (cr_child = xb_node_get_child (child); cr_child != NULL; g_object_unref (cr_child), cr_child = g_steal_pointer (&cr_next)) {
+						cr_next = xb_node_get_next (cr_child);
+						if (g_strcmp0 (xb_node_get_element (cr_child), "content_attribute") == 0) {
+							if (cr == NULL) {
+								cr = as_content_rating_new ();
+								as_content_rating_set_kind (cr, content_rating_kind);
+							}
+							as_content_rating_add_attribute (cr,
+											 xb_node_get_attr (cr_child, "id"),
+											 as_content_rating_value_from_string (xb_node_get_text (cr_child)));
+						}
+					}
+					if (cr != NULL)
+						gs_app_set_content_rating (app, cr);
+				}
+			}
+			} break;
+		case ELEMENT_KIND_CUSTOM: {
+			g_autoptr(XbNode) cus_child = NULL;
+			g_autoptr(XbNode) cus_next = NULL;
+			for (cus_child = xb_node_get_child (child); cus_child != NULL; g_object_unref (cus_child), cus_child = g_steal_pointer (&cus_next)) {
+				const gchar *key = xb_node_get_attr (cus_child, "key");
+				cus_next = xb_node_get_next (cus_child);
+				if (key == NULL)
+					continue;
+				if (gs_app_get_metadata_item (app, key) != NULL)
+					continue;
+				gs_app_set_metadata (app, key, xb_node_get_text (cus_child));
+			}
+			} break;
+		case ELEMENT_KIND_DESCRIPTION:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) != 0) {
+				g_autofree gchar *description = gs_appstream_format_description (child, NULL);
+				if (description != NULL)
+					gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, description);
+			}
+			break;
+		case ELEMENT_KIND_DEVELOPER_NAME:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME) > 0 &&
+			    gs_app_get_developer_name (app) == NULL) {
+				tmp = xb_node_get_text (child);
+				if (tmp != NULL)
+					gs_app_set_developer_name (app, tmp);
+			}
+			break;
+		case ELEMENT_KIND_ICON:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) != 0 &&
+			    !had_icons) {
+				/* This code deliberately does *not* check that the icon files or theme
+				 * icons exist, as that would mean doing disk I/O for all the apps in
+				 * the appstream file, regardless of whether the calling code is
+				 * actually going to use the icons. Better to add all the possible icons
+				 * and let the calling code check which ones exist, if it needs to. */
+				const gchar *icon_kind_str = xb_node_get_attr (child, "type");
+				AsIconKind icon_kind = as_icon_kind_from_string (icon_kind_str);
+
+				if (icon_kind == AS_ICON_KIND_UNKNOWN) {
+					g_debug ("unknown icon kind ‘%s’", icon_kind_str);
+				} else {
+					g_autoptr(GIcon) gicon = NULL;
+					g_autoptr(AsIcon) as_icon = NULL;
+					as_icon = gs_appstream_new_icon (component, child, icon_kind, 0);
+					gicon = gs_icon_new_for_appstream_icon (as_icon);
+					if (gicon != NULL)
+						gs_app_add_icon (app, gicon);
+				}
+			}
+			/* HiDPI icon */
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+			    !gs_app_has_kudo (app, GS_APP_KUDO_HI_DPI_ICON) &&
+			    xb_node_get_attr_as_uint (child, "width") == 128) {
+				gs_app_add_kudo (app, GS_APP_KUDO_HI_DPI_ICON);
+			}
+			break;
+		case ELEMENT_KIND_ID:
+			if (gs_app_get_id (app) == NULL) {
+				tmp = xb_node_get_text (child);
+				if (tmp != NULL)
+					gs_app_set_id (app, tmp);
+			}
+			break;
+		case ELEMENT_KIND_INFO:
+			if (gs_app_get_metadata_item (app, "appstream::source-file") == NULL) {
+				g_autoptr(XbNode) info_child = NULL;
+				g_autoptr(XbNode) info_next = NULL;
+				for (info_child = xb_node_get_child (child); info_child != NULL; g_object_unref (info_child), info_child = g_steal_pointer (&info_next)) {
+					info_next = xb_node_get_next (info_child);
+					if (g_strcmp0 (xb_node_get_element (info_child), "filename") == 0) {
+						tmp = xb_node_get_text (info_child);
+						if (tmp != NULL)
+							gs_app_set_metadata (app, "appstream::source-file", tmp);
+						break;
+					}
+				}
+			}
+			break;
+		case ELEMENT_KIND_KEYWORDS:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+			    !gs_app_has_kudo (app, GS_APP_KUDO_HAS_KEYWORDS)) {
+				g_autoptr(XbNode) kw_child = NULL;
+				g_autoptr(XbNode) kw_next = NULL;
+				for (kw_child = xb_node_get_child (child); kw_child != NULL; g_object_unref (kw_child), kw_child = g_steal_pointer (&kw_next)) {
+					kw_next = xb_node_get_next (kw_child);
+					if (g_strcmp0 (xb_node_get_element (kw_child), "keyword") == 0) {
+						gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
+						break;
+					}
+				}
+			}
+			break;
+		case ELEMENT_KIND_KUDOS:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+			    !gs_app_has_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED)) {
+				g_autoptr(XbNode) kudos_child = NULL;
+				g_autoptr(XbNode) kudos_next = NULL;
+				for (kudos_child = xb_node_get_child (child); kudos_child != NULL; g_object_unref (kudos_child), kudos_child = g_steal_pointer (&kudos_next)) {
+					kudos_next = xb_node_get_next (kudos_child);
+					if (g_strcmp0 (xb_node_get_element (kudos_child), "GnomeSoftware::popular") == 0) {
+						gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
+						break;
+					}
+				}
+			}
+			break;
+		case ELEMENT_KIND_LANGUAGES:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0) {
+				g_autoptr(GPtrArray) kudos = NULL;
+				if (!locale_has_translations)
+					gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
+
+				if (!gs_app_get_has_translations (app)) {
+					g_autoptr(XbNode) langs_child = NULL;
+					g_autoptr(XbNode) langs_next = NULL;
+					g_auto(GStrv) variants = g_get_locale_variants (tmp);
+
+					for (langs_child = xb_node_get_child (child); langs_child != NULL; g_object_unref (langs_child), langs_child = g_steal_pointer (&langs_next)) {
+						langs_next = xb_node_get_next (langs_child);
+						if (g_strcmp0 (xb_node_get_element (langs_child), "lang") == 0) {
+							tmp = xb_node_get_text (langs_child);
+							if (tmp != NULL) {
+								gboolean is_variant = FALSE;
+
+								/* Set this under the FLAGS_REQUIRE_KUDOS flag because it’s
+								 * only useful in combination with KUDO_MY_LANGUAGE */
+								gs_app_set_has_translations (app, TRUE);
+
+								if (gs_app_has_kudo (app, GS_APP_KUDO_MY_LANGUAGE))
+									break;
+
+								for (guint j = 0; variants[j]; j++) {
+									if (g_strcmp0 (tmp, variants[j]) == 0) {
+										is_variant = TRUE;
+										break;
+									}
+								}
+								if (is_variant && xb_node_get_attr_as_uint (langs_child, "percentage") > 50) {
+									gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			break;
+		case ELEMENT_KIND_LAUNCHABLE: {
+			const gchar *kind = xb_node_get_attr (child, "type");
 			if (g_strcmp0 (kind, "desktop-id") == 0) {
 				gs_app_set_launchable (app,
 						       AS_LAUNCHABLE_KIND_DESKTOP_ID,
-						       xb_node_get_text (launchable));
-				break;
+						       xb_node_get_text (child));
+				g_set_object (&launchable_desktop_id, child);
 			} else if (g_strcmp0 (kind, "url") == 0) {
 				gs_app_set_launchable (app,
 						       AS_LAUNCHABLE_KIND_URL,
-						       xb_node_get_text (launchable));
+						       xb_node_get_text (child));
 			}
-		}
-	}
-
-	/* set license */
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) > 0 &&
-	    gs_app_get_license (app) == NULL) {
-		tmp = xb_node_query_text (component, "project_license", NULL);
-		if (tmp != NULL)
-			gs_app_set_license (app, GS_APP_QUALITY_HIGHEST, tmp);
-	}
-
-	/* set description */
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) {
-		g_autofree gchar *description = NULL;
-		g_autoptr(XbNode) n = xb_node_query_first (component, "description", NULL);
-		if (n != NULL)
-			description = gs_appstream_format_description (n, NULL);
-		if (description != NULL)
-			gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, description);
-	}
-
-	/* set icon */
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) > 0 &&
-	    !gs_app_has_icons (app))
-		gs_appstream_refine_icon (app, silo, component);
-
-	/* set categories */
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES) {
-		g_autoptr(GPtrArray) categories = NULL;
-		categories = xb_node_query (component, "categories/category", 0, NULL);
-		if (categories != NULL) {
-			for (guint i = 0; i < categories->len; i++) {
-				XbNode *category = g_ptr_array_index (categories, i);
-				gs_app_add_category (app, xb_node_get_text (category));
-
-				/* Special case: We used to use the `Blacklisted`
-				 * category to hide apps from their .desktop
-				 * file or appdata. We now use a quirk for that.
-				 * This special case can be removed when all
-				 * appstream files no longer use the `Blacklisted`
-				 * category (including external-appstream files
-				 * put together by distributions). */
-				if (g_strcmp0 (xb_node_get_text (category), "Blacklisted") == 0)
-					gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
+			} break;
+		case ELEMENT_KIND_METADATA_LICENSE:
+			has_metadata_license = TRUE;
+			break;
+		case ELEMENT_KIND_NAME:
+			tmp = xb_node_get_text (child);
+			if (tmp != NULL) {
+				gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, tmp);
+				has_name = TRUE;
 			}
-		}
-	}
+			break;
+		case ELEMENT_KIND_PKGNAME:
+			g_ptr_array_add (legacy_pkgnames, g_object_ref (child));
+			break;
+		case ELEMENT_KIND_PROJECT_GROUP:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP) > 0 &&
+			    gs_app_get_project_group (app) == NULL) {
+				tmp = xb_node_get_text (child);
+				if (tmp != NULL && gs_appstream_is_valid_project_group (tmp))
+					gs_app_set_project_group (app, tmp);
+			}
+			break;
+		case ELEMENT_KIND_PROJECT_LICENSE:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) != 0 &&
+			    gs_app_get_license (app) == NULL) {
+				tmp = xb_node_get_text (child);
+				if (tmp != NULL)
+					gs_app_set_license (app, GS_APP_QUALITY_HIGHEST, tmp);
+			}
+			break;
+		case ELEMENT_KIND_PROVIDES: {
+			g_autoptr(XbNode) prov_child = NULL;
+			g_autoptr(XbNode) prov_next = NULL;
+			for (prov_child = xb_node_get_child (child); prov_child != NULL; g_object_unref (prov_child), prov_child = g_steal_pointer (&prov_next)) {
+				AsProvidedKind kind;
+				const gchar *element_name = xb_node_get_element (prov_child);
+				prov_next = xb_node_get_next (prov_child);
 
-	/* set project group */
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP) > 0 &&
-	    gs_app_get_project_group (app) == NULL) {
-		tmp = xb_node_query_text (component, "project_group", NULL);
-		if (tmp != NULL && gs_appstream_is_valid_project_group (tmp))
-			gs_app_set_project_group (app, tmp);
-	}
+				/* try the simple case */
+				kind = as_provided_kind_from_string (element_name);
+				if (kind == AS_PROVIDED_KIND_UNKNOWN) {
+					/* try the complex cases */
 
-	/* set developer name */
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME) > 0 &&
-	    gs_app_get_developer_name (app) == NULL) {
-		tmp = xb_node_query_text (component, "developer_name", NULL);
-		if (tmp != NULL)
-			gs_app_set_developer_name (app, tmp);
-	}
-
-	/* set the release date */
-	timestamp = component_get_release_timestamp (component);
-	if (timestamp != G_MAXUINT64)
-		gs_app_set_release_date (app, timestamp);
-
-	/* set the version history */
-	if (!gs_appstream_refine_add_version_history (app, component, error))
-		return FALSE;
-
-	/* copy all the metadata */
-	if (!gs_appstream_copy_metadata (app, component, error))
-		return FALSE;
-
-	/* add bundles */
-	bundles = xb_node_query (component, "bundle", 0, NULL);
-	if (bundles != NULL && gs_app_get_sources(app)->len == 0) {
-		for (guint i = 0; i < bundles->len; i++) {
-			XbNode *bundle = g_ptr_array_index (bundles, i);
-			const gchar *kind = xb_node_get_attr (bundle, "type");
-			const gchar *bundle_id = xb_node_get_text (bundle);
-
-			if (bundle_id == NULL || kind == NULL)
-				continue;
-
-			gs_app_add_source (app, bundle_id);
-			gs_app_set_bundle_kind (app, as_bundle_kind_from_string (kind));
-
-			/* get the type/name/arch/branch */
-			if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
-				g_auto(GStrv) split = g_strsplit (bundle_id, "/", -1);
-				if (g_strv_length (split) != 4) {
-					g_set_error (error,
-						     GS_PLUGIN_ERROR,
-						     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-						     "invalid ID %s for a flatpak ref",
-						     bundle_id);
-					return FALSE;
+					if (g_strcmp0 (element_name, "library") == 0) {
+						kind = AS_PROVIDED_KIND_LIBRARY;
+					} else if (g_strcmp0 (element_name, "binary") == 0) {
+						kind = AS_PROVIDED_KIND_BINARY;
+					} else if (g_strcmp0 (element_name, "firmware") == 0) {
+						const gchar *fw_type = xb_node_get_attr (prov_child, "type");
+						if (g_strcmp0 (fw_type, "runtime") == 0)
+							kind = AS_PROVIDED_KIND_FIRMWARE_RUNTIME;
+						else if (g_strcmp0 (fw_type, "flashed") == 0)
+							kind = AS_PROVIDED_KIND_FIRMWARE_FLASHED;
+					} else if (g_strcmp0 (element_name, "python3") == 0) {
+						kind = AS_PROVIDED_KIND_PYTHON;
+					} else if (g_strcmp0 (element_name, "dbus") == 0) {
+						const gchar *dbus_type = xb_node_get_attr (prov_child, "type");
+						if (g_strcmp0 (dbus_type, "system") == 0)
+							kind = AS_PROVIDED_KIND_DBUS_SYSTEM;
+						else if ((g_strcmp0 (dbus_type, "user") == 0) || (g_strcmp0 (dbus_type, "session") == 0))
+							kind = AS_PROVIDED_KIND_DBUS_USER;
+					}
 				}
 
-				/* we only need the branch for the unique ID */
-				gs_app_set_branch (app, split[3]);
+				if (kind == AS_PROVIDED_KIND_UNKNOWN ||
+				    xb_node_get_text (prov_child) == NULL) {
+					/* give up */
+					g_debug ("ignoring unknown or empty provided item type:'%s' value:'%s'", element_name, xb_node_get_text (prov_child));
+					continue;
+				}
+
+				gs_app_add_provided_item (app, kind, xb_node_get_text (prov_child));
 			}
+			} break;
+		case ELEMENT_KIND_RECOMMENDS:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) != 0) {
+				if (!gs_appstream_refine_app_relation (app, child, AS_RELATION_KIND_RECOMMENDS, error))
+						return FALSE;
+			}
+			break;
+		case ELEMENT_KIND_RELEASES: {
+			g_autoptr(GPtrArray) current_version_history = gs_app_get_version_history (app);
+			gboolean needs_version_history = current_version_history == NULL || current_version_history->len == 0;
+			gboolean needs_update_details = (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) != 0 &&
+							silo != NULL && gs_app_is_updatable (app);
+			/* set the release date */
+			if (gs_app_get_release_date (app) == G_MAXUINT64) {
+				g_autoptr(XbNode) release = xb_node_get_child (child);
+				if (release != NULL && g_strcmp0 (xb_node_get_element (release), "release") == 0) {
+					guint64 timestamp;
+					const gchar *date_str;
+
+					/* Spec says to prefer `timestamp` over `date` if both are provided:
+					 * https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-releases */
+					timestamp = xb_node_get_attr_as_uint (release, "timestamp");
+					date_str = xb_node_get_attr (release, "date");
+
+					if (timestamp != G_MAXUINT64) {
+						gs_app_set_release_date (app, timestamp);
+					} else if (date_str != NULL) {
+						g_autoptr(GDateTime) date = g_date_time_new_from_iso8601 (date_str, NULL);
+						if (date != NULL)
+							gs_app_set_release_date (app, g_date_time_to_unix (date));
+					}
+				}
+			}
+			if (needs_version_history || needs_update_details) {
+				g_autoptr(GPtrArray) version_history = NULL; /* (element-type AsRelease) */
+				g_autoptr(GHashTable) installed = NULL;
+				g_autoptr(GPtrArray) updates_list = NULL;
+				g_autoptr(XbNode) rels_child = NULL;
+				g_autoptr(XbNode) rels_next = NULL;
+				AsUrgencyKind urgency_best = AS_URGENCY_KIND_UNKNOWN;
+				guint i;
+
+				if (needs_update_details) {
+					g_autofree gchar *xpath = NULL;
+					g_autoptr(GPtrArray) releases_inst = NULL;
+					g_autoptr(GError) local_error = NULL;
+
+					installed = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
+					updates_list = g_ptr_array_new_with_free_func (g_object_unref);
+
+					/* find out which releases are already installed */
+					xpath = g_strdup_printf ("component/id[text()='%s']/../releases/*[@version]",
+								 gs_app_get_id (app));
+					releases_inst = xb_silo_query (silo, xpath, 0, &local_error);
+					if (releases_inst == NULL) {
+						if (!g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+							g_propagate_error (error, g_steal_pointer (&local_error));
+							return FALSE;
+						}
+					} else {
+						for (i = 0; i < releases_inst->len; i++) {
+							XbNode *release = g_ptr_array_index (releases_inst, i);
+							g_hash_table_insert (installed,
+									     (gpointer) xb_node_get_attr (release, "version"),
+									     g_object_ref (release));
+						}
+					}
+					g_clear_error (&local_error);
+				}
+
+				if (needs_version_history)
+					version_history = g_ptr_array_new_with_free_func (g_object_unref);
+
+				for (i = 0, rels_child = xb_node_get_child (child); rels_child != NULL;
+				     i++, g_object_unref (rels_child), rels_child = g_steal_pointer (&rels_next)) {
+					g_autoptr(XbNode) description_node = NULL;
+					g_autoptr(XbNode) issues_node = NULL;
+					const gchar *version;
+
+					rels_next = xb_node_get_next (rels_child);
+					if (g_strcmp0 (xb_node_get_element (rels_child), "release") != 0)
+						continue;
+
+					version = xb_node_get_attr (rels_child, "version");
+					/* ignore releases with no version */
+					if (version == NULL)
+						continue;
+
+					gs_appstream_find_description_and_issues_nodes (rels_child, &description_node, &issues_node);
+
+					if (version_history != NULL) {
+						g_autoptr(AsRelease) release = NULL;
+						g_autofree gchar *description = NULL;
+						guint64 timestamp;
+						const gchar *date_str;
+
+						timestamp = xb_node_get_attr_as_uint (rels_child, "timestamp");
+						date_str = xb_node_get_attr (rels_child, "date");
+
+						/* include updates with or without a description */
+						if (description_node != NULL || issues_node != NULL)
+							description = gs_appstream_format_description (description_node, issues_node);
+
+						release = as_release_new ();
+						as_release_set_version (release, version);
+						if (timestamp != G_MAXUINT64)
+							as_release_set_timestamp (release, timestamp);
+						else if (date_str != NULL)  /* timestamp takes precedence over date */
+							as_release_set_date (release, date_str);
+						if (description != NULL)
+							as_release_set_description (release, description, NULL);
+
+						g_ptr_array_add (version_history, g_steal_pointer (&release));
+					}
+
+					if (needs_update_details) {
+						AsUrgencyKind urgency_tmp;
+
+						/* already installed */
+						if (g_hash_table_lookup (installed, version) != NULL)
+							continue;
+
+						/* limit this to three versions backwards if there has never
+						 * been a detected installed version */
+						if (g_hash_table_size (installed) == 0 && i >= 3)
+							continue;
+
+						/* use the 'worst' urgency, e.g. critical over enhancement */
+						urgency_tmp = as_urgency_kind_from_string (xb_node_get_attr (rels_child, "urgency"));
+						if (urgency_tmp > urgency_best)
+							urgency_best = urgency_tmp;
+
+						/* add updates with a description */
+						if (description_node != NULL || issues_node != NULL)
+							g_ptr_array_add (updates_list, g_object_ref (rels_child));
+					}
+				}
+
+				if (version_history != NULL && version_history->len > 0)
+					gs_app_set_version_history (app, version_history);
+
+				if (needs_update_details) {
+					/* only set if known */
+					if (urgency_best != AS_URGENCY_KIND_UNKNOWN)
+						gs_app_set_update_urgency (app, urgency_best);
+
+					/* no prefix on each release */
+					if (updates_list->len == 1) {
+						XbNode *release = g_ptr_array_index (updates_list, 0);
+						g_autoptr(XbNode) description_node = NULL;
+						g_autoptr(XbNode) issues_node = NULL;
+						g_autofree gchar *desc = NULL;
+						gs_appstream_find_description_and_issues_nodes (release, &description_node, &issues_node);
+						desc = gs_appstream_format_description (description_node, issues_node);
+						gs_app_set_update_details_markup (app, desc);
+
+					/* get the descriptions with a version prefix */
+					} else if (updates_list->len > 1) {
+						const gchar *version = gs_app_get_version (app);
+						g_autoptr(GString) update_desc = g_string_new ("");
+						for (guint j = 0; j < updates_list->len; j++) {
+							XbNode *release = g_ptr_array_index (updates_list, j);
+							const gchar *release_version = xb_node_get_attr (release, "version");
+							g_autofree gchar *desc = NULL;
+							g_autoptr(XbNode) description_node = NULL;
+							g_autoptr(XbNode) issues_node = NULL;
+
+							/* use the first release description, then skip the currently installed version and all below it */
+							if (i != 0 && version != NULL && as_vercmp_simple (version, release_version) >= 0)
+								continue;
+
+							gs_appstream_find_description_and_issues_nodes (release, &description_node, &issues_node);
+							desc = gs_appstream_format_description (description_node, issues_node);
+
+							g_string_append_printf (update_desc,
+										"Version %s:\n%s\n\n",
+										xb_node_get_attr (release, "version"),
+										desc);
+						}
+
+						/* remove trailing newlines */
+						if (update_desc->len > 2)
+							g_string_truncate (update_desc, update_desc->len - 2);
+						if (update_desc->len > 0)
+							gs_app_set_update_details_markup (app, update_desc->str);
+					}
+
+					/* if there is no already set update version use the newest */
+					if (gs_app_get_update_version (app) == NULL &&
+					    updates_list->len > 0) {
+						XbNode *release = g_ptr_array_index (updates_list, 0);
+						gs_app_set_update_version (app, xb_node_get_attr (release, "version"));
+					}
+				}
+			}
+			} break;
+		case ELEMENT_KIND_REQUIRES:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) != 0) {
+				if (!gs_appstream_refine_app_relation (app, child, AS_RELATION_KIND_REQUIRES, error))
+						return FALSE;
+			}
+			break;
+		case ELEMENT_KIND_SCREENSHOTS:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS) != 0 &&
+			    gs_app_get_screenshots (app)->len == 0) {
+				g_autoptr(XbNode) scrs_child = NULL;
+				g_autoptr(XbNode) scrs_next = NULL;
+				for (scrs_child = xb_node_get_child (child); scrs_child != NULL; g_object_unref (scrs_child), scrs_child = g_steal_pointer (&scrs_next)) {
+					scrs_next = xb_node_get_next (scrs_child);
+					if (g_strcmp0 (xb_node_get_element (scrs_child), "screenshot") == 0) {
+						g_autoptr(AsScreenshot) scr = as_screenshot_new ();
+						g_autoptr(XbNode) scr_child = NULL;
+						g_autoptr(XbNode) scr_next = NULL;
+						gboolean any_added = FALSE;
+						for (scr_child = xb_node_get_child (scrs_child); scr_child != NULL; g_object_unref (scr_child), scr_child = g_steal_pointer (&scr_next)) {
+							scr_next = xb_node_get_next (scr_child);
+							if (g_strcmp0 (xb_node_get_element (scr_child), "image") == 0) {
+								g_autoptr(AsImage) im = as_image_new ();
+								as_image_set_height (im, xb_node_get_attr_as_uint (scr_child, "height"));
+								as_image_set_width (im, xb_node_get_attr_as_uint (scr_child, "width"));
+								as_image_set_kind (im, as_image_kind_from_string (xb_node_get_attr (scr_child, "type")));
+								as_image_set_url (im, xb_node_get_text (scr_child));
+								as_screenshot_add_image (scr, im);
+								any_added = TRUE;
+							} else if (g_strcmp0 (xb_node_get_element (scr_child), "video") == 0) {
+								g_autoptr(AsVideo) vid = as_video_new ();
+								as_video_set_height (vid, xb_node_get_attr_as_uint (scr_child, "height"));
+								as_video_set_width (vid, xb_node_get_attr_as_uint (scr_child, "width"));
+								as_video_set_codec_kind (vid, as_video_codec_kind_from_string (xb_node_get_attr (scr_child, "codec")));
+								as_video_set_container_kind (vid, as_video_container_kind_from_string (xb_node_get_attr (scr_child, "container")));
+								as_video_set_url (vid, xb_node_get_text (scr_child));
+								as_screenshot_add_video (scr, vid);
+								any_added = TRUE;
+							}
+						}
+						if (any_added)
+							gs_app_add_screenshot (app, scr);
+					}
+				}
+				/* FIXME: move into no refine flags section? */
+				if (gs_app_get_screenshots (app)->len)
+					gs_app_add_kudo (app, GS_APP_KUDO_HAS_SCREENSHOTS);
+			}
+			break;
+		case ELEMENT_KIND_SUMMARY:
+			tmp = xb_node_get_text (child);
+			if (tmp != NULL)
+				gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, tmp);
+			break;
+		case ELEMENT_KIND_SUPPORTS:
+			#if AS_CHECK_VERSION(0, 15, 0)
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) != 0) {
+				if (!gs_appstream_refine_app_relation (app, child, AS_RELATION_KIND_SUPPORTS, error))
+						return FALSE;
+			}
+			#endif
+			break;
+		case ELEMENT_KIND_URL:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) != 0) {
+				const gchar *kind = xb_node_get_attr (child, "type");
+				if (kind != NULL) {
+					gs_app_set_url (app,
+							as_url_kind_from_string (kind),
+							xb_node_get_text (child));
+				}
+			}
+			break;
+		}
+	}
+
+	/* try to detect old-style AppStream 'override'
+	 * files without the merge attribute */
+	if (!has_name && !has_metadata_license)
+		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+
+	if (gs_app_get_metadata_item (app, "appstream::source-file") == NULL) {
+		if (appstream_source_file != NULL) {
+			/* empty string means the node was not found by the caller */
+			if (*appstream_source_file != '\0')
+				gs_app_set_metadata (app, "appstream::source-file", appstream_source_file);
+		} else {
+			tmp = xb_node_query_text (component, "../info/filename", NULL);
+			if (tmp != NULL)
+				gs_app_set_metadata (app, "appstream::source-file", tmp);
+		}
+	}
+
+	/* set scope */
+	if (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN) {
+		/* all callers should provide both appstream_source_file and default_scope, thus
+		   when the appstream_source_file the "unknown" scope means "not found in the silo" */
+		if (appstream_source_file != NULL) {
+			if (default_scope != AS_COMPONENT_SCOPE_UNKNOWN)
+				gs_app_set_scope (app, default_scope);
+		} else {
+			tmp = xb_node_query_text (component, "../info/scope", NULL);
+			if (tmp != NULL)
+				gs_app_set_scope (app, as_component_scope_from_string (tmp));
+		}
+	}
+
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) != 0 &&
+	    !had_icons && !gs_app_has_icons (app)) {
+		/* If no icon found, try to inherit the icon from the .desktop file */
+		g_autofree gchar *xpath = NULL;
+		if (launchable_desktop_id != NULL) {
+			const gchar *launchable_id = xb_node_get_text (launchable_desktop_id);
+			if (launchable_id != NULL) {
+				if (installed_by_desktopid != NULL) {
+					GPtrArray *components = g_hash_table_lookup (installed_by_desktopid, launchable_id);
+					traverse_components_for_icons (app, components);
+				} else {
+					g_autoptr(GPtrArray) components = NULL;
+					xpath = g_strdup_printf ("/component[@type='desktop-application']/launchable[@type='desktop-id'][text()='%s']/..",
+								 launchable_id);
+					components = xb_silo_query (silo, xpath, 0, NULL);
+					traverse_components_for_icons (app, components);
+					g_clear_pointer (&xpath, g_free);
+				}
+			}
+		}
+
+		if (installed_by_desktopid != NULL) {
+			GPtrArray *components = g_hash_table_lookup (installed_by_desktopid, gs_app_get_id (app));
+			traverse_components_for_icons (app, components);
+		} else {
+			g_autoptr(GPtrArray) components = NULL;
+			xpath = g_strdup_printf ("/component[@type='desktop-application']/launchable[@type='desktop-id'][text()='%s']/..",
+						 gs_app_get_id (app));
+			components = xb_silo_query (silo, xpath, 0, NULL);
+			traverse_components_for_icons (app, components);
 		}
 	}
 
 	/* add legacy package names */
-	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN) {
-		g_autoptr(GPtrArray) pkgnames = NULL;
-		pkgnames = xb_node_query (component, "pkgname", 0, NULL);
-		if (pkgnames != NULL && gs_app_get_sources(app)->len == 0) {
-			for (guint i = 0; i < pkgnames->len; i++) {
-				XbNode *pkgname = g_ptr_array_index (pkgnames, i);
-				tmp = xb_node_get_text (pkgname);
-				if (tmp != NULL && tmp[0] != '\0')
-					gs_app_add_source (app, tmp);
-			}
-			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
+	    legacy_pkgnames->len > 0 && gs_app_get_sources (app)->len == 0) {
+		for (guint i = 0; i < legacy_pkgnames->len; i++) {
+			XbNode *pkgname = g_ptr_array_index (legacy_pkgnames, i);
+			tmp = xb_node_get_text (pkgname);
+			if (tmp != NULL && tmp[0] != '\0')
+				gs_app_add_source (app, tmp);
 		}
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	}
 
 	/* set origin */
-	tmp = xb_node_query_attr (component, "..", "origin", NULL);
-	if (gs_appstream_origin_valid (tmp)) {
-		gs_app_set_origin_appstream (app, tmp);
+	if (gs_app_get_origin_appstream (app) == NULL || (gs_app_get_origin (app) == NULL && (
+	    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK ||
+	    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE))) {
+		g_autoptr(XbNode) parent = xb_node_get_parent (component);
+		tmp = NULL;
+		if (parent != NULL) {
+			tmp = xb_node_get_attr (parent, "origin");
+			if (gs_appstream_origin_valid (tmp)) {
+				if (gs_app_get_origin_appstream (app) == NULL)
+					gs_app_set_origin_appstream (app, tmp);
 
-		if (gs_app_get_origin (app) == NULL && (
-		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK ||
-		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE)) {
-			gs_app_set_origin (app, tmp);
+				if (gs_app_get_origin (app) == NULL && (
+				    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK ||
+				    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE)) {
+					gs_app_set_origin (app, tmp);
+				}
+			}
 		}
 	}
 
 	/* set addons */
 	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) != 0 &&
 	    plugin != NULL && silo != NULL) {
-		if (!gs_appstream_refine_add_addons (plugin, app, silo, error))
+		if (!gs_appstream_refine_add_addons (plugin, app, silo, appstream_source_file, default_scope, error))
 			return FALSE;
 	}
 
-	/* set screenshots */
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS) > 0 &&
-	    gs_app_get_screenshots(app)->len == 0) {
-		if (!gs_appstream_refine_add_screenshots (app, component, error))
-			return FALSE;
-	}
-
-	/* set provides */
-	if (!gs_appstream_refine_add_provides (app, component, error))
-		return FALSE;
-
-	/* add kudos */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) {
 		g_autoptr(GPtrArray) kudos = NULL;
-		tmp = setlocale (LC_MESSAGES, NULL);
-		if (!_gs_utils_locale_has_translations (tmp)) {
+		if (!locale_has_translations)
 			gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
-		} else {
-
-			g_autoptr(GString) xpath = g_string_new (NULL);
-			g_auto(GStrv) variants = g_get_locale_variants (tmp);
-
-			/* @variants includes @tmp */
-			for (gsize i = 0; variants[i] != NULL; i++)
-				xb_string_append_union (xpath, "languages/lang[(text()='%s') and (@percentage>50)]", variants[i]);
-
-			if (xb_node_query_text (component, xpath->str, NULL) != NULL)
-				gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
-		}
-
-		/* Set this under the FLAGS_REQUIRE_KUDOS flag because it’s
-		 * only useful in combination with KUDO_MY_LANGUAGE */
-		if (xb_node_query_text (component, "languages/lang", NULL) != NULL)
-			gs_app_set_has_translations (app, TRUE);
-
-		/* any keywords */
-		if (xb_node_query_text (component, "keywords/keyword", NULL) != NULL)
-			gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
-
-		/* HiDPI icon */
-		if (xb_node_query_text (component, "icon[@width='128']", NULL) != NULL)
-			gs_app_add_kudo (app, GS_APP_KUDO_HI_DPI_ICON);
 
 		/* was this app released recently */
 		if (gs_appstream_is_recent_release (component))
 			gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
-
-		/* add a kudo to featured and popular apps */
-		if (xb_node_query_text (component, "kudos/kudo[text()='GnomeSoftware::popular']", NULL) != NULL)
-			gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
-		if (xb_node_query_text (component, "categories/category[text()='Featured']", NULL) != NULL)
-			gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
-	}
-
-	/* we have an origin in the XML */
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) > 0 &&
-	    gs_app_get_origin_appstream (app) == NULL) {
-		g_autoptr(XbNode) parent = xb_node_get_parent (component);
-		if (parent != NULL) {
-			tmp = xb_node_get_attr (parent, "origin");
-			if (gs_appstream_origin_valid (tmp))
-				gs_app_set_origin_appstream (app, tmp);
-		}
-	}
-
-	/* is there any update information */
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) != 0 &&
-	    silo != NULL) {
-		if (!gs_appstream_refine_app_updates (app,
-						      silo,
-						      component,
-						      error))
-			return FALSE;
 	}
 
 	return TRUE;
@@ -1542,6 +1564,8 @@ gs_appstream_do_search (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
+	AsComponentScope default_scope = AS_COMPONENT_SCOPE_UNKNOWN;
+	g_autofree gchar *silo_filename = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
 	g_autoptr(GPtrArray) components = NULL;
@@ -1579,11 +1603,21 @@ gs_appstream_do_search (GsPlugin *plugin,
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
+	if (components->len > 0) {
+		g_autoptr(XbNode) filename_node = NULL;
+		g_autoptr(XbNode) scope_node = NULL;
+		filename_node = xb_silo_query_first (silo, "info/filename", NULL);
+		if (filename_node != NULL)
+			silo_filename = g_strdup (xb_node_get_text (filename_node));
+		scope_node = xb_silo_query_first (silo, "info/scope", NULL);
+		if (scope_node != NULL && xb_node_get_text (scope_node) != NULL)
+			default_scope = as_component_scope_from_string (xb_node_get_text (scope_node));
+	}
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
 		guint16 match_value = gs_appstream_silo_search_component (array, component, values);
 		if (match_value != 0) {
-			g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
+			g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, silo_filename ? silo_filename : "", default_scope, error);
 			if (app == NULL)
 				return FALSE;
 			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
@@ -1859,7 +1893,7 @@ gs_appstream_add_installed (GsPlugin      *plugin,
 
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
-		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
+		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error);
 		if (app == NULL)
 			return FALSE;
 
@@ -1918,8 +1952,10 @@ gs_appstream_add_recent (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	AsComponentScope default_scope = AS_COMPONENT_SCOPE_UNKNOWN;
 	guint64 now = (guint64) g_get_real_time () / G_USEC_PER_SEC, max_future_timestamp;
 	g_autofree gchar *xpath = NULL;
+	g_autofree gchar *silo_filename = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
@@ -1938,6 +1974,16 @@ gs_appstream_add_recent (GsPlugin *plugin,
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
+	if (array->len > 0) {
+		g_autoptr(XbNode) filename_node = NULL;
+		g_autoptr(XbNode) scope_node = NULL;
+		filename_node = xb_silo_query_first (silo, "info/filename", NULL);
+		if (filename_node != NULL)
+			silo_filename = g_strdup (xb_node_get_text (filename_node));
+		scope_node = xb_silo_query_first (silo, "info/scope", NULL);
+		if (scope_node != NULL && xb_node_get_text (scope_node) != NULL)
+			default_scope = as_component_scope_from_string (xb_node_get_text (scope_node));
+	}
 	/* This is to cover mistakes when the release date is set in the future,
 	   to not have it picked for too long. */
 	max_future_timestamp = now + (3 * 24 * 60 * 60);
@@ -1947,7 +1993,7 @@ gs_appstream_add_recent (GsPlugin *plugin,
 		guint64 timestamp = component_get_release_timestamp (component);
 		/* set the release date */
 		if (timestamp != G_MAXUINT64 && timestamp < max_future_timestamp) {
-			app = gs_appstream_create_app (plugin, silo, component, error);
+			app = gs_appstream_create_app (plugin, silo, component, silo_filename ? silo_filename : "", default_scope, error);
 			if (app == NULL)
 				return FALSE;
 
@@ -2125,7 +2171,7 @@ gs_appstream_url_to_app (GsPlugin *plugin,
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
 		g_autoptr(GsApp) app = NULL;
-		app = gs_appstream_create_app (plugin, silo, component, error);
+		app = gs_appstream_create_app (plugin, silo, component, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error);
 		if (app == NULL)
 			return FALSE;
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);

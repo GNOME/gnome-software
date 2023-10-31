@@ -3256,7 +3256,7 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 	}
 
 	/* copy details from AppStream to app */
-	if (!gs_appstream_refine_app (self->plugin, app, silo, component_node, flags, error))
+	if (!gs_appstream_refine_app (self->plugin, app, silo, component_node, flags, NULL, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error))
 		return FALSE;
 
 	if (gs_app_get_origin (app))
@@ -3443,7 +3443,7 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 							       cancellable, error);
 	}
 
-	if (!gs_appstream_refine_app (self->plugin, app, silo, component, flags, error))
+	if (!gs_appstream_refine_app (self->plugin, app, silo, component, flags, NULL, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error))
 		return FALSE;
 
 	/* use the default release as the version number */
@@ -3694,7 +3694,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		g_autoptr(GsApp) new = NULL;
 
 		GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardCreateAppstreamApp, "Flatpak (create Appstream app)", NULL);
-		new = gs_appstream_create_app (self->plugin, self->silo, component, error);
+		new = gs_appstream_create_app (self->plugin, self->silo, component, NULL, AS_COMPONENT_SCOPE_UNKNOWN, error);
 		GS_PROFILER_END_SCOPED (FlatpakRefineWildcardCreateAppstreamApp);
 
 		if (new == NULL)
