@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-08-24 18:02+0000\n"
-"PO-Revision-Date: 2023-08-25 17:07+0300\n"
+"POT-Creation-Date: 2023-10-20 06:10+0000\n"
+"PO-Revision-Date: 2023-10-24 13:19+0300\n"
 "Last-Translator: Artur So <arturios2005@mail.ru>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -77,7 +77,7 @@ msgstr "Панель обновлений"
 msgid "The update details"
 msgstr "Подробности об обновлении"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2311
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2378
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "The GNOME Project"
@@ -835,17 +835,17 @@ msgstr "Пакет"
 msgid "Pending"
 msgstr "Ожидают"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:459 src/gs-details-page.c:390
+#: src/gs-app-addon-row.c:99 src/gs-app-row.c:459 src/gs-details-page.c:392
 msgid "Pending install"
 msgstr "Ожидают установки"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:463 src/gs-details-page.c:397
+#: src/gs-app-addon-row.c:103 src/gs-app-row.c:463 src/gs-details-page.c:399
 msgid "Pending remove"
 msgstr "Ожидают удаления"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:208 src/gs-details-page.c:383
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:208 src/gs-details-page.c:385
 msgid "Installing"
 msgstr "Устанавливается"
 
@@ -859,8 +859,8 @@ msgstr "Удаляется"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1024
-#: src/gs-details-page.c:1050 src/gs-details-page.ui:209 src/gs-page.c:437
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1030
+#: src/gs-details-page.c:1056 src/gs-details-page.ui:210 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Установить"
@@ -975,7 +975,7 @@ msgid "Requires additional permissions"
 msgstr "Требуются дополнительные разрешения"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1077
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1078
 msgid "Reviews"
 msgstr "Отзывы"
 
@@ -987,7 +987,7 @@ msgstr "Для этого приложения не найдено отзыво�
 msgid "No Reviews"
 msgstr "Нет отзывов"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:529
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:530
 msgid "Version History"
 msgstr "История версий"
 
@@ -1511,7 +1511,7 @@ msgid "Renamed from %s"
 msgstr "Переименовано с %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:562 src/gs-details-page.ui:561
+#: src/gs-app-row.c:562 src/gs-details-page.ui:562
 msgid "Stopped Receiving Updates"
 msgstr "Остановлено получение обновлений"
 
@@ -1567,7 +1567,7 @@ msgstr "Требуется вход"
 
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:12 src/gs-common.c:296 src/gs-common.c:697
-#: src/gs-details-page.ui:297 src/gs-page.c:435 src/gs-page.c:658
+#: src/gs-details-page.ui:298 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:171
 #: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:26 src/gs-review-row.c:241
 #: src/gs-updates-page.c:853 src/gs-updates-page.c:870
@@ -2318,47 +2318,47 @@ msgstr "_Показать больше"
 msgid "_Show Less"
 msgstr "_Показать меньше"
 
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:380
 msgid "Removing…"
 msgstr "Удаление…"
 
-#: src/gs-details-page.c:388
+#: src/gs-details-page.c:390
 msgid "Requires restart to finish install"
 msgstr "Для завершения установки требуется перезапуск"
 
-#: src/gs-details-page.c:395
+#: src/gs-details-page.c:397
 msgid "Requires restart to finish remove"
 msgstr "Для завершения удаления требуется перезапуск"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:412
+#: src/gs-details-page.c:414
 msgid "Pending installation…"
 msgstr "В ожидании установки…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:418
+#: src/gs-details-page.c:420
 msgid "Pending update…"
 msgstr "В ожидании обновления…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:432
+#: src/gs-details-page.c:434
 msgid "Preparing…"
 msgstr "Подготавливается…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:435
+#: src/gs-details-page.c:437
 msgid "Uninstalling…"
 msgstr "Удаляется…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:562
+#: src/gs-details-page.c:564
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "Приложение \"%s\" не установлено, но все еще присутствуют его данные."
 
-#: src/gs-details-page.c:1040
+#: src/gs-details-page.c:1046
 msgid "_Restart"
 msgstr "_Перезапустить"
 
@@ -2366,57 +2366,57 @@ msgstr "_Перезапустить"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1064
+#: src/gs-details-page.c:1070
 msgid "_Install…"
 msgstr "_Установить…"
 
-#: src/gs-details-page.c:1131
+#: src/gs-details-page.c:1137
 msgid "_Uninstall…"
 msgstr "_Удалить…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1277
+#: src/gs-details-page.c:1283
 #, c-format
 msgid "%s will appear in US English"
 msgstr "Приложение %s будет отображаться на английском языке"
 
-#: src/gs-details-page.c:1285
+#: src/gs-details-page.c:1291
 msgid "This app will appear in US English"
 msgstr "Это приложение будет отображаться на английском языке"
 
-#: src/gs-details-page.c:1287
+#: src/gs-details-page.c:1293
 msgid "This software will appear in US English"
 msgstr "Это ПО будет отображаться на английском языке"
 
-#: src/gs-details-page.c:1322 src/gs-details-page.ui:59
+#: src/gs-details-page.c:1328 src/gs-details-page.ui:60
 msgid "Help _Translate"
 msgstr "Помочь _перевести"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1387
+#: src/gs-details-page.c:1393
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Другие приложения от %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1777
+#: src/gs-details-page.c:1786
 msgid "You need internet access to write a review"
 msgstr "Для написания отзыва необходимо подключение к Интернету"
 
-#: src/gs-details-page.c:1878
+#: src/gs-details-page.c:1887
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
 "Это приложение больше не получает обновлений, включая исправления "
 "безопасности"
 
-#: src/gs-details-page.c:1879
+#: src/gs-details-page.c:1888
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "Это приложение уже предоставлено вашим дистрибутивом и не может быть "
 "заменено."
 
-#: src/gs-details-page.c:1880
+#: src/gs-details-page.c:1889
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2424,13 +2424,13 @@ msgstr ""
 "Это приложение не предоставляет никаких ссылок на сайт, репозиторий кода или "
 "трекер проблем."
 
-#: src/gs-details-page.c:1882
+#: src/gs-details-page.c:1891
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "Это программное обеспечение больше не получает обновлений, включая "
 "исправления безопасности"
 
-#: src/gs-details-page.c:1883
+#: src/gs-details-page.c:1892
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2438,7 +2438,7 @@ msgstr ""
 "Данное программное обеспечение уже предоставлено вашим дистрибутивом и не "
 "может быть заменено."
 
-#: src/gs-details-page.c:1884
+#: src/gs-details-page.c:1893
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2446,12 +2446,12 @@ msgstr ""
 "Это программное обеспечение не предоставляет никаких ссылок на сайт, "
 "репозиторий кода или трекер проблем."
 
-#: src/gs-details-page.c:1971 src/gs-details-page.c:1987
+#: src/gs-details-page.c:1982 src/gs-details-page.c:1998
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Не удалось найти «%s»"
 
-#: src/gs-details-page.c:2334
+#: src/gs-details-page.c:2345
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Не удалось отправить отзыв для \"%s\": %s"
@@ -2460,43 +2460,43 @@ msgstr "Не удалось отправить отзыв для \"%s\": %s"
 msgid "Details page"
 msgstr "Страница подробностей"
 
-#: src/gs-details-page.ui:39
+#: src/gs-details-page.ui:40
 msgid "Loading app details…"
 msgstr "Загрузка описания приложения…"
 
 #. TRANSLATORS: A label for a button to execute the selected app.
-#: src/gs-details-page.ui:226
+#: src/gs-details-page.ui:227
 msgid "_Open"
 msgstr "_Открыть"
 
-#: src/gs-details-page.ui:242 plugins/packagekit/gs-packagekit-task.c:159
+#: src/gs-details-page.ui:243 plugins/packagekit/gs-packagekit-task.c:159
 msgid "_Update"
 msgstr "_Обновить"
 
 #. TRANSLATORS: button text in the header when an app can be erased
-#: src/gs-details-page.ui:260 src/gs-details-page.ui:270
+#: src/gs-details-page.ui:261 src/gs-details-page.ui:271
 msgid "Uninstall"
 msgstr "Удалить"
 
-#: src/gs-details-page.ui:322
+#: src/gs-details-page.ui:323
 msgid "Downloading"
 msgstr "Загружается"
 
-#: src/gs-details-page.ui:459 src/gs-installed-page.ui:135
+#: src/gs-details-page.ui:460 src/gs-installed-page.ui:135
 msgid "Add-ons"
 msgstr "Дополнения"
 
-#: src/gs-details-page.ui:632
+#: src/gs-details-page.ui:633
 msgid "This app can only be used when there is an active internet connection."
 msgstr ""
 "Этим приложением можно пользоваться только при наличии активного Интернет-"
 "подключения."
 
-#: src/gs-details-page.ui:655
+#: src/gs-details-page.ui:656
 msgid "Software Repository Included"
 msgstr "Содержит репозиторий программного обеспечения"
 
-#: src/gs-details-page.ui:665
+#: src/gs-details-page.ui:666
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2505,11 +2505,11 @@ msgstr ""
 "предоставляет обновления приложения, а также доступ к другому программному "
 "обеспечению."
 
-#: src/gs-details-page.ui:693
+#: src/gs-details-page.ui:694
 msgid "No Software Repository Included"
 msgstr "Не содержит репозиторий программного обеспечения"
 
-#: src/gs-details-page.ui:703
+#: src/gs-details-page.ui:704
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2518,11 +2518,11 @@ msgstr ""
 "обновляться при выходе новых версий."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:762
+#: src/gs-details-page.ui:763
 msgid "Software Repository Identified"
 msgstr "Определен репозиторий программного обеспечения"
 
-#: src/gs-details-page.ui:772
+#: src/gs-details-page.ui:773
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2530,57 +2530,57 @@ msgstr ""
 "Добавление этого репозитоия программного обеспечения предоставит доступ к "
 "дополнительным приложениям и обновлениям."
 
-#: src/gs-details-page.ui:779
+#: src/gs-details-page.ui:780
 msgid "Only use software repositories that you trust."
 msgstr ""
 "Используйте только те репозитории программного обеспечения, которым "
 "доверяете."
 
-#: src/gs-details-page.ui:820
+#: src/gs-details-page.ui:821
 msgid "Clear app data"
 msgstr "Очистить данные приложения"
 
-#: src/gs-details-page.ui:837
+#: src/gs-details-page.ui:838
 msgid "D_elete Data"
 msgstr "У_далить данные"
 
-#: src/gs-details-page.ui:913
+#: src/gs-details-page.ui:914
 msgid "No Metadata"
 msgstr "Метаданные отсутствуют"
 
-#: src/gs-details-page.ui:950
+#: src/gs-details-page.ui:951
 msgid "Project _Website"
 msgstr "Сайт _проекта"
 
-#: src/gs-details-page.ui:967
+#: src/gs-details-page.ui:968
 msgid "_Donate"
 msgstr "_Пожертвовать"
 
-#: src/gs-details-page.ui:984
+#: src/gs-details-page.ui:985
 msgid "Contribute _Translations"
 msgstr "Помочь с _переводами"
 
-#: src/gs-details-page.ui:1001
+#: src/gs-details-page.ui:1002
 msgid "_Report an Issue"
 msgstr "_Сообщить о проблеме"
 
-#: src/gs-details-page.ui:1018
+#: src/gs-details-page.ui:1019
 msgid "_Help"
 msgstr "_Справка"
 
 #. Translators: This is a verb, used on a button to ‘contact the developer’
-#: src/gs-details-page.ui:1035
+#: src/gs-details-page.ui:1036
 msgctxt "verb"
 msgid "_Contact"
 msgstr "_Связаться"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1129
+#: src/gs-details-page.ui:1130
 msgid "Write R_eview"
 msgstr "Написать о_тзыв"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:1166
+#: src/gs-details-page.ui:1167
 msgid "All Reviews"
 msgstr "Все отзывы"
 
@@ -3243,7 +3243,7 @@ msgstr ""
 "Вы можете вносить или не вносить вклад в это программное обеспечение."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-license-tile.c:222
+#: src/gs-license-tile.c:223
 #, c-format
 msgid ""
 "This software is developed under the special license “%s”.\n"
@@ -3406,7 +3406,7 @@ msgstr "Другие категории"
 msgid "No App Data Found"
 msgstr "Данные приложения не найдены"
 
-#: lib/gs-plugin-loader.c:2793
+#: lib/gs-plugin-loader.c:2796
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Неизвестный"
@@ -3477,7 +3477,7 @@ msgstr "У_далить"
 
 #: src/gs-page.c:638
 msgid "Permanently deletes data to save disk space"
-msgstr "Постоянное удаление данных для экономии дискового пространства"
+msgstr "Безвозвратно удаляет данные для экономии дискового пространства"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:645
@@ -4216,36 +4216,36 @@ msgstr "Нет снимков экрана"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:359 src/gs-screenshot-image.c:416
-#: src/gs-screenshot-image.c:620
+#: src/gs-screenshot-image.c:360 src/gs-screenshot-image.c:417
+#: src/gs-screenshot-image.c:623
 msgid "Screenshot not found"
 msgstr "Снимок экрана не найден"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:435
+#: src/gs-screenshot-image.c:438
 msgid "Failed to load image"
 msgstr "Не удалось загрузить изображение"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:648
+#: src/gs-screenshot-image.c:651
 msgid "Screenshot size not found"
 msgstr "Размер снимка экрана не найден"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:730
+#: src/gs-screenshot-image.c:733
 msgid "Could not create cache"
 msgstr "Не удалось создать кэш"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:744
+#: src/gs-screenshot-image.c:747
 msgid "Screenshot not valid"
 msgstr "Снимок экрана недействителен"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:794
+#: src/gs-screenshot-image.c:797
 msgid "Screenshot not available"
 msgstr "Снимок экрана недоступен"
 
@@ -5267,46 +5267,46 @@ msgstr "Обновления выполняются автоматически."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:359
+#: src/gs-updates-section.c:365
 msgid "_Restart & Update…"
 msgstr "_Перезапустить и обновить…"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable apps
-#: src/gs-updates-section.c:365
+#: src/gs-updates-section.c:371
 msgid "U_pdate All"
 msgstr "О_бновить всё"
 
-#: src/gs-updates-section.c:442
+#: src/gs-updates-section.c:448
 msgid "Software Updates Downloaded"
 msgstr "Обновления программного обеспечения загружены"
 
-#: src/gs-updates-section.c:443
+#: src/gs-updates-section.c:449
 msgid "Software updates have been downloaded and are ready to be installed."
 msgstr ""
 "Обновления программного обеспечения были загружены и готовы к установке."
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:519
+#: src/gs-updates-section.c:525
 msgid "Integrated Firmware"
 msgstr "Встроенная прошивка"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:524
+#: src/gs-updates-section.c:530
 msgid "Requires Restart"
 msgstr "Требуется перезапуск"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:529
+#: src/gs-updates-section.c:535
 msgid "App Updates"
 msgstr "Обновления приложений"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:534
+#: src/gs-updates-section.c:540
 msgid "Device Firmware"
 msgstr "Прошивка устройства"
 
@@ -5453,135 +5453,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak — это платформа для приложений, запускаемых в Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:325
+#: plugins/flatpak/gs-flatpak.c:332
 #, c-format
 msgid "System folder %s"
 msgstr "Системная папка %s"
 
-#: plugins/flatpak/gs-flatpak.c:326 plugins/flatpak/gs-flatpak.c:327
+#: plugins/flatpak/gs-flatpak.c:333 plugins/flatpak/gs-flatpak.c:334
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Подпапка Домашней папки %s"
 
-#: plugins/flatpak/gs-flatpak.c:328
+#: plugins/flatpak/gs-flatpak.c:335
 msgid "Host system folders"
 msgstr "Папки хост-системы"
 
-#: plugins/flatpak/gs-flatpak.c:329
+#: plugins/flatpak/gs-flatpak.c:336
 msgid "Host system configuration from /etc"
 msgstr "Конфигурация хост-системы из /etc"
 
-#: plugins/flatpak/gs-flatpak.c:330
+#: plugins/flatpak/gs-flatpak.c:337
 msgid "Desktop folder"
 msgstr "Папка Рабочий стол"
 
-#: plugins/flatpak/gs-flatpak.c:330
+#: plugins/flatpak/gs-flatpak.c:337
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Подпапка Рабочего стола %s"
 
-#: plugins/flatpak/gs-flatpak.c:331
+#: plugins/flatpak/gs-flatpak.c:338
 msgid "Documents folder"
 msgstr "Папка Документы"
 
-#: plugins/flatpak/gs-flatpak.c:331
+#: plugins/flatpak/gs-flatpak.c:338
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Подпапка Документов %s"
 
-#: plugins/flatpak/gs-flatpak.c:332
+#: plugins/flatpak/gs-flatpak.c:339
 msgid "Music folder"
 msgstr "Папка Музыка"
 
-#: plugins/flatpak/gs-flatpak.c:332
+#: plugins/flatpak/gs-flatpak.c:339
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Подпапка Музыки %s"
 
-#: plugins/flatpak/gs-flatpak.c:333
+#: plugins/flatpak/gs-flatpak.c:340
 msgid "Pictures folder"
 msgstr "Папка Изображения"
 
-#: plugins/flatpak/gs-flatpak.c:333
+#: plugins/flatpak/gs-flatpak.c:340
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Подпапка Изображений %s"
 
-#: plugins/flatpak/gs-flatpak.c:334
+#: plugins/flatpak/gs-flatpak.c:341
 msgid "Public Share folder"
 msgstr "Папка общего доступа"
 
-#: plugins/flatpak/gs-flatpak.c:334
+#: plugins/flatpak/gs-flatpak.c:341
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Подпапка общего доступа %s"
 
-#: plugins/flatpak/gs-flatpak.c:335
+#: plugins/flatpak/gs-flatpak.c:342
 msgid "Videos folder"
 msgstr "Папка Видео"
 
-#: plugins/flatpak/gs-flatpak.c:335
+#: plugins/flatpak/gs-flatpak.c:342
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Подпапка Видео %s"
 
-#: plugins/flatpak/gs-flatpak.c:336
+#: plugins/flatpak/gs-flatpak.c:343
 msgid "Templates folder"
 msgstr "Папка Шаблоны"
 
-#: plugins/flatpak/gs-flatpak.c:336
+#: plugins/flatpak/gs-flatpak.c:343
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Подпапка Шаблонов %s"
 
-#: plugins/flatpak/gs-flatpak.c:337
+#: plugins/flatpak/gs-flatpak.c:344
 msgid "User cache folder"
 msgstr "Папка пользовательского кэша"
 
-#: plugins/flatpak/gs-flatpak.c:337
+#: plugins/flatpak/gs-flatpak.c:344
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Подпапка пользовательского кэша %s"
 
-#: plugins/flatpak/gs-flatpak.c:338
+#: plugins/flatpak/gs-flatpak.c:345
 msgid "User configuration folder"
 msgstr "Папка пользовательской конфигурации"
 
-#: plugins/flatpak/gs-flatpak.c:338
+#: plugins/flatpak/gs-flatpak.c:345
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Подпапка пользовательской конфигурации %s"
 
-#: plugins/flatpak/gs-flatpak.c:339
+#: plugins/flatpak/gs-flatpak.c:346
 msgid "User data folder"
 msgstr "Папка пользовательских данных"
 
-#: plugins/flatpak/gs-flatpak.c:339
+#: plugins/flatpak/gs-flatpak.c:346
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Подпапка пользовательских данных %s"
 
-#: plugins/flatpak/gs-flatpak.c:340
+#: plugins/flatpak/gs-flatpak.c:347
 msgid "User runtime folder"
 msgstr "Папка пользовательской среды выполнения"
 
-#: plugins/flatpak/gs-flatpak.c:340
+#: plugins/flatpak/gs-flatpak.c:347
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Подпапка пользовательской среды выполнения %s"
 
-#: plugins/flatpak/gs-flatpak.c:398
+#: plugins/flatpak/gs-flatpak.c:405
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Доступ файловой системы к %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1425
+#: plugins/flatpak/gs-flatpak.c:1432
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Получение метаданных flatpak для %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3611
+#: plugins/flatpak/gs-flatpak.c:3618
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Не удалость уточнить дополнение '%s': %s"
@@ -5594,17 +5594,17 @@ msgstr "Пользовательская установка"
 msgid "System Installation"
 msgstr "Системная установка"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1320
+#: plugins/flatpak/gs-plugin-flatpak.c:1321
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Не удалось добавить установку для дополнения '%s': %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1334
+#: plugins/flatpak/gs-plugin-flatpak.c:1335
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Не удалось добавить удаление для дополнения '%s': %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1601
+#: plugins/flatpak/gs-plugin-flatpak.c:1602
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5905,7 +5905,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Пакеты"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3152
+#: plugins/packagekit/gs-plugin-packagekit.c:3147
 msgid "Failed to install updates: "
 msgstr "Не удалось установить обновления: "
 
