@@ -8,86 +8,39 @@
     <property name="default_width">480</property>
     <property name="default_height">550</property>
     <property name="destroy_with_parent">True</property>
-    <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="AdwHeaderBar">
-            <property name="show_start_title_buttons">False</property>
-            <property name="show_end_title_buttons">False</property>
-            <property name="hexpand">True</property>
-            <property name="title-widget">
-              <object class="AdwWindowTitle">
-                <property name="title" bind-source="GsReviewDialog" bind-property="title" bind-flags="sync-create"/>
-              </object>
-            </property>
-            <child type="start">
-              <object class="GtkButton" id="cancel_button">
-                <property name="label" translatable="yes">_Cancel</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_underline">True</property>
-              </object>
-            </child>
-            <child type="end">
-              <object class="GtkButton" id="post_button">
-                <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Send</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_underline">True</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkOverlay" id="overlay">
-            <property name="halign">fill</property>
-            <property name="valign">fill</property>
-            <property name="vexpand">True</property>
-            <child type="overlay">
-              <object class="GtkRevealer" id="error_revealer">
-                <property name="halign">center</property>
-                <property name="valign">start</property>
-                <property name="reveal-child">False</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="orientation">horizontal</property>
-                    <property name="spacing">6</property>
-                    <style>
-                      <class name="app-notification"/>
-                    </style>
-                    <child>
-                      <object class="GtkLabel" id="error_label">
-                        <property name="halign">fill</property>
-                        <property name="hexpand">True</property>
-                        <property name="label">Some Title</property>
-                        <property name="wrap">True</property>
-                        <property name="wrap_mode">word-char</property>
-                        <property name="max_width_chars">60</property>
-                        <property name="margin_start">9</property>
-                        <property name="margin_end">9</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="error_dismiss_button">
-                        <property name="halign">end</property>
-                        <property name="valign">start</property>
-                        <signal name="clicked" handler="gs_review_dialog_dismiss_error_cb"/>
-                        <style>
-                          <class name="flat"/>
-                        </style>
-                        <child>
-                          <object class="GtkImage">
-                            <property name="icon_name">window-close-symbolic</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
+    <property name="content">
+      <object class="AdwToastOverlay" id="toast_overlay">
+        <property name="child">
+          <object class="AdwToolbarView">
+            <child type="top">
+              <object class="AdwHeaderBar">
+                <property name="show_start_title_buttons">False</property>
+                <property name="show_end_title_buttons">False</property>
+                <property name="hexpand">True</property>
+                <property name="title-widget">
+                  <object class="AdwWindowTitle">
+                    <property name="title" bind-source="GsReviewDialog" bind-property="title" bind-flags="sync-create"/>
+                  </object>
+                </property>
+                <child type="start">
+                  <object class="GtkButton" id="cancel_button">
+                    <property name="label" translatable="yes">_Cancel</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="use_underline">True</property>
+                  </object>
+                </child>
+                <child type="end">
+                  <object class="GtkButton" id="post_button">
+                    <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Send</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="use_underline">True</property>
                   </object>
                 </child>
               </object>
             </child>
-            <child>
+            <property name="content">
               <object class="AdwPreferencesPage">
                 <property name="vexpand">True</property>
                 <child>
@@ -219,11 +172,11 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
-        </child>
+        </property>
       </object>
-    </child>
+    </property>
   </template>
   <object class="GtkSizeGroup" id="sizegroup_folder_buttons">
     <property name="mode">horizontal</property>
