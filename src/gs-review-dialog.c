@@ -25,8 +25,7 @@ struct _GsReviewDialog
 {
 	AdwWindow	 parent_instance;
 
-	GtkWidget	*error_revealer;
-	GtkWidget	*error_label;
+	GtkWidget       *toast_overlay;
 	GtkWidget	*star;
 	GtkWidget	*label_rating_desc;
 	GtkWidget	*summary_entry;
@@ -164,22 +163,17 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 		gtk_widget_add_css_class (dialog->post_button, "suggested-action");
 	else
 		gtk_widget_remove_css_class (dialog->post_button, "suggested-action");
-
-	/* hide any error when the content changes */
-	gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), FALSE);
 }
 
 static gboolean
 gs_review_dialog_timeout_cb (gpointer user_data)
 {
 	GsReviewDialog *dialog = GS_REVIEW_DIALOG (user_data);
-	gboolean child_been_revealed = gtk_revealer_get_reveal_child (GTK_REVEALER (dialog->error_revealer));
+
 	dialog->timer_id = 0;
+
 	gs_review_dialog_changed_cb (dialog);
-	/* Restore the error message, because it was not hidden due to a user
-	   action, but due to a timer here. */
-	if (child_been_revealed)
-		gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), child_been_revealed);
+
 	return FALSE;
 }
 
@@ -191,17 +185,8 @@ gs_review_dialog_post_button_clicked_cb (GsReviewDialog *self)
 	if (error_text != NULL) {
 		gs_review_dialog_set_error_text (self, error_text);
 	} else {
-		/* hide any error before send */
-		gtk_revealer_set_reveal_child (GTK_REVEALER (self->error_revealer), FALSE);
 		g_signal_emit (self, signals[SIGNAL_SEND], 0, NULL);
 	}
-}
-
-static void
-gs_review_dialog_dismiss_error_cb (GtkButton *button,
-				   GsReviewDialog *self)
-{
-	gtk_revealer_set_reveal_child (GTK_REVEALER (self->error_revealer), FALSE);
 }
 
 static void
@@ -269,16 +254,13 @@ gs_review_dialog_class_init (GsReviewDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-review-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, error_revealer);
-	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, error_label);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, toast_overlay);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, star);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, label_rating_desc);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, summary_entry);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, text_view);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, cancel_button);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, post_button);
-
-	gtk_widget_class_bind_template_callback (widget_class, gs_review_dialog_dismiss_error_cb);
 }
 
 GtkWidget *
@@ -292,9 +274,12 @@ void
 gs_review_dialog_set_error_text (GsReviewDialog *dialog,
 				 const gchar *error_text)
 {
+	AdwToast *toast;
+
 	g_return_if_fail (GS_IS_REVIEW_DIALOG (dialog));
 	g_return_if_fail (error_text != NULL);
 
-	gtk_label_set_text (GTK_LABEL (dialog->error_label), error_text);
-	gtk_revealer_set_reveal_child (GTK_REVEALER (dialog->error_revealer), TRUE);
+	toast = adw_toast_new (error_text);
+
+	adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (dialog->toast_overlay), toast);
 }
