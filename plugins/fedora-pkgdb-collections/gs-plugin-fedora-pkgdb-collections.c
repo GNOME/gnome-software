@@ -410,7 +410,7 @@ _create_upgrade_from_info (GsPluginFedoraPkgdbCollections *self,
 	gs_app_add_icon (app, ic);
 
 	/* show a Fedora magazine article for the release */
-	url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-%u-workstation",
+	url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-workstation-%u",
 			       item->version);
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
 
