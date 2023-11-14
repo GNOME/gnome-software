@@ -101,10 +101,24 @@ TAG="registry.gitlab.gnome.org/gnome/gnome-software/${base}:${base_version}"
 
 if [ $build == 1 ]; then
         echo -e "\e[1;32mBUILDING\e[0m: ${base} as ${TAG}"
+        BUILDDIR=`pwd`
+        pushd ..
+        $SUDO_CMD zip -9 $BUILDDIR/subprojects.meson.zip \
+                meson.build \
+                meson_options.txt \
+                subprojects/appstream.wrap \
+                subprojects/gtk.wrap \
+                subprojects/libadwaita.wrap \
+                subprojects/libglib-testing.wrap \
+                subprojects/libxmlb.wrap \
+                subprojects/malcontent.wrap \
+                subprojects/sysprof.wrap
+        popd
         $SUDO_CMD docker build \
                 --build-arg HOST_USER_ID="$UID" \
                 --tag "${TAG}" \
                 --file "${base}.Dockerfile" .
+        $SUDO_CMD rm -r subprojects.meson.zip
         exit $?
 fi
 

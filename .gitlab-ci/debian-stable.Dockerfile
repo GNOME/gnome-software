@@ -89,6 +89,7 @@ RUN useradd -u $HOST_USER_ID -G sudo -ms /bin/bash user
 USER user
 WORKDIR /home/user
 
+COPY subprojects.meson.zip .
 COPY cache-subprojects.sh .
 RUN ./cache-subprojects.sh
 
