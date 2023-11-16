@@ -617,6 +617,7 @@ gs_shell_change_mode (GsShell *shell,
 	}
 
 	adw_view_stack_set_visible_child_name (shell->stack_loading, "main");
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	if (mode == GS_SHELL_MODE_DETAILS) {
 		adw_leaflet_set_visible_child_name (shell->details_leaflet, "details");
 	} else {
@@ -628,6 +629,7 @@ gs_shell_change_mode (GsShell *shell,
 		adw_view_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
 		adw_leaflet_set_visible_child_name (shell->main_leaflet, mode_is_main ? "main" : "sub");
 	}
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 	/* do any mode-specific actions */
 	page = shell->pages[mode];
@@ -1002,12 +1004,14 @@ search_bar_search_mode_enabled_changed_cb (GtkSearchBar *search_bar,
 static void
 go_back (GsShell *shell)
 {
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	if (adw_leaflet_get_adjacent_child (shell->details_leaflet,
 					    ADW_NAVIGATION_DIRECTION_BACK)) {
 		gtk_widget_activate (shell->button_back2);
 	} else {
 		gtk_widget_activate (shell->button_back);
 	}
+G_GNUC_END_IGNORE_DEPRECATIONS
 }
 
 static gboolean
@@ -2285,6 +2289,7 @@ gs_shell_get_mode (GsShell *shell)
 	if (g_strcmp0 (adw_view_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
 		return GS_SHELL_MODE_LOADING;
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->details_leaflet), "details") == 0)
 		return GS_SHELL_MODE_DETAILS;
 
@@ -2292,6 +2297,7 @@ gs_shell_get_mode (GsShell *shell)
 		name = adw_view_stack_get_visible_child_name (shell->stack_main);
 	else
 		name = adw_view_stack_get_visible_child_name (shell->stack_sub);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++)
 		if (g_strcmp0 (page_name[i], name) == 0)

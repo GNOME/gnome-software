@@ -50,6 +50,7 @@ leaflet_child_transition_cb (AdwLeaflet *leaflet, GParamSpec *pspec, GsUpdateDia
 {
 	GtkWidget *child;
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	if (adw_leaflet_get_child_transition_running (leaflet))
 		return;
 
@@ -57,6 +58,7 @@ leaflet_child_transition_cb (AdwLeaflet *leaflet, GParamSpec *pspec, GsUpdateDia
 		adw_leaflet_remove (leaflet, child);
 
 	child = adw_leaflet_get_visible_child (leaflet);
+G_GNUC_END_IGNORE_DEPRECATIONS
 	if (child != NULL && g_object_class_find_property (G_OBJECT_CLASS (GTK_WIDGET_GET_CLASS (child)), "title") != NULL) {
 		g_autofree gchar *title = NULL;
 		g_object_get (G_OBJECT (child), "title", &title, NULL);
@@ -178,7 +180,9 @@ unset_focus (GtkWidget *widget)
 static void
 back_clicked_cb (GtkWidget *widget, GsUpdateDialog *dialog)
 {
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	adw_leaflet_navigate (ADW_LEAFLET (dialog->leaflet), ADW_NAVIGATION_DIRECTION_BACK);
+G_GNUC_END_IGNORE_DEPRECATIONS
 }
 
 static void
@@ -221,8 +225,10 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 	gtk_widget_set_visible (page, TRUE);
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	adw_leaflet_append (ADW_LEAFLET (dialog->leaflet), page);
 	adw_leaflet_set_visible_child (ADW_LEAFLET (dialog->leaflet), page);
+G_GNUC_END_IGNORE_DEPRECATIONS
 }
 
 static void
@@ -279,12 +285,16 @@ gs_update_dialog_constructed (GObject *object)
 	if (dialog->app) {
 		GtkWidget *child;
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 		child = adw_leaflet_get_visible_child (ADW_LEAFLET (dialog->leaflet));
 		adw_leaflet_remove (ADW_LEAFLET (dialog->leaflet), child);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 		gs_update_dialog_show_update_details (dialog, dialog->app);
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 		child = adw_leaflet_get_visible_child (ADW_LEAFLET (dialog->leaflet));
+G_GNUC_END_IGNORE_DEPRECATIONS
 		/* It can be either the app details page or the OS update page */
 		if (GS_IS_APP_DETAILS_PAGE (child))
 			gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);
