@@ -24,7 +24,7 @@
  * - No ordered list support
  * - No blockquote section support
  * - No image support
- * - No links or email support
+ * - No email support
  * - No backslash escapes support
  * - No HTML escaping support
  * - Auto-escapes certain word patterns, like http://
@@ -71,6 +71,9 @@ typedef struct {
 	const gchar *bullet_start;
 	const gchar *bullet_end;
 	const gchar *rule;
+	const gchar *link_prefix;
+	const gchar *link_mid;
+	const gchar *link_suffix;
 } GsMarkdownTags;
 
 struct _GsMarkdown {
@@ -577,6 +580,46 @@ gs_markdown_word_auto_format_urls (const gchar *text)
 	return g_strjoinv (" ", words);
 }
 
+static gchar *
+gs_markdown_replace_links (GsMarkdown *self,
+			   const gchar *text)
+{
+	GString *str = g_string_new ("");
+	const gchar *start, *mid, *end, *from;
+
+	/* it's: [title](https://....) */
+	from = text;
+	start = strchr (from, '[');
+	while (start != NULL) {
+		start += 1;
+		mid = strstr (start, "](");
+		if (mid != NULL) {
+			mid += 2;
+			end = strchr (mid, ')');
+			if (end != NULL) {
+				if (start > from)
+					g_string_append_len (str, from, start - from - 1);
+				g_string_append (str, self->tags.link_prefix);
+				g_string_append_len (str, mid, end - mid);
+				g_string_append (str, self->tags.link_mid);
+				g_string_append_len (str, start, mid - start - 2);
+				g_string_append (str, self->tags.link_suffix);
+				from = end + 1;
+				start = strchr (from, '[');
+			} else {
+				break;
+			}
+		} else {
+			break;
+		}
+	}
+
+	if (*from)
+		g_string_append (str, from);
+
+	return g_string_free (str, FALSE);
+}
+
 static void
 gs_markdown_flush_pending (GsMarkdown *self)
 {
@@ -621,6 +664,14 @@ gs_markdown_flush_pending (GsMarkdown *self)
 	    (self->mode == GS_MARKDOWN_MODE_PARA ||
 	     self->mode == GS_MARKDOWN_MODE_BULLETT)) {
 		temp = gs_markdown_word_auto_format_urls (copy);
+		g_free (copy);
+		copy = temp;
+	}
+
+	if (self->tags.link_prefix != NULL &&
+	    self->tags.link_mid != NULL &&
+	    self->tags.link_suffix != NULL) {
+		temp = gs_markdown_replace_links (self, copy);
 		g_free (copy);
 		copy = temp;
 	}
@@ -823,6 +874,9 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		self->tags.bullet_start = "• ";
 		self->tags.bullet_end = "";
 		self->tags.rule = "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n";
+		self->tags.link_prefix = "<a href=\"";
+		self->tags.link_mid = "\">";
+		self->tags.link_suffix = "</a>";
 		self->escape = TRUE;
 		self->autolinkify = TRUE;
 		break;
@@ -849,6 +903,9 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		self->tags.bullet_start = "<li>";
 		self->tags.bullet_end = "</li>";
 		self->tags.rule = "<hr>";
+		self->tags.link_prefix = "<a href=\"";
+		self->tags.link_mid = "\">";
+		self->tags.link_suffix = "</a>";
 		self->escape = TRUE;
 		self->autolinkify = TRUE;
 		break;
@@ -875,6 +932,9 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		self->tags.bullet_start = "* ";
 		self->tags.bullet_end = "";
 		self->tags.rule = " ----- \n";
+		self->tags.link_prefix = NULL;
+		self->tags.link_mid = NULL;
+		self->tags.link_suffix = NULL;
 		self->escape = FALSE;
 		self->autolinkify = FALSE;
 		break;
