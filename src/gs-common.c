@@ -468,7 +468,11 @@ gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gch
 	}
 
 	/* set up custom provider and store on the widget */
+	#if GTK_CHECK_VERSION(4, 12, 0)
+	gtk_css_provider_load_from_string (*provider, str->str);
+	#else
 	gtk_css_provider_load_from_data (*provider, str->str, -1);
+	#endif
 	gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (*provider),
 						    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }

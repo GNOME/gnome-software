@@ -845,8 +845,15 @@ get_remotes_cb (GObject      *source_object,
 
 	for (guint i = 0; i < remotes->len; i++) {
 		FwupdRemote *remote = g_ptr_array_index (remotes, i);
+		gboolean is_enabled;
 
-		if (!fwupd_remote_get_enabled (remote))
+		#if FWUPD_CHECK_VERSION(1, 9, 4)
+		is_enabled = fwupd_remote_has_flag (remote, FWUPD_REMOTE_FLAG_ENABLED);
+		#else
+		is_enabled = fwupd_remote_get_enabled (remote);
+		#endif
+
+		if (!is_enabled)
 			continue;
 		if (fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_DOWNLOAD)
 			continue;
@@ -854,8 +861,13 @@ get_remotes_cb (GObject      *source_object,
 			continue;
 
 		data->n_operations_pending++;
+		#if FWUPD_CHECK_VERSION(1, 9, 4)
+		fwupd_client_refresh_remote2_async (client, remote, FWUPD_CLIENT_DOWNLOAD_FLAG_NONE, cancellable,
+						    refresh_remote_cb, g_object_ref (task));
+		#else
 		fwupd_client_refresh_remote_async (client, remote, cancellable,
 						   refresh_remote_cb, g_object_ref (task));
+		#endif
 	}
 
 	finish_refresh_metadata_op (task);
@@ -1791,10 +1803,18 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		id = g_strdup_printf ("org.fwupd.%s.remote", fwupd_remote_get_id (remote));
 		app = g_hash_table_lookup (self->cached_sources, id);
 		if (app == NULL) {
+			gboolean is_enabled;
+
+			#if FWUPD_CHECK_VERSION(1, 9, 4)
+			is_enabled = fwupd_remote_has_flag (remote, FWUPD_REMOTE_FLAG_ENABLED);
+			#else
+			is_enabled = fwupd_remote_get_enabled (remote);
+			#endif
+
 			app = gs_app_new (id);
 			gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
 			gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-			gs_app_set_state (app, fwupd_remote_get_enabled (remote) ?
+			gs_app_set_state (app, is_enabled ?
 					  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 			gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
@@ -1863,13 +1883,25 @@ gs_plugin_fwupd_enable_repository_get_remotes_ready_cb (GObject      *source_obj
 	for (guint i = 0; i < remotes->len; i++) {
 		FwupdRemote *remote = g_ptr_array_index (remotes, i);
 		if (g_strcmp0 (remote_id, fwupd_remote_get_id (remote)) == 0) {
-			if (fwupd_remote_get_enabled (remote) &&
+			gboolean is_enabled;
+			#if FWUPD_CHECK_VERSION(1, 9, 4)
+			is_enabled = fwupd_remote_has_flag (remote, FWUPD_REMOTE_FLAG_ENABLED);
+			#else
+			is_enabled = fwupd_remote_get_enabled (remote);
+			#endif
+			if (is_enabled &&
 			    fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_LOCAL &&
 			    !remote_cache_is_expired (remote, cache_age)) {
 				GCancellable *cancellable = g_task_get_cancellable (task);
+				#if FWUPD_CHECK_VERSION(1, 9, 4)
+				fwupd_client_refresh_remote2_async (self->client, remote, FWUPD_CLIENT_DOWNLOAD_FLAG_NONE, cancellable,
+								    gs_plugin_fwupd_enable_repository_remote_refresh_ready_cb,
+								    g_steal_pointer (&task));
+				#else
 				fwupd_client_refresh_remote_async (self->client, remote, cancellable,
 								   gs_plugin_fwupd_enable_repository_remote_refresh_ready_cb,
 								   g_steal_pointer (&task));
+				#endif
 				return;
 			}
 			break;

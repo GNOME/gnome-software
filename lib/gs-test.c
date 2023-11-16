@@ -7,6 +7,7 @@
  */
 
 #include <stdlib.h>
+#include <gtk/gtk.h>
 
 #include "gs-plugin-loader-sync.h"
 #include "gs-test.h"
@@ -85,6 +86,7 @@ gs_test_flush_main_context (void)
 void
 gs_test_expose_icon_theme_paths (void)
 {
+	GdkDisplay *display = gdk_display_get_default ();
 	const gchar * const *data_dirs;
 	g_autoptr(GString) data_dirs_str = NULL;
 	g_autofree gchar *data_dirs_joined = NULL;
@@ -97,6 +99,12 @@ gs_test_expose_icon_theme_paths (void)
 					data_dirs[i]);
 	data_dirs_joined = g_string_free (g_steal_pointer (&data_dirs_str), FALSE);
 	g_setenv ("GS_SELF_TEST_ICON_THEME_PATH", data_dirs_joined, TRUE);
+
+	if (display) {
+		GtkIconTheme *default_theme;
+		default_theme = gtk_icon_theme_get_for_display (display);
+		gtk_icon_theme_add_resource_path (default_theme, "/org/gnome/Software/icons/");
+	}
 }
 
 /**

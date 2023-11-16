@@ -105,6 +105,7 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 		ssimg->current_image = "video";
 	} else {
 		g_autoptr(GdkPixbuf) pixbuf = NULL;
+		g_autoptr(GdkTexture) texture = NULL;
 
 		/* no need to composite */
 		if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
@@ -117,14 +118,17 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 								    FALSE, NULL);
 		}
 
+		if (pixbuf != NULL)
+			texture = gdk_texture_new_for_pixbuf (pixbuf);
+
 		/* show icon */
 		if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
-			if (pixbuf != NULL)
-				gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image2), pixbuf);
+			if (texture != NULL)
+				gtk_picture_set_paintable (GTK_PICTURE (ssimg->image2), GDK_PAINTABLE (texture));
 			ssimg->current_image = "image2";
 		} else {
-			if (pixbuf != NULL)
-				gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pixbuf);
+			if (texture != NULL)
+				gtk_picture_set_paintable (GTK_PICTURE (ssimg->image1), GDK_PAINTABLE (texture));
 			ssimg->current_image = "image1";
 		}
 	}
@@ -231,6 +235,7 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 {
 	g_autoptr(GdkPixbuf) pb_src = NULL;
 	g_autoptr(GdkPixbuf) pb = NULL;
+	g_autoptr(GdkTexture) texture = NULL;
 
 	pb_src = gdk_pixbuf_new_from_file (filename_thumb, NULL);
 	if (pb_src == NULL)
@@ -242,15 +247,19 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 	if (pb == NULL)
 		return;
 
+	texture = gdk_texture_new_for_pixbuf (pb);
+	if (texture == NULL)
+		return;
+
 	if (g_strcmp0 (ssimg->current_image, "video") == 0) {
 		ssimg->current_image = "image1";
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), ssimg->current_image);
 	}
 
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
-		gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pb);
+		gtk_picture_set_paintable (GTK_PICTURE (ssimg->image1), GDK_PAINTABLE (texture));
 	} else {
-		gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image2), pb);
+		gtk_picture_set_paintable (GTK_PICTURE (ssimg->image2), GDK_PAINTABLE (texture));
 	}
 }
 

@@ -57,7 +57,7 @@ static GParamSpec *obj_props[PROP_TEXT + 1] = { NULL, };
 static void
 gs_description_box_update_content (GsDescriptionBox *box)
 {
-	GtkAllocation allocation;
+	gint width, height;
 	PangoLayout *layout;
 	gint n_lines;
 	gboolean visible;
@@ -69,17 +69,18 @@ gs_description_box_update_content (GsDescriptionBox *box)
 		return;
 	}
 
-	gtk_widget_get_allocation (GTK_WIDGET (box), &allocation);
+	width = gtk_widget_get_width (GTK_WIDGET (box));
+	height = gtk_widget_get_height (GTK_WIDGET (box));
 
-	if (!box->needs_recalc && box->last_width == allocation.width && box->last_height == allocation.height)
+	if (!box->needs_recalc && box->last_width == width && box->last_height == height)
 		return;
 
 	if ((!gtk_widget_get_visible (GTK_WIDGET (box->button))) == (!box->always_expanded))
 		gtk_widget_set_visible (GTK_WIDGET (box->button), !box->always_expanded);
 
-	box->needs_recalc = allocation.width <= 1 || allocation.height <= 1;
-	box->last_width = allocation.width;
-	box->last_height = allocation.height;
+	box->needs_recalc = width <= 1 || height <= 1;
+	box->last_width = width;
+	box->last_height = height;
 
 	if (box->always_expanded) {
 		gtk_widget_set_visible (GTK_WIDGET (box->button), FALSE);

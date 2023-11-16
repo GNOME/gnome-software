@@ -16,9 +16,17 @@ shared_module(
 )
 
 if get_option('tests')
+  resources_src = gnome.compile_resources(
+    'gs-resources',
+    '../../src/gnome-software.gresource.xml',
+    source_dir : '../../src',
+    c_name : 'gs'
+  )
+
   e = executable(
     'gs-self-test-dummy',
     compiled_schemas,
+    resources_src,
     sources : [
       'gs-self-test.c'
     ],
