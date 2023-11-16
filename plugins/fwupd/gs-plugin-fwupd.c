@@ -313,6 +313,7 @@ setup_connect_cb (GObject      *source_object,
 #if FWUPD_CHECK_VERSION(1, 8, 1)
 					      FWUPD_FEATURE_FLAG_SHOW_PROBLEMS |
 #endif
+					      FWUPD_FEATURE_FLAG_REQUESTS |
 					      FWUPD_FEATURE_FLAG_UPDATE_ACTION |
 					      FWUPD_FEATURE_FLAG_DETACH_ACTION,
 					      cancellable, setup_features_cb,
@@ -1112,6 +1113,9 @@ static void install_delete_cb (GObject      *source_object,
 static void install_get_device_cb (GObject      *source_object,
                                    GAsyncResult *result,
                                    gpointer      user_data);
+static void install_device_request_cb (FwupdClient  *client,
+                                       FwupdRequest *request,
+                                       GTask        *task);
 
 static void
 gs_plugin_fwupd_install_async (GsPluginFwupd                      *self,
@@ -1155,6 +1159,9 @@ gs_plugin_fwupd_install_async (GsPluginFwupd                      *self,
 	if (data->device_id == NULL)
 		data->device_id = FWUPD_DEVICE_ID_ANY;
 
+	/* watch for FwupdRequest */
+	g_signal_connect (self->client, "device-request", G_CALLBACK (install_device_request_cb), task);
+
 	/* Store the app pointer for getting status and progress updates from
 	 * the daemon.
 	 *
@@ -1178,6 +1185,46 @@ gs_plugin_fwupd_install_async (GsPluginFwupd                      *self,
 }
 
 static void
+install_device_request_cb (FwupdClient *client, FwupdRequest *request, GTask *task)
+{
+	GsPluginFwupd *self = g_task_get_source_object (task);
+	InstallData *data = g_task_get_task_data (task);
+	g_autoptr(AsScreenshot) ss = as_screenshot_new ();
+	g_autofree gchar *str = fwupd_request_to_string (request);
+
+	/* check the device ID is correct */
+	g_debug ("got FwupdRequest: %s", str);
+	if (g_strcmp0 (data->device_id, FWUPD_DEVICE_ID_ANY) != 0 &&
+	    g_strcmp0 (data->device_id, fwupd_request_get_device_id (request)) != 0) {
+		g_warning ("received request for %s, but updating %s",
+			   fwupd_request_get_device_id (request),
+			   data->device_id);
+		return;
+	}
+
+	/* image is optional, caption is required */
+	if (fwupd_request_get_image (request) != NULL) {
+		g_autoptr(AsImage) im = as_image_new ();
+		as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
+		as_image_set_url (im, fwupd_request_get_image (request));
+		as_screenshot_add_image (ss, im);
+	}
+	as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
+	as_screenshot_set_caption (ss, fwupd_request_get_message (request), NULL);
+
+	/* require the dialog */
+	if (fwupd_request_get_kind (request) == FWUPD_REQUEST_KIND_POST) {
+		gs_app_add_quirk (data->app, GS_APP_QUIRK_NEEDS_USER_ACTION);
+		gs_app_set_action_screenshot (data->app, ss);
+	} else if (data->app_needs_user_action_callback != NULL) {
+		data->app_needs_user_action_callback (GS_PLUGIN (self),
+						      data->app,
+						      ss,
+						      data->app_needs_user_action_data);
+	}
+}
+
+static void
 install_install_cb (GObject      *source_object,
                     GAsyncResult *result,
                     gpointer      user_data)
@@ -1187,6 +1234,9 @@ install_install_cb (GObject      *source_object,
 	InstallData *data = g_task_get_task_data (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autoptr(GError) local_error = NULL;
+
+	/* no longer handling requests */
+	g_signal_handlers_disconnect_by_func (client, G_CALLBACK (install_device_request_cb), data);
 
 	if (!fwupd_client_install_finish (client, result, &local_error)) {
 		gs_plugin_fwupd_error_convert (&local_error);
@@ -1237,8 +1287,6 @@ install_get_device_cb (GObject      *source_object,
 {
 	FwupdClient *client = FWUPD_CLIENT (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginFwupd *self = g_task_get_source_object (task);
-	InstallData *data = g_task_get_task_data (task);
 	g_autoptr(FwupdDevice) dev = NULL;
 	g_autoptr(GError) local_error = NULL;
 
@@ -1249,32 +1297,6 @@ install_get_device_cb (GObject      *source_object,
 		 * rebooted -- and the metadata to know that is only available
 		 * in a too-new-to-depend-on fwupd version */
 		g_debug ("failed to find device after install: %s", local_error->message);
-	} else {
-		if (fwupd_device_get_update_message (dev) != NULL) {
-			g_autoptr(AsScreenshot) ss = as_screenshot_new ();
-
-			/* image is optional */
-			if (fwupd_device_get_update_image (dev) != NULL) {
-				g_autoptr(AsImage) im = as_image_new ();
-				as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
-				as_image_set_url (im, fwupd_device_get_update_image (dev));
-				as_screenshot_add_image (ss, im);
-			}
-
-			/* caption is required */
-			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
-			as_screenshot_set_caption (ss, fwupd_device_get_update_message (dev), NULL);
-			gs_app_set_action_screenshot (data->app, ss);
-
-			/* require the dialog */
-			gs_app_add_quirk (data->app, GS_APP_QUIRK_NEEDS_USER_ACTION);
-
-			if (data->app_needs_user_action_callback != NULL)
-				data->app_needs_user_action_callback (GS_PLUGIN (self),
-								      data->app,
-								      ss,
-								      data->app_needs_user_action_data);
-		}
 	}
 
 	/* success */
