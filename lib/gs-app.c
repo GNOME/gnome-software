@@ -609,7 +609,11 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		AsScreenshot *ss = g_ptr_array_index (priv->screenshots, i);
 		g_autofree gchar *key = NULL;
 		tmp = as_screenshot_get_caption (ss);
+#if AS_CHECK_VERSION(1, 0, 0)
+		im = as_screenshot_get_image (ss, 0, 0, 1);
+#else
 		im = as_screenshot_get_image (ss, 0, 0);
+#endif
 		if (im == NULL)
 			continue;
 		key = g_strdup_printf ("screenshot-%02u", i);
