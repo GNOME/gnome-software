@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-10-13 08:51+0000\n"
-"PO-Revision-Date: 2023-10-13 16:24+0300\n"
+"POT-Creation-Date: 2023-11-07 02:48+0000\n"
+"PO-Revision-Date: 2023-11-12 11:29+0300\n"
 "Last-Translator: Artur So <arturios2005@mail.ru>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -26,7 +26,7 @@ msgstr ""
 "X-Generator: Poedit 3.3.2\n"
 
 #  перевод по аналогии с ubuntu software - центр приложений ubuntu
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:25
 #: src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Центр приложений"
@@ -855,7 +855,7 @@ msgstr "Удаляется"
 #. * can be live-installed
 #. TRANSLATORS: update the fw
 #: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1030
-#: src/gs-details-page.c:1056 src/gs-details-page.ui:210 src/gs-page.c:437
+#: src/gs-details-page.c:1056 src/gs-details-page.ui:226 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Установить"
@@ -971,7 +971,7 @@ msgid "Update Details"
 msgstr "Подробности обновления"
 
 #: src/gs-app-details-page.ui:25 src/gs-os-update-page.ui:25
-#: src/gs-shell.ui:349 src/gs-shell.ui:440
+#: src/gs-shell.ui:380 src/gs-shell.ui:471
 msgid "Go back"
 msgstr "Назад"
 
@@ -980,7 +980,7 @@ msgid "Requires additional permissions"
 msgstr "Требуются дополнительные разрешения"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1078
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1094
 msgid "Reviews"
 msgstr "Отзывы"
 
@@ -992,7 +992,7 @@ msgstr "Для этого приложения не найдено отзыво�
 msgid "No Reviews"
 msgstr "Нет отзывов"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:530
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:546
 msgid "Version History"
 msgstr "История версий"
 
@@ -1520,7 +1520,7 @@ msgid "Renamed from %s"
 msgstr "Переименовано с %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:562 src/gs-details-page.ui:562
+#: src/gs-app-row.c:562 src/gs-details-page.ui:578
 msgid "Stopped Receiving Updates"
 msgstr "Остановлено получение обновлений"
 
@@ -1576,7 +1576,7 @@ msgstr "Требуется вход"
 
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:12 src/gs-common.c:296 src/gs-common.c:697
-#: src/gs-details-page.ui:298 src/gs-page.c:435 src/gs-page.c:658
+#: src/gs-details-page.ui:314 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:171
 #: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:26 src/gs-review-row.c:241
 #: src/gs-updates-page.c:853 src/gs-updates-page.c:870
@@ -2395,7 +2395,7 @@ msgstr "Это приложение будет отображаться на а�
 msgid "This software will appear in US English"
 msgstr "Это ПО будет отображаться на английском языке"
 
-#: src/gs-details-page.c:1328 src/gs-details-page.ui:60
+#: src/gs-details-page.c:1328 src/gs-details-page.ui:76
 msgid "Help _Translate"
 msgstr "Помочь _перевести"
 
@@ -2463,43 +2463,43 @@ msgstr "Не удалось отправить отзыв для \"%s\": %s"
 msgid "Details page"
 msgstr "Страница подробностей"
 
-#: src/gs-details-page.ui:40
-msgid "Loading app details…"
+#: src/gs-details-page.ui:54
+msgid "Loading App Details…"
 msgstr "Загрузка описания приложения…"
 
 #. TRANSLATORS: A label for a button to execute the selected app.
-#: src/gs-details-page.ui:227
+#: src/gs-details-page.ui:243
 msgid "_Open"
 msgstr "_Открыть"
 
-#: src/gs-details-page.ui:243 plugins/packagekit/gs-packagekit-task.c:159
+#: src/gs-details-page.ui:259 plugins/packagekit/gs-packagekit-task.c:159
 msgid "_Update"
 msgstr "_Обновить"
 
 #. TRANSLATORS: button text in the header when an app can be erased
-#: src/gs-details-page.ui:261 src/gs-details-page.ui:271
+#: src/gs-details-page.ui:277 src/gs-details-page.ui:287
 msgid "Uninstall"
 msgstr "Удалить"
 
-#: src/gs-details-page.ui:323
+#: src/gs-details-page.ui:339
 msgid "Downloading"
 msgstr "Загружается"
 
-#: src/gs-details-page.ui:460 src/gs-installed-page.ui:135
+#: src/gs-details-page.ui:476 src/gs-installed-page.ui:135
 msgid "Add-ons"
 msgstr "Дополнения"
 
-#: src/gs-details-page.ui:633
+#: src/gs-details-page.ui:649
 msgid "This app can only be used when there is an active internet connection."
 msgstr ""
 "Этим приложением можно пользоваться только при наличии активного Интернет-"
 "подключения."
 
-#: src/gs-details-page.ui:656
+#: src/gs-details-page.ui:672
 msgid "Software Repository Included"
 msgstr "Содержит репозиторий ПО"
 
-#: src/gs-details-page.ui:666
+#: src/gs-details-page.ui:682
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2507,11 +2507,11 @@ msgstr ""
 "Это приложение содержит репозиторий ПО, который предоставляет обновления "
 "приложения, а также доступ к другому ПО."
 
-#: src/gs-details-page.ui:694
+#: src/gs-details-page.ui:710
 msgid "No Software Repository Included"
 msgstr "Не содержит репозиторий ПО"
 
-#: src/gs-details-page.ui:704
+#: src/gs-details-page.ui:720
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2520,11 +2520,11 @@ msgstr ""
 "новых версий."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:763
+#: src/gs-details-page.ui:779
 msgid "Software Repository Identified"
 msgstr "Определен репозиторий ПО"
 
-#: src/gs-details-page.ui:773
+#: src/gs-details-page.ui:789
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2532,55 +2532,55 @@ msgstr ""
 "Добавление этого репозитоия ПО предоставит доступ к дополнительным "
 "приложениям и обновлениям."
 
-#: src/gs-details-page.ui:780
+#: src/gs-details-page.ui:796
 msgid "Only use software repositories that you trust."
 msgstr "Используйте только те репозитории ПО, которым доверяете."
 
-#: src/gs-details-page.ui:821
+#: src/gs-details-page.ui:837
 msgid "Clear app data"
 msgstr "Очистить данные приложения"
 
-#: src/gs-details-page.ui:838
+#: src/gs-details-page.ui:854
 msgid "D_elete Data"
 msgstr "У_далить данные"
 
-#: src/gs-details-page.ui:914
+#: src/gs-details-page.ui:930
 msgid "No Metadata"
 msgstr "Метаданные отсутствуют"
 
-#: src/gs-details-page.ui:951
+#: src/gs-details-page.ui:967
 msgid "Project _Website"
 msgstr "Сайт _проекта"
 
-#: src/gs-details-page.ui:968
+#: src/gs-details-page.ui:984
 msgid "_Donate"
 msgstr "_Пожертвовать"
 
-#: src/gs-details-page.ui:985
+#: src/gs-details-page.ui:1001
 msgid "Contribute _Translations"
 msgstr "Помочь с _переводами"
 
-#: src/gs-details-page.ui:1002
+#: src/gs-details-page.ui:1018
 msgid "_Report an Issue"
 msgstr "_Сообщить о проблеме"
 
-#: src/gs-details-page.ui:1019
+#: src/gs-details-page.ui:1035
 msgid "_Help"
 msgstr "_Справка"
 
 #. Translators: This is a verb, used on a button to ‘contact the developer’
-#: src/gs-details-page.ui:1036
+#: src/gs-details-page.ui:1052
 msgctxt "verb"
 msgid "_Contact"
 msgstr "_Связаться"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1130
+#: src/gs-details-page.ui:1146
 msgid "Write R_eview"
 msgstr "Написать о_тзыв"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:1167
+#: src/gs-details-page.ui:1183
 msgid "All Reviews"
 msgstr "Все отзывы"
 
@@ -3035,6 +3035,46 @@ msgstr "«%s» не будет работать на этом устройств
 #: src/gs-hardware-support-context-dialog.ui:5
 msgid "Hardware Support"
 msgstr "Поддержка оборудования"
+
+#: src/gs-help-overlay.ui:12
+msgid "Navigation"
+msgstr "Навигация"
+
+#: src/gs-help-overlay.ui:17
+msgid "Navigate to Explore Page"
+msgstr "Перейти на страницу обзора"
+
+#: src/gs-help-overlay.ui:23
+msgid "Navigate to Installed Page"
+msgstr "Перейти на страницу установленного"
+
+#: src/gs-help-overlay.ui:29
+msgid "Navigate to Updates Page"
+msgstr "Перейти на страницу обновлений"
+
+#: src/gs-help-overlay.ui:35
+msgid "Open Search Bar"
+msgstr "Открыть панель поиска"
+
+#: src/gs-help-overlay.ui:43
+msgid "Windows"
+msgstr "Окна"
+
+#: src/gs-help-overlay.ui:48
+msgid "Open Preferences"
+msgstr "Открыть параметры"
+
+#: src/gs-help-overlay.ui:54
+msgid "Open Software Repositories"
+msgstr "Открыть репозитории ПО"
+
+#: src/gs-help-overlay.ui:62
+msgid "Help"
+msgstr "Справка"
+
+#: src/gs-help-overlay.ui:67
+msgid "Open Keyboard Shortcuts"
+msgstr "Открыть комбинации клавиш"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #: src/gs-installed-page.c:813
@@ -3524,7 +3564,7 @@ msgstr "Уведомлять когда обновления были устан
 
 #: src/gs-prefs-dialog.ui:76
 msgid "Explore Pages"
-msgstr "Обзор страниц"
+msgstr "Страница обзора"
 
 #: src/gs-prefs-dialog.ui:79
 msgid "Only Show _Free Software"
@@ -3534,7 +3574,7 @@ msgstr "Показывать только _свободное ПО"
 msgid "Hide proprietary software when browsing and searching"
 msgstr "Скрывать проприетарное ПО при просмотре каталога и поиске"
 
-#: src/gs-prefs-dialog.ui:105
+#: src/gs-prefs-dialog.ui:106
 msgid ""
 "Checking for and downloading updates uses data and power. Automatic update "
 "features are therefore paused when on metered network connections and when "
@@ -3629,7 +3669,7 @@ msgid "These repositories supplement the default software provided by %s."
 msgstr "Эти репозитории дополняют ПО по умолчанию, предоставленное %s."
 
 #. button in the info bar
-#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:99
+#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:130
 msgid "Software Repositories"
 msgstr "Репозитории ПО"
 
@@ -4769,62 +4809,66 @@ msgid "_Software Repositories"
 msgstr "_Репозитории ПО"
 
 #: src/gs-shell.ui:12
+msgid "_Keyboard Shortcuts"
+msgstr "_Комбинации клавиш"
+
+#: src/gs-shell.ui:16
 msgid "_Preferences"
 msgstr "_Параметры"
 
 #. button in the info bar
-#: src/gs-shell.ui:109
+#: src/gs-shell.ui:140
 msgid "Examine Disk"
 msgstr "Осмотреть диск"
 
 #. button in the info bar
-#: src/gs-shell.ui:119
+#: src/gs-shell.ui:150
 msgid "Network Settings"
 msgstr "Настройки сети"
 
 #. button in the info bar
-#: src/gs-shell.ui:129
+#: src/gs-shell.ui:160
 msgid "_Restart Now…"
 msgstr "_Перезапустить сейчас…"
 
 #. button in the info bar
-#: src/gs-shell.ui:140
+#: src/gs-shell.ui:171
 msgid "More Information"
 msgstr "Подробная информация"
 
-#: src/gs-shell.ui:200 src/gs-shell.ui:202
+#: src/gs-shell.ui:231 src/gs-shell.ui:233
 msgid "Search"
 msgstr "Поиск"
 
-#: src/gs-shell.ui:216 src/gs-shell.ui:218
+#: src/gs-shell.ui:247 src/gs-shell.ui:249
 msgid "Main Menu"
 msgstr "Главное меню"
 
-#: src/gs-shell.ui:245
+#: src/gs-shell.ui:276
 msgid "Search apps"
 msgstr "Поиск приложений"
 
-#: src/gs-shell.ui:257
+#: src/gs-shell.ui:288
 msgid "Metered network ‒ automatic updates paused"
 msgstr "Тарифицированная сеть ‒ автоматические обновления приостановлены"
 
-#: src/gs-shell.ui:258
+#: src/gs-shell.ui:289
 msgid "Find Out _More"
 msgstr "Узнать _больше"
 
 #. Translators: A label for a button to show all available software.
-#: src/gs-shell.ui:272
+#: src/gs-shell.ui:303
 msgid "_Explore"
 msgstr "_Обзор"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-shell.ui:286
+#: src/gs-shell.ui:317
 msgctxt "List of installed apps"
 msgid "_Installed"
 msgstr "_Установлено"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-shell.ui:308
+#: src/gs-shell.ui:339
 msgctxt "Header bar button for list of apps to be updated"
 msgid "_Updates"
 msgstr "_Обновления"
@@ -5210,11 +5254,11 @@ msgstr "Обновления ПО загружены"
 msgid "Software upgrades have been downloaded and are ready to be installed."
 msgstr "Обновления ПО были загружены и готовы к установке."
 
-#: src/gs-updates-page.c:1260
+#: src/gs-updates-page.c:1245
 msgid "Check for updates"
 msgstr "Проверить наличие обновлений"
 
-#: src/gs-updates-page.c:1296
+#: src/gs-updates-page.c:1281
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Обновления"
