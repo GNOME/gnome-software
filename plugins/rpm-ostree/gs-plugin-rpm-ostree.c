@@ -810,7 +810,9 @@ gs_rpmostree_wait_for_ongoing_transaction_end (GsRPMOSTreeSysroot *sysroot_proxy
 }
 
 static GsApp *
-app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
+app_from_modified_pkg_variant (GsPlugin *plugin,
+			       GVariant *variant,
+			       GHashTable *packages_with_urgency)
 {
 	g_autoptr(GsApp) app = NULL;
 	const char *name;
@@ -824,35 +826,42 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 	new_nevra = g_strdup_printf ("%s-%s.%s", name, new_evr, new_arch);
 
 	app = gs_plugin_cache_lookup (plugin, old_nevra);
-	if (app != NULL)
-		return g_steal_pointer (&app);
+	if (app == NULL) {
+		/* create new app */
+		app = gs_app_new (NULL);
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
+		app_set_rpm_ostree_packaging_format (app);
+		/* will be downloaded, but the size is unknown */
+		gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 
-	/* create new app */
-	app = gs_app_new (NULL);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
-	app_set_rpm_ostree_packaging_format (app);
-	/* will be downloaded, but the size is unknown */
-	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
-	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+		/* update or downgrade */
+		gs_app_add_source (app, name);
+		gs_app_set_version (app, old_evr);
+		gs_app_set_update_version (app, new_evr);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 
-	/* update or downgrade */
-	gs_app_add_source (app, name);
-	gs_app_set_version (app, old_evr);
-	gs_app_set_update_version (app, new_evr);
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+		g_debug ("!%s\n", old_nevra);
+		g_debug ("=%s\n", new_nevra);
 
-	g_debug ("!%s\n", old_nevra);
-	g_debug ("=%s\n", new_nevra);
-
-	gs_plugin_cache_add (plugin, old_nevra, app);
+		gs_plugin_cache_add (plugin, old_nevra, app);
+	}
+	if (packages_with_urgency != NULL) {
+		guint urgency = GPOINTER_TO_UINT (g_hash_table_lookup (packages_with_urgency, new_nevra));
+		if (urgency > 0)
+			gs_app_set_update_urgency (app, urgency);
+	}
 	return g_steal_pointer (&app);
 }
 
 static GsApp *
-app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addition)
+app_from_single_pkg_variant (GsPlugin *plugin,
+			     GVariant *variant,
+			     gboolean addition,
+			     GHashTable *packages_with_urgency)
 {
 	g_autoptr(GsApp) app = NULL;
 	const char *name;
@@ -864,37 +873,41 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 	nevra = g_strdup_printf ("%s-%s.%s", name, evr, arch);
 
 	app = gs_plugin_cache_lookup (plugin, nevra);
-	if (app != NULL)
-		return g_steal_pointer (&app);
+	if (app == NULL) {
+		/* create new app */
+		app = gs_app_new (NULL);
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
+		app_set_rpm_ostree_packaging_format (app);
+		/* will be downloaded, but the size is unknown */
+		gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 
-	/* create new app */
-	app = gs_app_new (NULL);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
-	app_set_rpm_ostree_packaging_format (app);
-	/* will be downloaded, but the size is unknown */
-	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
-	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+		if (addition) {
+			/* addition */
+			gs_app_add_source (app, name);
+			gs_app_set_version (app, evr);
+			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 
-	if (addition) {
-		/* addition */
-		gs_app_add_source (app, name);
-		gs_app_set_version (app, evr);
-		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+			g_debug ("+%s\n", nevra);
+		} else {
+			/* removal */
+			gs_app_add_source (app, name);
+			gs_app_set_version (app, evr);
+			gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 
-		g_debug ("+%s\n", nevra);
-	} else {
-		/* removal */
-		gs_app_add_source (app, name);
-		gs_app_set_version (app, evr);
-		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+			g_debug ("-%s\n", nevra);
+		}
 
-		g_debug ("-%s\n", nevra);
+		gs_plugin_cache_add (plugin, nevra, app);
 	}
-
-	gs_plugin_cache_add (plugin, nevra, app);
+	if (packages_with_urgency != NULL) {
+		guint urgency = GPOINTER_TO_UINT (g_hash_table_lookup (packages_with_urgency, nevra));
+		if (urgency > 0)
+			gs_app_set_update_urgency (app, urgency);
+	}
 	return g_steal_pointer (&app);
 }
 
@@ -1285,8 +1298,10 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GVariant) cached_update = NULL;
 	g_autoptr(GVariant) rpm_diff = NULL;
+	g_autoptr(GVariant) advisories = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GHashTable) packages_with_urgency = NULL;
 	g_autoptr(GError) local_error = NULL;
 	const gchar *checksum = NULL;
 	const gchar *version = NULL;
@@ -1317,6 +1332,51 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		return TRUE;
 
 	g_debug ("got CachedUpdate version '%s', checksum '%s'", version, checksum);
+
+	advisories = g_variant_dict_lookup_value (&cached_update_dict, "advisories", G_VARIANT_TYPE ("a(suuasa{sv})"));
+	if (advisories != NULL) {
+		GVariantIter iter;
+		GVariant *child;
+
+		packages_with_urgency = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
+		g_variant_iter_init (&iter, advisories);
+		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
+			GVariantIter *packages_iter = NULL;
+			guint severity = 0;
+			g_variant_get (child, "(suuasa{sv})", NULL /* id */, NULL /* kind */, &severity, &packages_iter, NULL /* metadata */);
+			if (packages_iter) {
+				guint urgency = AS_URGENCY_KIND_UNKNOWN; /* RPM_OSTREE_ADVISORY_SEVERITY_NONE */
+				switch (severity) {
+				case 1: /* RPM_OSTREE_ADVISORY_SEVERITY_LOW */
+					urgency = AS_URGENCY_KIND_LOW;
+					break;
+				case 2: /* RPM_OSTREE_ADVISORY_SEVERITY_MODERATE */
+					urgency = AS_URGENCY_KIND_MEDIUM;
+					break;
+				case 3: /* RPM_OSTREE_ADVISORY_SEVERITY_IMPORTANT */
+					urgency = AS_URGENCY_KIND_HIGH;
+					break;
+				case 4: /* RPM_OSTREE_ADVISORY_SEVERITY_CRITICAL */
+					urgency = AS_URGENCY_KIND_CRITICAL;
+					break;
+				default:
+					break;
+				}
+				if (urgency != AS_URGENCY_KIND_UNKNOWN) {
+					const gchar *pkgname = NULL;
+					while (g_variant_iter_loop (packages_iter, "s", &pkgname)) {
+						if (pkgname != NULL && *pkgname != '\0') {
+							if (GPOINTER_TO_UINT (g_hash_table_lookup (packages_with_urgency, pkgname)) < urgency)
+								g_hash_table_insert (packages_with_urgency, g_strdup (pkgname), GUINT_TO_POINTER (urgency));
+						}
+						pkgname = NULL;
+					}
+				}
+			}
+			g_variant_unref (child);
+		}
+	}
 
 	rpm_diff = g_variant_dict_lookup_value (&cached_update_dict, "rpm-diff", G_VARIANT_TYPE ("a{sv}"));
 	if (rpm_diff != NULL) {
@@ -1365,7 +1425,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* iterate over all upgraded packages and add them */
 		g_variant_iter_init (&iter, upgraded);
 		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-			g_autoptr(GsApp) app = app_from_modified_pkg_variant (plugin, child);
+			g_autoptr(GsApp) app = app_from_modified_pkg_variant (plugin, child, packages_with_urgency);
 			if (app != NULL)
 				gs_app_list_add (list, app);
 			g_variant_unref (child);
@@ -1374,7 +1434,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* iterate over all downgraded packages and add them */
 		g_variant_iter_init (&iter, downgraded);
 		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-			g_autoptr(GsApp) app = app_from_modified_pkg_variant (plugin, child);
+			g_autoptr(GsApp) app = app_from_modified_pkg_variant (plugin, child, packages_with_urgency);
 			if (app != NULL)
 				gs_app_list_add (list, app);
 			g_variant_unref (child);
@@ -1383,7 +1443,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* iterate over all removed packages and add them */
 		g_variant_iter_init (&iter, removed);
 		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-			g_autoptr(GsApp) app = app_from_single_pkg_variant (plugin, child, FALSE);
+			g_autoptr(GsApp) app = app_from_single_pkg_variant (plugin, child, FALSE, packages_with_urgency);
 			if (app != NULL)
 				gs_app_list_add (list, app);
 			g_variant_unref (child);
@@ -1392,7 +1452,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* iterate over all added packages and add them */
 		g_variant_iter_init (&iter, added);
 		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-			g_autoptr(GsApp) app = app_from_single_pkg_variant (plugin, child, TRUE);
+			g_autoptr(GsApp) app = app_from_single_pkg_variant (plugin, child, TRUE, packages_with_urgency);
 			if (app != NULL)
 				gs_app_list_add (list, app);
 			g_variant_unref (child);
