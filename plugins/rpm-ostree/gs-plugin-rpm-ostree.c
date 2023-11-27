@@ -820,8 +820,8 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 	g_autofree char *new_nevra = NULL;
 
 	g_variant_get (variant, "(us(ss)(ss))", NULL /* type*/, &name, &old_evr, &old_arch, &new_evr, &new_arch);
-	old_nevra = g_strdup_printf ("%s-%s-%s", name, old_evr, old_arch);
-	new_nevra = g_strdup_printf ("%s-%s-%s", name, new_evr, new_arch);
+	old_nevra = g_strdup_printf ("%s-%s.%s", name, old_evr, old_arch);
+	new_nevra = g_strdup_printf ("%s-%s.%s", name, new_evr, new_arch);
 
 	app = gs_plugin_cache_lookup (plugin, old_nevra);
 	if (app != NULL)
@@ -861,7 +861,7 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 	g_autofree char *nevra = NULL;
 
 	g_variant_get (variant, "(usss)", NULL /* type*/, &name, &evr, &arch);
-	nevra = g_strdup_printf ("%s-%s-%s", name, evr, arch);
+	nevra = g_strdup_printf ("%s-%s.%s", name, evr, arch);
 
 	app = gs_plugin_cache_lookup (plugin, nevra);
 	if (app != NULL)
