@@ -226,8 +226,13 @@ gs_rpmostree_inactive_timeout_cb (gpointer user_data)
 	    self->inactive_timeout_id == g_source_get_id (g_main_current_source ())) {
 		g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
-		if (self->sysroot_proxy)
+		if (self->sysroot_proxy) {
+			g_autofree gchar *current_path = gs_rpmostree_sysroot_dup_active_transaction_path (self->sysroot_proxy);
+			/* Do not unregister the client when there's an ongoing transaction */
+			if (current_path != NULL && *current_path != '\0')
+				return G_SOURCE_CONTINUE;
 			sysroot_proxy = g_steal_pointer (&self->sysroot_proxy);
+		}
 
 		g_clear_object (&self->os_proxy);
 		g_clear_object (&self->sysroot_proxy);
