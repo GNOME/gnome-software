@@ -39,5 +39,6 @@ void		gs_plugin_packagekit_refine_details_app		(GsPlugin *plugin,
 								 GsApp *app);
 void		gs_plugin_packagekit_set_packaging_format	(GsPlugin *plugin,
 								 GsApp *app);
-
+void		gs_plugin_packagekit_set_package_name		(GsApp *app,
+								 PkPackage *package);
 G_END_DECLS

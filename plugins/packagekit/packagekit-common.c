@@ -275,6 +275,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 			gs_app_set_management_plugin (app, plugin);
 			gs_app_add_source (app, pk_package_get_name (package));
 			gs_app_add_source_id (app, pk_package_get_id (package));
+			gs_plugin_packagekit_set_package_name (app, package);
 			gs_plugin_cache_add (plugin, pk_package_get_id (package), app);
 		}
 		gs_app_set_name (app,
@@ -391,6 +392,7 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_source (app, pk_package_get_name (package));
 	gs_app_add_source_id (app, pk_package_get_id (package));
+	gs_plugin_packagekit_set_package_name (app, package);
 
 	/* set origin */
 	if (gs_app_get_origin (app) == NULL) {
@@ -592,4 +594,23 @@ gs_plugin_packagekit_set_packaging_format (GsPlugin *plugin, GsApp *app)
 	}
 
 	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "error_color");
+}
+
+void
+gs_plugin_packagekit_set_package_name (GsApp *app,
+				       PkPackage *package)
+{
+	g_autofree gchar *tmp = NULL;
+
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (PK_IS_PACKAGE (package));
+
+	if (gs_app_get_metadata_item (app, "GnomeSoftware::packagename-value") != NULL)
+		return;
+
+	tmp = g_strdup_printf ("%s-%s.%s",
+				pk_package_get_name (package),
+				pk_package_get_version (package),
+				pk_package_get_arch (package));
+	gs_app_set_metadata (app, "GnomeSoftware::packagename-value", tmp);
 }
