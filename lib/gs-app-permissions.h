@@ -22,6 +22,7 @@ G_BEGIN_DECLS
  * @GS_APP_PERMISSIONS_FLAGS_SCREEN: App can access screen contents
  *   without asking, e.g. by reading Pipewire ScreenCast streams (Since: 46)
  * @GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES: App can access input devices, under `/dev/input` (Since: 46)
+ * @GS_APP_PERMISSIONS_FLAGS_PULSEAUDIO_DEVICES: App can access PulseAudio devices (Since: 46)
  *
  * Flags to indicate what permissions an app requires, at a high level.
  */
@@ -44,6 +45,7 @@ typedef enum {
 	GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES		= 1 << 15,
 	GS_APP_PERMISSIONS_FLAGS_SCREEN			= 1 << 16,
 	GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES		= 1 << 17,
+	GS_APP_PERMISSIONS_FLAGS_PULSEAUDIO_DEVICES	= 1 << 18,
 	GS_APP_PERMISSIONS_FLAGS_LAST  /*< skip >*/
 } GsAppPermissionsFlags;
 
