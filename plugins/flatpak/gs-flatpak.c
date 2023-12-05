@@ -263,6 +263,8 @@ perms_from_metadata (GKeyFile *keyfile)
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "fallback-x11") &&
 	    !g_strv_contains ((const gchar * const*)strv, "wayland"))
 		flags |= GS_APP_PERMISSIONS_FLAGS_X11;
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "pulseaudio"))
+		flags |= GS_APP_PERMISSIONS_FLAGS_DEVICES;
 	g_strfreev (strv);
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "devices", NULL, NULL);
