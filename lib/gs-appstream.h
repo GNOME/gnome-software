@@ -16,12 +16,17 @@ G_BEGIN_DECLS
 GsApp		*gs_appstream_create_app		(GsPlugin	*plugin,
 							 XbSilo		*silo,
 							 XbNode		*component,
+							 const gchar	*appstream_source_file,
+							 AsComponentScope default_scope,
 							 GError		**error);
 gboolean	 gs_appstream_refine_app		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 XbSilo		*silo,
 							 XbNode		*component,
 							 GsPluginRefineFlags flags,
+							 GHashTable	*installed_by_desktopid,
+							 const gchar	*appstream_source_file,
+							 AsComponentScope default_scope,
 							 GError		**error);
 gboolean	 gs_appstream_search			(GsPlugin	*plugin,
 							 XbSilo		*silo,

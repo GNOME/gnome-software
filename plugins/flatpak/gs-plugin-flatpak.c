@@ -614,6 +614,13 @@ gs_plugin_flatpak_refine_app (GsPluginFlatpak      *self,
 	return gs_flatpak_refine_app (flatpak, app, flags, interactive, FALSE, cancellable, error);
 }
 
+static void
+unref_nonnull_hash_table (gpointer ptr)
+{
+	GHashTable *hash_table = ptr;
+	if (hash_table != NULL)
+		g_hash_table_unref (hash_table);
+}
 
 static gboolean
 refine_app (GsPluginFlatpak      *self,
@@ -692,6 +699,8 @@ refine_thread_cb (GTask        *task,
 	GsAppList *list = data->list;
 	GsPluginRefineFlags flags = data->flags;
 	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GPtrArray) array_components_by_id = NULL; /* (element-type GHashTable) */
+	g_autoptr(GPtrArray) array_components_by_bundle = NULL; /* (element-type GHashTable) */
 	g_autoptr(GsAppList) app_list = NULL;
 	g_autoptr(GError) local_error = NULL;
 
@@ -712,6 +721,10 @@ refine_thread_cb (GTask        *task,
 	 * (e.g. inserting an app in the list on every call results in
 	 * an infinite loop) */
 	app_list = gs_app_list_copy (list);
+	array_components_by_id = g_ptr_array_new_full (self->installations->len, unref_nonnull_hash_table);
+	g_ptr_array_set_size (array_components_by_id, self->installations->len);
+	array_components_by_bundle = g_ptr_array_new_full (self->installations->len, unref_nonnull_hash_table);
+	g_ptr_array_set_size (array_components_by_bundle, self->installations->len);
 
 	for (guint j = 0; j < gs_app_list_length (app_list); j++) {
 		GsApp *app = gs_app_list_index (app_list, j);
@@ -721,12 +734,16 @@ refine_thread_cb (GTask        *task,
 
 		for (guint i = 0; i < self->installations->len; i++) {
 			GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
+			GHashTable *components_by_id = array_components_by_id->pdata[i];
+			GHashTable *components_by_bundle = array_components_by_bundle->pdata[i];
 
-			if (!gs_flatpak_refine_wildcard (flatpak, app, list, flags, interactive,
+			if (!gs_flatpak_refine_wildcard (flatpak, app, list, flags, interactive, &components_by_id, &components_by_bundle,
 							 cancellable, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
+			array_components_by_id->pdata[i] = components_by_id;
+			array_components_by_bundle->pdata[i] = components_by_bundle;
 		}
 	}
 
