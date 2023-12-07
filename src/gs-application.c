@@ -594,6 +594,7 @@ details_activated (GSimpleAction *action,
 							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					  "sort-func", gs_utils_app_sort_match_value,
 					  "license-type", gs_shell_get_query_license_type (app->shell),
+					  "developer-verified-type", gs_shell_get_query_developer_verified_type (app->shell),
 					  NULL);
 		plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 		gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
@@ -876,6 +877,7 @@ launch_activated (GSimpleAction *action,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  "license-type", gs_shell_get_query_license_type (self->shell),
+				  "developer-verified-type", gs_shell_get_query_developer_verified_type (self->shell),
 				  NULL);
 	search_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);

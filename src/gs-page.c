@@ -1001,3 +1001,12 @@ gs_page_get_query_license_type (GsPage *self)
 	g_return_val_if_fail (priv->shell != NULL, GS_APP_QUERY_LICENSE_ANY);
 	return gs_shell_get_query_license_type (priv->shell);
 }
+
+GsAppQueryDeveloperVerifiedType
+gs_page_get_query_developer_verified_type (GsPage *self)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (self);
+	g_return_val_if_fail (GS_IS_PAGE (self), GS_APP_QUERY_DEVELOPER_VERIFIED_ANY);
+	g_return_val_if_fail (priv->shell != NULL, GS_APP_QUERY_DEVELOPER_VERIFIED_ANY);
+	return gs_shell_get_query_developer_verified_type (priv->shell);
+}

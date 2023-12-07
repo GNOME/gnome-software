@@ -27,17 +27,19 @@ struct _GsPrefsDialog
 	GtkWidget		*manual_updates_radio;
 	GtkWidget		*switch_updates_notify;
 	GtkWidget		*switch_free_apps;
+	GtkWidget		*switch_verified_apps;
 	GtkPopover		*updates_info_popover;
 	AdwActionRow		*automatic_updates_row;
 	AdwActionRow		*manual_updates_row;
 	AdwActionRow		*automatic_update_notifications_row;
 	AdwActionRow		*show_only_free_apps_row;
+	AdwActionRow		*show_only_verified_apps_row;
 };
 
 G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, ADW_TYPE_PREFERENCES_WINDOW)
 
 static void
-gs_prefs_dialog_show_only_free_apps_changed_cb (GsPrefsDialog *self)
+gs_prefs_dialog_filters_changed_cb (GsPrefsDialog *self)
 {
 	g_signal_emit_by_name (self->plugin_loader, "reload", 0);
 }
@@ -90,14 +92,22 @@ gs_prefs_dialog_init (GsPrefsDialog *dialog)
 			 dialog->switch_free_apps,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (dialog->settings,
+			 "show-only-verified-apps",
+			 dialog->switch_verified_apps,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
 	g_signal_connect_object (dialog->switch_free_apps, "notify::active",
-				 G_CALLBACK (gs_prefs_dialog_show_only_free_apps_changed_cb), dialog, G_CONNECT_SWAPPED);
+				 G_CALLBACK (gs_prefs_dialog_filters_changed_cb), dialog, G_CONNECT_SWAPPED);
+	g_signal_connect_object (dialog->switch_verified_apps, "notify::active",
+				 G_CALLBACK (gs_prefs_dialog_filters_changed_cb), dialog, G_CONNECT_SWAPPED);
 
 #if ADW_CHECK_VERSION(1,2,0)
 	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->automatic_updates_row), FALSE);
 	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->manual_updates_row), FALSE);
 	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->automatic_update_notifications_row), FALSE);
 	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->show_only_free_apps_row), FALSE);
+	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->show_only_verified_apps_row), FALSE);
 #endif
 }
 
@@ -114,11 +124,13 @@ gs_prefs_dialog_class_init (GsPrefsDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, manual_updates_radio);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_updates_notify);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_free_apps);
+	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_verified_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, updates_info_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_updates_row);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, manual_updates_row);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_update_notifications_row);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, show_only_free_apps_row);
+	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, show_only_verified_apps_row);
 }
 
 GtkWidget *

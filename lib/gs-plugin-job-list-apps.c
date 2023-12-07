@@ -170,6 +170,13 @@ filter_freely_licensed_apps (GsApp    *app,
 }
 
 static gboolean
+filter_developer_verified_apps (GsApp    *app,
+				gpointer  user_data)
+{
+	return gs_app_has_quirk (app, GS_APP_QUIRK_DEVELOPER_VERIFIED);
+}
+
+static gboolean
 app_filter_qt_for_gtk_and_compatible (GsApp    *app,
                                       gpointer  user_data)
 {
@@ -403,6 +410,7 @@ finish_task (GTask     *task,
 	GsAppListSortFunc sort_func = NULL;
 	gpointer sort_func_data = NULL;
 	GsAppQueryLicenseType license_type = GS_APP_QUERY_LICENSE_ANY;
+	GsAppQueryDeveloperVerifiedType developer_verified_type = GS_APP_QUERY_DEVELOPER_VERIFIED_ANY;
 	GsAppListFilterFunc filter_func = NULL;
 	gpointer filter_func_data = NULL;
 	guint max_results = 0;
@@ -414,11 +422,15 @@ finish_task (GTask     *task,
 	gs_app_list_filter (merged_list, filter_valid_apps, self);
 	gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
 
-	if (self->query != NULL)
+	if (self->query != NULL) {
 		license_type = gs_app_query_get_license_type (self->query);
+		developer_verified_type = gs_app_query_get_developer_verified_type (self->query);
+	}
 
 	if (license_type == GS_APP_QUERY_LICENSE_FOSS)
 		gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
+	if (developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY)
+		gs_app_list_filter (merged_list, filter_developer_verified_apps, self);
 
 	/* Caller-specified filtering. */
 	if (self->query != NULL)

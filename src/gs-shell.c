@@ -2743,3 +2743,13 @@ gs_shell_get_query_license_type (GsShell *self)
 		return GS_APP_QUERY_LICENSE_FOSS;
 	return GS_APP_QUERY_LICENSE_ANY;
 }
+
+GsAppQueryDeveloperVerifiedType
+gs_shell_get_query_developer_verified_type (GsShell *self)
+{
+	g_return_val_if_fail (GS_IS_SHELL (self), GS_APP_QUERY_DEVELOPER_VERIFIED_ANY);
+
+	if (g_settings_get_boolean (self->settings, "show-only-verified-apps"))
+		return GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY;
+	return GS_APP_QUERY_DEVELOPER_VERIFIED_ANY;
+}

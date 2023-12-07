@@ -89,6 +89,20 @@ typedef enum {
 	GS_APP_QUERY_LICENSE_FOSS,
 } GsAppQueryLicenseType;
 
+/**
+ * GsAppQueryDeveloperVerifiedType:
+ * @GS_APP_QUERY_DEVELOPER_VERIFIED_ANY: Any app, with or without verified developer identity
+ * @GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY: Only apps with verified developer identity
+ *
+ * A type to filter apps by developer verified identity.
+ *
+ * Since: 46
+ */
+typedef enum {
+	GS_APP_QUERY_DEVELOPER_VERIFIED_ANY,
+	GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY,
+} GsAppQueryDeveloperVerifiedType;
+
 #define GS_TYPE_APP_QUERY (gs_app_query_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsAppQuery, gs_app_query, GS, APP_QUERY, GObject)
@@ -120,5 +134,8 @@ GsApp			*gs_app_query_get_alternate_of	 (GsAppQuery *self);
 GsAppQueryProvidesType	 gs_app_query_get_provides	 (GsAppQuery *self,
 							  const gchar **out_provides_tag);
 GsAppQueryLicenseType	 gs_app_query_get_license_type	 (GsAppQuery *self);
+GsAppQueryDeveloperVerifiedType
+			 gs_app_query_get_developer_verified_type
+							 (GsAppQuery *self);
 
 G_END_DECLS

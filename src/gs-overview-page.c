@@ -553,6 +553,7 @@ out:
 						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 								  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+						  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, flags);
@@ -848,6 +849,7 @@ gs_overview_page_load (GsOverviewPage *self)
 					  "filter-func", filter_hi_res_icon,
 					  "filter-user-data", self,
 					  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+					  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 					  NULL);
 
 		plugin_job = gs_plugin_job_list_apps_new (query, flags);
@@ -876,6 +878,7 @@ gs_overview_page_load (GsOverviewPage *self)
 					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+					  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 					  NULL);
 
 		plugin_job = gs_plugin_job_list_apps_new (query, flags);
@@ -901,6 +904,7 @@ gs_overview_page_load (GsOverviewPage *self)
 					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+					  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 					  NULL);
 
 		plugin_job = gs_plugin_job_list_apps_new (query, flags);
@@ -933,6 +937,7 @@ gs_overview_page_load (GsOverviewPage *self)
 					  "sort-func", gs_overview_page_sort_recent_cb,
 					  "filter-func", gs_overview_page_filter_recent_cb,
 					  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+					  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 					  NULL);
 
 		plugin_job = gs_plugin_job_list_apps_new (query, flags);

@@ -96,6 +96,7 @@ struct _GsDetailsPage
 	GtkWidget		*app_reviews_dialog;
 	GtkCssProvider		*origin_css_provider; /* (nullable) (owned) */
 	GtkCssProvider		*developer_verified_image_css_provider; /* (nullable) (owned) */
+	GtkCssProvider		*developer_verified_label_css_provider; /* (nullable) (owned) */
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
 								packaging format when the alternatives are found */
 	gboolean		 is_narrow;
@@ -142,6 +143,7 @@ struct _GsDetailsPage
 	GsAppContextBar		*context_bar;
 	GtkLabel		*developer_name_label;
 	GtkWidget		*developer_verified_image;
+	GtkWidget		*developer_verified_label;
 	GtkWidget		*label_failed;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_featured_review;
@@ -309,6 +311,7 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 
 	gs_utils_widget_set_css (self->origin_packaging_image, &self->origin_css_provider, css);
 	gs_utils_widget_set_css (self->developer_verified_image, &self->developer_verified_image_css_provider, css);
+	gs_utils_widget_set_css (self->developer_verified_label, &self->developer_verified_label_css_provider, css);
 }
 
 static void
@@ -1400,6 +1403,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 						  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID,
 						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+						  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query,
@@ -1418,7 +1422,20 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 
 	gtk_widget_set_visible (GTK_WIDGET (self->developer_name_label), tmp != NULL);
-	gtk_widget_set_visible (GTK_WIDGET (self->developer_verified_image), gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
+	gtk_widget_set_visible (self->developer_verified_image, gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
+
+	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED)) {
+		g_autofree gchar *tooltip = NULL;
+
+		if (tmp != NULL)
+			/* Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id */
+			tooltip = g_strdup_printf (_("Developer %s has proven the ownership of %s"), tmp, gs_app_get_id (self->app));
+		else
+			/* Translators: the %s is replaced with the app id */
+			tooltip = g_strdup_printf (_("Developer has proven the ownership of %s"), gs_app_get_id (self->app));
+
+		gtk_widget_set_tooltip_text (self->developer_verified_image, tooltip);
+	}
 
 	/* set version history */
 	version_history = gs_app_get_version_history (self->app);
@@ -1942,6 +1959,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 				  "filter-func", gs_details_page_filter_origin,
 				  "sort-func", gs_utils_app_sort_priority,
 				  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+				  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
 				  NULL);
 	plugin_job2 = gs_plugin_job_list_apps_new (query,
 						   GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
@@ -2525,6 +2543,7 @@ gs_details_page_dispose (GObject *object)
 	g_clear_pointer (&self->packaging_format_preference, g_strfreev);
 	g_clear_object (&self->origin_css_provider);
 	g_clear_object (&self->developer_verified_image_css_provider);
+	g_clear_object (&self->developer_verified_label_css_provider);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app_reviews_dialog);
 	g_clear_object (&self->plugin_loader);
@@ -2661,6 +2680,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_status);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_name_label);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_verified_image);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_verified_label);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_featured_review);
