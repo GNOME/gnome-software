@@ -160,6 +160,7 @@
                                     <property name="row-spacing">14</property>
                                     <property name="valign">start</property>
                                     <property name="selection-mode">none</property>
+                                    <signal name="child-activated" handler="app_activated_cb" swapped="yes"/>
                                     <accessibility>
                                       <relation name="labelled-by">heading_all_apps</relation>
                                     </accessibility>
