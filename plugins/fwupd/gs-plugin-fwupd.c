@@ -1252,7 +1252,7 @@ install_install_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	/* no longer handling requests */
-	g_signal_handlers_disconnect_by_func (client, G_CALLBACK (install_device_request_cb), data);
+	g_signal_handlers_disconnect_by_func (client, G_CALLBACK (install_device_request_cb), task);
 
 	if (!fwupd_client_install_finish (client, result, &local_error)) {
 		gs_plugin_fwupd_error_convert (&local_error);
