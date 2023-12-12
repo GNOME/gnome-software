@@ -149,6 +149,24 @@ gs_markdown_func (void)
 	g_free (text);
 
 	/* markdown (URLs) */
+	markdown = "* Upstream [release notes](https://www.gnome.org/release-notes.html) there";
+	markdown_expected =
+		   "• Upstream "
+		   "<a href=\"https://www.gnome.org/release-notes.html\">release notes</a>"
+		   " there";
+	text = gs_markdown_parse (md, markdown);
+	g_assert_cmpstr (text, ==, markdown_expected);
+	g_free (text);
+
+	markdown = "Links: [link1](https://www.gnome.org/1); [Link 2](https://www.gnome.org/2)";
+	markdown_expected =
+		   "Links: "
+		   "<a href=\"https://www.gnome.org/1\">link1</a>; "
+		   "<a href=\"https://www.gnome.org/2\">Link 2</a>";
+	text = gs_markdown_parse (md, markdown);
+	g_assert_cmpstr (text, ==, markdown_expected);
+	g_free (text);
+
 	markdown = "this is the http://www.hughsie.com/ coolest site";
 	markdown_expected =
 		   "this is the "
