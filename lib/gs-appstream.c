@@ -692,6 +692,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 AsComponentScope default_scope,
 			 GError **error)
 {
+	GsAppQuality name_quality = GS_APP_QUALITY_HIGHEST;
 	const gchar *tmp;
 	gboolean has_name = FALSE, has_metadata_license = FALSE;
 	gboolean had_icons, had_sources;
@@ -727,6 +728,10 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* types we can never launch */
 	switch (gs_app_get_kind (app)) {
+	case AS_COMPONENT_KIND_REPOSITORY:
+		/* plugins may know better name, than what there's set in the appstream for the repos */
+		name_quality = GS_APP_QUALITY_NORMAL;
+		/* fall-through */
 	case AS_COMPONENT_KIND_ADDON:
 	case AS_COMPONENT_KIND_CODEC:
 	case AS_COMPONENT_KIND_DRIVER:
@@ -737,7 +742,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	case AS_COMPONENT_KIND_LOCALIZATION:
 	case AS_COMPONENT_KIND_OPERATING_SYSTEM:
 	case AS_COMPONENT_KIND_RUNTIME:
-	case AS_COMPONENT_KIND_REPOSITORY:
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		break;
 	default:
@@ -1047,7 +1051,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		case ELEMENT_KIND_NAME:
 			tmp = xb_node_get_text (child);
 			if (tmp != NULL) {
-				gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, tmp);
+				gs_app_set_name (app, name_quality, tmp);
 				has_name = TRUE;
 			}
 			break;
@@ -1360,7 +1364,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		case ELEMENT_KIND_SUMMARY:
 			tmp = xb_node_get_text (child);
 			if (tmp != NULL)
-				gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, tmp);
+				gs_app_set_summary (app, name_quality, tmp);
 			break;
 		case ELEMENT_KIND_SUPPORTS:
 			#if AS_CHECK_VERSION(0, 15, 0)
