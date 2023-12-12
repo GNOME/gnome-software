@@ -43,9 +43,19 @@ G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
 /* See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053
  * for the rationale behind the numbers */
-#define MAX_RECENTLY_UPDATED_APPS 12
-#define MIN_RECENTLY_UPDATED_APPS 50
+#define MAX_RECENT_APPS_TO_DISPLAY 12
+#define MIN_RECENT_APPS_REQUIRED 50
 #define MIN_SECTION_APPS 3
+
+#define validate_app_buckets() \
+	n_total_apps = n_carousel_apps + n_featured_apps + n_recently_updated_apps + n_web_apps + n_other_apps; \
+	print_app_bucket_stats (self, n_carousel_apps, n_featured_apps, n_recently_updated_apps, n_web_apps, n_other_apps, n_category_apps); \
+	\
+	g_assert (n_total_apps == n_category_apps); \
+	g_assert (n_featured_apps == 0 || n_featured_apps == featured_app_tiles->len); \
+	g_assert (n_recently_updated_apps == 0 || n_recently_updated_apps == recently_updated_app_tiles->len); \
+	g_assert (n_web_apps == 0 || n_web_apps == web_app_tiles->len); \
+	g_assert (n_other_apps == 0 || n_other_apps == other_app_tiles->len); \
 
 typedef enum {
 	PROP_CATEGORY = 1,
@@ -82,17 +92,6 @@ top_carousel_app_clicked_cb (GsFeaturedCarousel *carousel,
 	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
 
 	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
-}
-
-static gint
-_max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	gint name_sort = gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
-
-	if (name_sort != 0)
-		return name_sort;
-
-	return gs_app_get_rating (app1) - gs_app_get_rating (app2);
 }
 
 static void
@@ -283,35 +282,196 @@ choose_top_carousel_apps (LoadCategoryData *data,
 }
 
 static gint
-compare_release_date_cb (gconstpointer aa,
-			 gconstpointer bb)
+app_name_flowbox_sort_func (GtkFlowBoxChild *child1,
+			    GtkFlowBoxChild *child2,
+			    gpointer         user_data)
 {
-	GsApp *app_a = gs_app_tile_get_app ((GsAppTile *) aa);
-	GsApp *app_b = gs_app_tile_get_app ((GsAppTile *) bb);
-	guint64 release_date_a = gs_app_get_release_date (app_a);
-	guint64 release_date_b = gs_app_get_release_date (app_b);
+	GsAppTile *tile1 = GS_APP_TILE (child1);
+	GsAppTile *tile2 = GS_APP_TILE (child2);
+	GsApp *app1 = gs_app_tile_get_app (tile1);
+	GsApp *app2 = gs_app_tile_get_app (tile2);
 
-	if (release_date_a == release_date_b)
-		return g_utf8_collate (gs_app_get_name (app_a), gs_app_get_name (app_b));
+	/* Placeholder tiles have no app. */
+	if (app1 == NULL && app2 == NULL)
+		return 0;
+	if (app1 == NULL)
+		return 1;
+	if (app2 == NULL)
+		return -1;
 
-	return release_date_a < release_date_b ? -1 : 1;
+	return gs_utils_app_sort_name (app1, app2, NULL);
+}
+
+static gint
+release_date_sort_func (GsAppTile *tile1,
+			GsAppTile *tile2)
+{
+	GsApp *app1 = gs_app_tile_get_app (tile1);
+	GsApp *app2 = gs_app_tile_get_app (tile2);
+	guint64 release_date1, release_date2;
+
+	/* Placeholder tiles have no app. */
+	if (app1 == NULL && app2 == NULL)
+		return 0;
+	if (app1 == NULL)
+		return 1;
+	if (app2 == NULL)
+		return -1;
+
+	release_date1 = gs_app_get_release_date (app1);
+	release_date2 = gs_app_get_release_date (app2);
+
+	if (release_date1 == release_date2)
+		return gs_utils_app_sort_name (app1, app2, NULL);
+
+	return release_date1 < release_date2 ? 1 : -1;
+}
+
+static gint
+release_date_gptrarray_sort_func (gconstpointer tile1,
+				  gconstpointer tile2)
+{
+	GsAppTile *tile_a = (*(GsAppTile **) tile1);
+	GsAppTile *tile_b = (*(GsAppTile **) tile2);
+
+	return release_date_sort_func (tile_a, tile_b);
+}
+
+static gint
+release_date_flowbox_sort_func (GtkFlowBoxChild *child1,
+				GtkFlowBoxChild *child2,
+				gpointer         user_data)
+{
+	GsAppTile *tile1 = GS_APP_TILE (child1);
+	GsAppTile *tile2 = GS_APP_TILE (child2);
+
+	return release_date_sort_func (tile1, tile2);
+}
+
+
+/* Sort all flow boxes in this page, if 'enable' is TRUE, else disable
+   sorting on all flow boxes. Sorting should always be enabled, except
+   for cases when doing bulk additions, where sorting once after the
+   bulk addition will offer better performance. */
+static void
+gs_category_page_set_sort (GsCategoryPage *self, gboolean enable)
+{
+	GtkFlowBoxSortFunc name_sort_func = NULL;
+	GtkFlowBoxSortFunc recent_sort_func = NULL;
+
+	if (enable) {
+		name_sort_func = app_name_flowbox_sort_func;
+		recent_sort_func = release_date_flowbox_sort_func;
+	}
+
+	/* Sort the featured apps flowbox by app name, when sorting is
+	   enabled. */
+	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->featured_flow_box),
+				    name_sort_func,
+				    NULL,
+				    NULL);
+
+	/* Sort the recent apps flowbox by release date, when sorting
+	   is enabled. Note that recent apps flowbox is already
+	   sorted. This call is there to account for the case
+	   (possibly in future), where app tiles are added to the
+	   flowbox after the initial population in 'populate_flow_boxes ()'. */
+	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->recently_updated_flow_box),
+				    recent_sort_func,
+				    NULL,
+				    NULL);
+
+	/* Sort the web apps flowbox by app name, when sorting is enabled. */
+	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->web_apps_flow_box),
+				    name_sort_func,
+				    NULL,
+				    NULL);
+
+	/* Sort the other apps flowbox by app name, when sorting is enabled. */
+	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->category_detail_box),
+				    name_sort_func,
+				    NULL,
+				    NULL);
 }
 
 static void
-move_to_flow_box (GsCategoryPage *self,
-		  GtkFlowBox *source,
-		  GtkFlowBox *destination)
+populate_flow_boxes (GsCategoryPage *self,
+		     GPtrArray *featured_app_tiles,
+		     GPtrArray *recently_updated_app_tiles,
+		     GPtrArray *web_app_tiles,
+		     GPtrArray *other_app_tiles)
 {
-	for (GtkFlowBoxChild *child = gtk_flow_box_get_child_at_index (source, 0);
-	     child != NULL;
-	     child = gtk_flow_box_get_child_at_index (source, 0)) {
-		GtkWidget *tile = gtk_flow_box_child_get_child (child);
-		g_object_ref (tile);
-		gtk_flow_box_remove (source, tile);
-		gtk_flow_box_insert (destination, tile, -1);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-		g_object_unref (tile);
+	guint i;
+	GtkWidget *tile;
+
+	/* Disable sorting on all flowboxes so we don't sort on each
+	   flowbox insertion which is not good for performance. */
+	gs_category_page_set_sort (self, FALSE);
+
+	/* Populate featured flowbox */
+	if (featured_app_tiles) {
+		for (i = 0; i < featured_app_tiles->len; i++) {
+			tile = g_ptr_array_index (featured_app_tiles, i);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->featured_flow_box), tile, -1);
+			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+		}
 	}
+
+	/* Populate recently updated flowbox */
+	if (recently_updated_app_tiles) {
+		for (i = 0; i < recently_updated_app_tiles->len; i++) {
+			guint64 release_date;
+			g_autofree gchar *release_date_tooltip = NULL;
+			tile = g_ptr_array_index (recently_updated_app_tiles, i);
+
+			/* Shows the latest release date of the app in
+			   relative format (e.g. "10 days ago") on hover. */
+			release_date = gs_app_get_release_date (gs_app_tile_get_app (GS_APP_TILE (tile)));
+			release_date_tooltip = gs_utils_time_to_string (release_date);
+			gtk_widget_set_tooltip_text (tile, release_date_tooltip);
+
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
+			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+		}
+	}
+
+	/* Populate web apps flowbox */
+	if (web_app_tiles) {
+		for (i = 0; i < web_app_tiles->len; i++) {
+			tile = g_ptr_array_index (web_app_tiles, i);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->web_apps_flow_box), tile, -1);
+			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+		}
+	}
+
+	/* Populate other apps flowbox */
+	if (other_app_tiles) {
+		for (i = 0; i < other_app_tiles->len; i++) {
+			tile = g_ptr_array_index (other_app_tiles, i);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, -1);
+			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+		}
+	}
+
+	/* Re-enable sorting on all flowboxes now that they are fully
+	   populated */
+	gs_category_page_set_sort (self, TRUE);
+}
+
+static void
+print_app_bucket_stats (GsCategoryPage *self,
+			guint64 n_carousel_apps,
+			guint64 n_featured_apps,
+			guint64 n_recently_updated_apps,
+			guint64 n_web_apps,
+			guint64 n_other_apps,
+			guint64 n_total_apps)
+{
+	g_debug ("[%s] Carousel apps: %" G_GUINT64_FORMAT ", Featured apps: %" G_GUINT64_FORMAT ", Recent apps: %" G_GUINT64_FORMAT ", "
+                 "Web apps: %" G_GUINT64_FORMAT ", Other apps: %" G_GUINT64_FORMAT ", Total apps: %" G_GUINT64_FORMAT,
+                 gs_category_get_name (self->category),
+                 n_carousel_apps, n_featured_apps, n_recently_updated_apps,
+                 n_web_apps, n_other_apps, n_total_apps);
 }
 
 static void
@@ -319,13 +479,19 @@ load_category_finish (LoadCategoryData *data)
 {
 	GsCategoryPage *self = data->page;
 	guint64 recently_updated_cutoff_secs;
-	guint64 n_recently_updated = 0;
-	guint64 n_featured = 0;
+	guint64 n_recently_updated_apps = 0;
+	guint64 n_featured_apps = 0;
 	guint64 n_web_apps = 0;
-	guint64 picked_recently_updated = 0;
-	guint64 min_release_date = G_MAXUINT64;
-	GSList *recently_updated = NULL, *link;
+	guint64 n_carousel_apps = 0;
+	guint64 n_other_apps = 0;
+	guint64 n_category_apps = 0;
+	guint64 n_total_apps;
+	g_autoptr(GPtrArray) featured_app_tiles = g_ptr_array_new ();
+	g_autoptr(GPtrArray) recently_updated_app_tiles = g_ptr_array_new ();
+	g_autoptr(GPtrArray) web_app_tiles = g_ptr_array_new ();
+	g_autoptr(GPtrArray) other_app_tiles = NULL;
 	g_autoptr(GsAppList) top_carousel_apps = NULL;
+	GtkWidget *tile;
 
 	if (!data->get_featured_apps_finished ||
 	    !data->get_main_apps_finished)
@@ -345,6 +511,12 @@ load_category_finish (LoadCategoryData *data)
 	/* Last 30 days */
 	recently_updated_cutoff_secs = g_get_real_time () / G_USEC_PER_SEC - 30 * 24 * 60 * 60;
 
+	if (data->apps)
+		n_category_apps = gs_app_list_length (data->apps);
+
+	/* High probability that all apps could land here */
+	other_app_tiles = g_ptr_array_sized_new (n_category_apps);
+
 	/* Apps to go in the top carousel */
 	top_carousel_apps = choose_top_carousel_apps (data, recently_updated_cutoff_secs);
 
@@ -352,12 +524,12 @@ load_category_finish (LoadCategoryData *data)
 		GsApp *app = gs_app_list_index (data->apps, i);
 		gboolean is_featured, is_recently_updated;
 		guint64 release_date;
-		GtkWidget *flow_box = self->category_detail_box;
-		GtkWidget *tile;
 
 		/* To be listed in the top carousel? */
-		if (gs_app_list_lookup (top_carousel_apps, gs_app_get_unique_id (app)) != NULL)
+		if (gs_app_list_lookup (top_carousel_apps, gs_app_get_unique_id (app)) != NULL) {
+			n_carousel_apps++;
 			continue;
+		}
 
 		release_date = gs_app_get_release_date (app);
 		is_featured = (data->featured_app_ids != NULL &&
@@ -367,69 +539,92 @@ load_category_finish (LoadCategoryData *data)
 		tile = gs_summary_tile_new (app);
 
 		if (is_featured) {
-			n_featured++;
-			flow_box = self->featured_flow_box;
+			n_featured_apps++;
+			g_ptr_array_add (featured_app_tiles, tile);
 		} else if (is_recently_updated) {
-			n_recently_updated++;
-			if (picked_recently_updated < MAX_RECENTLY_UPDATED_APPS) {
-				recently_updated = g_slist_insert_sorted (recently_updated, tile, compare_release_date_cb);
-				picked_recently_updated++;
-				if (min_release_date > release_date)
-					min_release_date = release_date;
-				flow_box = NULL;
-			} else if (release_date >= min_release_date) {
-				recently_updated = g_slist_insert_sorted (recently_updated, tile, compare_release_date_cb);
-				tile = recently_updated->data;
-				recently_updated = g_slist_remove (recently_updated, tile);
-				min_release_date = gs_app_get_release_date (gs_app_tile_get_app (GS_APP_TILE (recently_updated->data)));
-			}
+			n_recently_updated_apps++;
+			g_ptr_array_add (recently_updated_app_tiles, tile);
 		} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP) {
 			n_web_apps++;
-			flow_box = self->web_apps_flow_box;
-		}
-
-		if (flow_box != NULL) {
-			gtk_flow_box_insert (GTK_FLOW_BOX (flow_box), tile, -1);
-			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+			g_ptr_array_add (web_app_tiles, tile);
+		} else {
+			n_other_apps++;
+			g_ptr_array_add (other_app_tiles, tile);
 		}
 	}
+
+	validate_app_buckets ();
 
 	/* If these sections end up being too empty (which looks odd), merge them into the main section.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 */
-	if (n_featured < MIN_SECTION_APPS)
-		move_to_flow_box (self, GTK_FLOW_BOX (self->featured_flow_box), GTK_FLOW_BOX (self->category_detail_box));
+	if (n_featured_apps > 0 && n_featured_apps < MIN_SECTION_APPS) {
+		g_debug ("\tOnly %" G_GUINT64_FORMAT " featured apps, needed at least %d; moving apps to others",
+			 n_featured_apps, MIN_SECTION_APPS);
+		g_ptr_array_extend_and_steal (other_app_tiles, g_steal_pointer (&featured_app_tiles));
+		n_other_apps += n_featured_apps;
+		n_featured_apps = 0;
+	}
 
-	if (n_web_apps < MIN_SECTION_APPS)
-		move_to_flow_box (self, GTK_FLOW_BOX (self->web_apps_flow_box), GTK_FLOW_BOX (self->category_detail_box));
 
-	/* Show 'Recently Updated' section only if there had been enough of them recognized.
+	if (n_web_apps > 0 && n_web_apps < MIN_SECTION_APPS) {
+		g_debug ("\tOnly %" G_GUINT64_FORMAT " web apps, needed at least %d; moving apps to others",
+			 n_web_apps, MIN_SECTION_APPS);
+		g_ptr_array_extend_and_steal (other_app_tiles, g_steal_pointer (&web_app_tiles));
+		n_other_apps += n_web_apps;
+		n_web_apps = 0;
+	}
+
+	/* Show 'New & Updated' section only if there had been enough of them recognized.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 */
-	if (n_recently_updated >= MIN_RECENTLY_UPDATED_APPS && picked_recently_updated >= MIN_SECTION_APPS) {
-		for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
-			GtkWidget *tile = link->data;
-			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
-			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-		}
-	} else {
-		/* put them at the top */
-		recently_updated = g_slist_reverse (recently_updated);
-		for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
-			GtkWidget *tile = link->data;
-			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, 0);
-			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+	if (n_recently_updated_apps > 0) {
+		if (n_recently_updated_apps < MIN_RECENT_APPS_REQUIRED) {
+			g_debug ("\tOnly %" G_GUINT64_FORMAT " recent apps, needed at least %d; moving apps to others",
+				 n_recently_updated_apps, MIN_RECENT_APPS_REQUIRED);
+			g_ptr_array_extend_and_steal (other_app_tiles, g_steal_pointer (&recently_updated_app_tiles));
+			n_other_apps += n_recently_updated_apps;
+			n_recently_updated_apps = 0;
+		} else {
+			guint n_apps_to_move;
+
+			/* Defer sorting till we're sure that sorted
+			   data will be actually useful */
+			g_ptr_array_sort (recently_updated_app_tiles, release_date_gptrarray_sort_func);
+
+			g_assert (n_recently_updated_apps >= MAX_RECENT_APPS_TO_DISPLAY);
+			n_apps_to_move = n_recently_updated_apps - MAX_RECENT_APPS_TO_DISPLAY;
+
+			if (n_apps_to_move > 0) {
+				g_debug ("\tAlready %" G_GUINT64_FORMAT " recent apps, needed at most %d; moving %u apps to others",
+					 n_recently_updated_apps, MAX_RECENT_APPS_TO_DISPLAY, n_apps_to_move);
+
+				for (guint j = 0; j < n_apps_to_move; j++) {
+					/* keep removing at the same index */
+					tile = g_ptr_array_steal_index_fast (recently_updated_app_tiles, MAX_RECENT_APPS_TO_DISPLAY);
+					g_ptr_array_add (other_app_tiles, tile);
+				}
+
+				n_recently_updated_apps -= n_apps_to_move;
+				n_other_apps += n_apps_to_move;
+			}
 		}
 	}
 
-	g_slist_free (recently_updated);
+	validate_app_buckets ();
 
+	/* Populate all flowboxes. */
+	populate_flow_boxes (self, featured_app_tiles, recently_updated_app_tiles, web_app_tiles, other_app_tiles);
+
+	/* Show carousel only if it has apps */
 	gtk_widget_set_visible (self->top_carousel, gs_app_list_length (top_carousel_apps) > 0);
 	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), top_carousel_apps);
 
-	/* Show each of the flow boxes if they have any children. */
-	gtk_widget_set_visible (self->featured_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->featured_flow_box), 0) != NULL);
-	gtk_widget_set_visible (self->recently_updated_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->recently_updated_flow_box), 0) != NULL);
-	gtk_widget_set_visible (self->web_apps_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->web_apps_flow_box), 0) != NULL);
-	gtk_widget_set_visible (self->category_detail_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->category_detail_box), 0) != NULL);
+	/* Show each of the flow boxes only if they have apps. */
+	gtk_widget_set_visible (self->featured_flow_box, n_featured_apps > 0);
+	gtk_widget_set_visible (self->recently_updated_flow_box, n_recently_updated_apps > 0);
+	gtk_widget_set_visible (self->web_apps_flow_box, n_web_apps > 0);
+	gtk_widget_set_visible (self->category_detail_box, n_other_apps > 0);
+
+	/* Don't show "Other Software" heading if it's the only heading  */
 	gtk_widget_set_visible (self->other_heading, gtk_widget_get_visible (self->category_detail_box) && (
 				gtk_widget_get_visible (self->featured_flow_box) ||
 				gtk_widget_get_visible (self->recently_updated_flow_box) ||
@@ -469,7 +664,7 @@ gs_category_page_load_category (GsCategoryPage *self)
 		gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), NULL);
 		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
 						   MIN (30, gs_category_get_size (self->subcategory)));
-		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENTLY_UPDATED_APPS);
+		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENT_APPS_TO_DISPLAY);
 		gtk_widget_set_visible (self->top_carousel, TRUE);
 		gtk_widget_set_visible (self->category_detail_box, TRUE);
 		gtk_widget_set_visible (self->recently_updated_flow_box, TRUE);
@@ -518,7 +713,6 @@ gs_category_page_load_category (GsCategoryPage *self)
 
 		featured_query = gs_app_query_new ("category", featured_subcat,
 						   "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
-						   "sort-func", gs_utils_app_sort_name,
 						   "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 						   NULL);
 		featured_plugin_job = gs_plugin_job_list_apps_new (featured_query,
@@ -539,7 +733,6 @@ gs_category_page_load_category (GsCategoryPage *self)
 						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
 				       "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 						       GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-				       "sort-func", _max_results_sort_cb,
 				       "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 				       NULL);
 	main_plugin_job = gs_plugin_job_list_apps_new (main_query,
@@ -602,33 +795,6 @@ gs_category_page_get_category (GsCategoryPage *self)
 	return self->category;
 }
 
-static gint
-recently_updated_sort_cb (GtkFlowBoxChild *child1,
-                          GtkFlowBoxChild *child2,
-                          gpointer         user_data)
-{
-	GsSummaryTile *tile1 = GS_SUMMARY_TILE (child1);
-	GsSummaryTile *tile2 = GS_SUMMARY_TILE (child2);
-	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (tile1));
-	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (tile2));
-	guint64 release_date1 = 0, release_date2 = 0;
-
-	/* Placeholder tiles have no app. */
-	if (app1 != NULL)
-		release_date1 = gs_app_get_release_date (app1);
-	if (app2 != NULL)
-		release_date2 = gs_app_get_release_date (app2);
-
-	/* Don’t use the normal subtraction trick, as there’s the possibility
-	 * for overflow in the conversion from guint64 to gint. */
-	if (release_date1 > release_date2)
-		return -1;
-	else if (release_date2 > release_date1)
-		return 1;
-	else
-		return 0;
-}
-
 static void
 gs_category_page_init (GsCategoryPage *self)
 {
@@ -636,11 +802,8 @@ gs_category_page_init (GsCategoryPage *self)
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	/* Sort the recently updated apps by update date. */
-	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->recently_updated_flow_box),
-				    recently_updated_sort_cb,
-				    NULL,
-				    NULL);
+	/* Enable sorting on all flowboxes by default. */
+	gs_category_page_set_sort (self, TRUE);
 
 	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), NULL);
 }
