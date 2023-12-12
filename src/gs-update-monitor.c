@@ -1184,8 +1184,10 @@ static void
 get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
-	GsApp *app;
+	GsApp *os_upgrade_app = NULL;
+	guint64 latest_install_date = 0, now;
 	guint64 time_last_notified;
+	gboolean did_clamp = FALSE;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
 	g_autoptr(GNotification) notification = NULL;
@@ -1222,14 +1224,35 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		return;
 	}
 
+	for (guint i = 0; i < gs_app_list_length (apps); i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+		if (!latest_install_date || latest_install_date < gs_app_get_install_date (app))
+			latest_install_date = gs_app_get_install_date (app);
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM)
+			os_upgrade_app = app;
+	}
+
 	/* have we notified about this before */
-	app = gs_app_list_index (apps, 0);
 	g_settings_get (monitor->settings,
 			"install-timestamp", "x", &time_last_notified);
-	if (time_last_notified >= gs_app_get_install_date (app))
+	now = (guint64) g_get_real_time ();
+	if (time_last_notified > now) {
+		time_last_notified = now;
+		did_clamp = TRUE;
+	}
+	if (latest_install_date > now) {
+		latest_install_date = now;
+		did_clamp = TRUE;
+	}
+	if (time_last_notified >= latest_install_date) {
+		if (did_clamp) {
+			g_settings_set (monitor->settings,
+					"install-timestamp", "x", latest_install_date);
+		}
 		return;
+	}
 
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
+	if (os_upgrade_app != NULL) {
 		g_autofree gchar *message = NULL;
 
 		/* TRANSLATORS: Notification title when we've done a distro upgrade */
@@ -1239,8 +1262,8 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		 * distro upgrade. First %s is the distro name and the 2nd %s
 		 * is the version, e.g. "Welcome to Fedora 28!" */
 		message = g_strdup_printf (_("Welcome to %s %s!"),
-		                           gs_app_get_name (app),
-		                           gs_app_get_version (app));
+		                           gs_app_get_name (os_upgrade_app),
+		                           gs_app_get_version (os_upgrade_app));
 		g_notification_set_body (notification, message);
 	} else {
 		const gchar *message;
@@ -1269,7 +1292,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	/* update the timestamp so we don't show again */
 	g_settings_set (monitor->settings,
-			"install-timestamp", "x", gs_app_get_install_date (app));
+			"install-timestamp", "x", latest_install_date);
 
 	reset_update_notification_timestamp (monitor);
 }
