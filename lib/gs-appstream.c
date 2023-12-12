@@ -1087,6 +1087,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 GsPluginRefineFlags refine_flags,
 			 GError **error)
 {
+	GsAppQuality name_quality = GS_APP_QUALITY_HIGHEST;
 	const gchar *tmp;
 	guint64 timestamp;
 	g_autoptr(GPtrArray) bundles = NULL;
@@ -1126,6 +1127,10 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* types we can never launch */
 	switch (gs_app_get_kind (app)) {
+	case AS_COMPONENT_KIND_REPOSITORY:
+		/* plugins may know better name, than what there's set in the appstream for the repos */
+		name_quality = GS_APP_QUALITY_NORMAL;
+		/* fall-through */
 	case AS_COMPONENT_KIND_ADDON:
 	case AS_COMPONENT_KIND_CODEC:
 	case AS_COMPONENT_KIND_DRIVER:
@@ -1136,7 +1141,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	case AS_COMPONENT_KIND_LOCALIZATION:
 	case AS_COMPONENT_KIND_OPERATING_SYSTEM:
 	case AS_COMPONENT_KIND_RUNTIME:
-	case AS_COMPONENT_KIND_REPOSITORY:
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		break;
 	default:
@@ -1210,12 +1214,12 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* set name */
 	tmp = xb_node_query_text (component, "name", NULL);
 	if (tmp != NULL)
-		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, tmp);
+		gs_app_set_name (app, name_quality, tmp);
 
 	/* set summary */
 	tmp = xb_node_query_text (component, "summary", NULL);
 	if (tmp != NULL)
-		gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, tmp);
+		gs_app_set_summary (app, name_quality, tmp);
 
 	/* add urls */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) {
