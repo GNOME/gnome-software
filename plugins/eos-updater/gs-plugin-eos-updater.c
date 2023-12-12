@@ -941,6 +941,7 @@ typedef struct {
 	EosUpdaterState old_state;
 	gulong notify_id;
 	gulong cancelled_id;
+	guint idle_id;
 } WaitForStateChangeData;
 
 static void
@@ -1024,6 +1025,11 @@ wait_for_state_change_cb (GTask *task_unowned)
 	g_cancellable_disconnect (cancellable, data->cancelled_id);
 	data->cancelled_id = 0;
 
+	if (data->idle_id != 0) {
+		g_source_remove (data->idle_id);
+		data->idle_id = 0;
+	}
+
 	if (g_task_return_error_if_cancelled (task)) {
 		g_debug ("%s: Cancelled", G_STRFUNC);
 	} else {
@@ -1041,12 +1047,35 @@ wait_for_state_change_notify_cb (GObject    *object,
 	wait_for_state_change_cb (task);
 }
 
+static gboolean
+wait_for_state_change_idle_cb (gpointer user_data)
+{
+	g_autoptr(GTask) task = G_TASK (user_data);
+	WaitForStateChangeData *data = g_task_get_task_data (task);
+	/* it can be zeroed when the "state change" had been called meanwhile;
+	   in that case the task is finished already */
+	if (data->idle_id != 0) {
+		data->idle_id = 0;
+		wait_for_state_change_cb (task);
+	}
+	return G_SOURCE_REMOVE;
+}
+
 static void
 wait_for_state_change_cancelled_cb (GCancellable *cancellable,
                                     gpointer      user_data)
 {
 	GTask *task = G_TASK (user_data);
-	wait_for_state_change_cb (task);
+	WaitForStateChangeData *data = g_task_get_task_data (task);
+	if (data->idle_id != 0)
+		return;
+	/* cannot call wait_for_state_change_cb() from the GCancellable::cancelled signal,
+	   because it calls g_cancellable_disconnect(), which leads to deadlock, thus
+	   postpone this to an idle callback */
+	data->idle_id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
+					 wait_for_state_change_idle_cb,
+					 g_object_ref (task),
+					 g_object_unref);
 }
 
 static gboolean
