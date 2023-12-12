@@ -220,6 +220,14 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("No User Device Access"),
 				    _("Cannot access devices such as webcams or gaming controllers"));
 		add_permission_row (self->permissions_list, &chosen_rating,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES) != 0,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION,
+				    "input-keyboard-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("Input Device Access"),
+				    _("Can access input devices"),
+				    NULL, NULL, NULL);
+		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "computer-chip-symbolic",

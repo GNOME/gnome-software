@@ -271,6 +271,8 @@ perms_from_metadata (GKeyFile *keyfile)
 	strv = g_key_file_get_string_list (keyfile, "Context", "devices", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "all"))
 		flags |= GS_APP_PERMISSIONS_FLAGS_DEVICES;
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "input"))
+		flags |= GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES;
 	if (strv != NULL && (g_strv_contains ((const gchar * const*)strv, "shm") ||
 			     g_strv_contains ((const gchar * const*)strv, "kvm")))
 		flags |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES;
