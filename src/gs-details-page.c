@@ -144,7 +144,7 @@ struct _GsDetailsPage
 	GtkLabel		*developer_name_label;
 	GtkWidget		*developer_verified_image;
 	GtkWidget		*developer_verified_label;
-	GtkWidget		*label_failed;
+	AdwStatusPage           *page_failed;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_featured_review;
 	GtkWidget		*list_box_reviews_summary;
@@ -1998,7 +1998,7 @@ gs_details_page_load_stage1_cb (GObject *source,
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
 		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
-		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
+		adw_status_page_set_title (ADW_STATUS_PAGE (self->page_failed), str);
 		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 		return;
 	}
@@ -2014,7 +2014,7 @@ gs_details_page_load_stage1_cb (GObject *source,
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
 		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
-		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
+		adw_status_page_set_title (ADW_STATUS_PAGE (self->page_failed), str);
 		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 		return;
 	}
@@ -2681,7 +2681,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_name_label);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_verified_image);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_verified_label);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, page_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_featured_review);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews_summary);
@@ -2904,7 +2904,7 @@ gs_details_page_metainfo_ready_cb (GObject *source_object,
 
 	app = g_task_propagate_pointer (G_TASK (result), &error);
 	if (error) {
-		gtk_label_set_text (GTK_LABEL (self->label_failed), error->message);
+		adw_status_page_set_title (ADW_STATUS_PAGE (self->page_failed), error->message);
 		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 		return;
 	}
