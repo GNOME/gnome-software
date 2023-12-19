@@ -60,6 +60,9 @@ struct _GsSafetyContextDialog
 	GBinding		*license_label_binding;  /* (owned) (nullable) */
 	GtkLabel		*source_label;
 	GBinding		*source_label_binding;  /* (owned) (nullable) */
+	GtkWidget		*packagename_row;
+	GtkLabel		*packagename_title;
+	GtkLabel		*packagename_value;
 	GtkLabel		*sdk_label;
 	GtkImage		*sdk_eol_image;
 	GtkWidget		*sdk_row;
@@ -667,6 +670,9 @@ gs_safety_context_dialog_class_init (GsSafetyContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, permissions_list);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, license_label);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, source_label);
+	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, packagename_row);
+	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, packagename_title);
+	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, packagename_value);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_label);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_eol_image);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_row);
@@ -741,6 +747,8 @@ gs_safety_context_dialog_set_app (GsSafetyContextDialog *self,
 	g_set_object (&self->app, app);
 
 	if (self->app != NULL) {
+		const gchar *packagename_value;
+
 		self->app_notify_handler_permissions = g_signal_connect (self->app, "notify::permissions", G_CALLBACK (app_notify_cb), self);
 		self->app_notify_handler_name = g_signal_connect (self->app, "notify::name", G_CALLBACK (app_notify_cb), self);
 		self->app_notify_handler_quirk = g_signal_connect (self->app, "notify::quirk", G_CALLBACK (app_notify_cb), self);
@@ -751,6 +759,21 @@ gs_safety_context_dialog_set_app (GsSafetyContextDialog *self,
 		self->license_label_binding = g_object_bind_property_full (self->app, "license", self->license_label, "label", G_BINDING_SYNC_CREATE,
 									   sanitize_license_text_cb, NULL, NULL, NULL);
 		self->source_label_binding = g_object_bind_property (self->app, "origin-ui", self->source_label, "label", G_BINDING_SYNC_CREATE);
+
+		packagename_value = gs_app_get_metadata_item (app, "GnomeSoftware::packagename-value");
+		if (packagename_value != NULL && *packagename_value != '\0') {
+			const gchar *packagename_title = gs_app_get_metadata_item (app, "GnomeSoftware::packagename-title");
+			if (packagename_title == NULL || *packagename_title == '\0') {
+				/* Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’). */
+				packagename_title = _("Package");
+			}
+			gtk_label_set_label (self->packagename_title, packagename_title);
+			gtk_label_set_label (self->packagename_value, packagename_value);
+		}
+
+		gtk_widget_set_visible (self->packagename_row, packagename_value != NULL && *packagename_value != '\0');
+	} else {
+		gtk_widget_set_visible (self->packagename_row, FALSE);
 	}
 
 	/* Update the UI. */

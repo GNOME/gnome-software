@@ -2138,6 +2138,7 @@ resolve_installed_packages_app (GsPlugin *plugin,
 
 	if (pkg) {
 		gs_app_set_version (app, rpm_ostree_package_get_evr (pkg));
+		gs_app_set_metadata (app, "GnomeSoftware::packagename-value", rpm_ostree_package_get_nevra (pkg));
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
 			/* Kind of hack, pending installs do not have available the desktop file */
 			if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DESKTOP_APP || gs_rpm_ostree_has_launchable (app))
@@ -2209,8 +2210,10 @@ resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
 		/* add default source */
 		name = headerGetString (h, RPMTAG_NAME);
 		if (gs_app_get_source_default (app) == NULL) {
-			g_debug ("rpm: setting source to %s", name);
+			const gchar *nevra = headerGetString (h, RPMTAG_NEVRA);
+			g_debug ("rpm: setting source to '%s' with nevra '%s'", name, nevra);
 			gs_app_add_source (app, name);
+			gs_app_set_metadata (app, "GnomeSoftware::packagename-value", nevra);
 			gs_app_set_management_plugin (app, plugin);
 			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 			app_set_rpm_ostree_packaging_format (app);
@@ -2353,12 +2356,14 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 				GsApp *app;
 				const gchar *key = NULL;
 				const gchar *evr = NULL;
+				const gchar *nevra = NULL;
 				const gchar *reponame = NULL;
 				const gchar *name = NULL;
 				const gchar *summary = NULL;
 
 				if (!g_variant_dict_lookup (dict, "key", "&s", &key) ||
 				    !g_variant_dict_lookup (dict, "evr", "&s", &evr) ||
+				    !g_variant_dict_lookup (dict, "nevra", "&s", &nevra) ||
 				    !g_variant_dict_lookup (dict, "reponame", "&s", &reponame) ||
 				    !g_variant_dict_lookup (dict, "name", "&s", &name) ||
 				    !g_variant_dict_lookup (dict, "summary", "&s", &summary)) {
@@ -2372,6 +2377,8 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 				gs_app_set_version (app, evr);
 				if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 					gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+
+				gs_app_set_metadata (app, "GnomeSoftware::packagename-value", nevra);
 
 				/* anything not part of the base system can be removed */
 				gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
@@ -2672,6 +2679,10 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		str = headerGetString (h, RPMTAG_DESCRIPTION);
 		if (str && *str)
 			gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, str);
+
+		str = headerGetString (h, RPMTAG_NEVRA);
+		if (str && *str)
+			gs_app_set_metadata (app, "GnomeSoftware::packagename-value", str);
 	}
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
@@ -2901,6 +2912,7 @@ list_apps_thread_cb (GTask        *task,
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_add_source (app, name);
+		gs_app_set_metadata (app, "GnomeSoftware::packagename-value", nevra);
 
 		gs_plugin_cache_add (GS_PLUGIN (self), nevra, app);
 		gs_app_list_add (list, app);

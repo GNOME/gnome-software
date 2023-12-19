@@ -718,6 +718,7 @@ gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_add_source (app, pk_package_get_name (package));
 	gs_app_add_source_id (app, pk_package_get_id (package));
+	gs_plugin_packagekit_set_package_name (app, package);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 			 pk_package_get_name (package));
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
@@ -2871,6 +2872,7 @@ gs_plugin_packagekit_local_check_installed (GsPluginPackagekit  *self,
 		for (guint i = 0; i < packages->len; i++){
 			PkPackage *pkg = g_ptr_array_index (packages, i);
 			gs_app_add_source_id (app, pk_package_get_id (pkg));
+			gs_plugin_packagekit_set_package_name (app, pkg);
 			if (!is_higher_version &&
 			    as_vercmp_simple (pk_package_get_version (pkg), app_version) < 0)
 				is_higher_version = TRUE;
@@ -2898,6 +2900,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
+	g_autofree gchar *packagename = NULL;
 	g_auto(GStrv) files = NULL;
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GPtrArray) array = NULL;
@@ -2995,6 +2998,11 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		gs_app_set_license (app, GS_APP_QUALITY_LOWEST, license_spdx);
 	}
 	add_quirks_from_package_name (app, split[PK_PACKAGE_ID_NAME]);
+	packagename = g_strdup_printf ("%s-%s.%s",
+					split[PK_PACKAGE_ID_NAME],
+					split[PK_PACKAGE_ID_VERSION],
+					split[PK_PACKAGE_ID_ARCH]);
+	gs_app_set_metadata (app, "GnomeSoftware::packagename-value", packagename);
 
 	/* is already installed? */
 	if (!gs_plugin_packagekit_local_check_installed (self,
@@ -3178,6 +3186,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		package_id = pk_package_get_id (pkg);
 		split = g_strsplit (package_id, ";", 4);
 		gs_plugin_packagekit_set_packaging_format (plugin, app);
+		gs_plugin_packagekit_set_package_name (app, pkg);
 		gs_app_add_source (app, split[0]);
 		gs_app_set_update_version (app, split[1]);
 		gs_app_set_management_plugin (app, plugin);

@@ -544,6 +544,7 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_flatpak_claim_app (self, app);
 	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
 	gs_app_add_source (app, ref_tmp);
+	gs_app_set_metadata (app, "GnomeSoftware::packagename-value",  ref_tmp);
 	gs_plugin_refine_item_scope (self, app);
 
 	/* flatpak specific */
@@ -2623,6 +2624,7 @@ gs_flatpak_create_runtime (GsFlatpak   *self,
 	gs_flatpak_claim_app (self, app);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
+	gs_app_set_metadata (app, "GnomeSoftware::packagename-value",  source);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
 	gs_app_set_branch (app, split[2]);
 
@@ -2653,8 +2655,10 @@ gs_flatpak_create_runtime (GsFlatpak   *self,
 		/* since the cached runtime can have been created somewhere else
 		 * (we're using a global cache), we need to make sure that a
 		 * source is set */
-		if (gs_app_get_source_default (app_cache) == NULL)
+		if (gs_app_get_source_default (app_cache) == NULL) {
 			gs_app_add_source (app_cache, source);
+			gs_app_set_metadata (app_cache, "GnomeSoftware::packagename-value",  source);
+		}
 		return g_steal_pointer (&app_cache);
 	} else {
 		g_clear_object (&app_cache);
@@ -3846,6 +3850,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 					gs_flatpak_app_set_ref_name (new, split[1]);
 					gs_flatpak_app_set_ref_arch (new, split[2]);
 					gs_app_set_branch (new, split[3]);
+					gs_app_set_metadata (new, "GnomeSoftware::packagename-value", xref_str);
 				}
 			}
 		}
