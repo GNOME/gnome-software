@@ -1811,7 +1811,8 @@ static guint
 gs_appstream_count_component_for_groups (XbSilo      *silo,
                                          const gchar *desktop_group)
 {
-	guint limit = 10;
+	/* the overview page checks for 100 apps, then try to get them */
+	const guint limit = 100;
 	g_autofree gchar *xpath = NULL;
 	g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
 	g_autoptr(GPtrArray) array = NULL;
@@ -1871,7 +1872,6 @@ gs_appstream_refine_category_sizes (XbSilo        *silo,
 				}
 			}
 		}
-		continue;
 	}
 	return TRUE;
 }
