@@ -496,6 +496,7 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 
 		if (gs_category_get_icon_name (cat) != NULL) {
 			found_apps_cnt += gs_category_get_size (cat);
+			g_debug ("overview page found category '%s' which claims %u apps", gs_category_get_name (cat), gs_category_get_size (cat));
 			flowbox = GTK_FLOW_BOX (self->flowbox_categories);
 		} else
 			flowbox = GTK_FLOW_BOX (self->flowbox_iconless_categories);
@@ -524,6 +525,7 @@ out:
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2053 */
 	gtk_widget_set_visible (self->flowbox_categories, found_apps_cnt >= MIN_CATEGORIES_APPS);
 
+	g_debug ("overview page found %u category apps", found_apps_cnt);
 	if (found_apps_cnt < MIN_CATEGORIES_APPS && found_apps_cnt > 0) {
 		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 		GatherAppsData *gather_apps_data = g_new0 (GatherAppsData, 1);
