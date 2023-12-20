@@ -440,6 +440,7 @@ category_activated_cb (GsOverviewPage *self, GsCategoryTile *tile)
 typedef struct {
 	GsOverviewPage *page;  /* (unowned) */
 	GsPluginJobListCategories *job;  /* (owned) */
+	guint n_pending_ops;
 } GetCategoriesData;
 
 static void
@@ -452,13 +453,10 @@ get_categories_data_free (GetCategoriesData *data)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GetCategoriesData, get_categories_data_free)
 
 static void
-gs_overview_page_get_categories_cb (GObject *source_object,
-                                    GAsyncResult *res,
-                                    gpointer user_data)
+finish_verify_category_op (GetCategoriesData *op_data)
 {
-	g_autoptr(GetCategoriesData) data = g_steal_pointer (&user_data);
+	g_autoptr(GetCategoriesData) data = g_steal_pointer (&op_data);
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (data->page);
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	guint i;
 	GsCategory *cat;
 	GtkFlowBox *flowbox;
@@ -468,12 +466,15 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 	g_autoptr(GError) error = NULL;
 	GPtrArray *list = NULL;  /* (element-type GsCategory) */
 
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
-		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("failed to get categories: %s", error->message);
-		goto out;
+	data->n_pending_ops--;
+	if (data->n_pending_ops > 0) {
+		/* to not be freed */
+		g_steal_pointer (&data);
+		return;
 	}
+
+	if (g_cancellable_is_cancelled (self->cancellable))
+		return;
 
 	list = gs_plugin_job_list_categories_get_result_list (data->job);
 
@@ -488,7 +489,7 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 	 * be visually important, and are listed near the top of the page.
 	 * Categories without icons are listed in a separate flowbox at the
 	 * bottom of the page. Typically they are addons. */
-	for (i = 0; i < list->len; i++) {
+	for (i = 0; list != NULL && i < list->len; i++) {
 		cat = GS_CATEGORY (g_ptr_array_index (list, i));
 		if (gs_category_get_size (cat) == 0)
 			continue;
@@ -510,7 +511,6 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 				     g_object_ref (cat));
 	}
 
-out:
 	/* Show the heading for the iconless categories iff there are any. */
 	gtk_widget_set_visible (self->iconless_categories_heading,
 				gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->flowbox_iconless_categories), 0) != NULL);
@@ -534,7 +534,7 @@ out:
 		gather_apps_data->self = g_object_ref (self);
 		gather_apps_data->list = gs_app_list_new ();
 
-		for (i = 0; i < list->len; i++) {
+		for (i = 0; list != NULL && i < list->len; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
 			GsCategory *subcat;
@@ -576,6 +576,122 @@ out:
 	}
 
 	gs_overview_page_decrement_action_cnt (self);
+}
+
+typedef struct {
+	GsOverviewPage *page;  /* (unowned) */
+	GetCategoriesData *op_data; /* (unowned) */
+	GsCategory *category;  /* (owned) */
+} VerifyCategoryData;
+
+static void
+verify_category_data_free (VerifyCategoryData *data)
+{
+	g_clear_object (&data->category);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (VerifyCategoryData, verify_category_data_free)
+
+static void
+gs_overview_page_verify_category_cb (GObject *source_object,
+                                     GAsyncResult *res,
+                                     gpointer user_data)
+{
+	g_autoptr(VerifyCategoryData) data = user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &local_error);
+	if (list == NULL) {
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to get apps for category: %s", local_error->message);
+		g_debug ("Failed to get category content '%s' for overview page: %s", gs_category_get_id (data->category), local_error->message);
+	} else {
+		GsCategory *all_subcat = gs_category_find_child (data->category, "all");
+		guint size = gs_app_list_length (list);
+		g_debug ("overview page verify category '%s' size:%u~>%u subcat:'%s' size:%u~>%u",
+			gs_category_get_id (data->category), gs_category_get_size (data->category), size,
+			gs_category_get_id (all_subcat), gs_category_get_size (all_subcat), size);
+		gs_category_set_size (data->category, size);
+		gs_category_set_size (all_subcat, size);
+	}
+
+	finish_verify_category_op (data->op_data);
+}
+
+static void
+gs_overview_page_get_categories_list_cb (GObject *source_object,
+					 GAsyncResult *res,
+					 gpointer user_data)
+{
+	g_autoptr(GetCategoriesData) data = g_steal_pointer (&user_data);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (data->page);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(GError) error = NULL;
+
+	g_assert (data->n_pending_ops == 0);
+
+	data->n_pending_ops++;
+
+	/* The apps can be mentioned in the appstream data, but no plugin may provide actual app,
+	   thus try to get the content as the Categories page and fine tune the numbers appropriately. */
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to get categories: %s", error->message);
+	} else {
+		g_autoptr(GPtrArray) verify_categories = NULL; /* (element-type GsCategory) */
+		GPtrArray *list = NULL; /* (element-type GsCategory) */
+
+		list = gs_plugin_job_list_categories_get_result_list (data->job);
+		verify_categories = g_ptr_array_new_full (list != NULL ? list->len : 0, g_object_unref);
+		for (guint i = 0; list != NULL && i < list->len; i++) {
+			GsCategory *category = g_ptr_array_index (list, i);
+			if (gs_category_get_size (category) > 0 &&
+			    gs_category_find_child (category, "all") != NULL) {
+				g_ptr_array_add (verify_categories, g_object_ref (category));
+			}
+		}
+		if (verify_categories->len > 0 && !g_cancellable_is_cancelled (self->cancellable)) {
+			for (guint i = 0; i < verify_categories->len; i++) {
+				GsCategory *category = g_ptr_array_index (verify_categories, i);
+				GsCategory *all_subcat = gs_category_find_child (category, "all");
+				g_autoptr(GsAppQuery) query = NULL;
+				g_autoptr(GsPluginJob) plugin_job = NULL;
+				VerifyCategoryData *ver_data;
+
+				g_assert (all_subcat != NULL);
+
+				data->n_pending_ops++;
+
+				ver_data = g_new0 (VerifyCategoryData, 1);
+				ver_data->page = self;
+				ver_data->op_data = data;
+				ver_data->category = g_object_ref (category);
+
+				query = gs_app_query_new ("category", all_subcat,
+							  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
+							  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+							  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
+							  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
+							  NULL);
+				plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+				gs_plugin_loader_job_process_async (plugin_loader,
+								    plugin_job,
+								    self->cancellable,
+								    gs_overview_page_verify_category_cb,
+								    ver_data);
+			}
+
+			finish_verify_category_op (g_steal_pointer (&data));
+			return;
+		}
+	}
+
+	finish_verify_category_op (g_steal_pointer (&data));
 }
 
 static void
@@ -967,7 +1083,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		data->job = g_object_ref (GS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job));
 
 		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-						    self->cancellable, gs_overview_page_get_categories_cb,
+						    self->cancellable, gs_overview_page_get_categories_list_cb,
 						    g_steal_pointer (&data));
 		self->action_cnt++;
 	}
