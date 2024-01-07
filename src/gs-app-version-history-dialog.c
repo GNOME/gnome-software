@@ -77,6 +77,8 @@ gs_app_version_history_dialog_class_init (GsAppVersionHistoryDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-version-history-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryDialog, listbox);
+
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 GtkWidget *

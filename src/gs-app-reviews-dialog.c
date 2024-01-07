@@ -426,6 +426,8 @@ gs_app_reviews_dialog_class_init (GsAppReviewsDialogClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsAppReviewsDialog, listbox);
 	gtk_widget_class_bind_template_child (widget_class, GsAppReviewsDialog, stack);
+
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 static void
