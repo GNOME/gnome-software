@@ -20,6 +20,8 @@
 
   <template class="GsShell" parent="AdwApplicationWindow">
     <property name="visible">False</property>
+    <property name="width-request">360</property>
+    <property name="height-request">400</property>
     <property name="default-width">1200</property>
     <property name="default-height">800</property>
     <property name="title" translatable="yes">Software</property>
@@ -81,6 +83,13 @@
         <!-- Mouse hardware back button -->
         <property name="button">8</property>
         <signal name="pressed" handler="window_button_pressed_cb"/>
+      </object>
+    </child>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 550sp</condition>
+        <setter object="main_header" property="title-widget"/>
+        <setter object="sidebar_switcher" property="reveal">True</setter>
       </object>
     </child>
     <child>
@@ -216,13 +225,11 @@
                               <object class="AdwLeafletPage">
                                 <property name="name">main</property>
                                 <property name="child">
-                                  <object class="GtkBox" id="main_box">
-                                    <property name="orientation">vertical</property>
-                                    <child>
+                                  <object class="AdwToolbarView">
+                                    <child type="top">
                                       <object class="AdwHeaderBar" id="main_header">
                                         <property name="hexpand">True</property>
                                         <property name="show-end-title-buttons">True</property>
-                                        <property name="centering-policy">loose</property>
                                         <child type="start">
                                           <object class="GtkToggleButton" id="search_button">
                                             <property name="can_focus">True</property>
@@ -253,16 +260,16 @@
                                             </style>
                                           </object>
                                         </child>
-                                        <child type="title">
-                                          <object class="AdwViewSwitcherTitle" id="title_switcher">
+                                        <property name="title-widget">
+                                          <object class="AdwViewSwitcher">
                                             <property name="stack">stack_main</property>
-                                            <property name="title" bind-source="GsShell" bind-property="title" bind-flags="sync-create"/>
+                                            <property name="policy">wide</property>
                                           </object>
-                                        </child>
+                                        </property>
                                       </object>
                                     </child>
 
-                                    <child>
+                                    <child type="top">
                                       <object class="GtkSearchBar" id="search_bar">
                                         <property name="key-capture-widget">GsShell</property>
                                         <signal name="notify::search-mode-enabled" handler="search_bar_search_mode_enabled_changed_cb"/>
@@ -283,14 +290,14 @@
                                         </child>
                                       </object>
                                     </child>
-                                    <child>
+                                    <child type="top">
                                       <object class="AdwBanner" id="metered_updates_banner">
                                         <property name="title" translatable="yes">Metered network ‒ automatic updates paused</property>
                                         <property name="button-label" translatable="yes">Find Out _More</property>
                                         <signal name="button-clicked" handler="gs_shell_metered_updates_banner_clicked_cb" swapped="yes"/>
                                       </object>
                                     </child>
-                                    <child>
+                                    <property name="content">
                                       <object class="AdwViewStack" id="stack_main">
                                         <property name="hexpand">True</property>
                                         <property name="vexpand">True</property>
@@ -350,10 +357,9 @@
                                           </object>
                                         </child>
                                       </object>
-                                    </child>
-                                    <child>
+                                    </property>
+                                    <child type="bottom">
                                       <object class="AdwViewSwitcherBar" id="sidebar_switcher">
-                                        <property name="reveal" bind-source="title_switcher" bind-property="title-visible" bind-flags="sync-create"/>
                                         <property name="stack">stack_main</property>
                                       </object>
                                     </child>
@@ -366,9 +372,8 @@
                               <object class="AdwLeafletPage">
                                 <property name="name">sub</property>
                                 <property name="child">
-                                  <object class="GtkBox" id="sub_box">
-                                    <property name="orientation">vertical</property>
-                                    <child>
+                                  <object class="AdwToolbarView">
+                                    <child type="top">
                                       <object class="AdwHeaderBar" id="sub_header">
                                         <property name="show-end-title-buttons">True</property>
                                         <property name="hexpand">True</property>
@@ -401,7 +406,7 @@
                                         </child>
                                       </object>
                                     </child>
-                                    <child>
+                                    <property name="content">
                                       <object class="AdwViewStack" id="stack_sub">
                                         <property name="hexpand">True</property>
                                         <property name="vexpand">True</property>
@@ -437,7 +442,7 @@
                                           </object>
                                         </child>
                                       </object>
-                                    </child>
+                                    </property>
                                   </object>
                                 </property>
                               </object>
@@ -452,9 +457,8 @@
                       <object class="AdwLeafletPage">
                         <property name="name">details</property>
                         <property name="child">
-                          <object class="GtkBox" id="details_box">
-                            <property name="orientation">vertical</property>
-                            <child>
+                          <object class="AdwToolbarView">
+                            <child type="top">
                               <object class="AdwHeaderBar" id="details_header">
                                 <property name="hexpand">True</property>
                                 <property name="show-end-title-buttons">True</property>
@@ -483,13 +487,13 @@
                                 </child>
                               </object>
                             </child>
-                            <child>
+                            <property name="content">
                               <object class="GsDetailsPage" id="details_page">
                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                                 <signal name="metainfo-loaded" handler="gs_shell_details_page_metainfo_loaded_cb"/>
                                 <signal name="app-clicked" handler="details_page_app_clicked_cb"/>
                               </object>
-                            </child>
+                            </property>
                           </object>
                         </property>
                       </object>
@@ -505,17 +509,11 @@
           <object class="AdwViewStackPage">
             <property name="name">loading</property>
             <property name="child">
-              <object class="GtkOverlay">
-                <child type="overlay">
-                  <object class="GtkHeaderBar">
-                    <property name="show_title_buttons">True</property>
-                    <property name="valign">start</property>
-                    <style>
-                      <class name="flat"/>
-                    </style>
-                  </object>
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar"/>
                 </child>
-                <child>
+                <property name="content">
                   <object class="GtkWindowHandle">
                     <child>
                       <object class="GsLoadingPage" id="loading_page">
@@ -523,7 +521,7 @@
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </property>
           </object>

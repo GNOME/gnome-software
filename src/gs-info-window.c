@@ -33,7 +33,7 @@
 
 typedef struct
 {
-	GtkWidget	*overlay;
+	GtkWidget	*view;
 } GsInfoWindowPrivate;
 
 static void gs_info_window_buildable_init (GtkBuildableIface *iface);
@@ -59,7 +59,7 @@ gs_info_window_buildable_add_child (GtkBuildable *buildable,
 	GsInfoWindow *self = GS_INFO_WINDOW (buildable);
 	GsInfoWindowPrivate *priv = gs_info_window_get_instance_private (self);
 
-	if (!priv->overlay)
+	if (!priv->view)
 		parent_buildable_iface->add_child (buildable, builder, child, type);
 	else if (GTK_IS_WIDGET (child))
 		gs_info_window_set_child (self, GTK_WIDGET (child));
@@ -83,7 +83,7 @@ gs_info_window_class_init (GsInfoWindowClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-info-window.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsInfoWindow, overlay);
+	gtk_widget_class_bind_template_child_private (widget_class, GsInfoWindow, view);
 
 	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
@@ -120,5 +120,5 @@ gs_info_window_set_child (GsInfoWindow *self,
 	g_return_if_fail (widget == NULL || GTK_IS_WIDGET (widget));
 
 	priv = gs_info_window_get_instance_private (self);
-	gtk_overlay_set_child (GTK_OVERLAY (priv->overlay), widget);
+	adw_toolbar_view_set_content (ADW_TOOLBAR_VIEW (priv->view), widget);
 }

@@ -25,11 +25,12 @@ struct _GsUpdateDialog
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
 	GsApp		*app;
-	GtkWidget	*leaflet;
+	GtkWidget	*navigation_view;
 	GtkWidget	*list_box_installed_updates;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
 	AdwWindowTitle	*window_title;
+	AdwNavigationPage	*default_page;
 	gboolean	 showing_installed_updates;
 };
 
@@ -44,31 +45,6 @@ static GParamSpec *obj_props[PROP_APP + 1]  = { NULL, };
 
 static void gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog);
 static void gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app);
-
-static void
-leaflet_child_transition_cb (AdwLeaflet *leaflet, GParamSpec *pspec, GsUpdateDialog *dialog)
-{
-	GtkWidget *child;
-
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	if (adw_leaflet_get_child_transition_running (leaflet))
-		return;
-
-	while ((child = adw_leaflet_get_adjacent_child (leaflet, ADW_NAVIGATION_DIRECTION_FORWARD)))
-		adw_leaflet_remove (leaflet, child);
-
-	child = adw_leaflet_get_visible_child (leaflet);
-G_GNUC_END_IGNORE_DEPRECATIONS
-	if (child != NULL && g_object_class_find_property (G_OBJECT_CLASS (GTK_WIDGET_GET_CLASS (child)), "title") != NULL) {
-		g_autofree gchar *title = NULL;
-		g_object_get (G_OBJECT (child), "title", &title, NULL);
-		gtk_window_set_title (GTK_WINDOW (dialog), title);
-	} else if (dialog->showing_installed_updates) {
-		gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
-	} else {
-		gtk_window_set_title (GTK_WINDOW (dialog), "");
-	}
-}
 
 static void
 installed_updates_row_activated_cb (GsUpdateList *update_list,
@@ -151,7 +127,7 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	dialog->showing_installed_updates = TRUE;
 
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
-	gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
+	adw_navigation_page_set_title (dialog->default_page, _("Installed Updates"));
 
 	gtk_spinner_start (GTK_SPINNER (dialog->spinner));
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
@@ -175,14 +151,6 @@ unset_focus (GtkWidget *widget)
 	focus = gtk_window_get_focus (GTK_WINDOW (widget));
 	if (GTK_IS_LABEL (focus))
 		gtk_label_select_region (GTK_LABEL (focus), 0, 0);
-}
-
-static void
-back_clicked_cb (GtkWidget *widget, GsUpdateDialog *dialog)
-{
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	adw_leaflet_navigate (ADW_LEAFLET (dialog->leaflet), ADW_NAVIGATION_DIRECTION_BACK);
-G_GNUC_END_IGNORE_DEPRECATIONS
 }
 
 static void
@@ -214,21 +182,12 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 		gs_os_update_page_set_app (GS_OS_UPDATE_PAGE (page), app);
 		g_signal_connect (page, "app-activated",
 				  G_CALLBACK (app_activated_cb), dialog);
-		gs_os_update_page_set_show_back_button (GS_OS_UPDATE_PAGE (page), dialog->showing_installed_updates);
 	} else {
 		page = gs_app_details_page_new (dialog->plugin_loader);
 		gs_app_details_page_set_app (GS_APP_DETAILS_PAGE (page), app);
 	}
 
-	g_signal_connect (page, "back-clicked",
-			  G_CALLBACK (back_clicked_cb), dialog);
-
-	gtk_widget_set_visible (page, TRUE);
-
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	adw_leaflet_append (ADW_LEAFLET (dialog->leaflet), page);
-	adw_leaflet_set_visible_child (ADW_LEAFLET (dialog->leaflet), page);
-G_GNUC_END_IGNORE_DEPRECATIONS
+	adw_navigation_view_push (ADW_NAVIGATION_VIEW (dialog->navigation_view), ADW_NAVIGATION_PAGE (page));
 }
 
 static void
@@ -283,21 +242,9 @@ gs_update_dialog_constructed (GObject *object)
 	g_assert (dialog->plugin_loader);
 
 	if (dialog->app) {
-		GtkWidget *child;
-
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-		child = adw_leaflet_get_visible_child (ADW_LEAFLET (dialog->leaflet));
-		adw_leaflet_remove (ADW_LEAFLET (dialog->leaflet), child);
-G_GNUC_END_IGNORE_DEPRECATIONS
+		adw_navigation_view_replace (ADW_NAVIGATION_VIEW (dialog->navigation_view), NULL, 0);
 
 		gs_update_dialog_show_update_details (dialog, dialog->app);
-
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-		child = adw_leaflet_get_visible_child (ADW_LEAFLET (dialog->leaflet));
-G_GNUC_END_IGNORE_DEPRECATIONS
-		/* It can be either the app details page or the OS update page */
-		if (GS_IS_APP_DETAILS_PAGE (child))
-			gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);
 	} else {
 		gs_update_dialog_show_installed_updates (dialog);
 	}
@@ -375,12 +322,12 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-update-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, leaflet);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, navigation_view);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box_installed_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, window_title);
-	gtk_widget_class_bind_template_callback (widget_class, leaflet_child_transition_cb);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, default_page);
 
 	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 #include "gnome-software-private.h"
 
@@ -16,16 +16,11 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_OS_UPDATE_PAGE (gs_os_update_page_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsOsUpdatePage, gs_os_update_page, GS, OS_UPDATE_PAGE, GtkBox)
+G_DECLARE_FINAL_TYPE (GsOsUpdatePage, gs_os_update_page, GS, OS_UPDATE_PAGE, AdwNavigationPage)
 
 GtkWidget	*gs_os_update_page_new		(void);
 GsApp		*gs_os_update_page_get_app	(GsOsUpdatePage	*page);
 void		 gs_os_update_page_set_app	(GsOsUpdatePage	*page,
 						 GsApp		*app);
-gboolean	 gs_os_update_page_get_show_back_button
-						(GsOsUpdatePage *page);
-void		 gs_os_update_page_set_show_back_button
-						(GsOsUpdatePage *page,
-						 gboolean show_back_button);
 
 G_END_DECLS

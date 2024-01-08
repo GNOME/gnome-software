@@ -2,20 +2,18 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <requires lib="handy" version="1.0"/>
-  <template class="GsAppReviewsDialog" parent="GtkDialog">
+  <template class="GsAppReviewsDialog" parent="AdwWindow">
     <property name="title" translatable="yes">Reviews</property>
     <property name="default_width">550</property>
     <property name="default_height">600</property>
     <property name="width_request">318</property>
     <property name="height_request">400</property>
-    <property name="use_header_bar">1</property>
-    <child internal-child="headerbar">
-      <object class="AdwHeaderBar"/>
-    </child>
-    <child internal-child="content_area">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
+    <property name="content">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar"/>
+        </child>
+        <property name="content">
           <object class="GtkStack" id="stack">
             <child>
               <object class="GtkStackPage">
@@ -58,8 +56,8 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
-    </child>
+    </property>
   </template>
 </interface>

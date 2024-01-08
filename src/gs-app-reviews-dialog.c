@@ -17,7 +17,7 @@
 
 struct _GsAppReviewsDialog
 {
-	GtkDialog	 parent_instance;
+	AdwWindow	 parent_instance;
 	GtkWidget	*listbox;
 	GtkWidget	*stack;
 
@@ -28,7 +28,7 @@ struct _GsAppReviewsDialog
 	GsOdrsProvider	*odrs_provider;  /* (nullable) (owned), NULL if reviews are disabled */
 };
 
-G_DEFINE_TYPE (GsAppReviewsDialog, gs_app_reviews_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsAppReviewsDialog, gs_app_reviews_dialog, ADW_TYPE_WINDOW)
 
 typedef enum {
 	PROP_APP = 1,
@@ -426,6 +426,8 @@ gs_app_reviews_dialog_class_init (GsAppReviewsDialogClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsAppReviewsDialog, listbox);
 	gtk_widget_class_bind_template_child (widget_class, GsAppReviewsDialog, stack);
+
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 static void
@@ -469,7 +471,6 @@ gs_app_reviews_dialog_new (GtkWindow *parent, GsApp *app, GsOdrsProvider *odrs_p
 			     "odrs-provider", odrs_provider,
 			     "plugin-loader", plugin_loader,
 			     "transient-for", parent,
-			     "use-header-bar", TRUE,
 			     NULL);
 
 	return GTK_WIDGET (self);

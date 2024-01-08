@@ -16,7 +16,7 @@
 
 struct _GsBasicAuthDialog
 {
-	GtkWindow		 parent_instance;
+	AdwWindow		 parent_instance;
 
 	GsBasicAuthCallback	 callback;
 	gpointer		 callback_data;
@@ -28,7 +28,7 @@ struct _GsBasicAuthDialog
 	GtkEntry		*password_entry;
 };
 
-G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, GTK_TYPE_WINDOW)
+G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, ADW_TYPE_WINDOW)
 
 static void
 cancel_button_clicked_cb (GsBasicAuthDialog *dialog)
