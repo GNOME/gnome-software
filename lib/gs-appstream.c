@@ -617,6 +617,7 @@ typedef enum {
 	ELEMENT_KIND_CUSTOM,
 	ELEMENT_KIND_DESCRIPTION,
 	ELEMENT_KIND_DEVELOPER_NAME,
+	ELEMENT_KIND_DEVELOPER,
 	ELEMENT_KIND_ICON,
 	ELEMENT_KIND_ID,
 	ELEMENT_KIND_INFO,
@@ -652,6 +653,7 @@ gs_appstream_get_element_kind (const gchar *element_name)
 		{ "content_rating", ELEMENT_KIND_CONTENT_RATING },
 		{ "custom", ELEMENT_KIND_CUSTOM },
 		{ "description", ELEMENT_KIND_DESCRIPTION },
+		{ "developer", ELEMENT_KIND_DEVELOPER },
 		{ "developer_name", ELEMENT_KIND_DEVELOPER_NAME },
 		{ "icon", ELEMENT_KIND_ICON },
 		{ "id", ELEMENT_KIND_ID },
@@ -694,6 +696,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 {
 	GsAppQuality name_quality = GS_APP_QUALITY_HIGHEST;
 	const gchar *tmp;
+	const gchar *developer_name_fallback = NULL;
 	gboolean has_name = FALSE, has_metadata_license = FALSE;
 	gboolean had_icons, had_sources;
 	gboolean locale_has_translations = FALSE;
@@ -904,12 +907,29 @@ gs_appstream_refine_app (GsPlugin *plugin,
 					gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, description);
 			}
 			break;
-		case ELEMENT_KIND_DEVELOPER_NAME:
+		case ELEMENT_KIND_DEVELOPER:
 			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME) > 0 &&
 			    gs_app_get_developer_name (app) == NULL) {
-				tmp = xb_node_get_text (child);
-				if (tmp != NULL)
-					gs_app_set_developer_name (app, tmp);
+				g_autoptr(XbNode) developer_child = NULL;
+				g_autoptr(XbNode) developer_next = NULL;
+				for (developer_child = xb_node_get_child (child);
+				     developer_child != NULL;
+				     g_object_unref (developer_child), developer_child = g_steal_pointer (&developer_next)) {
+					developer_next = xb_node_get_next (developer_child);
+					if (g_strcmp0 (xb_node_get_element (developer_child), "name") == 0) {
+						tmp = xb_node_get_text (developer_child);
+						if (tmp != NULL) {
+							gs_app_set_developer_name (app, tmp);
+							break;
+						}
+					}
+				}
+			}
+			break;
+		case ELEMENT_KIND_DEVELOPER_NAME:
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME) > 0 &&
+			    developer_name_fallback == NULL) {
+				developer_name_fallback = xb_node_get_text (child);
 			}
 			break;
 		case ELEMENT_KIND_ICON:
@@ -1385,6 +1405,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			break;
 		}
+	}
+
+	if (developer_name_fallback != NULL &&
+	    gs_app_get_developer_name (app) == NULL) {
+		gs_app_set_developer_name (app, developer_name_fallback);
 	}
 
 	/* try to detect old-style AppStream 'override'
