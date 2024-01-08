@@ -491,6 +491,10 @@ gs_plugin_appstream_load_appstream_fn (GsPluginAppstream  *self,
 
 	/* add support for DEP-11 files */
 	xb_builder_source_add_adapter (source,
+				       "application/yaml",
+				       gs_plugin_appstream_load_dep11_cb,
+				       NULL, NULL);
+	xb_builder_source_add_adapter (source,
 				       "application/x-yaml",
 				       gs_plugin_appstream_load_dep11_cb,
 				       NULL, NULL);
