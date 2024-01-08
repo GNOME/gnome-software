@@ -865,7 +865,10 @@ get_remotes_cb (GObject      *source_object,
 			continue;
 
 		data->n_operations_pending++;
-		#if FWUPD_CHECK_VERSION(1, 9, 4)
+		#if FWUPD_CHECK_VERSION(2, 0, 0)
+		fwupd_client_refresh_remote_async (client, remote, FWUPD_CLIENT_DOWNLOAD_FLAG_NONE, cancellable,
+						   refresh_remote_cb, g_object_ref (task));
+		#elif FWUPD_CHECK_VERSION(1, 9, 4)
 		fwupd_client_refresh_remote2_async (client, remote, FWUPD_CLIENT_DOWNLOAD_FLAG_NONE, cancellable,
 						    refresh_remote_cb, g_object_ref (task));
 		#else
@@ -1897,7 +1900,11 @@ gs_plugin_fwupd_enable_repository_get_remotes_ready_cb (GObject      *source_obj
 			    fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_LOCAL &&
 			    !remote_cache_is_expired (remote, cache_age)) {
 				GCancellable *cancellable = g_task_get_cancellable (task);
-				#if FWUPD_CHECK_VERSION(1, 9, 4)
+				#if FWUPD_CHECK_VERSION(2, 0, 0)
+				fwupd_client_refresh_remote_async (self->client, remote, FWUPD_CLIENT_DOWNLOAD_FLAG_NONE, cancellable,
+								   gs_plugin_fwupd_enable_repository_remote_refresh_ready_cb,
+								   g_steal_pointer (&task));
+				#elif FWUPD_CHECK_VERSION(1, 9, 4)
 				fwupd_client_refresh_remote2_async (self->client, remote, FWUPD_CLIENT_DOWNLOAD_FLAG_NONE, cancellable,
 								    gs_plugin_fwupd_enable_repository_remote_refresh_ready_cb,
 								    g_steal_pointer (&task));
