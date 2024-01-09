@@ -1066,7 +1066,6 @@ gs_utils_invoke_reboot_ready2_cb (GObject *source_object,
 	if (ret_val != NULL) {
 		g_task_return_boolean (task, TRUE);
 	} else {
-		g_autoptr(GDBusConnection) bus = NULL;
 		GCancellable *cancellable;
 		const gchar *method_name = g_task_get_task_data (task);
 

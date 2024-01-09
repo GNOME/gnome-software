@@ -1149,10 +1149,7 @@ gs_plugin_appstream_refine_state (GsPluginAppstream  *self,
                                   GsApp              *app,
                                   GError            **error)
 {
-	g_autofree gchar *xpath = NULL;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
-	g_autoptr(XbNode) component = NULL;
 
 	/* Ignore apps with no ID */
 	if (gs_app_get_id (app) == NULL)
@@ -1455,8 +1452,6 @@ refine_wildcard (GsPluginAppstream    *self,
 {
 	const gchar *id;
 	GPtrArray *components;
-	g_autofree gchar *xpath = NULL;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 
 	/* not enough info to find */

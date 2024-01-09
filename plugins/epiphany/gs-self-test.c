@@ -194,8 +194,6 @@ int
 main (int argc, char **argv)
 {
 	gboolean ret;
-	g_autofree gchar *fn = NULL;
-	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
 	g_autoptr(GtDBusQueue) queue = NULL;

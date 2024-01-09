@@ -188,8 +188,6 @@ build_title (GsExtrasPage *self)
 static void
 gs_extras_page_update_ui_state (GsExtrasPage *self)
 {
-	g_autofree gchar *title = NULL;
-
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS)
 		return;
 

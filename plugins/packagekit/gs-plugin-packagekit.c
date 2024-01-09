@@ -3501,7 +3501,6 @@ get_permission_cb (GObject      *source_object,
 	g_autofree gchar *proxy_socks = NULL;
 	g_autofree gchar *no_proxy = NULL;
 	g_autofree gchar *pac = NULL;
-	g_autoptr(GError) error = NULL;
 	g_autoptr(GPermission) permission = NULL;
 	g_autoptr(GError) local_error = NULL;
 

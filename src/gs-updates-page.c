@@ -624,7 +624,6 @@ static void
 gs_updates_page_load (GsUpdatesPage *self)
 {
 	guint64 refine_flags;
-	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	if (self->action_cnt > 0)

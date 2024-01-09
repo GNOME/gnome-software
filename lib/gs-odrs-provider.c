@@ -274,7 +274,6 @@ gs_odrs_provider_parse_reviews (GsOdrsProvider  *self,
 	guint i;
 	g_autoptr(GHashTable) reviewer_ids = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
-	g_autoptr(GError) local_error = NULL;
 
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
@@ -724,9 +723,6 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 	g_autoptr(JsonGenerator) json_generator = NULL;
 	g_autoptr(JsonNode) json_root = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
-#if SOUP_CHECK_VERSION(3, 0, 0)
-	g_autoptr(GBytes) bytes = NULL;
-#endif
 	g_autoptr(GTask) task = NULL;
 	FetchReviewsForAppData *data;
 	g_autoptr(FetchReviewsForAppData) data_owned = NULL;

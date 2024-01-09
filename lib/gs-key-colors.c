@@ -71,16 +71,6 @@ typedef struct {
 	guint n_members;
 } CentroidAccumulator;
 
-static inline ClusterPixel8 *
-get_pixel (guint8 *pixels,
-           guint   x,
-           guint   y,
-           guint   rowstride,
-           guint   n_channels)
-{
-	return (ClusterPixel8 *) (pixels + y * rowstride + x * n_channels);
-}
-
 static inline guint
 color_distance (const Pixel8 *a,
                 const Pixel8 *b)

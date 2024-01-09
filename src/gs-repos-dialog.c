@@ -831,7 +831,6 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 {
 	g_autofree gchar *label_empty_text = NULL;
 	g_autofree gchar *os_name = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 

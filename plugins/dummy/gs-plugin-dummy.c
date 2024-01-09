@@ -739,9 +739,6 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	}
 
 	if (is_curated != GS_APP_QUERY_TRISTATE_UNSET) {
-		g_autoptr(GsApp) app1 = NULL;
-		g_autoptr(GsApp) app2 = NULL;
-
 		/* Hacky way of letting callers indicate which set of results
 		 * they want, for unit testing. */
 		if (max_results == 6) {
@@ -752,12 +749,13 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 				gs_app_list_add (list, app);
 			}
 		} else {
+			g_autoptr(GsApp) app = NULL;
 			/* add wildcard */
-			app1 = gs_app_new ("zeus.desktop");
-			gs_app_add_quirk (app1, GS_APP_QUIRK_IS_WILDCARD);
-			gs_app_set_metadata (app1, "GnomeSoftware::Creator",
+			app = gs_app_new ("zeus.desktop");
+			gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+			gs_app_set_metadata (app, "GnomeSoftware::Creator",
 					     gs_plugin_get_name (plugin));
-			gs_app_list_add (list, app1);
+			gs_app_list_add (list, app);
 		}
 	}
 
@@ -969,7 +967,6 @@ gs_plugin_dummy_update_apps_async (GsPlugin                           *plugin,
                                    gpointer                            user_data)
 {
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GsApp) app = NULL;
 
 	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
 						    progress_callback, progress_user_data,

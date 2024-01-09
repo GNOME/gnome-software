@@ -1495,69 +1495,66 @@ gchar *
 gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 {
 	g_autoptr(GPtrArray) cstrs = g_ptr_array_new ();
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID)
-		g_ptr_array_add (cstrs, "require-id");
+		g_ptr_array_add (cstrs, (gpointer) "require-id");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE)
-		g_ptr_array_add (cstrs, "require-license");
+		g_ptr_array_add (cstrs, (gpointer) "require-license");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL)
-		g_ptr_array_add (cstrs, "require-url");
+		g_ptr_array_add (cstrs, (gpointer) "require-url");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION)
-		g_ptr_array_add (cstrs, "require-description");
+		g_ptr_array_add (cstrs, (gpointer) "require-description");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)
-		g_ptr_array_add (cstrs, "require-size");
+		g_ptr_array_add (cstrs, (gpointer) "require-size");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING)
-		g_ptr_array_add (cstrs, "require-rating");
+		g_ptr_array_add (cstrs, (gpointer) "require-rating");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION)
-		g_ptr_array_add (cstrs, "require-version");
+		g_ptr_array_add (cstrs, (gpointer) "require-version");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY)
-		g_ptr_array_add (cstrs, "require-history");
+		g_ptr_array_add (cstrs, (gpointer) "require-history");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION)
-		g_ptr_array_add (cstrs, "require-setup-action");
+		g_ptr_array_add (cstrs, (gpointer) "require-setup-action");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS)
-		g_ptr_array_add (cstrs, "require-update-details");
+		g_ptr_array_add (cstrs, (gpointer) "require-update-details");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN)
-		g_ptr_array_add (cstrs, "require-origin");
+		g_ptr_array_add (cstrs, (gpointer) "require-origin");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED)
-		g_ptr_array_add (cstrs, "require-related");
+		g_ptr_array_add (cstrs, (gpointer) "require-related");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS)
-		g_ptr_array_add (cstrs, "require-addons");
+		g_ptr_array_add (cstrs, (gpointer) "require-addons");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES)
-		g_ptr_array_add (cstrs, "require-allow-packages");
+		g_ptr_array_add (cstrs, (gpointer) "require-allow-packages");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY)
-		g_ptr_array_add (cstrs, "require-update-severity");
+		g_ptr_array_add (cstrs, (gpointer) "require-update-severity");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED)
-		g_ptr_array_add (cstrs, "require-upgrade-removed");
+		g_ptr_array_add (cstrs, (gpointer) "require-upgrade-removed");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE)
-		g_ptr_array_add (cstrs, "require-provenance");
+		g_ptr_array_add (cstrs, (gpointer) "require-provenance");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
-		g_ptr_array_add (cstrs, "require-reviews");
+		g_ptr_array_add (cstrs, (gpointer) "require-reviews");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS)
-		g_ptr_array_add (cstrs, "require-review-ratings");
+		g_ptr_array_add (cstrs, (gpointer) "require-review-ratings");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
-		g_ptr_array_add (cstrs, "require-icon");
+		g_ptr_array_add (cstrs, (gpointer) "require-icon");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS)
-		g_ptr_array_add (cstrs, "require-permissions");
+		g_ptr_array_add (cstrs, (gpointer) "require-permissions");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
-		g_ptr_array_add (cstrs, "require-origin-hostname");
+		g_ptr_array_add (cstrs, (gpointer) "require-origin-hostname");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)
-		g_ptr_array_add (cstrs, "require-origin-ui");
+		g_ptr_array_add (cstrs, (gpointer) "require-origin-ui");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME)
-		g_ptr_array_add (cstrs, "require-runtime");
+		g_ptr_array_add (cstrs, (gpointer) "require-runtime");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS)
-		g_ptr_array_add (cstrs, "require-screenshots");
+		g_ptr_array_add (cstrs, (gpointer) "require-screenshots");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES)
-		g_ptr_array_add (cstrs, "require-categories");
+		g_ptr_array_add (cstrs, (gpointer) "require-categories");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP)
-		g_ptr_array_add (cstrs, "require-project-group");
+		g_ptr_array_add (cstrs, (gpointer) "require-project-group");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME)
-		g_ptr_array_add (cstrs, "require-developer-name");
+		g_ptr_array_add (cstrs, (gpointer) "require-developer-name");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS)
-		g_ptr_array_add (cstrs, "require-kudos");
+		g_ptr_array_add (cstrs, (gpointer) "require-kudos");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING)
-		g_ptr_array_add (cstrs, "content-rating");
-#pragma GCC diagnostic pop
+		g_ptr_array_add (cstrs, (gpointer) "content-rating");
 	if (cstrs->len == 0)
 		return g_strdup ("none");
 	g_ptr_array_add (cstrs, NULL);

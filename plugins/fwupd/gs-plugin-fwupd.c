@@ -967,7 +967,6 @@ gs_plugin_fwupd_download_async (GsPluginFwupd       *self,
 	g_autoptr(GTask) task = NULL;
 	DownloadData *data;
 	g_autoptr(DownloadData) data_owned = NULL;
-	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fwupd_download_async);
@@ -1150,7 +1149,6 @@ gs_plugin_fwupd_install_async (GsPluginFwupd                      *self,
 	g_autoptr(GTask) task = NULL;
 	InstallData *data;
 	g_autoptr(InstallData) data_owned = NULL;
-	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fwupd_install_async);
@@ -1528,7 +1526,6 @@ gs_plugin_fwupd_update_apps_async (GsPlugin                           *plugin,
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	UpdateAppsData *data;
 	g_autoptr(UpdateAppsData) data_owned = NULL;
-	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fwupd_update_apps_async);
