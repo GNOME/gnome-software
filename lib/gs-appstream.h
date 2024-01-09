@@ -85,6 +85,18 @@ gboolean	gs_appstream_url_to_app			(GsPlugin	*plugin,
 							 const gchar	*url,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_appstream_load_desktop_files	(XbBuilder	*builder,
+							 const gchar	*path,
+							 gboolean	*out_any_loaded,
+							 GFileMonitor  **out_file_monitor,
+							 GCancellable	*cancellable,
+							 GError		**error);
+GPtrArray	*gs_appstream_get_appstream_data_dirs	(void);
+void		 gs_appstream_add_current_locales	(XbBuilder	*builder);
+void		 gs_appstream_add_data_merge_fixup	(XbBuilder	*builder,
+							 GPtrArray	*appstream_paths,
+							 GPtrArray	*desktop_paths,
+							 GCancellable	*cancellable);
 void		 gs_appstream_component_add_extra_info	(XbBuilderNode	*component);
 void		 gs_appstream_component_add_keyword	(XbBuilderNode	*component,
 							 const gchar	*str);

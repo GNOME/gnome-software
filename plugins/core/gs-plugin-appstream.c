@@ -10,7 +10,6 @@
 #include <config.h>
 
 #include <glib/gi18n.h>
-#include <glib/gstdio.h>
 #include <errno.h>
 #include <gnome-software.h>
 #include <xmlb.h>
@@ -328,115 +327,6 @@ gs_plugin_appstream_load_appdata (GsPluginAppstream  *self,
 }
 
 static GInputStream *
-gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
-				     XbBuilderSourceCtx *ctx,
-				     gpointer user_data,
-				     GCancellable *cancellable,
-				     GError **error)
-{
-	g_autofree gchar *xml = NULL;
-	g_autoptr(AsComponent) cpt = as_component_new ();
-	g_autoptr(AsContext) actx = as_context_new ();
-	g_autoptr(GBytes) bytes = NULL;
-	gboolean ret;
-
-	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
-	if (bytes == NULL)
-		return NULL;
-
-	as_component_set_id (cpt, xb_builder_source_ctx_get_filename (ctx));
-	ret = as_component_load_from_bytes (cpt,
-					   actx,
-					   AS_FORMAT_KIND_DESKTOP_ENTRY,
-					   bytes,
-					   error);
-	if (!ret)
-		return NULL;
-	xml = as_component_to_xml_data (cpt, actx, error);
-	if (xml == NULL)
-		return NULL;
-	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), (gssize) -1, g_free);
-}
-
-static gboolean
-gs_plugin_appstream_load_desktop_fn (GsPluginAppstream  *self,
-                                     XbBuilder          *builder,
-                                     const gchar        *filename,
-                                     GCancellable       *cancellable,
-                                     GError            **error)
-{
-	g_autoptr(GFile) file = g_file_new_for_path (filename);
-	g_autoptr(XbBuilderNode) info = NULL;
-	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
-
-	/* add support for desktop files */
-	xb_builder_source_add_adapter (source, "application/x-desktop",
-				       gs_plugin_appstream_load_desktop_cb, NULL, NULL);
-
-	/* add source */
-	if (!xb_builder_source_load_file (source, file, 0, cancellable, error))
-		return FALSE;
-
-	/* add metadata */
-	info = xb_builder_node_insert (NULL, "info", NULL);
-	xb_builder_node_insert_text (info, "filename", filename, NULL);
-	xb_builder_source_set_info (source, info);
-
-	/* success */
-	xb_builder_import_source (builder, source);
-	return TRUE;
-}
-
-static gboolean
-gs_plugin_appstream_load_desktop (GsPluginAppstream  *self,
-                                  XbBuilder          *builder,
-                                  const gchar        *path,
-                                  GCancellable       *cancellable,
-                                  GError            **error)
-{
-	const gchar *fn;
-	g_autoptr(GDir) dir = NULL;
-	g_autoptr(GFile) parent = g_file_new_for_path (path);
-	g_autoptr(GFileMonitor) file_monitor = NULL;
-	g_autoptr(GError) local_error = NULL;
-	if (!g_file_query_exists (parent, cancellable)) {
-		g_debug ("appstream: Skipping desktop path '%s' as %s", path, g_cancellable_is_cancelled (cancellable) ? "cancelled" : "does not exist");
-		return TRUE;
-	}
-
-	g_debug ("appstream: Loading desktop path '%s'", path);
-
-	dir = g_dir_open (path, 0, error);
-	if (dir == NULL)
-		return FALSE;
-
-	file_monitor = g_file_monitor (parent, G_FILE_MONITOR_NONE, cancellable, &local_error);
-	if (local_error)
-		g_debug ("appstream: Failed to create file monitor for '%s': %s", path, local_error->message);
-	gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
-
-	while ((fn = g_dir_read_name (dir)) != NULL) {
-		if (g_str_has_suffix (fn, ".desktop")) {
-			g_autofree gchar *filename = g_build_filename (path, fn, NULL);
-			g_autoptr(GError) error_local = NULL;
-			if (g_strcmp0 (fn, "mimeinfo.cache") == 0)
-				continue;
-			if (!gs_plugin_appstream_load_desktop_fn (self,
-								  builder,
-								  filename,
-								  cancellable,
-								  &error_local)) {
-				g_debug ("ignoring %s: %s", filename, error_local->message);
-				continue;
-			}
-		}
-	}
-
-	/* success */
-	return TRUE;
-}
-
-static GInputStream *
 gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 				   XbBuilderSourceCtx *ctx,
 				   gpointer user_data,
@@ -641,42 +531,6 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 }
 
 static void
-gs_add_appstream_catalog_location (GPtrArray *locations, const gchar *root)
-{
-	g_autofree gchar *catalog_path = NULL;
-	g_autofree gchar *catalog_legacy_path = NULL;
-	gboolean ignore_legacy_path = FALSE;
-
-	catalog_path = g_build_filename (root, "swcatalog", NULL);
-	catalog_legacy_path = g_build_filename (root, "app-info", NULL);
-
-	/* ignore compatibility symlink if one exists, so we don't scan the same location twice */
-	if (g_file_test (catalog_legacy_path, G_FILE_TEST_IS_SYMLINK)) {
-		g_autofree gchar *link_target = g_file_read_link (catalog_legacy_path, NULL);
-		if (link_target != NULL) {
-			if (g_strcmp0 (link_target, catalog_path) == 0) {
-				ignore_legacy_path = TRUE;
-				g_debug ("Ignoring legacy AppStream catalog location '%s'.", catalog_legacy_path);
-			}
-		}
-	}
-
-	g_ptr_array_add (locations,
-			 g_build_filename (catalog_path, "xml", NULL));
-	g_ptr_array_add (locations,
-			 g_build_filename (catalog_path, "yaml", NULL));
-
-	if (!ignore_legacy_path) {
-		g_ptr_array_add (locations,
-				 g_build_filename (catalog_legacy_path, "xml", NULL));
-		g_ptr_array_add (locations,
-				 g_build_filename (catalog_legacy_path, "xmls", NULL));
-		g_ptr_array_add (locations,
-				 g_build_filename (catalog_legacy_path, "yaml", NULL));
-	}
-}
-
-static void
 gs_add_appstream_metainfo_location (GPtrArray *locations, const gchar *root)
 {
 	g_ptr_array_add (locations,
@@ -699,8 +553,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 	g_autoptr(GRWLockReaderLocker) reader_locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
-	g_autoptr(GPtrArray) parent_appstream = g_ptr_array_new_with_free_func (g_free);
-	const gchar *const *locales = g_get_language_names ();
+	g_autoptr(GPtrArray) parent_appstream = NULL;
 	g_autoptr(GMainContext) old_thread_default = NULL;
 
 	reader_locker = g_rw_lock_reader_locker_new (&self->silo_lock);
@@ -739,9 +592,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 					      XB_SILO_PROFILE_FLAG_DEBUG);
 	}
 
-	/* add current locales */
-	for (guint i = 0; locales[i] != NULL; i++)
-		xb_builder_add_locale (builder, locales[i]);
+	gs_appstream_add_current_locales (builder);
 
 	/* only when in self test */
 	test_xml = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
@@ -764,69 +615,26 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 		xb_builder_fixup_set_max_depth (fixup2, 2);
 		xb_builder_source_add_fixup (source, fixup2);
 		xb_builder_import_source (builder, source);
+
+		/* Nothing to watch in the tests */
+		parent_appstream = g_ptr_array_new_with_free_func (g_free);
 	} else {
-		g_autofree gchar *state_cache_dir = NULL;
-		g_autofree gchar *state_lib_dir = NULL;
+		g_autoptr(GPtrArray) parent_desktop = g_ptr_array_new ();
+
+		g_ptr_array_add (parent_desktop, (gpointer) DATADIR "/applications");
+		if (g_strcmp0 (DATADIR, "/usr/share") != 0)
+			g_ptr_array_add (parent_desktop, (gpointer) "/usr/share/applications");
 
 		/* add search paths */
-		gs_add_appstream_catalog_location (parent_appstream, DATADIR);
+		parent_appstream = gs_appstream_get_appstream_data_dirs ();
 		gs_add_appstream_metainfo_location (parent_appdata, DATADIR);
-
-		state_cache_dir = g_build_filename (LOCALSTATEDIR, "cache", NULL);
-		gs_add_appstream_catalog_location (parent_appstream, state_cache_dir);
-		state_lib_dir = g_build_filename (LOCALSTATEDIR, "lib", NULL);
-		gs_add_appstream_catalog_location (parent_appstream, state_lib_dir);
-
-#ifdef ENABLE_EXTERNAL_APPSTREAM
-		/* check for the corresponding setting */
-		if (!g_settings_get_boolean (self->settings, "external-appstream-system-wide")) {
-			g_autofree gchar *user_catalog_path = NULL;
-			g_autofree gchar *user_catalog_old_path = NULL;
-
-			/* migrate data paths */
-			user_catalog_path = g_build_filename (g_get_user_data_dir (), "swcatalog", NULL);
-			user_catalog_old_path = g_build_filename (g_get_user_data_dir (), "app-info", NULL);
-			if (g_file_test (user_catalog_old_path, G_FILE_TEST_IS_DIR) &&
-			    !g_file_test (user_catalog_path, G_FILE_TEST_IS_DIR)) {
-				g_debug ("Migrating external AppStream user location.");
-				if (g_rename (user_catalog_old_path, user_catalog_path) == 0) {
-					g_autofree gchar *user_catalog_xml_path = NULL;
-					g_autofree gchar *user_catalog_xml_old_path = NULL;
-
-					user_catalog_xml_path = g_build_filename (user_catalog_path, "xml", NULL);
-					user_catalog_xml_old_path = g_build_filename (user_catalog_path, "xmls", NULL);
-					if (g_file_test (user_catalog_xml_old_path, G_FILE_TEST_IS_DIR)) {
-						if (g_rename (user_catalog_xml_old_path, user_catalog_xml_path) != 0)
-							g_warning ("Unable to migrate external XML data location from '%s' to '%s': %s",
-								user_catalog_xml_old_path, user_catalog_xml_path, g_strerror (errno));
-					}
-				} else {
-					g_warning ("Unable to migrate external data location from '%s' to '%s': %s",
-						   user_catalog_old_path, user_catalog_path, g_strerror (errno));
-				}
-
-			}
-
-			/* add modern locations only */
-			g_ptr_array_add (parent_appstream,
-					g_build_filename (user_catalog_path, "xml", NULL));
-			g_ptr_array_add (parent_appstream,
-					g_build_filename (user_catalog_path, "yaml", NULL));
-		}
-#endif
 
 		/* Add the normal system directories if the installation prefix
 		 * is different from normal — typically this happens when doing
 		 * development builds. It’s useful to still list the system apps
 		 * during development. */
-		if (g_strcmp0 (DATADIR, "/usr/share") != 0) {
-			gs_add_appstream_catalog_location (parent_appstream, "/usr/share");
+		if (g_strcmp0 (DATADIR, "/usr/share") != 0)
 			gs_add_appstream_metainfo_location (parent_appdata, "/usr/share");
-		}
-		if (g_strcmp0 (LOCALSTATEDIR, "/var") != 0) {
-			gs_add_appstream_catalog_location (parent_appstream, "/var/cache");
-			gs_add_appstream_catalog_location (parent_appstream, "/var/lib");
-		}
 
 		/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
 		old_thread_default = g_main_context_ref_thread_default ();
@@ -852,21 +660,18 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 				return FALSE;
 			}
 		}
-		if (!gs_plugin_appstream_load_desktop (self, builder,
-						       DATADIR "/applications",
-						       cancellable, error)) {
-			if (old_thread_default != NULL)
-				g_main_context_push_thread_default (old_thread_default);
-			return FALSE;
+		for (guint i = 0; i < parent_desktop->len; i++) {
+			g_autoptr(GFileMonitor) file_monitor = NULL;
+			const gchar *dir = g_ptr_array_index (parent_desktop, i);
+			if (!gs_appstream_load_desktop_files (builder, dir, NULL, &file_monitor, cancellable, error)) {
+				if (old_thread_default != NULL)
+					g_main_context_push_thread_default (old_thread_default);
+				return FALSE;
+			}
+			gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
 		}
-		if (g_strcmp0 (DATADIR, "/usr/share") != 0 &&
-		    !gs_plugin_appstream_load_desktop (self, builder,
-						       "/usr/share/applications",
-						       cancellable, error)) {
-			if (old_thread_default != NULL)
-				g_main_context_push_thread_default (old_thread_default);
-			return FALSE;
-		}
+
+		gs_appstream_add_data_merge_fixup (builder, parent_appstream, parent_desktop, cancellable);
 
 		if (old_thread_default != NULL)
 			g_main_context_push_thread_default (old_thread_default);
