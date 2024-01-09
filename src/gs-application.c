@@ -693,7 +693,6 @@ install_activated (GSimpleAction *action,
 	const gchar *id;
 	GsShellInteraction interaction;
 	InstallActivatedHelper *helper;
-	g_autoptr (GsApp) a = NULL;
 	g_autofree gchar *data_id = NULL;
 
 	g_variant_get (parameter, "(&su)", &id, &interaction);
@@ -1085,7 +1084,6 @@ gs_application_startup (GApplication *application)
 	g_auto(GStrv) plugin_blocklist = NULL;
 	g_auto(GStrv) plugin_allowlist = NULL;
 	const gchar *tmp;
-	g_autoptr(GAsyncResult) setup_result = NULL;
 
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
 

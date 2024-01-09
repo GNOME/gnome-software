@@ -700,8 +700,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	gboolean has_name = FALSE, has_metadata_license = FALSE;
 	gboolean had_icons, had_sources;
 	gboolean locale_has_translations = FALSE;
-	g_autoptr(GPtrArray) bundles = NULL;
-	g_autoptr(GPtrArray) launchables = NULL;
 	g_autoptr(GPtrArray) legacy_pkgnames = NULL;
 	g_autoptr(XbNode) launchable_desktop_id = NULL;
 	g_autoptr(XbNode) child = NULL;
@@ -859,7 +857,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		case ELEMENT_KIND_CONTENT_RATING: {
 			g_autoptr(AsContentRating) content_rating = gs_app_dup_content_rating (app);
 			if (content_rating == NULL) {
-				g_autoptr(GPtrArray) content_attributes = NULL;
 				const gchar *content_rating_kind = NULL;
 
 				/* get kind */
@@ -1013,7 +1010,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			break;
 		case ELEMENT_KIND_LANGUAGES:
 			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0) {
-				g_autoptr(GPtrArray) kudos = NULL;
 				if (!locale_has_translations)
 					gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 
@@ -1517,7 +1513,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) {
-		g_autoptr(GPtrArray) kudos = NULL;
 		if (!locale_has_translations)
 			gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 
@@ -1909,7 +1904,6 @@ gs_appstream_add_installed (GsPlugin      *plugin,
                             GError       **error)
 {
 	g_autoptr(GPtrArray) components = NULL;
-	g_autoptr(GError) local_error = NULL;
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
 	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);

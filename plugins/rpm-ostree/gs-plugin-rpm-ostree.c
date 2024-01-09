@@ -1905,7 +1905,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
 	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
@@ -2824,7 +2823,6 @@ list_apps_thread_cb (GTask        *task,
 	const gchar *provides_tag = NULL;
 	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GPtrArray) pkglist = NULL;
 	g_auto(GStrv) provides = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;

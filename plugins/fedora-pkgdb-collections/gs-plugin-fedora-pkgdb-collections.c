@@ -744,7 +744,6 @@ gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin            *plugin,
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
 	g_autoptr(GTask) task = NULL;
 	gboolean refine_needed = FALSE;
-	g_autoptr(GError) local_error = NULL;
 
 	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_refine_async);

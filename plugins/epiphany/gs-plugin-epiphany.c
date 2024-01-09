@@ -673,7 +673,6 @@ ensure_installed_apps_cache (GsPluginEpiphany  *self,
 			     GCancellable      *cancellable,
 			     GError           **error)
 {
-	g_autoptr(GVariant) webapps_v = NULL;
 	g_auto(GStrv) webapps = NULL;
 	guint n_webapps;
 	g_autoptr(GsAppList) installed_cache = gs_app_list_new ();

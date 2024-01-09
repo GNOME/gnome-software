@@ -1272,7 +1272,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	g_autoptr(GIcon) icon = NULL;
 	const gchar *tmp;
-	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
 	gboolean link_rows_visible;
 
@@ -2923,7 +2922,6 @@ gs_details_page_metainfo_thread (GTask *task,
 				 GCancellable *cancellable)
 {
 	const gchar *const *locales;
-	g_autofree gchar *xml = NULL;
 	g_autofree gchar *path = NULL;
 	g_autofree gchar *icon_path = NULL;
 	g_autoptr(XbBuilder) builder = NULL;

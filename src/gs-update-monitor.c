@@ -829,8 +829,6 @@ get_upgrades (GsUpdateMonitor *monitor)
 static void
 get_system (GsUpdateMonitor *monitor)
 {
-	g_autoptr(GsApp) app = NULL;
-
 	g_debug ("Getting system");
 	gs_plugin_loader_get_system_app_async (monitor->plugin_loader, monitor->update_cancellable,
 		get_system_finished_cb, monitor);

@@ -467,25 +467,22 @@ static gchar *
 gs_app_kudos_to_string (guint64 kudos)
 {
 	g_autoptr(GPtrArray) array = g_ptr_array_new ();
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 	if ((kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
-		g_ptr_array_add (array, "my-language");
+		g_ptr_array_add (array, (gpointer) "my-language");
 	if ((kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
-		g_ptr_array_add (array, "recent-release");
+		g_ptr_array_add (array, (gpointer) "recent-release");
 	if ((kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
-		g_ptr_array_add (array, "featured-recommended");
+		g_ptr_array_add (array, (gpointer) "featured-recommended");
 	if ((kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
-		g_ptr_array_add (array, "has-keywords");
+		g_ptr_array_add (array, (gpointer) "has-keywords");
 	if ((kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
-		g_ptr_array_add (array, "has-screenshots");
+		g_ptr_array_add (array, (gpointer) "has-screenshots");
 	if ((kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
-		g_ptr_array_add (array, "hi-dpi-icon");
+		g_ptr_array_add (array, (gpointer) "hi-dpi-icon");
 	if ((kudos & GS_APP_KUDO_SANDBOXED) > 0)
-		g_ptr_array_add (array, "sandboxed");
+		g_ptr_array_add (array, (gpointer) "sandboxed");
 	if ((kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
-		g_ptr_array_add (array, "sandboxed-secure");
-#pragma GCC diagnostic pop
+		g_ptr_array_add (array, (gpointer) "sandboxed-secure");
 	g_ptr_array_add (array, NULL);
 	return g_strjoinv ("|", (gchar **) array->pdata);
 }

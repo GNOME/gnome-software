@@ -1515,7 +1515,6 @@ gs_plugin_eos_updater_update_apps_async (GsPlugin                           *plu
 	GsApp *app;
 	guint n_managed_apps = 0;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
-	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_eos_updater_update_apps_async);

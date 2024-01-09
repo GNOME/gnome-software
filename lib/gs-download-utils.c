@@ -216,7 +216,6 @@ gs_download_stream_async (SoupSession                *soup_session,
                           gpointer                    user_data)
 {
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GError) local_error = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 	DownloadData *data;
 	g_autoptr(DownloadData) data_owned = NULL;
