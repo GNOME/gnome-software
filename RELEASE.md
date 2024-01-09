@@ -19,6 +19,11 @@ These instructions use the following variables:
  - `branch`: the branch which the release is based on, for example gnome-40 or main
  - `key_id`: the ID of your GPG key, see the output of `gpg --list-keys` and the note at the end of this file
 
+Go to https://gitlab.gnome.org/GNOME/gnome-software/-/milestones/ and
+choose the corresponding milestone. Verify all issues and merge requests
+tagged for this release are complete now. Move those which not to the next
+milestone or merge pending fixes when possible.
+
 Make sure your repository is up to date and doesn’t contain local changes:
 ```
 git pull
@@ -70,6 +75,13 @@ To use a specific key add an option `-u ${keyid|email}` after the `sign` argumen
 
 Use `Tag ${new_version} release` as the tag message.
 
+Post release version bump in `meson.build`:
+```
+# edit meson.build, then
+git commit -a -m "trivial: Post release version bump"
+git push
+```
+
 Upload the release tarball:
 ```
 scp build/meson-dist/gnome-software-${new_version}.tar.xz master.gnome.org:
@@ -90,15 +102,7 @@ Add the release notes to GitLab and close the milestone:
    - save the changes with `Create release` button
    - verify the added links for the release artifacts work
  - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/milestones/
-   choose the milestone and close it, as all issues and merge requests tagged
-   for this release should now be complete
-
-Post release version bump in `meson.build`:
-```
-# edit meson.build, then
-git commit -a -m "trivial: Post release version bump"
-git push
-```
+   choose the milestone and close it
 
 `git-evtag`
 ---
