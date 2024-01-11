@@ -2492,7 +2492,7 @@ gs_appstream_load_dep11_cb (XbBuilderSource *self,
 	if (bytes == NULL)
 		return NULL;
 
-	as_metadata_set_format_style (mdata, AS_FORMAT_STYLE_COLLECTION);
+	as_metadata_set_format_style (mdata, AS_FORMAT_STYLE_CATALOG);
 	as_metadata_parse_bytes (mdata,
 				 bytes,
 				 AS_FORMAT_KIND_YAML,
