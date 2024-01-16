@@ -36,6 +36,7 @@ refresh_ui (GsOriginPopoverRow *row)
 {
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
 	const gchar *packaging_base_css_color, *packaging_icon;
+	const gchar *branch, *version;
 	g_autofree gchar *packaging_format = NULL;
 	g_autofree gchar *info = NULL;
 	g_autofree gchar *css = NULL;
@@ -57,14 +58,13 @@ refresh_ui (GsOriginPopoverRow *row)
 		url = g_strdup (gs_app_get_origin_hostname (priv->app));
 	}
 
-	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_SNAP) {
-		const gchar *branch = NULL, *version = NULL;
+	branch = gs_app_get_branch (priv->app);
+	version = gs_app_get_version (priv->app);
+
+	if (branch != NULL && *branch != '\0' && version != NULL && *version != '\0') {
 		const gchar *order[3];
 		const gchar *items[7] = { NULL, };
 		guint index = 0;
-
-		branch = gs_app_get_branch (priv->app);
-		version = gs_app_get_version (priv->app);
 
 		if (gtk_widget_get_direction (GTK_WIDGET (row)) == GTK_TEXT_DIR_RTL) {
 			order[0] = version;
@@ -95,6 +95,19 @@ refresh_ui (GsOriginPopoverRow *row)
 
 			info = g_strjoinv (" ", (gchar **) items);
 		}
+	} else if ((branch != NULL && *branch != '\0') || (version != NULL && *version != '\0')) {
+		const gchar *branch_or_version = (branch != NULL && *branch != '\0') ? branch : version;
+		const gchar *first, *second;
+
+		if (gtk_widget_get_direction (GTK_WIDGET (row)) == GTK_TEXT_DIR_RTL) {
+			first = branch_or_version;
+			second = url;
+		} else {
+			first = url;
+			second = branch_or_version;
+		}
+
+		info = g_strdup_printf ("%s • %s", first, second);
 	} else {
 		info = g_steal_pointer (&url);
 	}
