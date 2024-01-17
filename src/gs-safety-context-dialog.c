@@ -231,6 +231,14 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can access input devices"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_PULSEAUDIO_DEVICES) != 0,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION,
+				    "audio-input-microphone-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("Microphone Access"),
+				    _("Can listen using microphones without asking permission"),
+				    NULL, NULL, NULL);
+		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "computer-chip-symbolic",

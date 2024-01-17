@@ -336,6 +336,13 @@ update_safety_tile (GsAppContextBar *self)
 					       * It’s used in a context tile, so should be short. */
 					      _("Can access input devices"));
 			break;
+		case GS_APP_PERMISSIONS_FLAGS_PULSEAUDIO_DEVICES:
+			add_to_safety_rating (&chosen_rating, descriptions,
+					      SAFETY_PROBABLY_SAFE,
+					      /* Translators: This indicates an app can access input devices.
+					       * It’s used in a context tile, so should be short. */
+					      _("Can access microphones"));
+			break;
 		case GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
