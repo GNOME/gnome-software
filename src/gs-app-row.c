@@ -180,9 +180,15 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 	case GS_APP_STATE_UPDATABLE_LIVE:
 		gtk_widget_set_visible (priv->button, TRUE);
 		if (priv->show_update) {
-			/* TRANSLATORS: this is a button in the updates panel
-			 * that allows the app to be easily updated live */
-			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Update"));
+			if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEEDS_REBOOT) &&
+			    !gs_app_is_downloaded (priv->app)) {
+				/* TRANSLATORS: this is a button in the updates panel */
+				gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Download"));
+			} else {
+				/* TRANSLATORS: this is a button in the updates panel
+				 * that allows the app to be easily updated live */
+				gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Update"));
+			}
 			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "software-update-available-symbolic");
 			gtk_widget_set_sensitive (priv->button, !gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEEDS_USER_ACTION));
 		} else {
