@@ -1021,7 +1021,7 @@ gs_plugin_fwupd_download_async (GsPluginFwupd       *self,
 		return;
 	}
 
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_DOWNLOADING);
 
 	if (!interactive) {
 		gs_metered_block_on_download_scheduler_async (gs_metered_build_scheduler_parameters_for_app (app),

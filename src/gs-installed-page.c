@@ -89,7 +89,8 @@ gs_installed_page_get_app_section (GsApp *app)
 
 	if (state == GS_APP_STATE_INSTALLING ||
 	    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
-	    state == GS_APP_STATE_REMOVING)
+	    state == GS_APP_STATE_REMOVING ||
+	    state == GS_APP_STATE_DOWNLOADING)
 		return GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING;
 
 	if (kind == AS_COMPONENT_KIND_DESKTOP_APP) {
@@ -297,6 +298,7 @@ gs_installed_page_notify_state_changed_cb (GsApp *app,
 	if (state != GS_APP_STATE_INSTALLING &&
 	    state != GS_APP_STATE_INSTALLED &&
 	    state != GS_APP_STATE_REMOVING &&
+	    state != GS_APP_STATE_DOWNLOADING &&
 	    state != GS_APP_STATE_UPDATABLE &&
 	    state != GS_APP_STATE_UPDATABLE_LIVE)
 		gs_installed_page_unreveal_row (app_row);
@@ -576,17 +578,20 @@ gs_installed_page_get_app_sort_key (GsApp *app)
 
 	/* sort installed, removing, other */
 	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_DOWNLOADING:
 		g_string_append (key, "1:");
 		break;
-	case GS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_INSTALLING:
 		g_string_append (key, "2:");
 		break;
-	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		g_string_append (key, "3:");
 		break;
-	default:
+	case GS_APP_STATE_REMOVING:
 		g_string_append (key, "4:");
+		break;
+	default:
+		g_string_append (key, "5:");
 		break;
 	}
 

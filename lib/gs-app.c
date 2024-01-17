@@ -274,6 +274,8 @@ gs_app_state_to_string (GsAppState state)
 		return "pending-install";
 	if (state == GS_APP_STATE_PENDING_REMOVE)
 		return "pending-remove";
+	if (state == GS_APP_STATE_DOWNLOADING)
+		return "downloading";
 	return NULL;
 }
 
@@ -1118,6 +1120,7 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		if (state == GS_APP_STATE_UNKNOWN ||
 		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_DOWNLOADING ||
 		    state == GS_APP_STATE_AVAILABLE)
 			state_change_ok = TRUE;
 		break;
@@ -1125,7 +1128,18 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		/* available has to go into an action state */
 		if (state == GS_APP_STATE_UNKNOWN ||
 		    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
-		    state == GS_APP_STATE_INSTALLING)
+		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_DOWNLOADING)
+			state_change_ok = TRUE;
+		break;
+	case GS_APP_STATE_DOWNLOADING:
+		/* downloading is similar to the installing state, to which it can go too */
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_UPDATABLE ||
+		    state == GS_APP_STATE_UPDATABLE_LIVE ||
+		    state == GS_APP_STATE_AVAILABLE ||
+		    state == GS_APP_STATE_PENDING_INSTALL)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_INSTALLING:
@@ -1152,6 +1166,7 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		if (state == GS_APP_STATE_UNKNOWN ||
 		    state == GS_APP_STATE_REMOVING ||
 		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_DOWNLOADING ||
 		    state == GS_APP_STATE_PENDING_INSTALL)
 			state_change_ok = TRUE;
 		break;
@@ -1159,7 +1174,8 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		/* updatable-live has to go into an action state */
 		if (state == GS_APP_STATE_UNKNOWN ||
 		    state == GS_APP_STATE_REMOVING ||
-		    state == GS_APP_STATE_INSTALLING)
+		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_DOWNLOADING)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_UNAVAILABLE:
@@ -1172,7 +1188,8 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		/* local has to go into an action state */
 		if (state == GS_APP_STATE_UNKNOWN ||
 		    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
-		    state == GS_APP_STATE_INSTALLING)
+		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_DOWNLOADING)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_PENDING_INSTALL:
@@ -1203,6 +1220,7 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 
 	/* save this to simplify error handling in the plugins */
 	switch (state) {
+	case GS_APP_STATE_DOWNLOADING:
 	case GS_APP_STATE_INSTALLING:
 	case GS_APP_STATE_REMOVING:
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:

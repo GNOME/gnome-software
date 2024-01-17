@@ -315,7 +315,8 @@ update_progress_for_op (GsFlatpakTransaction        *self,
 			return;
 		}
 		if (gs_app_get_state (root_app) != GS_APP_STATE_INSTALLING &&
-		    gs_app_get_state (root_app) != GS_APP_STATE_REMOVING)
+		    gs_app_get_state (root_app) != GS_APP_STATE_REMOVING &&
+		    gs_app_get_state (root_app) != GS_APP_STATE_DOWNLOADING)
 			return;
 	} else {
 		GsApp *unskipped_root_app = _transaction_operation_get_app (root_op);

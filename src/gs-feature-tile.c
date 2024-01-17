@@ -575,6 +575,7 @@ gs_feature_tile_refresh (GsFeatureTile *tile)
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_DOWNLOADING:
 	default:
 		name = g_strdup (gs_app_get_name (app));
 		break;

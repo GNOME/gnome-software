@@ -149,7 +149,8 @@ _get_app_section (GsApp *app)
 
 	if (!gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT) &&
 	    (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE ||
-	     gs_app_get_state (app) == GS_APP_STATE_INSTALLING)) {
+	     gs_app_get_state (app) == GS_APP_STATE_INSTALLING ||
+	     gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING)) {
 		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
 			return GS_UPDATES_SECTION_KIND_ONLINE_FIRMWARE;
 		return GS_UPDATES_SECTION_KIND_ONLINE;
@@ -179,7 +180,8 @@ _get_num_updates (GsUpdatesPage *self)
 	for (guint i = 0; i < gs_app_list_length (apps); ++i) {
 		GsApp *app = gs_app_list_index (apps, i);
 		if (gs_app_is_updatable (app) ||
-		    gs_app_get_state (app) == GS_APP_STATE_INSTALLING)
+		    gs_app_get_state (app) == GS_APP_STATE_INSTALLING ||
+		    gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING)
 			++count;
 	}
 	return count;
@@ -1122,6 +1124,7 @@ gs_shell_update_are_updates_in_progress (GsUpdatesPage *self)
 		switch (gs_app_get_state (app)) {
 		case GS_APP_STATE_INSTALLING:
 		case GS_APP_STATE_REMOVING:
+		case GS_APP_STATE_DOWNLOADING:
 			return TRUE;
 			break;
 		default:

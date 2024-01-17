@@ -354,6 +354,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	switch (state) {
 	case GS_APP_STATE_INSTALLING:
 	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_DOWNLOADING:
 		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), TRUE);
 		/* If the app is installing, the user can only cancel it if
 		 * 1) They haven't already, and
@@ -386,6 +387,11 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->label_progress_status, TRUE);
 		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
 				     _("Installing"));
+		break;
+	case GS_APP_STATE_DOWNLOADING:
+		gtk_widget_set_visible (self->label_progress_status, TRUE);
+		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
+				     _("Downloading"));
 		break;
 	case GS_APP_STATE_PENDING_INSTALL:
 		gtk_widget_set_visible (self->label_progress_status, TRUE);
@@ -430,9 +436,13 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	switch (state) {
 	case GS_APP_STATE_INSTALLING:
 	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_DOWNLOADING:
 		percentage = gs_app_get_progress (self->app);
 		if (percentage == GS_APP_PROGRESS_UNKNOWN) {
-			if (state == GS_APP_STATE_INSTALLING) {
+			if (state == GS_APP_STATE_DOWNLOADING) {
+				/* Translators: This string is shown when downloading an app before install. */
+				gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Downloading…"));
+			} else if (state == GS_APP_STATE_INSTALLING) {
 				/* Translators: This string is shown when preparing to download and install an app. */
 				gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Preparing…"));
 			} else {
@@ -1033,6 +1043,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
 		break;
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_DOWNLOADING:
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
 	case GS_APP_STATE_UNKNOWN:
@@ -1112,6 +1123,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
 		case GS_APP_STATE_REMOVING:
+		case GS_APP_STATE_DOWNLOADING:
 		case GS_APP_STATE_UNAVAILABLE:
 		case GS_APP_STATE_UNKNOWN:
 		case GS_APP_STATE_QUEUED_FOR_INSTALL:
@@ -2145,6 +2157,7 @@ gs_details_page_reload (GsPage *page)
 		/* Do not reload the page when the app is "doing something" */
 		if (state == GS_APP_STATE_INSTALLING ||
 		    state == GS_APP_STATE_REMOVING ||
+		    state == GS_APP_STATE_DOWNLOADING ||
 		    state == GS_APP_STATE_PURCHASING)
 			return;
 		gs_details_page_load_stage1 (self);

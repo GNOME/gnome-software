@@ -244,6 +244,7 @@ should_add_os_update_or_upgrade (GsAppState state)
 	case GS_APP_STATE_UPDATABLE:
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_DOWNLOADING:
 	case GS_APP_STATE_UPDATABLE_LIVE:
 		return TRUE;
 	case GS_APP_STATE_UNKNOWN:
@@ -455,7 +456,7 @@ sync_state_from_updater (GsPluginEosUpdater *self)
 
 		/* FIXME: Set to QUEUED_FOR_INSTALL if we’re waiting for metered
 		 * data permission. */
-		app_set_state (plugin, app, GS_APP_STATE_INSTALLING);
+		app_set_state (plugin, app, GS_APP_STATE_DOWNLOADING);
 
 		downloaded = gs_eos_updater_get_downloaded_bytes (self->updater_proxy);
 		total_size = gs_eos_updater_get_download_size (self->updater_proxy);

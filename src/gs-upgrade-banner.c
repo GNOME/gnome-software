@@ -112,6 +112,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_set_visible (priv->box_upgrades_install, FALSE);
 		break;
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_DOWNLOADING:
 		gtk_widget_set_visible (priv->box_upgrades_download, FALSE);
 		gtk_widget_set_visible (priv->box_upgrades_downloading, TRUE);
 		gtk_widget_set_visible (priv->box_upgrades_install, FALSE);
@@ -170,6 +171,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 	/* do a fill bar for the current progress */
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_DOWNLOADING:
 		percentage = gs_app_get_progress (priv->app);
 		if (percentage == GS_APP_PROGRESS_UNKNOWN) {
 			if (priv->progress_pulse_id == 0)

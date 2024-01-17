@@ -307,7 +307,8 @@ gs_updates_section_count_busy_apps (GsUpdatesSection *self)
 		GsAppState state = gs_app_get_state (app);
 
 		if (state == GS_APP_STATE_INSTALLING ||
-		    state == GS_APP_STATE_REMOVING) {
+		    state == GS_APP_STATE_REMOVING ||
+		    state == GS_APP_STATE_DOWNLOADING) {
 			busy++;
 		}
 	}
