@@ -1129,6 +1129,7 @@ typedef struct {
 	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
 	gpointer app_needs_user_action_data;
 	GsApp *app;  /* (owned) (not nullable) */
+	gboolean interactive;
 	GFile *local_file;  /* (owned) (not nullable) */
 	const gchar *device_id;  /* (not nullable) */
 } InstallData;
@@ -1160,6 +1161,7 @@ static void install_device_request_cb (FwupdClient  *client,
 static void
 gs_plugin_fwupd_install_async (GsPluginFwupd                      *self,
                                GsApp                              *app,
+                               gboolean                            interactive,
                                GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                gpointer                            app_needs_user_action_data,
                                GCancellable                       *cancellable,
@@ -1190,6 +1192,7 @@ gs_plugin_fwupd_install_async (GsPluginFwupd                      *self,
 	data->app_needs_user_action_callback = app_needs_user_action_callback;
 	data->app_needs_user_action_data = app_needs_user_action_data;
 	data->app = g_object_ref (app);
+	data->interactive = interactive;
 	data->local_file = g_object_ref (local_file);
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) install_data_free);
 
@@ -1270,6 +1273,7 @@ install_install_cb (GObject      *source_object,
 {
 	FwupdClient *client = FWUPD_CLIENT (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginFwupd *self = g_task_get_source_object (task);
 	InstallData *data = g_task_get_task_data (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autoptr(GError) local_error = NULL;
@@ -1278,9 +1282,25 @@ install_install_cb (GObject      *source_object,
 	g_signal_handlers_disconnect_by_func (client, G_CALLBACK (install_device_request_cb), task);
 
 	if (!fwupd_client_install_finish (client, result, &local_error)) {
+		g_autoptr(GsPluginEvent) event = NULL;
+
+		/* show the user this failed */
 		gs_plugin_fwupd_error_convert (&local_error);
+		event = gs_plugin_event_new ("app", self->app_current,
+					     "error", local_error,
+					     NULL);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		if (data->interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+
 		gs_app_set_state_recover (data->app);
-		g_task_return_error (task, g_steal_pointer (&local_error));
+
+		/* this error code *has* to be cancelled to *not* show the reboot dialog */
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_CANCELLED,
+					 "%s", local_error->message);
 		return;
 	}
 
@@ -1470,7 +1490,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	/* FIXME: Connect #GsPluginAppNeedsUserActionCallback when this function
 	 * is ported to the new #GsPluginJob subclasses. */
-	gs_plugin_fwupd_install_async (self, app, NULL, NULL, cancellable, async_result_cb, &result);
+	gs_plugin_fwupd_install_async (self, app, interactive, NULL, NULL, cancellable, async_result_cb, &result);
 	while (result == NULL)
 		g_main_context_iteration (context, TRUE);
 
@@ -1660,6 +1680,7 @@ update_app_unlock_cb (GObject      *source_object,
 
 	/* update means install */
 	gs_plugin_fwupd_install_async (self, app,
+				       (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE),
 				       data->app_needs_user_action_callback,
 				       data->app_needs_user_action_data,
 				       cancellable,
