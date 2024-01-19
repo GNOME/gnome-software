@@ -69,7 +69,7 @@ update_labels (GsAppTranslationDialog *self)
 
 	/* Translators: The placeholder is an app name */
 	description = g_strdup_printf (_("%s is designed, developed, and translated by an "
-					 "international community of volunteers."
+					 "international community of contributors."
 					 "\n\n"
 					 "This means that while it’s not yet available in "
 					 "your language, you can get involved and help "
