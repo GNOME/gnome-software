@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-01-20 16:42+0000\n"
-"PO-Revision-Date: 2024-01-21 23:36+0100\n"
+"POT-Creation-Date: 2024-01-22 13:59+0000\n"
+"PO-Revision-Date: 2024-01-22 23:14+0100\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -813,7 +813,7 @@ msgstr "Vhodné od věku"
 msgid "How to contribute missing information"
 msgstr "Jak přidat chybějící informace"
 
-#: lib/gs-app.c:6321
+#: lib/gs-app.c:6339
 msgid "Local file"
 msgstr "Místní soubor"
 
@@ -822,32 +822,32 @@ msgstr "Místní soubor"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6340 src/gs-safety-context-dialog.c:539
+#: lib/gs-app.c:6358 src/gs-safety-context-dialog.c:539
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6417 src/gs-safety-context-dialog.c:776
+#: lib/gs-app.c:6435 src/gs-safety-context-dialog.c:776
 #: src/gs-safety-context-dialog.ui:180
 msgid "Package"
 msgstr "Balíček"
 
-#: src/gs-app-addon-row.c:95 src/gs-app-row.c:455
+#: src/gs-app-addon-row.c:95 src/gs-app-row.c:471
 msgid "Pending"
 msgstr "Čeká na zpracování"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:459 src/gs-details-page.c:395
+#: src/gs-app-addon-row.c:99 src/gs-app-row.c:475 src/gs-details-page.c:401
 msgid "Pending install"
 msgstr "Čeká na instalaci"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:463 src/gs-details-page.c:402
+#: src/gs-app-addon-row.c:103 src/gs-app-row.c:479 src/gs-details-page.c:408
 msgid "Pending remove"
 msgstr "Čeká na odebrání"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:208 src/gs-details-page.c:388
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:214 src/gs-details-page.c:389
 msgid "Installing"
 msgstr "Instaluje se"
 
@@ -855,19 +855,26 @@ msgstr "Instaluje se"
 msgid "Removing"
 msgstr "Odebírá se"
 
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an app being downloaded
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:228 src/gs-details-page.c:394
+#: src/gs-details-page.ui:356
+msgid "Downloading"
+msgstr "Stahuje se"
+
 #. TRANSLATORS: button text
 #. TRANSLATORS: button text in the header when an app
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1033
-#: src/gs-details-page.c:1059 src/gs-details-page.ui:243 src/gs-page.c:437
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1043
+#: src/gs-details-page.c:1070 src/gs-details-page.ui:243 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Instalovat"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1140
+#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1152
 msgid "_Uninstall…"
 msgstr "_Odinstalovat…"
 
@@ -990,7 +997,7 @@ msgstr "Není k dispozici žádný popis aktualizace."
 msgid "Update Details"
 msgstr "Podrobnosti o aktualizaci"
 
-#: src/gs-app-details-page.ui:26 src/gs-app-row.c:518
+#: src/gs-app-details-page.ui:26 src/gs-app-row.c:535
 msgid "Requires additional permissions"
 msgstr "Vyžaduje dodatečná oprávnění"
 
@@ -1502,43 +1509,48 @@ msgid "Install"
 msgstr "Instalovat"
 
 #. TRANSLATORS: this is a button in the updates panel
+#: src/gs-app-row.c:186
+msgid "Download"
+msgstr "Stáhnout"
+
+#. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:185
+#: src/gs-app-row.c:190
 msgid "Update"
 msgstr "Aktualizovat"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily removed
-#: src/gs-app-row.c:191 src/gs-app-row.c:201
+#: src/gs-app-row.c:197 src/gs-app-row.c:207
 msgid "Uninstall…"
 msgstr "Odinstalovat…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being erased
-#: src/gs-app-row.c:215
+#: src/gs-app-row.c:221
 msgid "Uninstalling"
 msgstr "Odinstalovává se"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:328
+#: src/gs-app-row.c:344
 msgid "Device cannot be used during update."
 msgstr "Zařízení nelze během aktualizace používat."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:338 src/gs-shell-search-provider.c:270
+#: src/gs-app-row.c:354 src/gs-shell-search-provider.c:270
 #, c-format
 msgid "Source: %s"
 msgstr "Zdroj: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:525
+#: src/gs-app-row.c:542
 #, c-format
 msgid "Renamed from %s"
 msgstr "Přejmenováno z %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:562 src/gs-details-page.ui:595
+#: src/gs-app-row.c:579 src/gs-details-page.ui:595
 msgid "Stopped Receiving Updates"
 msgstr "Příjem aktualizací zastaven"
 
@@ -1600,7 +1612,7 @@ msgstr "Vyžadováno přihlášení"
 #: src/gs-details-page.ui:331 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:26 src/gs-repos-dialog.c:175
 #: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:27 src/gs-review-row.c:241
-#: src/gs-updates-page.c:852 src/gs-updates-page.c:869
+#: src/gs-updates-page.c:854 src/gs-updates-page.c:871
 #: src/gs-upgrade-banner.ui:201
 msgid "_Cancel"
 msgstr "_Zrušit"
@@ -2339,47 +2351,52 @@ msgstr "Zobrazit _více"
 msgid "_Show Less"
 msgstr "Zobrazit _méně"
 
-#: src/gs-details-page.c:383
+#: src/gs-details-page.c:384
 msgid "Removing…"
 msgstr "Odebírá se…"
 
-#: src/gs-details-page.c:393
+#: src/gs-details-page.c:399
 msgid "Requires restart to finish install"
 msgstr "Vyžaduje restart k dokončení instalace"
 
-#: src/gs-details-page.c:400
+#: src/gs-details-page.c:406
 msgid "Requires restart to finish remove"
 msgstr "Vyžaduje restart k dokončení odebírání"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:417
+#: src/gs-details-page.c:423
 msgid "Pending installation…"
 msgstr "Probíhá instalace…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:423
+#: src/gs-details-page.c:429
 msgid "Pending update…"
 msgstr "Probíhá aktualizace…"
 
+#. Translators: This string is shown when downloading an app before install.
+#: src/gs-details-page.c:444 src/gs-upgrade-banner.c:180
+msgid "Downloading…"
+msgstr "Stahuje se…"
+
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:437
+#: src/gs-details-page.c:447
 msgid "Preparing…"
 msgstr "Připravuje se…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:440
+#: src/gs-details-page.c:450
 msgid "Uninstalling…"
 msgstr "Odinstalovává se…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:567
+#: src/gs-details-page.c:577
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "Aplikace %s není nainstalována, ale má stále k dispozici data."
 
-#: src/gs-details-page.c:1049
+#: src/gs-details-page.c:1060
 msgid "_Restart"
 msgstr "_Restartovat"
 
@@ -2387,62 +2404,62 @@ msgstr "_Restartovat"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1073
+#: src/gs-details-page.c:1084
 msgid "_Install…"
 msgstr "_Instalovat…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1285
+#: src/gs-details-page.c:1297
 #, c-format
 msgid "%s will appear in US English"
 msgstr "Aplikace %s se zobrazí v americké angličtině"
 
-#: src/gs-details-page.c:1293
+#: src/gs-details-page.c:1305
 msgid "This app will appear in US English"
 msgstr "Tato aplikace se zobrazí v americké angličtině"
 
-#: src/gs-details-page.c:1295
+#: src/gs-details-page.c:1307
 msgid "This software will appear in US English"
 msgstr "Tento software se zobrazí v americké angličtině"
 
-#: src/gs-details-page.c:1330 src/gs-details-page.ui:76
+#: src/gs-details-page.c:1342 src/gs-details-page.ui:76
 msgid "Help _Translate"
 msgstr "_Pomoci přeložit"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1395
+#: src/gs-details-page.c:1407
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Co dalšího nabízí %s"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1431
+#: src/gs-details-page.c:1443
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "Vývojář %s prokázal vlastnictví %s"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1434
+#: src/gs-details-page.c:1446
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "Vývojář prokázal vlastnictví %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1802
+#: src/gs-details-page.c:1814
 msgid "You need internet access to write a review"
 msgstr "Abyste mohli napsat recenzi, musíte být připojeni k Internetu"
 
-#: src/gs-details-page.c:1903
+#: src/gs-details-page.c:1915
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr "Tato aplikace již nedostává aktualizace, včetně bezpečnostních oprav"
 
-#: src/gs-details-page.c:1904
+#: src/gs-details-page.c:1916
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "Tuto aplikaci již poskytuje vaše distribuce a neměli byste ji nahrazovat."
 
-#: src/gs-details-page.c:1905
+#: src/gs-details-page.c:1917
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2450,18 +2467,18 @@ msgstr ""
 "Tato aplikace neposkytuje žádné odkazy na webové stránky, repozitáře kódu "
 "ani nástroj pro sledování problémů."
 
-#: src/gs-details-page.c:1907
+#: src/gs-details-page.c:1919
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr "Tento software již nedostává aktualizace, včetně bezpečnostních oprav"
 
-#: src/gs-details-page.c:1908
+#: src/gs-details-page.c:1920
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr ""
 "Tento software již poskytuje vaše distribuce a neměli byste jej nahrazovat."
 
-#: src/gs-details-page.c:1909
+#: src/gs-details-page.c:1921
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2469,12 +2486,12 @@ msgstr ""
 "Tento software neposkytuje žádné odkazy na webové stránky, repozitáře kódu "
 "ani nástroj pro sledování problémů."
 
-#: src/gs-details-page.c:1999 src/gs-details-page.c:2015
+#: src/gs-details-page.c:2011 src/gs-details-page.c:2027
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nelze najít „%s“"
 
-#: src/gs-details-page.c:2362
+#: src/gs-details-page.c:2375
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Selhalo odeslání recenze pro „%s“: %s"
@@ -2504,10 +2521,6 @@ msgstr "_Aktualizovat"
 #: src/gs-details-page.ui:294 src/gs-details-page.ui:304
 msgid "Uninstall"
 msgstr "Odinstalovat"
-
-#: src/gs-details-page.ui:356
-msgid "Downloading"
-msgstr "Stahuje se"
 
 #: src/gs-details-page.ui:493 src/gs-installed-page.ui:135
 msgid "Add-ons"
@@ -2651,26 +2664,26 @@ msgid "Failed to find requested software"
 msgstr "Selhalo vyhledání požadovaného softwaru"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:417
+#: src/gs-extras-page.c:418
 #, c-format
 msgid "%s not found"
 msgstr "%s nebyl nalezen"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:421
+#: src/gs-extras-page.c:422
 msgid "on the website"
 msgstr "na webových stránkách"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:428
+#: src/gs-extras-page.c:429
 #, c-format
 msgid "No apps are available that provide the file %s."
 msgstr "Nejsou k dispozici žádné aplikace, které by poskytovaly soubor %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:432 src/gs-extras-page.c:443 src/gs-extras-page.c:454
+#: src/gs-extras-page.c:433 src/gs-extras-page.c:444 src/gs-extras-page.c:455
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing apps might "
@@ -2681,21 +2694,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:439 src/gs-extras-page.c:461
+#: src/gs-extras-page.c:440 src/gs-extras-page.c:462
 #, c-format
 msgid "No apps are available for %s support."
 msgstr "Pro podporu %s nejsou k dispozici žádné aplikace."
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:450
+#: src/gs-extras-page.c:451
 #, c-format
 msgid "%s is not available."
 msgstr "%s není k dispozici."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:465
+#: src/gs-extras-page.c:466
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an app that can "
@@ -2706,14 +2719,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:472
+#: src/gs-extras-page.c:473
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Pro podporu písma %s nejsou k dispozici žádné fonty."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:476
+#: src/gs-extras-page.c:477
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -2723,14 +2736,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:483
+#: src/gs-extras-page.c:484
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Pro formát %s nejsou k dispozici žádné dodatečné kodeky."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:487
+#: src/gs-extras-page.c:488
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2741,14 +2754,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:494
+#: src/gs-extras-page.c:495
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Pro podporu %s nejsou k dispozici žádné prostředky Plasma."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:498
+#: src/gs-extras-page.c:499
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2759,14 +2772,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:505
+#: src/gs-extras-page.c:506
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Pro %s nejsou k dispozici žádné tiskové ovladače."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:509
+#: src/gs-extras-page.c:510
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2776,13 +2789,13 @@ msgstr ""
 "tuto tiskárnu, najdete %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:555
+#: src/gs-extras-page.c:556
 msgid "the documentation"
 msgstr "dokumentace"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the app name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:561
+#: src/gs-extras-page.c:562
 #, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
@@ -2799,7 +2812,7 @@ msgstr[2] ""
 "podívejte do %s."
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:570
+#: src/gs-extras-page.c:571
 #, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
@@ -2817,21 +2830,21 @@ msgstr[2] ""
 "Nelze najít kodeky %s, které hledáte. Na další informace se prosím podívejte "
 "do %s."
 
-#: src/gs-extras-page.c:648 src/gs-extras-page.c:705 src/gs-extras-page.c:745
+#: src/gs-extras-page.c:649 src/gs-extras-page.c:706 src/gs-extras-page.c:746
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "Selhalo získání jakýchkoliv výsledků hledání: %s"
 
-#: src/gs-extras-page.c:964
+#: src/gs-extras-page.c:965
 #, c-format
 msgid "%s file format"
 msgstr "formát souboru %s"
 
-#: src/gs-extras-page.c:1325
+#: src/gs-extras-page.c:1326
 msgid "Install _All"
 msgstr "Inst_alovat vše"
 
-#: src/gs-extras-page.c:1355
+#: src/gs-extras-page.c:1356
 msgid "Unable to Find Requested Software"
 msgstr "Nelze najít požadovaný software"
 
@@ -3108,7 +3121,7 @@ msgid "Open Keyboard Shortcuts"
 msgstr "Otevřít klávesové zkratky"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
-#: src/gs-installed-page.c:813
+#: src/gs-installed-page.c:818
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "Nainstalováno"
@@ -3474,7 +3487,7 @@ msgstr "Ostatní kategorie"
 msgid "No App Data Found"
 msgstr "O aplikaci nebyly nalezeny žádné informace"
 
-#: lib/gs-plugin-loader.c:2796
+#: lib/gs-plugin-loader.c:2799
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "neznámá"
@@ -3669,41 +3682,41 @@ msgstr "_Zakázat"
 msgid "_Remove"
 msgstr "_Odebrat"
 
-#: src/gs-repos-dialog.c:617
+#: src/gs-repos-dialog.c:618
 msgid "Enable New Repositories"
 msgstr "Povolit nové repozitáře"
 
-#: src/gs-repos-dialog.c:618
+#: src/gs-repos-dialog.c:619
 msgid "Turn on new repositories when they are added."
 msgstr "Zapnout nové repozitáře při jejich přidání."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:627
+#: src/gs-repos-dialog.c:628
 msgid "more information"
 msgstr "více informací"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:632
+#: src/gs-repos-dialog.c:633
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Další repozitáře od vybraných třetích stran — %s."
 
-#: src/gs-repos-dialog.c:637
+#: src/gs-repos-dialog.c:638
 msgid "Fedora Third Party Repositories"
 msgstr "Repozitáře třetích stran Fedory"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:789
+#: src/gs-repos-dialog.c:790
 msgid "the operating system"
 msgstr "operačního systému"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:845
+#: src/gs-repos-dialog.c:846
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -3722,7 +3735,7 @@ msgstr "Žádné repozitáře"
 #. TRANSLATORS: This string states how many apps have been
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of apps.
-#: src/gs-repo-row.c:181
+#: src/gs-repo-row.c:182
 #, c-format
 msgid "%u app installed"
 msgid_plural "%u apps installed"
@@ -3733,7 +3746,7 @@ msgstr[2] "Nainstalováno %u aplikací"
 #. TRANSLATORS: This string states how many add-ons have been
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of add-ons.
-#: src/gs-repo-row.c:189
+#: src/gs-repo-row.c:190
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -3747,7 +3760,7 @@ msgstr[2] "Nainstalováno %u doplňků"
 #. * that repo. The placeholder is the number of apps, and the translated
 #. * string will be substituted in for the first placeholder in the
 #. * string “%s and %s installed”.
-#: src/gs-repo-row.c:200
+#: src/gs-repo-row.c:201
 #, c-format
 msgid "%u app"
 msgid_plural "%u apps"
@@ -3761,7 +3774,7 @@ msgstr[2] "%u aplikací"
 #. * that repo. The placeholder is the number of add-ons, and the translated
 #. * string will be substituted in for the second placeholder in the
 #. * string “%s and %s installed”.
-#: src/gs-repo-row.c:209
+#: src/gs-repo-row.c:210
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -3782,7 +3795,7 @@ msgstr[2] "%u doplňků"
 #. *  - “2 apps and 1 add-on installed” - uses count 3
 #. *  - “4 apps and 5 add-ons installed” - uses count 9
 #.
-#: src/gs-repo-row.c:225
+#: src/gs-repo-row.c:226
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -3790,19 +3803,19 @@ msgstr[0] "%s a %s"
 msgstr[1] "%s a %s"
 msgstr[2] "%s a %s"
 
-#: src/gs-repo-row.c:241
+#: src/gs-repo-row.c:242
 msgid "Checking installed software…"
 msgstr "Kontrola nainstalovaného softwaru…"
 
 #. Translators: The first '%s' is replaced with installation kind, like in case of Flatpak 'User Installation',
 #. the second '%s' is replaced with a text like '10 apps installed'.
-#: src/gs-repo-row.c:249
+#: src/gs-repo-row.c:250
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
 msgstr "%s • %s"
 
-#: src/gs-repo-row.c:399
+#: src/gs-repo-row.c:400
 msgid "Remove"
 msgstr "Odebrat"
 
@@ -5019,6 +5032,11 @@ msgstr "%s (instaluje se)"
 
 #: src/gs-summary-tile.c:149
 #, c-format
+msgid "%s (Downloading)"
+msgstr "%s (stahuje se)"
+
+#: src/gs-summary-tile.c:154
+#, c-format
 msgid "%s (Removing)"
 msgstr "%s (odebírá se)"
 
@@ -5259,39 +5277,39 @@ msgstr ""
 "poskytovatele softwaru."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:253
+#: src/gs-updates-page.c:255
 #, c-format
 msgid "Last checked: %s"
 msgstr "Poslední kontrola: %s"
 
-#: src/gs-updates-page.c:302
+#: src/gs-updates-page.c:304
 msgid "Stop"
 msgstr "Zastavit"
 
-#: src/gs-updates-page.c:311 src/gs-updates-page.c:323
+#: src/gs-updates-page.c:313 src/gs-updates-page.c:325
 msgid "Check for Updates"
 msgstr "Zkontrolovat aktualizace"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:573
+#: src/gs-updates-page.c:575
 #, c-format
 msgid "%s %s has stopped receiving critical software updates"
 msgstr "Distribuce %s %s přestala dostávat kritické aktualizace softwaru"
 
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
-#: src/gs-updates-page.c:579
+#: src/gs-updates-page.c:581
 msgid "Your operating system has stopped receiving critical software updates"
 msgstr "Váš operační systém přestal dostávat kritické aktualizace softwaru"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:848
+#: src/gs-updates-page.c:850
 msgid "Charges May Apply"
 msgstr "Možné zpoplatnění"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:850
+#: src/gs-updates-page.c:852
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -5300,38 +5318,38 @@ msgstr ""
 "operátorem."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:854
+#: src/gs-updates-page.c:856
 msgid "Check _Anyway"
 msgstr "_Přesto zkontrolovat"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:865
+#: src/gs-updates-page.c:867
 msgid "No Network"
 msgstr "Žádné připojení k síti"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:867
+#: src/gs-updates-page.c:869
 msgid "Internet access is required to check for updates."
 msgstr "Přístup k internetu je nezbytný pro kontrolu aktualizací."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:871
+#: src/gs-updates-page.c:873
 msgid "Network _Settings"
 msgstr "Nastavení _sítě"
 
-#: src/gs-updates-page.c:909
+#: src/gs-updates-page.c:911
 msgid "Software Upgrades Downloaded"
 msgstr "Staženy povýšení softwaru"
 
-#: src/gs-updates-page.c:910
+#: src/gs-updates-page.c:912
 msgid "Software upgrades have been downloaded and are ready to be installed."
 msgstr "Povýšení softwaru byly staženy a jsou připraveny k instalaci."
 
-#: src/gs-updates-page.c:1244
+#: src/gs-updates-page.c:1247
 msgid "Check for updates"
 msgstr "Zkontrolovat aktualizace"
 
-#: src/gs-updates-page.c:1280
+#: src/gs-updates-page.c:1283
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Aktualizace"
@@ -5393,45 +5411,45 @@ msgstr "Aktualizace jsou spravovány automaticky"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:365
+#: src/gs-updates-section.c:375
 msgid "_Restart & Update…"
 msgstr "_Restartovat a aktualizovat…"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable apps
-#: src/gs-updates-section.c:371
+#: src/gs-updates-section.c:381
 msgid "U_pdate All"
 msgstr "_Aktualizovat vše"
 
-#: src/gs-updates-section.c:448
+#: src/gs-updates-section.c:458
 msgid "Software Updates Downloaded"
 msgstr "Staženy aktualizace softwaru"
 
-#: src/gs-updates-section.c:449
+#: src/gs-updates-section.c:459
 msgid "Software updates have been downloaded and are ready to be installed."
 msgstr "Aktualizace softwaru byly staženy a jsou připraveny k instalaci."
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:525
+#: src/gs-updates-section.c:550
 msgid "Integrated Firmware"
 msgstr "Integrovaný Firmware"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:530
+#: src/gs-updates-section.c:555
 msgid "Requires Restart"
 msgstr "Vyžaduje restart"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:535
+#: src/gs-updates-section.c:560
 msgid "App Updates"
 msgstr "Aktualizace aplikací"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:540
+#: src/gs-updates-section.c:565
 msgid "Device Firmware"
 msgstr "Firmware zařízení"
 
@@ -5456,24 +5474,20 @@ msgstr "Je k dispozici %s %s"
 msgid "%s Available"
 msgstr "Je k dispozici %s"
 
-#: src/gs-upgrade-banner.c:154
+#: src/gs-upgrade-banner.c:155
 msgid "Learn about the new version"
 msgstr "Přečíst si o nové verzi"
 
-#: src/gs-upgrade-banner.c:178
-msgid "Downloading…"
-msgstr "Stahuje se…"
-
 #. Translators: the first '%s' is replaced with the downloaded size, the second '%s'
 #. with the total download size, forming text like "135 MB of 2 GB downloaded"
-#: src/gs-upgrade-banner.c:196
+#: src/gs-upgrade-banner.c:198
 #, c-format
 msgid "%s of %s downloaded"
 msgstr "Staženo %s z %s"
 
 #. Translators: the '%u' is replaced with the actual percentage being already
 #. downloaded, forming text like "13% downloaded"
-#: src/gs-upgrade-banner.c:200
+#: src/gs-upgrade-banner.c:202
 #, c-format
 msgid "%u%% downloaded"
 msgstr "Staženo %u%%"
@@ -5532,12 +5546,12 @@ msgstr ""
 "vylepšení výkonu."
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
-#: plugins/eos-updater/gs-plugin-eos-updater.c:688
+#: plugins/eos-updater/gs-plugin-eos-updater.c:689
 #, c-format
 msgid "%s update with new features and fixes."
 msgstr "Aktualizace %s s novými funkcemi a opravami."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:1305
+#: plugins/eos-updater/gs-plugin-eos-updater.c:1306
 msgid "EOS update service could not fetch and apply the update."
 msgstr "Aktualizační služba EOS nemohla stáhnout a nasadit aktualizaci."
 
@@ -5967,11 +5981,11 @@ msgstr "Aktualizace dokovacího zařízení pro %s"
 msgid "%s USB Dock Update"
 msgstr "Aktualizace USB dokovacího zařízení pro %s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1694
+#: plugins/fwupd/gs-plugin-fwupd.c:1717
 msgid "Firmware update could not be applied: "
 msgstr "Aktualizaci firmwaru nelze provést: "
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1834
+#: plugins/fwupd/gs-plugin-fwupd.c:1857
 msgid "Firmware"
 msgstr "Firmware"
 
