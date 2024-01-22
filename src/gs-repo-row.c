@@ -75,6 +75,7 @@ refresh_ui (GsRepoRow *row)
 		active = TRUE;
 		break;
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_DOWNLOADING:
 		active = TRUE;
 		busy = TRUE;
 		break;

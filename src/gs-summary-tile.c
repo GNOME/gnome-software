@@ -144,6 +144,11 @@ gs_summary_tile_refresh (GsAppTile *self)
 		name = g_strdup_printf (_("%s (Installing)"),
 					gs_app_get_name (app));
 		break;
+	case GS_APP_STATE_DOWNLOADING:
+		installed = FALSE;
+		name = g_strdup_printf (_("%s (Downloading)"),
+					gs_app_get_name (app));
+		break;
 	case GS_APP_STATE_REMOVING:
 		installed = TRUE;
 		name = g_strdup_printf (_("%s (Removing)"),

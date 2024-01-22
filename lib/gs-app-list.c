@@ -215,7 +215,8 @@ gs_app_list_invalidate_state (GsAppList *self)
 	for (guint i = 0; i < apps->len; i++) {
 		GsApp *app_tmp = g_ptr_array_index (apps, i);
 		GsAppState state_tmp = gs_app_get_state (app_tmp);
-		if (state_tmp == GS_APP_STATE_INSTALLING ||
+		if (state_tmp == GS_APP_STATE_DOWNLOADING ||
+		    state_tmp == GS_APP_STATE_INSTALLING ||
 		    state_tmp == GS_APP_STATE_REMOVING) {
 			state = state_tmp;
 			break;

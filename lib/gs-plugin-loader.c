@@ -933,7 +933,9 @@ static gboolean
 gs_plugin_loader_app_is_valid_updatable (GsApp *app, gpointer user_data)
 {
 	return gs_plugin_loader_app_is_valid_filter (app, user_data) &&
-		(gs_app_is_updatable (app) || gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
+		(gs_app_is_updatable (app) ||
+		 gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING ||
+		 gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
 }
 
 gboolean
@@ -1078,6 +1080,7 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 
 		/* check the app is not still in an action helper */
 		switch (gs_app_get_state (app)) {
+		case GS_APP_STATE_DOWNLOADING:
 		case GS_APP_STATE_INSTALLING:
 		case GS_APP_STATE_REMOVING:
 			g_warning ("application %s left in %s helper",

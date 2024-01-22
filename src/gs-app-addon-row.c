@@ -110,6 +110,10 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		gtk_widget_set_visible (row->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (row->label), _("Removing"));
 		break;
+	case GS_APP_STATE_DOWNLOADING:
+		gtk_widget_set_visible (row->label, TRUE);
+		gtk_label_set_label (GTK_LABEL (row->label), _("Downloading"));
+		break;
 	default:
 		gtk_widget_set_visible (row->label, FALSE);
 		break;
@@ -140,6 +144,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		break;
 	case GS_APP_STATE_INSTALLING:
 	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_DOWNLOADING:
 		show_install = FALSE;
 		show_remove = TRUE;
 		gtk_widget_set_sensitive (row->button_remove, FALSE);

@@ -53,6 +53,7 @@ struct _GsAppClass
  *						like restart, to finish it
  * @GS_APP_STATE_PENDING_REMOVE:		Application is removed, but may have pending some actions,
  *						like restart, to finish it
+ * @GS_APP_STATE_DOWNLOADING:			Application is being downloaded
  *
  * The application state.
  **/
@@ -71,6 +72,7 @@ typedef enum {
 	GS_APP_STATE_PURCHASING,			/* Since: 0.5.17 */
 	GS_APP_STATE_PENDING_INSTALL,			/* Since: 41 */
 	GS_APP_STATE_PENDING_REMOVE,			/* Since: 41 */
+	GS_APP_STATE_DOWNLOADING,			/* Since: 46 */
 	GS_APP_STATE_LAST  /*< skip >*/
 } GsAppState;
 

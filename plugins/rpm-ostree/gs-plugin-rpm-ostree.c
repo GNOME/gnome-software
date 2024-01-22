@@ -2504,7 +2504,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 
 	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_ALLOW_DOWNGRADE |
 	                                          RPMOSTREE_OPTION_DOWNLOAD_ONLY);
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_DOWNLOADING);
 	tp->app = g_object_ref (app);
 
 	done = FALSE;

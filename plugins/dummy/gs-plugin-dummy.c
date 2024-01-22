@@ -1115,7 +1115,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
 		return TRUE;
 
 	g_debug ("starting download");
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_DOWNLOADING);
 	if (!gs_plugin_dummy_delay (plugin, app, 5000, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;

@@ -367,6 +367,7 @@ add_repo (GsReposDialog *dialog,
 	      state == GS_APP_STATE_AVAILABLE_LOCAL ||
 	      state == GS_APP_STATE_INSTALLED ||
 	      state == GS_APP_STATE_INSTALLING ||
+	      state == GS_APP_STATE_DOWNLOADING ||
 	      state == GS_APP_STATE_REMOVING)) {
 		g_warning ("repo %s in invalid state %s",
 		           gs_app_get_id (repo),

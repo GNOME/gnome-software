@@ -328,7 +328,8 @@ gs_extras_page_app_notify_state_cb (GsApp *app,
 		return;
 
 	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLING ||
-	    gs_app_get_state (app) == GS_APP_STATE_REMOVING) {
+	    gs_app_get_state (app) == GS_APP_STATE_REMOVING ||
+	    gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING) {
 		gtk_widget_set_sensitive (self->button_install_all, FALSE);
 		return;
 	}

@@ -3619,7 +3619,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 		return TRUE;
 
 	/* ask PK to download enough packages to upgrade the system */
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_DOWNLOADING);
 	gs_packagekit_helper_set_progress_app (helper, app);
 
 	task_upgrade = gs_packagekit_task_new (plugin);

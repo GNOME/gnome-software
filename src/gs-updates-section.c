@@ -77,11 +77,20 @@ _listbox_keynav_failed_cb (GsUpdatesSection *self, GtkDirectionType direction, G
 }
 
 static void
+gs_updates_section_run_download (GsUpdatesSection *self,
+				 GsApp *only_app);
+
+static void
 _app_row_button_clicked_cb (GsAppRow *app_row, GsUpdatesSection *self)
 {
 	GsApp *app = gs_app_row_get_app (app_row);
 	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE)
 		return;
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT) &&
+	    !gs_app_is_downloaded (app)) {
+		gs_updates_section_run_download (self, app);
+		return;
+	}
 	gs_page_update_app (GS_PAGE (self->page), app, gs_app_get_cancellable (app));
 }
 
@@ -307,7 +316,8 @@ gs_updates_section_count_busy_apps (GsUpdatesSection *self)
 		GsAppState state = gs_app_get_state (app);
 
 		if (state == GS_APP_STATE_INSTALLING ||
-		    state == GS_APP_STATE_REMOVING) {
+		    state == GS_APP_STATE_REMOVING ||
+		    state == GS_APP_STATE_DOWNLOADING) {
 			busy++;
 		}
 	}
@@ -457,16 +467,25 @@ _download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 }
 
 static void
-_button_download_clicked_cb (GsUpdatesSection *self)
+gs_updates_section_run_download (GsUpdatesSection *self,
+				 GsApp *only_app) /* (optional) */
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	GsUpdatesSectionUpdateHelper *helper;
 
 	g_application_withdraw_notification (g_application_get_default (), "updates-downloaded");
 
+	if (only_app != NULL) {
+		list = gs_app_list_new ();
+		gs_app_list_add (list, only_app);
+	} else {
+		list = g_object_ref (self->list);
+	}
+
 	g_set_object (&self->cancellable, cancellable);
-	plugin_job = gs_plugin_job_update_apps_new (self->list,
+	plugin_job = gs_plugin_job_update_apps_new (list,
 						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 	helper = g_new0 (GsUpdatesSectionUpdateHelper, 1);
@@ -477,6 +496,12 @@ _button_download_clicked_cb (GsUpdatesSection *self)
 					    _download_finished_cb,
 					    helper);
 	_update_buttons (self);
+}
+
+static void
+_button_download_clicked_cb (GsUpdatesSection *self)
+{
+	gs_updates_section_run_download (self, NULL);
 }
 
 static void

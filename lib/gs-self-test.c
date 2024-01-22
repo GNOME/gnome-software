@@ -658,6 +658,13 @@ gs_app_func (void)
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
 	gs_app_set_state_recover (app);
+
+	/* check pending action */
+	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
+	gs_app_set_state (app, GS_APP_STATE_DOWNLOADING);
+	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
+	gs_app_set_state_recover (app);
 }
 
 static void
@@ -709,6 +716,24 @@ gs_app_list_func (void)
 	gs_test_flush_main_context ();
 	g_assert_cmpint (gs_app_list_get_progress (list), ==, 75);
 	g_assert_cmpint (gs_app_list_get_state (list), ==, GS_APP_STATE_INSTALLING);
+
+	gs_app_set_state (app1, GS_APP_STATE_UNKNOWN);
+	gs_test_flush_main_context ();
+	g_assert_cmpint (gs_app_list_get_state (list), ==, GS_APP_STATE_UNKNOWN);
+	gs_app_set_state (app1, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app1, GS_APP_STATE_DOWNLOADING);
+	gs_app_set_progress (app1, 80);
+	gs_test_flush_main_context ();
+	g_assert_cmpint (gs_app_list_get_progress (list), ==, 80);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, GS_APP_STATE_DOWNLOADING);
+	gs_app_set_progress (app1, 90);
+	gs_app_set_state (app1, GS_APP_STATE_INSTALLING);
+	gs_test_flush_main_context ();
+	g_assert_cmpint (gs_app_list_get_progress (list), ==, 90);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, GS_APP_STATE_INSTALLING);
+
+	/* return back the progress expected by the below code */
+	gs_app_set_progress (app1, 75);
 
 	gs_app_list_add (list, app2);
 	gs_app_set_progress (app2, 25);
