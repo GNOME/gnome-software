@@ -610,15 +610,10 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(FwupdDevice) dev = NULL;
+	g_autoptr(GPtrArray) devices = NULL;
 
-	/* get historical updates */
-	dev = fwupd_client_get_results (self->client,
-					FWUPD_DEVICE_ID_ANY,
-					cancellable,
-					&error_local);
-	if (dev == NULL) {
+	devices = fwupd_client_get_devices (self->client, cancellable, &error_local);
+	if (devices == NULL) {
 		if (g_error_matches (error_local,
 				     FWUPD_ERROR,
 				     FWUPD_ERROR_NOTHING_TO_DO))
@@ -632,17 +627,45 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* parse */
-	app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
-	if (app == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to build result for %s",
-			     fwupd_device_get_id (dev));
-		return FALSE;
+	for (guint i = 0; i < devices->len; i++) {
+		FwupdDevice *idev = g_ptr_array_index (devices, i);
+		g_autoptr(FwupdDevice) dev = NULL;
+		g_autoptr(GsApp) app = NULL;
+
+		/* get historical updates */
+		dev = fwupd_client_get_results (self->client,
+						fwupd_device_get_id (idev),
+						cancellable,
+						&error_local);
+		if (dev == NULL) {
+			if (g_error_matches (error_local,
+					     FWUPD_ERROR,
+					     FWUPD_ERROR_NOTHING_TO_DO)) {
+				g_clear_error (&error_local);
+				continue;
+			}
+			if (g_error_matches (error_local,
+					     FWUPD_ERROR,
+					     FWUPD_ERROR_NOT_FOUND)) {
+				g_clear_error (&error_local);
+				continue;
+			}
+			g_propagate_error (error, g_steal_pointer (&error_local));
+			gs_plugin_fwupd_error_convert (error);
+			return FALSE;
+		}
+
+		/* parse */
+		app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
+		if (app != NULL) {
+			gs_app_list_add (list, app);
+		} else {
+			g_debug ("updates historical: failed to build result for '%s' (%s)",
+				 fwupd_device_get_name (dev),
+				 fwupd_device_get_id (dev));
+		}
 	}
-	gs_app_list_add (list, app);
+
 	return TRUE;
 }
 
