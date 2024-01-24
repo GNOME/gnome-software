@@ -34,6 +34,7 @@
 #include "gs-extras-page.h"
 #include "gs-repos-dialog.h"
 #include "gs-prefs-dialog.h"
+#include "gs-toast.h"
 #include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
@@ -74,8 +75,6 @@ struct _GsShell
 	GtkWidget		*sub_header_end_widget;
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
-	gchar			*events_info_uri;
-	gchar			*events_more_info;
 	AdwLeaflet		*main_leaflet;
 	AdwLeaflet		*details_leaflet;
 	AdwViewStack		*stack_loading;
@@ -99,14 +98,7 @@ struct _GsShell
 	GtkWidget		*search_bar;
 	GtkWidget		*button_back;
 	GtkWidget		*button_back2;
-	GtkWidget		*notification_event;
-	GtkWidget		*button_events_sources;
-	GtkWidget		*button_events_no_space;
-	GtkWidget		*button_events_network_settings;
-	GtkWidget		*button_events_restart_required;
-	GtkWidget		*button_events_more_info;
-	GtkWidget		*button_events_dismiss;
-	GtkWidget		*label_events;
+	GtkWidget		*toast_overlay;
 	GtkWidget		*primary_menu;
 	GtkWidget		*sub_header;
 	GtkWidget		*sub_page_header_title;
@@ -661,33 +653,6 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 		gs_page_scroll_up (page);
 }
 
-static gboolean
-overlay_get_child_position_cb (GtkOverlay   *overlay,
-                               GtkWidget    *widget,
-                               GdkRectangle *allocation,
-                               gpointer      user_data)
-{
-	GsShell *self = GS_SHELL (user_data);
-	GtkRequisition overlay_natural_size;
-
-	/* Override the default position of the in-app notification overlay
-	 * to position it below the header bar. The overlay can’t easily be
-	 * moved in the widget hierarchy so it doesn’t have the header bar as
-	 * a child, since there are several header bars in different pages of
-	 * a AdwLeaflet. */
-	g_assert (gtk_widget_is_ancestor (self->main_header, GTK_WIDGET (overlay)));
-
-	gtk_widget_get_preferred_size (widget, NULL, &overlay_natural_size);
-
-	allocation->width = overlay_natural_size.width;
-	allocation->height = overlay_natural_size.height;
-
-	allocation->x = gtk_widget_get_width (GTK_WIDGET (overlay)) / 2 - overlay_natural_size.width / 2;
-	allocation->y = gtk_widget_get_height (GTK_WIDGET (self->main_header));
-
-	return TRUE;
-}
-
 static void
 gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell)
 {
@@ -736,13 +701,13 @@ save_back_entry (GsShell *shell)
 }
 
 static void
-gs_shell_plugin_events_sources_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_sources_cb (GsShell *shell)
 {
 	gs_shell_show_sources (shell);
 }
 
 static void
-gs_shell_plugin_events_no_space_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_no_space_cb (GsShell *shell)
 {
 	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async ("baobab", &error))
@@ -750,7 +715,7 @@ gs_shell_plugin_events_no_space_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-gs_shell_plugin_events_network_settings_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_network_settings_cb (GsShell *shell)
 {
 	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async ("gnome-control-center network", &error))
@@ -758,30 +723,67 @@ gs_shell_plugin_events_network_settings_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-gs_shell_plugin_events_more_info_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_details_text_cb (GsShell *shell,
+					AdwToast *toast)
 {
+	const gchar *details_message;
+	const gchar *details_text;
+
+	details_message = gs_toast_get_details_message (toast);
+	details_text = gs_toast_get_details_text (toast);
+
+	if (details_message == NULL || *details_message == '\0')
+		details_message = adw_toast_get_title (toast);
+
+	gs_utils_show_error_dialog_simple (GTK_WINDOW (shell),
+					   details_message,
+					   details_text);
+}
+
+static void
+gs_shell_plugin_events_details_uri_cb (GsShell *shell,
+				       AdwToast *toast)
+{
+	/* in this case the details text contains a URI to be opened */
+	const gchar *uri = gs_toast_get_details_text (toast);
 	g_autoptr(GError) error = NULL;
 
-	/* Prefer detailed error message against origin's help URL */
-	if (shell->events_more_info != NULL) {
-		gs_utils_show_error_dialog_simple (GTK_WINDOW (shell),
-					    gtk_label_get_text (GTK_LABEL (shell->label_events)),
-					    shell->events_more_info);
-		return;
-	}
+	g_return_if_fail (uri != NULL);
 
-	if (!g_app_info_launch_default_for_uri (shell->events_info_uri, NULL, &error)) {
+	if (!g_app_info_launch_default_for_uri (uri, NULL, &error)) {
 		g_warning ("failed to launch URI %s: %s",
-			   shell->events_info_uri, error->message);
+			   uri, error->message);
 	}
 }
 
 static void
-gs_shell_plugin_events_restart_required_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_plugin_events_restart_required_cb (GsShell *shell)
 {
 	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async (LIBEXECDIR "/gnome-software-restarter", &error))
 		g_warning ("failed to restart: %s", error->message);
+}
+
+static void gs_shell_rescan_events (GsShell *shell);
+
+static void
+gs_shell_plugin_event_dismissed_cb (GsShell *shell)
+{
+	guint i;
+	g_autoptr(GPtrArray) events = NULL;
+
+	/* mark any events currently showing as invalid */
+	events = gs_plugin_loader_get_events (shell->plugin_loader);
+	for (i = 0; i < events->len; i++) {
+		GsPluginEvent *event = g_ptr_array_index (events, i);
+		if (gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE)) {
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID);
+			gs_plugin_event_remove_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE);
+		}
+	}
+
+	/* show the next event */
+	gs_shell_rescan_events (shell);
 }
 
 static void
@@ -1057,9 +1059,6 @@ main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 	g_application_withdraw_notification (g_application_get_default (),
 					     "install-resources");
 
-	/* clear any in-app notification */
-	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), FALSE);
-
 	/* release our hold on the download scheduler */
 #ifdef HAVE_MOGWAI
 	if (shell->scheduler != NULL) {
@@ -1130,16 +1129,6 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 	}
 }
 
-typedef enum {
-	GS_SHELL_EVENT_BUTTON_NONE		= 0,
-	GS_SHELL_EVENT_BUTTON_SOURCES		= 1 << 0,
-	GS_SHELL_EVENT_BUTTON_NO_SPACE		= 1 << 1,
-	GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS	= 1 << 2,
-	GS_SHELL_EVENT_BUTTON_MORE_INFO		= 1 << 3,
-	GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED	= 1 << 4,
-	GS_SHELL_EVENT_BUTTON_LAST
-} GsShellEventButtons;
-
 static gboolean
 gs_shell_has_disk_examination_app (void)
 {
@@ -1150,45 +1139,62 @@ gs_shell_has_disk_examination_app (void)
 static void
 gs_shell_show_event_app_notify (GsShell *shell,
 				const gchar *title,
-				GsShellEventButtons buttons)
+				GsToastButton button,
+				const gchar *details_text,
+				const gchar *details_message)
 {
-	/* set visible */
-	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), TRUE);
+	g_autoptr(AdwToast) toast = NULL;
 
-	/* sources button */
-	gtk_widget_set_visible (shell->button_events_sources,
-				(buttons & GS_SHELL_EVENT_BUTTON_SOURCES) > 0);
+	toast = gs_toast_new (title, button, details_message, details_text);
 
-	/* no-space button */
-	gtk_widget_set_visible (shell->button_events_no_space,
-				(buttons & GS_SHELL_EVENT_BUTTON_NO_SPACE) > 0 &&
-				gs_shell_has_disk_examination_app());
+	if (details_text != NULL)
+		button = GS_TOAST_BUTTON_NONE;
 
-	/* network settings button */
-	gtk_widget_set_visible (shell->button_events_network_settings,
-				(buttons & GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS) > 0);
+	g_signal_connect_object (toast, "dismissed",
+				 G_CALLBACK (gs_shell_plugin_event_dismissed_cb), shell, G_CONNECT_SWAPPED);
 
-	/* restart button */
-	gtk_widget_set_visible (shell->button_events_restart_required,
-				(buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) > 0);
+	switch (button) {
+	case GS_TOAST_BUTTON_SOURCES:
+		g_signal_connect_object (toast, "button-clicked",
+					 G_CALLBACK (gs_shell_plugin_events_sources_cb), shell, G_CONNECT_SWAPPED);
+		break;
+	case GS_TOAST_BUTTON_NO_SPACE:
+		if (gs_shell_has_disk_examination_app ()) {
+			g_signal_connect_object (toast, "button-clicked",
+						 G_CALLBACK (gs_shell_plugin_events_no_space_cb), shell, G_CONNECT_SWAPPED);
+		}
+		break;
+	case GS_TOAST_BUTTON_NETWORK_SETTINGS:
+		g_signal_connect_object (toast, "button-clicked",
+					 G_CALLBACK (gs_shell_plugin_events_network_settings_cb), shell, G_CONNECT_SWAPPED);
+		break;
+	case GS_TOAST_BUTTON_RESTART_REQUIRED:
+		g_signal_connect_object (toast, "button-clicked",
+					 G_CALLBACK (gs_shell_plugin_events_restart_required_cb), shell, G_CONNECT_SWAPPED);
+		break;
+	case GS_TOAST_BUTTON_DETAILS_URI:
+		g_signal_connect_object (toast, "button-clicked",
+					 G_CALLBACK (gs_shell_plugin_events_details_uri_cb), shell, G_CONNECT_SWAPPED);
+		break;
+	default:
+		g_warn_if_reached ();
+	/* fall-through */
+	case GS_TOAST_BUTTON_NONE:
+	case GS_TOAST_BUTTON_LAST:
+		if (details_text != NULL) {
+			g_signal_connect_object (toast, "button-clicked",
+						 G_CALLBACK (gs_shell_plugin_events_details_text_cb), shell, G_CONNECT_SWAPPED);
+		}
+		break;
+	}
 
-	/* more-info button */
-	gtk_widget_set_visible (shell->button_events_more_info,
-				(buttons & GS_SHELL_EVENT_BUTTON_MORE_INFO) > 0);
-
-	/* dismiss button */
-	gtk_widget_set_visible (shell->button_events_dismiss,
-				(buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) == 0);
-
-	/* set title */
-	gtk_label_set_markup (GTK_LABEL (shell->label_events), title);
-	gtk_widget_set_visible (shell->label_events, title != NULL);
+	adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (shell->toast_overlay), g_steal_pointer (&toast));
 }
 
 void
 gs_shell_show_notification (GsShell *shell, const gchar *title)
 {
-	gs_shell_show_event_app_notify (shell, title, GS_SHELL_EVENT_BUTTON_NONE);
+	gs_shell_show_event_app_notify (shell, title, GS_TOAST_BUTTON_NONE, NULL, NULL);
 }
 
 static gchar *
@@ -1226,20 +1232,23 @@ gs_shell_get_title_from_app (GsApp *app)
 	return g_strdup_printf (_("“%s”"), gs_app_get_id (app));
 }
 
+/* returns whether the `out_details_text` is a URI */
 static gboolean
 gs_shell_handle_events_more_info (GsShell *self,
 				  GsApp *origin,
-				  const gchar *more_info)
+				  const gchar *suggested_details_text,
+				  const gchar *suggested_details_message,
+				  const gchar **out_details_text,
+				  const gchar **out_details_message)
 {
 	const gchar *uri;
 
-	g_clear_pointer (&self->events_info_uri, g_free);
-	g_clear_pointer (&self->events_more_info, g_free);
-
 	/* Prefer detailed error message against origin's help URL */
-	if (more_info != NULL && *more_info != '\0') {
-		self->events_more_info = g_strdup (more_info);
-		return TRUE;
+	if (suggested_details_text != NULL && *suggested_details_text != '\0') {
+		if (out_details_message != NULL)
+			*out_details_message = suggested_details_message;
+		*out_details_text = suggested_details_text;
+		return FALSE;
 	}
 
 	if (origin == NULL)
@@ -1247,7 +1256,7 @@ gs_shell_handle_events_more_info (GsShell *self,
 
 	uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
 	if (uri != NULL) {
-		self->events_info_uri = g_strdup (uri);
+		*out_details_text = uri;
 		return TRUE;
 	}
 
@@ -1258,11 +1267,13 @@ static gboolean
 gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *origin = gs_plugin_event_get_origin (event);
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
+	const gchar *toast_text = NULL;
+	const gchar *details_text = NULL;
+	const gchar *details_message = NULL;
+	const gchar *suggested_details_text = NULL;
 	g_autofree gchar *str_origin = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
 	GsPluginJob *job = gs_plugin_event_get_job (event);
 
 	/* ignore any errors from background downloads */
@@ -1270,58 +1281,39 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		return TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to download updates");
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
 			if (gs_app_get_bundle_kind (origin) == AS_BUNDLE_KIND_CABINET) {
-				/* TRANSLATORS: failure text for the in-app notification,
-				 * where the %s is the source (e.g. "alt.fedoraproject.org") */
-				g_string_append_printf (str, _("Unable to download "
-							       "firmware updates from %s"),
-							str_origin);
+				/* TRANSLATORS: failure text for the in-app notification */
+				toast_text = _("Unable to download firmware updates");
 			} else {
-				/* TRANSLATORS: failure text for the in-app notification,
-				 * where the %s is the source (e.g. "alt.fedoraproject.org") */
-				g_string_append_printf (str, _("Unable to download updates from %s"),
-							str_origin);
 				if (!gs_app_has_management_plugin (origin, NULL))
-					buttons |= GS_SHELL_EVENT_BUTTON_SOURCES;
+					button = GS_TOAST_BUTTON_SOURCES;
 			}
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append (str, _("Unable to download updates"));
 		}
-		more_info = error->message;
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to download updates: "
-				       "internet access was required but wasn’t available"));
-		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
+		toast_text = _("Unable to update: internet access required");
+		button = GS_TOAST_BUTTON_NETWORK_SETTINGS;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
-		if (origin != NULL) {
-			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the source (e.g. "alt.fedoraproject.org") */
-			g_string_append_printf (str, _("Unable to download updates "
-					         "from %s: not enough disk space"),
-					       str_origin);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append (str, _("Unable to download updates: "
-					        "not enough disk space"));
-		}
-		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to update: not enough disk space");
+		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to download updates: "
-				        "authentication was required"));
+		toast_text = _("Unable to update: authentication required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to download updates: "
-				        "authentication was invalid"));
+		toast_text = _("Unable to update: invalid authentication");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to download updates: you do not have"
-				        " permission to install software"));
+		toast_text = _("Unable to update: permission required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1329,22 +1321,22 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job) &&
 		    !(gs_plugin_job_update_apps_get_flags (GS_PLUGIN_JOB_UPDATE_APPS (job)) & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
 			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append (str, _("Unable to download updates"));
+			toast_text = _("Unable to download updates");
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append (str, _("Unable to get list of updates"));
+			toast_text = _("Unable to get list of updates");
 		}
-		more_info = error->message;
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, details_message);
 	return TRUE;
 }
 
@@ -1353,112 +1345,71 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *app = gs_plugin_event_get_app (event);
 	GsApp *origin = gs_plugin_event_get_origin (event);
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
+	const gchar *toast_text = NULL;
+	const gchar *details_text = NULL;
+	const gchar *details_message = NULL;
+	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
-	g_autofree gchar *str_origin = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
 
 	str_app = gs_shell_get_title_from_app (app);
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
-		if (origin != NULL) {
-			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the first %s is the app name (e.g. "GIMP") and
-			 * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"  */
-			g_string_append_printf (str, _("Unable to install %s as "
-						       "download failed from %s"),
-					       str_app, str_origin);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to install %s "
-						       "as download failed"),
-						str_app);
-		}
-		more_info = error->message;
+		toast_text = _("Unable to install: download failed");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		if (origin != NULL) {
-			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the first %s is the app name (e.g. "GIMP")
-			 * and the second %s is the name of the runtime, e.g.
-			 * "GNOME SDK [flatpak.gnome.org]" */
-			g_string_append_printf (str, _("Unable to install %s as "
-						       "runtime %s not available"),
-					       str_app, str_origin);
+			toast_text = _("Unable to install: missing runtime");
 		} else {
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to install %s "
-						       "as not supported"),
-						str_app);
+			tmp_toast_text = g_strdup_printf (_("Unable to install %s"), str_app);
+			toast_text = tmp_toast_text;
 		}
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to install: internet access was "
-				        "required but wasn’t available"));
-		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
+		toast_text  = _("Unable to install: internet access required");
+		button = GS_TOAST_BUTTON_NETWORK_SETTINGS;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to install: the app has an invalid format"));
+		toast_text = _("Unable to install: invalid app format");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to install %s: "
-					       "not enough disk space"),
-					str_app);
-		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		toast_text = _("Unable to install: not enough disk space");
+		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
-		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append_printf (str, _("Unable to install %s: "
-					       "authentication was required"),
-					str_app);
+		toast_text = _("Unable to install: authentication required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to install %s: "
-					       "authentication was invalid"),
-					str_app);
+		toast_text = _("Unable to install: invalid authentication");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to install %s: "
-					       "you do not have permission to "
-					       "install software"),
-					str_app);
+		toast_text = _("Unable to install: permission required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "Dell XPS 13") */
-		g_string_append_printf (str, _("Unable to install %s: "
-					       "AC power is required"),
-					str_app);
+		toast_text = _("Unable to install: device must be plugged in");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "Dell XPS 13") */
-		g_string_append_printf (str, _("Unable to install %s: "
-					       "The battery level is too low"),
-					str_app);
+		toast_text = _("Unable to install: low battery");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to install %s"), str_app);
-		more_info = error->message;
+		tmp_toast_text = g_strdup_printf (_("Unable to install %s"), str_app);
+		toast_text = tmp_toast_text;
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, details_message);
 	return TRUE;
 }
 
@@ -1467,135 +1418,49 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *app = gs_plugin_event_get_app (event);
 	GsApp *origin = gs_plugin_event_get_origin (event);
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
+	const gchar *toast_text = NULL;
+	const gchar *details_text = NULL;
+	const gchar *details_message = NULL;
+	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
-	g_autofree gchar *str_origin = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* ignore any errors from background downloads */
 	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 		return TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
-		if (app != NULL && origin != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the first %s is the app name (e.g. "GIMP") and
-			 * the second %s is the origin, e.g. "Fedora" or
-			 * "Fedora Project [fedoraproject.org]" */
-			g_string_append_printf (str, _("Unable to update %s from %s as download failed"),
-					       str_app, str_origin);
-			buttons = TRUE;
-		} else if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to update %s as download failed"),
-						str_app);
-		} else if (origin != NULL) {
-			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the origin, e.g. "Fedora" or
-			 * "Fedora Project [fedoraproject.org]" */
-			g_string_append_printf (str, _("Unable to install updates from %s as download failed"),
-						str_origin);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append_printf (str, _("Unable to install updates as download failed"));
-		}
-		more_info = error->message;
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to update: download failed");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to update: "
-					"internet access was required but "
-					"wasn’t available"));
-		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
+		toast_text = _("Unable to update: internet access required");
+		button = GS_TOAST_BUTTON_NETWORK_SETTINGS;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to update %s: "
-						       "not enough disk space"),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append_printf (str, _("Unable to install updates: "
-						       "not enough disk space"));
-		}
-		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to update: not enough disk space");
+		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to update %s: "
-						       "authentication was required"),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append_printf (str, _("Unable to install updates: "
-						       "authentication was required"));
-		}
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to update: authentication required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to update %s: "
-						       "authentication was invalid"),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append_printf (str, _("Unable to install updates: "
-						       "authentication was invalid"));
-		}
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to update: invalid authentication");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to update %s: "
-						       "you do not have permission to "
-						       "update software"),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append_printf (str, _("Unable to install updates: "
-						       "you do not have permission to "
-						       "update software"));
-		}
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to update: permission required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "Dell XPS 13") */
-			g_string_append_printf (str, _("Unable to update %s: "
-						       "AC power is required"),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "Dell XPS 13") */
-			g_string_append_printf (str, _("Unable to install updates: "
-						       "AC power is required"));
-		}
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to update: device must be plugged in");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "Dell XPS 13") */
-			g_string_append_printf (str, _("Unable to update %s: "
-						       "The battery level is too low"),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "Dell XPS 13") */
-			g_string_append_printf (str, _("Unable to install updates: "
-						       "The battery level is too low"));
-		}
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to update: low battery");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1604,22 +1469,23 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
 			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to update %s"), str_app);
+			tmp_toast_text = g_strdup_printf (_("Unable to update %s"), str_app);
+			toast_text = tmp_toast_text;
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append_printf (str, _("Unable to install updates"));
+			toast_text = _("Unable to install updates");
 		}
-		more_info = error->message;
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, details_message);
 	return TRUE;
 }
 
@@ -1628,10 +1494,12 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *app = gs_plugin_event_get_app (event);
 	GsApp *origin = gs_plugin_event_get_origin (event);
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
+	const gchar *toast_text = NULL;
+	const gchar *details_text = NULL;
+	const gchar *details_message = NULL;
+	const gchar *suggested_details_text = NULL;
 	g_autofree gchar *str_app = NULL;
 	g_autofree gchar *str_origin = NULL;
 
@@ -1640,82 +1508,56 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the first %s is the distro name (e.g. "Fedora 25") and
-			 * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]" */
-			g_string_append_printf (str, _("Unable to upgrade to %s from %s"),
-					       str_app, str_origin);
+			/* TRANSLATORS: failure text for the in-app notification */
+			toast_text = _("Unable to upgrade");
 		} else {
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the app name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to upgrade to %s "
-						       "as download failed"),
-						str_app);
+			/* TRANSLATORS: failure text for the in-app notification */
+			toast_text = _("Unable to upgrade: download failed");
 		}
-		more_info = error->message;
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "internet access was required but "
-					       "wasn’t available"),
-					str_app);
-		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to upgrade: internet access required");
+		button = GS_TOAST_BUTTON_NETWORK_SETTINGS;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "not enough disk space"),
-					str_app);
-		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to upgrade: not enough disk space");
+		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "authentication was required"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to upgrade: authentication required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "authentication was invalid"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to upgrade: invalid authentication");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "you do not have permission to upgrade"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to upgrade: permission required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "AC power is required"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to upgrade: device must be plugged in");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "The battery level is too low"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to upgrade: low battery");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s"), str_app);
-		more_info = error->message;
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to upgrade");
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, details_message);
 	return TRUE;
 }
 
@@ -1724,42 +1566,35 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *app = gs_plugin_event_get_app (event);
 	GsApp *origin = gs_plugin_event_get_origin (event);
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
+	const gchar *toast_text = NULL;
+	const gchar *details_text = NULL;
+	const gchar *details_message = NULL;
+	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
 
 	str_app = gs_shell_get_title_from_app (app);
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to remove %s: authentication was required"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to uninstall: authentication required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to remove %s: authentication was invalid"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to uninstall: authentication invalid");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to remove %s: you do not have"
-					       " permission to remove software"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to uninstall: permission required");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to remove %s: "
-					       "AC power is required"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to uninstall: device must be plugged in");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to remove %s: "
-					       "The battery level is too low"),
-					str_app);
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to uninstall: low battery");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1769,18 +1604,19 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 			return TRUE;
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the app name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to remove %s"), str_app);
-		more_info = error->message;
+		tmp_toast_text = g_strdup_printf (_("Unable to uninstall %s"), str_app);
+		toast_text = tmp_toast_text;
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, details_message);
 	return TRUE;
 }
 
@@ -1789,37 +1625,38 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *app = gs_plugin_event_get_app (event);
 	GsApp *origin = gs_plugin_event_get_origin (event);
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
+	const gchar *toast_text = NULL;
+	const gchar *details_text = NULL;
+	const gchar *details_message = NULL;
+	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
-	g_autofree gchar *str_origin = NULL;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
-		if (app != NULL && origin != NULL) {
+		if (app != NULL)
 			str_app = gs_shell_get_title_from_app (app);
-			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the first %s is the app name (e.g. "GIMP")
-			 * and the second %s is the name of the runtime, e.g.
-			 * "GNOME SDK [flatpak.gnome.org]" */
-			g_string_append_printf (str, _("Unable to launch %s: %s is not installed"),
-					        str_app,
-					        str_origin);
+		if (str_app != NULL) {
+			/* TRANSLATORS: failure text for the in-app notification, where the '%s' is
+			   replaced with the app name (e.g. "GIMP") */
+			tmp_toast_text = g_strdup_printf (_("Unable to launch %s"),
+							  str_app);
+			toast_text = tmp_toast_text;
 		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			toast_text = _("Sorry, something went wrong");
+		}
+		if (str_app == NULL || origin == NULL) {
 			/* non-interactive generic */
 			if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 				return FALSE;
-			/* TRANSLATORS: we failed to get a proper error code */
-			g_string_append (str, _("Sorry, something went wrong"));
-			more_info = error->message;
 		}
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Not enough disk space — free up some space "
-					"and try again"));
-		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		toast_text = _("Not enough disk space for operation");
+		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1828,40 +1665,42 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
-		g_string_append (str, _("Sorry, something went wrong"));
-		more_info = error->message;
+		toast_text = _("Sorry, something went wrong");
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, details_message);
 	return TRUE;
 }
 
 static gboolean
 gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 {
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
+	const gchar *toast_text = NULL;
+	const gchar *suggested_details_text = NULL;
+	const gchar *details_text = NULL;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Failed to install file: not supported"));
+		toast_text = _("Unable to install: file type not supported");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Failed to install file: authentication failed"));
+		toast_text = _("Unable to install: authentication failed");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Not enough disk space — free up some space "
-					"and try again"));
-		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		toast_text = _("Not enough disk space for operation");
+		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1870,40 +1709,42 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
-		g_string_append (str, _("Sorry, something went wrong"));
-		more_info = error->message;
+		toast_text = _("Sorry, something went wrong");
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, NULL, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, NULL, suggested_details_text, NULL, &details_text, NULL))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, NULL);
 	return TRUE;
 }
 
 static gboolean
 gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
 {
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
+	const gchar *toast_text = NULL;
+	const gchar *suggested_details_text = NULL;
+	const gchar *details_text = NULL;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Failed to install: not supported"));
+		toast_text = _("Unable to install");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Failed to install: authentication failed"));
+		toast_text = _("Unable to install: authentication failed");
+		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Not enough disk space — free up some space "
-					"and try again"));
-		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		toast_text = _("Not enough disk space for operation");
+		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1912,18 +1753,18 @@ gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
-		g_string_append (str, _("Sorry, something went wrong"));
-		more_info = error->message;
+		toast_text = _("Sorry, something went wrong");
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, NULL, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, NULL, suggested_details_text, NULL, &details_text, NULL))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, NULL);
 	return TRUE;
 }
 
@@ -1931,10 +1772,12 @@ static gboolean
 gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *origin = gs_plugin_event_get_origin (event);
-	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsToastButton button = GS_TOAST_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
-	const gchar *more_info = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
+	const gchar *toast_text = NULL;
+	const gchar *suggested_details_text = NULL;
+	const gchar *details_text = NULL;
+	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_origin = NULL;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
@@ -1943,24 +1786,25 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 			/* TRANSLATORS: failure text for the in-app notification,
 			 * the %s is the origin, e.g. "Fedora" or
 			 * "Fedora Project [fedoraproject.org]" */
-			g_string_append_printf (str, _("Unable to contact %s"),
-					        str_origin);
+			tmp_toast_text = g_strdup_printf (_("Unable to contact %s"),
+							  str_origin);
+			toast_text = tmp_toast_text;
+			suggested_details_text = error->message;
 		}
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Not enough disk space — free up some space "
-					"and try again"));
-		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		toast_text = _("Not enough disk space for operation");
+		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_RESTART_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'. */
-		g_string_append (str, _("Software needs to be restarted to use new plugins."));
-		buttons |= GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED;
+		toast_text = _("Restart Software to use new plugins");
+		button = GS_TOAST_BUTTON_RESTART_REQUIRED;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
 		/* TRANSLATORS: need to be connected to the AC power */
-		g_string_append (str, _("AC power is required"));
+		toast_text = _("Device needs to be plugged in");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
 		/* TRANSLATORS: not enough juice to do this safely */
-		g_string_append (str, _("The battery level is too low"));
+		toast_text = _("Battery level is too low");
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1969,18 +1813,18 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
-		g_string_append (str, _("Sorry, something went wrong"));
-		more_info = error->message;
+		toast_text = _("Sorry, something went wrong");
+		suggested_details_text = error->message;
 	}
 
-	if (str->len == 0)
+	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, more_info))
-		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, NULL))
+		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	gs_shell_show_event_app_notify (shell, toast_text, button, details_text, NULL);
 	return TRUE;
 }
 
@@ -1999,7 +1843,7 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	/* name and shame the plugin */
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT)) {
 		gs_shell_show_event_app_notify (shell, error->message,
-						GS_SHELL_EVENT_BUTTON_NONE);
+						GS_TOAST_BUTTON_NONE, NULL, NULL);
 		return TRUE;
 	}
 
@@ -2101,9 +1945,6 @@ gs_shell_rescan_events (GsShell *shell)
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE);
 		return;
 	}
-
-	/* nothing to show */
-	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), FALSE);
 }
 
 static void
@@ -2111,26 +1952,6 @@ gs_shell_events_notify_cb (GsPluginLoader *plugin_loader,
 			   GParamSpec *pspec,
 			   GsShell *shell)
 {
-	gs_shell_rescan_events (shell);
-}
-
-static void
-gs_shell_plugin_event_dismissed_cb (GtkButton *button, GsShell *shell)
-{
-	guint i;
-	g_autoptr(GPtrArray) events = NULL;
-
-	/* mark any events currently showing as invalid */
-	events = gs_plugin_loader_get_events (shell->plugin_loader);
-	for (i = 0; i < events->len; i++) {
-		GsPluginEvent *event = g_ptr_array_index (events, i);
-		if (gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE)) {
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID);
-			gs_plugin_event_remove_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE);
-		}
-	}
-
-	/* show the next event */
 	gs_shell_rescan_events (shell);
 }
 
@@ -2517,8 +2338,6 @@ gs_shell_dispose (GObject *object)
 	g_clear_object (&shell->header_end_widget);
 	g_clear_object (&shell->sub_header_end_widget);
 	g_clear_object (&shell->page);
-	g_clear_pointer (&shell->events_info_uri, g_free);
-	g_clear_pointer (&shell->events_more_info, g_free);
 	g_clear_pointer (&shell->modal_dialogs, g_ptr_array_unref);
 	g_clear_object (&shell->settings);
 
@@ -2656,14 +2475,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back2);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, notification_event);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_sources);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_no_space);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_network_settings);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_restart_required);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_more_info);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_dismiss);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, label_events);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_overlay);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_page_header_title);
@@ -2691,16 +2503,9 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, category_page_app_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, search_bar_search_mode_enabled_changed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, search_changed_handler);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_sources_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_no_space_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_network_settings_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_restart_required_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_more_info_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_event_dismissed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_banner_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
-	gtk_widget_class_bind_template_callback (widget_class, overlay_get_child_position_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_details_page_metainfo_loaded_cb);
 	gtk_widget_class_bind_template_callback (widget_class, details_page_app_clicked_cb);
 

@@ -100,112 +100,8 @@
           <object class="AdwViewStackPage">
             <property name="name">main</property>
             <property name="child">
-              <object class="GtkOverlay" id="overlay">
-                <property name="halign">fill</property>
-                <property name="valign">fill</property>
-                <property name="vexpand">True</property>
-                <signal name="get-child-position" handler="overlay_get_child_position_cb"/>
-                <child type="overlay">
-                  <object class="GtkRevealer" id="notification_event">
-                    <property name="halign">GTK_ALIGN_CENTER</property>
-                    <property name="valign">GTK_ALIGN_START</property>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="orientation">horizontal</property>
-                        <property name="spacing">6</property>
-                        <style>
-                          <class name="app-notification"/>
-                        </style>
-                        <child>
-                          <object class="GtkLabel" id="label_events">
-                            <property name="halign">fill</property>
-                            <property name="hexpand">True</property>
-                            <property name="label">Some Title</property>
-                            <property name="wrap">True</property>
-                            <property name="wrap_mode">word-char</property>
-                            <property name="max_width_chars">60</property>
-                            <property name="margin_start">9</property>
-                            <property name="margin_end">9</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                            </attributes>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <child>
-                              <object class="GtkButton" id="button_events_sources">
-                                <property name="visible">False</property>
-                                <property name="label" translatable="yes" comments="button in the info bar">Software Repositories</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="valign">center</property>
-                                <signal name="clicked" handler="gs_shell_plugin_events_sources_cb"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_events_no_space">
-                                <property name="visible">False</property>
-                                <property name="label" translatable="yes" comments="button in the info bar">Examine Disk</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="valign">center</property>
-                                <signal name="clicked" handler="gs_shell_plugin_events_no_space_cb"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_events_network_settings">
-                                <property name="visible">False</property>
-                                <property name="label" translatable="yes" comments="button in the info bar">Network Settings</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="valign">center</property>
-                                <signal name="clicked" handler="gs_shell_plugin_events_network_settings_cb"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_events_restart_required">
-                                <property name="visible">False</property>
-                                <property name="label" translatable="yes" comments="button in the info bar">_Restart Now…</property>
-                                <property name="use-underline">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="valign">center</property>
-                                <signal name="clicked" handler="gs_shell_plugin_events_restart_required_cb"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_events_more_info">
-                                <property name="visible">False</property>
-                                <property name="label" translatable="yes" comments="button in the info bar">More Information</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="valign">center</property>
-                                <signal name="clicked" handler="gs_shell_plugin_events_more_info_cb"/>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="button_events_dismiss">
-                            <property name="halign">end</property>
-                            <property name="valign">start</property>
-                            <signal name="clicked" handler="gs_shell_plugin_event_dismissed_cb"/>
-                            <style>
-                              <class name="flat"/>
-                            </style>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="icon_name">window-close-symbolic</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
+              <object class="AdwToastOverlay" id="toast_overlay">
+                <property name="child">
                   <object class="AdwLeaflet" id="details_leaflet">
                     <property name="can-navigate-back">True</property>
                     <property name="can-unfold">False</property>
@@ -500,7 +396,7 @@
                     </child>
 
                   </object>
-                </child>
+                </property>
               </object>
             </property>
           </object>
