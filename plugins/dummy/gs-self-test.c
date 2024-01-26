@@ -51,9 +51,7 @@ gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -653,9 +651,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 					    &result1);
 
 	/* install an app */
-	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					  "app", app2,
-					  NULL);
+	plugin_job2 = gs_plugin_job_manage_app_new (app2, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job2,
 					    NULL,

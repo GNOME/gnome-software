@@ -324,10 +324,8 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_install_date (app), ==, 0);
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
+	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);

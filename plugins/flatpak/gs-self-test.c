@@ -414,9 +414,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* install, also installing runtime */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -486,9 +484,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 				      G_CALLBACK (progress_notify_cb), &seen_unknown);
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 
 	/* progress should be set to unknown right before installing */
@@ -629,9 +625,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* install, also installing runtime */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED);
 	g_assert_true (!ret);
@@ -767,9 +761,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* install, which will install the runtime from the new remote */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 					    NULL,
 					    update_app_action_finish_sync,
@@ -927,9 +919,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	/* install, which will NOT install the runtime from the RuntimeRemote,
 	 * but from the existing test repo */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1149,9 +1139,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* install the runtime ahead of time */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", runtime,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (runtime, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1236,9 +1224,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* install */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1482,9 +1468,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 
 	/* install, also installing runtime */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1740,9 +1724,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* install, also installing runtime and suggested extensions */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
