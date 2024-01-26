@@ -230,7 +230,8 @@ gs_plugin_func (void)
 		const gchar *tmp = gs_plugin_action_to_function_name (i);
 		if (tmp == NULL) {
 			/* These do not have function, they exist only for better error messages. */
-			if (i == GS_PLUGIN_ACTION_INSTALL_REPO ||
+			if (i == GS_PLUGIN_ACTION_INSTALL ||
+			    i == GS_PLUGIN_ACTION_INSTALL_REPO ||
 			    i == GS_PLUGIN_ACTION_REMOVE_REPO ||
 			    i == GS_PLUGIN_ACTION_ENABLE_REPO ||
 			    i == GS_PLUGIN_ACTION_DISABLE_REPO)

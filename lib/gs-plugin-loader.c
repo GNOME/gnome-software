@@ -236,7 +236,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 {
 	/* reset progress */
 	switch (gs_plugin_job_get_action (helper->plugin_job)) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 		{
 			GsApp *app;
@@ -571,7 +570,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	GsPluginLoader *plugin_loader = helper->plugin_loader;
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	gboolean ret = TRUE;
 	gpointer func = NULL;
@@ -608,7 +606,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
@@ -672,12 +669,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 							plugin,
 							error_local,
 							error);
-	}
-
-	/* add app to the pending installation queue if necessary */
-	if (action == GS_PLUGIN_ACTION_INSTALL &&
-	    app != NULL && gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
-	        add_app_to_install_queue (plugin_loader, app);
 	}
 
 	GS_PROFILER_END_SCOPED (PluginLoader);
@@ -3175,7 +3166,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* these change the pending count on the installed panel */
 	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 		add_to_pending_array = TRUE;
 		break;
@@ -3250,7 +3240,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 	/* some functions are really required for proper operation */
 	switch (action) {
 	case GS_PLUGIN_ACTION_GET_UPDATES:
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_REMOVE:
 		if (!helper->anything_ran) {
@@ -3289,7 +3278,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* pick up new source id */
 	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 		gs_plugin_job_add_refine_flags (helper->plugin_job,
 		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
@@ -3536,8 +3524,27 @@ run_job_cb (GObject      *source_object,
 		return;
 	} else if (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (plugin_job) ||
 		   GS_IS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_MANAGE_APP (plugin_job)) {
+		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job)) {
+		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
+		 * pointer on success, thus return it. */
+		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+		return;
+	} else if (GS_IS_PLUGIN_JOB_MANAGE_APP (plugin_job)) {
+		GsPluginManageAppFlags flags = 0;
+		g_autoptr(GsApp) app = NULL;
+
+		g_object_get (plugin_job,
+			      "app", &app,
+			      "flags", &flags,
+			      NULL);
+
+		/* add app to the pending installation queue if necessary */
+		if ((flags & GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL) != 0 &&
+		     app != NULL && gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
+			GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (g_task_get_source_object (task));
+			add_app_to_install_queue (plugin_loader, app);
+		}
+
 		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
 		 * pointer on success, thus return it. */
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
