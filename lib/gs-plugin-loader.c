@@ -214,48 +214,8 @@ gs_plugin_loader_helper_new (GsPluginLoader *plugin_loader, GsPluginJob *plugin_
 }
 
 static void
-reset_app_progress (GsApp *app)
-{
-	g_autoptr(GsAppList) addons = gs_app_dup_addons (app);
-	GsAppList *related = gs_app_get_related (app);
-
-	gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
-
-	for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-		GsApp *app_addons = gs_app_list_index (addons, i);
-		gs_app_set_progress (app_addons, GS_APP_PROGRESS_UNKNOWN);
-	}
-	for (guint i = 0; i < gs_app_list_length (related); i++) {
-		GsApp *app_related = gs_app_list_index (related, i);
-		gs_app_set_progress (app_related, GS_APP_PROGRESS_UNKNOWN);
-	}
-}
-
-static void
 gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 {
-	/* reset progress */
-	switch (gs_plugin_job_get_action (helper->plugin_job)) {
-	case GS_PLUGIN_ACTION_REMOVE:
-		{
-			GsApp *app;
-			GsAppList *list;
-
-			app = gs_plugin_job_get_app (helper->plugin_job);
-			if (app != NULL)
-				reset_app_progress (app);
-
-			list = gs_plugin_job_get_list (helper->plugin_job);
-			for (guint i = 0; i < gs_app_list_length (list); i++) {
-				GsApp *app_tmp = gs_app_list_index (list, i);
-				reset_app_progress (app_tmp);
-			}
-		}
-		break;
-	default:
-		break;
-	}
-
 	g_object_unref (helper->plugin_loader);
 	if (helper->plugin_job != NULL)
 		g_object_unref (helper->plugin_job);
@@ -606,7 +566,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
 	case GS_PLUGIN_ACTION_LAUNCH:
@@ -1032,61 +991,6 @@ emit_pending_apps_idle (gpointer loader)
 	g_object_unref (loader);
 
 	return G_SOURCE_REMOVE;
-}
-
-static void
-gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
-				   GsPluginLoaderHelper *helper)
-{
-	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
-
-	g_assert (gs_app_list_length (list) > 0);
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		switch (gs_plugin_job_get_action (helper->plugin_job)) {
-		case GS_PLUGIN_ACTION_INSTALL:
-			if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE_LOCAL)
-				add_app_to_install_queue (plugin_loader, app);
-			/* make sure the progress is properly initialized */
-			gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
-			break;
-		case GS_PLUGIN_ACTION_REMOVE:
-			remove_app_from_install_queue (plugin_loader, app);
-			break;
-		default:
-			break;
-		}
-	}
-	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
-}
-
-static void
-gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
-				      GsPluginLoaderHelper *helper)
-{
-	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
-
-	g_assert (gs_app_list_length (list) > 0);
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		remove_app_from_install_queue (plugin_loader, app);
-
-		/* check the app is not still in an action helper */
-		switch (gs_app_get_state (app)) {
-		case GS_APP_STATE_DOWNLOADING:
-		case GS_APP_STATE_INSTALLING:
-		case GS_APP_STATE_REMOVING:
-			g_warning ("application %s left in %s helper",
-				   gs_app_get_unique_id (app),
-				   gs_app_state_to_string (gs_app_get_state (app)));
-			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-			break;
-		default:
-			break;
-		}
-
-	}
-	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
 
 static void
@@ -3152,7 +3056,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 	g_autoptr(GsAppList) list = g_object_ref (gs_plugin_job_get_list (helper->plugin_job));
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	gboolean add_to_pending_array = FALSE;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
 	g_autofree gchar *sysprof_name = NULL;
@@ -3164,26 +3067,9 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	GS_PROFILER_BEGIN_SCOPED (PluginLoader, sysprof_name, sysprof_message);
 
-	/* these change the pending count on the installed panel */
-	switch (action) {
-	case GS_PLUGIN_ACTION_REMOVE:
-		add_to_pending_array = TRUE;
-		break;
-	default:
-		break;
-	}
-
-	/* add to pending list */
-	if (add_to_pending_array)
-		gs_plugin_loader_pending_apps_add (plugin_loader, helper);
-
 	/* run each plugin */
 	if (!GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job)) {
 		if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
-			if (add_to_pending_array) {
-				gs_app_set_state_recover (gs_plugin_job_get_app (helper->plugin_job));
-				gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
-			}
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
 			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
@@ -3216,32 +3102,10 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 		}
 	}
 
-	/* remove from pending list */
-	if (add_to_pending_array) {
-		GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
-		/* The plugin can left the app queued for install when there is no network available,
-		   in which case the app cannot be removed from the install queue. */
-		if (action != GS_PLUGIN_ACTION_INSTALL ||
-		    gs_app_get_state (app) != GS_APP_STATE_QUEUED_FOR_INSTALL) {
-			g_autoptr(GsAppList) addons = NULL;
-
-			gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
-
-			/* unstage addons */
-			addons = gs_app_dup_addons (gs_plugin_job_get_app (helper->plugin_job));
-			for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-				GsApp *addon = gs_app_list_index (addons, i);
-				if (gs_app_get_to_be_installed (addon))
-					gs_app_set_to_be_installed (addon, FALSE);
-			}
-		}
-	}
-
 	/* some functions are really required for proper operation */
 	switch (action) {
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_LAUNCH:
-	case GS_PLUGIN_ACTION_REMOVE:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
 				     GS_PLUGIN_ERROR,
@@ -3272,17 +3136,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 			if (gs_app_get_local_file (app) == NULL)
 				gs_app_set_local_file (app, gs_plugin_job_get_file (helper->plugin_job));
 		}
-	default:
-		break;
-	}
-
-	/* pick up new source id */
-	switch (action) {
-	case GS_PLUGIN_ACTION_REMOVE:
-		gs_plugin_job_add_refine_flags (helper->plugin_job,
-		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
-		break;
 	default:
 		break;
 	}
