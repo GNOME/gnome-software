@@ -465,9 +465,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* remove the application */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -501,9 +499,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* remove the application */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -523,9 +519,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* remove the runtime */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", runtime,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (runtime, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -781,9 +775,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* remove the app */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -792,9 +784,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* remove the runtime */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", runtime,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (runtime, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -936,9 +926,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* remove the app */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -947,9 +935,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* remove the runtime */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", runtime,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (runtime, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1277,18 +1263,14 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* remove app */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app2,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app2, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
 	/* remove runtime */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", runtime,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (runtime, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1577,9 +1559,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 
 	/* remove the app */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1587,9 +1567,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* remove the old_runtime */
 	g_assert_cmpstr (gs_app_get_unique_id (old_runtime), ==, "user/flatpak/test/org.test.Runtime/master");
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", old_runtime,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (old_runtime, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1598,9 +1576,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* remove the runtime */
 	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/org.test.Runtime/new_master");
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", runtime,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (runtime, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1862,18 +1838,14 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* remove the app */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (app, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
 	/* remove the runtime */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", runtime,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_app_new (runtime, GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
