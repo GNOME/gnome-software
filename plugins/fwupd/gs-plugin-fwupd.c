@@ -1448,53 +1448,78 @@ gs_plugin_fwupd_modify_source_finish (GsPluginFwupd *self,
 }
 
 static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
+gs_plugin_fwupd_install_app_installed (GObject *source_object,
+				       GAsyncResult *result,
+				       gpointer user_data)
 {
-	GAsyncResult **result_out = user_data;
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (source_object);
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GError) local_error = NULL;
 
-	g_assert (result_out != NULL && *result_out == NULL);
-	*result_out = g_object_ref (result);
-	g_main_context_wakeup (g_main_context_get_thread_default ());
+	if (!gs_plugin_fwupd_install_finish (self, result, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
 }
 
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+static void
+gs_plugin_fwupd_install_app_downloaded (GObject *source_object,
+					GAsyncResult *result,
+					gpointer user_data)
+{
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (source_object);
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginManageAppData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+
+	if (!gs_plugin_fwupd_download_finish (self, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+	/* FIXME: Connect #GsPluginAppNeedsUserActionCallback */
+	gs_plugin_fwupd_install_async (self, data->app, (data->flags & GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE) != 0,
+				       NULL, NULL, cancellable,
+				       gs_plugin_fwupd_install_app_installed,
+				       g_steal_pointer (&task));
+}
+
+static void
+gs_plugin_fwupd_install_app_async (GsPlugin *plugin,
+				   GsApp *app,
+				   GsPluginManageAppFlags flags,
+				   GCancellable *cancellable,
+				   GAsyncReadyCallback callback,
+				   gpointer user_data)
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-	g_autoptr(GMainContext) context = g_main_context_new ();
-	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
-	g_autoptr(GAsyncResult) result = NULL;
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_manage_app_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fwupd_install_app_async);
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
-	/* source -> remote, handled by dedicated function */
-	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	/* is not a source */
+	g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
 
 	/* Download the file first. */
-	gs_plugin_fwupd_download_async (self, app, interactive, cancellable, async_result_cb, &result);
-	while (result == NULL)
-		g_main_context_iteration (context, TRUE);
+	gs_plugin_fwupd_download_async (self, app, interactive, cancellable,
+					gs_plugin_fwupd_install_app_downloaded,
+					g_steal_pointer (&task));
+}
 
-	if (!gs_plugin_fwupd_download_finish (self, result, error))
-		return FALSE;
-
-	g_clear_object (&result);
-
-	/* FIXME: Connect #GsPluginAppNeedsUserActionCallback when this function
-	 * is ported to the new #GsPluginJob subclasses. */
-	gs_plugin_fwupd_install_async (self, app, interactive, NULL, NULL, cancellable, async_result_cb, &result);
-	while (result == NULL)
-		g_main_context_iteration (context, TRUE);
-
-	return gs_plugin_fwupd_install_finish (self, result, error);
+static gboolean
+gs_plugin_fwupd_install_app_finish (GsPlugin *plugin,
+				    GAsyncResult *result,
+				    GError **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 typedef struct {
@@ -2069,6 +2094,8 @@ gs_plugin_fwupd_class_init (GsPluginFwupdClass *klass)
 	plugin_class->disable_repository_finish = gs_plugin_fwupd_disable_repository_finish;
 	plugin_class->update_apps_async = gs_plugin_fwupd_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_fwupd_update_apps_finish;
+	plugin_class->install_app_async = gs_plugin_fwupd_install_app_async;
+	plugin_class->install_app_finish = gs_plugin_fwupd_install_app_finish;
 }
 
 GType

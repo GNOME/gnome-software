@@ -421,57 +421,188 @@ gs_plugin_app_origin_repo_enable (GsPluginPackagekit  *self,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+static void
+gs_plugin_packagekit_install_app_installed (GObject *source_object,
+					    GAsyncResult *result,
+					    gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	GsPluginManageAppData *data = g_task_get_task_data (task);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_task_generic_finish (PK_TASK (source_object), result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
+		gs_app_set_state_recover (data->app);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* state is known */
+	gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
+
+	/* if we remove the app again later, we should be able to
+	 * cancel the installation if we'd never installed it */
+	gs_app_set_allow_cancel (data->app, TRUE);
+
+	/* no longer valid */
+	gs_app_clear_source_ids (data->app);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_packagekit_install_app_installed_file (GObject *source_object,
+						 GAsyncResult *result,
+						 gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	GsPluginManageAppData *data = g_task_get_task_data (task);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_task_generic_finish (PK_TASK (source_object), result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
+		gs_app_set_state_recover (data->app);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* state is known */
+	gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
+
+	/* get the new icon from the package */
+	gs_app_set_local_file (data->app, NULL);
+	gs_app_remove_all_icons (data->app);
+
+	/* no longer valid */
+	gs_app_clear_source_ids (data->app);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+typedef struct {
+	GTask *task; /* (owned) */
+	GsAppList *addons; /* (owned) (nullable) */
+} InstallWithAddonsData;
+
+static void
+install_with_addons_data_free (InstallWithAddonsData *data)
+{
+	if (data != NULL) {
+		g_clear_object (&data->task);
+		g_clear_object (&data->addons);
+		g_free (data);
+	}
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (InstallWithAddonsData, install_with_addons_data_free)
+
+static void
+gs_plugin_packagekit_install_app_installed_with_addons (GObject *source_object,
+							GAsyncResult *result,
+							gpointer user_data)
+{
+	g_autoptr(InstallWithAddonsData) install_with_addons_data = user_data;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GTask *task = install_with_addons_data->task;
+	GsPluginManageAppData *data = g_task_get_task_data (task);
+
+	results = pk_task_generic_finish (PK_TASK (source_object), result, &local_error);
+
+	if (results == NULL || !gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
+		gs_app_set_state_recover (data->app);
+		for (guint i = 0; install_with_addons_data->addons != NULL && i < gs_app_list_length (install_with_addons_data->addons); i++) {
+			GsApp *addon = gs_app_list_index (install_with_addons_data->addons, i);
+			if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING)
+				gs_app_set_state_recover (addon);
+		}
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* state is known */
+	for (guint i = 0; install_with_addons_data->addons != NULL && i < gs_app_list_length (install_with_addons_data->addons); i++) {
+		GsApp *addon = gs_app_list_index (install_with_addons_data->addons, i);
+		if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING) {
+			gs_app_set_state (addon, GS_APP_STATE_INSTALLED);
+			gs_app_clear_source_ids (addon);
+		}
+	}
+	gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
+
+	/* no longer valid */
+	gs_app_clear_source_ids (data->app);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_packagekit_install_app_async (GsPlugin *plugin,
+					GsApp *app,
+					GsPluginManageAppFlags flags,
+					GCancellable *cancellable,
+					GAsyncReadyCallback callback,
+					gpointer user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	g_autoptr(GsAppList) addons = NULL;
 	GPtrArray *source_ids;
+	g_auto(GStrv) package_ids = NULL;
+	g_autofree gchar *local_filename = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsAppList) addons = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkTask) task_install = NULL;
+	g_autoptr(GPtrArray) array_package_ids = NULL;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(InstallWithAddonsData) install_with_addons_data = NULL;
 	const gchar *package_id;
 	guint i;
-	g_autofree gchar *local_filename = NULL;
-	g_auto(GStrv) package_ids = NULL;
-	g_autoptr(GPtrArray) array_package_ids = NULL;
-	g_autoptr(PkResults) results = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_manage_app_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_install_app_async);
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
-	/* enable repo, handled by dedicated function */
-	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	/* is not a source */
+	g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
 
 	/* queue for install if installation needs the network */
 	if (!gs_plugin_get_network_available (plugin)) {
 		gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
-		return TRUE;
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
 
 	/* Set up a #PkTask to handle the D-Bus calls to packagekitd. */
 	task_install = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, interactive);
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		/* get everything up front we need */
 		source_ids = gs_app_get_source_ids (app);
 		if (source_ids->len == 0) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "installing not available");
-			return FALSE;
+			g_task_return_new_error (task, GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "installing not available");
+			return;
 		}
 		package_ids = g_new0 (gchar *, 2);
 		package_ids[0] = g_strdup (g_ptr_array_index (source_ids, 0));
 
 		/* enable the repo where the unavailable app is coming from */
-		if (!gs_plugin_app_origin_repo_enable (self, task_install, app, cancellable, error))
-			return FALSE;
+		if (!gs_plugin_app_origin_repo_enable (self, task_install, app, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
@@ -482,28 +613,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 		/* actually install the package */
 		gs_packagekit_helper_add_app (helper, app);
+		gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_install), helper);
 
-		results = pk_task_install_packages_sync (task_install,
-							 package_ids,
-							 cancellable,
-							 gs_packagekit_helper_cb, helper,
-							 error);
+		pk_task_install_packages_async (task_install, package_ids, cancellable,
+						gs_packagekit_helper_cb, g_steal_pointer (&helper),
+						gs_plugin_packagekit_install_app_installed,
+						g_steal_pointer (&task));
 
-		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-
-		/* state is known */
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-		/* if we remove the app again later, we should be able to
-		 * cancel the installation if we'd never installed it */
-		gs_app_set_allow_cancel (app, TRUE);
-
-		/* no longer valid */
-		gs_app_clear_source_ids (app);
-		return TRUE;
+		return;
 	}
 
 	/* get the list of available package ids to install */
@@ -513,11 +630,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		source_ids = gs_app_get_source_ids (app);
 		if (source_ids->len == 0) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "installing not available");
-			return FALSE;
+			g_task_return_new_error (task, GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "installing not available");
+			return;
 		}
 
 		addons = gs_app_dup_addons (app);
@@ -533,11 +649,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 
 		if (array_package_ids->len == 0) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "no packages to install");
-			return FALSE;
+			g_task_return_new_error (task, GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "no packages to install");
+			return;
 		}
 
 		/* NULL-terminate the array */
@@ -551,79 +666,53 @@ gs_plugin_app_install (GsPlugin *plugin,
 				gs_app_set_state (addon, GS_APP_STATE_INSTALLING);
 		}
 		gs_packagekit_helper_add_app (helper, app);
+		gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_install), helper);
 
-		results = pk_task_install_packages_sync (task_install,
-							 (gchar **) array_package_ids->pdata,
-							 cancellable,
-							 gs_packagekit_helper_cb, helper,
-							 error);
+		install_with_addons_data = g_new0 (InstallWithAddonsData, 1);
+		install_with_addons_data->task = g_steal_pointer (&task);
+		install_with_addons_data->addons = g_steal_pointer (&addons);
 
-		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-			for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-				GsApp *addon = gs_app_list_index (addons, i);
-				if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING)
-					gs_app_set_state_recover (addon);
-			}
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-
-		/* state is known */
-		for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-			GsApp *addon = gs_app_list_index (addons, i);
-			if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING) {
-				gs_app_set_state (addon, GS_APP_STATE_INSTALLED);
-				gs_app_clear_source_ids (addon);
-			}
-		}
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
+		pk_task_install_packages_async (task_install,
+						(gchar **) array_package_ids->pdata,
+						cancellable,
+						gs_packagekit_helper_cb, g_steal_pointer (&helper),
+						gs_plugin_packagekit_install_app_installed_with_addons,
+						g_steal_pointer (&install_with_addons_data));
 		break;
 	case GS_APP_STATE_AVAILABLE_LOCAL:
 		if (gs_app_get_local_file (app) == NULL) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "local package, but no filename");
-			return FALSE;
+			g_task_return_new_error (task, GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "local package, but no filename");
+			return;
 		}
 		local_filename = g_file_get_path (gs_app_get_local_file (app));
 		package_ids = g_strsplit (local_filename, "\t", -1);
 
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		gs_packagekit_helper_add_app (helper, app);
+		gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_install), helper);
 
-		results = pk_task_install_files_sync (task_install,
-						      package_ids,
-						      cancellable,
-						      gs_packagekit_helper_cb, helper,
-						      error);
-
-		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-
-		/* state is known */
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-		/* get the new icon from the package */
-		gs_app_set_local_file (app, NULL);
-		gs_app_remove_all_icons (app);
+		pk_task_install_files_async (task_install, package_ids, cancellable,
+					     gs_packagekit_helper_cb, g_steal_pointer (&helper),
+					     gs_plugin_packagekit_install_app_installed_file,
+					     g_steal_pointer (&task));
 		break;
 	default:
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "do not know how to install app in state %s",
-			     gs_app_state_to_string (gs_app_get_state (app)));
-		return FALSE;
+		g_task_return_new_error (task, GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "do not know how to install app in state %s",
+					 gs_app_state_to_string (gs_app_get_state (app)));
+		return;
 	}
+}
 
-	/* no longer valid */
-	gs_app_clear_source_ids (app);
-
-	return TRUE;
+static gboolean
+gs_plugin_packagekit_install_app_finish (GsPlugin *plugin,
+					 GAsyncResult *result,
+					 GError **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -4511,6 +4600,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->disable_repository_finish = gs_plugin_packagekit_disable_repository_finish;
 	plugin_class->update_apps_async = gs_plugin_packagekit_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_packagekit_update_apps_finish;
+	plugin_class->install_app_async = gs_plugin_packagekit_install_app_async;
+	plugin_class->install_app_finish = gs_plugin_packagekit_install_app_finish;
 }
 
 GType

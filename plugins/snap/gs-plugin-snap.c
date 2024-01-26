@@ -1657,27 +1657,94 @@ progress_cb (SnapdClient *client, SnapdChange *change, gpointer deprecated, gpoi
 	gs_app_set_progress (app, (guint) (100 * done / total));
 }
 
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+static void
+gs_plugin_snap_install_app_refreshed (GObject *source_object,
+				      GAsyncResult *result,
+				      gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginManageAppData *data = g_task_get_task_data (task);
+
+	if (!snapd_client_refresh_finish (SNAPD_CLIENT (source_object), result, &local_error)) {
+		gs_app_set_state_recover (data->app);
+		snapd_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_snap_install_app_installed (GObject *source_object,
+				      GAsyncResult *result,
+				      gpointer user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginManageAppData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+
+	if (!snapd_client_install2_finish (client, result, &local_error)) {
+		/* if already installed then just try to switch channel */
+		if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_ALREADY_INSTALLED)) {
+			const gchar *name, *channel;
+
+			name = gs_app_get_metadata_item (data->app, "snap::name");
+			channel = gs_app_get_branch (data->app);
+
+			snapd_client_refresh_async (client, name, channel, progress_cb, data->app, cancellable,
+						    gs_plugin_snap_install_app_refreshed, g_steal_pointer (&task));
+		} else {
+			gs_app_set_state_recover (data->app);
+			snapd_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+		}
+		return;
+	}
+
+	gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_snap_install_app_async (GsPlugin *plugin,
+				  GsApp *app,
+				  GsPluginManageAppFlags flags,
+				  GCancellable *cancellable,
+				  GAsyncReadyCallback callback,
+				  gpointer user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
+	g_autoptr(GTask) task = NULL;
 	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(GError) local_error = NULL;
 	const gchar *name, *channel;
-	SnapdInstallFlags flags = SNAPD_INSTALL_FLAGS_NONE;
-	gboolean result;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-	g_autoptr(GError) error_local = NULL;
+	SnapdInstallFlags snap_flags = SNAPD_INSTALL_FLAGS_NONE;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE) != 0;
 
-	/* We can only install apps we know of */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	task = gs_plugin_manage_app_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_install_app_async);
 
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* is not a source */
+	g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
+
+	client = get_client (self, interactive, &local_error);
+	if (client == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	name = gs_app_get_metadata_item (app, "snap::name");
 	channel = gs_app_get_branch (app);
@@ -1685,25 +1752,17 @@ gs_plugin_app_install (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
 	if (g_strcmp0 (gs_app_get_metadata_item (app, "snap::confinement"), "classic") == 0)
-		flags |= SNAPD_INSTALL_FLAGS_CLASSIC;
-	result = snapd_client_install2_sync (client, flags, name, channel, NULL, progress_cb, app, cancellable, &error_local);
+		snap_flags |= SNAPD_INSTALL_FLAGS_CLASSIC;
+	snapd_client_install2_async (client, snap_flags, name, channel, NULL, progress_cb, app, cancellable,
+				     gs_plugin_snap_install_app_installed, g_steal_pointer (&task));
+}
 
-	/* if already installed then just try to switch channel */
-	if (!result && g_error_matches (error_local, SNAPD_ERROR, SNAPD_ERROR_ALREADY_INSTALLED)) {
-		g_clear_error (&error_local);
-		result = snapd_client_refresh_sync (client, name, channel, progress_cb, app, cancellable, &error_local);
-	}
-
-	if (!result) {
-		gs_app_set_state_recover (app);
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		snapd_error_convert (error);
-		return FALSE;
-	}
-
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-	return TRUE;
+static gboolean
+gs_plugin_snap_install_app_finish (GsPlugin *plugin,
+				   GAsyncResult *result,
+				   GError **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 // Check if an app is graphical by checking if it uses a known GUI interface.
@@ -2068,6 +2127,8 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	plugin_class->list_apps_finish = gs_plugin_snap_list_apps_finish;
 	plugin_class->update_apps_async = gs_plugin_snap_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_snap_update_apps_finish;
+	plugin_class->install_app_async = gs_plugin_snap_install_app_async;
+	plugin_class->install_app_finish = gs_plugin_snap_install_app_finish;
 }
 
 GType
