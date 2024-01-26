@@ -3002,16 +3002,15 @@ gs_plugin_loader_pending_apps_refined_cb (GObject      *source,
 		GsApp *app = gs_app_list_index (refined_queue, i);
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
+		/* The 'interactive' is needed for credentials prompt, otherwise it just fails */
 		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
 			plugin_job = gs_plugin_job_manage_repository_new (app,
 									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE |
 									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
 		} else {
-			/* The 'interactive' is needed for credentials prompt, otherwise it just fails */
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-							 "app", app,
-							 "interactive", TRUE,
-							 NULL);
+			plugin_job = gs_plugin_job_manage_app_new (app,
+								   GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE |
+								   GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL);
 		}
 
 		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
