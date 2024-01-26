@@ -715,37 +715,82 @@ gs_plugin_packagekit_install_app_finish (GsPlugin *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_app_remove (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
+static void
+gs_plugin_packagekit_remove_app_removed (GObject *source_object,
+					 GAsyncResult *result,
+					 gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	GsPluginManageAppData *data = g_task_get_task_data (task);
+	g_autoptr(GsAppList) addons = NULL;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_task_generic_finish (PK_TASK (source_object), result, &local_error);
+
+	if (results == NULL || !gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
+		gs_app_set_state_recover (data->app);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Make sure addons' state is updated as well */
+	addons = gs_app_dup_addons (data->app);
+	for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
+		GsApp *addon = gs_app_list_index (addons, i);
+		if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLED) {
+			gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
+			gs_app_clear_source_ids (addon);
+		}
+	}
+
+	/* state is not known: we don't know if we can re-install this app */
+	gs_app_set_state (data->app, GS_APP_STATE_UNKNOWN);
+
+	/* no longer valid */
+	gs_app_clear_source_ids (data->app);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_packagekit_remove_app_async (GsPlugin *plugin,
+				       GsApp *app,
+				       GsPluginManageAppFlags flags,
+				       GCancellable *cancellable,
+				       GAsyncReadyCallback callback,
+				       gpointer user_data)
 {
 	const gchar *package_id;
 	GPtrArray *source_ids;
-	g_autoptr(GsAppList) addons = NULL;
+	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkTask) task_remove = NULL;
 	guint i;
 	guint cnt = 0;
 	g_autoptr(PkResults) results = NULL;
 	g_auto(GStrv) package_ids = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_manage_app_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_remove_app_async);
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* disable repo, handled by dedicated function */
-	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
 
 	/* get the list of available package ids to install */
 	source_ids = gs_app_get_source_ids (app);
 	if (source_ids->len == 0) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "removing not available");
-		return FALSE;
+		g_task_return_new_error (task, GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "%s", "removing not available");
+		return;
 	}
 	package_ids = g_new0 (gchar *, source_ids->len + 1);
 	for (i = 0; i < source_ids->len; i++) {
@@ -755,11 +800,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		package_ids[cnt++] = g_strdup (package_id);
 	}
 	if (cnt == 0) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no packages to remove");
-		return FALSE;
+		g_task_return_new_error (task, GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "%s", "no packages to remove");
+		return;
 	}
 
 	/* do the action */
@@ -767,37 +811,24 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_packagekit_helper_add_app (helper, app);
 
 	task_remove = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_remove), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_remove), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_remove), helper);
 
-	results = pk_task_remove_packages_sync (task_remove,
-						package_ids,
-						TRUE, GS_PACKAGEKIT_AUTOREMOVE,
-						cancellable,
-						gs_packagekit_helper_cb, helper,
-						error);
+	pk_task_remove_packages_async (task_remove,
+				       package_ids,
+				       TRUE, GS_PACKAGEKIT_AUTOREMOVE,
+				       cancellable,
+				       gs_packagekit_helper_cb, g_steal_pointer (&helper),
+				       gs_plugin_packagekit_remove_app_removed,
+				       g_steal_pointer (&task));
+}
 
-	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-		gs_app_set_state_recover (app);
-		return FALSE;
-	}
-
-	/* Make sure addons' state is updated as well */
-	addons = gs_app_dup_addons (app);
-	for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-		GsApp *addon = gs_app_list_index (addons, i);
-		if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLED) {
-			gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
-			gs_app_clear_source_ids (addon);
-		}
-	}
-
-	/* state is not known: we don't know if we can re-install this app */
-	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-
-	/* no longer valid */
-	gs_app_clear_source_ids (app);
-
-	return TRUE;
+static gboolean
+gs_plugin_packagekit_remove_app_finish (GsPlugin *plugin,
+					GAsyncResult *result,
+					GError **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static GsApp *
@@ -4602,6 +4633,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->update_apps_finish = gs_plugin_packagekit_update_apps_finish;
 	plugin_class->install_app_async = gs_plugin_packagekit_install_app_async;
 	plugin_class->install_app_finish = gs_plugin_packagekit_install_app_finish;
+	plugin_class->remove_app_async = gs_plugin_packagekit_remove_app_async;
+	plugin_class->remove_app_finish = gs_plugin_packagekit_remove_app_finish;
 }
 
 GType

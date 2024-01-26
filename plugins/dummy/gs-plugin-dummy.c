@@ -456,24 +456,37 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_app_remove (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
+static void
+gs_plugin_dummy_remove_app_async (GsPlugin *plugin,
+				  GsApp *app,
+				  GsPluginManageAppFlags flags,
+				  GCancellable *cancellable,
+				  GAsyncReadyCallback callback,
+				  gpointer user_data)
 {
 	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_manage_app_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_remove_app_async);
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* is not a source */
+	g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
 
 	/* remove app */
 	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0) {
+		g_autoptr(GError) local_error = NULL;
 		gs_app_set_state (app, GS_APP_STATE_REMOVING);
-		if (!gs_plugin_dummy_delay (plugin, app, 500, cancellable, error)) {
+		if (!gs_plugin_dummy_delay (plugin, app, 500, cancellable, &local_error)) {
 			gs_app_set_state_recover (app);
-			return FALSE;
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
 		}
 		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 	}
@@ -483,7 +496,16 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_hash_table_insert (self->available_apps,
 			     g_strdup (gs_app_get_id (app)),
 			     GUINT_TO_POINTER (1));
-	return TRUE;
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_dummy_remove_app_finish (GsPlugin *plugin,
+				   GAsyncResult *result,
+				   GError **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -1186,6 +1208,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->update_apps_finish = gs_plugin_dummy_update_apps_finish;
 	plugin_class->install_app_async = gs_plugin_dummy_install_app_async;
 	plugin_class->install_app_finish = gs_plugin_dummy_install_app_finish;
+	plugin_class->remove_app_async = gs_plugin_dummy_remove_app_async;
+	plugin_class->remove_app_finish = gs_plugin_dummy_remove_app_finish;
 }
 
 GType

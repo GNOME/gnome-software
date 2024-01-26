@@ -1367,31 +1367,71 @@ gs_flatpak_cover_addons_in_transaction (GsPlugin *plugin,
 	}
 }
 
-gboolean
-gs_plugin_app_remove (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
+static void remove_app_thread_cb (GTask *task,
+				  gpointer source_object,
+				  gpointer task_data,
+				  GCancellable *cancellable);
+
+static void
+gs_plugin_flatpak_remove_app_async (GsPlugin *plugin,
+				    GsApp *app,
+				    GsPluginManageAppFlags flags,
+				    GCancellable *cancellable,
+				    GAsyncReadyCallback callback,
+				    gpointer user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_manage_app_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_remove_app_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* is not a source */
+	g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
+
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				remove_app_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+remove_app_thread_cb (GTask *task,
+		      gpointer source_object,
+		      gpointer task_data,
+		      GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsPlugin *plugin = GS_PLUGIN (self);
+	GsPluginManageAppData *data = task_data;
+	GsApp *app = data->app;
 	GsFlatpak *flatpak;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 	g_autofree gchar *ref = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (data->flags & GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE) != 0;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
 
 	/* not supported */
 	flatpak = gs_plugin_flatpak_get_handler (self, app);
-	if (flatpak == NULL)
-		return TRUE;
-
-	/* is a source, handled by dedicated function */
-	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	if (flatpak == NULL) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* build and run transaction */
-	transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE), cancellable, error);
+	transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, cancellable, &local_error);
 	if (transaction == NULL) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
+		gs_flatpak_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* add to the transaction cache for quick look up -- other unrelated
@@ -1399,36 +1439,40 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_flatpak_transaction_add_app (transaction, app);
 
 	ref = gs_flatpak_app_get_ref_display (app);
-	if (!flatpak_transaction_add_uninstall (transaction, ref, error)) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
+	if (!flatpak_transaction_add_uninstall (transaction, ref, &local_error)) {
+		gs_flatpak_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_REMOVING);
 
 	/* run transaction */
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
-	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
-		gs_flatpak_error_convert (error);
+	if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
 		gs_app_set_state_recover (app);
-		return FALSE;
+		gs_flatpak_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* get any new state */
 	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
 	gs_app_set_size_installed (app, GS_SIZE_TYPE_UNKNOWN, 0);
 
-	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, error)) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
+	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, &local_error)) {
+		gs_flatpak_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 	if (!gs_flatpak_refine_app (flatpak, app,
 				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
 				    interactive, FALSE,
-				    cancellable, error)) {
-		g_prefix_error (error, "failed to run refine for %s: ", ref);
-		gs_flatpak_error_convert (error);
-		return FALSE;
+				    cancellable, &local_error)) {
+		g_prefix_error (&local_error, "failed to run refine for %s: ", ref);
+		gs_flatpak_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	gs_flatpak_refine_addons (flatpak,
@@ -1438,7 +1482,15 @@ gs_plugin_app_remove (GsPlugin *plugin,
 				  interactive,
 				  cancellable);
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_flatpak_remove_app_finish (GsPlugin *plugin,
+				     GAsyncResult *result,
+				     GError **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -2552,6 +2604,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->update_apps_finish = gs_plugin_flatpak_update_apps_finish;
 	plugin_class->install_app_async = gs_plugin_flatpak_install_app_async;
 	plugin_class->install_app_finish = gs_plugin_flatpak_install_app_finish;
+	plugin_class->remove_app_async = gs_plugin_flatpak_remove_app_async;
+	plugin_class->remove_app_finish = gs_plugin_flatpak_remove_app_finish;
 }
 
 GType
