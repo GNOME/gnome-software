@@ -271,6 +271,24 @@ typedef enum {
 } GsPluginUpdateAppsFlags;
 
 /**
+ * GsPluginManageAppFlags:
+ * @GS_PLUGIN_MANAGE_APP_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE: User initiated the job.
+ * @GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL: Install the app.
+ * @GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE: Remove the app.
+ *
+ * Flags for an operation on an app.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_MANAGE_APP_FLAGS_NONE		= 0,
+	GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE	= 1 << 0,
+	GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL	= 1 << 1,
+	GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE	= 1 << 2,
+} GsPluginManageAppFlags;
+
+/**
  * GsPluginProgressCallback:
  * @plugin: the #GsPlugin reporting its progress
  * @progress: the percentage completion (0–100 inclusive), or
