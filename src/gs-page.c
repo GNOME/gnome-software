@@ -306,15 +306,14 @@ gs_page_install_app (GsPage *page,
 								  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL |
 								  ((interaction == GS_SHELL_INTERACTION_FULL) ?
 								   GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE : 0));
-		gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 	} else {
 		helper->action = GS_PLUGIN_ACTION_INSTALL;
-		plugin_job = gs_plugin_job_newv (helper->action,
-						 "interactive", (interaction == GS_SHELL_INTERACTION_FULL),
-						 "propagate-error", helper->propagate_error,
-						 "app", helper->app,
-						 NULL);
+		plugin_job = gs_plugin_job_manage_app_new (helper->app,
+							   GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL |
+							   ((interaction == GS_SHELL_INTERACTION_FULL) ?
+							    GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE : 0));
 	}
+	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,
