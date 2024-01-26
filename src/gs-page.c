@@ -488,12 +488,11 @@ gs_page_remove_app_response_cb (AdwMessageDialog *dialog,
 								  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE |
 								  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 	} else {
-		plugin_job = gs_plugin_job_newv (helper->action,
-						 "interactive", TRUE,
-						 "propagate-error", helper->propagate_error,
-						 "app", helper->app,
-						 NULL);
+		plugin_job = gs_plugin_job_manage_app_new (helper->app,
+							   GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE |
+							   GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE);
 	}
+	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 	g_assert (helper->job == NULL);
 	helper->job = g_object_ref (plugin_job);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
@@ -547,10 +546,11 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 			g_cancellable_cancel (gs_app_get_cancellable (app));
 		}
 
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-						 "interactive", TRUE,
-						 "app", app,
-							 NULL);
+		plugin_job = gs_plugin_job_manage_app_new (app,
+							   GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE |
+							   GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE);
+		gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
+
 		g_debug ("uninstall %s", gs_app_get_id (app));
 		gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 						    helper->cancellable,
