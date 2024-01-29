@@ -626,6 +626,7 @@ static void
 gs_updates_page_load (GsUpdatesPage *self)
 {
 	guint64 refine_flags;
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	if (self->action_cnt > 0)
@@ -641,11 +642,10 @@ gs_updates_page_load (GsUpdatesPage *self)
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES);
 	self->action_cnt++;
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
-					 "interactive", TRUE,
-					 "refine-flags", refine_flags,
-					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
-					 NULL);
+	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", refine_flags,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    (GAsyncReadyCallback) gs_updates_page_get_updates_cb,
