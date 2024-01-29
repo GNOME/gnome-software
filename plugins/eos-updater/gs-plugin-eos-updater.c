@@ -59,7 +59,7 @@
  *
  * The #GsApp instance is returned by
  * `gs_plugin_eos_updater_list_distro_upgrades_async()` or
- * `gs_plugin_add_updates()` depending on whether it contains significant
+ * `gs_plugin_eos_updater_list_apps_async()` depending on whether it contains significant
  * user visible changes, as determined by the `update-is-user-visible` property
  * on the proxy. (This in turn is set from information on the release OSTree
  * commit.) The #GsApp will be returned by at most one of these vfuncs.
@@ -905,37 +905,63 @@ gs_plugin_eos_updater_list_distro_upgrades_finish (GsPlugin      *plugin,
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
-/* This is called in a #GTask worker thread.
- *
- * It’s used to check for non-significant or non-user-visible updates, in
- * contrast to the significant user visible updates checked for by
- * gs_plugin_eos_updater_list_distro_upgrades_async(). The polling process is
- * the same in either case, though. */
-gboolean
-gs_plugin_add_updates (GsPlugin      *plugin,
-                       GsAppList     *list,
-                       GCancellable  *cancellable,
-                       GError       **error)
+static void
+gs_plugin_eos_updater_list_apps_async (GsPlugin              *plugin,
+                                       GsAppQuery            *query,
+                                       GsPluginListAppsFlags  flags,
+                                       GCancellable          *cancellable,
+                                       GAsyncReadyCallback    callback,
+                                       gpointer               user_data)
 {
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
+	g_autoptr(GTask) task = NULL;
+	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_eos_updater_list_apps_async);
 
 	g_debug ("%s", G_STRFUNC);
 
 	/* check if the OS upgrade has been disabled */
 	if (self->updater_proxy == NULL) {
 		g_debug ("%s: Updater disabled", G_STRFUNC);
-		return TRUE;
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
 
-	if (should_add_os_update (self)) {
-		g_debug ("Adding EOS upgrade as non-user visible OS update: %s",
-			 gs_app_get_unique_id (self->os_upgrade));
-		gs_app_list_add (list, self->os_upgrade);
+	if (query != NULL)
+		is_for_update = gs_app_query_get_is_for_update (query);
+
+	/* Currently only support a subset of query properties, and only one set at once. */
+	if (is_for_update == GS_APP_QUERY_TRISTATE_UNSET ||
+	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
+	    gs_app_query_get_n_properties_set (query) != 1) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+		return;
+	}
+
+	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
+		g_autoptr(GsAppList) list = gs_app_list_new ();
+		if (should_add_os_update (self)) {
+			g_debug ("Adding EOS upgrade as non-user visible OS update: %s",
+				 gs_app_get_unique_id (self->os_upgrade));
+			gs_app_list_add (list, self->os_upgrade);
+		} else {
+			g_debug ("Not adding EOS upgrade as non-user visible OS update");
+		}
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 	} else {
-		g_debug ("Not adding EOS upgrade as non-user visible OS update");
+		g_assert_not_reached ();
 	}
+}
 
-	return TRUE;
+static GsAppList *
+gs_plugin_eos_updater_list_apps_finish (GsPlugin      *plugin,
+                                        GAsyncResult  *result,
+                                        GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 typedef struct {
@@ -1594,6 +1620,8 @@ gs_plugin_eos_updater_class_init (GsPluginEosUpdaterClass *klass)
 	plugin_class->list_distro_upgrades_finish = gs_plugin_eos_updater_list_distro_upgrades_finish;
 	plugin_class->update_apps_async = gs_plugin_eos_updater_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_eos_updater_update_apps_finish;
+	plugin_class->list_apps_async = gs_plugin_eos_updater_list_apps_async;
+	plugin_class->list_apps_finish = gs_plugin_eos_updater_list_apps_finish;
 }
 
 GType
