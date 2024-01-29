@@ -577,7 +577,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, app, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
 		{
@@ -722,7 +721,6 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			/* Let some actions forgive plugin errors, in case other plugins can handle it,
 			   when one plugin fails. */
 			switch (gs_plugin_job_get_action (helper->plugin_job)) {
-			case GS_PLUGIN_ACTION_GET_UPDATES:
 			case GS_PLUGIN_ACTION_GET_SOURCES:
 			case GS_PLUGIN_ACTION_GET_LANGPACKS:
 				mask_error = TRUE;
@@ -881,15 +879,6 @@ gs_plugin_loader_app_is_valid_filter (GsApp    *app,
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
 
 	return gs_plugin_loader_app_is_valid (app, gs_plugin_job_get_refine_flags (helper->plugin_job));
-}
-
-static gboolean
-gs_plugin_loader_app_is_valid_updatable (GsApp *app, gpointer user_data)
-{
-	return gs_plugin_loader_app_is_valid_filter (app, user_data) &&
-		(gs_app_is_updatable (app) ||
-		 gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING ||
-		 gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
 }
 
 gboolean
@@ -3209,7 +3198,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* some functions are really required for proper operation */
 	switch (action) {
-	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_LAUNCH:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
@@ -3324,9 +3312,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 	switch (action) {
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		break;
-	case GS_PLUGIN_ACTION_GET_UPDATES:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
 		break;
 	default:
 		break;
