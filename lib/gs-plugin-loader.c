@@ -575,7 +575,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, app, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
 		{
@@ -884,7 +883,8 @@ gs_plugin_loader_app_is_valid_filter (GsApp    *app,
 static gboolean
 gs_plugin_loader_app_is_valid_updatable (GsApp *app, gpointer user_data)
 {
-	return gs_plugin_loader_app_is_valid_filter (app, user_data) &&
+	GsPluginJob *plugin_job = user_data;
+	return gs_plugin_loader_app_is_valid (app, gs_plugin_job_get_refine_flags (plugin_job)) &&
 		(gs_app_is_updatable (app) ||
 		 gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING ||
 		 gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
@@ -3104,7 +3104,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* some functions are really required for proper operation */
 	switch (action) {
-	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_LAUNCH:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
@@ -3232,9 +3231,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
-	case GS_PLUGIN_ACTION_GET_UPDATES:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
-		break;
 	default:
 		break;
 	}
@@ -3361,6 +3357,10 @@ run_job_cb (GObject      *source_object,
 		return;
 	} else if (GS_IS_PLUGIN_JOB_LIST_APPS (plugin_job)) {
 		GsAppList *list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+		g_autoptr(GsAppQuery) query = NULL;
+		g_object_get (plugin_job, "query", &query, NULL);
+		if (query != NULL && gs_app_query_get_is_for_update (query) == GS_APP_QUERY_TRISTATE_TRUE)
+			gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, plugin_job);
 		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 		return;
 	} else if (GS_IS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job)) {

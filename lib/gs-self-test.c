@@ -232,6 +232,7 @@ gs_plugin_func (void)
 			/* These do not have function, they exist only for better error messages. */
 			if (i == GS_PLUGIN_ACTION_INSTALL ||
 			    i == GS_PLUGIN_ACTION_REMOVE ||
+			    i == GS_PLUGIN_ACTION_GET_UPDATES ||
 			    i == GS_PLUGIN_ACTION_INSTALL_REPO ||
 			    i == GS_PLUGIN_ACTION_REMOVE_REPO ||
 			    i == GS_PLUGIN_ACTION_ENABLE_REPO ||
