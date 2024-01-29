@@ -1409,8 +1409,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_url_to_app";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "gs_plugin_add_sources";
-	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
-		return "gs_plugin_add_updates_historical";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "gs_plugin_add_langpacks";
 	return NULL;

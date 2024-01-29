@@ -233,6 +233,7 @@ gs_plugin_func (void)
 			if (i == GS_PLUGIN_ACTION_INSTALL ||
 			    i == GS_PLUGIN_ACTION_REMOVE ||
 			    i == GS_PLUGIN_ACTION_GET_UPDATES ||
+			    i == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL ||
 			    i == GS_PLUGIN_ACTION_INSTALL_REPO ||
 			    i == GS_PLUGIN_ACTION_REMOVE_REPO ||
 			    i == GS_PLUGIN_ACTION_ENABLE_REPO ||
