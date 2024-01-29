@@ -2937,6 +2937,80 @@ list_apps_for_update_sync (GsPluginRpmOstree *self,
 	return g_steal_pointer (&list);
 }
 
+static void sanitize_update_history_text (gchar *text);
+
+static GsAppList * /* (transfer full) */
+list_apps_updates_historical_sync (GsPluginRpmOstree *self,
+				   gboolean interactive,
+				   GsRPMOSTreeOS *os_proxy,
+				   GsRPMOSTreeSysroot *sysroot_proxy,
+				   GCancellable *cancellable,
+				   GError **error)
+{
+	g_autoptr(GSubprocess) subprocess = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	GInputStream *input_stream;
+
+	subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE, error,
+				       "rpm-ostree",
+				       "db",
+				       "diff",
+				       "--changelogs",
+				       "--format=block",
+				       NULL);
+	if (subprocess == NULL)
+		return NULL;
+	input_stream = g_subprocess_get_stdout_pipe (subprocess);
+	if (input_stream != NULL) {
+		g_autoptr(GByteArray) array = g_byte_array_new ();
+		gchar buffer[4096];
+		gsize nread = 0;
+		gboolean success;
+
+		while (success = g_input_stream_read_all (input_stream, buffer, sizeof (buffer), &nread, cancellable, error), success && nread > 0) {
+			g_byte_array_append (array, (const guint8 *) buffer, nread);
+		}
+
+		if (success && array->len > 0) {
+			GsPlugin *plugin = GS_PLUGIN (self);
+			g_autoptr(GsApp) app = NULL;
+			g_autoptr(GIcon) ic = NULL;
+
+			list = gs_app_list_new ();
+
+			/* NUL-terminated the array, to use it as a string */
+			g_byte_array_append (array, (const guint8 *) "", 1);
+
+			sanitize_update_history_text ((gchar *) array->data);
+
+			/* create new */
+			app = gs_app_new ("org.gnome.Software.RpmostreeUpdate");
+			gs_app_set_management_plugin (app, plugin);
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			gs_app_set_name (app,
+					 GS_APP_QUALITY_NORMAL,
+					 /* TRANSLATORS: this is a group of updates that are not
+					  * packages and are not shown in the main list */
+					 _("System Updates"));
+			gs_app_set_summary (app,
+					    GS_APP_QUALITY_NORMAL,
+					    /* TRANSLATORS: this is a longer description of the
+					     * "System Updates" string */
+					    _("General system updates, such as security or bug fixes, and performance improvements."));
+			gs_app_set_description (app,
+						GS_APP_QUALITY_NORMAL,
+						gs_app_get_summary (app));
+			gs_app_set_update_details_text (app, (const gchar *) array->data);
+			ic = g_themed_icon_new ("system-component-os-updates");
+			gs_app_add_icon (app, ic);
+
+			gs_app_list_add (list, app);
+		}
+	}
+
+	return g_steal_pointer (&list);
+}
+
 static void list_apps_thread_cb (GTask        *task,
                                  gpointer      source_object,
                                  gpointer      task_data,
@@ -2976,6 +3050,7 @@ list_apps_thread_cb (GTask        *task,
 	const gchar *provides_tag = NULL;
 	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_updates_historical = GS_APP_QUERY_TRISTATE_UNSET;
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
@@ -2986,12 +3061,15 @@ list_apps_thread_cb (GTask        *task,
 	if (data->query != NULL) {
 		provides_type = gs_app_query_get_provides (data->query, &provides_tag);
 		is_for_update = gs_app_query_get_is_for_update (data->query);
+		is_updates_historical = gs_app_query_get_is_updates_historical (data->query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once. */
 	if ((provides_tag == NULL &&
-	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
+	     is_updates_historical == GS_APP_QUERY_TRISTATE_UNSET) ||
 	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_updates_historical == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (data->query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -3008,6 +3086,8 @@ list_apps_thread_cb (GTask        *task,
 		list = list_apps_provides_sync (self, interactive, os_proxy, sysroot_proxy, provides_type, provides_tag, cancellable, &local_error);
 	} else if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
 		list = list_apps_for_update_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
+	} else if (is_updates_historical == GS_APP_QUERY_TRISTATE_TRUE) {
+		list = list_apps_updates_historical_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
 	}
 
 	if (list != NULL)
@@ -3346,74 +3426,6 @@ sanitize_update_history_text (gchar *text)
 
 	if (read_pos != write_pos)
 		*write_pos = '\0';
-}
-
-gboolean
-gs_plugin_add_updates_historical (GsPlugin *plugin,
-				  GsAppList *list,
-				  GCancellable *cancellable,
-				  GError **error)
-{
-	g_autoptr(GSubprocess) subprocess = NULL;
-	GInputStream *input_stream;
-
-	subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE, error,
-				       "rpm-ostree",
-				       "db",
-				       "diff",
-				       "--changelogs",
-				       "--format=block",
-				       NULL);
-	if (subprocess == NULL)
-		return FALSE;
-	if (!g_subprocess_wait (subprocess, cancellable, error))
-		return FALSE;
-	input_stream = g_subprocess_get_stdout_pipe (subprocess);
-	if (input_stream != NULL) {
-		g_autoptr(GByteArray) array = g_byte_array_new ();
-		gchar buffer[4096];
-		gsize nread = 0;
-		gboolean success;
-
-		while (success = g_input_stream_read_all (input_stream, buffer, sizeof (buffer), &nread, cancellable, error), success && nread > 0) {
-			g_byte_array_append (array, (const guint8 *) buffer, nread);
-		}
-
-		if (success && array->len > 0) {
-			g_autoptr(GsApp) app = NULL;
-			g_autoptr(GIcon) ic = NULL;
-
-			/* NUL-terminated the array, to use it as a string */
-			g_byte_array_append (array, (const guint8 *) "", 1);
-
-			sanitize_update_history_text ((gchar *) array->data);
-
-			/* create new */
-			app = gs_app_new ("org.gnome.Software.RpmostreeUpdate");
-			gs_app_set_management_plugin (app, plugin);
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-			gs_app_set_name (app,
-					 GS_APP_QUALITY_NORMAL,
-					 /* TRANSLATORS: this is a group of updates that are not
-					  * packages and are not shown in the main list */
-					 _("System Updates"));
-			gs_app_set_summary (app,
-					    GS_APP_QUALITY_NORMAL,
-					    /* TRANSLATORS: this is a longer description of the
-					     * "System Updates" string */
-					    _("General system updates, such as security or bug fixes, and performance improvements."));
-			gs_app_set_description (app,
-						GS_APP_QUALITY_NORMAL,
-						gs_app_get_summary (app));
-			gs_app_set_update_details_text (app, (const gchar *) array->data);
-			ic = g_themed_icon_new ("system-component-os-updates");
-			gs_app_add_icon (app, ic);
-
-			gs_app_list_add (list, app);
-		}
-	}
-
-	return input_stream != NULL;
 }
 
 static void

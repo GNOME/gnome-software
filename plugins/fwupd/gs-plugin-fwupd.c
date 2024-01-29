@@ -601,75 +601,9 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 	return g_steal_pointer (&app);
 }
 
-gboolean
-gs_plugin_add_updates_historical (GsPlugin *plugin,
-				  GsAppList *list,
-				  GCancellable *cancellable,
-				  GError **error)
-{
-	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPtrArray) devices = NULL;
-
-	devices = fwupd_client_get_devices (self->client, cancellable, &error_local);
-	if (devices == NULL) {
-		if (g_error_matches (error_local,
-				     FWUPD_ERROR,
-				     FWUPD_ERROR_NOTHING_TO_DO))
-			return TRUE;
-		if (g_error_matches (error_local,
-				     FWUPD_ERROR,
-				     FWUPD_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
-	}
-
-	for (guint i = 0; i < devices->len; i++) {
-		FwupdDevice *idev = g_ptr_array_index (devices, i);
-		g_autoptr(FwupdDevice) dev = NULL;
-		g_autoptr(GsApp) app = NULL;
-
-		/* get historical updates */
-		dev = fwupd_client_get_results (self->client,
-						fwupd_device_get_id (idev),
-						cancellable,
-						&error_local);
-		if (dev == NULL) {
-			if (g_error_matches (error_local,
-					     FWUPD_ERROR,
-					     FWUPD_ERROR_NOTHING_TO_DO)) {
-				g_clear_error (&error_local);
-				continue;
-			}
-			if (g_error_matches (error_local,
-					     FWUPD_ERROR,
-					     FWUPD_ERROR_NOT_FOUND)) {
-				g_clear_error (&error_local);
-				continue;
-			}
-			g_propagate_error (error, g_steal_pointer (&error_local));
-			gs_plugin_fwupd_error_convert (error);
-			return FALSE;
-		}
-
-		/* parse */
-		app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
-		if (app != NULL) {
-			gs_app_list_add (list, app);
-		} else {
-			g_debug ("updates historical: failed to build result for '%s' (%s)",
-				 fwupd_device_get_name (dev),
-				 fwupd_device_get_id (dev));
-		}
-	}
-
-	return TRUE;
-}
-
 typedef struct {
 	guint n_pending_ops;
+	gboolean historical_updates;
 	GsAppList *list; /* (owned) */
 	GError *saved_error;  /* (nullable) (owned) */
 } ListUpdatesData;
@@ -728,6 +662,42 @@ gs_plugin_fwupd_list_updates_finish_op (GTask *task,
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
 	else
 		g_task_return_pointer (task, g_steal_pointer (&data->list), g_object_unref);
+}
+
+static void
+gs_plugin_fwupd_list_historical_updates_got_dev_results_cb (GObject *source_object,
+							    GAsyncResult *result,
+							    gpointer user_data)
+{
+	g_autoptr(ListUpdatesDevData) dev_data = user_data;
+	g_autoptr(FwupdDevice) dev = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gboolean success = TRUE;
+
+	dev = fwupd_client_get_results_finish (FWUPD_CLIENT (source_object), result, &local_error);
+	if (dev == NULL) {
+		if (g_error_matches (local_error, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO)) {
+			g_clear_error (&local_error);
+		} else if (g_error_matches (local_error, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND)) {
+			g_clear_error (&local_error);
+		} else {
+			gs_plugin_fwupd_error_convert (&local_error);
+		}
+		success = FALSE;
+	} else {
+		GsPlugin *plugin = GS_PLUGIN (g_task_get_source_object (dev_data->task));
+
+		/* parse */
+		app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
+		if (app == NULL) {
+			g_debug ("updates historical: failed to build result for '%s' (%s)",
+				 fwupd_device_get_name (dev),
+				 fwupd_device_get_id (dev));
+		}
+	}
+
+	gs_plugin_fwupd_list_updates_finish_op (dev_data->task, app, success ? NULL : g_steal_pointer (&local_error));
 }
 
 static void
@@ -838,6 +808,25 @@ gs_plugin_fwupd_list_updates_got_devices_cb (GObject *source_object,
 		g_autoptr(ListUpdatesDevData) dev_data = NULL;
 		g_autoptr(GsApp) app = NULL;
 
+		/* not going to have results, so save a D-Bus round-trip */
+		if (!fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_SUPPORTED))
+			continue;
+
+		if (list_updates_data->historical_updates) {
+			list_updates_data->n_pending_ops++;
+
+			dev_data = g_new0 (ListUpdatesDevData, 1);
+			dev_data->task = g_object_ref (task);
+			dev_data->device = g_object_ref (dev);
+
+			fwupd_client_get_results_async (client,
+							fwupd_device_get_id (dev),
+							cancellable,
+							gs_plugin_fwupd_list_historical_updates_got_dev_results_cb,
+							g_steal_pointer (&dev_data));
+			continue;
+		}
+
 		/* locked device that needs unlocking */
 		if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_LOCKED)) {
 			app = gs_plugin_fwupd_new_app_from_device_raw (plugin, dev);
@@ -845,10 +834,6 @@ gs_plugin_fwupd_list_updates_got_devices_cb (GObject *source_object,
 			gs_app_list_add (list_updates_data->list, app);
 			continue;
 		}
-
-		/* not going to have results, so save a D-Bus round-trip */
-		if (!fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_SUPPORTED))
-			continue;
 
 		list_updates_data->n_pending_ops++;
 
@@ -877,26 +862,33 @@ gs_plugin_fwupd_list_apps_async (GsPlugin *plugin,
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_updates_historical = GS_APP_QUERY_TRISTATE_UNSET;
 	g_autoptr(GTask) task = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fwupd_list_apps_async);
 
-	if (query != NULL)
+	if (query != NULL) {
 		is_for_update = gs_app_query_get_is_for_update (query);
+		is_updates_historical = gs_app_query_get_is_updates_historical (query);
+	}
 
 	/* Currently only support a subset of query properties, and only one set at once. */
-	if (is_for_update == GS_APP_QUERY_TRISTATE_UNSET ||
+	if ((is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
+	     is_updates_historical == GS_APP_QUERY_TRISTATE_UNSET) ||
 	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_updates_historical == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
 		return;
 	}
 
-	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
+	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE ||
+	    is_updates_historical == GS_APP_QUERY_TRISTATE_TRUE) {
 		g_autoptr (ListUpdatesData) data = g_new0 (ListUpdatesData, 1);
 		data->n_pending_ops = 1;
+		data->historical_updates = is_updates_historical == GS_APP_QUERY_TRISTATE_TRUE;
 		data->list = gs_app_list_new ();
 		g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) list_updates_data_free);
 		fwupd_client_get_devices_async (self->client, cancellable,
