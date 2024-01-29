@@ -122,6 +122,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 static void
 gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 {
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	dialog->showing_installed_updates = TRUE;
@@ -132,11 +133,13 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	gtk_spinner_start (GTK_SPINNER (dialog->spinner));
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
-					 NULL);
+	query = gs_app_query_new ("is-updates-historical", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+						  GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 	                                    dialog->cancellable,
 	                                    (GAsyncReadyCallback) get_installed_updates_cb,
