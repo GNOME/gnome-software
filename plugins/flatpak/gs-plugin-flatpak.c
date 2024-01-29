@@ -470,25 +470,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_updates (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	for (guint i = 0; i < self->installations->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		g_autoptr(GError) local_error = NULL;
-		if (!gs_flatpak_add_updates (flatpak, list, interactive, cancellable, &local_error))
-			g_debug ("Failed to get updates for '%s': %s", gs_flatpak_get_id (flatpak), local_error->message);
-	}
-	gs_plugin_cache_lookup_by_state (plugin, list, GS_APP_STATE_INSTALLING);
-	return TRUE;
-}
-
 static void refresh_metadata_thread_cb (GTask        *task,
                                         gpointer      source_object,
                                         gpointer      task_data,
@@ -2120,6 +2101,7 @@ list_apps_thread_cb (GTask        *task,
 	GsAppQueryTristate is_featured = GS_APP_QUERY_TRISTATE_UNSET;
 	GsCategory *category = NULL;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	guint64 age_secs = 0;
 	const gchar * const *deployment_featured = NULL;
 	const gchar *const *developers = NULL;
@@ -2142,6 +2124,7 @@ list_apps_thread_cb (GTask        *task,
 		keywords = gs_app_query_get_keywords (data->query);
 		alternate_of = gs_app_query_get_alternate_of (data->query);
 		provides_type = gs_app_query_get_provides (data->query, &provides_tag);
+		is_for_update = gs_app_query_get_is_for_update (data->query);
 	}
 
 	if (released_since != NULL) {
@@ -2160,10 +2143,12 @@ list_apps_thread_cb (GTask        *task,
 	     developers == NULL &&
 	     keywords == NULL &&
 	     alternate_of == NULL &&
-	     provides_tag == NULL) ||
+	     provides_tag == NULL &&
+	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (data->query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -2259,7 +2244,16 @@ list_apps_thread_cb (GTask        *task,
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
+
+		if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
+			g_autoptr(GError) local_error2 = NULL;
+			if (!gs_flatpak_add_updates (flatpak, list, interactive, cancellable, &local_error2))
+				g_debug ("Failed to get updates for '%s': %s", gs_flatpak_get_id (flatpak), local_error2->message);
+		}
 	}
+
+	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE)
+		gs_plugin_cache_lookup_by_state (GS_PLUGIN (self), list, GS_APP_STATE_INSTALLING);
 
 	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 }

@@ -354,108 +354,6 @@ gs_plugin_dummy_timeout_finish (GsPluginDummy  *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_add_updates (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	GsApp *app;
-	GsApp *proxy;
-	g_autoptr(GIcon) ic = NULL;
-
-	/* update UI as this might take some time */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-
-	/* spin */
-	if (!gs_plugin_dummy_delay (plugin, NULL, 2000, cancellable, error))
-		return FALSE;
-
-	/* use a generic stock icon */
-	ic = g_themed_icon_new ("system-component-driver");
-
-	/* add a live updatable normal application */
-	app = gs_app_new ("chiron.desktop");
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
-	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
-	gs_app_set_update_details_text (app, "Do not crash when using libvirt.");
-	gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
-	gs_app_add_icon (app, ic);
-	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_list_add (list, app);
-	g_object_unref (app);
-
-	/* add a offline OS update */
-	app = gs_app_new (NULL);
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "libvirt-glib-devel");
-	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Development files for libvirt");
-	gs_app_set_update_details_text (app, "Fix several memory leaks.");
-	gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
-	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-	gs_app_add_source (app, "libvirt-glib-devel");
-	gs_app_add_source_id (app, "libvirt-glib-devel;0.0.1;noarch;fedora");
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_list_add (list, app);
-	g_object_unref (app);
-
-	/* add a live OS update */
-	app = gs_app_new (NULL);
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "chiron-libs");
-	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "library for chiron");
-	gs_app_set_update_details_text (app, "Do not crash when using libvirt.");
-	gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
-	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_add_source (app, "chiron-libs");
-	gs_app_add_source_id (app, "chiron-libs;0.0.1;i386;updates-testing");
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_list_add (list, app);
-	g_object_unref (app);
-
-	/* add a proxy app update */
-	proxy = gs_app_new ("proxy.desktop");
-	gs_app_set_name (proxy, GS_APP_QUALITY_NORMAL, "Proxy");
-	gs_app_set_summary (proxy, GS_APP_QUALITY_NORMAL, "A proxy app");
-	gs_app_set_update_details_text (proxy, "Update all related apps.");
-	gs_app_set_update_urgency (proxy, AS_URGENCY_KIND_HIGH);
-	gs_app_add_icon (proxy, ic);
-	gs_app_set_kind (proxy, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_add_quirk (proxy, GS_APP_QUIRK_IS_PROXY);
-	gs_app_set_state (proxy, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_management_plugin (proxy, plugin);
-	gs_app_list_add (list, proxy);
-	g_object_unref (proxy);
-
-	/* add a proxy related app */
-	app = gs_app_new ("proxy-related-app.desktop");
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Related app");
-	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
-	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_add_related (proxy, app);
-	g_object_unref (app);
-
-	/* add another proxy related app */
-	app = gs_app_new ("proxy-another-related-app.desktop");
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Another Related app");
-	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
-	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_add_related (proxy, app);
-	g_object_unref (app);
-
-	return TRUE;
-}
-
 static void
 gs_plugin_dummy_remove_app_async (GsPlugin *plugin,
 				  GsApp *app,
@@ -734,10 +632,11 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	guint max_results = 0;
 	GsCategory *category = NULL;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	const gchar * const *keywords = NULL;
 	GsApp *alternate_of = NULL;
 
-	task = g_task_new (plugin, cancellable, callback, user_data);
+	task = gs_plugin_list_apps_data_new_task (plugin, query, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
 
 	if (query != NULL) {
@@ -748,6 +647,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 		is_installed = gs_app_query_get_is_installed (query);
 		keywords = gs_app_query_get_keywords (query);
 		alternate_of = gs_app_query_get_alternate_of (query);
+		is_for_update = gs_app_query_get_is_for_update (query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once.
@@ -757,9 +657,11 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	     category == NULL &&
 	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
 	     keywords == NULL &&
-	     alternate_of == NULL) ||
+	     alternate_of == NULL &&
+	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -894,7 +796,116 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 		}
 	}
 
+	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
+		/* update UI as this might take some time */
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+
+		/* spin */
+		gs_plugin_dummy_timeout_async (self, 2000, cancellable,
+					       list_apps_timeout_cb, g_steal_pointer (&task));
+		return;
+	}
+
 	g_task_return_pointer (task, g_steal_pointer (&list), (GDestroyNotify) g_object_unref);
+}
+
+static GsAppList *
+list_apps_finish (GsPluginDummy *self,
+		  GTask *task)
+{
+	GsPluginListAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+
+	if (data->query && gs_app_query_get_is_for_update (data->query) == GS_APP_QUERY_TRISTATE_TRUE) {
+		GsPlugin *plugin = GS_PLUGIN (self);
+		GsApp *app;
+		GsApp *proxy;
+		g_autoptr(GIcon) ic = NULL;
+
+		/* use a generic stock icon */
+		ic = g_themed_icon_new ("system-component-driver");
+
+		/* add a live updatable normal application */
+		app = gs_app_new ("chiron.desktop");
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
+		gs_app_set_update_details_text (app, "Do not crash when using libvirt.");
+		gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
+		gs_app_add_icon (app, ic);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_list_add (list, app);
+		g_object_unref (app);
+
+		/* add a offline OS update */
+		app = gs_app_new (NULL);
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "libvirt-glib-devel");
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Development files for libvirt");
+		gs_app_set_update_details_text (app, "Fix several memory leaks.");
+		gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+		gs_app_add_source (app, "libvirt-glib-devel");
+		gs_app_add_source_id (app, "libvirt-glib-devel;0.0.1;noarch;fedora");
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_list_add (list, app);
+		g_object_unref (app);
+
+		/* add a live OS update */
+		app = gs_app_new (NULL);
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "chiron-libs");
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "library for chiron");
+		gs_app_set_update_details_text (app, "Do not crash when using libvirt.");
+		gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_add_source (app, "chiron-libs");
+		gs_app_add_source_id (app, "chiron-libs;0.0.1;i386;updates-testing");
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_list_add (list, app);
+		g_object_unref (app);
+
+		/* add a proxy app update */
+		proxy = gs_app_new ("proxy.desktop");
+		gs_app_set_name (proxy, GS_APP_QUALITY_NORMAL, "Proxy");
+		gs_app_set_summary (proxy, GS_APP_QUALITY_NORMAL, "A proxy app");
+		gs_app_set_update_details_text (proxy, "Update all related apps.");
+		gs_app_set_update_urgency (proxy, AS_URGENCY_KIND_HIGH);
+		gs_app_add_icon (proxy, ic);
+		gs_app_set_kind (proxy, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_add_quirk (proxy, GS_APP_QUIRK_IS_PROXY);
+		gs_app_set_state (proxy, GS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_management_plugin (proxy, plugin);
+		gs_app_list_add (list, proxy);
+		g_object_unref (proxy);
+
+		/* add a proxy related app */
+		app = gs_app_new ("proxy-related-app.desktop");
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Related app");
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_add_related (proxy, app);
+		g_object_unref (app);
+
+		/* add another proxy related app */
+		app = gs_app_new ("proxy-another-related-app.desktop");
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Another Related app");
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_add_related (proxy, app);
+		g_object_unref (app);
+	}
+
+	return g_steal_pointer (&list);
 }
 
 static void
@@ -908,7 +919,7 @@ list_apps_timeout_cb (GObject      *object,
 
 	/* Return a cancelled error, or an empty app list after hanging. */
 	if (gs_plugin_dummy_timeout_finish (self, result, &local_error))
-		g_task_return_pointer (task, gs_app_list_new (), (GDestroyNotify) g_object_unref);
+		g_task_return_pointer (task, list_apps_finish (self, task), (GDestroyNotify) g_object_unref);
 	else
 		g_task_return_error (task, g_steal_pointer (&local_error));
 }
