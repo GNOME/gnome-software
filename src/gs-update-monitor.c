@@ -772,6 +772,7 @@ static void
 get_updates (GsUpdateMonitor *monitor,
 	     gint64 check_timestamp)
 {
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(DownloadUpdatesData) download_updates_data = NULL;
 
@@ -787,9 +788,10 @@ get_updates (GsUpdateMonitor *monitor,
 
 	/* NOTE: this doesn't actually do any network access */
 	g_debug ("Getting updates");
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
-					 NULL);
+	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
 					    monitor->update_cancellable,
