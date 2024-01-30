@@ -580,12 +580,13 @@ main (int argc, char **argv)
 			}
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "sources") == 0) {
+		g_autoptr(GsAppQuery) query = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
-						 "refine-flags", self->refine_flags,
-						 "max-results", self->max_results,
-						 "interactive", self->interactive,
-						 NULL);
+		query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE,
+					  "refine-flags", self->refine_flags,
+					  "max-results", self->max_results,
+					  NULL);
+		plugin_job = gs_plugin_job_list_apps_new (query, self->interactive ? GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 		list = gs_plugin_loader_job_process (self->plugin_loader,
 						     plugin_job,
 						     NULL,
