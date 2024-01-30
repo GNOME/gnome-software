@@ -853,6 +853,82 @@ gs_plugin_fwupd_list_updates_got_devices_cb (GObject *source_object,
 }
 
 static void
+gs_plugin_fwupd_list_sources_got_remotes_cb (GObject *source_object,
+					     GAsyncResult *result,
+					     gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GPtrArray) remotes = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (g_task_get_source_object (task));
+	GsPlugin *plugin = GS_PLUGIN (self);
+
+	/* find all remotes */
+	remotes = fwupd_client_get_remotes_finish (FWUPD_CLIENT (source_object), result, &local_error);
+	if (remotes == NULL) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+	list = gs_app_list_new ();
+	if (self->cached_sources == NULL)
+		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	for (guint i = 0; i < remotes->len; i++) {
+		FwupdRemote *remote = g_ptr_array_index (remotes, i);
+		g_autofree gchar *id = NULL;
+		g_autoptr(GsApp) app = NULL;
+
+		/* ignore these, they're built in */
+		if (fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_DOWNLOAD)
+			continue;
+
+		/* create something that we can use to enable/disable */
+		id = g_strdup_printf ("org.fwupd.%s.remote", fwupd_remote_get_id (remote));
+		app = g_hash_table_lookup (self->cached_sources, id);
+		if (app == NULL) {
+			gboolean is_enabled;
+
+			#if FWUPD_CHECK_VERSION(1, 9, 4)
+			is_enabled = fwupd_remote_has_flag (remote, FWUPD_REMOTE_FLAG_ENABLED);
+			#else
+			is_enabled = fwupd_remote_get_enabled (remote);
+			#endif
+
+			app = gs_app_new (id);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
+			gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+			gs_app_set_state (app, is_enabled ?
+					  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
+			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+			gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
+					 fwupd_remote_get_title (remote));
+			gs_app_set_agreement (app, fwupd_remote_get_agreement (remote));
+			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+					fwupd_remote_get_metadata_uri (remote));
+			gs_app_set_metadata (app, "fwupd::remote-id",
+					     fwupd_remote_get_id (remote));
+			gs_app_set_management_plugin (app, plugin);
+			gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "fwupd");
+			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "800");
+			gs_app_set_origin_ui (app, _("Firmware"));
+			g_hash_table_insert (self->cached_sources, g_strdup (id), app);
+			g_object_weak_ref (G_OBJECT (app), cached_sources_weak_ref_cb, self);
+		} else {
+			g_object_ref (app);
+			/* The repo-related apps are those installed; due to re-using
+			   cached app, make sure the list is populated from fresh data. */
+			gs_app_list_remove_all (gs_app_get_related (app));
+		}
+		gs_app_list_add (list, app);
+	}
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static void
 gs_plugin_fwupd_list_apps_async (GsPlugin *plugin,
 				 GsAppQuery *query,
 				 GsPluginListAppsFlags flags,
@@ -863,6 +939,7 @@ gs_plugin_fwupd_list_apps_async (GsPlugin *plugin,
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppQueryTristate is_updates_historical = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_source = GS_APP_QUERY_TRISTATE_UNSET;
 	g_autoptr(GTask) task = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
@@ -871,13 +948,16 @@ gs_plugin_fwupd_list_apps_async (GsPlugin *plugin,
 	if (query != NULL) {
 		is_for_update = gs_app_query_get_is_for_update (query);
 		is_updates_historical = gs_app_query_get_is_updates_historical (query);
+		is_source = gs_app_query_get_is_source (query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once. */
 	if ((is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
-	     is_updates_historical == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     is_updates_historical == GS_APP_QUERY_TRISTATE_UNSET &&
+	     is_source == GS_APP_QUERY_TRISTATE_UNSET) ||
 	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_updates_historical == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_source == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -893,6 +973,9 @@ gs_plugin_fwupd_list_apps_async (GsPlugin *plugin,
 		g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) list_updates_data_free);
 		fwupd_client_get_devices_async (self->client, cancellable,
 						gs_plugin_fwupd_list_updates_got_devices_cb, g_steal_pointer (&task));
+	} else if (is_source == GS_APP_QUERY_TRISTATE_TRUE) {
+		fwupd_client_get_remotes_async (self->client, cancellable,
+						gs_plugin_fwupd_list_sources_got_remotes_cb, g_steal_pointer (&task));
 	} else {
 		g_assert_not_reached ();
 	}
@@ -1975,74 +2058,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		gs_app_set_version (app, gs_app_get_update_version (app));
 		gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
 					gs_app_get_update_details_markup (app));
-		gs_app_list_add (list, app);
-	}
-	return TRUE;
-}
-
-gboolean
-gs_plugin_add_sources (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
-	g_autoptr(GPtrArray) remotes = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	/* find all remotes */
-	remotes = fwupd_client_get_remotes (self->client, cancellable, error);
-	if (remotes == NULL)
-		return FALSE;
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
-	if (self->cached_sources == NULL)
-		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-	for (guint i = 0; i < remotes->len; i++) {
-		FwupdRemote *remote = g_ptr_array_index (remotes, i);
-		g_autofree gchar *id = NULL;
-		g_autoptr(GsApp) app = NULL;
-
-		/* ignore these, they're built in */
-		if (fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_DOWNLOAD)
-			continue;
-
-		/* create something that we can use to enable/disable */
-		id = g_strdup_printf ("org.fwupd.%s.remote", fwupd_remote_get_id (remote));
-		app = g_hash_table_lookup (self->cached_sources, id);
-		if (app == NULL) {
-			gboolean is_enabled;
-
-			#if FWUPD_CHECK_VERSION(1, 9, 4)
-			is_enabled = fwupd_remote_has_flag (remote, FWUPD_REMOTE_FLAG_ENABLED);
-			#else
-			is_enabled = fwupd_remote_get_enabled (remote);
-			#endif
-
-			app = gs_app_new (id);
-			gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
-			gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-			gs_app_set_state (app, is_enabled ?
-					  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
-			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-			gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
-					 fwupd_remote_get_title (remote));
-			gs_app_set_agreement (app, fwupd_remote_get_agreement (remote));
-			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
-					fwupd_remote_get_metadata_uri (remote));
-			gs_app_set_metadata (app, "fwupd::remote-id",
-					     fwupd_remote_get_id (remote));
-			gs_app_set_management_plugin (app, plugin);
-			gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "fwupd");
-			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "800");
-			gs_app_set_origin_ui (app, _("Firmware"));
-			g_hash_table_insert (self->cached_sources, g_strdup (id), app);
-			g_object_weak_ref (G_OBJECT (app), cached_sources_weak_ref_cb, self);
-		} else {
-			g_object_ref (app);
-			/* The repo-related apps are those installed; due to re-using
-			   cached app, make sure the list is populated from fresh data. */
-			gs_app_list_remove_all (gs_app_get_related (app));
-		}
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
