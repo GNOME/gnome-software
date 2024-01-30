@@ -100,6 +100,10 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @remove_app_finish: (nullable): Finish method for
  *   @remove_app_async. Must be implemented if
  *   @remove_app_async is implemented. (Since: 47)
+ * @update_cancel_async: (nullable): Cancels the offline update of given @app. (Since: 47)
+ * @update_cancel_finish: (nullable): Finish method for
+ *   @update_cancel_async. Must be implemented if
+ *   @update_cancel_async is implemented. (Since: 47)
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -263,8 +267,17 @@ struct _GsPluginClass
 	gboolean		(*remove_app_finish)		(GsPlugin			*plugin,
 								 GAsyncResult			*result,
 								 GError				**error);
+	void			(*update_cancel_async)		(GsPlugin			*plugin,
+								 GsApp				*app,
+								 GsPluginUpdateCancelFlags	 flags,
+								 GCancellable			*cancellable,
+								 GAsyncReadyCallback		 callback,
+								 gpointer			 user_data);
+	gboolean		(*update_cancel_finish)		(GsPlugin			*plugin,
+								 GAsyncResult			*result,
+								 GError				**error);
 
-	gpointer		 padding[19];
+	gpointer		 padding[17];
 };
 
 /* helpers */
