@@ -414,23 +414,27 @@ finish_task (GTask     *task,
 	GsAppListFilterFunc filter_func = NULL;
 	gpointer filter_func_data = NULL;
 	guint max_results = 0;
+	gboolean disable_filtering = FALSE;
 	g_autofree gchar *job_debug = NULL;
-
-	/* Standard filtering.
-	 *
-	 * FIXME: It feels like this filter should be done in a different layer. */
-	gs_app_list_filter (merged_list, filter_valid_apps, self);
-	gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
 
 	if (self->query != NULL) {
 		license_type = gs_app_query_get_license_type (self->query);
 		developer_verified_type = gs_app_query_get_developer_verified_type (self->query);
+		disable_filtering = (gs_app_query_get_refine_flags (self->query) & GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING) != 0;
 	}
 
-	if (license_type == GS_APP_QUERY_LICENSE_FOSS)
-		gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
-	if (developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY)
-		gs_app_list_filter (merged_list, filter_developer_verified_apps, self);
+	if (!disable_filtering) {
+		/* Standard filtering.
+		 *
+		 * FIXME: It feels like this filter should be done in a different layer. */
+		gs_app_list_filter (merged_list, filter_valid_apps, self);
+		gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
+
+		if (license_type == GS_APP_QUERY_LICENSE_FOSS)
+			gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
+		if (developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY)
+			gs_app_list_filter (merged_list, filter_developer_verified_apps, self);
+	}
 
 	/* Caller-specified filtering. */
 	if (self->query != NULL)
