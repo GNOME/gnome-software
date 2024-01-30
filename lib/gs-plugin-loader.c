@@ -577,12 +577,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, app, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_SOURCES:
-		{
-			GsPluginResultsFunc plugin_func = func;
-			ret = plugin_func (plugin, list, cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
 		{
 			GsPluginFileToAppFunc plugin_func = func;
@@ -720,7 +714,6 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			/* Let some actions forgive plugin errors, in case other plugins can handle it,
 			   when one plugin fails. */
 			switch (gs_plugin_job_get_action (helper->plugin_job)) {
-			case GS_PLUGIN_ACTION_GET_SOURCES:
 			case GS_PLUGIN_ACTION_GET_LANGPACKS:
 				mask_error = TRUE;
 				break;
@@ -3697,12 +3690,6 @@ job_process_cb (GTask *task)
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)) {
 		gs_plugin_job_add_refine_flags (plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME);
-	}
-
-	/* FIXME: this is probably a bug */
-	if (action == GS_PLUGIN_ACTION_GET_SOURCES) {
-		gs_plugin_job_add_refine_flags (plugin_job,
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
 	}
 
 	/* check required args */

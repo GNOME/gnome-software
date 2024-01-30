@@ -64,26 +64,6 @@ void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
 							 GsApp		*app);
 
 /**
- * gs_plugin_add_sources:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get the list of sources, for example the repos listed in /etc/yum.repos.d
- * or the remotes configured in flatpak.
- *
- * Plugins are expected to add new apps using gs_app_list_add() of type
- * %AS_COMPONENT_KIND_REPOSITORY.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_sources			(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_launch:
  * @plugin: a #GsPlugin
  * @app: a #GsApp

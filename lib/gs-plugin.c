@@ -1407,8 +1407,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_file_to_app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
 		return "gs_plugin_url_to_app";
-	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
-		return "gs_plugin_add_sources";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "gs_plugin_add_langpacks";
 	return NULL;
@@ -1435,8 +1433,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "launch";
 	if (action == GS_PLUGIN_ACTION_UPDATE_CANCEL)
 		return "update-cancel";
-	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
-		return "get-sources";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
@@ -1475,8 +1471,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_LAUNCH;
 	if (g_strcmp0 (action, "update-cancel") == 0)
 		return GS_PLUGIN_ACTION_UPDATE_CANCEL;
-	if (g_strcmp0 (action, "get-sources") == 0)
-		return GS_PLUGIN_ACTION_GET_SOURCES;
 	if (g_strcmp0 (action, "file-to-app") == 0)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)
