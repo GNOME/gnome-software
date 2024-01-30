@@ -193,6 +193,13 @@ filter_nonupdatable_apps (GsApp    *app,
 }
 
 static gboolean
+filter_sources (GsApp    *app,
+                gpointer  user_data)
+{
+	return (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY);
+}
+
+static gboolean
 app_filter_qt_for_gtk_and_compatible (GsApp    *app,
                                       gpointer  user_data)
 {
@@ -428,31 +435,39 @@ finish_task (GTask     *task,
 	GsAppQueryLicenseType license_type = GS_APP_QUERY_LICENSE_ANY;
 	GsAppQueryDeveloperVerifiedType developer_verified_type = GS_APP_QUERY_DEVELOPER_VERIFIED_ANY;
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_source = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppListFilterFunc filter_func = NULL;
 	gpointer filter_func_data = NULL;
 	guint max_results = 0;
 	g_autofree gchar *job_debug = NULL;
 
-	/* Standard filtering.
-	 *
-	 * FIXME: It feels like this filter should be done in a different layer. */
-	gs_app_list_filter (merged_list, filter_valid_apps, self);
-	gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
-
 	if (self->query != NULL) {
 		license_type = gs_app_query_get_license_type (self->query);
 		developer_verified_type = gs_app_query_get_developer_verified_type (self->query);
 		is_for_update = gs_app_query_get_is_for_update (self->query);
+		is_source = gs_app_query_get_is_source (self->query);
 	}
 
-	if (license_type == GS_APP_QUERY_LICENSE_FOSS)
-		gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
-	if (developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY)
-		gs_app_list_filter (merged_list, filter_developer_verified_apps, self);
-	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE)
-		gs_app_list_filter (merged_list, filter_updatable_apps, self);
-	else if (is_for_update == GS_APP_QUERY_TRISTATE_FALSE)
-		gs_app_list_filter (merged_list, filter_nonupdatable_apps, self);
+	if (is_source == GS_APP_QUERY_TRISTATE_UNSET ||
+	    is_source == GS_APP_QUERY_TRISTATE_FALSE) {
+		/* Standard filtering for apps.
+		 *
+		 * FIXME: It feels like this filter should be done in a different layer. */
+		gs_app_list_filter (merged_list, filter_valid_apps, self);
+		gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
+
+		if (license_type == GS_APP_QUERY_LICENSE_FOSS)
+			gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
+		if (developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY)
+			gs_app_list_filter (merged_list, filter_developer_verified_apps, self);
+		if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE)
+			gs_app_list_filter (merged_list, filter_updatable_apps, self);
+		else if (is_for_update == GS_APP_QUERY_TRISTATE_FALSE)
+			gs_app_list_filter (merged_list, filter_nonupdatable_apps, self);
+	} else if (is_source == GS_APP_QUERY_TRISTATE_TRUE) {
+		/* Filtering for sources/repositories. */
+		gs_app_list_filter (merged_list, filter_sources, self);
+	}
 
 	/* Caller-specified filtering. */
 	if (self->query != NULL)
