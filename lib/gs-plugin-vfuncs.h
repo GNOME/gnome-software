@@ -84,26 +84,6 @@ gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_app_upgrade_download:
- * @plugin: a #GsPlugin
- * @app: a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Starts downloading a distribution upgrade in the background.
- *
- * All functions can block, but should sent progress notifications, e.g. using
- * gs_app_set_progress() if they will take more than tens of milliseconds
- * to complete.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_app_upgrade_download		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_app_upgrade_trigger:
  * @plugin: a #GsPlugin
  * @app: a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
