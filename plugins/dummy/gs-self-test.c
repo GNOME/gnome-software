@@ -319,9 +319,7 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 
 	/* trigger the update */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_trigger_upgrade_new (app, GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
