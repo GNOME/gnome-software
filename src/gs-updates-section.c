@@ -281,9 +281,7 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	 * function was in flight. If so, ignore it. */
 	if (self->list != NULL && gs_app_list_length (self->list) > 0) {
 		app = gs_app_list_index (self->list, 0);
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL,
-						 "app", app,
-						 NULL);
+		plugin_job = gs_plugin_job_update_cancel_new (app, GS_PLUGIN_UPDATE_CANCEL_FLAGS_INTERACTIVE);
 		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 						    gs_app_get_cancellable (app),
 						    _cancel_trigger_failed_cb,
