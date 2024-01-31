@@ -414,7 +414,6 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		break;
 	}
 	if (gs_details_page_app_has_pending_action (self)) {
-		GsPluginAction action = gs_app_get_pending_action (self->app);
 		gtk_widget_set_visible (self->label_progress_status, TRUE);
 
 		if (gs_job_manager_app_has_pending_job_type (job_manager, self->app, GS_TYPE_PLUGIN_JOB_INSTALL_APPS)) {
@@ -423,7 +422,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 					      * bar to inform the user that the app should be installed soon */
 					     _("Pending installation…"));
 		} else if (gs_job_manager_app_has_pending_job_type (job_manager, self->app, GS_TYPE_PLUGIN_JOB_UPDATE_APPS) ||
-			   action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD) {
+			   gs_job_manager_app_has_pending_job_type (job_manager, self->app, GS_TYPE_PLUGIN_JOB_DOWNLOAD_UPGRADE)) {
 			gtk_label_set_label (GTK_LABEL (self->label_progress_status),
 					     /* TRANSLATORS: This is a label on top of the app's progress
 					      * bar to inform the user that the app should be updated soon */
