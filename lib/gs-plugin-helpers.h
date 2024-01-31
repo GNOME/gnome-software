@@ -138,4 +138,21 @@ GTask *		gs_plugin_manage_app_data_new_task	(gpointer		 source_object,
 void		gs_plugin_manage_app_data_free		(GsPluginManageAppData	*data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginManageAppData, gs_plugin_manage_app_data_free)
 
+typedef struct {
+	GsApp *app;  /* (owned) (nullable) */
+	GsPluginUpdateCancelFlags flags;
+} GsPluginUpdateCancelData;
+
+GsPluginUpdateCancelData *
+		gs_plugin_update_cancel_data_new	(GsApp			  *app,
+							 GsPluginUpdateCancelFlags flags);
+GTask *		gs_plugin_update_cancel_data_new_task	(gpointer		   source_object,
+							 GsApp			  *app,
+							 GsPluginUpdateCancelFlags flags,
+							 GCancellable		  *cancellable,
+							 GAsyncReadyCallback	   callback,
+							 gpointer		   user_data);
+void		gs_plugin_update_cancel_data_free	(GsPluginUpdateCancelData	*data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginUpdateCancelData, gs_plugin_update_cancel_data_free)
+
 G_END_DECLS
