@@ -612,3 +612,64 @@ gs_plugin_update_apps_data_free (GsPluginUpdateAppsData *data)
 	g_clear_object (&data->apps);
 	g_free (data);
 }
+
+/**
+ * gs_plugin_cancel_offline_update_data_new:
+ * @flags: operation flags
+ *
+ * Common context data for a call to #GsPluginClass.cancel_offline_update_async.
+ *
+ * Returns: (transfer full): context data structure
+ * Since: 47
+ */
+GsPluginCancelOfflineUpdateData *
+gs_plugin_cancel_offline_update_data_new (GsPluginCancelOfflineUpdateFlags  flags)
+{
+	g_autoptr(GsPluginCancelOfflineUpdateData) data = g_new0 (GsPluginCancelOfflineUpdateData, 1);
+	data->flags = flags;
+
+	return g_steal_pointer (&data);
+}
+
+/**
+ * gs_plugin_cancel_offline_update_data_new_task:
+ * @source_object: task source object
+ * @flags: operation flags
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: function to call once asynchronous operation is finished
+ * @user_data: data to pass to @callback
+ *
+ * Create a #GTask for an update-cancel operation with the given arguments. The task
+ * data will be set to a #GsPluginCancelOfflineUpdateData containing the given context.
+ *
+ * This is essentially a combination of gs_plugin_cancel_offline_update_data_new(),
+ * g_task_new() and g_task_set_task_data().
+ *
+ * Returns: (transfer full): new #GTask with the given context data
+ * Since: 47
+ */
+GTask *
+gs_plugin_cancel_offline_update_data_new_task (gpointer                          source_object,
+                                               GsPluginCancelOfflineUpdateFlags  flags,
+                                               GCancellable                     *cancellable,
+                                               GAsyncReadyCallback               callback,
+                                               gpointer                          user_data)
+{
+	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
+	g_task_set_task_data (task, gs_plugin_cancel_offline_update_data_new (flags), (GDestroyNotify) gs_plugin_cancel_offline_update_data_free);
+	return g_steal_pointer (&task);
+}
+
+/**
+ * gs_plugin_cancel_offline_update_data_free:
+ * @data: (transfer full): a #GsPluginCancelOfflineUpdateData
+ *
+ * Free the given @data.
+ *
+ * Since: 47
+ */
+void
+gs_plugin_cancel_offline_update_data_free (GsPluginCancelOfflineUpdateData *data)
+{
+	g_free (data);
+}
