@@ -523,10 +523,9 @@ main (int argc, char **argv)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		app = gs_app_new (argv[2]);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-						 "app", app,
-						 "interactive", self->interactive,
-						 NULL);
+		plugin_job = gs_plugin_job_upgrade_download_new (app,
+								 self->interactive ? GS_PLUGIN_UPGRADE_DOWNLOAD_FLAGS_INTERACTIVE :
+								 GS_PLUGIN_UPGRADE_DOWNLOAD_FLAGS_NONE);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (ret)
