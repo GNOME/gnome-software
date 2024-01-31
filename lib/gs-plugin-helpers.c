@@ -630,3 +630,70 @@ gs_plugin_upgrade_download_data_free (GsPluginUpgradeDownloadData *data)
 	g_clear_object (&data->app);
 	g_free (data);
 }
+
+/**
+ * gs_plugin_upgrade_trigger_data_new:
+ * @app: (not-nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
+ * @flags: operation flags
+ *
+ * Common context data for a call to #GsPluginClass.upgrade_trigger_async.
+ *
+ * Returns: (transfer full): context data structure
+ * Since: 47
+ */
+GsPluginUpgradeTriggerData *
+gs_plugin_upgrade_trigger_data_new (GsApp                      *app,
+				    GsPluginUpgradeTriggerFlags flags)
+{
+	g_autoptr(GsPluginUpgradeTriggerData) data = g_new0 (GsPluginUpgradeTriggerData, 1);
+	data->app = g_object_ref (app);
+	data->flags = flags;
+
+	return g_steal_pointer (&data);
+}
+
+/**
+ * gs_plugin_upgrade_trigger_data_new_task:
+ * @source_object: task source object
+ * @app: (not-nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
+ * @flags: operation flags
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: function to call once asynchronous operation is finished
+ * @user_data: data to pass to @callback
+ *
+ * Create a #GTask for an upgrade-trigger operation with the given arguments. The task
+ * data will be set to a #GsPluginUpgradeTriggerData containing the given context.
+ *
+ * This is essentially a combination of gs_plugin_upgrade_trigger_data_new(),
+ * g_task_new() and g_task_set_task_data().
+ *
+ * Returns: (transfer full): new #GTask with the given context data
+ * Since: 47
+ */
+GTask *
+gs_plugin_upgrade_trigger_data_new_task (gpointer                    source_object,
+					 GsApp                      *app,
+					 GsPluginUpgradeTriggerFlags flags,
+					 GCancellable               *cancellable,
+					 GAsyncReadyCallback         callback,
+					 gpointer                    user_data)
+{
+	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
+	g_task_set_task_data (task, gs_plugin_upgrade_trigger_data_new (app, flags), (GDestroyNotify) gs_plugin_upgrade_trigger_data_free);
+	return g_steal_pointer (&task);
+}
+
+/**
+ * gs_plugin_upgrade_trigger_data_free:
+ * @data: (transfer full): a #GsPluginUpgradeTriggerData
+ *
+ * Free the given @data.
+ *
+ * Since: 47
+ */
+void
+gs_plugin_upgrade_trigger_data_free (GsPluginUpgradeTriggerData *data)
+{
+	g_clear_object (&data->app);
+	g_free (data);
+}
