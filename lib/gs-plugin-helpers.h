@@ -208,4 +208,21 @@ GTask *		gs_plugin_download_upgrade_data_new_task(gpointer		      source_object,
 void		gs_plugin_download_upgrade_data_free	(GsPluginDownloadUpgradeData *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginDownloadUpgradeData, gs_plugin_download_upgrade_data_free)
 
+typedef struct {
+	GsApp *app;  /* (owned) (not nullable) */
+	GsPluginTriggerUpgradeFlags flags;
+} GsPluginTriggerUpgradeData;
+
+GsPluginTriggerUpgradeData *
+		gs_plugin_trigger_upgrade_data_new	(GsApp			    *app,
+							 GsPluginTriggerUpgradeFlags flags);
+GTask *		gs_plugin_trigger_upgrade_data_new_task	(gpointer		     source_object,
+							 GsApp			    *app,
+							 GsPluginTriggerUpgradeFlags flags,
+							 GCancellable		    *cancellable,
+							 GAsyncReadyCallback	     callback,
+							 gpointer		     user_data);
+void		gs_plugin_trigger_upgrade_data_free	(GsPluginTriggerUpgradeData *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginTriggerUpgradeData, gs_plugin_trigger_upgrade_data_free)
+
 G_END_DECLS
