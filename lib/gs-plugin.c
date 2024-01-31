@@ -1395,8 +1395,6 @@ gs_plugin_error_to_string (GsPluginError error)
 const gchar *
 gs_plugin_action_to_function_name (GsPluginAction action)
 {
-	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
-		return "gs_plugin_app_upgrade_trigger";
 	if (action == GS_PLUGIN_ACTION_LAUNCH)
 		return "gs_plugin_launch";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
@@ -1423,8 +1421,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "unknown";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
 		return "upgrade-download";
-	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
-		return "upgrade-trigger";
 	if (action == GS_PLUGIN_ACTION_LAUNCH)
 		return "launch";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
@@ -1459,8 +1455,6 @@ gs_plugin_action_from_string (const gchar *action)
 {
 	if (g_strcmp0 (action, "upgrade-download") == 0)
 		return GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD;
-	if (g_strcmp0 (action, "upgrade-trigger") == 0)
-		return GS_PLUGIN_ACTION_UPGRADE_TRIGGER;
 	if (g_strcmp0 (action, "launch") == 0)
 		return GS_PLUGIN_ACTION_LAUNCH;
 	if (g_strcmp0 (action, "file-to-app") == 0)
