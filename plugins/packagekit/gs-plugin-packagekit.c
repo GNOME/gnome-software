@@ -4604,36 +4604,67 @@ gs_plugin_packagekit_refresh_metadata_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_update_cancel (GsPlugin *plugin,
-			 GsApp *app,
-			 GCancellable *cancellable,
-			 GError **error)
+static void
+gs_packagekit_update_cancel_thread (GTask *task,
+				    gpointer source_object,
+				    gpointer task_data,
+				    GCancellable *cancellable)
 {
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
-
-	/* already in correct state */
-	if (!self->is_triggered)
-		return TRUE;
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	GsPluginUpdateCancelData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_UPDATE_CANCEL_FLAGS_INTERACTIVE) != 0;
+	g_autoptr(GError) local_error = NULL;
 
 	/* cancel offline update */
 	if (!pk_offline_cancel_with_flags (interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
-					   cancellable,
-					   error)) {
-		gs_plugin_packagekit_error_convert (error, cancellable);
-		return FALSE;
+					   cancellable, &local_error)) {
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* don't rely on the file monitor */
 	gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
 
-	/* success! */
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_packagekit_update_cancel_async (GsPlugin                 *plugin,
+                                          GsApp                    *app,
+                                          GsPluginUpdateCancelFlags flags,
+                                          GCancellable             *cancellable,
+                                          GAsyncReadyCallback      callback,
+                                          gpointer                 user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_update_cancel_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_update_cancel_async);
+
+	/* only process this app if was created by this plugin */
+	if (app != NULL && !gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* already in correct state */
+	if (!self->is_triggered) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* There is no async API in the pk-offline, thus run in a thread */
+	g_task_run_in_thread (task, gs_packagekit_update_cancel_thread);
+}
+
+static gboolean
+gs_plugin_packagekit_update_cancel_finish (GsPlugin      *plugin,
+                                           GAsyncResult  *result,
+                                           GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -4691,6 +4722,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->install_app_finish = gs_plugin_packagekit_install_app_finish;
 	plugin_class->remove_app_async = gs_plugin_packagekit_remove_app_async;
 	plugin_class->remove_app_finish = gs_plugin_packagekit_remove_app_finish;
+	plugin_class->update_cancel_async = gs_plugin_packagekit_update_cancel_async;
+	plugin_class->update_cancel_finish = gs_plugin_packagekit_update_cancel_finish;
 }
 
 GType

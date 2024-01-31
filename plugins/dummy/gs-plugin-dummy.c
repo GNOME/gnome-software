@@ -1190,11 +1190,29 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
-			 GCancellable *cancellable, GError **error)
+static void
+gs_plugin_dummy_update_cancel_async (GsPlugin                 *plugin,
+                                     GsApp                    *app,
+                                     GsPluginUpdateCancelFlags flags,
+                                     GCancellable             *cancellable,
+                                     GAsyncReadyCallback      callback,
+                                     gpointer                 user_data)
 {
-	return TRUE;
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_update_cancel_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_update_cancel_async);
+
+	/* success */
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_dummy_update_cancel_finish (GsPlugin      *plugin,
+				      GAsyncResult  *result,
+                                      GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -1221,6 +1239,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->install_app_finish = gs_plugin_dummy_install_app_finish;
 	plugin_class->remove_app_async = gs_plugin_dummy_remove_app_async;
 	plugin_class->remove_app_finish = gs_plugin_dummy_remove_app_finish;
+	plugin_class->update_cancel_async = gs_plugin_dummy_update_cancel_async;
+	plugin_class->update_cancel_finish = gs_plugin_dummy_update_cancel_finish;
 }
 
 GType
