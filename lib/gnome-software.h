@@ -40,6 +40,7 @@
 #include <gs-plugin-job-update-apps.h>
 #include <gs-plugin-job-update-cancel.h>
 #include <gs-plugin-job-upgrade-download.h>
+#include <gs-plugin-job-upgrade-trigger.h>
 #include <gs-plugin-vfuncs.h>
 #include <gs-remote-icon.h>
 #include <gs-rewrite-resources.h>
