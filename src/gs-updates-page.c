@@ -935,11 +935,8 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 	g_clear_object (&self->cancellable_upgrade);
 	self->cancellable_upgrade = g_cancellable_new ();
 	g_debug ("Starting upgrade download with cancellable %p", self->cancellable_upgrade);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					 "interactive", TRUE,
-					 "app", app,
-					 "propagate-error", TRUE,
-					 NULL);
+	plugin_job = gs_plugin_job_upgrade_download_new (app, GS_PLUGIN_UPGRADE_DOWNLOAD_FLAGS_INTERACTIVE);
+	gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 	helper = gs_page_helper_new (self, app, plugin_job);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_upgrade,
