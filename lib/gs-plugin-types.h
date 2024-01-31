@@ -317,6 +317,20 @@ typedef enum {
 } GsPluginUpgradeDownloadFlags;
 
 /**
+ * GsPluginUpgradeTriggerFlags:
+ * @GS_PLUGIN_UPGRADE_TRIGGER_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_UPGRADE_TRIGGER_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an upgrade-trigger operation.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_UPGRADE_TRIGGER_FLAGS_NONE		= 0,
+	GS_PLUGIN_UPGRADE_TRIGGER_FLAGS_INTERACTIVE	= 1 << 0,
+} GsPluginUpgradeTriggerFlags;
+
+/**
  * GsPluginProgressCallback:
  * @plugin: the #GsPlugin reporting its progress
  * @progress: the percentage completion (0–100 inclusive), or
