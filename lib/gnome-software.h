@@ -38,6 +38,7 @@
 #include <gs-plugin-job-manage-repository.h>
 #include <gs-plugin-job-refine.h>
 #include <gs-plugin-job-refresh-metadata.h>
+#include <gs-plugin-job-trigger-upgrade.h>
 #include <gs-plugin-job-install-apps.h>
 #include <gs-plugin-job-uninstall-apps.h>
 #include <gs-plugin-job-update-apps.h>
