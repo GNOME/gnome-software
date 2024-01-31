@@ -30,6 +30,7 @@
 #include <gs-plugin.h>
 #include <gs-plugin-helpers.h>
 #include <gs-plugin-job.h>
+#include <gs-plugin-job-cancel-offline-update.h>
 #include <gs-plugin-job-list-apps.h>
 #include <gs-plugin-job-list-categories.h>
 #include <gs-plugin-job-list-distro-upgrades.h>

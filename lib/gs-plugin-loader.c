@@ -3484,7 +3484,8 @@ run_job_cb (GObject      *source_object,
 		return;
 	} else if (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (plugin_job) ||
 		   GS_IS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job)) {
+		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job) ||
+		   GS_IS_PLUGIN_JOB_CANCEL_OFFLINE_UPDATE (plugin_job)) {
 		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
 		 * pointer on success, thus return it. */
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
