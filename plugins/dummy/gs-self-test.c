@@ -310,9 +310,7 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 
 	/* download the update */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_download_upgrade_new (app, GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -649,9 +647,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 
 	/* download an upgrade */
 	g_object_unref (plugin_job1);
-	plugin_job1 = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					  "app", app1,
-					  NULL);
+	plugin_job1 = gs_plugin_job_download_upgrade_new (app1, GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job1,
 					    NULL,
