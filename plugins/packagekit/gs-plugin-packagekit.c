@@ -3845,23 +3845,60 @@ proxy_changed_reload_proxy_settings_cb (GObject      *source_object,
 		g_warning ("Failed to set proxies: %s", local_error->message);
 }
 
-gboolean
-gs_plugin_app_upgrade_download (GsPlugin *plugin,
-				GsApp *app,
-				GCancellable *cancellable,
-				GError **error)
+static void
+gs_packagekit_upgrade_system_cb (GObject *source_object,
+				 GAsyncResult *result,
+				 gpointer user_data)
 {
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_upgrade = NULL;
+	g_autoptr(GTask) task = user_data;
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginUpgradeDownloadData *data = g_task_get_task_data (task);
+
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+
+	if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
+		gs_app_set_state_recover (data->app);
+		gs_plugin_packagekit_error_convert (&local_error, g_task_get_cancellable (task));
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* state is known */
+	gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_packagekit_upgrade_download_async (GsPlugin                    *plugin,
+                                             GsApp                       *app,
+                                             GsPluginUpgradeDownloadFlags flags,
+                                             GCancellable                *cancellable,
+                                             GAsyncReadyCallback          callback,
+                                             gpointer                     user_data)
+{
+	g_autoptr(GsPackagekitHelper) helper = NULL;
+	g_autoptr(PkTask) task_upgrade = NULL;
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_UPGRADE_DOWNLOAD_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_upgrade_download_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_upgrade_download_async);
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* check is distro-upgrade */
-	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
-		return TRUE;
+	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	helper = gs_packagekit_helper_new (plugin);
 
 	/* ask PK to download enough packages to upgrade the system */
 	gs_app_set_state (app, GS_APP_STATE_DOWNLOADING);
@@ -3870,23 +3907,24 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	task_upgrade = gs_packagekit_task_new (plugin);
 	pk_task_set_only_download (task_upgrade, TRUE);
 	pk_client_set_cache_age (PK_CLIENT (task_upgrade), 60 * 60 * 24);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_upgrade), GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_upgrade), GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD, interactive);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_upgrade), helper);
 
-	results = pk_task_upgrade_system_sync (task_upgrade,
-					       gs_app_get_version (app),
-					       PK_UPGRADE_KIND_ENUM_COMPLETE,
-					       cancellable,
-					       gs_packagekit_helper_cb, helper,
-					       error);
+	pk_task_upgrade_system_async (task_upgrade,
+				      gs_app_get_version (app),
+				      PK_UPGRADE_KIND_ENUM_COMPLETE,
+				      cancellable,
+				      gs_packagekit_helper_cb, g_steal_pointer (&helper),
+				      gs_packagekit_upgrade_system_cb,
+				      g_steal_pointer (&task));
+}
 
-	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-		gs_app_set_state_recover (app);
-		return FALSE;
-	}
-
-	/* state is known */
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-	return TRUE;
+static gboolean
+gs_plugin_packagekit_upgrade_download_finish (GsPlugin      *plugin,
+                                              GAsyncResult  *result,
+                                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugin,
@@ -4724,6 +4762,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->remove_app_finish = gs_plugin_packagekit_remove_app_finish;
 	plugin_class->update_cancel_async = gs_plugin_packagekit_update_cancel_async;
 	plugin_class->update_cancel_finish = gs_plugin_packagekit_update_cancel_finish;
+	plugin_class->upgrade_download_async = gs_plugin_packagekit_upgrade_download_async;
+	plugin_class->upgrade_download_finish = gs_plugin_packagekit_upgrade_download_finish;
 }
 
 GType
