@@ -4705,30 +4705,61 @@ gs_plugin_packagekit_update_cancel_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
-                               GsApp *app,
-                               GCancellable *cancellable,
-                               GError **error)
+static void
+gs_packagekit_upgrade_trigger_thread (GTask *task,
+				      gpointer source_object,
+				      gpointer task_data,
+				      GCancellable *cancellable)
 {
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
-
-	gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
+	GsPluginUpgradeTriggerData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_UPGRADE_TRIGGER_FLAGS_INTERACTIVE) != 0;
+	g_autoptr(GError) local_error = NULL;
 
 	if (!pk_offline_trigger_upgrade_with_flags (PK_OFFLINE_ACTION_REBOOT,
 						    interactive ? PK_OFFLINE_FLAGS_INTERACTIVE : PK_OFFLINE_FLAGS_NONE,
-						    cancellable,
-						    error)) {
-		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-		gs_plugin_packagekit_error_convert (error, cancellable);
-		return FALSE;
+						    cancellable, &local_error)) {
+		gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-	return TRUE;
+
+	gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_packagekit_upgrade_trigger_async (GsPlugin                   *plugin,
+                                            GsApp                      *app,
+                                            GsPluginUpgradeTriggerFlags flags,
+                                            GCancellable               *cancellable,
+                                            GAsyncReadyCallback         callback,
+                                            gpointer                    user_data)
+{
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_upgrade_trigger_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_upgrade_trigger_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
+
+	/* There is no async API in the pk-offline, thus run in a thread */
+	g_task_run_in_thread (task, gs_packagekit_upgrade_trigger_thread);
+}
+
+static gboolean
+gs_plugin_packagekit_upgrade_trigger_finish (GsPlugin      *plugin,
+                                             GAsyncResult  *result,
+                                             GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -4764,6 +4795,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->update_cancel_finish = gs_plugin_packagekit_update_cancel_finish;
 	plugin_class->upgrade_download_async = gs_plugin_packagekit_upgrade_download_async;
 	plugin_class->upgrade_download_finish = gs_plugin_packagekit_upgrade_download_finish;
+	plugin_class->upgrade_trigger_async = gs_plugin_packagekit_upgrade_trigger_async;
+	plugin_class->upgrade_trigger_finish = gs_plugin_packagekit_upgrade_trigger_finish;
 }
 
 GType
