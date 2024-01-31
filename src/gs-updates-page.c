@@ -1004,10 +1004,7 @@ trigger_upgrade (GsUpdatesPage *self)
 	g_clear_object (&self->cancellable_upgrade);
 	self->cancellable_upgrade = g_cancellable_new ();
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
-					 "interactive", TRUE,
-					 "app", upgrade,
-					 NULL);
+	plugin_job = gs_plugin_job_trigger_upgrade_new (upgrade, GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_upgrade,
 					    upgrade_trigger_finished_cb,
