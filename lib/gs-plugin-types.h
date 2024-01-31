@@ -319,6 +319,20 @@ typedef enum {
 } GsPluginCancelOfflineUpdateFlags;
 
 /**
+ * GsPluginDownloadUpgradeFlags:
+ * @GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to download an upgrade.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE		= 0,
+	GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE	= 1 << 0,
+} GsPluginDownloadUpgradeFlags;
+
+/**
  * GsPluginProgressCallback:
  * @plugin: the #GsPlugin reporting its progress
  * @progress: the percentage completion (0–100 inclusive), or
