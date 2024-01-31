@@ -1401,8 +1401,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_app_upgrade_trigger";
 	if (action == GS_PLUGIN_ACTION_LAUNCH)
 		return "gs_plugin_launch";
-	if (action == GS_PLUGIN_ACTION_UPDATE_CANCEL)
-		return "gs_plugin_update_cancel";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
 		return "gs_plugin_file_to_app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)

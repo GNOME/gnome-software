@@ -569,7 +569,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
 	case GS_PLUGIN_ACTION_LAUNCH:
-	case GS_PLUGIN_ACTION_UPDATE_CANCEL:
 		{
 			GsPluginActionFunc plugin_func = func;
 			ret = plugin_func (plugin, app, cancellable, &error_local);
