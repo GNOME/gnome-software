@@ -84,22 +84,6 @@ gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_app_upgrade_trigger:
- * @plugin: a #GsPlugin
- * @app: a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Triggers the distribution upgrade to be installed on next boot.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_file_to_app:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
