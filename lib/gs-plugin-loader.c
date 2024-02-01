@@ -3370,7 +3370,8 @@ run_job_cb (GObject      *source_object,
 		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job) ||
 		   GS_IS_PLUGIN_JOB_UPDATE_CANCEL (plugin_job) ||
 		   GS_IS_PLUGIN_JOB_UPGRADE_DOWNLOAD (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_UPGRADE_TRIGGER (plugin_job)) {
+		   GS_IS_PLUGIN_JOB_UPGRADE_TRIGGER (plugin_job) ||
+		   GS_IS_PLUGIN_JOB_LAUNCH (plugin_job)) {
 		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
 		 * pointer on success, thus return it. */
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
