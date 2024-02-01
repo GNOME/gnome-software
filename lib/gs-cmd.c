@@ -546,10 +546,9 @@ main (int argc, char **argv)
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_LAUNCH,
-							 "app", app,
-							 "interactive", self->interactive,
-							 NULL);
+			plugin_job = gs_plugin_job_launch_new (app,
+							       self->interactive ? GS_PLUGIN_LAUNCH_FLAGS_INTERACTIVE :
+							       GS_PLUGIN_LAUNCH_FLAGS_NONE);
 			ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 							    NULL, &error);
 			if (!ret)
