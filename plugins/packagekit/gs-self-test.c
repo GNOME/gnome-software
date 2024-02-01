@@ -230,9 +230,7 @@ gs_plugins_packagekit_local_func (GsPluginLoader *plugin_loader)
 	fn = gs_test_get_filename (TESTDATADIR, "chiron-1.1-1.fc24.x86_64.rpm");
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
-					 "file", file,
-					 NULL);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
