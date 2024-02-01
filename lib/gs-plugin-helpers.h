@@ -206,4 +206,21 @@ GTask *		gs_plugin_launch_data_new_task		(gpointer		     source_object,
 void		gs_plugin_launch_data_free		(GsPluginLaunchData	    *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginLaunchData, gs_plugin_launch_data_free)
 
+typedef struct {
+	GFile *file;  /* (owned) */
+	GsPluginFileToAppFlags flags;
+} GsPluginFileToAppData;
+
+GsPluginFileToAppData *
+		gs_plugin_file_to_app_data_new		(GFile			    *file,
+							 GsPluginFileToAppFlags	     flags);
+GTask *		gs_plugin_file_to_app_data_new_task	(gpointer		     source_object,
+							 GFile			    *file,
+							 GsPluginFileToAppFlags	     flags,
+							 GCancellable		    *cancellable,
+							 GAsyncReadyCallback	     callback,
+							 gpointer		     user_data);
+void		gs_plugin_file_to_app_data_free		(GsPluginFileToAppData	    *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginFileToAppData, gs_plugin_file_to_app_data_free)
+
 G_END_DECLS
