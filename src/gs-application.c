@@ -901,9 +901,7 @@ launch_activated (GSimpleAction *action,
 		return;
 	}
 
-	launch_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_LAUNCH,
-					 "app", app,
-					 NULL);
+	launch_job = gs_plugin_job_launch_new (app, GS_PLUGIN_LAUNCH_FLAGS_NONE);
 	if (!gs_plugin_loader_job_action (self->plugin_loader, launch_job, self->cancellable, &error)) {
 		g_warning ("Failed to launch app: %s", error->message);
 		return;
