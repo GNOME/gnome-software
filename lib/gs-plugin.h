@@ -114,6 +114,10 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @upgrade_trigger_finish: (nullable): Finish method for
  *   @upgrade_trigger_async. Must be implemented if
  *   @upgrade_trigger_async is implemented. (Since: 47)
+ * @launch_async: (nullable): Launch the specified app using a plugin-specific method. (Since: 47)
+ * @launch_finish: (nullable): Finish method for
+ *   @launch_async. Must be implemented if
+ *   @launch_async is implemented. (Since: 47)
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -304,8 +308,17 @@ struct _GsPluginClass
 	gboolean		(*upgrade_trigger_finish)	(GsPlugin			*plugin,
 								 GAsyncResult			*result,
 								 GError				**error);
+	void			(*launch_async)			(GsPlugin			*plugin,
+								 GsApp				*app,
+								 GsPluginLaunchFlags		 flags,
+								 GCancellable			*cancellable,
+								 GAsyncReadyCallback		 callback,
+								 gpointer			 user_data);
+	gboolean		(*launch_finish)		(GsPlugin			*plugin,
+								 GAsyncResult			*result,
+								 GError				**error);
 
-	gpointer		 padding[13];
+	gpointer		 padding[11];
 };
 
 /* helpers */
