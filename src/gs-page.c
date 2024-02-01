@@ -687,10 +687,7 @@ gs_page_launch_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_LAUNCH,
-					 "interactive", TRUE,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_launch_new (app, GS_PLUGIN_LAUNCH_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    cancellable,
 					    gs_page_app_launched_cb,
