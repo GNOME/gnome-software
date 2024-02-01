@@ -1267,16 +1267,23 @@ gs_plugin_epiphany_remove_app_finish (GsPlugin *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_launch (GsPlugin      *plugin,
-		  GsApp         *app,
-		  GCancellable  *cancellable,
-		  GError       **error)
+static void
+gs_plugin_epiphany_launch_async (GsPlugin *plugin,
+				 GsApp *app,
+				 GsPluginLaunchFlags flags,
+				 GCancellable *cancellable,
+				 GAsyncReadyCallback callback,
+				 gpointer user_data)
 {
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	gs_plugin_app_launch_async (plugin, app, flags, cancellable, callback, user_data);
+}
 
-	return gs_plugin_app_launch (plugin, app, error);
+static gboolean
+gs_plugin_epiphany_launch_finish (GsPlugin *plugin,
+				  GAsyncResult *result,
+				  GError **error)
+{
+	return gs_plugin_app_launch_finish (plugin, result, error);
 }
 
 static void
@@ -1300,6 +1307,8 @@ gs_plugin_epiphany_class_init (GsPluginEpiphanyClass *klass)
 	plugin_class->install_app_finish = gs_plugin_epiphany_install_app_finish;
 	plugin_class->remove_app_async = gs_plugin_epiphany_remove_app_async;
 	plugin_class->remove_app_finish = gs_plugin_epiphany_remove_app_finish;
+	plugin_class->launch_async = gs_plugin_epiphany_launch_async;
+	plugin_class->launch_finish = gs_plugin_epiphany_launch_finish;
 }
 
 GType

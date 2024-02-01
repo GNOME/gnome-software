@@ -1815,92 +1815,135 @@ gs_plugin_snap_install_app_finish (GsPlugin *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-// Check if an app is graphical by checking if it uses a known GUI interface.
-// This doesn't necessarily mean that every binary uses this interfaces, but is probably true.
-// https://bugs.launchpad.net/bugs/1595023
-static gboolean
-is_graphical (GsPluginSnap *self,
-              SnapdClient  *client,
-              GsApp        *app,
-              GCancellable *cancellable)
+/* Check if an app is graphical by checking if it uses a known GUI interface.
+  This doesn't necessarily mean that every binary uses this interfaces, but is probably true.
+  https://bugs.launchpad.net/bugs/1595023 */
+static void
+gs_plugin_snap_launch_got_connections_cb (GObject *source_object,
+					  GAsyncResult *result,
+					  gpointer user_data)
 {
+	g_autoptr(GTask) task = user_data;
 	g_autoptr(GPtrArray) plugs = NULL;
-	guint i;
-	g_autoptr(GError) error = NULL;
+	g_autoptr(GAppInfo) appinfo = NULL;
+	g_autoptr(GError) local_error = NULL;
+	g_autofree gchar *commandline = NULL;
+	const gchar *app_snap_name;
+	const gchar *launch_name;
+	GsPluginLaunchData *data = g_task_get_task_data (task);
+	GAppInfoCreateFlags flags = G_APP_INFO_CREATE_NONE;
+	gboolean is_graphical = FALSE;
 
-	if (!snapd_client_get_connections2_sync (client,
-						 SNAPD_GET_CONNECTIONS_FLAGS_SELECT_ALL, NULL, NULL,
-						 NULL, NULL, &plugs, NULL,
-						 cancellable, &error)) {
-		g_warning ("Failed to get connections: %s", error->message);
-		return FALSE;
+	app_snap_name = gs_app_get_metadata_item (data->app, "snap::name");
+	launch_name = gs_app_get_metadata_item (data->app, "snap::launch-name");
+
+	if (!snapd_client_get_connections2_finish (SNAPD_CLIENT (source_object), result, NULL, NULL, &plugs, NULL, &local_error)) {
+		g_debug ("%s: Failed to get connections: %s", G_STRFUNC, local_error->message);
+		g_clear_error (&local_error);
+	} else {
+		for (guint i = 0; i < plugs->len && !is_graphical; i++) {
+			SnapdPlug *plug = plugs->pdata[i];
+			const gchar *interface;
+
+			/* Only looks at the plugs for this snap */
+			if (g_strcmp0 (snapd_plug_get_snap (plug), app_snap_name) != 0)
+				continue;
+
+			interface = snapd_plug_get_interface (plug);
+			if (interface == NULL)
+				continue;
+
+			if (g_strcmp0 (interface, "unity7") == 0 ||
+			    g_strcmp0 (interface, "x11") == 0 ||
+			    g_strcmp0 (interface, "mir") == 0)
+				is_graphical = TRUE;
+		}
 	}
 
-	for (i = 0; i < plugs->len; i++) {
-		SnapdPlug *plug = plugs->pdata[i];
-		const gchar *interface;
+	if (g_strcmp0 (launch_name, app_snap_name) == 0)
+		commandline = g_strdup_printf ("snap run %s", launch_name);
+	else
+		commandline = g_strdup_printf ("snap run %s.%s", app_snap_name, launch_name);
 
-		// Only looks at the plugs for this snap
-		if (g_strcmp0 (snapd_plug_get_snap (plug), gs_app_get_metadata_item (app, "snap::name")) != 0)
-			continue;
+	if (!is_graphical)
+		flags |= G_APP_INFO_CREATE_NEEDS_TERMINAL;
 
-		interface = snapd_plug_get_interface (plug);
-		if (interface == NULL)
-			continue;
-
-		if (g_strcmp0 (interface, "unity7") == 0 || g_strcmp0 (interface, "x11") == 0 || g_strcmp0 (interface, "mir") == 0)
-			return TRUE;
-	}
-
-	return FALSE;
+	appinfo = g_app_info_create_from_commandline (commandline, NULL, flags, &local_error);
+	if (appinfo != NULL)
+		g_task_return_pointer (task, appinfo, g_object_unref);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
 }
 
-gboolean
-gs_plugin_launch (GsPlugin *plugin,
-		  GsApp *app,
-		  GCancellable *cancellable,
-		  GError **error)
+static void
+gs_plugin_snap_launch_async (GsPlugin            *plugin,
+			     GsApp               *app,
+			     GsPluginLaunchFlags  flags,
+			     GCancellable        *cancellable,
+			     GAsyncReadyCallback  callback,
+			     gpointer             user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	const gchar *launch_name;
 	const gchar *launch_desktop;
 	g_autoptr(GAppInfo) info = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_LAUNCH_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_launch_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_launch_async);
 
 	/* We can only launch apps we know of */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_pointer (task, NULL, NULL);
+		return;
+	}
 
 	launch_name = gs_app_get_metadata_item (app, "snap::launch-name");
 	launch_desktop = gs_app_get_metadata_item (app, "snap::launch-desktop");
-	if (!launch_name)
-		return TRUE;
+	if (!launch_name) {
+		g_task_return_pointer (task, NULL, NULL);
+		return;
+	}
 
 	if (launch_desktop) {
 		info = (GAppInfo *)g_desktop_app_info_new_from_filename (launch_desktop);
 	} else {
-		g_autofree gchar *commandline = NULL;
 		g_autoptr(SnapdClient) client = NULL;
-		GAppInfoCreateFlags flags = G_APP_INFO_CREATE_NONE;
 
-		if (g_strcmp0 (launch_name, gs_app_get_metadata_item (app, "snap::name")) == 0)
-			commandline = g_strdup_printf ("snap run %s", launch_name);
-		else
-			commandline = g_strdup_printf ("snap run %s.%s", gs_app_get_metadata_item (app, "snap::name"), launch_name);
+		client = get_client (self, interactive, &local_error);
+		if (client == NULL) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 
-		client = get_client (self, interactive, error);
-		if (client == NULL)
-			return FALSE;
-
-		if (!is_graphical (self, client, app, cancellable))
-			flags |= G_APP_INFO_CREATE_NEEDS_TERMINAL;
-		info = g_app_info_create_from_commandline (commandline, NULL, flags, error);
+		snapd_client_get_connections2_async (client, SNAPD_GET_CONNECTIONS_FLAGS_SELECT_ALL, NULL, NULL,
+						     cancellable, gs_plugin_snap_launch_got_connections_cb,
+						     g_steal_pointer (&task));
+		return;
 	}
 
-	if (info == NULL)
+	g_task_return_pointer (task, g_steal_pointer (&info), g_object_unref);
+}
+
+static gboolean
+gs_plugin_snap_launch_finish (GsPlugin      *plugin,
+			      GAsyncResult  *result,
+			      GError       **error)
+{
+	GdkDisplay *display;
+	g_autoptr(GAppLaunchContext) context = NULL;
+	g_autoptr(GAppInfo) appinfo = NULL;
+
+	appinfo = g_task_propagate_pointer (G_TASK (result), error);
+	if (appinfo == NULL)
 		return FALSE;
 
-	return g_app_info_launch (info, NULL, NULL, error);
+	display = gdk_display_get_default ();
+	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
+
+	return g_app_info_launch (appinfo, NULL, context, error);
 }
 
 static void
@@ -2177,6 +2220,8 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	plugin_class->install_app_finish = gs_plugin_snap_install_app_finish;
 	plugin_class->remove_app_async = gs_plugin_snap_remove_app_async;
 	plugin_class->remove_app_finish = gs_plugin_snap_remove_app_finish;
+	plugin_class->launch_async = gs_plugin_snap_launch_async;
+	plugin_class->launch_finish = gs_plugin_snap_launch_finish;
 }
 
 GType

@@ -2554,7 +2554,8 @@ static gboolean
 plugin_rpmostree_pick_rpm_desktop_file_cb (GsPlugin *plugin,
 					   GsApp *app,
 					   const gchar *filename,
-					   GKeyFile *key_file)
+					   GKeyFile *key_file,
+					   gpointer user_data)
 {
 	return strstr (filename, "/snapd/") == NULL &&
 	       strstr (filename, "/snap/") == NULL &&
@@ -2564,17 +2565,26 @@ plugin_rpmostree_pick_rpm_desktop_file_cb (GsPlugin *plugin,
 	       !g_key_file_has_key (key_file, "Desktop Entry", "X-SnapInstanceName", NULL);
 }
 
-gboolean
-gs_plugin_launch (GsPlugin *plugin,
-                  GsApp *app,
-                  GCancellable *cancellable,
-                  GError **error)
+static void
+gs_plugin_rpm_ostree_launch_async (GsPlugin            *plugin,
+				   GsApp               *app,
+				   GsPluginLaunchFlags  flags,
+				   GCancellable        *cancellable,
+				   GAsyncReadyCallback  callback,
+				   gpointer             user_data)
 {
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	gs_plugin_app_launch_filtered_async (plugin, app, flags,
+					     plugin_rpmostree_pick_rpm_desktop_file_cb, NULL,
+					     cancellable,
+					     callback, user_data);
+}
 
-	return gs_plugin_app_launch_filtered (plugin, app, plugin_rpmostree_pick_rpm_desktop_file_cb, NULL, error);
+static gboolean
+gs_plugin_rpm_ostree_launch_finish (GsPlugin      *plugin,
+				    GAsyncResult  *result,
+				    GError       **error)
+{
+	return gs_plugin_app_launch_filtered_finish (plugin, result, error);
 }
 
 static void
@@ -3549,6 +3559,8 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->upgrade_download_finish = gs_plugin_rpm_ostree_upgrade_download_finish;
 	plugin_class->upgrade_trigger_async = gs_plugin_rpm_ostree_upgrade_trigger_async;
 	plugin_class->upgrade_trigger_finish = gs_plugin_rpm_ostree_upgrade_trigger_finish;
+	plugin_class->launch_async = gs_plugin_rpm_ostree_launch_async;
+	plugin_class->launch_finish = gs_plugin_rpm_ostree_launch_finish;
 }
 
 GType

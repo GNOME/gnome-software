@@ -722,19 +722,65 @@ gs_plugin_flatpak_refine_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_launch (GsPlugin *plugin,
-		  GsApp *app,
-		  GCancellable *cancellable,
-		  GError **error)
+/* Run in @worker. */
+static void
+launch_thread_cb (GTask        *task,
+                  gpointer      source_object,
+                  gpointer      task_data,
+                  GCancellable *cancellable)
 {
-	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (GS_PLUGIN_FLATPAK (plugin), app);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsPluginLaunchData *data = task_data;
+	GsFlatpak *flatpak;
+	g_autoptr(GError) local_error = NULL;
+	gboolean interactive = (data->flags & GS_PLUGIN_LAUNCH_FLAGS_INTERACTIVE) != 0;
 
-	if (flatpak == NULL)
-		return TRUE;
+	assert_in_worker (self);
 
-	return gs_flatpak_launch (flatpak, app, interactive, cancellable, error);
+	flatpak = gs_plugin_flatpak_get_handler (self, data->app);
+	if (flatpak == NULL) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	if (gs_flatpak_launch (flatpak, data->app, interactive, cancellable, &local_error))
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static void
+gs_plugin_flatpak_launch_async (GsPlugin            *plugin,
+                                GsApp               *app,
+                                GsPluginLaunchFlags  flags,
+                                GCancellable        *cancellable,
+                                GAsyncReadyCallback  callback,
+                                gpointer             user_data)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_LAUNCH_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_launch_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_launch_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* Queue a job to refine the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				launch_thread_cb, g_steal_pointer (&task));
+}
+
+static gboolean
+gs_plugin_flatpak_launch_finish (GsPlugin      *plugin,
+                                 GAsyncResult  *result,
+                                 GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /* ref full */
@@ -2593,6 +2639,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->install_app_finish = gs_plugin_flatpak_install_app_finish;
 	plugin_class->remove_app_async = gs_plugin_flatpak_remove_app_async;
 	plugin_class->remove_app_finish = gs_plugin_flatpak_remove_app_finish;
+	plugin_class->launch_async = gs_plugin_flatpak_launch_async;
+	plugin_class->launch_finish = gs_plugin_flatpak_launch_finish;
 }
 
 GType
