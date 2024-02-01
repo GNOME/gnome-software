@@ -2093,10 +2093,8 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	g_clear_object (&self->app_local_file);
 	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
-					 "file", file,
-					 "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
-					 NULL);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+	gs_plugin_job_set_refine_flags (plugin_job, GS_DETAILS_PAGE_REFINE_FLAGS);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_file_to_app_cb,
