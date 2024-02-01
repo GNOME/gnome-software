@@ -32,6 +32,7 @@
 #include <gs-plugin-job.h>
 #include <gs-plugin-job-cancel-offline-update.h>
 #include <gs-plugin-job-download-upgrade.h>
+#include <gs-plugin-job-file-to-app.h>
 #include <gs-plugin-job-launch.h>
 #include <gs-plugin-job-list-apps.h>
 #include <gs-plugin-job-list-categories.h>
