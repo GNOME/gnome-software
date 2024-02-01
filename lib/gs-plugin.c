@@ -831,65 +831,126 @@ gs_plugin_basic_auth_start (GsPlugin *plugin,
 	g_source_attach (idle_source, NULL);
 }
 
-static gboolean
-gs_plugin_app_launch_cb (gpointer user_data)
+static const gchar *
+get_desktop_id_to_launch (GsApp *app)
 {
-	GAppInfo *appinfo = (GAppInfo *) user_data;
+	const gchar *desktop_id = gs_app_get_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
+	if (desktop_id == NULL)
+		desktop_id = gs_app_get_id (app);
+	return desktop_id;
+}
+
+static gboolean
+launch_app_info (GAppInfo *appinfo,
+		 GError **error)
+{
 	GdkDisplay *display;
 	g_autoptr(GAppLaunchContext) context = NULL;
-	g_autoptr(GError) error = NULL;
+
+	if (appinfo == NULL)
+		return TRUE;
 
 	display = gdk_display_get_default ();
 	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
-	if (!g_app_info_launch (appinfo, NULL, context, &error))
-		g_warning ("Failed to launch: %s", error->message);
 
-	return G_SOURCE_REMOVE;
+	return g_app_info_launch (appinfo, NULL, context, error);
 }
 
 /**
- * gs_plugin_app_launch:
+ * gs_plugin_app_launch_async:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
- * @error: a #GError, or %NULL
+ * @flags: a bit-or of #GsPluginLaunchFlags
+ * @cancellable: a #GCancellable, or %NULL
+ * @callback: (not nullable): a #GAsyncReadyCallback to call when the request is satisfied
+ * @user_data: (closure callback) (scope async): data to pass to @callback
  *
- * Launches the application using #GAppInfo.
+ * Asynchronously launches the application using #GAppInfo.
+ * Finish the call with gs_plugin_app_launch_finish().
  *
- * Returns: %TRUE for success
+ * The function also verifies whether the @plugin can handle the @app,
+ * in a sense of gs_app_has_management_plugin(), and if not then does
+ * nothing.
  *
- * Since: 3.22
+ * Since: 47
  **/
-gboolean
-gs_plugin_app_launch (GsPlugin *plugin, GsApp *app, GError **error)
+void
+gs_plugin_app_launch_async (GsPlugin *plugin,
+			    GsApp *app,
+			    GsPluginLaunchFlags flags,
+			    GCancellable *cancellable,
+			    GAsyncReadyCallback callback,
+			    gpointer user_data)
 {
 	const gchar *desktop_id;
+	g_autoptr(GTask) task = NULL;
 	g_autoptr(GAppInfo) appinfo = NULL;
 
-	desktop_id = gs_app_get_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
-	if (desktop_id == NULL)
-		desktop_id = gs_app_get_id (app);
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (callback != NULL);
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_app_launch_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_pointer (task, NULL, NULL);
+		return;
+	}
+
+	desktop_id = get_desktop_id_to_launch (app);
 	if (desktop_id == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
+		g_task_return_new_error (task, GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "no such desktop file: %s",
-			     desktop_id);
-		return FALSE;
+			     "no desktop file for app: %s",
+			     gs_app_get_name (app));
+		return;
 	}
 	appinfo = G_APP_INFO (gs_utils_get_desktop_app_info (desktop_id));
 	if (appinfo == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
+		g_task_return_new_error (task, GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "no such desktop file: %s",
 			     desktop_id);
+		return;
+	}
+
+	/* the actual launch happens in the _finish() function,
+	   which should be in the main thread */
+	g_task_return_pointer (task, g_steal_pointer (&appinfo), g_object_unref);
+}
+
+/**
+ * gs_plugin_app_launch_finish:
+ * @plugin: a #GsPlugin
+ * @result: an async result
+ * @error: a #GError or %NULL
+ *
+ * Finishes operation started by gs_plugin_app_launch_async().
+ * This function should be called from the main thread.
+ *
+ * Returns: whether succeeded
+ *
+ * Since: 47
+ **/
+gboolean
+gs_plugin_app_launch_finish (GsPlugin *plugin,
+			     GAsyncResult *result,
+			     GError **error)
+{
+	g_autoptr(GAppInfo) appinfo = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	g_return_val_if_fail (g_task_is_valid (G_TASK (result), plugin), FALSE);
+	g_return_val_if_fail (g_async_result_is_tagged (result, gs_plugin_app_launch_async), FALSE);
+
+	appinfo = g_task_propagate_pointer (G_TASK (result), &local_error);
+	if (local_error != NULL) {
+		g_propagate_error (error, local_error);
 		return FALSE;
 	}
-	g_idle_add_full (G_PRIORITY_DEFAULT,
-			 gs_plugin_app_launch_cb,
-			 g_object_ref (appinfo),
-			 (GDestroyNotify) g_object_unref);
-	return TRUE;
+	return launch_app_info (appinfo, error);
 }
 
 static GDesktopAppInfo *
@@ -908,7 +969,7 @@ check_directory_for_desktop_file (GsPlugin *plugin,
 	key_file = g_key_file_new ();
 
 	found = g_key_file_load_from_file (key_file, filename, G_KEY_FILE_KEEP_TRANSLATIONS, NULL);
-	if (found && cb (plugin, app, filename, key_file)) {
+	if (found && cb (plugin, app, filename, key_file, user_data)) {
 		g_autoptr(GDesktopAppInfo) appinfo = NULL;
 		g_debug ("Found '%s' for app '%s' and picked it", filename, desktop_id);
 		/* use the filename, not the key_file, to enable bus activation from the .desktop file */
@@ -925,7 +986,7 @@ check_directory_for_desktop_file (GsPlugin *plugin,
 	if (!g_str_has_suffix (desktop_id, ".desktop")) {
 		g_autofree gchar *desktop_filename = g_strconcat (filename, ".desktop", NULL);
 		found = g_key_file_load_from_file (key_file, desktop_filename, G_KEY_FILE_KEEP_TRANSLATIONS, NULL);
-		if (found && cb (plugin, app, desktop_filename, key_file)) {
+		if (found && cb (plugin, app, desktop_filename, key_file, user_data)) {
 			g_autoptr(GDesktopAppInfo) appinfo = NULL;
 			g_debug ("Found '%s' for app '%s' and picked it", desktop_filename, desktop_id);
 			/* use the filename, not the key_file, to enable bus activation from the .desktop file */
@@ -945,63 +1006,53 @@ check_directory_for_desktop_file (GsPlugin *plugin,
 	return NULL;
 }
 
-/**
- * gs_plugin_app_launch_filtered:
- * @plugin: a #GsPlugin
- * @app: a #GsApp to launch
- * @cb: a callback to pick the correct .desktop file
- * @user_data: (closure cb) (scope call): user data for the @cb
- * @error: a #GError, or %NULL
- *
- * Launches application @app, using the .desktop file picked by the @cb.
- * This can help in case multiple versions of the @app are installed
- * in the system (like a Flatpak and RPM versions).
- *
- * Returns: %TRUE on success
- *
- * Since: 43
- **/
-gboolean
-gs_plugin_app_launch_filtered (GsPlugin *plugin,
-			       GsApp *app,
-			       GsPluginPickDesktopFileCallback cb,
-			       gpointer user_data,
-			       GError **error)
+typedef struct {
+	GsApp *app; /* (owned) */
+	GsPluginPickDesktopFileCallback cb;
+	gpointer cb_user_data;
+	GAppInfo *appinfo; /* (owned) (nullable) (out) */
+} LaunchFilteredData;
+
+static void
+launch_filtered_data_free (LaunchFilteredData *data)
 {
-	const gchar *desktop_id;
+	g_clear_object (&data->app);
+	g_clear_object (&data->appinfo);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (LaunchFilteredData, launch_filtered_data_free)
+
+static void
+launch_filtered_thread (GTask *task,
+			gpointer source_object,
+			gpointer task_data,
+			GCancellable *cancellable)
+{
 	g_autoptr(GDesktopAppInfo) appinfo = NULL;
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	LaunchFilteredData *data = task_data;
+	const gchar *desktop_id;
 
-	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
-	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	g_return_val_if_fail (cb != NULL, FALSE);
-
-	desktop_id = gs_app_get_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
-	if (desktop_id == NULL)
-		desktop_id = gs_app_get_id (app);
-	if (desktop_id == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "no desktop file for app: %s",
-			     gs_app_get_name (app));
-		return FALSE;
-	}
+	desktop_id = get_desktop_id_to_launch (data->app);
+	/* the caller verified it's set */
+	g_assert (desktop_id != NULL);
 
 	/* First, the configs.  Highest priority: the user's ~/.config */
-	appinfo = check_directory_for_desktop_file (plugin, app, cb, user_data, desktop_id, g_get_user_config_dir ());
+	appinfo = check_directory_for_desktop_file (plugin, data->app, data->cb, data->cb_user_data, desktop_id, g_get_user_config_dir ());
 
 	if (appinfo == NULL) {
 		/* Next, the system configs (/etc/xdg, and so on). */
 		const gchar * const *dirs;
 		dirs = g_get_system_config_dirs ();
 		for (guint i = 0; dirs[i] && appinfo == NULL; i++) {
-			appinfo = check_directory_for_desktop_file (plugin, app, cb, user_data, desktop_id, dirs[i]);
+			appinfo = check_directory_for_desktop_file (plugin, data->app, data->cb, data->cb_user_data, desktop_id, dirs[i]);
 		}
 	}
 
 	if (appinfo == NULL) {
 		/* Now the data.  Highest priority: the user's ~/.local/share/applications */
-		appinfo = check_directory_for_desktop_file (plugin, app, cb, user_data, desktop_id, g_get_user_data_dir ());
+		appinfo = check_directory_for_desktop_file (plugin, data->app, data->cb, data->cb_user_data, desktop_id, g_get_user_data_dir ());
 	}
 
 	if (appinfo == NULL) {
@@ -1009,25 +1060,125 @@ gs_plugin_app_launch_filtered (GsPlugin *plugin,
 		const gchar * const *dirs;
 		dirs = g_get_system_data_dirs ();
 		for (guint i = 0; dirs[i] && appinfo == NULL; i++) {
-			appinfo = check_directory_for_desktop_file (plugin, app, cb, user_data, desktop_id, dirs[i]);
+			appinfo = check_directory_for_desktop_file (plugin, data->app, data->cb, data->cb_user_data, desktop_id, dirs[i]);
 		}
 	}
 
 	if (appinfo == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "no appropriate desktop file found: %s",
-			     desktop_id);
-		return FALSE;
+		g_task_return_new_error (task, GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "no appropriate desktop file found: %s",
+					 desktop_id);
+		return;
 	}
 
-	g_idle_add_full (G_PRIORITY_DEFAULT,
-			 gs_plugin_app_launch_cb,
-			 g_object_ref (appinfo),
-			 (GDestroyNotify) g_object_unref);
+	/* the actual launch happens in the _finish() function,
+	   which should be in the main thread */
+	data->appinfo = (GAppInfo *) g_steal_pointer (&appinfo);
+	g_task_return_boolean (task, TRUE);
+}
 
-	return TRUE;
+/**
+ * gs_plugin_app_launch_filtered_async:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp to launch
+ * @flags: a bit-or of #GsPluginLaunchFlags
+ * @cb: a callback to pick the correct .desktop file
+ * @cb_user_data: (closure cb) (scope async): user data for the @cb
+ * @cancellable: a #GCancellable or %NULL
+ * @async_callback: (not nullable): async call ready callback
+ * @async_user_data: (closure async_callback) (scope async): user data for the @async_callback
+ *
+ * Asynchronosuly launches @app, using the .desktop file picked by the @cb.
+ * This can help in case multiple versions of the @app are installed
+ * in the system (like a Flatpak and RPM versions).
+ * Finish the call with gs_plugin_app_launch_filtered_finish().
+ *
+ * The function also verifies whether the @plugin can handle the @app,
+ * in a sense of gs_app_has_management_plugin(), and if not then does
+ * nothing.
+ *
+ * Since: 47
+ **/
+void
+gs_plugin_app_launch_filtered_async (GsPlugin *plugin,
+				     GsApp *app,
+				     GsPluginLaunchFlags flags,
+				     GsPluginPickDesktopFileCallback cb,
+				     gpointer cb_user_data,
+				     GCancellable *cancellable,
+				     GAsyncReadyCallback async_callback,
+				     gpointer async_user_data)
+{
+	const gchar *desktop_id;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(LaunchFilteredData) data = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (cb != NULL);
+	g_return_if_fail (async_callback != NULL);
+
+	task = g_task_new (plugin, cancellable, async_callback, async_user_data);
+	g_task_set_source_tag (task, gs_plugin_app_launch_filtered_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	desktop_id = get_desktop_id_to_launch (app);
+	if (desktop_id == NULL) {
+		g_task_return_new_error (task, GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no desktop file for app: %s",
+			     gs_app_get_name (app));
+		return;
+	}
+
+	data = g_new0 (LaunchFilteredData, 1);
+	data->app = g_object_ref (app);
+	data->cb = cb;
+	data->cb_user_data = cb_user_data;
+
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) launch_filtered_data_free);
+	g_task_run_in_thread (task, launch_filtered_thread);
+}
+
+/**
+ * gs_plugin_app_launch_filtered_finish:
+ * @plugin: a #GsPlugin
+ * @result: an async result
+ * @error: a #GError or %NULL
+ *
+ * Finishes operation started by gs_plugin_app_launch_finltered_async().
+ * This function should be called from the main thread.
+ *
+ * Returns: whether succeeded
+ *
+ * Since: 47
+ **/
+gboolean
+gs_plugin_app_launch_filtered_finish (GsPlugin *plugin,
+				      GAsyncResult *result,
+				      GError **error)
+{
+	GTask *task = G_TASK (result);
+	LaunchFilteredData *data = NULL;
+
+	g_return_val_if_fail (g_task_is_valid (task, plugin), FALSE);
+	g_return_val_if_fail (g_async_result_is_tagged (result, gs_plugin_app_launch_filtered_async), FALSE);
+
+	if (!g_task_propagate_boolean (task, error))
+		return FALSE;
+
+	data = g_task_get_task_data (task);
+	/* the plugin does not manage the provided app */
+	if (data == NULL)
+		return TRUE;
+
+	return launch_app_info (data->appinfo, error);
 }
 
 static void
