@@ -259,30 +259,45 @@ gs_plugin_dummy_poll_cb (gpointer user_data)
 	return TRUE;
 }
 
-gboolean
-gs_plugin_url_to_app (GsPlugin *plugin,
-		      GsAppList *list,
-		      const gchar *url,
-		      GCancellable *cancellable,
-		      GError **error)
+
+static void
+gs_plugin_dummy_url_to_app_async (GsPlugin              *plugin,
+                                  const gchar           *url,
+                                  GsPluginUrlToAppFlags  flags,
+                                  GCancellable          *cancellable,
+                                  GAsyncReadyCallback    callback,
+                                  gpointer               user_data)
 {
-	g_autofree gchar *path = NULL;
-	g_autofree gchar *scheme = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
 	g_autoptr(GsApp) app = NULL;
+	g_autofree gchar *scheme = NULL;
 
-	/* not us */
+	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_url_to_app_async);
+
+	/* it's us */
 	scheme = gs_utils_get_url_scheme (url);
-	if (g_strcmp0 (scheme, "dummy") != 0)
-		return TRUE;
+	if (g_strcmp0 (scheme, "dummy") == 0) {
+		g_autofree gchar *path = NULL;
+		/* create app */
+		path = gs_utils_get_url_path (url);
+		app = gs_app_new (path);
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_set_metadata (app, "GnomeSoftware::Creator",
+				     gs_plugin_get_name (plugin));
+		gs_app_list_add (list, app);
+	}
 
-	/* create app */
-	path = gs_utils_get_url_path (url);
-	app = gs_app_new (path);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_set_metadata (app, "GnomeSoftware::Creator",
-			     gs_plugin_get_name (plugin));
-	gs_app_list_add (list, app);
-	return TRUE;
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_dummy_url_to_app_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static gboolean timeout_cb (gpointer user_data);
@@ -1542,6 +1557,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->download_upgrade_finish = gs_plugin_dummy_download_upgrade_finish;
 	plugin_class->trigger_upgrade_async = gs_plugin_dummy_trigger_upgrade_async;
 	plugin_class->trigger_upgrade_finish = gs_plugin_dummy_trigger_upgrade_finish;
+	plugin_class->url_to_app_async = gs_plugin_dummy_url_to_app_async;
+	plugin_class->url_to_app_finish = gs_plugin_dummy_url_to_app_finish;
 }
 
 GType
