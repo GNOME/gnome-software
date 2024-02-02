@@ -441,12 +441,13 @@ snap_to_app (GsPluginSnap *self, SnapdSnap *snap, const gchar *branch)
 	return g_steal_pointer (&app);
 }
 
-gboolean
-gs_plugin_url_to_app (GsPlugin *plugin,
-		      GsAppList *list,
-		      const gchar *url,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+gs_plugin_snap_url_to_app_sync (GsPlugin *plugin,
+				const gchar *url,
+				gboolean interactive,
+				GsAppList *list,
+				GCancellable *cancellable,
+				GError **error)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
@@ -454,7 +455,6 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autofree gchar *path = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
 	g_autoptr(GsApp) app = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* not us */
 	scheme = gs_utils_get_url_scheme (url);
@@ -486,6 +486,47 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	gs_app_list_add (list, app);
 
 	return TRUE;
+}
+
+static void
+gs_plugin_snap_url_to_app_thread (GTask *task,
+				  gpointer source_object,
+				  gpointer task_data,
+				  GCancellable *cancellable)
+{
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GError) local_error = NULL;
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	GsPluginUrlToAppData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE) != 0;
+
+	if (gs_plugin_snap_url_to_app_sync (plugin, data->url, interactive, list, cancellable, &local_error))
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static void
+gs_plugin_snap_url_to_app_async (GsPlugin *plugin,
+				 const gchar *url,
+				 GsPluginUrlToAppFlags flags,
+				 GCancellable *cancellable,
+				 GAsyncReadyCallback callback,
+				 gpointer user_data)
+{
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_url_to_app_async);
+	g_task_run_in_thread (task, gs_plugin_snap_url_to_app_thread);
+}
+
+static GsAppList *
+gs_plugin_snap_url_to_app_finish (GsPlugin *plugin,
+				  GAsyncResult *result,
+				  GError **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static void
@@ -2222,6 +2263,8 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	plugin_class->remove_app_finish = gs_plugin_snap_remove_app_finish;
 	plugin_class->launch_async = gs_plugin_snap_launch_async;
 	plugin_class->launch_finish = gs_plugin_snap_launch_finish;
+	plugin_class->url_to_app_async = gs_plugin_snap_url_to_app_async;
+	plugin_class->url_to_app_finish = gs_plugin_snap_url_to_app_finish;
 }
 
 GType

@@ -2339,22 +2339,55 @@ gs_plugin_flatpak_list_apps_finish (GsPlugin      *plugin,
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_url_to_app (GsPlugin *plugin,
-		      GsAppList *list,
-		      const gchar *url,
-		      GCancellable *cancellable,
-		      GError **error)
+static void
+url_to_app_thread_cb (GTask *task,
+		      gpointer source_object,
+		      gpointer task_data,
+		      GCancellable *cancellable)
 {
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GError) local_error = NULL;
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsPluginUrlToAppData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE) != 0;
 
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		if (!gs_flatpak_url_to_app (flatpak, list, url, interactive, cancellable, error))
-			return FALSE;
+		if (!gs_flatpak_url_to_app (flatpak, list, data->url, interactive, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 	}
-	return TRUE;
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static void
+gs_plugin_flatpak_url_to_app_async (GsPlugin *plugin,
+				    const gchar *url,
+				    GsPluginUrlToAppFlags flags,
+				    GCancellable *cancellable,
+				    GAsyncReadyCallback callback,
+				    gpointer user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
+	gboolean interactive = (flags & GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_url_to_app_async);
+
+	/* Queue a job to get the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				url_to_app_thread_cb, g_steal_pointer (&task));
+}
+
+static GsAppList *
+gs_plugin_flatpak_url_to_app_finish (GsPlugin      *plugin,
+				     GAsyncResult  *result,
+				     GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static void install_repository_thread_cb (GTask        *task,
@@ -2677,6 +2710,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->launch_finish = gs_plugin_flatpak_launch_finish;
 	plugin_class->file_to_app_async = gs_plugin_flatpak_file_to_app_async;
 	plugin_class->file_to_app_finish = gs_plugin_flatpak_file_to_app_finish;
+	plugin_class->url_to_app_async = gs_plugin_flatpak_url_to_app_async;
+	plugin_class->url_to_app_finish = gs_plugin_flatpak_url_to_app_finish;
 }
 
 GType
