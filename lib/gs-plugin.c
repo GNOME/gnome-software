@@ -1546,8 +1546,6 @@ gs_plugin_error_to_string (GsPluginError error)
 const gchar *
 gs_plugin_action_to_function_name (GsPluginAction action)
 {
-	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
-		return "gs_plugin_file_to_app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
 		return "gs_plugin_url_to_app";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)

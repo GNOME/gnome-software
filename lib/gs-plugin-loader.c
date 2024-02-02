@@ -566,14 +566,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_FILE_TO_APP:
-		{
-			GsPluginFileToAppFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
-					   gs_plugin_job_get_file (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		{
 			GsPluginUrlToAppFunc plugin_func = func;
@@ -3094,18 +3086,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 	/* filter to reduce to a sane set */
 	gs_plugin_loader_job_sorted_truncation (helper->plugin_job, list);
 
-	/* set the local file on any of the returned results */
-	switch (action) {
-	case GS_PLUGIN_ACTION_FILE_TO_APP:
-		for (guint j = 0; j < gs_app_list_length (list); j++) {
-			GsApp *app = gs_app_list_index (list, j);
-			if (gs_app_get_local_file (app) == NULL)
-				gs_app_set_local_file (app, gs_plugin_job_get_file (helper->plugin_job));
-		}
-	default:
-		break;
-	}
-
 	/* run refine() on each one if required */
 	if (gs_plugin_job_get_refine_flags (helper->plugin_job) != 0 &&
 	    list != NULL &&
@@ -3143,8 +3123,7 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* check the local files have an icon set */
 	switch (action) {
-	case GS_PLUGIN_ACTION_URL_TO_APP:
-	case GS_PLUGIN_ACTION_FILE_TO_APP: {
+	case GS_PLUGIN_ACTION_URL_TO_APP: {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 		g_autoptr(GAsyncResult) refine_result = NULL;
 		g_autoptr(GsAppList) new_list = NULL;
@@ -3203,8 +3182,7 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 	}
 
 	/* only allow one result */
-	if (action == GS_PLUGIN_ACTION_URL_TO_APP ||
-	    action == GS_PLUGIN_ACTION_FILE_TO_APP) {
+	if (action == GS_PLUGIN_ACTION_URL_TO_APP) {
 		if (gs_app_list_length (list) == 0) {
 			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
 			g_autoptr(GError) error_local = NULL;

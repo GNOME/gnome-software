@@ -233,6 +233,7 @@ gs_plugin_func (void)
 			if (i == GS_PLUGIN_ACTION_INSTALL ||
 			    i == GS_PLUGIN_ACTION_REMOVE ||
 			    i == GS_PLUGIN_ACTION_LAUNCH ||
+			    i == GS_PLUGIN_ACTION_FILE_TO_APP ||
 			    i == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD ||
 			    i == GS_PLUGIN_ACTION_UPGRADE_TRIGGER ||
 			    i == GS_PLUGIN_ACTION_GET_UPDATES ||
