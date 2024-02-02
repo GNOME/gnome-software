@@ -676,6 +676,38 @@ gs_plugin_get_rules (GsPlugin *plugin, GsPluginRule rule)
 }
 
 /**
+ * gs_plugin_adopt_app:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp
+ *
+ * Called when the @app has not been claimed (i.e. a management plugin has not
+ * been set), using GsPluginClass.adopt_app() if set. This does nothing, when
+ * the @plugin does not implement the function.
+ *
+ * A claimed app means other plugins will not try to perform actions
+ * such as install, remove or update. Most apps are claimed when they
+ * are created.
+ *
+ * If a plugin can adopt this app then it should call
+ * gs_app_set_management_plugin() on @app.
+ *
+ * Since: 47
+ **/
+void
+gs_plugin_adopt_app (GsPlugin *plugin,
+		     GsApp *app)
+{
+	GsPluginClass *plugin_class;
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_APP (app));
+
+	plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+	if (plugin_class->adopt_app != NULL)
+		plugin_class->adopt_app (plugin, app);
+}
+
+/**
  * gs_plugin_check_distro_id:
  * @plugin: a #GsPlugin
  * @distro_id: a distro ID, e.g. "fedora"

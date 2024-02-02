@@ -28,6 +28,8 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
 
 /**
  * GsPluginClass:
+ * @adopt_app: (nullable): Called when an app has not been claimed (i.e. a management
+ *   plugin has not been set). (Since: 47)
  * @setup_async: (nullable): Setup method for the plugin. This is called after
  *   the #GsPlugin object is constructed, before it’s used for anything. It
  *   should do any long-running setup operations which the plugin needs, such as
@@ -160,6 +162,8 @@ struct _GsPluginClass
 							 const gchar	*msg,
 							 const gchar	*details,
 							 const gchar	*accept_label);
+	void			(*adopt_app)		(GsPlugin	*plugin,
+							 GsApp		*app);
 
 	void			(*setup_async)		(GsPlugin		*plugin,
 							 GCancellable		*cancellable,
@@ -358,7 +362,7 @@ struct _GsPluginClass
 								 GAsyncResult			*result,
 								 GError				**error);
 
-	gpointer		 padding[5];
+	gpointer		 padding[20];
 };
 
 /* helpers */
@@ -385,6 +389,8 @@ const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);
 void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 GsPluginRule	 rule,
 							 const gchar	*name);
+void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
+							 GsApp		*app);
 
 /* helpers */
 gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
