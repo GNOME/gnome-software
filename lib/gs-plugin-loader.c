@@ -3197,6 +3197,10 @@ run_job_cb (GObject      *source_object,
 		GsAppList *list = gs_plugin_job_url_to_app_get_result_list (GS_PLUGIN_JOB_URL_TO_APP (plugin_job));
 		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 		return;
+	} else if (GS_IS_PLUGIN_JOB_GET_LANGPACKS (plugin_job)) {
+		GsAppList *list = gs_plugin_job_get_langpacks_get_result_list (GS_PLUGIN_JOB_GET_LANGPACKS (plugin_job));
+		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+		return;
 	} else if (GS_IS_PLUGIN_JOB_REFRESH_METADATA (plugin_job)) {
 		/* FIXME: For some reason, existing callers of refresh jobs
 		 * expect a #GsAppList instance back, even though it’s empty and

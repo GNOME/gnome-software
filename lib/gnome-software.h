@@ -31,6 +31,7 @@
 #include <gs-plugin-helpers.h>
 #include <gs-plugin-job.h>
 #include <gs-plugin-job-file-to-app.h>
+#include <gs-plugin-job-get-langpacks.h>
 #include <gs-plugin-job-launch.h>
 #include <gs-plugin-job-list-apps.h>
 #include <gs-plugin-job-list-categories.h>
