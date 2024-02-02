@@ -565,19 +565,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	/* run the correct vfunc */
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
-	switch (action) {
-	case GS_PLUGIN_ACTION_GET_LANGPACKS:
-		{
-			GsPluginGetLangPacksFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
-					   gs_plugin_job_get_search (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
-	default:
-		g_critical ("no handler for %s", helper->function_name);
-		break;
-	}
+	g_critical ("no handler for %s", helper->function_name);
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_dec (plugin);
 

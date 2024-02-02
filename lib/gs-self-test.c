@@ -235,6 +235,7 @@ gs_plugin_func (void)
 			    i == GS_PLUGIN_ACTION_LAUNCH ||
 			    i == GS_PLUGIN_ACTION_FILE_TO_APP ||
 			    i == GS_PLUGIN_ACTION_URL_TO_APP ||
+			    i == GS_PLUGIN_ACTION_GET_LANGPACKS ||
 			    i == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD ||
 			    i == GS_PLUGIN_ACTION_UPGRADE_TRIGGER ||
 			    i == GS_PLUGIN_ACTION_GET_UPDATES ||
