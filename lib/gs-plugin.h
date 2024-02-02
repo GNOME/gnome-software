@@ -126,6 +126,11 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @url_to_app_finish: (nullable): Finish method for
  *   @url_to_app_async. Must be implemented if
  *   @url_to_app_async is implemented. (Since: 47)
+ * @get_langpacks_async: (nullable): Get a list of language packs, as given input language code
+ *   or locale, e.g. "ja" or "ja_JP". (Since: 47)
+ * @get_langpacks_finish: (nullable): Finish method for
+ *   @get_langpacks_async. Must be implemented if
+ *   @get_langpacks_async is implemented. (Since: 47)
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -343,8 +348,17 @@ struct _GsPluginClass
 	GsAppList *		(*url_to_app_finish)		(GsPlugin			*plugin,
 								 GAsyncResult			*result,
 								 GError				**error);
+	void			(*get_langpacks_async)		(GsPlugin			*plugin,
+								 const gchar			*locale,
+								 GsPluginGetLangpacksFlags	 flags,
+								 GCancellable			*cancellable,
+								 GAsyncReadyCallback		 callback,
+								 gpointer			 user_data);
+	GsAppList *		(*get_langpacks_finish)		(GsPlugin			*plugin,
+								 GAsyncResult			*result,
+								 GError				**error);
 
-	gpointer		 padding[7];
+	gpointer		 padding[5];
 };
 
 /* helpers */

@@ -373,6 +373,20 @@ typedef enum {
 } GsPluginUrlToAppFlags;
 
 /**
+ * GsPluginGetLangpacksFlags:
+ * @GS_PLUGIN_GET_LANGPACKS_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_GET_LANGPACKS_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for a get-langpacks operation.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_GET_LANGPACKS_FLAGS_NONE		= 0,
+	GS_PLUGIN_GET_LANGPACKS_FLAGS_INTERACTIVE	= 1 << 0,
+} GsPluginGetLangpacksFlags;
+
+/**
  * GsPluginProgressCallback:
  * @plugin: the #GsPlugin reporting its progress
  * @progress: the percentage completion (0–100 inclusive), or
