@@ -566,14 +566,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_URL_TO_APP:
-		{
-			GsPluginUrlToAppFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
-					   gs_plugin_job_get_search (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_LANGPACKS:
 		{
 			GsPluginGetLangPacksFunc plugin_func = func;
@@ -845,15 +837,6 @@ gs_plugin_loader_app_is_valid (GsApp               *app,
 		return FALSE;
 	}
 	return TRUE;
-}
-
-static gboolean
-gs_plugin_loader_app_is_valid_filter (GsApp    *app,
-                                      gpointer  user_data)
-{
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
-
-	return gs_plugin_loader_app_is_valid (app, gs_plugin_job_get_refine_flags (helper->plugin_job));
 }
 
 static gboolean
@@ -3051,31 +3034,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
-
-		if (action == GS_PLUGIN_ACTION_URL_TO_APP) {
-			const gchar *search = gs_plugin_job_get_search (helper->plugin_job);
-			if (search && g_ascii_strncasecmp (search, "file://", 7) == 0 && (
-			    gs_plugin_job_get_list (helper->plugin_job) == NULL ||
-			    gs_app_list_length (gs_plugin_job_get_list (helper->plugin_job)) == 0)) {
-				g_autoptr(GError) local_error = NULL;
-				g_autoptr(GFile) file = NULL;
-				file = g_file_new_for_uri (search);
-				gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_FILE_TO_APP);
-				gs_plugin_job_set_file (helper->plugin_job, file);
-				helper->function_name = gs_plugin_action_to_function_name (GS_PLUGIN_ACTION_FILE_TO_APP);
-				if (gs_plugin_loader_run_results (helper, cancellable, &local_error)) {
-					for (guint j = 0; j < gs_app_list_length (list); j++) {
-						GsApp *app = gs_app_list_index (list, j);
-						if (gs_app_get_local_file (app) == NULL)
-							gs_app_set_local_file (app, gs_plugin_job_get_file (helper->plugin_job));
-					}
-				} else {
-					g_debug ("Failed to convert file:// URI to app using file-to-app action: %s", local_error->message);
-				}
-				gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_URL_TO_APP);
-				gs_plugin_job_set_file (helper->plugin_job, NULL);
-			}
-		}
 	}
 
 	if (!helper->anything_ran && !GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job)) {
@@ -3119,87 +3077,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 		g_set_object (&list, new_list);
 	} else {
 		g_debug ("no refine flags set for transaction");
-	}
-
-	/* check the local files have an icon set */
-	switch (action) {
-	case GS_PLUGIN_ACTION_URL_TO_APP: {
-		g_autoptr(GsPluginJob) refine_job = NULL;
-		g_autoptr(GAsyncResult) refine_result = NULL;
-		g_autoptr(GsAppList) new_list = NULL;
-
-		for (guint j = 0; j < gs_app_list_length (list); j++) {
-			GsApp *app = gs_app_list_index (list, j);
-			if (!gs_app_has_icons (app)) {
-				g_autoptr(GIcon) ic = NULL;
-				const gchar *icon_name;
-				if (gs_app_has_quirk (app, GS_APP_QUIRK_HAS_SOURCE))
-					icon_name = "x-package-repository";
-				else
-					icon_name = "system-component-application";
-				ic = g_themed_icon_new (icon_name);
-				gs_app_add_icon (app, ic);
-			}
-		}
-
-		refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
-		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
-						    cancellable,
-						    async_result_cb,
-						    &refine_result);
-
-		/* FIXME: Make this sync until the enclosing function is
-		 * refactored to be async. */
-		while (refine_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		new_list = gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error);
-		if (new_list == NULL) {
-			gs_utils_error_convert_gio (&error);
-			g_task_return_error (task, g_steal_pointer (&error));
-			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
-			return;
-		}
-
-		gs_plugin_loader_inherit_list_props (new_list, list);
-
-		/* Update the app list in case the refine resolved any wildcards. */
-		g_set_object (&list, new_list);
-
-		break;
-	}
-	default:
-		break;
-	}
-
-	/* filter package list */
-	switch (action) {
-	case GS_PLUGIN_ACTION_URL_TO_APP:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		break;
-	default:
-		break;
-	}
-
-	/* only allow one result */
-	if (action == GS_PLUGIN_ACTION_URL_TO_APP) {
-		if (gs_app_list_length (list) == 0) {
-			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
-			g_autoptr(GError) error_local = NULL;
-			g_set_error (&error_local,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no application was created for %s", str);
-			if (!gs_plugin_job_get_propagate_error (helper->plugin_job))
-				gs_plugin_loader_claim_job_error (plugin_loader, NULL, helper->plugin_job, error_local);
-			g_task_return_error (task, g_steal_pointer (&error_local));
-			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
-			return;
-		}
-		if (gs_app_list_length (list) > 1) {
-			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
-			g_debug ("more than one application was created for %s", str);
-		}
 	}
 
 	/* filter duplicates with priority, taking into account the source name
@@ -3559,21 +3436,6 @@ job_process_cb (GTask *task)
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)) {
 		gs_plugin_job_add_refine_flags (plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME);
-	}
-
-	/* check required args */
-	switch (action) {
-	case GS_PLUGIN_ACTION_URL_TO_APP:
-		if (gs_plugin_job_get_search (plugin_job) == NULL) {
-			g_task_return_new_error (task,
-						 GS_PLUGIN_ERROR,
-						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-						 "no valid search terms");
-			return;
-		}
-		break;
-	default:
-		break;
 	}
 
 	/* save helper */
