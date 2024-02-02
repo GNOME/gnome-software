@@ -223,4 +223,21 @@ GTask *		gs_plugin_file_to_app_data_new_task	(gpointer		     source_object,
 void		gs_plugin_file_to_app_data_free		(GsPluginFileToAppData	    *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginFileToAppData, gs_plugin_file_to_app_data_free)
 
+typedef struct {
+	gchar *url;  /* (owned) */
+	GsPluginUrlToAppFlags flags;
+} GsPluginUrlToAppData;
+
+GsPluginUrlToAppData *
+		gs_plugin_url_to_app_data_new		(const gchar		    *url,
+							 GsPluginUrlToAppFlags	     flags);
+GTask *		gs_plugin_url_to_app_data_new_task	(gpointer		     source_object,
+							 const gchar		    *url,
+							 GsPluginUrlToAppFlags	     flags,
+							 GCancellable		    *cancellable,
+							 GAsyncReadyCallback	     callback,
+							 gpointer		     user_data);
+void		gs_plugin_url_to_app_data_free		(GsPluginUrlToAppData	    *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginUrlToAppData, gs_plugin_url_to_app_data_free)
+
 G_END_DECLS
