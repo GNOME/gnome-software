@@ -126,8 +126,9 @@ gs_plugin_dummy_setup_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-void
-gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+static void
+gs_plugin_dummy_adopt_app (GsPlugin *plugin,
+			   GsApp *app)
 {
 	if (gs_app_get_id (app) != NULL &&
 	    g_str_has_prefix (gs_app_get_id (app), "dummy:")) {
@@ -1290,6 +1291,7 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 
 	object_class->dispose = gs_plugin_dummy_dispose;
 
+	plugin_class->adopt_app = gs_plugin_dummy_adopt_app;
 	plugin_class->setup_async = gs_plugin_dummy_setup_async;
 	plugin_class->setup_finish = gs_plugin_dummy_setup_finish;
 	plugin_class->refine_async = gs_plugin_dummy_refine_async;

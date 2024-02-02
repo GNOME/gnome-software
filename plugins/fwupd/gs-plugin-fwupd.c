@@ -171,8 +171,9 @@ gs_plugin_fwupd_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_fwupd_parent_class)->finalize (object);
 }
 
-void
-gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+static void
+gs_plugin_fwupd_adopt_app (GsPlugin *plugin,
+			   GsApp *app)
 {
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
 		gs_app_set_management_plugin (app, plugin);
@@ -2267,6 +2268,7 @@ gs_plugin_fwupd_class_init (GsPluginFwupdClass *klass)
 	object_class->dispose = gs_plugin_fwupd_dispose;
 	object_class->finalize = gs_plugin_fwupd_finalize;
 
+	plugin_class->adopt_app = gs_plugin_fwupd_adopt_app;
 	plugin_class->setup_async = gs_plugin_fwupd_setup_async;
 	plugin_class->setup_finish = gs_plugin_fwupd_setup_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_fwupd_refresh_metadata_async;
