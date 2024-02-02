@@ -377,6 +377,64 @@ gs_utils_get_content_type (GFile *file,
 }
 
 /**
+ * gs_utils_get_content_type_async:
+ * @file: a #GFile
+ * @cancellable: a #GCancellable, or %NULL
+ * @callback: callback for when the asynchronous operation is complete
+ * @user_data: data to pass to @callback
+ *
+ * Asynchronously get the standard content type for the @file.
+ * Finish the operation with @gs_utils_get_content_type_finish.
+ *
+ * Since: 47
+ */
+void
+gs_utils_get_content_type_async (GFile *file,
+				 GCancellable *cancellable,
+				 GAsyncReadyCallback callback,
+				 gpointer user_data)
+{
+	g_return_if_fail (G_IS_FILE (file));
+
+	g_file_query_info_async (file,
+				 G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+				 G_FILE_QUERY_INFO_NONE,
+				 G_PRIORITY_DEFAULT,
+				 cancellable,
+				 callback,
+				 user_data);
+}
+
+/**
+ * gs_utils_get_content_type_finish:
+ * @file: a #GFile
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish an asynchronous operation started with gs_utils_get_content_type_async().
+ *
+ * Returns: the content type, or %NULL, e.g. "text/plain"
+ *
+ * Since: 47
+ **/
+gchar *
+gs_utils_get_content_type_finish (GFile *file,
+				  GAsyncResult *result,
+				  GError **error)
+{
+	const gchar *tmp;
+	g_autoptr(GFileInfo) info = NULL;
+
+	info = g_file_query_info_finish (file, result, error);
+	if (info == NULL)
+		return NULL;
+	tmp = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
+	if (tmp == NULL)
+		return NULL;
+	return g_strdup (tmp);
+}
+
+/**
  * gs_utils_strv_fnmatch:
  * @strv: A NUL-terminated list of strings
  * @str: A string
