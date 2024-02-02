@@ -506,10 +506,8 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 
 	/* go through each plugin in order */
 	for (i = 0; i < plugin_loader->plugins->len; i++) {
-		GsPluginAdoptAppFunc adopt_app_func = NULL;
 		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
-		adopt_app_func = gs_plugin_get_symbol (plugin, "gs_plugin_adopt_app");
-		if (adopt_app_func == NULL)
+		if (!gs_plugin_get_enabled (plugin))
 			continue;
 		for (j = 0; j < gs_app_list_length (list); j++) {
 			GsApp *app = gs_app_list_index (list, j);
@@ -519,7 +517,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 			if (!gs_app_has_management_plugin (app, NULL))
 				continue;
 
-			adopt_app_func (plugin, app);
+			gs_plugin_adopt_app (plugin, app);
 
 			if (!gs_app_has_management_plugin (app, NULL)) {
 				g_debug ("%s adopted %s",
