@@ -187,11 +187,7 @@
                                       </object>
                                     </child>
                                     <child type="top">
-                                      <object class="AdwBanner" id="metered_updates_banner">
-                                        <property name="title" translatable="yes">Metered network ‒ automatic updates paused</property>
-                                        <property name="button-label" translatable="yes">Find Out _More</property>
-                                        <signal name="button-clicked" handler="gs_shell_metered_updates_banner_clicked_cb" swapped="yes"/>
-                                      </object>
+                                      <object class="GsUpdatesPausedBanner" id="updates_paused_banner"/>
                                     </child>
                                     <property name="content">
                                       <object class="AdwViewStack" id="stack_main">
