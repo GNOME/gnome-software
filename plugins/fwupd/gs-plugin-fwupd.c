@@ -2015,38 +2015,44 @@ gs_plugin_fwupd_update_apps_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_file_to_app (GsPlugin *plugin,
-		       GsAppList *list,
-		       GFile *file,
-		       GCancellable *cancellable,
-		       GError **error)
+static void
+gs_plugin_fwupd_file_to_app_got_content_type_cb (GObject *source_object,
+						 GAsyncResult *result,
+						 gpointer user_data)
 {
-	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GPtrArray) devices = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GError) local_error = NULL;
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
-	g_autoptr(GPtrArray) devices = NULL;
+	GsPluginFileToAppData *data = g_task_get_task_data (task);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (g_task_get_source_object (task));
+	GsPlugin *plugin = GS_PLUGIN (self);
 	const gchar *mimetypes[] = {
 		"application/vnd.ms-cab-compressed",
 		NULL };
 
-	/* does this match any of the mimetypes we support */
-	content_type = gs_utils_get_content_type (file, cancellable, error);
-	if (content_type == NULL)
-		return FALSE;
-	if (!g_strv_contains (mimetypes, content_type))
-		return TRUE;
-
-	/* get results */
-	filename = g_file_get_path (file);
-	devices = fwupd_client_get_details (self->client,
-					    filename,
-					    cancellable,
-					    error);
-	if (devices == NULL) {
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
+	content_type = gs_utils_get_content_type_finish (G_FILE (source_object), result, &local_error);
+	if (content_type == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
+	if (!g_strv_contains (mimetypes, content_type)) {
+		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+		return;
+	}
+
+	filename = g_file_get_path (data->file);
+	devices = fwupd_client_get_details (self->client, filename, g_task_get_cancellable (task), &local_error);
+	if (devices == NULL) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	list = gs_app_list_new ();
+
 	for (guint i = 0; i < devices->len; i++) {
 		FwupdDevice *dev = g_ptr_array_index (devices, i);
 		g_autoptr(GsApp) app = NULL;
@@ -2060,7 +2066,34 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 					gs_app_get_update_details_markup (app));
 		gs_app_list_add (list, app);
 	}
-	return TRUE;
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static void
+gs_plugin_fwupd_file_to_app_async (GsPlugin *plugin,
+				   GFile *file,
+				   GsPluginFileToAppFlags flags,
+				   GCancellable *cancellable,
+				   GAsyncReadyCallback callback,
+				   gpointer user_data)
+{
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fwupd_file_to_app_async);
+
+	gs_utils_get_content_type_async (file, cancellable,
+					 gs_plugin_fwupd_file_to_app_got_content_type_cb,
+					 g_steal_pointer (&task));
+}
+
+static GsAppList *
+gs_plugin_fwupd_file_to_app_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static void
@@ -2248,6 +2281,8 @@ gs_plugin_fwupd_class_init (GsPluginFwupdClass *klass)
 	plugin_class->install_app_finish = gs_plugin_fwupd_install_app_finish;
 	plugin_class->list_apps_async = gs_plugin_fwupd_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_fwupd_list_apps_finish;
+	plugin_class->file_to_app_async = gs_plugin_fwupd_file_to_app_async;
+	plugin_class->file_to_app_finish = gs_plugin_fwupd_file_to_app_finish;
 }
 
 GType
