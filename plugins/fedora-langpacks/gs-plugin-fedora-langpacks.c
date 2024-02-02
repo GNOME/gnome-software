@@ -59,12 +59,13 @@ gs_plugin_fedora_langpacks_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_fedora_langpacks_parent_class)->dispose (object);
 }
 
-gboolean
-gs_plugin_add_langpacks (GsPlugin *plugin,
-			 GsAppList *list,
-			 const gchar *locale,
-			 GCancellable *cancellable,
-			 GError **error)
+static void
+gs_plugin_fedora_langpacks_get_langpacks_async (GsPlugin *plugin,
+						const gchar *locale,
+						GsPluginGetLangpacksFlags flags,
+						GCancellable *cancellable,
+						GAsyncReadyCallback callback,
+						gpointer user_data)
 {
 	GsPluginFedoraLangpacks *self = GS_PLUGIN_FEDORA_LANGPACKS (plugin);
 	gchar *separator;
@@ -72,6 +73,13 @@ gs_plugin_add_langpacks (GsPlugin *plugin,
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *langpack_pkgname = NULL;
 	g_auto(GStrv) language_region = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = gs_plugin_get_langpacks_data_new_task (self, locale, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fedora_langpacks_get_langpacks_async);
 
 	/* This plugin may receive user locale in the form as documented in `man 3 setlocale`:
 	 *
@@ -102,32 +110,49 @@ gs_plugin_add_langpacks (GsPlugin *plugin,
 	cachefn = gs_utils_get_cache_filename ("langpacks", langpack_pkgname,
 					       GS_UTILS_CACHE_FLAG_WRITEABLE |
 					       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
-					       error);
-	if (cachefn == NULL)
-		return FALSE;
+					       &local_error);
+	if (cachefn == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 	if (!g_file_test (cachefn, G_FILE_TEST_EXISTS)) {
-		g_autoptr(GsApp) app = gs_app_new (NULL);
-		gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
-		gs_app_set_kind (app, AS_COMPONENT_KIND_LOCALIZATION);
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-		gs_app_add_source (app, langpack_pkgname);
-		gs_app_list_add (list, app);
-
 		/* ensure we do not keep trying to install the langpack */
-		if (!g_file_set_contents (cachefn, language_code, -1, error))
-			return FALSE;
+		if (!g_file_set_contents (cachefn, language_code, -1, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 	}
 
-	return TRUE;
+	list = gs_app_list_new ();
+	app = gs_app_new (NULL);
+	gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
+	gs_app_set_kind (app, AS_COMPONENT_KIND_LOCALIZATION);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+	gs_app_add_source (app, langpack_pkgname);
+	gs_app_list_add (list, app);
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_fedora_langpacks_get_langpacks_finish (GsPlugin *plugin,
+						 GAsyncResult *result,
+						 GError **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static void
 gs_plugin_fedora_langpacks_class_init (GsPluginFedoraLangpacksClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_fedora_langpacks_dispose;
+
+	plugin_class->get_langpacks_async = gs_plugin_fedora_langpacks_get_langpacks_async;
+	plugin_class->get_langpacks_finish = gs_plugin_fedora_langpacks_get_langpacks_finish;
 }
 
 GType
