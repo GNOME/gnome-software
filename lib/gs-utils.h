@@ -39,6 +39,13 @@ guint64		 gs_utils_get_file_age		(GFile		*file);
 gchar		*gs_utils_get_content_type	(GFile		*file,
 						 GCancellable	*cancellable,
 						 GError		**error);
+void		 gs_utils_get_content_type_async(GFile		*file,
+						 GCancellable	*cancellable,
+						 GAsyncReadyCallback callback,
+						 gpointer	 user_data);
+gchar *		gs_utils_get_content_type_finish(GFile		*file,
+						 GAsyncResult	*result,
+						 GError		**error);
 gboolean	 gs_utils_symlink		(const gchar	*target,
 						 const gchar	*linkpath,
 						 GError		**error);
