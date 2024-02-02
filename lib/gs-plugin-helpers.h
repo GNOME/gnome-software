@@ -240,4 +240,21 @@ GTask *		gs_plugin_url_to_app_data_new_task	(gpointer		     source_object,
 void		gs_plugin_url_to_app_data_free		(GsPluginUrlToAppData	    *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginUrlToAppData, gs_plugin_url_to_app_data_free)
 
+typedef struct {
+	gchar *locale;  /* (owned) */
+	GsPluginGetLangpacksFlags flags;
+} GsPluginGetLangpacksData;
+
+GsPluginGetLangpacksData *
+		gs_plugin_get_langpacks_data_new	(const gchar		    *locale,
+							 GsPluginGetLangpacksFlags   flags);
+GTask *		gs_plugin_get_langpacks_data_new_task	(gpointer		     source_object,
+							 const gchar		    *locale,
+							 GsPluginGetLangpacksFlags   flags,
+							 GCancellable		    *cancellable,
+							 GAsyncReadyCallback	     callback,
+							 gpointer		     user_data);
+void		gs_plugin_get_langpacks_data_free	(GsPluginGetLangpacksData   *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginGetLangpacksData, gs_plugin_get_langpacks_data_free)
+
 G_END_DECLS

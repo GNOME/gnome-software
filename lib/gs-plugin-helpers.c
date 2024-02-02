@@ -898,3 +898,70 @@ gs_plugin_url_to_app_data_free (GsPluginUrlToAppData *data)
 	g_free (data->url);
 	g_free (data);
 }
+
+/**
+ * gs_plugin_get_langpacks_data_new:
+ * @locale: (not-nullable): a #LANGUAGE_CODE or #LOCALE, e.g. "ja" or "ja_JP"
+ * @flags: operation flags
+ *
+ * Common context data for a call to #GsPluginClass.get_langpacks_async.
+ *
+ * Returns: (transfer full): context data structure
+ * Since: 47
+ */
+GsPluginGetLangpacksData *
+gs_plugin_get_langpacks_data_new (const gchar              *locale,
+				  GsPluginGetLangpacksFlags flags)
+{
+	g_autoptr(GsPluginGetLangpacksData) data = g_new0 (GsPluginGetLangpacksData, 1);
+	data->locale = g_strdup (locale);
+	data->flags = flags;
+
+	return g_steal_pointer (&data);
+}
+
+/**
+ * gs_plugin_get_langpacks_data_new_task:
+ * @source_object: task source object
+ * @locale: (not-nullable): a #LANGUAGE_CODE or #LOCALE, e.g. "ja" or "ja_JP"
+ * @flags: operation flags
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: function to call once asynchronous operation is finished
+ * @user_data: data to pass to @callback
+ *
+ * Create a #GTask for a get-langpacks operation with the given arguments. The task
+ * data will be set to a #GsPluginGetLangpacksData containing the given context.
+ *
+ * This is essentially a combination of gs_plugin_get_langpacks_data_new(),
+ * g_task_new() and g_task_set_task_data().
+ *
+ * Returns: (transfer full): new #GTask with the given context data
+ * Since: 47
+ */
+GTask *
+gs_plugin_get_langpacks_data_new_task (gpointer                  source_object,
+				       const gchar              *locale,
+				       GsPluginGetLangpacksFlags flags,
+				       GCancellable             *cancellable,
+				       GAsyncReadyCallback       callback,
+				       gpointer                  user_data)
+{
+	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
+	g_task_set_task_data (task, gs_plugin_get_langpacks_data_new (locale, flags), (GDestroyNotify) gs_plugin_get_langpacks_data_free);
+	return g_steal_pointer (&task);
+}
+
+/**
+ * gs_plugin_get_langpacks_data_free:
+ * @data: (transfer full): a #GsPluginGetLangpacksData
+ *
+ * Free the given @data.
+ *
+ * Since: 47
+ */
+void
+gs_plugin_get_langpacks_data_free (GsPluginGetLangpacksData *data)
+{
+	g_free (data->locale);
+	g_free (data);
+}
