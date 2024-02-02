@@ -64,33 +64,6 @@ void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
 							 GsApp		*app);
 
 /**
- * gs_plugin_file_to_app:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @file: a #GFile
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Converts a local file to a #GsApp. It's expected that only one plugin will
- * match the mimetype of @file and that a single #GsApp will be in the returned
- * list. If no plugins can handle the file, the list will be empty.
- *
- * For example, the PackageKit plugin can turn a .rpm file into a app
- * of kind %AS_COMPONENT_KIND_UNKNOWN but that in some cases it will be further refined
- * into a %AS_COMPONENT_KIND_DESKTOP_APP (with all the extra metadata) by the appstream
- * plugin.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_file_to_app			(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GFile		*file,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_url_to_app:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
