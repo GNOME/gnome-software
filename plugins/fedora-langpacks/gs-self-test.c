@@ -39,10 +39,7 @@ gs_plugins_fedora_langpacks_func (GsPluginLoader *plugin_loader)
 	g_unlink (cachefn);
 
 	/* get langpacks result based on locale */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_LANGPACKS,
-					 "search", "pt_BR.UTF-8",
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	plugin_job = gs_plugin_job_get_langpacks_new ("pt_BR.UTF-8", GS_PLUGIN_GET_LANGPACKS_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	g_assert_nonnull (list);
 	g_assert_no_error (error);
