@@ -616,9 +616,6 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app1), ==, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	g_assert_cmpint (gs_app_get_state (app1), ==, GS_APP_STATE_AVAILABLE);
 
-	/* allow only one operation at a time */
-	gs_plugin_loader_set_max_parallel_ops (plugin_loader, 1);
-
 	app2 = gs_app_new ("chiron.desktop");
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app2, plugin);
@@ -681,9 +678,6 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app1), ==, GS_APP_STATE_UPDATABLE);
 	g_assert_cmpint (gs_app_get_state (app2), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpint (gs_app_get_state (app3), ==, GS_APP_STATE_INSTALLED);
-
-	/* set the default max parallel ops */
-	gs_plugin_loader_set_max_parallel_ops (plugin_loader, 0);
 }
 
 static void

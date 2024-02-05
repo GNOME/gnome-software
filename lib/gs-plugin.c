@@ -1568,20 +1568,6 @@ gs_plugin_error_to_string (GsPluginError error)
 }
 
 /**
- * gs_plugin_action_to_function_name: (skip)
- * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ACTION_INSTALL
- *
- * Converts the enumerated action to the vfunc name.
- *
- * Returns: a string, or %NULL for invalid
- **/
-const gchar *
-gs_plugin_action_to_function_name (GsPluginAction action)
-{
-	return NULL;
-}
-
-/**
  * gs_plugin_action_to_string:
  * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ACTION_INSTALL
  *

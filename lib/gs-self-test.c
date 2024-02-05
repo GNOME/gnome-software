@@ -226,30 +226,6 @@ gs_plugin_func (void)
 			g_critical ("failed to convert %u", i);
 		g_assert_cmpint (gs_plugin_action_from_string (tmp), ==, i);
 	}
-	for (guint i = 1; i < GS_PLUGIN_ACTION_LAST; i++) {
-		const gchar *tmp = gs_plugin_action_to_function_name (i);
-		if (tmp == NULL) {
-			/* These do not have function, they exist only for better error messages. */
-			if (i == GS_PLUGIN_ACTION_INSTALL ||
-			    i == GS_PLUGIN_ACTION_REMOVE ||
-			    i == GS_PLUGIN_ACTION_LAUNCH ||
-			    i == GS_PLUGIN_ACTION_FILE_TO_APP ||
-			    i == GS_PLUGIN_ACTION_URL_TO_APP ||
-			    i == GS_PLUGIN_ACTION_GET_LANGPACKS ||
-			    i == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD ||
-			    i == GS_PLUGIN_ACTION_UPGRADE_TRIGGER ||
-			    i == GS_PLUGIN_ACTION_GET_UPDATES ||
-			    i == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL ||
-			    i == GS_PLUGIN_ACTION_GET_SOURCES ||
-			    i == GS_PLUGIN_ACTION_UPDATE_CANCEL ||
-			    i == GS_PLUGIN_ACTION_INSTALL_REPO ||
-			    i == GS_PLUGIN_ACTION_REMOVE_REPO ||
-			    i == GS_PLUGIN_ACTION_ENABLE_REPO ||
-			    i == GS_PLUGIN_ACTION_DISABLE_REPO)
-				continue;
-			g_critical ("failed to convert %u", i);
-		}
-	}
 
 	/* add a couple of duplicate IDs */
 	app = gs_app_new ("a");
