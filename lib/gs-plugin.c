@@ -54,8 +54,6 @@ typedef struct
 	GHashTable		*vfuncs;		/* string:pointer */
 	GMutex			 vfuncs_mutex;
 	gboolean		 enabled;
-	guint			 interactive_cnt;
-	GMutex			 interactive_mutex;
 	gchar			*language;		/* allow-none */
 	gchar			*name;
 	gchar			*appstream_id;
@@ -256,7 +254,6 @@ gs_plugin_finalize (GObject *object)
 	g_hash_table_unref (priv->cache);
 	g_hash_table_unref (priv->vfuncs);
 	g_mutex_clear (&priv->cache_mutex);
-	g_mutex_clear (&priv->interactive_mutex);
 	g_mutex_clear (&priv->timer_mutex);
 	g_mutex_clear (&priv->vfuncs_mutex);
 	if (priv->module != NULL)
@@ -333,26 +330,6 @@ gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	priv->enabled = enabled;
-}
-
-void
-gs_plugin_interactive_inc (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->interactive_mutex);
-	priv->interactive_cnt++;
-	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-}
-
-void
-gs_plugin_interactive_dec (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->interactive_mutex);
-	if (priv->interactive_cnt > 0)
-		priv->interactive_cnt--;
-	if (priv->interactive_cnt == 0)
-		gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 }
 
 /**
@@ -1922,7 +1899,6 @@ gs_plugin_init (GsPlugin *plugin)
 	priv->vfuncs = g_hash_table_new_full (g_str_hash, g_str_equal,
 					      g_free, NULL);
 	g_mutex_init (&priv->cache_mutex);
-	g_mutex_init (&priv->interactive_mutex);
 	g_mutex_init (&priv->timer_mutex);
 	g_mutex_init (&priv->vfuncs_mutex);
 }
