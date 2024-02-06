@@ -267,6 +267,8 @@ static void
 update_safety_tile (GsAppContextBar *self)
 {
 	const gchar *icon_name, *title, *css_class;
+	/* keep @reviewd_by global for the function, because it's added as-is into the @descriptions array, not copied */
+	g_autofree gchar *reviewed_by = NULL;
 	g_autofree gchar *description = NULL;
 	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GsAppPermissions) permissions = NULL;
@@ -447,7 +449,6 @@ update_safety_tile (GsAppContextBar *self)
 	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE)) {
 		/* It's a new key suggested at https://github.com/systemd/systemd/issues/27777 */
 		g_autofree gchar *name = g_get_os_info ("VENDOR_NAME");
-		g_autofree gchar *reviewed_by = NULL;
 		if (name == NULL) {
 			/* Translators: This indicates that an app has been packaged
 			 * by the user’s distribution and is probably safe.
