@@ -28,6 +28,9 @@ endif
 if get_option('malcontent')
   subdir('malcontent')
 endif
+if get_option('opensuse-distro-upgrade')
+  subdir('opensuse-distro-upgrade')
+endif
 if get_option('packagekit')
   subdir('packagekit')
 endif
