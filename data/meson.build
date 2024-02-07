@@ -40,3 +40,6 @@ if get_option('external_appstream')
     install_dir: join_paths(get_option('datadir'), 'polkit-1', 'actions'),
   )
 endif
+
+install_data('bash-completion/gnome-software',
+             install_dir : join_paths(get_option('datadir'), 'bash-completion', 'completions'))
