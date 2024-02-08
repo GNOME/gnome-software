@@ -395,7 +395,6 @@ decrement_gather_apps (GatherAppsData *data)
 
 		tile = gs_summary_tile_new (app);
 		gtk_flow_box_insert (GTK_FLOW_BOX (data->self->box_all_apps), tile, -1);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
 	data->self->empty = data->self->empty && gs_app_list_length (data->list) == 0;
