@@ -59,6 +59,9 @@ struct _GsWorkerThread
 	GsWorkerThreadState	 worker_state;  /* (atomic) */
 	GMainContext		*worker_context;  /* (owned); may be NULL before setup or after shutdown */
 	GThread			*worker_thread;  /* (atomic); may be NULL before setup or after shutdown */
+
+	GMutex			 queue_mutex;
+	GQueue			 queue;
 };
 
 typedef enum {
@@ -68,6 +71,21 @@ typedef enum {
 static GParamSpec *props[PROP_NAME + 1] = { NULL, };
 
 G_DEFINE_TYPE (GsWorkerThread, gs_worker_thread, G_TYPE_OBJECT)
+
+typedef struct {
+	GTaskThreadFunc work_func;
+	GTask *task;  /* (owned) */
+	gint priority;
+} WorkData;
+
+static void
+work_data_free (WorkData *data)
+{
+	g_clear_object (&data->task);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (WorkData, work_data_free)
 
 static void
 gs_worker_thread_get_property (GObject    *object,
@@ -118,7 +136,21 @@ gs_worker_thread_dispose (GObject *object)
 	g_clear_pointer (&self->name, g_free);
 	g_clear_pointer (&self->worker_context, g_main_context_unref);
 
+	g_mutex_lock (&self->queue_mutex);
+	g_queue_clear_full (&self->queue, (GDestroyNotify) work_data_free);
+	g_mutex_unlock (&self->queue_mutex);
+
 	G_OBJECT_CLASS (gs_worker_thread_parent_class)->dispose (object);
+}
+
+static void
+gs_worker_thread_finalize (GObject *object)
+{
+	GsWorkerThread *self = GS_WORKER_THREAD (object);
+
+	g_mutex_clear (&self->queue_mutex);
+
+	G_OBJECT_CLASS (gs_worker_thread_parent_class)->finalize (object);
 }
 
 static gpointer thread_cb (gpointer data);
@@ -147,6 +179,7 @@ gs_worker_thread_class_init (GsWorkerThreadClass *klass)
 	object_class->get_property = gs_worker_thread_get_property;
 	object_class->set_property = gs_worker_thread_set_property;
 	object_class->dispose = gs_worker_thread_dispose;
+	object_class->finalize = gs_worker_thread_finalize;
 
 	/**
 	 * GsWorkerThread:name: (not nullable):
@@ -165,14 +198,45 @@ gs_worker_thread_class_init (GsWorkerThreadClass *klass)
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
+static void
+gs_worker_thread_run_queue (GsWorkerThread *self)
+{
+	g_mutex_lock (&self->queue_mutex);
+	while (!g_queue_is_empty (&self->queue)) {
+		g_autoptr(WorkData) data = g_queue_pop_head (&self->queue);
+		GTask *task;
+		gpointer source_object;
+		gpointer task_data;
+		GCancellable *cancellable;
+
+		/* thus the other threads can queue more work */
+		g_mutex_unlock (&self->queue_mutex);
+
+		task = data->task;
+		source_object = g_task_get_source_object (task);
+		task_data = g_task_get_task_data (task);
+		cancellable = g_task_get_cancellable (task);
+
+		/* Set the I/O priority of the thread to match the priority of the task. */
+		gs_ioprio_set (data->priority);
+
+		data->work_func (task, source_object, task_data, cancellable);
+
+		g_mutex_lock (&self->queue_mutex);
+	}
+	g_mutex_unlock (&self->queue_mutex);
+}
+
 static gpointer
 thread_cb (gpointer data)
 {
 	GsWorkerThread *self = GS_WORKER_THREAD (data);
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (self->worker_context);
 
-	while (g_atomic_int_get (&self->worker_state) != GS_WORKER_THREAD_STATE_SHUT_DOWN)
+	while (g_atomic_int_get (&self->worker_state) != GS_WORKER_THREAD_STATE_SHUT_DOWN) {
 		g_main_context_iteration (self->worker_context, TRUE);
+		gs_worker_thread_run_queue (self);
+	}
 
 	return NULL;
 }
@@ -180,6 +244,8 @@ thread_cb (gpointer data)
 static void
 gs_worker_thread_init (GsWorkerThread *self)
 {
+	g_mutex_init (&self->queue_mutex);
+	g_queue_init (&self->queue);
 }
 
 /**
@@ -203,39 +269,14 @@ gs_worker_thread_new (const gchar *name)
 			     NULL);
 }
 
-/* Essentially a wrapper around these elements to avoid the caller having to
- * return `G_SOURCE_REMOVE` from their `work_func` every time. */
-typedef struct {
-	GTaskThreadFunc work_func;
-	GTask *task;  /* (owned) */
-	gint priority;
-} WorkData;
-
-static void
-work_data_free (WorkData *data)
+static gint
+gs_worker_thread_cmp (gconstpointer a,
+		      gconstpointer b,
+		      gpointer user_data)
 {
-	g_clear_object (&data->task);
-	g_free (data);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC (WorkData, work_data_free)
-
-static gboolean
-work_run_cb (gpointer _data)
-{
-	WorkData *data = _data;
-	GTask *task = data->task;
-	gpointer source_object = g_task_get_source_object (task);
-	gpointer task_data = g_task_get_task_data (task);
-	GCancellable *cancellable = g_task_get_cancellable (task);
-
-	/* Set the I/O priority of the thread to match the priority of the
-	 * task. */
-	gs_ioprio_set (data->priority);
-
-	data->work_func (task, source_object, task_data, cancellable);
-
-	return G_SOURCE_REMOVE;
+	const WorkData *dta = a;
+	const WorkData *dtb = b;
+	return dta->priority - dtb->priority;
 }
 
 /**
@@ -278,6 +319,7 @@ gs_worker_thread_queue (GsWorkerThread  *self,
                         GTask           *task)
 {
 	g_autoptr(WorkData) data = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_WORKER_THREAD (self));
 	g_return_if_fail (work_func != NULL);
@@ -291,8 +333,9 @@ gs_worker_thread_queue (GsWorkerThread  *self,
 	data->task = g_steal_pointer (&task);
 	data->priority = priority;
 
-	g_main_context_invoke_full (self->worker_context, priority,
-				    work_run_cb, g_steal_pointer (&data), (GDestroyNotify) work_data_free);
+	locker = g_mutex_locker_new (&self->queue_mutex);
+	g_queue_insert_sorted (&self->queue, g_steal_pointer (&data), gs_worker_thread_cmp, NULL);
+	g_main_context_wakeup (self->worker_context);
 }
 
 /**
