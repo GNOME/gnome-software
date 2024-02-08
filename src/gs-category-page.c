@@ -413,7 +413,6 @@ populate_flow_boxes (GsCategoryPage *self,
 		for (i = 0; i < featured_app_tiles->len; i++) {
 			tile = g_ptr_array_index (featured_app_tiles, i);
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->featured_flow_box), tile, -1);
-			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		}
 	}
 
@@ -431,7 +430,6 @@ populate_flow_boxes (GsCategoryPage *self,
 			gtk_widget_set_tooltip_text (tile, release_date_tooltip);
 
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
-			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		}
 	}
 
@@ -440,7 +438,6 @@ populate_flow_boxes (GsCategoryPage *self,
 		for (i = 0; i < web_app_tiles->len; i++) {
 			tile = g_ptr_array_index (web_app_tiles, i);
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->web_apps_flow_box), tile, -1);
-			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		}
 	}
 
@@ -449,7 +446,6 @@ populate_flow_boxes (GsCategoryPage *self,
 		for (i = 0; i < other_app_tiles->len; i++) {
 			tile = g_ptr_array_index (other_app_tiles, i);
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, -1);
-			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		}
 	}
 
