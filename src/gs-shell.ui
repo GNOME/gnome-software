@@ -271,20 +271,10 @@
                                         <property name="hexpand">True</property>
                                         <child>
                                           <object class="GtkButton" id="button_back">
+                                            <property name="tooltip-text" translatable="yes">Go back</property>
+                                            <property name="icon_name">go-previous-symbolic</property>
                                             <property name="can_focus">True</property>
                                             <signal name="clicked" handler="gs_shell_back_button_cb"/>
-                                            <accessibility>
-                                              <property name="label" translatable="yes">Go back</property>
-                                            </accessibility>
-                                            <style>
-                                              <class name="image-button"/>
-                                            </style>
-                                            <child>
-                                              <object class="GtkImage" id="back_image">
-                                                <property name="icon_name">go-previous-symbolic</property>
-                                                <property name="icon-size">normal</property>
-                                              </object>
-                                            </child>
                                           </object>
                                         </child>
                                         <child type="title">
@@ -361,20 +351,10 @@
                                 </property>
                                 <child>
                                   <object class="GtkButton" id="button_back2">
+                                    <property name="tooltip-text" translatable="yes">Go back</property>
+                                    <property name="icon_name">go-previous-symbolic</property>
                                     <property name="can_focus">True</property>
                                     <signal name="clicked" handler="gs_shell_details_back_button_cb"/>
-                                    <accessibility>
-                                      <property name="label" translatable="yes">Go back</property>
-                                    </accessibility>
-                                    <style>
-                                      <class name="image-button"/>
-                                    </style>
-                                    <child>
-                                      <object class="GtkImage">
-                                        <property name="icon_name">go-previous-symbolic</property>
-                                        <property name="icon-size">normal</property>
-                                      </object>
-                                    </child>
                                   </object>
                                 </child>
                               </object>
