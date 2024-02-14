@@ -103,7 +103,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		css_class = "green";
 		lozenge_icon_names[0] = "heart-filled-symbolic";
 		lozenge_icon_names[1] = "community-symbolic";
-		lozenge_icon_names[2] = "sign-language-symbolic";
+		lozenge_icon_names[2] = "thumbs-up-symbolic";
 #if AS_CHECK_VERSION(0, 15, 3)
 		get_involved_visible = (gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE) != NULL ||
 					gs_app_get_url (self->app, AS_URL_KIND_CONTRIBUTE) != NULL);
@@ -118,30 +118,30 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		if (is_application) {
 			if (license_url != NULL) {
 				/* Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license. */
-				description = g_strdup_printf (_("This app is developed in the open by a community of volunteers, and released under the <a href=\"%s\">%s license</a>."
+				description = g_strdup_printf (_("This app is developed in the open by an international community, and released under the <a href=\"%s\">%s license</a>."
 								 "\n\n"
-								 "You can contribute and help make it even better."),
+								 "You can participate and help make it even better."),
 								 license_url,
 								 license_spdx);
 			} else {
 				/* Translators: The placeholder here is the name of a software license. */
-				description = g_strdup_printf (_("This app is developed in the open by a community of volunteers, and released under the %s license."
+				description = g_strdup_printf (_("This app is developed in the open by an international community, and released under the %s license."
 								 "\n\n"
-								 "You can contribute and help make it even better."),
+								 "You can participate and help make it even better."),
 								 license_spdx);
 			}
 		} else if (license_url != NULL) {
 			/* Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license. */
-			description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the <a href=\"%s\">%s license</a>."
+			description = g_strdup_printf (_("This software is developed in the open by an international community, and released under the <a href=\"%s\">%s license</a>."
 							 "\n\n"
-							 "You can contribute and help make it even better."),
+							 "You can participate and help make it even better."),
 							 license_url,
 							 license_spdx);
 		} else {
 			/* Translators: The placeholder here is the name of a software license. */
-			description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the %s license."
+			description = g_strdup_printf (_("This software is developed in the open by an international community, and released under the %s license."
 							 "\n\n"
-							 "You can contribute and help make it even better."),
+							 "You can participate and help make it even better."),
 							 license_spdx);
 		}
 	} else if (gs_app_get_license (self->app) == NULL) {
