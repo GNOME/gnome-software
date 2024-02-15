@@ -201,7 +201,7 @@ reload_app_filter_async (GsPluginMalcontent  *self,
 	/* Refresh the app filter. This causes a D-Bus request. */
 	mct_manager_get_app_filter_async (self->manager,
 					  getuid (),
-					  interactive ? MCT_GET_APP_FILTER_FLAGS_INTERACTIVE : MCT_GET_APP_FILTER_FLAGS_NONE,
+					  interactive ? MCT_MANAGER_GET_VALUE_FLAGS_INTERACTIVE : MCT_MANAGER_GET_VALUE_FLAGS_NONE,
 					  cancellable,
 					  callback,
 					  user_data);
@@ -305,7 +305,7 @@ gs_plugin_malcontent_setup_async (GsPlugin            *plugin,
 
 	mct_manager_get_app_filter_async (self->manager, getuid (),
 					  /* FIXME: Should this be unconditionally interactive? */
-					  MCT_GET_APP_FILTER_FLAGS_INTERACTIVE, cancellable,
+					  MCT_MANAGER_GET_VALUE_FLAGS_INTERACTIVE, cancellable,
 					  get_app_filter_cb,
 					  g_steal_pointer (&task));
 }
