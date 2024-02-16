@@ -8,17 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-01-24 17:05+0000\n"
-"PO-Revision-Date: 2024-01-25 12:33+0200\n"
-"Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
+"POT-Creation-Date: 2024-02-16 06:53+0000\n"
+"PO-Revision-Date: 2024-02-16 22:35+0200\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : n==2 ? 1 : n>10 && n%10==0 ? "
-"2 : 3)\n"
-"X-Generator: Gtranslator 45.3\n"
+"2 : 3);\n"
+"X-Generator: Poedit 3.4.1\n"
 "X-DL-Lang: he\n"
 "X-DL-Module: gnome-software\n"
 "X-DL-Branch: main\n"
@@ -76,7 +76,7 @@ msgid "The update details"
 msgstr "פרטי עדכון"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2414
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2437
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "מיזם GNOME"
@@ -899,14 +899,14 @@ msgstr "רשאי לגשת להתקנים שונים כמו מצלמות רשת"
 
 #. Translators: This indicates an app can access input devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:337
+#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:339
 #: src/gs-safety-context-dialog.c:231
 msgid "Can access input devices"
 msgstr "רשאי לגשת להתקני קלט"
 
 #. Translators: This indicates an app can access input devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:344
+#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:346
 msgid "Can access microphones"
 msgstr "רשאי לגשת למיקרופון"
 
@@ -920,7 +920,7 @@ msgstr "תוכן מסך"
 
 #. Translators: This indicates an app can access the screen/display contents.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:358
+#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:360
 msgid "Can access screen contents"
 msgstr "יכול לגשת לתוכן המסך"
 
@@ -1131,7 +1131,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:287 src/gs-shell.c:1980
+#: src/gs-application.c:287 src/gs-shell.c:1977
 msgid "About Software"
 msgstr "על אודות תכנה"
 
@@ -1200,98 +1200,98 @@ msgstr "הגודל לא ידוע"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:292
+#: src/gs-app-context-bar.c:294
 msgid "No permissions"
 msgstr "אין הרשאות"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:309
+#: src/gs-app-context-bar.c:311
 msgid "Has network access"
 msgstr "יש גישה לרשת"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:316
+#: src/gs-app-context-bar.c:318
 msgid "Uses system services"
 msgstr "משתמש בשירותי מערכת"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:323
+#: src/gs-app-context-bar.c:325
 msgid "Uses session services"
 msgstr "משתמש בשירותי הפעלה"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:330
+#: src/gs-app-context-bar.c:332
 msgid "Can access hardware devices"
 msgstr "רשאי לגשת להתקני חומרה"
 
 #. Translators: This indicates an app can access system devices such as /dev/shm.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:351
+#: src/gs-app-context-bar.c:353
 msgid "Can access system devices"
 msgstr "רשאי לגשת להתקני מערכת"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370
+#: src/gs-app-context-bar.c:372
 msgid "Can read/write all your data"
 msgstr "יכול לקרוא/לכתוב את כל הנתונים שלך"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:382
+#: src/gs-app-context-bar.c:384
 msgid "Can read all your data"
 msgstr "יכול לקרוא את כל הנתונים שלך"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:389
+#: src/gs-app-context-bar.c:391
 msgid "Can read/write your downloads"
 msgstr "יכול לקרוא/לכתוב את ההורדות שלך"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:396
+#: src/gs-app-context-bar.c:398
 msgid "Can read your downloads"
 msgstr "יכול לקרוא את ההורדות שלך"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:403
+#: src/gs-app-context-bar.c:405
 msgid "Can access some specific files"
 msgstr "ניתן לגשת למספר קבצים מסוימים"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:410 src/gs-safety-context-dialog.c:279
+#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:279
 msgid "Can access and change user settings"
 msgstr "רשאי לגשת ולשנות הגדרות משתמש"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:417 src/gs-safety-context-dialog.c:263
+#: src/gs-app-context-bar.c:419 src/gs-safety-context-dialog.c:263
 msgid "Uses a legacy windowing system"
 msgstr "משתמש במערכת חלונאית מיושנת"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:424 src/gs-safety-context-dialog.c:271
+#: src/gs-app-context-bar.c:426 src/gs-safety-context-dialog.c:271
 msgid "Can acquire arbitrary permissions"
 msgstr "רשאי לקבל הרשאות שרירותיות"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:436
+#: src/gs-app-context-bar.c:438
 msgid "Software developer is verified"
 msgstr "גוף פיתוח התכנה מאומת"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:455 src/gs-safety-context-dialog.c:147
+#: src/gs-app-context-bar.c:456 src/gs-safety-context-dialog.c:147
 msgid "Reviewed by OS distributor"
 msgstr "נבדק על ידי מפיץ מערכת ההפעלה שלך"
 
@@ -1300,7 +1300,7 @@ msgstr "נבדק על ידי מפיץ מערכת ההפעלה שלך"
 #. * It’s used in a context tile, so should be short.
 #. * The '%s' is replaced by the distribution name.
 #. Translators: The '%s' is replaced by the distribution name.
-#: src/gs-app-context-bar.c:461 src/gs-safety-context-dialog.c:150
+#: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:150
 #, c-format
 msgid "Reviewed by %s"
 msgstr "נבדק על ידי %s"
@@ -1308,37 +1308,37 @@ msgstr "נבדק על ידי %s"
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:477 src/gs-safety-context-dialog.c:164
+#: src/gs-app-context-bar.c:478 src/gs-safety-context-dialog.c:164
 msgid "Provided by a third party"
 msgstr "מסופק על ידי צד־שלישי"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:487
+#: src/gs-app-context-bar.c:488
 msgid "Software no longer supported"
 msgstr "התכנית לא נתמכת עוד"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:499
+#: src/gs-app-context-bar.c:500
 msgid "Auditable code"
 msgstr "קוד שניתן לפקח עליו"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:505
+#: src/gs-app-context-bar.c:506
 msgid "Unknown license"
 msgstr "רישיון לא ידוע"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:512
+#: src/gs-app-context-bar.c:513
 msgid "Proprietary code"
 msgstr "קוד קנייני"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:519
+#: src/gs-app-context-bar.c:520
 msgid "Special license"
 msgstr "רישיון מיוחד"
 
@@ -1356,116 +1356,116 @@ msgstr "רישיון מיוחד"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:533 src/gs-app-context-bar.c:816
+#: src/gs-app-context-bar.c:534 src/gs-app-context-bar.c:817
 msgid "; "
 msgstr ", "
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:541
+#: src/gs-app-context-bar.c:542
 msgid "Privileged"
 msgstr "מהימן"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:548
+#: src/gs-app-context-bar.c:549
 msgid "Safe"
 msgstr "בטוח"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:555
+#: src/gs-app-context-bar.c:556
 msgid "Probably Safe"
 msgstr "כנראה בטוח"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:562
+#: src/gs-app-context-bar.c:563
 msgid "Potentially Unsafe"
 msgstr "כנראה לא בטוח"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:569
+#: src/gs-app-context-bar.c:570
 msgid "Unsafe"
 msgstr "לא בטוח"
 
-#: src/gs-app-context-bar.c:647 src/gs-app-context-bar.c:679
+#: src/gs-app-context-bar.c:648 src/gs-app-context-bar.c:680
 #: src/gs-hardware-support-context-dialog.c:608
 msgid "Mobile Only"
 msgstr "נייד בלבד"
 
-#: src/gs-app-context-bar.c:648
+#: src/gs-app-context-bar.c:649
 msgid "Only works on a small screen"
 msgstr "עובד על מסך קטן בלבד"
 
-#: src/gs-app-context-bar.c:653 src/gs-app-context-bar.c:686
-#: src/gs-app-context-bar.c:693 src/gs-app-context-bar.c:743
-#: src/gs-app-context-bar.c:748 src/gs-hardware-support-context-dialog.c:588
+#: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:687
+#: src/gs-app-context-bar.c:694 src/gs-app-context-bar.c:744
+#: src/gs-app-context-bar.c:749 src/gs-hardware-support-context-dialog.c:588
 msgid "Desktop Only"
 msgstr "שולחן עבודה בלבד"
 
-#: src/gs-app-context-bar.c:654
+#: src/gs-app-context-bar.c:655
 msgid "Only works on a large screen"
 msgstr "עובד על מסך גדול בלבד"
 
-#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:626
+#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:626
 msgid "Screen Size Mismatch"
 msgstr "אין התאמה בגודל המסך"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:627
+#: src/gs-app-context-bar.c:660 src/gs-hardware-support-context-dialog.c:627
 msgid "Doesn’t support your current screen size"
 msgstr "לא תומך בגודל המסך הנוכחי שלך"
 
-#: src/gs-app-context-bar.c:680 src/gs-hardware-support-context-dialog.c:679
+#: src/gs-app-context-bar.c:681 src/gs-hardware-support-context-dialog.c:679
 #: src/gs-hardware-support-context-dialog.c:685
 msgid "Requires a touchscreen"
 msgstr "דורש מסך מגע"
 
-#: src/gs-app-context-bar.c:687 src/gs-hardware-support-context-dialog.c:639
+#: src/gs-app-context-bar.c:688 src/gs-hardware-support-context-dialog.c:639
 #: src/gs-hardware-support-context-dialog.c:645
 msgid "Requires a keyboard"
 msgstr "דורש מקלדת"
 
-#: src/gs-app-context-bar.c:694
+#: src/gs-app-context-bar.c:695
 msgid "Requires a mouse"
 msgstr "דורש עכבר"
 
-#: src/gs-app-context-bar.c:705
+#: src/gs-app-context-bar.c:706
 msgid "Gamepad Needed"
 msgstr "דרוש בקר משחקים"
 
-#: src/gs-app-context-bar.c:706
+#: src/gs-app-context-bar.c:707
 msgid "Requires a gamepad to play"
 msgstr "דורש בקר משחקים כדי לשחק"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:730
+#: src/gs-app-context-bar.c:731
 msgid "Adaptive"
 msgstr "מסתגל"
 
-#: src/gs-app-context-bar.c:731
+#: src/gs-app-context-bar.c:732
 msgid "Works on phones, tablets and desktops"
 msgstr "עובד על טלפונים, מחשבי לוח ושולחנות עבודה"
 
-#: src/gs-app-context-bar.c:744
+#: src/gs-app-context-bar.c:745
 msgid "Probably requires a keyboard or mouse"
 msgstr "כנראה דורש מקלדת או עכבר"
 
-#: src/gs-app-context-bar.c:749
+#: src/gs-app-context-bar.c:750
 msgid "Works on desktops and laptops"
 msgstr "עובד על שולחנות עבודה ומחשבים ניידים"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:791
+#: src/gs-app-context-bar.c:792
 msgid "Contains no age-inappropriate content"
 msgstr "מכיל תוכן ראוי לכל גיל"
 
-#: src/gs-app-context-bar.c:839
+#: src/gs-app-context-bar.c:840
 msgid "No age rating information available"
 msgstr "אין פירוט דירוג גיל זמין"
 
@@ -1564,14 +1564,12 @@ msgstr "סיוע בתרגום %s"
 #, c-format
 msgid ""
 "%s is designed, developed, and translated by an international community of "
-"volunteers.\n"
+"contributors.\n"
 "\n"
 "This means that while it’s not yet available in your language, you can get "
 "involved and help translate it yourself."
 msgstr ""
-"‫%s מתוכנן, מפותח ומתורגם על ידי קהילה בינלאומית של מתנדבים.\n"
-"‬\n"
-"‏‫\n"
+"%s מתוכנן, מפותח ומתורגם על ידי קהילה בינלאומית של מתנדבים.\n"
 "‬\n"
 "‫משמעות הדבר היא שאם עדיין אין תרגום לשפה שלך, ניתן להירתם ולסייע בתרגום "
 "בעצמך."
@@ -2156,12 +2154,12 @@ msgid "Detailed errors from the package manager follow:"
 msgstr "להלן שגיאות מפורטות ממנהל החבילות:"
 
 #: src/gs-common.c:522 src/gs-common.c:659 src/gs-safety-context-dialog.ui:71
-#: src/gs-toast.c:74
+#: src/gs-toast.c:74 src/gs-updates-paused-banner.c:78
 msgid "Details"
 msgstr "פרטים"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:571
+#: src/gs-common.c:571 src/gs-updates-paused-banner.c:65
 msgid "_Close"
 msgstr "_סגירה"
 
@@ -3118,55 +3116,55 @@ msgstr "הי_רתמות"
 #: src/gs-license-tile.c:121
 #, c-format
 msgid ""
-"This app is developed in the open by a community of volunteers, and released "
-"under the <a href=\"%s\">%s license</a>.\n"
+"This app is developed in the open by an international community, and "
+"released under the <a href=\"%s\">%s license</a>.\n"
 "\n"
-"You can contribute and help make it even better."
+"You can participate and help make it even better."
 msgstr ""
 "יישום זה מפותח בגלוי על ידי קהילה של מתנדבים, וכפוף <a href=\"%s\">%s "
 "לרישיון</a>.\n"
 "‬\n"
-"‫באפשרותך לתרום ולסייע לשפר אותו."
+"‫אפשר לתרום ולסייע לשפר אותו."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:128
 #, c-format
 msgid ""
-"This app is developed in the open by a community of volunteers, and released "
-"under the %s license.\n"
+"This app is developed in the open by an international community, and "
+"released under the %s license.\n"
 "\n"
-"You can contribute and help make it even better."
+"You can participate and help make it even better."
 msgstr ""
 "יישום זה מפותח בגלוי על ידי קהילה של מתנדבים והוא כפוף לרישיון ‎%s‎.\n"
 "\n"
-"‫באפשרותך לתרום ולסייע לשפר אותו."
+"‫אפשר לתרום ולסייע לשפר אותו."
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:135
 #, c-format
 msgid ""
-"This software is developed in the open by a community of volunteers, and "
+"This software is developed in the open by an international community, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
 "\n"
-"You can contribute and help make it even better."
+"You can participate and help make it even better."
 msgstr ""
 "התכנית הזאת מפותחת בגלוי על ידי קהילה של מתנדבים, וכפופה <a href=\"%s\">%s "
 "לרישיון</a>.\n"
 "‬\n"
-"‫באפשרותך לתרום ולסייע לשפר אותה."
+"‫אפשר לתרום ולסייע לשפר אותה."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:142
 #, c-format
 msgid ""
-"This software is developed in the open by a community of volunteers, and "
+"This software is developed in the open by an international community, and "
 "released under the %s license.\n"
 "\n"
-"You can contribute and help make it even better."
+"You can participate and help make it even better."
 msgstr ""
 "התכנית הזאת מפותחת בגלוי על ידי קהילה של מתנדבים והיא כפופה לרישיון ‎%s‎.\n"
 "\n"
-"‫באפשרותך לתרום ולסייע לשפר אותה."
+"‫אפשר לתרום ולסייע לשפר אותה."
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:413
@@ -3301,28 +3299,6 @@ msgstr "דף בטעינה"
 msgid "Starting Up"
 msgstr "מתחיל"
 
-#: src/gs-metered-data-dialog.ui:5
-msgid "Automatic Updates Paused"
-msgstr "עדכונים אוטומטיים מושהים"
-
-#: src/gs-metered-data-dialog.ui:9
-msgid ""
-"The current network is metered, so it may have data limits or charges "
-"associated with it. To save data, automatic updates have been paused.\n"
-"\n"
-"If the network has been incorrectly identified as metered, this can be "
-"changed in Settings."
-msgstr ""
-"חיבור הרשת הנוכחי מוגבל. לחיבור מוגבל קיימת מגבלת נתונים, או לחלופין מתקבלים "
-"חיובים נוספים על שימוש בנתונים. על מנת לחסוך במידע, העדכונים האוטומטיים "
-"הושהו.\n"
-"\n"
-"אם החיבור הנוכחי זוהה באופן שגוי כחיבור מוגבל, ניתן לשנות זאת בהגדרות."
-
-#: src/gs-metered-data-dialog.ui:15
-msgid "Open Network _Settings"
-msgstr "פתיחת _הגדרות רשת"
-
 #: src/gs-moderate-page.ui:6
 msgid "Moderate page"
 msgstr "פיקוח על דף"
@@ -3368,14 +3344,14 @@ msgstr "שונמכו"
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:735
+#: src/gs-overview-page.c:734
 msgid "selected external sources"
 msgstr "מקורות חיצוניים נבחרים"
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:739
+#: src/gs-overview-page.c:738
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3388,35 +3364,35 @@ msgstr ""
 "ניתן לאפשר מאגרים אלה מאוחר יותר בהעדפות מקורות תכנה."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:745
+#: src/gs-overview-page.c:744
 msgid "Enable Third Party Software Repositories?"
 msgstr "לאפשר מקורות תכנה מצד שלישי?"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:750
+#: src/gs-overview-page.c:749
 msgid "_Ignore"
 msgstr "ה_תעלמות"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:752 src/gs-repos-dialog.c:177
+#: src/gs-overview-page.c:751 src/gs-repos-dialog.c:177
 msgid "_Enable"
 msgstr "ל_אפשר"
 
-#: src/gs-overview-page.c:955
+#: src/gs-overview-page.c:954
 msgid "Available for your operating system"
 msgstr "זמין עבור מערכת ההפעלה שלך"
 
 # msgid_plural "Available software for %s"
 #. Translators: the '%s' is replaced with the distribution name, constructing
 #. for example: "Available for Fedora Linux"
-#: src/gs-overview-page.c:959
+#: src/gs-overview-page.c:958
 #, c-format
 msgid "Available for %s"
 msgstr "זמין עבור %s"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:1256
+#: src/gs-overview-page.c:1255
 msgid "Explore"
 msgstr "חשיפה"
 
@@ -3439,7 +3415,7 @@ msgstr "קטגוריות אחרות"
 msgid "No App Data Found"
 msgstr "לא נמצא מידע על יישומים"
 
-#: lib/gs-plugin-loader.c:2799
+#: lib/gs-plugin-loader.c:2802
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "לא ידועה"
@@ -3846,23 +3822,25 @@ msgstr "כתיבת ביקורת"
 msgid "_Send"
 msgstr "_שליחה"
 
-#: src/gs-review-dialog.ui:73
+#: src/gs-review-dialog.ui:54
 msgid ""
-"What did you like about this app? Leaving your feedback along with your "
-"reasons for leaving a review is helpful for others."
-msgstr "מה אהוב בעינך ביישום זה? השארת המשוב שלך עם הסיבות להשארת הביקורת"
+"Please provide a rating, summary and review text. Reviews should not be used "
+"to report problems: instead, contact the developer or your support provider."
+msgstr ""
+"נא לספק טקסט דירוג, תקציר וסקירה. אין להשתמש בסקירות כדי לדווח על תקלות: "
+"במקום, יש לפנות למפתחים או לספק השירות שלך."
 
-#: src/gs-review-dialog.ui:86
+#: src/gs-review-dialog.ui:100
 msgid "Review Summary"
 msgstr "תקציר הביקורת"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:118
+#: src/gs-review-dialog.ui:132
 msgctxt "app review"
 msgid "Write a short review"
 msgstr "כתיבת תקציר לביקורת"
 
-#: src/gs-review-dialog.ui:162
+#: src/gs-review-dialog.ui:176
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
 "privacy\">privacy policy</a>. The full name attached to your account will be "
@@ -4352,260 +4330,260 @@ msgstr "לא נמצאו יישומים"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1208 src/gs-shell.c:1213 src/gs-shell.c:1228
-#: src/gs-shell.c:1232
+#: src/gs-shell.c:1205 src/gs-shell.c:1210 src/gs-shell.c:1225
+#: src/gs-shell.c:1229
 #, c-format
 msgid "“%s”"
 msgstr "‏„%s”"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1285 src/gs-shell.c:1324
+#: src/gs-shell.c:1282 src/gs-shell.c:1321
 msgid "Unable to download updates"
 msgstr "לא ניתן להוריד עדכונים"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1290
+#: src/gs-shell.c:1287
 msgid "Unable to download firmware updates"
 msgstr "לא ניתן להוריד עדכוני קושחה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1299 src/gs-shell.c:1440
+#: src/gs-shell.c:1296 src/gs-shell.c:1437
 msgid "Unable to update: internet access required"
 msgstr "לא ניתן לעדכן: נדרשת גישה לאינטרנט"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1303 src/gs-shell.c:1444
+#: src/gs-shell.c:1300 src/gs-shell.c:1441
 msgid "Unable to update: not enough disk space"
 msgstr "לא ניתן לעדכן: אין מספיק מקום בכונן"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1307 src/gs-shell.c:1448
+#: src/gs-shell.c:1304 src/gs-shell.c:1445
 msgid "Unable to update: authentication required"
 msgstr "לא ניתן לעדכן: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1311 src/gs-shell.c:1452
+#: src/gs-shell.c:1308 src/gs-shell.c:1449
 msgid "Unable to update: invalid authentication"
 msgstr "לא ניתן לעדכן: האימות לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1315 src/gs-shell.c:1456
+#: src/gs-shell.c:1312 src/gs-shell.c:1453
 msgid "Unable to update: permission required"
 msgstr "לא ניתן לעדכן: נדרשת הרשאה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1327
+#: src/gs-shell.c:1324
 msgid "Unable to get list of updates"
 msgstr "לא ניתן לקבל את רשימת העדכונים"
 
-#: src/gs-shell.c:1360
+#: src/gs-shell.c:1357
 msgid "Unable to install: download failed"
 msgstr "לא ניתן להתקין: ההורדה נכשלה"
 
-#: src/gs-shell.c:1364
+#: src/gs-shell.c:1361
 msgid "Unable to install: missing runtime"
 msgstr "לא ניתן להתקין: חסרים רכיבי זמן ריצה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1366 src/gs-shell.c:1400
+#: src/gs-shell.c:1363 src/gs-shell.c:1397
 #, c-format
 msgid "Unable to install %s"
 msgstr "לא ניתן להקין את %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1372
+#: src/gs-shell.c:1369
 msgid "Unable to install: internet access required"
 msgstr "לא ניתן להתקין: נדרשת גישה לאינטרנט"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1376
+#: src/gs-shell.c:1373
 msgid "Unable to install: invalid app format"
 msgstr "לא ניתן להתקין: ליישום יש תבנית לא חוקית"
 
-#: src/gs-shell.c:1379
+#: src/gs-shell.c:1376
 msgid "Unable to install: not enough disk space"
 msgstr "לא ניתן להתקין: אין מספיק מקום בכונן"
 
-#: src/gs-shell.c:1382
+#: src/gs-shell.c:1379
 msgid "Unable to install: authentication required"
 msgstr "לא ניתן להתקין: נדרש אימות"
 
-#: src/gs-shell.c:1385
+#: src/gs-shell.c:1382
 msgid "Unable to install: invalid authentication"
 msgstr "לא ניתן להתקין: האימות לא היה תקין"
 
-#: src/gs-shell.c:1388
+#: src/gs-shell.c:1385
 msgid "Unable to install: permission required"
 msgstr "לא ניתן להתקין: נדרשת הרשאה"
 
-#: src/gs-shell.c:1391
+#: src/gs-shell.c:1388
 msgid "Unable to install: device must be plugged in"
 msgstr "לא ניתן להתקין: ההתקן צריך להיות מחובר לחשמל"
 
-#: src/gs-shell.c:1393
+#: src/gs-shell.c:1390
 msgid "Unable to install: low battery"
 msgstr "לא ניתן להתקין: סוללה חלשה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1436
+#: src/gs-shell.c:1433
 msgid "Unable to update: download failed"
 msgstr "לא ניתן לעדכן: ההורדה נכשלה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1460
+#: src/gs-shell.c:1457
 msgid "Unable to update: device must be plugged in"
 msgstr "לא ניתן לעדכן: ההתקן חייב להיות מחובר לחשמל"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1463
+#: src/gs-shell.c:1460
 msgid "Unable to update: low battery"
 msgstr "לא ניתן לעדכן: סוללה חלשה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1472
+#: src/gs-shell.c:1469
 #, c-format
 msgid "Unable to update %s"
 msgstr "לא ניתן לעדכן את %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1476
+#: src/gs-shell.c:1473
 msgid "Unable to install updates"
 msgstr "לא ניתן להתקין עדכונים"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1512 src/gs-shell.c:1549
+#: src/gs-shell.c:1509 src/gs-shell.c:1546
 msgid "Unable to upgrade"
 msgstr "לא ניתן לשדרג"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1515
+#: src/gs-shell.c:1512
 msgid "Unable to upgrade: download failed"
 msgstr "לא ניתן לשדרג: ההורדה נכשלה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1517
 msgid "Unable to upgrade: internet access required"
 msgstr "לא ניתן לשדרג: נדרשת גישה לאינטרנט"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1524
+#: src/gs-shell.c:1521
 msgid "Unable to upgrade: not enough disk space"
 msgstr "לא ניתן לשדרג: אין מספיק מקום בכונן"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1528
+#: src/gs-shell.c:1525
 msgid "Unable to upgrade: authentication required"
 msgstr "לא ניתן לשדרג: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1532
+#: src/gs-shell.c:1529
 msgid "Unable to upgrade: invalid authentication"
 msgstr "לא ניתן לשדרג: האימות לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1536
+#: src/gs-shell.c:1533
 msgid "Unable to upgrade: permission required"
 msgstr "לא ניתן לשדרג: נדרשת הרשאה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1540
+#: src/gs-shell.c:1537
 msgid "Unable to upgrade: device must be plugged in"
 msgstr "לא ניתן לשדרג: ההתקן חייב להיות מחובר לחשמל"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1543
+#: src/gs-shell.c:1540
 msgid "Unable to upgrade: low battery"
 msgstr "לא ניתן לשדרג: סוללה חלשה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1582
+#: src/gs-shell.c:1579
 msgid "Unable to uninstall: authentication required"
 msgstr "לא ניתן להסיר את ההתקנה: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1586
+#: src/gs-shell.c:1583
 msgid "Unable to uninstall: authentication invalid"
 msgstr "לא ניתן להסיר את ההתקנה: האימות לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1590
+#: src/gs-shell.c:1587
 msgid "Unable to uninstall: permission required"
 msgstr "לא ניתן להסיר את ההתקנה: נדרשת הרשאה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1594
+#: src/gs-shell.c:1591
 msgid "Unable to uninstall: device must be plugged in"
 msgstr "לא ניתן להסיר את ההתקנה: ההתקן חייב להיות מחובר לחשמל"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1597
+#: src/gs-shell.c:1594
 msgid "Unable to uninstall: low battery"
 msgstr "לא ניתן להסיר את ההתקנה: סוללה חלשה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1607
+#: src/gs-shell.c:1604
 #, c-format
 msgid "Unable to uninstall %s"
 msgstr "לא ניתן להסיר את התקנת %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the '%s' is
 #. replaced with the app name (e.g. "GIMP")
-#: src/gs-shell.c:1643
+#: src/gs-shell.c:1640
 #, c-format
 msgid "Unable to launch %s"
 msgstr "לא ניתן להפעיל את %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1648 src/gs-shell.c:1668 src/gs-shell.c:1712
-#: src/gs-shell.c:1756 src/gs-shell.c:1816
+#: src/gs-shell.c:1645 src/gs-shell.c:1665 src/gs-shell.c:1709
+#: src/gs-shell.c:1753 src/gs-shell.c:1813
 msgid "Sorry, something went wrong"
 msgstr "משהו לא עבד, עמך הסליחה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1658 src/gs-shell.c:1702 src/gs-shell.c:1746
-#: src/gs-shell.c:1796
+#: src/gs-shell.c:1655 src/gs-shell.c:1699 src/gs-shell.c:1743
+#: src/gs-shell.c:1793
 msgid "Not enough disk space for operation"
 msgstr "אין מספיק מקום פנוי בכונן כדי לבצע פעולה זו"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1694
+#: src/gs-shell.c:1691
 msgid "Unable to install: file type not supported"
 msgstr "לא ניתן להתקין: סוג הקובץ לא נתמך"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1698 src/gs-shell.c:1742
+#: src/gs-shell.c:1695 src/gs-shell.c:1739
 msgid "Unable to install: authentication failed"
 msgstr "לא ניתן להתקין: האימת לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1738
+#: src/gs-shell.c:1735
 msgid "Unable to install"
 msgstr "לא ניתן להקין"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1789
+#: src/gs-shell.c:1786
 #, c-format
 msgid "Unable to contact %s"
 msgstr "לא ניתן ליצור קשר עם %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
-#: src/gs-shell.c:1800
+#: src/gs-shell.c:1797
 msgid "Restart Software to use new plugins"
 msgstr "יש להפעיל מחדש את מרכז התכנה כדי להשתמש בתוספים חדשים"
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1804
+#: src/gs-shell.c:1801
 msgid "Device needs to be plugged in"
 msgstr "ההתקן צריך להיות מחובר לחשמל"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1807
+#: src/gs-shell.c:1804
 msgid "Battery level is too low"
 msgstr "הסוללה חלשה מדי"
 
@@ -4633,32 +4611,24 @@ msgstr "תפריט ראשי"
 msgid "Search apps"
 msgstr "חיפוש יישומים"
 
-#: src/gs-shell.ui:191
-msgid "Metered network ‒ automatic updates paused"
-msgstr "חיבור רשת מוגבל - עדכונים אוטומטיים מושהים"
-
-#: src/gs-shell.ui:192
-msgid "Find Out _More"
-msgstr "פרטים _נוספים"
-
 #. Translators: A label for a button to show all available software.
-#: src/gs-shell.ui:206
+#: src/gs-shell.ui:202
 msgid "_Explore"
 msgstr "_סיור"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-shell.ui:220
+#: src/gs-shell.ui:216
 msgctxt "List of installed apps"
 msgid "_Installed"
 msgstr "_מותקן"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-shell.ui:242
+#: src/gs-shell.ui:238
 msgctxt "Header bar button for list of apps to be updated"
 msgid "_Updates"
 msgstr "_עדכונים"
 
-#: src/gs-shell.ui:281 src/gs-shell.ui:371
+#: src/gs-shell.ui:277 src/gs-shell.ui:367
 msgid "Go back"
 msgstr "חזרה"
 
@@ -4896,34 +4866,34 @@ msgid "Software Upgrade Available"
 msgstr "שדרוג תכנה זמין"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1245
+#: src/gs-update-monitor.c:1211
 msgid "Software Updates Failed"
 msgstr "עדכון התכנה נכשל"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1247
+#: src/gs-update-monitor.c:1213
 msgid "An important operating system update failed to be installed."
 msgstr "התקנת עדכוני מערכת חשובים נכשלה."
 
-#: src/gs-update-monitor.c:1248
+#: src/gs-update-monitor.c:1214
 msgid "Show Details"
 msgstr "הצגת פרטים"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1293
+#: src/gs-update-monitor.c:1259
 msgid "System Upgrade Complete"
 msgstr "עדכון המערכת הושלם"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1298
+#: src/gs-update-monitor.c:1264
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "ברוך בואך אל %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1307
+#: src/gs-update-monitor.c:1273
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "הותקן עדכון תכנה"
@@ -4932,7 +4902,7 @@ msgstr[2] "הותקנו עדכוני תכנה"
 msgstr[3] "הותקנו עדכוני תכנה"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1311
+#: src/gs-update-monitor.c:1277
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "הותקן עדכון חשוב למערכת הפעלה."
@@ -4945,30 +4915,30 @@ msgstr[3] "הותקנו עדכונים חשובים למערכת הפעלה."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1322
+#: src/gs-update-monitor.c:1288
 msgctxt "updates"
 msgid "Review"
 msgstr "ביקורת"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1372
+#: src/gs-update-monitor.c:1338
 msgid "Failed To Update"
 msgstr "העדכון נכשל"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1377
+#: src/gs-update-monitor.c:1343
 msgid "The system was already up to date."
 msgstr "המערכת כבר היתה עדכנית."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1382
+#: src/gs-update-monitor.c:1348
 msgid "The update was cancelled."
 msgstr "העדכון בוטל."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1387
+#: src/gs-update-monitor.c:1353
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -4977,20 +4947,20 @@ msgstr ""
 "ואחר כך לנסות שוב."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1392
+#: src/gs-update-monitor.c:1358
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr "היתה בעיית אבטחה עם העדכון. נא להתייעץ עם ספק התכנה שלך למידע נוסף."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1397
+#: src/gs-update-monitor.c:1363
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "לא היה מספיק מקום פנוי בכונן הקשיח שלך. נא לפנות מקום ולנסות שוב."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1401
+#: src/gs-update-monitor.c:1367
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -5023,7 +4993,7 @@ msgstr "‏%s %s הפסיק לקבל עדכוני תכנה חיוניים"
 #. * or else their distro will not get important updates.
 #: src/gs-updates-page.c:581
 msgid "Your operating system has stopped receiving critical software updates"
-msgstr "מערכת ההפעלה שלך הפסיקה לקבל עדכוני תכנה חיוניים."
+msgstr "מערכת ההפעלה שלך הפסיקה לקבל עדכוני תכנה חיוניים"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
 #: src/gs-updates-page.c:850
@@ -5126,6 +5096,67 @@ msgstr "שגיאה"
 #: src/gs-updates-page.ui:276
 msgid "Updates are automatically managed"
 msgstr "עדכונים מנוהלים אוטומטית"
+
+#: src/gs-updates-paused-banner.c:45
+msgid "Software Updates Paused"
+msgstr "עדכוני התכנה מושהים"
+
+#: src/gs-updates-paused-banner.c:48
+msgid ""
+"Automatic software updates have been paused for the following reasons:\n"
+msgstr "עדכוני תוכנה אוטומטיים הושהו מהסיבות הבאות:\n"
+
+#: src/gs-updates-paused-banner.c:50
+msgid ""
+"\n"
+"• The current network connection is metered"
+msgstr ""
+"\n"
+"• החיבור הנוכחי לרשת מדוד"
+
+#: src/gs-updates-paused-banner.c:52
+msgid ""
+"\n"
+"• The current network connection prohibits large downloads"
+msgstr ""
+"\n"
+"• החיבור הנוכחי לרשת מונע הורדות גדולות"
+
+#: src/gs-updates-paused-banner.c:54
+msgid ""
+"\n"
+"• Power saver mode is active"
+msgstr ""
+"\n"
+"• מצב חיסכון בחשמל פעיל"
+
+#: src/gs-updates-paused-banner.c:56
+msgid ""
+"\n"
+"• Game mode is active"
+msgstr ""
+"\n"
+"• מצב משחק פעיל"
+
+#: src/gs-updates-paused-banner.c:80
+msgid "Software updates paused"
+msgstr "עדכוני התכנה מושהים"
+
+#: src/gs-updates-paused-banner.c:85
+msgid "Network connection is metered - software updates paused"
+msgstr "החיבור לרשת מדוד - עדכוני התוכנה מושהים"
+
+#: src/gs-updates-paused-banner.c:87
+msgid "Network connection prohibits large downloads - software updates paused"
+msgstr "החיבור לרשת מונע הורדות גדולות - עדכוני התוכנה מושהים"
+
+#: src/gs-updates-paused-banner.c:89
+msgid "Power saver mode is active - software updates paused"
+msgstr "מצב חיסכון בחשמל פעיל - עדכוני תוכנה מושהים"
+
+#: src/gs-updates-paused-banner.c:91
+msgid "Game mode is active - software updates paused"
+msgstr "מצב משחקים פעיל - עדכוני תוכנה מושהים"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
@@ -5291,6 +5322,7 @@ msgstr "פרטי השדרוג מתקבלים…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:402
+#: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:95
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -5775,6 +5807,36 @@ msgstr "תמיכה ב־Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוקס"
+
+#~ msgid "Automatic Updates Paused"
+#~ msgstr "עדכונים אוטומטיים מושהים"
+
+#~ msgid ""
+#~ "The current network is metered, so it may have data limits or charges "
+#~ "associated with it. To save data, automatic updates have been paused.\n"
+#~ "\n"
+#~ "If the network has been incorrectly identified as metered, this can be "
+#~ "changed in Settings."
+#~ msgstr ""
+#~ "חיבור הרשת הנוכחי מוגבל. לחיבור מוגבל קיימת מגבלת נתונים, או לחלופין "
+#~ "מתקבלים חיובים נוספים על שימוש בנתונים. על מנת לחסוך במידע, העדכונים "
+#~ "האוטומטיים הושהו.\n"
+#~ "\n"
+#~ "אם החיבור הנוכחי זוהה באופן שגוי כחיבור מוגבל, ניתן לשנות זאת בהגדרות."
+
+#~ msgid "Open Network _Settings"
+#~ msgstr "פתיחת _הגדרות רשת"
+
+#~ msgid ""
+#~ "What did you like about this app? Leaving your feedback along with your "
+#~ "reasons for leaving a review is helpful for others."
+#~ msgstr "מה אהוב בעינך ביישום זה? השארת המשוב שלך עם הסיבות להשארת הביקורת"
+
+#~ msgid "Metered network ‒ automatic updates paused"
+#~ msgstr "חיבור רשת מוגבל - עדכונים אוטומטיים מושהים"
+
+#~ msgid "Find Out _More"
+#~ msgstr "פרטים _נוספים"
 
 #, c-format
 #~ msgid "Unable to download updates from %s"
