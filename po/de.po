@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-02-12 11:01+0000\n"
-"PO-Revision-Date: 2024-02-14 13:28+0100\n"
+"POT-Creation-Date: 2024-02-16 06:53+0000\n"
+"PO-Revision-Date: 2024-02-17 12:21+0100\n"
 "Last-Translator: Philipp Kiemle <philipp.kiemle@gmail.com>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de\n"
@@ -1620,10 +1620,16 @@ msgstr "Helfen Sie, %s zu übersetzen"
 
 #. Translators: The placeholder is an app name
 #: src/gs-app-translation-dialog.c:71
-#, c-format
+#, fuzzy, c-format
+#| msgid ""
+#| "%s is designed, developed, and translated by an international community "
+#| "of volunteers.\n"
+#| "\n"
+#| "This means that while it’s not yet available in your language, you can "
+#| "get involved and help translate it yourself."
 msgid ""
 "%s is designed, developed, and translated by an international community of "
-"volunteers.\n"
+"contributors.\n"
 "\n"
 "This means that while it’s not yet available in your language, you can get "
 "involved and help translate it yourself."
@@ -3214,12 +3220,17 @@ msgstr "M_ithelfen"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:121
-#, c-format
+#, fuzzy, c-format
+#| msgid ""
+#| "This app is developed in the open by a community of volunteers, and "
+#| "released under the <a href=\"%s\">%s license</a>.\n"
+#| "\n"
+#| "You can contribute and help make it even better."
 msgid ""
-"This app is developed in the open by a community of volunteers, and released "
-"under the <a href=\"%s\">%s license</a>.\n"
+"This app is developed in the open by an international community, and "
+"released under the <a href=\"%s\">%s license</a>.\n"
 "\n"
-"You can contribute and help make it even better."
+"You can participate and help make it even better."
 msgstr ""
 "Diese Anwendung wurde offen von einer Gemeinschaft von Freiwilligen "
 "entwickelt und unter der <a href=\"%s\">%s-Lizenz</a> veröffentlicht.\n"
@@ -3228,12 +3239,17 @@ msgstr ""
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:128
-#, c-format
+#, fuzzy, c-format
+#| msgid ""
+#| "This app is developed in the open by a community of volunteers, and "
+#| "released under the %s license.\n"
+#| "\n"
+#| "You can contribute and help make it even better."
 msgid ""
-"This app is developed in the open by a community of volunteers, and released "
-"under the %s license.\n"
+"This app is developed in the open by an international community, and "
+"released under the %s license.\n"
 "\n"
-"You can contribute and help make it even better."
+"You can participate and help make it even better."
 msgstr ""
 "Diese Anwendung wurde offen von einer Gemeinschaft von Freiwilligen "
 "entwickelt und unter der »%s«-Lizenz veröffentlicht.\n"
@@ -3242,12 +3258,17 @@ msgstr ""
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:135
-#, c-format
+#, fuzzy, c-format
+#| msgid ""
+#| "This software is developed in the open by a community of volunteers, and "
+#| "released under the <a href=\"%s\">%s license</a>.\n"
+#| "\n"
+#| "You can contribute and help make it even better."
 msgid ""
-"This software is developed in the open by a community of volunteers, and "
+"This software is developed in the open by an international community, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
 "\n"
-"You can contribute and help make it even better."
+"You can participate and help make it even better."
 msgstr ""
 "Diese Software wurde offen von einer Gemeinschaft von Freiwilligen "
 "entwickelt und unter der <a href=\"%s\">%s-Lizenz</a> veröffentlicht.\n"
@@ -3256,12 +3277,17 @@ msgstr ""
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:142
-#, c-format
+#, fuzzy, c-format
+#| msgid ""
+#| "This software is developed in the open by a community of volunteers, and "
+#| "released under the %s license.\n"
+#| "\n"
+#| "You can contribute and help make it even better."
 msgid ""
-"This software is developed in the open by a community of volunteers, and "
+"This software is developed in the open by an international community, and "
 "released under the %s license.\n"
 "\n"
-"You can contribute and help make it even better."
+"You can participate and help make it even better."
 msgstr ""
 "Diese Software wurde offen von einer Gemeinschaft von Freiwilligen "
 "entwickelt und unter der »%s«-Lizenz veröffentlicht.\n"
@@ -3932,26 +3958,23 @@ msgstr "Eine Rezension schreiben"
 msgid "_Send"
 msgstr "Ab_senden"
 
-#: src/gs-review-dialog.ui:73
+#: src/gs-review-dialog.ui:54
 msgid ""
-"What did you like about this app? Leaving your feedback along with your "
-"reasons for leaving a review is helpful for others."
+"Please provide a rating, summary and review text. Reviews should not be used "
+"to report problems: instead, contact the developer or your support provider."
 msgstr ""
-"Was hat Ihnen an dieser Anwendung gefallen? Wenn Sie Ihre Rückmeldung "
-"zusammen mit Ihren Gründen für eine Bewertung hinterlassen, ist das "
-"hilfreich für andere."
 
-#: src/gs-review-dialog.ui:86
+#: src/gs-review-dialog.ui:100
 msgid "Review Summary"
 msgstr "Zusammenfassung der Rezension"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:118
+#: src/gs-review-dialog.ui:132
 msgctxt "app review"
 msgid "Write a short review"
 msgstr "Eine kurze Rezension schreiben"
 
-#: src/gs-review-dialog.ui:162
+#: src/gs-review-dialog.ui:176
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
 "\">privacy policy</a>. The full name attached to your account will be shown "
@@ -4338,7 +4361,7 @@ msgstr "%s ist sicher"
 #: src/gs-safety-context-dialog.c:478
 #, c-format
 msgid "%s is probably safe"
-msgstr "%s ist wahrscheinlich unsicher"
+msgstr "%s ist wahrscheinlich sicher"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
@@ -5971,6 +5994,14 @@ msgstr "Unterstützung von Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Ein Snap ist ein universelles Linux-Paket"
+
+#~ msgid ""
+#~ "What did you like about this app? Leaving your feedback along with your "
+#~ "reasons for leaving a review is helpful for others."
+#~ msgstr ""
+#~ "Was hat Ihnen an dieser Anwendung gefallen? Wenn Sie Ihre Rückmeldung "
+#~ "zusammen mit Ihren Gründen für eine Bewertung hinterlassen, ist das "
+#~ "hilfreich für andere."
 
 #~ msgid "Automatic Updates Paused"
 #~ msgstr "Automatische Aktualisierungen pausiert"
