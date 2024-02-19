@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-02-16 06:53+0000\n"
-"PO-Revision-Date: 2024-02-16 22:35+0200\n"
+"POT-Creation-Date: 2024-02-19 17:02+0000\n"
+"PO-Revision-Date: 2024-02-19 23:28+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew\n"
 "Language: he\n"
@@ -97,13 +97,11 @@ msgstr "רשימה של מיזמים נתמכים"
 msgid ""
 "This is a list of compatible projects we should show such as GNOME, KDE and "
 "XFCE."
-msgstr ""
-"This is a list of compatible projects we should show such as GNOME, KDE and "
-"XFCE."
+msgstr "זאת רשימה של מיזמים נתמכים שאנחנו צריכים להציג כגון GNOME,‏ KDE ו־XFCE."
 
 #: data/org.gnome.software.gschema.xml:10
 msgid "Whether to manage updates and upgrades in GNOME Software"
-msgstr "Whether to manage updates and upgrades in GNOME Software"
+msgstr "האם לנהל עדכונים ושדרוגים במרכז התכנה של GNOME"
 
 #: data/org.gnome.software.gschema.xml:11
 msgid ""
@@ -4748,44 +4746,44 @@ msgid "No Updates Installed"
 msgstr "לא הותקנו עדכונים"
 
 #: src/gs-update-monitor.c:216
-msgid "Software Updates Are Out of Date"
-msgstr "עדכוני המערכת אינם בתוקף"
+msgid "Updates Are Out of Date"
+msgstr "העדכונים אינם בתוקף"
 
 #: src/gs-update-monitor.c:217
-msgid "Please check for software updates."
-msgstr "יש לבדוק עבור עדכוני תכנה."
+msgid "Please check for available updates"
+msgstr "נא לבדוק אם יש עדכונים תוכנה זמינים"
 
 #: src/gs-update-monitor.c:223
-msgid "Critical Software Update Ready to Install"
-msgstr "עדכון תכנה קריטי מוכן להתקנה"
+msgid "Critical Updates Ready to Install"
+msgstr "עדכונים מהותיים מוכנים להתקנה"
 
 #: src/gs-update-monitor.c:224
-msgid "An important software update is ready to be installed."
-msgstr "עדכון תכנה חשוב מוכן להתקנה."
+msgid "Install critical updates as soon as possible"
+msgstr "יש להתקין עדכונים מהותיים במהירות האפשרית"
 
 #: src/gs-update-monitor.c:227
-msgid "Critical Software Updates Available to Download"
-msgstr "עדכוני תכנה קריטיים מוכנים להורדה"
+msgid "Critical Updates Available to Download"
+msgstr "עדכונים מהותיים זמינים להורדה"
 
 #: src/gs-update-monitor.c:228
-msgid "Important: critical software updates are waiting."
-msgstr "חשוב: עדכוני תכנה קריטיים בהמתנה."
+msgid "Download critical updates as soon as possible"
+msgstr "להוריד עדכונים מהותיים במהירות האפשרית"
 
 #: src/gs-update-monitor.c:234
-msgid "Software Updates Ready to Install"
-msgstr "עדכוני תכנה מוכנים להתקנה"
+msgid "Updates Ready to Install"
+msgstr "עדכונים מוכנים להתקנה"
 
 #: src/gs-update-monitor.c:235
-msgid "Software updates are waiting and ready to be installed."
-msgstr "עדכוני תכנה מוכנים וממתינים להתקנה."
+msgid "Software updates are ready and waiting"
+msgstr "עדכוני תכנה מוכנים וממתינים"
 
 #: src/gs-update-monitor.c:241
-msgid "Software Updates Available to Download"
-msgstr "עדכוני תכנה זמינים להורדה"
+msgid "Updates Available to Download"
+msgstr "עדכונים זמינים להורדה"
 
 #: src/gs-update-monitor.c:242
-msgid "Please download waiting software updates."
-msgstr "נא להוריד עדכוני תכנה שבהמתנה."
+msgid "Software updates can be downloaded"
+msgstr "ניתן להוריד עדכוני תכנה"
 
 # msgid_plural "%u Applications Updated — Restart Required"
 #. TRANSLATORS: apps were auto-updated and restart is required
@@ -5729,7 +5727,7 @@ msgstr "עדכון לתחנת עגינה USB ‏%s"
 
 #: plugins/fwupd/gs-plugin-fwupd.c:1717
 msgid "Firmware update could not be applied: "
-msgstr "לא ניתן להחיל את עדכוני הקושחה"
+msgstr "לא ניתן להחיל את עדכוני הקושחה:"
 
 #: plugins/fwupd/gs-plugin-fwupd.c:1857
 msgid "Firmware"
@@ -5807,6 +5805,15 @@ msgstr "תמיכה ב־Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוקס"
+
+#~ msgid "An important software update is ready to be installed."
+#~ msgstr "עדכון תכנה חשוב מוכן להתקנה."
+
+#~ msgid "Important: critical software updates are waiting."
+#~ msgstr "חשוב: עדכוני תכנה קריטיים בהמתנה."
+
+#~ msgid "Please download waiting software updates."
+#~ msgstr "נא להוריד עדכוני תכנה שבהמתנה."
 
 #~ msgid "Automatic Updates Paused"
 #~ msgstr "עדכונים אוטומטיים מושהים"
@@ -5887,10 +5894,6 @@ msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוק�
 #, c-format
 #~ msgid "Unable to install updates from %s as download failed"
 #~ msgstr "לא ניתן להתקין עדכונים מ־%s כיוון שההורדה כשלה"
-
-#, c-format
-#~ msgid "Unable to install updates as download failed"
-#~ msgstr "לא ניתן להתקין עדכונים כיוון שההורדה כשלה"
 
 #, c-format
 #~ msgid "Unable to install updates: not enough disk space"
