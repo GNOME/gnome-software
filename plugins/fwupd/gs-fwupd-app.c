@@ -162,16 +162,6 @@ gs_fwupd_app_set_from_device (GsApp *app,
 	}
 	if (fwupd_device_get_created (dev) != 0)
 		gs_app_set_install_date (app, fwupd_device_get_created (dev));
-	if (fwupd_device_get_description (dev) != NULL) {
-		g_autofree gchar *tmp = NULL;
-#if AS_CHECK_VERSION(1, 0, 0)
-		tmp = as_markup_convert (fwupd_device_get_description (dev), AS_MARKUP_KIND_TEXT, NULL);
-#else
-		tmp = as_markup_convert_simple (fwupd_device_get_description (dev), NULL);
-#endif
-		if (tmp != NULL)
-			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, tmp);
-	}
 
 #if FWUPD_CHECK_VERSION(1, 8, 1)
 	if (fwupd_device_get_problems (dev) != FWUPD_DEVICE_PROBLEM_NONE) {

@@ -53,9 +53,6 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	size_download_type = gs_app_get_size_download (app, &size_download_bytes);
 	g_assert_cmpint (size_download_type, ==, GS_SIZE_TYPE_VALID);
 	g_assert_cmpuint (size_download_bytes, ==, 32784);
-	g_assert_cmpstr (gs_app_get_description (app), ==,
-			 "This is the first paragraph in the example "
-			 "cab file.\n\nThis is the second paragraph.");
 #if FWUPD_CHECK_VERSION(1, 7, 1) && !FWUPD_CHECK_VERSION(1, 8, 0)
 	/* Changes introduced in fwupd commit d3706e0e0b0fc210796da839b84ac391f7a251f8 and
 	   removed for 1.8.0 with https://github.com/fwupd/fwupd/commit/0eeaad76ec79562ea3790bb377d847d5be02182f */
