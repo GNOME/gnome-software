@@ -213,33 +213,33 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 	if (!gs_app_list_length (apps)) {
 		/* Notify only when the download is disabled and it's the 4th day or it's more than 7 days */
 		if (!should_download && (timestamp_days >= 7 || timestamp_days == 4)) {
-			*out_title = _("Software Updates Are Out of Date");
-			*out_body = _("Please check for software updates.");
+			*out_title = _("Updates Are Out of Date");
+			*out_body = _("Please check for available updates");
 			res = TRUE;
 		}
 	} else if (has_important) {
 		if (timestamp_days >= 1) {
 			if (all_downloaded) {
-				*out_title = _("Critical Software Update Ready to Install");
-				*out_body = _("An important software update is ready to be installed.");
+				*out_title = _("Critical Updates Ready to Install");
+				*out_body = _("Install critical updates as soon as possible");
 				res = TRUE;
 			} else if (!should_download) {
-				*out_title = _("Critical Software Updates Available to Download");
-				*out_body = _("Important: critical software updates are waiting.");
+				*out_title = _("Critical Updates Available to Download");
+				*out_body = _("Download critical updates as soon as possible");
 				res = TRUE;
 			}
 		}
 	} else if (all_downloaded) {
 		if (timestamp_days >= 3) {
-			*out_title = _("Software Updates Ready to Install");
-			*out_body = _("Software updates are waiting and ready to be installed.");
+			*out_title = _("Updates Ready to Install");
+			*out_body = _("Software updates are ready and waiting");
 			res = TRUE;
 		}
 	/* To not hide downloaded updates for 14 days when new updates were discovered meanwhile.
 	   Never show "Available to Download" when it's supposed to download the updates. */
 	} else if (!should_download && timestamp_days >= 14) {
-		*out_title = _("Software Updates Available to Download");
-		*out_body = _("Please download waiting software updates.");
+		*out_title = _("Updates Available to Download");
+		*out_body = _("Software updates can be downloaded");
 		res = TRUE;
 	}
 
