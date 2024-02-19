@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-02-16 06:53+0000\n"
-"PO-Revision-Date: 2024-02-16 20:28+0200\n"
+"POT-Creation-Date: 2024-02-19 17:02+0000\n"
+"PO-Revision-Date: 2024-02-19 21:45+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -3905,9 +3905,9 @@ msgid ""
 "Please provide a rating, summary and review text. Reviews should not be used "
 "to report problems: instead, contact the developer or your support provider."
 msgstr ""
-"Будь ласка, додайте оцінку, резюме та текст рецензії. Рецензіями не слід"
-" користуватися для сповіщень про вади: для надсилання звітів про вади"
-" зв'яжіться із розробником або службою надання підтримки."
+"Будь ласка, додайте оцінку, резюме та текст рецензії. Рецензіями не слід "
+"користуватися для сповіщень про вади: для надсилання звітів про вади "
+"зв'яжіться із розробником або службою надання підтримки."
 
 #: src/gs-review-dialog.ui:100
 msgid "Review Summary"
@@ -4848,47 +4848,54 @@ msgid "No Updates Installed"
 msgstr "Оновлення не встановлено"
 
 #: src/gs-update-monitor.c:216
-msgid "Software Updates Are Out of Date"
-msgstr "Програмне забезпечення втратило актуальність"
+#| msgid "Software Updates Are Out of Date"
+msgid "Updates Are Out of Date"
+msgstr "Оновлення втратило актуальність"
 
 #: src/gs-update-monitor.c:217
-msgid "Please check for software updates."
-msgstr "Будь ласка, виконайте пошук оновлень програмного забезпечення."
+#| msgid "Please check for software updates."
+msgid "Please check for available updates"
+msgstr "Будь ласка, виконайте пошук доступних оновлень"
 
 #: src/gs-update-monitor.c:223
-msgid "Critical Software Update Ready to Install"
-msgstr "До встановлення готові критичні оновлення програм"
+#| msgid "Critical Software Update Ready to Install"
+msgid "Critical Updates Ready to Install"
+msgstr "До встановлення готові критичні оновлення"
 
 #: src/gs-update-monitor.c:224
-msgid "An important software update is ready to be installed."
-msgstr "Готове до встановлення важливе оновлення програмного забезпечення."
+#| msgid "Unable to install updates as download failed"
+msgid "Install critical updates as soon as possible"
+msgstr "Встановіть критичні оновлення якомога швидше"
 
 #: src/gs-update-monitor.c:227
-msgid "Critical Software Updates Available to Download"
-msgstr "Доступні критичні оновлення програмного забезпечення"
+#| msgid "Critical Software Updates Available to Download"
+msgid "Critical Updates Available to Download"
+msgstr "Доступні до отримання критичні оновлення"
 
 #: src/gs-update-monitor.c:228
-msgid "Important: critical software updates are waiting."
-msgstr ""
-"Важливо: очікуємо на встановлення критичних оновлень програмного "
-"забезпечення."
+#| msgid "Unable to install updates as download failed"
+msgid "Download critical updates as soon as possible"
+msgstr "Отримайте критичні оновлення якомога швидше"
 
 #: src/gs-update-monitor.c:234
-msgid "Software Updates Ready to Install"
-msgstr "Готові до встановлення оновлення програм"
+#| msgid "Software Updates Ready to Install"
+msgid "Updates Ready to Install"
+msgstr "Готові до встановлення оновлення"
 
 #: src/gs-update-monitor.c:235
-msgid "Software updates are waiting and ready to be installed."
-msgstr ""
-"Отримано і приготовано до встановлення оновлення програмного забезпечення."
+#| msgid "Software updates are waiting and ready to be installed."
+msgid "Software updates are ready and waiting"
+msgstr "Оновлення програмного забезпечення готові і очікують"
 
 #: src/gs-update-monitor.c:241
-msgid "Software Updates Available to Download"
-msgstr "Доступні оновлення програмного забезпечення"
+#| msgid "Software Updates Available to Download"
+msgid "Updates Available to Download"
+msgstr "Доступні до отримання оновлення"
 
 #: src/gs-update-monitor.c:242
-msgid "Please download waiting software updates."
-msgstr "Будь ласка, отримайте оновлення програмного забезпечення."
+#| msgid "Software Updates Downloaded"
+msgid "Software updates can be downloaded"
+msgstr "Можна отримати оновлення програмного забезпечення"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
 #: src/gs-update-monitor.c:358
@@ -5944,6 +5951,17 @@ msgstr "Підтримка Snap"
 msgid "A snap is a universal Linux package"
 msgstr "Snap — універсальний пакунок Linux"
 
+#~ msgid "An important software update is ready to be installed."
+#~ msgstr "Готове до встановлення важливе оновлення програмного забезпечення."
+
+#~ msgid "Important: critical software updates are waiting."
+#~ msgstr ""
+#~ "Важливо: очікуємо на встановлення критичних оновлень програмного "
+#~ "забезпечення."
+
+#~ msgid "Please download waiting software updates."
+#~ msgstr "Будь ласка, отримайте оновлення програмного забезпечення."
+
 #~ msgid ""
 #~ "What did you like about this app? Leaving your feedback along with your "
 #~ "reasons for leaving a review is helpful for others."
@@ -6026,10 +6044,6 @@ msgstr "Snap — універсальний пакунок Linux"
 #~ msgid "Unable to install updates from %s as download failed"
 #~ msgstr ""
 #~ "Не вдалося встановити оновлення з %s, оскільки не вдалося отримати дані"
-
-#, c-format
-#~ msgid "Unable to install updates as download failed"
-#~ msgstr "Не вдалося встановити оновлення, оскільки не вдалося отримати дані"
 
 #, c-format
 #~ msgid "Unable to install updates: not enough disk space"
