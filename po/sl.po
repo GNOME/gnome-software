@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-02-14 18:33+0000\n"
-"PO-Revision-Date: 2024-02-21 12:02+0100\n"
+"POT-Creation-Date: 2024-02-21 06:25+0000\n"
+"PO-Revision-Date: 2024-02-21 12:14+0100\n"
 "Last-Translator: Matej Urbančič <mateju@src.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -3888,25 +3888,26 @@ msgstr "Napišite oceno"
 msgid "_Send"
 msgstr "_Pošlji"
 
-#: src/gs-review-dialog.ui:73
+#: src/gs-review-dialog.ui:54
 msgid ""
-"What did you like about this app? Leaving your feedback along with your "
-"reasons for leaving a review is helpful for others."
+"Please provide a rating, summary and review text. Reviews should not be used "
+"to report problems: instead, contact the developer or your support provider."
 msgstr ""
-"Kaj vam je bilo pri tem programu všeč? Če pustite sporočilo skupaj z razlogi "
-"za pisanje ocene, je to koristno za druge uporabnike."
+"Navesti je treba oceno, povzetek in poročilo pregleda. Teh mnenja ne smejo "
+"biti uporabljena za prijavo napak: v tem primeru je najbolje stopiti v stik "
+"z razvijalcem ali podporo."
 
-#: src/gs-review-dialog.ui:86
+#: src/gs-review-dialog.ui:100
 msgid "Review Summary"
 msgstr "Predogled povzetka"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:118
+#: src/gs-review-dialog.ui:132
 msgctxt "app review"
 msgid "Write a short review"
 msgstr "Napišite kratko oceno"
 
-#: src/gs-review-dialog.ui:162
+#: src/gs-review-dialog.ui:176
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
 "privacy\">privacy policy</a>. The full name attached to your account will be "
@@ -4825,44 +4826,44 @@ msgid "No Updates Installed"
 msgstr "Ni nameščenih posodobitev"
 
 #: src/gs-update-monitor.c:216
-msgid "Software Updates Are Out of Date"
-msgstr "Programske posodobitve so zastarele"
+msgid "Updates Are Out of Date"
+msgstr "Posodobitve programske opreme so zastarele"
 
 #: src/gs-update-monitor.c:217
-msgid "Please check for software updates."
-msgstr "Preveri za posodobitve."
+msgid "Please check for available updates"
+msgstr "Preveri za razpoložljive posodobitve"
 
 #: src/gs-update-monitor.c:223
-msgid "Critical Software Update Ready to Install"
-msgstr "Pomembne programske posodobitve so pripravljene za namestitev."
+msgid "Critical Updates Ready to Install"
+msgstr "Pomembne posodobitve so pripravljene za namestitev"
 
 #: src/gs-update-monitor.c:224
-msgid "An important software update is ready to be installed."
-msgstr "Pomembne programske posodobitve so pripravljene za namestitev."
+msgid "Install critical updates as soon as possible"
+msgstr "Pomembne posodobitve je priporočeno namestiti takoj, ko je to mogoče"
 
 #: src/gs-update-monitor.c:227
-msgid "Critical Software Updates Available to Download"
-msgstr "Pomembne programske posodobitve so pripravljene za prejem."
+msgid "Critical Updates Available to Download"
+msgstr "Pomembne posodobitve so pripravljene za prejem"
 
 #: src/gs-update-monitor.c:228
-msgid "Important: critical software updates are waiting."
-msgstr "Pomembno: na voljo so kritične programske posodobitve."
+msgid "Download critical updates as soon as possible"
+msgstr "Pomembne posodobitve je priporočeno prejeti takoj, ko je to mogoče"
 
 #: src/gs-update-monitor.c:234
-msgid "Software Updates Ready to Install"
-msgstr "Programske posodobitve, pripravljene za namestitev"
+msgid "Updates Ready to Install"
+msgstr "Posodobitve so pripravljene za namestitev"
 
 #: src/gs-update-monitor.c:235
-msgid "Software updates are waiting and ready to be installed."
-msgstr "Izbrane programske posodobitve so pripravljene za namestitev."
+msgid "Software updates are ready and waiting"
+msgstr "Posodobitve so pripravljene za namestitev"
 
 #: src/gs-update-monitor.c:241
-msgid "Software Updates Available to Download"
-msgstr "Programske posodobitve, pripravljene za prejem"
+msgid "Updates Available to Download"
+msgstr "Posodobitve so pripravljene za prejem"
 
 #: src/gs-update-monitor.c:242
-msgid "Please download waiting software updates."
-msgstr "Priporočljivo je prejeti posodobitve, pripravljene za namestitev."
+msgid "Software updates can be downloaded"
+msgstr "Posodobitve programske opreme je mogoče prejeti"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
 #: src/gs-update-monitor.c:358
@@ -5640,42 +5641,42 @@ msgstr "Naprave ni mogoče uporabiti, ko je pokrov zaprt"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:213
 #, c-format
 msgid "%s Device Update"
 msgstr "Posodobitev naprave %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:218
 #, c-format
 msgid "%s System Update"
 msgstr "Posodobitev sistema %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:223
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "Posodobitev vgrajenega nadzornika %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:238
+#: plugins/fwupd/gs-fwupd-app.c:228
 #, c-format
 msgid "%s ME Update"
 msgstr "Posodobitev ME %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:243
+#: plugins/fwupd/gs-fwupd-app.c:233
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "Posodobitev poslovnega upravljalnika %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:248
+#: plugins/fwupd/gs-fwupd-app.c:238
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "Posodobitev uporabniškega upravljalnika %s"
@@ -5683,7 +5684,7 @@ msgstr "Posodobitev uporabniškega upravljalnika %s"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:254
+#: plugins/fwupd/gs-fwupd-app.c:244
 #, c-format
 msgid "%s Controller Update"
 msgstr "Posodobitev upravljalnika krmilnika %s"
@@ -5691,141 +5692,141 @@ msgstr "Posodobitev upravljalnika krmilnika %s"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:260
+#: plugins/fwupd/gs-fwupd-app.c:250
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "Posodobitev upravljalnika krmilnika Thunderbolt %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:265
+#: plugins/fwupd/gs-fwupd-app.c:255
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "Posodobitev mikrokode CPE %s"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:270
+#: plugins/fwupd/gs-fwupd-app.c:260
 #, c-format
 msgid "%s Configuration Update"
 msgstr "Posodobitev nastavitev %s"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:274
+#: plugins/fwupd/gs-fwupd-app.c:264
 #, c-format
 msgid "%s Battery Update"
 msgstr "Posodobitev baterije %s"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:279
+#: plugins/fwupd/gs-fwupd-app.c:269
 #, c-format
 msgid "%s Camera Update"
 msgstr "Posodobitev kamere %s"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:283
+#: plugins/fwupd/gs-fwupd-app.c:273
 #, c-format
 msgid "%s TPM Update"
 msgstr "Posodobitev modula okolja TPM %s"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:287
+#: plugins/fwupd/gs-fwupd-app.c:277
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "Posodobitev sledilne ploščice %s"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:291
+#: plugins/fwupd/gs-fwupd-app.c:281
 #, c-format
 msgid "%s Mouse Update"
 msgstr "Posodobitev miške %s"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:295
+#: plugins/fwupd/gs-fwupd-app.c:285
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "Posodobitev tipkovnice %s"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:289
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "Posodobitev upravljalnika shrembe %s"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:294
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "Posodobitev omrežnega vmesnika %s"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:309
+#: plugins/fwupd/gs-fwupd-app.c:299
 #, c-format
 msgid "%s Display Update"
 msgstr "Posodobitev zaslona %s"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:314
+#: plugins/fwupd/gs-fwupd-app.c:304
 #, c-format
 msgid "%s BMC Update"
 msgstr "Posodobitev BMC %s"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:319
+#: plugins/fwupd/gs-fwupd-app.c:309
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "Posodobitev pogona USB %s"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:323
+#: plugins/fwupd/gs-fwupd-app.c:313
 #, c-format
 msgid "%s Drive Update"
 msgstr "Posodobitev naprave %s"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:317
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr "Posodobitev naprave %s"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:322
 #, c-format
 msgid "%s SSD Update"
 msgstr "Posodobitev SSD %s"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:337
+#: plugins/fwupd/gs-fwupd-app.c:327
 #, c-format
 msgid "%s GPU Update"
 msgstr "Posodobitev modula GPU %s"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:342
+#: plugins/fwupd/gs-fwupd-app.c:332
 #, c-format
 msgid "%s Dock Update"
 msgstr "Posodobitev pogona %s"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:347
+#: plugins/fwupd/gs-fwupd-app.c:337
 #, c-format
 msgid "%s USB Dock Update"
 msgstr "Posodobitev pogona USB %s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1717
+#: plugins/fwupd/gs-plugin-fwupd.c:1716
 msgid "Firmware update could not be applied: "
 msgstr "Posodobitve strojne programske opreme ni mogoče začeti: "
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1857
+#: plugins/fwupd/gs-plugin-fwupd.c:1856
 msgid "Firmware"
 msgstr "Strojna programska oprema"
 
@@ -5904,6 +5905,22 @@ msgstr "Podpora Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "»Snap« je univerzalni paket operacijskega sistema Linux"
+
+#~ msgid ""
+#~ "What did you like about this app? Leaving your feedback along with your "
+#~ "reasons for leaving a review is helpful for others."
+#~ msgstr ""
+#~ "Kaj vam je bilo pri tem programu všeč? Če pustite sporočilo skupaj z "
+#~ "razlogi za pisanje ocene, je to koristno za druge uporabnike."
+
+#~ msgid "An important software update is ready to be installed."
+#~ msgstr "Pomembne programske posodobitve so pripravljene za namestitev."
+
+#~ msgid "Important: critical software updates are waiting."
+#~ msgstr "Pomembno: na voljo so kritične programske posodobitve."
+
+#~ msgid "Please download waiting software updates."
+#~ msgstr "Priporočljivo je prejeti posodobitve, pripravljene za namestitev."
 
 #~ msgid "Automatic Updates Paused"
 #~ msgstr "Samodejno posodabljanje je v premoru"
@@ -6008,10 +6025,6 @@ msgstr "»Snap« je univerzalni paket operacijskega sistema Linux"
 #, c-format
 #~ msgid "Unable to install updates from %s as download failed"
 #~ msgstr "Ni mogoče namestiti posodobitev %s, ker je prejemanje spodletelo"
-
-#, c-format
-#~ msgid "Unable to install updates as download failed"
-#~ msgstr "Ni mogoče namestiti posodobitev, ker je prejemanje spodletelo"
 
 #, c-format
 #~ msgid "Unable to install updates: not enough disk space"
