@@ -1553,11 +1553,23 @@ gs_plugin_loader_reload_delay_cb (gpointer user_data)
 }
 
 static void
-gs_plugin_loader_reload_cb (GsPlugin *plugin,
+gs_plugin_loader_reload_cb (GsPlugin *in_plugin,
 			    GsPluginLoader *plugin_loader)
 {
 	if (plugin_loader->reload_id != 0)
 		return;
+	/* Let also the plugins know that the reload had been initiated;
+	   The GsPluginClass::reload is a signal function, but its default
+	   implementation can be used to notify the plugin. */
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
+		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+		if (plugin != in_plugin && plugin_class != NULL && plugin_class->reload != NULL) {
+			g_signal_handlers_block_by_func (plugin, gs_plugin_loader_reload_cb, plugin_loader);
+			plugin_class->reload (plugin);
+			g_signal_handlers_unblock_by_func (plugin, gs_plugin_loader_reload_cb, plugin_loader);
+		}
+	}
 	plugin_loader->reload_id =
 		g_timeout_add_seconds (GS_PLUGIN_LOADER_RELOAD_DELAY,
 				       gs_plugin_loader_reload_delay_cb,
