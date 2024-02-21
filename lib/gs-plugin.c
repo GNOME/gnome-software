@@ -911,7 +911,8 @@ check_directory_for_desktop_file (GsPlugin *plugin,
 	if (found && cb (plugin, app, filename, key_file)) {
 		g_autoptr(GDesktopAppInfo) appinfo = NULL;
 		g_debug ("Found '%s' for app '%s' and picked it", filename, desktop_id);
-		appinfo = g_desktop_app_info_new_from_keyfile (key_file);
+		/* use the filename, not the key_file, to enable bus activation from the .desktop file */
+		appinfo = g_desktop_app_info_new_from_filename (filename);
 		if (appinfo != NULL)
 			return g_steal_pointer (&appinfo);
 		g_debug ("Failed to load '%s' as a GDesktopAppInfo", filename);
@@ -927,7 +928,8 @@ check_directory_for_desktop_file (GsPlugin *plugin,
 		if (found && cb (plugin, app, desktop_filename, key_file)) {
 			g_autoptr(GDesktopAppInfo) appinfo = NULL;
 			g_debug ("Found '%s' for app '%s' and picked it", desktop_filename, desktop_id);
-			appinfo = g_desktop_app_info_new_from_keyfile (key_file);
+			/* use the filename, not the key_file, to enable bus activation from the .desktop file */
+			appinfo = g_desktop_app_info_new_from_filename (desktop_filename);
 			if (appinfo != NULL)
 				return g_steal_pointer (&appinfo);
 			g_debug ("Failed to load '%s' as a GDesktopAppInfo", desktop_filename);
