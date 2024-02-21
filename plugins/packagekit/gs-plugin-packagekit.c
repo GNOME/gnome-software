@@ -78,6 +78,7 @@ struct _GsPluginPackagekit {
 
 G_DEFINE_TYPE (GsPluginPackagekit, gs_plugin_packagekit, GS_TYPE_PLUGIN)
 
+static void gs_plugin_packagekit_installed_changed_cb (PkControl *control, GsPlugin *plugin);
 static void gs_plugin_packagekit_updates_changed_cb (PkControl *control, GsPlugin *plugin);
 static void gs_plugin_packagekit_repo_list_changed_cb (PkControl *control, GsPlugin *plugin);
 static void gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
@@ -135,6 +136,11 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 			  G_CALLBACK (gs_plugin_packagekit_updates_changed_cb), plugin);
 	g_signal_connect (self->control_refine, "repo-list-changed",
 			  G_CALLBACK (gs_plugin_packagekit_repo_list_changed_cb), plugin);
+	if (g_signal_lookup ("installed-changed", PK_TYPE_CONTROL) != 0) {
+		g_debug ("Connecting to PkControl::installed-changed signal");
+		g_signal_connect_object (self->control_refine, "installed-changed",
+					 G_CALLBACK (gs_plugin_packagekit_installed_changed_cb), plugin, 0);
+	}
 
 	/* proxy */
 	self->control_proxy = pk_control_new ();
@@ -920,6 +926,12 @@ gs_plugin_launch (GsPlugin *plugin,
 		return TRUE;
 
 	return gs_plugin_app_launch_filtered (plugin, app, plugin_packagekit_pick_rpm_desktop_file_cb, NULL, error);
+}
+
+static void
+gs_plugin_packagekit_installed_changed_cb (PkControl *control, GsPlugin *plugin)
+{
+	gs_plugin_reload (plugin);
 }
 
 static void
