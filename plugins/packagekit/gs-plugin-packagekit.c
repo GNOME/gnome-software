@@ -929,9 +929,22 @@ gs_plugin_launch (GsPlugin *plugin,
 }
 
 static void
+gs_plugin_packagekit_invoke_reload (GsPlugin *plugin)
+{
+	g_autoptr(GsAppList) list = gs_plugin_list_cached (plugin);
+	guint sz = gs_app_list_length (list);
+	for (guint i = 0; i < sz; i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		/* to ensure the app states are refined */
+		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+	}
+	gs_plugin_reload (plugin);
+}
+
+static void
 gs_plugin_packagekit_installed_changed_cb (PkControl *control, GsPlugin *plugin)
 {
-	gs_plugin_reload (plugin);
+	gs_plugin_packagekit_invoke_reload (plugin);
 }
 
 static void
@@ -943,7 +956,7 @@ gs_plugin_packagekit_updates_changed_cb (PkControl *control, GsPlugin *plugin)
 static void
 gs_plugin_packagekit_repo_list_changed_cb (PkControl *control, GsPlugin *plugin)
 {
-	gs_plugin_reload (plugin);
+	gs_plugin_packagekit_invoke_reload (plugin);
 }
 
 void
