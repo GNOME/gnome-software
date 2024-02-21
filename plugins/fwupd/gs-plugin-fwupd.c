@@ -459,7 +459,6 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 	gs_app_set_version (app, fwupd_device_get_version (device));
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_name (device));
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_summary (device));
-	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_description (device));
 	gs_app_set_origin (app, fwupd_device_get_vendor (device));
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (device));
 	gs_app_set_management_plugin (app, plugin);
