@@ -280,6 +280,7 @@ void		 gs_plugin_cache_add			(GsPlugin	*plugin,
 void		 gs_plugin_cache_remove			(GsPlugin	*plugin,
 							 const gchar	*key);
 void		 gs_plugin_cache_invalidate		(GsPlugin	*plugin);
+GsAppList	*gs_plugin_list_cached			(GsPlugin	*plugin);
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
