@@ -780,6 +780,30 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 	return TRUE;
 }
 
+static void
+gs_plugin_appstream_reload (GsPlugin *plugin)
+{
+	GsPluginAppstream *self;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
+	guint sz;
+
+	g_return_if_fail (GS_IS_PLUGIN_APPSTREAM (plugin));
+
+	list = gs_plugin_list_cached (plugin);
+	sz = gs_app_list_length (list);
+	for (guint i = 0; i < sz; i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		/* to ensure the app states are refined */
+		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+	}
+
+	self = GS_PLUGIN_APPSTREAM (plugin);
+	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
+	if (self->silo != NULL)
+		xb_silo_invalidate (self->silo);
+}
+
 static gint
 get_priority_for_interactivity (gboolean interactive)
 {
@@ -1591,6 +1615,7 @@ gs_plugin_appstream_class_init (GsPluginAppstreamClass *klass)
 
 	object_class->dispose = gs_plugin_appstream_dispose;
 
+	plugin_class->reload = gs_plugin_appstream_reload;
 	plugin_class->setup_async = gs_plugin_appstream_setup_async;
 	plugin_class->setup_finish = gs_plugin_appstream_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_appstream_shutdown_async;
