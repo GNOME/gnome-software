@@ -98,6 +98,28 @@ gs_appstream_format_description_text (XbNode *node)
 	node_text = xb_node_get_text (node);
 	if (node_text != NULL && *node_text != '\0') {
 		g_autofree gchar *escaped = g_markup_escape_text (node_text, -1);
+		gchar *r_ptr = escaped, *w_ptr = escaped;
+		gboolean has_space;
+		/* skip leading spaces */
+		while (g_ascii_isspace (*r_ptr))
+			r_ptr++;
+		/* replace consecutive white-spaces with a single space */
+		for (has_space = FALSE; *r_ptr != '\0'; r_ptr++) {
+			if (g_ascii_isspace (*r_ptr)) {
+				has_space = TRUE;
+			} else {
+				if (has_space) {
+					*w_ptr = ' ';
+					w_ptr++;
+					has_space = FALSE;
+				}
+				if (w_ptr != r_ptr)
+					*w_ptr = *r_ptr;
+				w_ptr++;
+			}
+		}
+		if (w_ptr != r_ptr)
+			*w_ptr = '\0';
 		g_string_append (str, escaped);
 	}
 
