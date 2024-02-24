@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-02-21 20:23+0000\n"
-"PO-Revision-Date: 2024-02-21 23:07+0100\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2024-02-21 22:08+0000\n"
+"PO-Revision-Date: 2024-02-24 14:56+0100\n"
+"Last-Translator: Brage Fuglseth <bragefuglseth@gnome.org>\n"
 "Language-Team: \n"
 "Language: nb\n"
 "MIME-Version: 1.0\n"
@@ -2097,7 +2097,7 @@ msgid ""
 "source_software\">free and open source software</a>, and is provided by “%s”."
 msgstr ""
 "%s er ikke <a href=\"https://no.wikipedia.org/wiki/Fri_programvare\">fri og "
-"åpen</a>, og leveres av “%s”."
+"åpen</a>, og leveres av «%s»."
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. App name, e.g. "Firefox"
@@ -2105,7 +2105,7 @@ msgstr ""
 #: src/gs-common.c:260
 #, c-format
 msgid "%s is provided by “%s”."
-msgstr "%s leveres av “%s”."
+msgstr "%s leveres av «%s»."
 
 #: src/gs-common.c:269
 msgid "This software repository must be enabled to continue installation."
@@ -2448,12 +2448,12 @@ msgstr ""
 #: src/gs-details-page.c:2011 src/gs-details-page.c:2027
 #, c-format
 msgid "Unable to find “%s”"
-msgstr "Fant ikke “%s”"
+msgstr "Fant ikke «%s»"
 
 #: src/gs-details-page.c:2375
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
-msgstr "Innsending av anmeldelse av “%s” mislyktes: %s"
+msgstr "Innsending av anmeldelse av «%s» mislyktes: %s"
 
 #: src/gs-details-page.ui:7
 msgid "Details page"
@@ -3231,7 +3231,7 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
-"Denne appen utgis under den spesielle lisensen <a href=\"%s\">“%s”</a>.\n"
+"Denne appen utgis under den spesielle lisensen <a href=\"%s\">«%s»</a>.\n"
 "\n"
 "Du kan sannsynligvis ikke hjelpe til med å forbedre den."
 
@@ -3243,7 +3243,7 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
-"Denne appen utgis under den spesielle lisensen “%s”.\n"
+"Denne appen utgis under den spesielle lisensen «%s».\n"
 "\n"
 "Du kan sannsynligvis ikke hjelpe til med å forbedre den."
 
@@ -3255,7 +3255,7 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
-"Dette innholdet utgis under den spesielle lisensen <a href=\"%s\">“%s”</a>.\n"
+"Dette innholdet utgis under den spesielle lisensen <a href=\"%s\">«%s»</a>.\n"
 "\n"
 "Du kan sannsynligvis ikke hjelpe til med å forbedre det."
 
@@ -3267,7 +3267,7 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
-"Dette innholdet utgis under den spesielle lisensen “%s”.\n"
+"Dette innholdet utgis under den spesielle lisensen «%s».\n"
 "\n"
 "Du kan sannsynligvis ikke hjelpe til med å forbedre det."
 
@@ -3572,7 +3572,7 @@ msgstr "_Oppdater"
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
-msgstr "Innhold fra “%s” vil ikke oppdateres lenger."
+msgstr "Innhold fra «%s» vil ikke oppdateres lenger."
 
 #: src/gs-repos-dialog.c:250
 msgid "Disable Repository?"
@@ -4136,13 +4136,13 @@ msgstr "Har ikke åpent tilgjengelig og kontrollerbar kildekode"
 #: src/gs-safety-context-dialog.c:438
 #, c-format
 msgid "This app is developed under the special license “%s”"
-msgstr "Utgitt under den spesielle lisensen “%s”"
+msgstr "Utgitt under den spesielle lisensen «%s»"
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-safety-context-dialog.c:441
 #, c-format
 msgid "This software is developed under the special license “%s”"
-msgstr "Utgitt under den spesielle lisensen “%s”"
+msgstr "Utgitt under den spesielle lisensen «%s»"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:454
@@ -4305,7 +4305,7 @@ msgstr "Fant ingen apper"
 #: src/gs-shell.c:1229
 #, c-format
 msgid "“%s”"
-msgstr "“%s”"
+msgstr "«%s»"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1282 src/gs-shell.c:1321
@@ -4349,52 +4349,52 @@ msgstr "Henting av oppdateringsliste mislyktes"
 
 #: src/gs-shell.c:1357
 msgid "Unable to install: download failed"
-msgstr "Installasjon mislyktes: nedlasting avbrutt"
+msgstr "Installering mislyktes: nedlasting avbrutt"
 
 #: src/gs-shell.c:1361
 msgid "Unable to install: missing runtime"
-msgstr "Installasjon mislyktes: manglende base"
+msgstr "Installering mislyktes: manglende base"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1363 src/gs-shell.c:1397
 #, c-format
 msgid "Unable to install %s"
-msgstr "Installasjon av %s mislyktes"
+msgstr "Installering av %s mislyktes"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1369
 msgid "Unable to install: internet access required"
-msgstr "Installasjon mislyktes: trenger nettilgang"
+msgstr "Installering mislyktes: trenger nettilgang"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1373
 msgid "Unable to install: invalid app format"
-msgstr "Installasjon mislyktes: ugyldig apptype"
+msgstr "Installering mislyktes: ugyldig apptype"
 
 #: src/gs-shell.c:1376
 msgid "Unable to install: not enough disk space"
-msgstr "Installasjon mislyktes: ikke nok lagringsplass"
+msgstr "Installering mislyktes: ikke nok lagringsplass"
 
 #: src/gs-shell.c:1379
 msgid "Unable to install: authentication required"
-msgstr "Installasjon mislyktes: autentisering kreves"
+msgstr "Installering mislyktes: autentisering kreves"
 
 #: src/gs-shell.c:1382
 msgid "Unable to install: invalid authentication"
-msgstr "Installasjon mislyktes: ugyldig autentisering"
+msgstr "Installering mislyktes: ugyldig autentisering"
 
 #: src/gs-shell.c:1385
 msgid "Unable to install: permission required"
-msgstr "Installasjon mislyktes: trenger tillatelse"
+msgstr "Installering mislyktes: trenger tillatelse"
 
 #: src/gs-shell.c:1388
 msgid "Unable to install: device must be plugged in"
-msgstr "Installasjon mislyktes: enheten må kobles til"
+msgstr "Installering mislyktes: enheten må kobles til"
 
 #: src/gs-shell.c:1390
 msgid "Unable to install: low battery"
-msgstr "Installasjon mislyktes: lavt batterinivå"
+msgstr "Installering mislyktes: lavt batterinivå"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1433
@@ -4421,7 +4421,7 @@ msgstr "Oppdatering av %s mislyktes"
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1473
 msgid "Unable to install updates"
-msgstr "Installasjon av oppdateringer mislyktes"
+msgstr "Installering av oppdateringer mislyktes"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1509 src/gs-shell.c:1546
@@ -4523,17 +4523,17 @@ msgstr "Ikke nok lagringsplass til handling"
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1691
 msgid "Unable to install: file type not supported"
-msgstr "Installasjon mislyktes: filtypen støttes ikke"
+msgstr "Installering mislyktes: filtypen støttes ikke"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1695 src/gs-shell.c:1739
 msgid "Unable to install: authentication failed"
-msgstr "Installasjon mislyktes: autentisering avbrutt"
+msgstr "Installering mislyktes: autentisering avbrutt"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1735
 msgid "Unable to install"
-msgstr "Installasjon mislyktes"
+msgstr "Installering mislyktes"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
@@ -5217,12 +5217,12 @@ msgstr "Husk å sikkerhetskopiere data og filer før oppdateringen."
 #: lib/gs-utils.c:523 lib/gs-utils.c:554
 #, c-format
 msgid "Failed to delete file “%s”: %s"
-msgstr "Sletting av “%s” mislyktes: %s"
+msgstr "Sletting av «%s» mislyktes: %s"
 
 #: lib/gs-utils.c:565
 #, c-format
 msgid "Failed to delete directory “%s”: %s"
-msgstr "Sletting av “%s” mislyktes: %s"
+msgstr "Sletting av «%s» mislyktes: %s"
 
 #: src/org.gnome.Software.desktop.in:4
 msgid "Add, remove or update software on this computer"
@@ -5431,7 +5431,7 @@ msgstr "Laster ned Flatpak-informasjon for %s…"
 #: plugins/flatpak/gs-flatpak.c:3604
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
-msgstr "Behandling av tillegg “%s” mislyktes: %s"
+msgstr "Behandling av tillegg «%s» mislyktes: %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:94
 msgid "User Installation"
@@ -5448,12 +5448,12 @@ msgstr "App-ID"
 #: plugins/flatpak/gs-plugin-flatpak.c:1338
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
-msgstr "Installering av tillegg “%s” mislyktes: %s"
+msgstr "Installering av tillegg «%s» mislyktes: %s"
 
 #: plugins/flatpak/gs-plugin-flatpak.c:1352
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
-msgstr "Avinstallering av tillegg “%s” mislyktes: %s"
+msgstr "Avinstallering av tillegg «%s» mislyktes: %s"
 
 #: plugins/flatpak/gs-plugin-flatpak.c:1619
 #, c-format
@@ -5461,7 +5461,7 @@ msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
 "Remove the filter and repeat the install. Detailed error: %s"
 msgstr ""
-"KIlde “%s” tillater ikke installering av “%s”, muligens på grunn av "
+"KIlde «%s» tillater ikke installering av «%s», muligens på grunn av "
 "filteret. Fjern filteret og prøv på nytt. Informasjon: %s"
 
 #. TRANSLATORS: as in laptop battery power
