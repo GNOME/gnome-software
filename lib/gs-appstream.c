@@ -2838,7 +2838,7 @@ gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
 							       XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
 							       XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 							       cancellable, &local_error);
-			if (md->desktop_silo != NULL && !g_cancellable_is_cancelled (cancellable))
+			if (md->desktop_silo != NULL)
 				md->desktop_index = gs_appstream_create_silo_index (md->desktop_silo, FALSE);
 			else
 				g_warning ("Failed to compile desktop silo: %s", local_error->message);
