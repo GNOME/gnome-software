@@ -62,8 +62,16 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	GString *str = g_string_new (NULL);
 	gint64 time_now = g_get_monotonic_time ();
-	g_string_append_printf (str, "running %s",
-				gs_plugin_action_to_string (priv->action));
+	g_string_append (str, "running ");
+	if (priv->action != GS_PLUGIN_ACTION_UNKNOWN) {
+		g_string_append_printf (str, "%s", gs_plugin_action_to_string (priv->action));
+	} else {
+		const gchar *job_type_name = G_OBJECT_TYPE_NAME (self);
+		if (job_type_name != NULL && g_str_has_prefix (job_type_name, "GsPluginJob"))
+			g_string_append_printf (str, "%s job", job_type_name + strlen ("GsPluginJob"));
+		else
+			g_string_append_printf (str, "%s", job_type_name);
+	}
 	if (priv->plugin != NULL) {
 		g_string_append_printf (str, " on plugin=%s",
 					gs_plugin_get_name (priv->plugin));
