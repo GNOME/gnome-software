@@ -33,6 +33,9 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 	/* remove previous */
 	gs_widget_remove_all (dialog->listbox, (GsRemoveFunc) gtk_list_box_remove);
 
+	/* grab focus so first row text is not selected by default */
+	gtk_widget_grab_focus (dialog->listbox);
+
 	version_history = gs_app_get_version_history (app);
 	if (version_history == NULL || version_history->len == 0) {
 		GtkWidget *row;
