@@ -100,6 +100,7 @@ struct _GsDetailsPage
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
 								packaging format when the alternatives are found */
 	gboolean		 is_narrow;
+	gboolean		 title_visible;
 
 	guint			 job_manager_watch_id;
 
@@ -2483,6 +2484,13 @@ gs_details_page_setup (GsPage *page,
 	return TRUE;
 }
 
+static gboolean
+gs_details_page_should_show_title (GsDetailsPage *self)
+{
+	/* only when not scrolled at the very top */
+	return ((gint) gs_details_page_get_vscroll_position (self)) >= 1;
+}
+
 static void
 gs_details_page_get_property (GObject    *object,
                               guint       prop_id,
@@ -2499,7 +2507,11 @@ gs_details_page_get_property (GObject    *object,
 			g_value_set_string (value, NULL);
 			break;
 		case GS_DETAILS_PAGE_STATE_READY:
-			g_value_set_string (value, gs_app_get_name (self->app));
+			self->title_visible = gs_details_page_should_show_title (self);
+			if (self->title_visible)
+				g_value_set_string (value, gs_app_get_name (self->app));
+			else
+				g_value_set_string (value, NULL);
 			break;
 		case GS_DETAILS_PAGE_STATE_FAILED:
 			g_value_set_string (value, NULL);
@@ -2768,8 +2780,19 @@ narrow_to_halign (GBinding *binding, const GValue *from_value, GValue *to_value,
 }
 
 static void
+scrolledwindow_details_value_changed_cb (GtkAdjustment *adjustment,
+					 GsDetailsPage *self)
+{
+	gboolean title_visible = gs_details_page_should_show_title (self);
+	if ((!title_visible) != (!self->title_visible))
+		g_object_notify (G_OBJECT (self), "title");
+}
+
+static void
 gs_details_page_init (GsDetailsPage *self)
 {
+	GtkAdjustment *adjustment;
+
 	g_type_ensure (GS_TYPE_APP_CONTEXT_BAR);
 	g_type_ensure (GS_TYPE_APP_VERSION_HISTORY_ROW);
 	g_type_ensure (GS_TYPE_DESCRIPTION_BOX);
@@ -2817,6 +2840,10 @@ gs_details_page_init (GsDetailsPage *self)
 				     narrow_to_orientation, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->box_reviews_internal, "orientation", G_BINDING_SYNC_CREATE,
 				     narrow_to_orientation, NULL, NULL, NULL);
+
+	adjustment = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
+	g_signal_connect_object (adjustment, "value-changed",
+				 G_CALLBACK (scrolledwindow_details_value_changed_cb), self, 0);
 }
 
 GsDetailsPage *
