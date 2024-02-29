@@ -216,7 +216,7 @@ gs_flatpak_set_runtime_kind_from_id (GsApp *app)
 		   g_str_has_prefix (id, "org.freedesktop.Platform.Icontheme.") ||
 		   g_str_has_prefix (id, "org.gtk.Gtk3theme.")) {
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
-	} else {
+	} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN) {
 		gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
 	}
 }
@@ -225,7 +225,10 @@ static void
 gs_flatpak_set_kind_from_flatpak (GsApp *app, FlatpakRef *xref)
 {
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
-		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+		/* the appstream plugin can set proper kind, like console-application,
+		   from the appstream data */
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN)
+			gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	} else if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME) {
 		gs_flatpak_set_runtime_kind_from_id (app);
 	}
@@ -3753,7 +3756,11 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 				/* get the kind/name/arch/branch */
 				split = g_strsplit (xref_str, "/", -1);
 				if (g_strv_length (split) == 4) {
-					if (g_ascii_strcasecmp (split[0], "app") == 0)
+					const gchar *comp_type = xb_node_get_attr (component, "type");
+					AsComponentKind kind = as_component_kind_from_string (comp_type);
+					if (kind != AS_COMPONENT_KIND_UNKNOWN)
+						gs_app_set_kind (new, kind);
+					else if (g_ascii_strcasecmp (split[0], "app") == 0)
 						gs_app_set_kind (new, AS_COMPONENT_KIND_DESKTOP_APP);
 					else if (g_ascii_strcasecmp (split[0], "runtime") == 0)
 						gs_flatpak_set_runtime_kind_from_id (new);
