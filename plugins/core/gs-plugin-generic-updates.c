@@ -39,10 +39,14 @@ gs_plugin_generic_updates_merge_os_update (GsApp *app)
 	    gs_app_get_scope (app) != AS_COMPONENT_SCOPE_SYSTEM)
 		return FALSE;
 
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC)
+	switch (gs_app_get_kind (app)) {
+	case AS_COMPONENT_KIND_GENERIC:
+	case AS_COMPONENT_KIND_REPOSITORY:
+	case AS_COMPONENT_KIND_SERVICE:
 		return TRUE;
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
-		return TRUE;
+	default:
+		break;
+	}
 
 	return FALSE;
 }
