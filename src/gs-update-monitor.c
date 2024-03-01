@@ -191,7 +191,7 @@ should_download_updates (GsUpdateMonitor *monitor)
 }
 
 /* The days below are discussed at https://gitlab.gnome.org/GNOME/gnome-software/-/issues/947
-   and https://wiki.gnome.org/Design/Apps/Software/Updates#Tentative_Design */
+   and https://gitlab.gnome.org/Teams/Design/software-mockups/-/raw/master/old/updates-logic.png */
 static gboolean
 should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 				     GsAppList *apps,

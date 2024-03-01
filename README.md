@@ -21,7 +21,7 @@ Plugins are provided for:
 
 Software supports showing metadata that closely matches the [AppStream](https://www.freedesktop.org/wiki/Distributions/AppStream/) format.
 
-Software runs as a background service to provide update notifications and be a search provider for [GNOME Shell](https://wiki.gnome.org/Projects/GnomeShell).
+Software runs as a background service to provide update notifications and be a search provider for [GNOME Shell](https://gitlab.gnome.org/GNOME/gnome-shell/).
 
 # Contact
 
@@ -29,7 +29,7 @@ For questions about how to use Software, ask on [Discourse](https://discourse.gn
 
 Bug reports and merge requests should be filed on [GNOME GitLab](https://gitlab.gnome.org/GNOME/gnome-software).
 
-For development discussion, join us on [#gnome-software](irc://irc.libera.chat/gnome-software) on [Libera Chat](https://wiki.gnome.org/GettingInTouch/IRC) or `#gnome-software:gnome.org` on [Matrix](https://matrix.to/#/#gnome-software:gnome.org).
+For development discussion, join us on `#gnome-software:gnome.org` on [Matrix](https://matrix.to/#/#gnome-software:gnome.org).
 
 # Documentation for app developers and vendors
 
