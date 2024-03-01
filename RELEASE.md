@@ -4,14 +4,14 @@ GNOME Software Release Notes
 Release schedule
 ---
 
-GNOME Software releases are done on the timetable set by the [GNOME release schedule](https://wiki.gnome.org/Schedule).
+GNOME Software releases are done on the timetable set by the [GNOME release schedule](https://release.gnome.org/calendar/).
 
 Maintainers take it in turns to make releases so that the load is spread out evenly.
 
 Making a release
 ---
 
-Adapted from the [GNOME release process](https://wiki.gnome.org/MaintainersCorner/Releasing).
+Adapted from the [GNOME release process](https://handbook.gnome.org/maintainers/making-a-release.html).
 
 These instructions use the following variables:
  - `new_version`: the version number of the release you are making, for example 3.38.1
