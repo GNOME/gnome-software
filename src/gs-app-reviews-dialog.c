@@ -237,7 +237,7 @@ gs_app_reviews_dialog_app_refine_cb (GObject      *source,
                                      gpointer      user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsAppReviewsDialog *self = GS_APP_REVIEWS_DIALOG (user_data);
+	GsAppReviewsDialog *self = user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
