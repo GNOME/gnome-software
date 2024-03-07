@@ -736,13 +736,19 @@ _transaction_end_of_lifed_with_rebase (FlatpakTransaction  *transaction,
 	if (rebased_to_ref && remote) {
 		g_autoptr(GError) local_error = NULL;
 
+#if FLATPAK_CHECK_VERSION(1, 15, 6)
+		if (!flatpak_transaction_add_rebase_and_uninstall (transaction, remote, rebased_to_ref, ref,
+								   NULL, previous_ids, &local_error)) {
+#else
 		if (!flatpak_transaction_add_rebase (transaction, remote, rebased_to_ref,
 						     NULL, previous_ids, &local_error) ||
 		    !flatpak_transaction_add_uninstall (transaction, ref, &local_error)) {
 			/* NOT_INSTALLED error is expected in case the op that triggered this was install not update */
 			if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_NOT_INSTALLED))
 				g_clear_error (&local_error);
-			else if (self->first_operation_error == NULL)
+			else
+#endif
+			if (self->first_operation_error == NULL)
 				g_propagate_prefixed_error (&self->first_operation_error,
 							    g_steal_pointer (&local_error),
 							    "Failed to rebase %s to %s: ",
