@@ -642,6 +642,7 @@ gs_appstream_find_description_and_issues_nodes (XbNode *release_node,
 
 typedef enum {
 	ELEMENT_KIND_UNKNOWN = -1,
+	ELEMENT_KIND_BRANDING,
 	ELEMENT_KIND_BUNDLE,
 	ELEMENT_KIND_CATEGORIES,
 	ELEMENT_KIND_CONTENT_RATING,
@@ -679,6 +680,7 @@ gs_appstream_get_element_kind (const gchar *element_name)
 		const gchar *name;
 		ElementKind kind;
 	} kinds[] = {
+		{ "branding", ELEMENT_KIND_BRANDING },
 		{ "bundle", ELEMENT_KIND_BUNDLE },
 		{ "categories", ELEMENT_KIND_CATEGORIES },
 		{ "content_rating", ELEMENT_KIND_CONTENT_RATING },
@@ -811,6 +813,35 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		switch (gs_appstream_get_element_kind (xb_node_get_element (child))) {
 		default:
 		case ELEMENT_KIND_UNKNOWN:
+			break;
+		case ELEMENT_KIND_BRANDING:
+			{
+				g_autoptr(XbNode) branding_child = NULL;
+				g_autoptr(XbNode) branding_next = NULL;
+				for (branding_child = xb_node_get_child (child);
+				     branding_child != NULL;
+				     g_object_unref (branding_child), branding_child = g_steal_pointer (&branding_next)) {
+					branding_next = xb_node_get_next (branding_child);
+					if (g_strcmp0 (xb_node_get_element (branding_child), "color") == 0) {
+						const gchar *type = xb_node_get_attr (branding_child, "type");
+						if (g_strcmp0 (type, "primary") == 0) {
+							const gchar *color = xb_node_get_text (branding_child);
+							GdkRGBA rgba;
+							if (color != NULL && gdk_rgba_parse (&rgba, color)) {
+								const gchar *scheme_preference = xb_node_get_attr (branding_child, "scheme_preference");
+								GsColorScheme color_scheme = GS_COLOR_SCHEME_ANY;
+
+								if (g_strcmp0 (scheme_preference, "light") == 0)
+									color_scheme = GS_COLOR_SCHEME_LIGHT;
+								else if (g_strcmp0 (scheme_preference, "dark") == 0)
+									color_scheme = GS_COLOR_SCHEME_DARK;
+
+								gs_app_set_key_color_for_color_scheme (app, color_scheme, &rgba);
+							}
+						}
+					}
+				}
+			}
 			break;
 		case ELEMENT_KIND_BUNDLE:
 			if (!had_sources) {
