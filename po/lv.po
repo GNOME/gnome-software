@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-02-19 17:02+0000\n"
-"PO-Revision-Date: 2024-02-25 23:27+0200\n"
+"POT-Creation-Date: 2024-02-25 21:28+0000\n"
+"PO-Revision-Date: 2024-03-08 22:53+0200\n"
 "Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
 "Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
 "Language: lv\n"
@@ -27,9 +27,6 @@ msgid "Install and update apps"
 msgstr "Instalēt un atjaunināt lietotnes"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
-#| msgid ""
-#| "Software allows you to find and install new applications and system "
-#| "extensions and remove existing installed applications."
 msgid ""
 "Software allows you to find and install new apps and system extensions and "
 "remove existing installed apps."
@@ -38,11 +35,6 @@ msgstr ""
 "paplašinājumus, kā arī izņemt jau instalētās lietotnes."
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:14
-#| msgid ""
-#| "Software showcases featured and popular applications with useful "
-#| "descriptions and multiple screenshots per application. Applications can "
-#| "be found either through browsing the list of categories or by searching. "
-#| "It also allows you to update your system using an offline update."
 msgid ""
 "Software showcases featured and popular apps with useful descriptions and "
 "multiple screenshots per app. Apps can be found either through browsing the "
@@ -162,7 +154,7 @@ msgstr "Pie lietotnēm rādīt vērtējumu"
 
 #: data/org.gnome.software.gschema.xml:38
 msgid "Filter applications based on the default branch set for the remote"
-msgstr "Filtrēt lietotnes, balstoties uz noklusējuma zara kopu attālinātajam"
+msgstr "Filtrēt lietotnes, balstoties uz noklusējuma zara kopu attālajam"
 
 #: data/org.gnome.software.gschema.xml:42
 msgid "Non-free applications show a warning dialog before install"
@@ -209,8 +201,8 @@ msgid ""
 "updates to the screenshots may take longer to show to the user. A value of 0 "
 "means to never check the server if the image already exists in the cache."
 msgstr ""
-"Lielākas vērtības izvēlēšanās nozīmē mazāk apkārtceļošanas uz attālināto "
-"serveri, bet ekrānuzņēmumumu atjaunināšana var aizņemt ilgāku laiku, līdz "
+"Lielākas vērtības izvēlēšanās nozīmē mazāk apkārtceļošanas uz attālo "
+"serveri, bet ekrānattēlu atjaunināšana var aizņemt ilgāku laiku, līdz "
 "tie parādās lietotājam. Vērtība 0 nozīmē nekad nepārbaudīt serverī, ja "
 "attēls jau ir kešatmiņā."
 
@@ -296,11 +288,6 @@ msgstr ""
 "swcatalog/xml"
 
 #: data/org.gnome.software.gschema.xml:135
-#| msgid ""
-#| "Priority order of packaging formats to prefer, with more important "
-#| "formats listed first. An empty array means the default order. Omitted "
-#| "formats are assumed to be listed last. Example packaging formats are: "
-#| "deb, flatpak, rpm, snap."
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
@@ -311,8 +298,8 @@ msgstr ""
 "Vēlamo pakošanas formātu prioritāšu secība, kur svarīgākie formāti ir "
 "uzskaitīti pirmie. Tukšs masīvs nozīmē noklusējuma secību. Tiek pieņemts, ka "
 "izlaistie formāti ir saraksta beigās. Piemēra pakotņu formāti: deb, flatpak, "
-"rpm, snap. Ja vēlas, formātus var norādīt ar izcelsmes nosaukumu, atdalītu ar"
-" kolu, piemēram, “flatpak:flathub”."
+"rpm, snap. Ja vēlas, formātus var norādīt ar izcelsmes nosaukumu, atdalītu "
+"ar kolu, piemēram, “flatpak:flathub”."
 
 #: data/org.gnome.software.gschema.xml:139
 msgid "The timestamp of the last attempt to remove unused Flatpak runtimes"
@@ -323,19 +310,18 @@ msgid ""
 "Set to 'true' to show only freely licensed apps and hide any proprietary "
 "apps."
 msgstr ""
-"Iestatiet uz “patiess”, lai rādītu tikai brīvi pieejamas lietotnes un slēptu"
-" visas slēgtās lietotnes."
+"Iestatiet uz “patiess”, lai rādītu tikai brīvi pieejamas lietotnes un slēptu "
+"visas slēgtās lietotnes."
 
 #: data/org.gnome.software.gschema.xml:147
 msgid ""
 "Set to 'true' to show only apps from developers whose identity has been "
 "verified."
 msgstr ""
-"Iestatiet uz “patiess”, lai rādītu lietotnes tikai no izstrādātājiem, kuru"
-" identitāte ir pārbaudīta."
+"Iestatiet uz “patiess”, lai rādītu lietotnes tikai no izstrādātājiem, kuru "
+"identitāte ir pārbaudīta."
 
 #: data/org.gnome.software.gschema.xml:151
-#| msgid "The timestamp of the first security update, cleared after update"
 msgid "The timestamp of the last received historical updates."
 msgstr "Laika spiedogs pēdējiem saņemtiem vēsturiskajiem atjauninājumiem."
 
@@ -779,7 +765,6 @@ msgstr "%s ir piemērots jauniem bērniem"
 #. * for children up to around age 12. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:1033
 #, c-format
-#| msgid "%s is suitable for young children"
 msgid "%s is suitable for children"
 msgstr "%s ir piemērots bērniem"
 
@@ -879,7 +864,6 @@ msgid "_Install"
 msgstr "_Instalēt"
 
 #: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1152
-#| msgid "_Uninstall"
 msgid "_Uninstall…"
 msgstr "_Atinstalēt…"
 
@@ -913,7 +897,6 @@ msgid "Devices"
 msgstr "Ierīces"
 
 #: src/gs-app-details-page.c:63
-#| msgid "Can access arbitrary files"
 msgid "Can access arbitrary devices such as webcams"
 msgstr "Var piekļūt patvaļīgām ierīcēm, piemēram, tīmekļa kamerai"
 
@@ -921,14 +904,12 @@ msgstr "Var piekļūt patvaļīgām ierīcēm, piemēram, tīmekļa kamerai"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:339
 #: src/gs-safety-context-dialog.c:231
-#| msgid "Can access hardware devices"
 msgid "Can access input devices"
 msgstr "Var piekļūt ievades ierīcēm"
 
 #. Translators: This indicates an app can access input devices.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:346
-#| msgid "Can access the internet"
 msgid "Can access microphones"
 msgstr "Var piekļūt mikrofoniem"
 
@@ -937,14 +918,12 @@ msgid "Can access system device files"
 msgstr "Var piekļūt sistēmas ierīču datnēm"
 
 #: src/gs-app-details-page.c:67
-#| msgid "Screenshot"
 msgid "Screen contents"
 msgstr "Ekrāna saturs"
 
 #. Translators: This indicates an app can access the screen/display contents.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:360
-#| msgid "Can access the internet"
 msgid "Can access screen contents"
 msgstr "Var piekļūt ekrāna saturam"
 
@@ -1017,7 +996,6 @@ msgid "Reviews"
 msgstr "Atsauksmes"
 
 #: src/gs-app-reviews-dialog.ui:23
-#| msgid "No reviews were found for this application."
 msgid "No reviews were found for this app."
 msgstr "Nav atrastas atsauksmes par šo lietotni."
 
@@ -1120,15 +1098,14 @@ msgid ""
 "Enable verbose debugging output (from the running instance, if already "
 "running)"
 msgstr ""
-"Ieslēgt detalizētu atkļūdošanas izvadi (no esošas instances, ja tāda jau"
-" darbojas)"
+"Ieslēgt detalizētu atkļūdošanas izvadi (no esošas instances, ja tāda jau "
+"darbojas)"
 
 #: src/gs-application.c:145
 msgid "Installs any pending updates in the background"
 msgstr "Fonā instalē rindā esošos atjauninājumus"
 
 #: src/gs-application.c:147
-#| msgid "Show update preferences"
 msgid "Show preferences"
 msgstr "Rādīt iestatījumus"
 
@@ -1145,7 +1122,6 @@ msgid "Show version number"
 msgstr "Rādīt versijas numuru"
 
 #: src/gs-application.c:271 src/gs-application.c:279
-#| msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgid "Copyright © 2016–2023 GNOME Software contributors"
 msgstr "Autortiesības © 2016–2023 GNOME “Programmatūras” veidotāji"
 
@@ -1255,7 +1231,6 @@ msgstr "Var piekļūt aparatūras ierīcēm"
 #. Translators: This indicates an app can access system devices such as /dev/shm.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:353
-#| msgid "Can access system device files"
 msgid "Can access system devices"
 msgstr "Var piekļūt sistēmas ierīcēm"
 
@@ -1286,7 +1261,6 @@ msgstr "Var lasīt visas jūsu lejupielādes"
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:405
-#| msgid "Can access system device files"
 msgid "Can access some specific files"
 msgstr "Var piekļūt dažām specifiskām datnēm"
 
@@ -1318,7 +1292,6 @@ msgstr "Programmatūras izstrādātājs ir pārbaudīts"
 #. * by the user’s distribution and is probably safe.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:456 src/gs-safety-context-dialog.c:147
-#| msgid "Reviewed by your distribution"
 msgid "Reviewed by OS distributor"
 msgstr "Pārbaudīja OS izplatītāji"
 
@@ -1329,7 +1302,6 @@ msgstr "Pārbaudīja OS izplatītāji"
 #. Translators: The '%s' is replaced by the distribution name.
 #: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:150
 #, c-format
-#| msgid "Reviews"
 msgid "Reviewed by %s"
 msgstr "Pārbaudīja %s"
 
@@ -1355,7 +1327,6 @@ msgstr "Pārbaudāms kods"
 #. Translators: This indicates an app does not specify which license it's developed under.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:506
-#| msgid "Unknown Software License"
 msgid "Unknown license"
 msgstr "Nezināma licence"
 
@@ -1525,7 +1496,6 @@ msgstr "Instalēt"
 
 #. TRANSLATORS: this is a button in the updates panel
 #: src/gs-app-row.c:186
-#| msgid "_Download"
 msgid "Download"
 msgstr "Lejupielādēt"
 
@@ -1538,7 +1508,6 @@ msgstr "Atjaunināt"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily removed
 #: src/gs-app-row.c:197 src/gs-app-row.c:207
-#| msgid "Uninstalling…"
 msgid "Uninstall…"
 msgstr "Atinstalēt…"
 
@@ -1568,12 +1537,10 @@ msgstr "Pārdēvēt no %s"
 
 #. Replace user-provided non-localized string with a localized text
 #: src/gs-app-row.c:579 src/gs-details-page.ui:595
-#| msgid "%s USB Receiver Update"
 msgid "Stopped Receiving Updates"
 msgstr "Beidza saņemt atjauninājums"
 
 #: src/gs-app-row.ui:58
-#| msgid "%s Camera Update"
 msgid "Critical Update"
 msgstr "Kritisks atjauninājums"
 
@@ -1595,12 +1562,6 @@ msgstr "Palīdziet tulkot %s"
 #. Translators: The placeholder is an app name
 #: src/gs-app-translation-dialog.c:71
 #, c-format
-#| msgid ""
-#| "%s is designed, developed, and translated by an international community "
-#| "of volunteers.\n"
-#| "\n"
-#| "This means that while it’s not yet available in your language, you can "
-#| "get involved and help translate it yourself."
 msgid ""
 "%s is designed, developed, and translated by an international community of "
 "contributors.\n"
@@ -1625,7 +1586,7 @@ msgstr "_Tulkošanas tīmekļa vietne"
 #: src/gs-basic-auth-dialog.c:82
 #, c-format
 msgid "Login required remote %s (realm %s)"
-msgstr "Attālinātajam %s vajag ierakstīties (apgabals %s)"
+msgstr "Attālajam %s vajag ierakstīties (apgabals %s)"
 
 #: src/gs-basic-auth-dialog.ui:6
 msgid "Login Required"
@@ -1653,7 +1614,6 @@ msgstr "Lietotājs"
 
 #. Translators: Placeholder text for a login entry.
 #: src/gs-basic-auth-dialog.ui:75
-#| msgid "_Password"
 msgid "Password"
 msgstr "Parole"
 
@@ -1705,7 +1665,6 @@ msgstr "Lūdzu, ievadiet skaitli no 1 līdz %u: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
 #: lib/gs-cmd.c:283
-#| msgid "Choose an application:"
 msgid "Choose an app:"
 msgstr "Izvēlieties lietotni:"
 
@@ -2097,7 +2056,6 @@ msgstr "Nepieciešama pārstartēšana, lai izmaiņas stātos spēkā."
 #. TRANSLATORS: this is the body of a notification that an app
 #. * has been successfully installed
 #: src/gs-common.c:77
-#| msgid "Application is ready to be used."
 msgid "App is ready to be used."
 msgstr "Lietotne ir gatava lietošanai."
 
@@ -2124,7 +2082,6 @@ msgstr "Palaist"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:230
-#| msgid "Install Unsigned Software?"
 msgid "Install Software?"
 msgstr "Instalēt programmatūru?"
 
@@ -2135,7 +2092,6 @@ msgstr "Instalēt trešās puses programmatūru?"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:236
-#| msgid "Enable Third-Party Software Repository?"
 msgid "Enable Software Repository?"
 msgstr "Ieslēgt programmatūras krātuves?"
 
@@ -2184,13 +2140,11 @@ msgstr ""
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
 #: src/gs-common.c:299
-#| msgid "Don’t Warn Again"
 msgid "Don’t _Warn Again"
 msgstr "_Vairs nebrīdināt"
 
 #. TRANSLATORS: button text
 #: src/gs-common.c:308
-#| msgid "Enable and Install"
 msgid "Enable and _Install"
 msgstr "_Ieslēgt un instalēt"
 
@@ -2226,8 +2180,6 @@ msgstr[2] "Atjauninājumi tika uzinstalēti"
 
 #. TRANSLATORS: we've just removed some apps
 #: src/gs-common.c:896
-#| msgid "An application has been removed"
-#| msgid_plural "Applications have been removed"
 msgid "An app has been removed"
 msgid_plural "Apps have been removed"
 msgstr[0] "Lietotne ir izņemta"
@@ -2312,7 +2264,6 @@ msgstr "%s %s"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:291
-#| msgid "An application"
 msgid "An app"
 msgstr "Lietotne"
 
@@ -2452,9 +2403,6 @@ msgid "This app will appear in US English"
 msgstr "Šī lietotne būs ASV angļu valodā"
 
 #: src/gs-details-page.c:1307
-#| msgid ""
-#| "This software is not available in your language and will appear in US "
-#| "English."
 msgid "This software will appear in US English"
 msgstr "Šī programmatūra būs ASV angļu valodā"
 
@@ -2488,32 +2436,27 @@ msgstr "Jums vajadzīga interneta piekļuve, lai rakstītu apskatu"
 #: src/gs-details-page.c:1915
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
-"Šī lietotne vairs nesaņem drošības atjauninājumus, tai skaitā drošības ielāpus"
+"Šī lietotne vairs nesaņem drošības atjauninājumus, tai skaitā drošības "
+"ielāpus"
 
 #: src/gs-details-page.c:1916
-#| msgid ""
-#| "This software is already provided by your distribution and should not be "
-#| "replaced."
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr "Šo lietotni jau piegādā jūsu distribūcija un to nevajadzētu aizvietot."
 
 #: src/gs-details-page.c:1917
-#| msgid ""
-#| "This software doesn’t provide any links to a website, code repository or "
-#| "issue tracker."
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
 msgstr ""
-"Šī lietotne nepiedāvā nekādas saites uz tīmekļa vietni, pirmkoda "
-"krātuvēm vai kļūdu izsekotāju."
+"Šī lietotne nepiedāvā nekādas saites uz tīmekļa vietni, pirmkoda krātuvēm "
+"vai kļūdu izsekotāju."
 
 #: src/gs-details-page.c:1919
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
-"Šī programmatūra vairs nesaņem drošības atjauninājumus, tai skaitā drošības"
-" ielāpus"
+"Šī programmatūra vairs nesaņem drošības atjauninājumus, tai skaitā drošības "
+"ielāpus"
 
 #: src/gs-details-page.c:1920
 msgid ""
@@ -2537,7 +2480,6 @@ msgstr "Nevar atrast “%s”"
 
 #: src/gs-details-page.c:2375
 #, c-format
-#| msgid "Failed to refine addon ‘%s’: %s"
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Neizdevās iesniegt atsauksmi par “%s” — %s"
 
@@ -2546,7 +2488,6 @@ msgid "Details page"
 msgstr "Sīkākas informācijas lapa"
 
 #: src/gs-details-page.ui:54
-#| msgid "Loading application details…"
 msgid "Loading App Details"
 msgstr "Ielādē informāciju par lietotni"
 
@@ -2573,9 +2514,6 @@ msgid "Add-ons"
 msgstr "Pielikumi"
 
 #: src/gs-details-page.ui:666
-#| msgid ""
-#| "This application can only be used when there is an active internet "
-#| "connection."
 msgid "This app can only be used when there is an active internet connection."
 msgstr "Šo lietotni var izmantot tikai tad, kad ir savienojums ar internetu."
 
@@ -2584,9 +2522,6 @@ msgid "Software Repository Included"
 msgstr "Programmatūras krātuve ir iekļauta"
 
 #: src/gs-details-page.ui:699
-#| msgid ""
-#| "This application includes a software repository which provides updates, "
-#| "as well as access to other software."
 msgid ""
 "This app includes a software repository which provides updates, as well as "
 "access to other software."
@@ -2599,9 +2534,6 @@ msgid "No Software Repository Included"
 msgstr "Programmatūras krātuve nav iekļauta"
 
 #: src/gs-details-page.ui:737
-#| msgid ""
-#| "This application does not include a software repository. It will not be "
-#| "updated with new versions."
 msgid ""
 "This app does not include a software repository. It will not be updated with "
 "new versions."
@@ -2631,7 +2563,6 @@ msgid "Clear app data"
 msgstr "Attīrīt lietotnes datus"
 
 #: src/gs-details-page.ui:871
-#| msgid "Delete Design"
 msgid "D_elete Data"
 msgstr "D_zēst datus"
 
@@ -2661,14 +2592,12 @@ msgstr "_Palīdzība"
 
 #. Translators: This is a verb, used on a button to ‘contact the developer’
 #: src/gs-details-page.ui:1069
-#| msgid "Contact Details"
 msgctxt "verb"
 msgid "_Contact"
 msgstr "_Saiznāties"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
 #: src/gs-details-page.ui:1163
-#| msgid "_Write Review"
 msgid "Write R_eview"
 msgstr "_Rakstīt atsauksmi"
 
@@ -2735,7 +2664,6 @@ msgstr "tīmekļa vietnē"
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:429
 #, c-format
-#| msgid "No applications are available that provide the file %s."
 msgid "No apps are available that provide the file %s."
 msgstr "Nav lietotņu, kas nodrošinātu datni %s."
 
@@ -2743,9 +2671,6 @@ msgstr "Nav lietotņu, kas nodrošinātu datni %s."
 #. * hyperlink with the "on the website" text
 #: src/gs-extras-page.c:433 src/gs-extras-page.c:444 src/gs-extras-page.c:455
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get missing "
-#| "applications might be found %s."
 msgid ""
 "Information about %s, as well as options for how to get missing apps might "
 "be found %s."
@@ -2757,7 +2682,6 @@ msgstr ""
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:440 src/gs-extras-page.c:462
 #, c-format
-#| msgid "No applications are available for %s support."
 msgid "No apps are available for %s support."
 msgstr "%s atbalstam nav pieejamu lietotņu."
 
@@ -2772,9 +2696,6 @@ msgstr "%s nav pieejams."
 #. * hyperlink with the "on the website" text
 #: src/gs-extras-page.c:466
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get an application "
-#| "that can support this format might be found %s."
 msgid ""
 "Information about %s, as well as options for how to get an app that can "
 "support this format might be found %s."
@@ -2901,7 +2822,6 @@ msgid "%s file format"
 msgstr "%s datnes formāts"
 
 #: src/gs-extras-page.c:1326
-#| msgid "Install"
 msgid "Install _All"
 msgstr "Inst_alēt visu"
 
@@ -3114,7 +3034,6 @@ msgstr "%s strādā ar šo ierīci"
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:731
 #, c-format
-#| msgid "%s probably works on this device"
 msgid "%s possibly works on this device"
 msgstr "%s iespējams strādās ar šo ierīci"
 
@@ -3138,7 +3057,6 @@ msgid "Hardware Support"
 msgstr "Aparatūras atbalsts"
 
 #: src/gs-help-overlay.ui:12
-#| msgid "Localization"
 msgid "Navigation"
 msgstr "Navigācija"
 
@@ -3147,17 +3065,14 @@ msgid "Navigate to Explore Page"
 msgstr "Iet uz pārskatīšanas lapu"
 
 #: src/gs-help-overlay.ui:23
-#| msgid "Installed page"
 msgid "Navigate to Installed Page"
 msgstr "Iet uz instalēto lietotņu lapu"
 
 #: src/gs-help-overlay.ui:29
-#| msgid "Updates page"
 msgid "Navigate to Updates Page"
 msgstr "Iet uz atjauninājumu lapu"
 
 #: src/gs-help-overlay.ui:35
-#| msgid "Search page"
 msgid "Open Search Bar"
 msgstr "Atvērt meklēšanas joslu"
 
@@ -3166,22 +3081,18 @@ msgid "Windows"
 msgstr "Logi"
 
 #: src/gs-help-overlay.ui:48
-#| msgid "Update Preferences"
 msgid "Open Preferences"
 msgstr "Atvērt iestatījumus"
 
 #: src/gs-help-overlay.ui:54
-#| msgid "Software Repositories"
 msgid "Open Software Repositories"
 msgstr "Atvērt programmatūras krātuves"
 
 #: src/gs-help-overlay.ui:62
-#| msgid "_Help"
 msgid "Help"
 msgstr "Palīdzība"
 
 #: src/gs-help-overlay.ui:67
-#| msgid "Keyboard Support"
 msgid "Open Keyboard Shortcuts"
 msgstr "Atvērt tastatūras īsinājumtaustiņus"
 
@@ -3206,12 +3117,10 @@ msgid "Apps"
 msgstr "Lietotnes"
 
 #: src/gs-installed-page.ui:95
-#| msgid "Web Apps Support"
 msgid "Web Apps"
 msgstr "Tīmekļa lietotnes"
 
 #: src/gs-installed-page.ui:115
-#| msgid "System Applications"
 msgid "System Apps"
 msgstr "Sistēmas lietotnes"
 
@@ -3226,82 +3135,61 @@ msgstr "_Piedalīties"
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:121
 #, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the <a href=\"%s\">%s license</a>.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
 msgid ""
 "This app is developed in the open by an international community, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
 "\n"
 "You can participate and help make it even better."
 msgstr ""
-"Šī programmatūra tika izstrādāta starptautiskā kopienā un tā ir "
-"izlaista zem <a href=\"%s\">%s licences</a>.\n"
+"Šī programmatūra tika izstrādāta starptautiskā kopienā un tā ir izlaista zem "
+"<a href=\"%s\">%s licences</a>.\n"
 "\n"
 "Jūs varat piedalīties un padarīt to vēl labāku."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:128
 #, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
 msgid ""
 "This app is developed in the open by an international community, and "
 "released under the %s license.\n"
 "\n"
 "You can participate and help make it even better."
 msgstr ""
-"Šī programmatūra tika izstrādāta starptautiskā kopienā un tā ir "
-"izlaista zem %s licences.\n"
+"Šī programmatūra tika izstrādāta starptautiskā kopienā un tā ir izlaista zem "
+"%s licences.\n"
 "\n"
 "Jūs varat piedalīties un padarīt to vēl labāku."
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:135
 #, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the <a href=\"%s\">%s license</a>.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
 msgid ""
 "This software is developed in the open by an international community, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
 "\n"
 "You can participate and help make it even better."
 msgstr ""
-"Šī lietotne tika izstrādāta starptautiskā kopienā un tā ir "
-"izlaista zem <a href=\"%s\">%s licences</a>.\n"
+"Šī lietotne tika izstrādāta starptautiskā kopienā un tā ir izlaista zem <a "
+"href=\"%s\">%s licences</a>.\n"
 "\n"
 "Jūs varat piedalīties un padarīt to vēl labāku."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:142
 #, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
 msgid ""
 "This software is developed in the open by an international community, and "
 "released under the %s license.\n"
 "\n"
 "You can participate and help make it even better."
 msgstr ""
-"Šī lietotne tika izstrādāta starptautiskā kopienā un tā ir "
-"izlaista zem %s licences.\n"
+"Šī lietotne tika izstrādāta starptautiskā kopienā un tā ir izlaista zem %s "
+"licences.\n"
 "\n"
 "Jūs varat piedalīties un padarīt to vēl labāku."
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:413
-#| msgid "Unknown Software License"
 msgid "Unknown License"
 msgstr "Nezināma licence"
 
@@ -3311,12 +3199,6 @@ msgid "_Learn More"
 msgstr "_Uzzināt vairāk"
 
 #: src/gs-license-tile.c:157
-#| msgid ""
-#| "This software is not developed in the open, so only its developers know "
-#| "how it works. It may be insecure in ways that are hard to detect, and it "
-#| "may change without oversight.\n"
-#| "\n"
-#| "You may not be able to contribute to this software."
 msgid ""
 "This app does not specify what license it is developed under, and may be "
 "proprietary. It may be insecure in ways that are hard to detect, and it may "
@@ -3324,19 +3206,13 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
-"Šī lietotne nav norādījusi, kāda ir tās licence, un tā varētu būt slēgta."
-" Tajā varētu būt grūti atklāt drošības problēmas un tā "
-"varētu tikt mainīta bez pārraudzības.\n"
+"Šī lietotne nav norādījusi, kāda ir tās licence, un tā varētu būt slēgta. "
+"Tajā varētu būt grūti atklāt drošības problēmas un tā varētu tikt mainīta "
+"bez pārraudzības.\n"
 "\n"
 "Jūs nevarēsiet dot savu ieguldījumu šīs lietotnes attīstībā."
 
 #: src/gs-license-tile.c:161
-#| msgid ""
-#| "This software is not developed in the open, so only its developers know "
-#| "how it works. It may be insecure in ways that are hard to detect, and it "
-#| "may change without oversight.\n"
-#| "\n"
-#| "You may not be able to contribute to this software."
 msgid ""
 "This software does not specify what license it is developed under, and may "
 "be proprietary. It may be insecure in ways that are hard to detect, and it "
@@ -3344,9 +3220,9 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
-"Šī programmatūra nav norādījusi, kāda ir tās licence, un tā varētu būt"
-" slēgta. Tajā varētu būt grūti atklāt drošības problēmas un tā "
-"varētu tikt mainīta bez pārraudzības.\n"
+"Šī programmatūra nav norādījusi, kāda ir tās licence, un tā varētu būt "
+"slēgta. Tajā varētu būt grūti atklāt drošības problēmas un tā varētu tikt "
+"mainīta bez pārraudzības.\n"
 "\n"
 "Jūs nevarēsiet dot savu ieguldījumu šīs lietotnes attīstībā."
 
@@ -3356,12 +3232,6 @@ msgid "Proprietary"
 msgstr "Īpašnieka"
 
 #: src/gs-license-tile.c:175
-#| msgid ""
-#| "This software is not developed in the open, so only its developers know "
-#| "how it works. It may be insecure in ways that are hard to detect, and it "
-#| "may change without oversight.\n"
-#| "\n"
-#| "You may not be able to contribute to this software."
 msgid ""
 "This app is not developed in the open, so only its developers know how it "
 "works. It may be insecure in ways that are hard to detect, and it may change "
@@ -3369,9 +3239,9 @@ msgid ""
 "\n"
 "You may not be able to contribute to this app."
 msgstr ""
-"Šī lietotne nav izstrādāta atvērtā formā un tikai tās izstrādātāji "
-"zina, kā tā darbojas. Tajā varētu būt grūti atklāt drošības problēmas un tā "
-"varētu tikt mainīta bez pārraudzības.\n"
+"Šī lietotne nav izstrādāta atvērtā formā un tikai tās izstrādātāji zina, kā "
+"tā darbojas. Tajā varētu būt grūti atklāt drošības problēmas un tā varētu "
+"tikt mainīta bez pārraudzības.\n"
 "\n"
 "Jūs nevarēsiet dot savu ieguldījumu šīs lietotnes attīstībā."
 
@@ -3391,7 +3261,6 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:450
-#| msgid "License"
 msgid "Special License"
 msgstr "Īpaša licence"
 
@@ -3422,11 +3291,6 @@ msgstr ""
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:215
 #, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the <a href=\"%s\">%s license</a>.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
 msgid ""
 "This software is developed under the special license <a href=\"%s\">%s</a>.\n"
 "\n"
@@ -3450,7 +3314,6 @@ msgstr ""
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
-#| msgid "Downloading software catalog"
 msgid "Downloading Software Catalog"
 msgstr "Lejupielādē programmatūras katalogu"
 
@@ -3459,7 +3322,6 @@ msgid "Loading page"
 msgstr "Ielādē lapu"
 
 #: src/gs-loading-page.ui:11
-#| msgid "Starting up…"
 msgid "Starting Up"
 msgstr "Startējas"
 
@@ -3517,9 +3379,6 @@ msgstr "izvēlētie ārējie avoti"
 #. Repositories Preferences is an item from Software's main menu.
 #: src/gs-overview-page.c:738
 #, c-format
-#| msgid ""
-#| "Provides access to additional software from %s. Some proprietary software "
-#| "is included."
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included.\n"
@@ -3529,8 +3388,8 @@ msgstr ""
 "Sniedz pieeju papildu programmatūrai no %s. Tajā ir iekļauta arī "
 "īpašniekprogrammatūra.\n"
 "\n"
-"Jūs varat ieslēgt šīs krātuves vēlāk lietotnes Programmatūras Krātuves"
-" iestatījumos."
+"Jūs varat ieslēgt šīs krātuves vēlāk lietotnes Programmatūras Krātuves "
+"iestatījumos."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
 #: src/gs-overview-page.c:744
@@ -3549,7 +3408,6 @@ msgid "_Enable"
 msgstr "I_eslēgt"
 
 #: src/gs-overview-page.c:954
-#| msgid "the operating system"
 msgid "Available for your operating system"
 msgstr "Pieejams šajā operētājsistēmā"
 
@@ -3557,8 +3415,6 @@ msgstr "Pieejams šajā operētājsistēmā"
 #. for example: "Available for Fedora Linux"
 #: src/gs-overview-page.c:958
 #, c-format
-#| msgid "Available software for %s"
-#| msgid_plural "Available software for %s"
 msgid "Available for %s"
 msgstr "Pieejams distribūcijai %s"
 
@@ -3573,7 +3429,6 @@ msgstr "Pārskata lapa"
 
 #. Translators: This is a heading for a section with all available apps.
 #: src/gs-overview-page.ui:146
-#| msgid "%s Available"
 msgid "Available Apps"
 msgstr "Pieejamās lietotnes"
 
@@ -3583,7 +3438,6 @@ msgid "Other Categories"
 msgstr "Citas kategorijas"
 
 #: src/gs-overview-page.ui:215
-#| msgid "No Application Data Found"
 msgid "No App Data Found"
 msgstr "Nav atrastu lietotņu datu"
 
@@ -3618,9 +3472,6 @@ msgstr "Vai tiešām vēlaties izņemt %s krātuvi?"
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:572
 #, c-format
-#| msgid ""
-#| "All applications from %s will be uninstalled, and you will have to re-"
-#| "install the repository to use them again."
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
 "repository to use them again."
@@ -3632,12 +3483,10 @@ msgstr ""
 #. * app summary, e.g. 'GNOME Clocks'
 #: src/gs-page.c:582
 #, c-format
-#| msgid "Uninstall"
 msgid "Uninstall %s?"
 msgstr "Atinstalēt %s?"
 
 #: src/gs-page.c:591
-#| msgid "Application Data"
 msgid "App Settings & Data"
 msgstr "Lietotņu iestatījumi un dati"
 
@@ -3658,7 +3507,6 @@ msgstr "Ļauj atjaunot lietotnes iestatījumus un saturu"
 
 #. Translators: this is part of section about deleting app's data
 #: src/gs-page.c:632
-#| msgid "Delete Design"
 msgid "_Delete"
 msgstr "_Dzēst"
 
@@ -3673,8 +3521,8 @@ msgid ""
 "It will not be possible to use %s after removal. App data and settings will "
 "be kept on disk, to allow restoring the app in the future."
 msgstr ""
-"To nevarēs lietot pēc %s izņemšanas. Lietotnes dati un iestatījumi tiks"
-" saglabāti uz diska, lai nākotnē varētu atjaunot lietotni."
+"To nevarēs lietot pēc %s izņemšanas. Lietotnes dati un iestatījumi tiks "
+"saglabāti uz diska, lai nākotnē varētu atjaunot lietotni."
 
 #. TRANSLATORS: this is button text to remove the app
 #: src/gs-page.c:660
@@ -3682,22 +3530,18 @@ msgid "_Uninstall"
 msgstr "_Atinstalēt"
 
 #: src/gs-prefs-dialog.ui:5
-#| msgid "Reference"
 msgid "Preferences"
 msgstr "Iestatījumi"
 
 #: src/gs-prefs-dialog.ui:14
-#| msgid "Software Updates Failed"
 msgid "Software Updates"
 msgstr "Programmatūras atjauninājumi"
 
 #: src/gs-prefs-dialog.ui:26
-#| msgid "Automatic Updates"
 msgid "_Automatic"
 msgstr "_Automātiski"
 
 #: src/gs-prefs-dialog.ui:27
-#| msgid "Automatically download and install updates"
 msgid "Automatically check for and download updates"
 msgstr "Automātiski pārbaudīt un lejupielādēt atjauninājumus"
 
@@ -3710,22 +3554,18 @@ msgid "Checking for and downloading updates must be done manually"
 msgstr "Atjauninājumu pārbaudīšana un lejupielādēšana jāveic pašrocīgi"
 
 #: src/gs-prefs-dialog.ui:60
-#| msgid "Automatic Update Notifications"
 msgid "Automatic Update _Notifications"
 msgstr "Automātiskās atjaunināšanas _paziņojumi"
 
 #: src/gs-prefs-dialog.ui:61
-#| msgid "Show notifications when updates have been automatically installed."
 msgid "Notify when updates have been automatically installed"
 msgstr "Paziņot, kad atjauninājumi ir automātiski uzinstalēti"
 
 #: src/gs-prefs-dialog.ui:76
-#| msgid "Contact Details"
 msgid "Content Filters"
 msgstr "Satura filtri"
 
 #: src/gs-prefs-dialog.ui:79
-#| msgid "Other Software"
 msgid "Only Show _Free Software"
 msgstr "Rādīt tikai _brīvo programmatūru"
 
@@ -3747,31 +3587,26 @@ msgid ""
 "features are therefore paused when on metered network connections and when "
 "power saver is on."
 msgstr ""
-"Atjauninājumu pārbaudīšana patērē datus un elektrību. Tāpēc automātiskās"
-" atjaunināšanas iespējas ir izslēgtas uz mērītiem tīkla savienojumiem un kad"
-" ir ieslēgta elektrības taupīšana."
+"Atjauninājumu pārbaudīšana patērē datus un elektrību. Tāpēc automātiskās "
+"atjaunināšanas iespējas ir izslēgtas uz mērītiem tīkla savienojumiem un kad "
+"ir ieslēgta elektrības taupīšana."
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
 #: src/gs-removal-dialog.c:96
 #, c-format
-#| msgid ""
-#| "Some of the currently installed software is not compatible with %s. If "
-#| "you continue, the following will be automatically removed during the "
-#| "upgrade:"
 msgid ""
 "Installed software is incompatible with %s, and will be automatically "
 "removed during upgrade."
 msgstr ""
-"Instalētā programmatūra nav savietojama ar %s un tiks automātiski izņemta"
-" uzlabošanas laikā."
+"Instalētā programmatūra nav savietojama ar %s un tiks automātiski izņemta "
+"uzlabošanas laikā."
 
 #: src/gs-removal-dialog.ui:7
 msgid "Incompatible Software"
 msgstr "Nesavietojamā programmatūra"
 
 #: src/gs-removal-dialog.ui:35
-#| msgid "OS Upgrade"
 msgid "_Upgrade"
 msgstr "_Uzlabot"
 
@@ -3853,8 +3688,6 @@ msgstr "Nav krātuvju"
 #. * describing that repo. The placeholder is the number of apps.
 #: src/gs-repo-row.c:182
 #, c-format
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
 msgid "%u app installed"
 msgid_plural "%u apps installed"
 msgstr[0] "Instalēta %u lietotne"
@@ -3880,8 +3713,6 @@ msgstr[2] "Instalēti %u papildinājumi"
 #. * string “%s and %s installed”.
 #: src/gs-repo-row.c:201
 #, c-format
-#| msgid "%u application"
-#| msgid_plural "%u applications"
 msgid "%u app"
 msgid_plural "%u apps"
 msgstr[0] "%u lietotne"
@@ -3924,7 +3755,6 @@ msgstr[1] "%s un %s instalēti"
 msgstr[2] "%s un %s instalēti"
 
 #: src/gs-repo-row.c:242
-#| msgid "Pending installation…"
 msgid "Checking installed software…"
 msgstr "Pārbauda instalēto programmatūru…"
 
@@ -4008,7 +3838,6 @@ msgstr "Apraksts ir pārāk garš"
 
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: src/gs-review-dialog.ui:6
-#| msgid "_Write Review"
 msgid "Write a Review"
 msgstr "Rakstīt atsauksmi"
 
@@ -4022,18 +3851,16 @@ msgid ""
 "Please provide a rating, summary and review text. Reviews should not be used "
 "to report problems: instead, contact the developer or your support provider."
 msgstr ""
-"Lūdzu, sniedziet vērtējumu, kopsavilkumu un atsauksmes tekstu. Atsauksmes"
-" nevajadzētu izmantot, lai ziņotu par kļūdām, tā vietā sazinieties ar"
-" izstrādātāju vai savu atbalsta sniedzēju."
+"Lūdzu, sniedziet vērtējumu, kopsavilkumu un atsauksmes tekstu. Atsauksmes "
+"nevajadzētu izmantot, lai ziņotu par kļūdām, tā vietā sazinieties ar "
+"izstrādātāju vai savu atbalsta sniedzēju."
 
 #: src/gs-review-dialog.ui:100
-#| msgid "Summary"
 msgid "Review Summary"
 msgstr "Atsauksmes kopsavilkums"
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: src/gs-review-dialog.ui:132
-#| msgid "_Write Review"
 msgctxt "app review"
 msgid "Write a short review"
 msgstr "Rakstīt īsu atsauksmi"
@@ -4090,7 +3917,6 @@ msgstr "Ziņot par atsauksmi?"
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: src/gs-review-row.c:244
-#| msgid "Report"
 msgid "_Report"
 msgstr "_Ziņot"
 
@@ -4121,9 +3947,6 @@ msgid "Remove…"
 msgstr "Izņemt…"
 
 #: src/gs-safety-context-dialog.c:157
-#| msgid ""
-#| "Application isn’t sandboxed but the distribution has checked that it is "
-#| "not malicious"
 msgid ""
 "App isn’t sandboxed but the distribution has checked that it is not malicious"
 msgstr ""
@@ -4131,7 +3954,6 @@ msgstr ""
 "nav ļaundabīga"
 
 #: src/gs-safety-context-dialog.c:165
-#| msgid "Check that you trust the vendor, as the application isn’t sandboxed"
 msgid "Check that you trust the vendor, as the app isn’t sandboxed"
 msgstr ""
 "Pārliecinieties, ka uzticaties piegādātājam, jo lietotne nav ierobežota "
@@ -4184,7 +4006,6 @@ msgstr "Var pieprasīt datus no sesijas pakalpojumiem"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:219
-#| msgid "Device Access"
 msgid "User Device Access"
 msgstr "Piekļuve lietotāja ierīcēm"
 
@@ -4194,7 +4015,6 @@ msgstr "Var piekļūt ierīcēm, piemēram, tīmekļa kamerām vai spēļu kontr
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:223
-#| msgid "No Device Access"
 msgid "No User Device Access"
 msgstr "Nav piekļuve lietotāja ierīcēm"
 
@@ -4205,13 +4025,11 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:230
-#| msgid "Device Access"
 msgid "Input Device Access"
 msgstr "Piekļuve ievades ierīcēm"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:238
-#| msgid "Device Access"
 msgid "Microphone Access"
 msgstr "Piekļuve mikrofonam"
 
@@ -4221,12 +4039,10 @@ msgstr "Var klausīties, izmantojot mikrofonu, neprasot atļauju"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:246
-#| msgid "Device Access"
 msgid "System Device Access"
 msgstr "Piekļuve sistēmasierīcēm"
 
 #: src/gs-safety-context-dialog.c:247
-#| msgid "Can access system device files"
 msgid "Can access system devices which require elevated permissions"
 msgstr "Var piekļūt sistēmas ierīcēm, kurām vajag īpašas atļaujas"
 
@@ -4359,7 +4175,8 @@ msgid ""
 "This software does not specify what license it is developed under, and may "
 "be proprietary"
 msgstr ""
-"Šī programmatūra nav norādījusi, kāda ir tās licence, un tā varētu būt slēgta."
+"Šī programmatūra nav norādījusi, kāda ir tās licence, un tā varētu būt "
+"slēgta."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:429
@@ -4417,7 +4234,6 @@ msgstr "%s ir droša"
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:478
 #, c-format
-#| msgid "%s is potentially unsafe"
 msgid "%s is probably safe"
 msgstr "%s droši vien ir droša"
 
@@ -4437,8 +4253,6 @@ msgstr "%s ir nedroša"
 
 #. Translators: This is used for "License    Unknown"
 #: src/gs-safety-context-dialog.c:583
-#| msgctxt "Distribution name"
-#| msgid "Unknown"
 msgctxt "Unknown license"
 msgid "Unknown"
 msgstr "Nezināma"
@@ -4477,7 +4291,6 @@ msgstr "Nākamais ekrānattēls"
 
 #. Translators: Shortened form of “no screenshots available” when showing an app’s details.
 #: src/gs-screenshot-carousel.ui:130
-#| msgid "Screenshot"
 msgid "No Screenshots"
 msgstr "Nav ekrānattēlu"
 
@@ -4539,7 +4352,6 @@ msgid "Search for Apps"
 msgstr "Meklēt lietotnes"
 
 #: src/gs-search-page.ui:46
-#| msgid "No Application Found"
 msgid "No App Found"
 msgstr "Nav atrastu lietotņu"
 
@@ -4564,37 +4376,31 @@ msgstr "Nevar lejupielādēt atjauninājumus"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1287
-#| msgid "Unable to download firmware updates from %s"
 msgid "Unable to download firmware updates"
 msgstr "Nevar lejupielādēt aparātprogrammatūras atjauninājumus"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1296 src/gs-shell.c:1437
-#| msgid "Unable to update: internet access was required but wasn’t available"
 msgid "Unable to update: internet access required"
 msgstr "Nevar atjaunināt: nepieciešama piekļuve internetam"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1300 src/gs-shell.c:1441
-#| msgid "Unable to update %s: not enough disk space"
 msgid "Unable to update: not enough disk space"
 msgstr "Nevar atjaunināt — nepietiek diska vietas"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1304 src/gs-shell.c:1445
-#| msgid "Unable to update %s: authentication was required"
 msgid "Unable to update: authentication required"
 msgstr "Nevar atjaunināt — vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1308 src/gs-shell.c:1449
-#| msgid "Unable to update %s: authentication was invalid"
 msgid "Unable to update: invalid authentication"
 msgstr "Nevar atjaunināt — nederīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1312 src/gs-shell.c:1453
-#| msgid "Unable to update %s: AC power is required"
 msgid "Unable to update: permission required"
 msgstr "Nevar atjaunināt — nepieciešama atļauja"
 
@@ -4604,12 +4410,10 @@ msgid "Unable to get list of updates"
 msgstr "Nevar iegūt atjauninājumu sarakstu"
 
 #: src/gs-shell.c:1357
-#| msgid "Unable to install %s as download failed"
 msgid "Unable to install: download failed"
 msgstr "Nevar instalēt — neizdevās lejupielādēt"
 
 #: src/gs-shell.c:1361
-#| msgid "Unable to install updates"
 msgid "Unable to install: missing runtime"
 msgstr "Nevar instalēt — nav izpildlaika"
 
@@ -4622,61 +4426,50 @@ msgstr "Nevar instalēt %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1369
-#| msgid "Unable to install: internet access was required but wasn’t available"
 msgid "Unable to install: internet access required"
 msgstr "Nevar instalēt — nepieciešama piekļuve internetam"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1373
-#| msgid "Unable to install: the application has an invalid format"
 msgid "Unable to install: invalid app format"
 msgstr "Nevar instalēt — nederīgs lietotnes formāts"
 
 #: src/gs-shell.c:1376
-#| msgid "Unable to install %s: not enough disk space"
 msgid "Unable to install: not enough disk space"
 msgstr "Nevar instalēt — nepietiek diska vietas"
 
 #: src/gs-shell.c:1379
-#| msgid "Unable to install %s: authentication was required"
 msgid "Unable to install: authentication required"
 msgstr "Nevar instalēt — vajadzīga autentifikācija"
 
 #: src/gs-shell.c:1382
-#| msgid "Failed to install file: authentication failed"
 msgid "Unable to install: invalid authentication"
 msgstr "Neizdevās instalēt — nederīga autentifikācija"
 
 #: src/gs-shell.c:1385
-#| msgid "Unable to install %s: AC power is required"
 msgid "Unable to install: permission required"
 msgstr "Nevar instalēt — nepieciešama atļauja"
 
 #: src/gs-shell.c:1388
-#| msgid "Unable to install %s: AC power is required"
 msgid "Unable to install: device must be plugged in"
 msgstr "Nevar instalēt — ierīcei ir jābūt piespraustai"
 
 #: src/gs-shell.c:1390
-#| msgid "Unable to install updates"
 msgid "Unable to install: low battery"
 msgstr "Nevar instalēt — baterijā maz enerģijas"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1433
-#| msgid "Unable to update %s as download failed"
 msgid "Unable to update: download failed"
 msgstr "Nevar atjaunināt — neizdevās lejupielādēt"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1457
-#| msgid "Unable to update %s: AC power is required"
 msgid "Unable to update: device must be plugged in"
 msgstr "Nevar atjaunināt — ierīcei ir jābūt pieslēgtai barošanai"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1460
-#| msgid "Unable to update %s"
 msgid "Unable to update: low battery"
 msgstr "Nevar atjaunināt — baterijā maz enerģijas"
 
@@ -4694,85 +4487,71 @@ msgstr "Nevar instalēt atjauninājumus"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1509 src/gs-shell.c:1546
-#| msgid "Unable to upgrade to %s"
 msgid "Unable to upgrade"
 msgstr "Nevar uzlabot"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1512
-#| msgid "Unable to upgrade to %s as download failed"
 msgid "Unable to upgrade: download failed"
 msgstr "Nevar uzlabot — neizdevās lejupielādēt"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1517
-#| msgid "Unable to upgrade to %s: authentication was required"
 msgid "Unable to upgrade: internet access required"
 msgstr "Nevar uzlabot — nepieciešama piekļuve internetam"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1521
-#| msgid "Unable to upgrade to %s: not enough disk space"
 msgid "Unable to upgrade: not enough disk space"
 msgstr "Nevar uzlabot — nepietiek diska vietas"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1525
-#| msgid "Unable to upgrade to %s: authentication was required"
 msgid "Unable to upgrade: authentication required"
 msgstr "Nevar uzlabot — vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1529
-#| msgid "Unable to upgrade to %s: authentication was invalid"
 msgid "Unable to upgrade: invalid authentication"
 msgstr "Nevar uzlabot — nederīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1533
-#| msgid "Unable to upgrade to %s: AC power is required"
 msgid "Unable to upgrade: permission required"
 msgstr "Nevar uzlabot — nepieciešama atļauja"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1537
-#| msgid "Unable to upgrade to %s: AC power is required"
 msgid "Unable to upgrade: device must be plugged in"
 msgstr "Nevar uzlabot — ierīcei ir jābūt pieslēgtai barošanai"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1540
-#| msgid "Unable to upgrade to %s"
 msgid "Unable to upgrade: low battery"
 msgstr "Nevar uzlabot — baterijā maz enerģijas"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1579
-#| msgid "Unable to install %s: authentication was required"
 msgid "Unable to uninstall: authentication required"
 msgstr "Nevar atinstalēt — vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1583
-#| msgid "Unable to install %s: authentication was invalid"
 msgid "Unable to uninstall: authentication invalid"
 msgstr "Nevar atinstalēt — nederīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1587
-#| msgid "Unable to install %s: AC power is required"
 msgid "Unable to uninstall: permission required"
 msgstr "Nevar atinstalēt — nepieciešama atļauja"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1591
-#| msgid "Unable to install %s: AC power is required"
 msgid "Unable to uninstall: device must be plugged in"
 msgstr "Nevar atinstalēt — ierīcei ir jābūt pieslēgtai barošanai"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1594
-#| msgid "Unable to install updates"
 msgid "Unable to uninstall: low battery"
 msgstr "Nevar atinstalēt — baterijā maz enerģijas"
 
@@ -4780,7 +4559,6 @@ msgstr "Nevar atinstalēt — baterijā maz enerģijas"
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1604
 #, c-format
-#| msgid "Unable to install %s"
 msgid "Unable to uninstall %s"
 msgstr "Nevar atinstalēt %s"
 
@@ -4788,7 +4566,6 @@ msgstr "Nevar atinstalēt %s"
 #. replaced with the app name (e.g. "GIMP")
 #: src/gs-shell.c:1640
 #, c-format
-#| msgid "Unable to purchase %s"
 msgid "Unable to launch %s"
 msgstr "Nevar palaist %s"
 
@@ -4802,25 +4579,21 @@ msgstr "Diemžēl kaut kas nogāja greizi"
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1655 src/gs-shell.c:1699 src/gs-shell.c:1743
 #: src/gs-shell.c:1793
-#| msgid "Not enough disk space — free up some space and try again"
 msgid "Not enough disk space for operation"
 msgstr "Darbībai nepietiek diska vietas"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1691
-#| msgid "Unable to install %s as not supported"
 msgid "Unable to install: file type not supported"
 msgstr "Nevar instalēt — datnes tips nav atbalstīts"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1695 src/gs-shell.c:1739
-#| msgid "Failed to install: authentication failed"
 msgid "Unable to install: authentication failed"
 msgstr "Nevar instalēt — autentifikācija neizdevās"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1735
-#| msgid "Unable to install %s"
 msgid "Unable to install"
 msgstr "Nevar instalēt"
 
@@ -4834,7 +4607,6 @@ msgstr "Nevar sazināties ar %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
 #: src/gs-shell.c:1797
-#| msgid "Software needs to be restarted to use new plugins."
 msgid "Restart Software to use new plugins"
 msgstr "Jāpārstartē “Programmatūru”, lai lietotu jaunos spraudņus"
 
@@ -4845,7 +4617,6 @@ msgstr "Ierīcei ir jābūt pieslēgtai barošanai"
 
 #. TRANSLATORS: not enough juice to do this safely
 #: src/gs-shell.c:1804
-#| msgid "The battery level is too low"
 msgid "Battery level is too low"
 msgstr "Baterijas līmenis ir pārāk zems"
 
@@ -4854,12 +4625,10 @@ msgid "_Software Repositories"
 msgstr "Programmatūra_s krātuves"
 
 #: src/gs-shell.ui:12
-#| msgid "Keyboard Support"
 msgid "_Keyboard Shortcuts"
 msgstr "_Tastatūras īsinājumtaustiņi"
 
 #: src/gs-shell.ui:16
-#| msgid "_Update Preferences"
 msgid "_Preferences"
 msgstr "_Iestatījumi"
 
@@ -4872,26 +4641,22 @@ msgid "Main Menu"
 msgstr "Galvenā izvēlne"
 
 #: src/gs-shell.ui:179
-#| msgid "Search for Apps"
 msgid "Search apps"
 msgstr "Meklēt lietotnes"
 
 #. Translators: A label for a button to show all available software.
 #: src/gs-shell.ui:202
-#| msgid "Explore"
 msgid "_Explore"
 msgstr "_Pārskatīt"
 
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-shell.ui:216
-#| msgid "_Installed"
 msgctxt "List of installed apps"
 msgid "_Installed"
 msgstr "_Instalētās"
 
 #. Translators: A label for a button to show only updates which are available to install.
 #: src/gs-shell.ui:238
-#| msgid "_Updates"
 msgctxt "Header bar button for list of apps to be updated"
 msgid "_Updates"
 msgstr "_Atjauninājumi"
@@ -4909,12 +4674,10 @@ msgid "None"
 msgstr "Nekas"
 
 #: src/gs-storage-context-dialog.c:139
-#| msgid "App ID"
 msgid "App Data"
 msgstr "Lietotnes dati"
 
 #: src/gs-storage-context-dialog.c:140
-#| msgid "Data needed for the application to run"
 msgid "Data needed for the app to run"
 msgstr "Nepieciešamie dati, lai lietotne varētu strādāt"
 
@@ -4923,7 +4686,6 @@ msgid "User Data"
 msgstr "Lietotāja dati"
 
 #: src/gs-storage-context-dialog.c:146
-#| msgid "Data created by you in the application"
 msgid "Data created by you in the app"
 msgstr "Jūsu izveidotie dati lietotnē"
 
@@ -4936,7 +4698,6 @@ msgid "Temporary cached data"
 msgstr "Pagaidu kešatmiņas dati"
 
 #: src/gs-storage-context-dialog.c:172
-#| msgid "The application itself"
 msgid "The app itself"
 msgstr "Pati lietotne"
 
@@ -4945,7 +4706,6 @@ msgid "Required Dependencies"
 msgstr "Nepieciešamās atkarības"
 
 #: src/gs-storage-context-dialog.c:178
-#| msgid "Shared system components required by this application"
 msgid "Shared system components required by this app"
 msgstr "Koplietotās sistēmas komponentes, kas ir nepieciešamas šai lietotnei"
 
@@ -4961,9 +4721,6 @@ msgstr "Krātuve"
 
 #. Translators: Please do not translate the markup or link href
 #: src/gs-storage-context-dialog.ui:68
-#| msgid ""
-#| "Cached data can be cleared from the <a href=\"dummy\">_application "
-#| "settings</a>."
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_app settings</a>."
 msgstr ""
@@ -4981,7 +4738,6 @@ msgstr "%s (instalē)"
 
 #: src/gs-summary-tile.c:149
 #, c-format
-#| msgid "Downloading"
 msgid "%s (Downloading)"
 msgstr "%s (lejupielādē)"
 
@@ -4991,7 +4747,6 @@ msgid "%s (Removing)"
 msgstr "%s (izņem)"
 
 #: src/gs-toast.c:58
-#| msgid "Details"
 msgid "_Details"
 msgstr "_Sīkāka informācija"
 
@@ -5004,7 +4759,6 @@ msgid "Network Settings"
 msgstr "Tīkla iestatījumi"
 
 #: src/gs-toast.c:71
-#| msgid "_Restart Now"
 msgid "_Restart Now…"
 msgstr "Pā_rstartēt tagad…"
 
@@ -5027,60 +4781,48 @@ msgid "No Updates Installed"
 msgstr "Nav instalētu atjauninājumu"
 
 #: src/gs-update-monitor.c:216
-#| msgid "Software Updates Are Out of Date"
 msgid "Updates Are Out of Date"
 msgstr "Atjauninājumi ir novecojuši"
 
 #: src/gs-update-monitor.c:217
-#| msgid "Please check for software updates."
 msgid "Please check for available updates"
 msgstr "Lūdzu, pārbaudiet pieejamos atjauninājumus."
 
 #: src/gs-update-monitor.c:223
-#| msgid "Critical Software Update Ready to Install"
 msgid "Critical Updates Ready to Install"
 msgstr "Kritiski atjauninājumi ir gatavi instalēšanai"
 
 #: src/gs-update-monitor.c:224
-#| msgid "Unable to install updates as download failed"
 msgid "Install critical updates as soon as possible"
 msgstr "Instalēt kritiskos atjauninājumus pēc iespējas agrāk"
 
 #: src/gs-update-monitor.c:227
-#| msgid "Critical Software Updates Available to Download"
 msgid "Critical Updates Available to Download"
 msgstr "Kritiski atjauninājumi ir pieejami lejupielādēšanai"
 
 #: src/gs-update-monitor.c:228
-#| msgid "Unable to install updates as download failed"
 msgid "Download critical updates as soon as possible"
 msgstr "Lejupielādēt kritiskos atjauninājumus pēc iespējas agrāk"
 
 #: src/gs-update-monitor.c:234
-#| msgid "Software Updates Ready to Install"
 msgid "Updates Ready to Install"
 msgstr "Atjauninājumi ir gatavi instalēšanai"
 
 #: src/gs-update-monitor.c:235
-#| msgid "Software updates are waiting and ready to be installed."
 msgid "Software updates are ready and waiting"
 msgstr "Programmatūras atjauninājumi ir gatavi un gaida"
 
 #: src/gs-update-monitor.c:241
-#| msgid "Software Updates Available to Download"
 msgid "Updates Available to Download"
 msgstr "Atjauninājumi ir pieejami lejupielādēšanai"
 
 #: src/gs-update-monitor.c:242
-#| msgid "Software Updates Available to Download"
 msgid "Software updates can be downloaded"
 msgstr "Programmatūras atjauninājumus var lejupielādēt"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
 #: src/gs-update-monitor.c:358
 #, c-format
-#| msgid "%u Application Updated — Restart Required"
-#| msgid_plural "%u Applications Updated — Restart Required"
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
 msgstr[0] "%u lietotne ir atjaunināta — Nepieciešama pārstartēšana"
@@ -5090,8 +4832,6 @@ msgstr[2] "%u lietotnes ir atjauninātas — Nepieciešama pārstartēšana"
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:364
 #, c-format
-#| msgid "%u Application Updated"
-#| msgid_plural "%u Applications Updated"
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
 msgstr[0] "%u lietotne ir atjaunināta"
@@ -5106,7 +4846,6 @@ msgstr "%s tika atjaunināts."
 
 #. TRANSLATORS: the app needs restarting
 #: src/gs-update-monitor.c:378
-#| msgid "Please restart the application."
 msgid "Please restart the app."
 msgstr "Lūdzu, pārstartējiet lietotni."
 
@@ -5119,8 +4858,6 @@ msgstr "%s un %s tika atjaunināti."
 #. TRANSLATORS: at least one app needs restarting
 #: src/gs-update-monitor.c:392 src/gs-update-monitor.c:411
 #, c-format
-#| msgid "%u application requires a restart."
-#| msgid_plural "%u applications require a restart."
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
 msgstr[0] "%u lietotne pieprasa pārstartēšanu."
@@ -5271,7 +5008,6 @@ msgid "Stop"
 msgstr "Apturēt"
 
 #: src/gs-updates-page.c:313 src/gs-updates-page.c:325
-#| msgid "Check for updates"
 msgid "Check for Updates"
 msgstr "Pārbaudīt atjauninājumus"
 
@@ -5285,7 +5021,6 @@ msgstr "%s %s vairs nesaņem kritiskus programmatūras atjauninājumus"
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
 #: src/gs-updates-page.c:581
-#| msgid "Your operating system is no longer supported."
 msgid "Your operating system has stopped receiving critical software updates"
 msgstr ""
 "Jūsu operētājsistēma vairs nesaņem kritiskus programmatūras atjauninājumus"
@@ -5321,17 +5056,14 @@ msgstr "Lai pārbaudītu atjauninājumus, nepieciešama piekļuve internetam."
 
 #. TRANSLATORS: this is a link to the control-center network panel
 #: src/gs-updates-page.c:873
-#| msgid "Network Settings"
 msgid "Network _Settings"
 msgstr "Tīkla ie_statījumi"
 
 #: src/gs-updates-page.c:911
-#| msgid "Software Upgrade Available"
 msgid "Software Upgrades Downloaded"
 msgstr "Programmatūras uzlabojumi ir lejupielādēti"
 
 #: src/gs-updates-page.c:912
-#| msgid "Software updates are waiting and ready to be installed."
 msgid "Software upgrades have been downloaded and are ready to be installed."
 msgstr ""
 "Programmatūras atjauninājumi ir lejupielādēti un ir gatavi instalēšanai."
@@ -5351,13 +5083,11 @@ msgstr "Atjauninājumu mape"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:58
-#| msgid "Loading Updates…"
 msgid "Loading Updates"
 msgstr "Ielādē atjauninājumus"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:71
-#| msgid "This could take a while."
 msgid "This could take a while"
 msgstr "Tas var aizņemt kādu laiciņu"
 
@@ -5371,9 +5101,6 @@ msgid "Use Mobile Data?"
 msgstr "Izmantojat mobilos datus?"
 
 #: src/gs-updates-page.ui:219
-#| msgid ""
-#| "Checking for updates when using mobile broadband could cause you to incur "
-#| "charges."
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -5390,7 +5117,6 @@ msgid "No Connection"
 msgstr "Nav savienojuma"
 
 #: src/gs-updates-page.ui:239
-#| msgid "Go online to check for updates."
 msgid "Go online to check for updates"
 msgstr "Doties tiešsaistē, lai pārbaudītu atjauninājumus"
 
@@ -5403,12 +5129,10 @@ msgid "Error"
 msgstr "Kļūda"
 
 #: src/gs-updates-page.ui:276
-#| msgid "Updates are automatically managed."
 msgid "Updates are automatically managed"
 msgstr "Atjauninājumi tika automātiski sapludināti"
 
 #: src/gs-updates-paused-banner.c:45
-#| msgid "Software Updates Failed"
 msgid "Software Updates Paused"
 msgstr "Programmatūras atjaunināšana ir pauzēta"
 
@@ -5450,7 +5174,6 @@ msgstr ""
 "• Ir ieslēgts spēļu režīms"
 
 #: src/gs-updates-paused-banner.c:80
-#| msgid "Software Updates Failed"
 msgid "Software updates paused"
 msgstr "Programmatūras atjaunināšana ir pauzēta"
 
@@ -5461,25 +5184,22 @@ msgstr "Tīkla savienojums ir mērīts — programmatūras atjaunināšana ir pa
 #: src/gs-updates-paused-banner.c:87
 msgid "Network connection prohibits large downloads - software updates paused"
 msgstr ""
-"Tīkla savienojums aizliedz lielas lejupielādes — programmatūras atjaunināšana"
-" ir pauzēta"
+"Tīkla savienojums aizliedz lielas lejupielādes — programmatūras "
+"atjaunināšana ir pauzēta"
 
 #: src/gs-updates-paused-banner.c:89
-#| msgid "Please download waiting software updates."
 msgid "Power saver mode is active - software updates paused"
 msgstr ""
-"Enerģijas taupīšanas režīms ir aktīvs — programmatūras atjaunināšana ir"
-" pauzēta"
+"Enerģijas taupīšanas režīms ir aktīvs — programmatūras atjaunināšana ir "
+"pauzēta"
 
 #: src/gs-updates-paused-banner.c:91
-#| msgid "Please download waiting software updates."
 msgid "Game mode is active - software updates paused"
 msgstr "Spēļu režīms ir aktīvs — programmatūras atjaunināšana ir pauzēta"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
 #: src/gs-updates-section.c:375
-#| msgid "Restart & Update"
 msgid "_Restart & Update…"
 msgstr "Pā_rstartēt un atjaunināt…"
 
@@ -5490,12 +5210,10 @@ msgid "U_pdate All"
 msgstr "_Atjaunināt visu"
 
 #: src/gs-updates-section.c:458
-#| msgid "Software Updates Failed"
 msgid "Software Updates Downloaded"
 msgstr "Programmatūras atjauninājumi ir lejupielādēti"
 
 #: src/gs-updates-section.c:459
-#| msgid "Software updates are waiting and ready to be installed."
 msgid "Software updates have been downloaded and are ready to be installed."
 msgstr "Programmatūras uzlabojumi ir lejupielādēti un ir gatavi instalēšanai."
 
@@ -5514,8 +5232,6 @@ msgstr "Pieprasa pārstartēšanu"
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
 #: src/gs-updates-section.c:560
-#| msgctxt "Packages to be updated during a system upgrade"
-#| msgid "Updates"
 msgid "App Updates"
 msgstr "Lietotņu atjauninājumi"
 
@@ -5569,7 +5285,6 @@ msgid "A major upgrade, with new features and added polish."
 msgstr "Liels uzlabojums, ar jaunām iespējām un uzlabojumiem."
 
 #: src/gs-upgrade-banner.ui:187
-#| msgid "_Restart & Upgrade"
 msgid "_Restart & Upgrade…"
 msgstr "Pā_rstartēt un uzlabot…"
 
@@ -5579,13 +5294,11 @@ msgstr "Pirms uzlabošanas atcerieties izveidot datu un datņu dublējumu."
 
 #: lib/gs-utils.c:523 lib/gs-utils.c:554
 #, c-format
-#| msgid "Failed to refine addon ‘%s’: %s"
 msgid "Failed to delete file “%s”: %s"
 msgstr "Neizdevās dzēst datni “%s” — %s"
 
 #: lib/gs-utils.c:565
 #, c-format
-#| msgid "Failed to refine addon ‘%s’: %s"
 msgid "Failed to delete directory “%s”: %s"
 msgstr "Neizdevās dzēst direktoriju “%s” — %s"
 
@@ -5632,7 +5345,6 @@ msgstr "EOS atjauninājumu pakalpojums nevarēja saņemt un uzlikt atjauninājum
 
 #: plugins/epiphany/gs-plugin-epiphany.c:500
 #: plugins/epiphany/gs-plugin-epiphany.c:504
-#| msgid "Web Applications"
 msgid "Web App"
 msgstr "Tīmekļa lietotnes"
 
@@ -5662,7 +5374,6 @@ msgid "Flatpak Support"
 msgstr "Flatpak atbalsts"
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
-#| msgid "Flatpak is a framework for desktop applications on Linux"
 msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak ir ietvars darbvirsmas lietotnēm uz Linux"
 
@@ -5828,7 +5539,7 @@ msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
 "Remove the filter and repeat the install. Detailed error: %s"
 msgstr ""
-"Attālinātais “%s” neatļauj instalēt “%s”, iespējams, dēļ tā filtra. Noņemiet "
+"Attālais “%s” neatļauj instalēt “%s”, iespējams, dēļ tā filtra. Noņemiet "
 "filtru un mēģiniet instalēt atkal. Informācija par kļūdu: %s"
 
 #. TRANSLATORS: as in laptop battery power
@@ -5852,7 +5563,6 @@ msgstr "Ierīce ir nesasniedzama vai ārpus bezvadu diapazona"
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
 #: plugins/fwupd/gs-fwupd-app.c:82
 #, c-format
-#| msgid "The battery level is too low"
 msgid "Device battery power is too low"
 msgstr "Ierīces baterijā ir pārāk maz enerģijas"
 
@@ -5874,48 +5584,47 @@ msgstr "Ierīce gaida, kad tiks pievienots maiņstrāvas avots"
 
 #. TRANSLATORS: lid means "laptop top cover"
 #: plugins/fwupd/gs-fwupd-app.c:99
-#| msgid "Device cannot be used during update."
 msgid "Device cannot be used while the lid is closed"
 msgstr "Ierīci nevar izmantot, kad ir aizvērts vāks"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:213
 #, c-format
 msgid "%s Device Update"
 msgstr "%s ierīces atjauninājums"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:218
 #, c-format
 msgid "%s System Update"
 msgstr "%s sistēmas atjauninājumus"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:223
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "%s iegultā kontroliera atjauninājumus"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:238
+#: plugins/fwupd/gs-fwupd-app.c:228
 #, c-format
 msgid "%s ME Update"
 msgstr "%s ME atjauninājumus"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:243
+#: plugins/fwupd/gs-fwupd-app.c:233
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "%s uzņēmumu ME atjauninājumus"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:248
+#: plugins/fwupd/gs-fwupd-app.c:238
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "%s patērētāju ME atjauninājumus"
@@ -5923,7 +5632,7 @@ msgstr "%s patērētāju ME atjauninājumus"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:254
+#: plugins/fwupd/gs-fwupd-app.c:244
 #, c-format
 msgid "%s Controller Update"
 msgstr "%s kontroliera atjauninājumus"
@@ -5931,147 +5640,141 @@ msgstr "%s kontroliera atjauninājumus"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:260
+#: plugins/fwupd/gs-fwupd-app.c:250
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "%s Thunderbolt kontroliera atjauninājumus"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:265
+#: plugins/fwupd/gs-fwupd-app.c:255
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "%s CPU mikrokoda atjauninājumus"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:270
+#: plugins/fwupd/gs-fwupd-app.c:260
 #, c-format
 msgid "%s Configuration Update"
 msgstr "%s konfigurācijas atjauninājumus"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:274
+#: plugins/fwupd/gs-fwupd-app.c:264
 #, c-format
 msgid "%s Battery Update"
 msgstr "%s baterijas atjauninājumus"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:279
+#: plugins/fwupd/gs-fwupd-app.c:269
 #, c-format
 msgid "%s Camera Update"
 msgstr "%s kameras atjauninājumus"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:283
+#: plugins/fwupd/gs-fwupd-app.c:273
 #, c-format
 msgid "%s TPM Update"
 msgstr "%s TPM atjauninājumus"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:287
+#: plugins/fwupd/gs-fwupd-app.c:277
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "%s skārienpaliktņa atjauninājumus"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:291
+#: plugins/fwupd/gs-fwupd-app.c:281
 #, c-format
 msgid "%s Mouse Update"
 msgstr "%s peles atjauninājumus"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:295
+#: plugins/fwupd/gs-fwupd-app.c:285
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "%s tastatūras atjauninājumus"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:289
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "%s krātuves kontroliera atjauninājumus"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:294
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "%s tīkla saskarnes atjauninājumus"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:309
+#: plugins/fwupd/gs-fwupd-app.c:299
 #, c-format
 msgid "%s Display Update"
 msgstr "%s displeja atjauninājums"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:314
+#: plugins/fwupd/gs-fwupd-app.c:304
 #, c-format
 msgid "%s BMC Update"
 msgstr "%s BMC atjauninājumus"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:319
+#: plugins/fwupd/gs-fwupd-app.c:309
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "%s USB uztvērēja atjauninājums"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:323
+#: plugins/fwupd/gs-fwupd-app.c:313
 #, c-format
-#| msgid "%s Device Update"
 msgid "%s Drive Update"
 msgstr "%s dziņa atjauninājums"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:317
 #, c-format
-#| msgid "%s Device Update"
 msgid "%s Flash Drive Update"
 msgstr "%s zib-dziņa atjauninājums"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:322
 #, c-format
-#| msgid "%s ME Update"
 msgid "%s SSD Update"
 msgstr "%s SSD atjauninājumus"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:337
+#: plugins/fwupd/gs-fwupd-app.c:327
 #, c-format
-#| msgid "%s TPM Update"
 msgid "%s GPU Update"
 msgstr "%s GPU atjauninājumus"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:342
+#: plugins/fwupd/gs-fwupd-app.c:332
 #, c-format
-#| msgid "%s Device Update"
 msgid "%s Dock Update"
 msgstr "%s doka atjauninājums"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:347
+#: plugins/fwupd/gs-fwupd-app.c:337
 #, c-format
-#| msgid "%s USB Receiver Update"
 msgid "%s USB Dock Update"
 msgstr "%s USB doka atjauninājums"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1717
+#: plugins/fwupd/gs-plugin-fwupd.c:1716
 msgid "Firmware update could not be applied: "
 msgstr "Nevarēja pielietot programmatūras atjauninājumu: "
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1857
+#: plugins/fwupd/gs-plugin-fwupd.c:1856
 msgid "Firmware"
 msgstr "Aparātprogrammatūra"
 
@@ -6130,7 +5833,6 @@ msgid "Packages"
 msgstr "Pakotnes"
 
 #: plugins/packagekit/gs-plugin-packagekit.c:3155
-#| msgid "Unable to install updates"
 msgid "Failed to install updates: "
 msgstr "Neizdevās instalēt atjauninājumus: "
 
