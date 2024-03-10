@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2024-02-20 03:14+0000\n"
-"PO-Revision-Date: 2024-03-10 10:14+0100\n"
+"PO-Revision-Date: 2024-03-10 15:34+0100\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -42,6 +42,10 @@ msgid ""
 "list of categories or by searching. It also allows you to update your system "
 "using an offline update."
 msgstr ""
+"პროგრამები გამოხატავენ პოპულარულ აპებს გამოსადეგი აღწერებით და ერთზე მეტი "
+"ეკრანის ანაბეჭდით თითოეული აპისთვის. აპების პოვნა ან კატეგორიების "
+"თვალიერებით შეგიძლიათ, ან ძებნით. მას ასევე შეუძლია ამ პროგრამების "
+"ინტერნეტის გარეშე განახლებაც."
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:25
 msgid "Overview panel"
@@ -151,7 +155,7 @@ msgstr "აპლიკაციის გასწვრივ ვარსკ�
 
 #: data/org.gnome.software.gschema.xml:38
 msgid "Filter applications based on the default branch set for the remote"
-msgstr ""
+msgstr "აპლიკაციების გაფილტვრა დაშორებულისთვის დაყენებული ნაგულისხმევი ბრენჩით"
 
 #: data/org.gnome.software.gschema.xml:42
 msgid "Non-free applications show a warning dialog before install"
@@ -162,6 +166,8 @@ msgid ""
 "When non-free applications are installed a warning dialog can be shown. This "
 "controls if that dialog is suppressed."
 msgstr ""
+"როცა აყენებთ არა-თავისუფალ აპლიკაციას, გაფრთხილების დიალოგს გაჩვენებთ. ეს "
+"აკონტროლებს, ჩაჩუმდება თუ არა ის დიალოგი."
 
 #: data/org.gnome.software.gschema.xml:47
 msgid "The last update check timestamp"
@@ -187,6 +193,8 @@ msgstr "უკანასკნელი განახლების დრ�
 #: data/org.gnome.software.gschema.xml:67
 msgid "The age in seconds to verify the upstream screenshot is still valid"
 msgstr ""
+"ასაკი წამებში, გადასამოწმებლად, აღმავლის ეკრანის ანაბეჭდი ჯერ კიდევ სწორია, "
+"თუ არა"
 
 #: data/org.gnome.software.gschema.xml:68
 msgid ""
@@ -194,6 +202,9 @@ msgid ""
 "updates to the screenshots may take longer to show to the user. A value of 0 "
 "means to never check the server if the image already exists in the cache."
 msgstr ""
+"უფრო დიდი მნიშვნელობა ნიშნავს ნაკლებ წრეებს დაშორებულ სერვერამდე, მაგრამ "
+"ეკრანის ანაბეჭდების განახლებას უფრო მეტი დრო დასჭირდება. მნიშვნელობა 0 "
+"ნიშნავს, რომ სერვერზე არასდროს შემოწმდება, თუ ფაილი კეშში უკვე არსებობს."
 
 #: data/org.gnome.software.gschema.xml:77
 msgid "The server to use for application reviews"
@@ -205,7 +216,7 @@ msgstr "მინიმალური კარმა მიმოხილვ�
 
 #: data/org.gnome.software.gschema.xml:82
 msgid "Reviews with karma less than this number will not be shown."
-msgstr ""
+msgstr "ამ რიცხვზე ნაკლები კარმის მქონე მიმოხილვები ნაჩვენები არ იქნება."
 
 #: data/org.gnome.software.gschema.xml:86
 msgid "A list of official repositories that should not be considered 3rd party"
@@ -232,6 +243,7 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:102
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
+"აწყობილი აპლიკაციების დაყენება ყველა მომხმარებლისთვის, როცა ეს შესაძლებელია"
 
 #: data/org.gnome.software.gschema.xml:106
 msgid "Allow access to the Software Repositories dialog"
@@ -264,6 +276,8 @@ msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "swcatalog folder"
 msgstr ""
+"ბმულების სია, რომელიც მიუთითებს აღმავლის ფაილებზე, რომლებიც swcatalog "
+"საქაღალდეში იქნება გადმოწერილი"
 
 #: data/org.gnome.software.gschema.xml:131
 msgid ""
@@ -271,6 +285,8 @@ msgid ""
 "false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
 "directory"
 msgstr ""
+"AppStream-ის ფაილების მთელი სისტემისთვის დაყენება. თუ ცრუა. ფაილები "
+"არასტანდარტულ $XDG_DATA_HOME/swcatalog/xml საქაღალდეში დადგება"
 
 #: data/org.gnome.software.gschema.xml:135
 msgid ""
@@ -284,18 +300,24 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:139
 msgid "The timestamp of the last attempt to remove unused Flatpak runtimes"
 msgstr ""
+"გამოუყენებელი Flatpak-ის გაშვების გარემოების წაშლის ბოლო მცდელობის დროის "
+"შტამპი"
 
 #: data/org.gnome.software.gschema.xml:143
 msgid ""
 "Set to 'true' to show only freely licensed apps and hide any proprietary "
 "apps."
 msgstr ""
+"დააყენეთ ჭეშმარიტზე, რომ, მხოლოდ, უფასო ლიცენზიის მქონე აპები გაჩვენოთ და "
+"დავმალო ფასიანები."
 
 #: data/org.gnome.software.gschema.xml:147
 msgid ""
 "Set to 'true' to show only apps from developers whose identity has been "
 "verified."
 msgstr ""
+"დააყენეთ ჭეშმარიტზე, რომ, მხოლოდ, გადამოწმებული პროგრამისტების პროგრამები "
+"გაჩვენოთ."
 
 #: data/org.gnome.software.gschema.xml:151
 msgid "The timestamp of the last received historical updates."
@@ -308,7 +330,7 @@ msgstr "სტრიქონი, რომელიც gnome-online-account-ი
 #. TRANSLATORS: tool that is used when moving profiles system-wide
 #: gs-install-appstream/gs-install-appstream.c:185
 msgid "GNOME Software AppStream system-wide installer"
-msgstr ""
+msgstr "GNOME-ის AppStream პროგრამების მთელ სისტემაში დაყენება"
 
 #: gs-install-appstream/gs-install-appstream.c:187
 msgid "Failed to parse command line arguments"
@@ -1059,6 +1081,7 @@ msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
+"ურთიერთობა, რომელსაც მოველი ამ ქმედებისთვის: 'none', 'notify' ან 'full'"
 
 #: src/gs-application.c:139
 msgid "INTERACTION"
@@ -1073,6 +1096,8 @@ msgid ""
 "Enable verbose debugging output (from the running instance, if already "
 "running)"
 msgstr ""
+"დამატებითი გამართვის შეტყობინებების ჩართვა (გაშვებული ასლიდან, თუ უკვე "
+"გაშვებულია)"
 
 #: src/gs-application.c:145
 msgid "Installs any pending updates in the background"
@@ -2080,6 +2105,9 @@ msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
 "source_software\">free and open source software</a>, and is provided by “%s”."
 msgstr ""
+"%s არაა <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">თავისუფალი და ღია პროგრამა</a>. მოგეწოდებათ რეპოზიტორიიდან "
+"“%s”."
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. App name, e.g. "Firefox"
@@ -2615,6 +2643,8 @@ msgid ""
 "Information about %s, as well as options for how to get missing apps might "
 "be found %s."
 msgstr ""
+"ინფორმაცია %s-ის შესახებ, არჩევნის ჩათვლით, როგორ და სად იპოვოთ ნაკლული "
+"პროგრამები, შეგიძლიათ იპოვოთ ბმულზე %s."
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
@@ -2717,6 +2747,7 @@ msgid ""
 msgid_plural ""
 "Unable to find the %s requested by %s. Please see %s for more information."
 msgstr[0] ""
+"%s, რომელიც %s-მა გაოითხოვა, ვერ ვიპოვე. იხილეთ %s მეტი ინფორმაციისთვის."
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
 #: src/gs-extras-page.c:571
@@ -2727,7 +2758,7 @@ msgid ""
 msgid_plural ""
 "Unable to find the %s you were searching for. Please see %s for more "
 "information."
-msgstr[0] ""
+msgstr[0] "ვერ ვიპოვე %s, რომელსაც ეძებდით. მეტი ინფორმაციისთვის იხილეთ %s."
 
 #: src/gs-extras-page.c:649 src/gs-extras-page.c:706 src/gs-extras-page.c:746
 #, c-format
@@ -3064,6 +3095,10 @@ msgid ""
 "\n"
 "You can participate and help make it even better."
 msgstr ""
+"ეს აპი დაწერილია ღიად, საერთაშორისო საზოგადოების მიერ და ვრცელდება <a "
+"href=\"%s\">%s ლიცენზიით</a>.\n"
+"\n"
+"შეგიძლიათ, მონაწილეობა მიიღოთ და დაგვეხმაროთ, ის კიდევ უფრო უკეთესო გავხადოთ."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:128
@@ -3074,6 +3109,10 @@ msgid ""
 "\n"
 "You can participate and help make it even better."
 msgstr ""
+"ეს აპი დაწერილია ღიად, საერთაშორისო საზოგადოების მიერ და ვრცელდება %s "
+"ლიცენზიით.\n"
+"\n"
+"შეგიძლიათ, მონაწილეობა მიიღოთ და დაგვეხმაროთ, ის კიდევ უფრო უკეთესო გავხადოთ."
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:135
@@ -3084,6 +3123,10 @@ msgid ""
 "\n"
 "You can participate and help make it even better."
 msgstr ""
+"ეს პროგრამა დაწერილია ღიად, საერთაშორისო საზოგადოების მიერ და ვრცელდება <a "
+"href=\"%s\">%s ლიცენზიით</a>.\n"
+"\n"
+"შეგიძლიათ, მონაწილეობა მიიღოთ და დაგვეხმაროთ, ის კიდევ უფრო უკეთესო გავხადოთ."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:142
@@ -3094,6 +3137,10 @@ msgid ""
 "\n"
 "You can participate and help make it even better."
 msgstr ""
+"ეს პროგრამა დაწერილია ღიად, საერთაშორისო საზოგადოების მიერ და ვრცელდება %s "
+"ლიცენზიით.\n"
+"\n"
+"შეგიძლიათ, მონაწილეობა მიიღოთ და დაგვეხმაროთ, ის კიდევ უფრო უკეთესო გავხადოთ."
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:413
@@ -3113,6 +3160,11 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
+"ამ აპს არ აქვს მითითებული ლიცენზია, რომლითაც ის ვრცელდება და შეიძლება, "
+"ფასიანი იყოს. შეიძლება, დაუცველი იყოს ძნელად აღმოსაჩენი გზებით და შეიძლება, "
+"გაფრთხილების გარეშე შეიცვალოს.\n"
+"\n"
+"ამ აპისთვის შეწირვა ან შეგიძლიათ, ან არა."
 
 #: src/gs-license-tile.c:161
 msgid ""
@@ -3122,6 +3174,11 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
+"ამ პროგრამას არ აქვს მითითებული ლიცენზია, რომლითაც ის ვრცელდება და შეიძლება, "
+"ფასიანი იყოს. შეიძლება, დაუცველი იყოს ძნელად აღმოსაჩენი გზებით და შეიძლება, "
+"გაფრთხილების გარეშე შეიცვალოს.\n"
+"\n"
+"ამ აპისთვის შეწირვა ან შეგიძლიათ, ან არა."
 
 #. Translators: This is used for "License    Proprietary"
 #: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:586
@@ -3136,6 +3193,11 @@ msgid ""
 "\n"
 "You may not be able to contribute to this app."
 msgstr ""
+"ეს აპი არ დაწერილა ღია კოდით, და მხოლოდ მისმა ავტორმა იცის, როგორ მუშაობს. "
+"ის შეიძლება მოწყვლადი იყოს ძნელად აღმოსაჩენი შეცდომებით, და შეიძლება, "
+"გაუფრთხილებლად შეიცვალოს.\n"
+"\n"
+"აპისთვის შეწირვა ან შეგიძლიათ, ან არა."
 
 #: src/gs-license-tile.c:179
 msgid ""
@@ -3145,6 +3207,11 @@ msgid ""
 "\n"
 "You may not be able to contribute to this software."
 msgstr ""
+"ეს პროგრამა არ დაწერილა ღია კოდით, და მხოლოდ მისმა ავტორმა იცის, როგორ "
+"მუშაობს. ის შეიძლება მოწყვლადი იყოს ძნელად აღმოსაჩენი შეცდომებით, და "
+"შეიძლება, გაუფრთხილებლად შეიცვალოს.\n"
+"\n"
+"აპისთვის შეწირვა ან შეგიძლიათ, ან არა."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:450
@@ -3159,6 +3226,9 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
+"ეს აპი დაწერილია სპეციალური ლიცენზიით <a href=\"%s\">%s</a>.\n"
+"\n"
+"აპისთვის შეწირვა ან შეგიძლიათ, ან არა."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:208
@@ -3168,6 +3238,9 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
+"ეს აპი დაწერილია სპეციალური ლიცენზიით \"%s\".\n"
+"\n"
+"აპისთვის შეწირვა ან შეგიძლიათ, ან არა."
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:215
@@ -3177,6 +3250,9 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
+"ეს პროგრამა დაწერილია სპეციალური ლიცენზიით <a href=\"%s\">%s</a>.\n"
+"\n"
+"აპისთვის შეწირვა ან შეგიძლიათ, ან არა."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:223
@@ -3186,6 +3262,9 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
+"ეს პროგრამა დაწერილია სპეციალური ლიცენზიით \"%s\".\n"
+"\n"
+"აპისთვის შეწირვა ან შეგიძლიათ, ან არა."
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
@@ -3478,6 +3557,7 @@ msgstr "_განახლება"
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
 msgstr ""
+"პროგრამები, რომელიც \"%s\"-დან დააყენეთ, განახლებების მიღებას შეწყვეტს."
 
 #: src/gs-repos-dialog.c:250
 msgid "Disable Repository?"
@@ -3535,6 +3615,7 @@ msgstr "ოპერაციული სისტემა"
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
+"ეს რეპოზიტორიები მიემატება %s-ის მიერ მოწოდებულ ნაგულისხმევ პროგრამებს."
 
 #: src/gs-repos-dialog.ui:8 src/gs-toast.c:62
 msgid "Software Repositories"
@@ -3702,6 +3783,9 @@ msgid ""
 "Please provide a rating, summary and review text. Reviews should not be used "
 "to report problems: instead, contact the developer or your support provider."
 msgstr ""
+"შეიყვანეთ შეფასება, შეჯამება და შეჯამების ტექსტი. შეჯამებები პრობლემების "
+"შესახებ მოსაწერად არ გამოიყენოთ. დაუკავშირდით პროგრამისტს ან თქვენი "
+"მხარდაჭერის მომწოდებელს."
 
 #: src/gs-review-dialog.ui:100
 msgid "Review Summary"
@@ -3739,7 +3823,7 @@ msgstr "უცნობი"
 #. TRANSLATORS: we explain what the action is going to do
 #: src/gs-review-row.c:226
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
-msgstr ""
+msgstr "შეგიძლიათ მოგვწეროთ აგრესიული, უხეში ან დამამცირებელი ქცევის შესახებ."
 
 #. TRANSLATORS: we ask the user if they really want to do this
 #: src/gs-review-row.c:231
@@ -3747,6 +3831,8 @@ msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
 msgstr ""
+"როცა მოგვწერთ, მიმოხილვა დამალული იქნება, სანამ მას ადმინისტრატორი არ "
+"შეამოწმებს."
 
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
@@ -3790,7 +3876,7 @@ msgstr "წაშლა…"
 #: src/gs-safety-context-dialog.c:157
 msgid ""
 "App isn’t sandboxed but the distribution has checked that it is not malicious"
-msgstr ""
+msgstr "აპი სენდბოქსში არაა, მაგრამ დისტრიბუტივმა შეამოწმა, ის მავნე არაა"
 
 #: src/gs-safety-context-dialog.c:165
 msgid "Check that you trust the vendor, as the app isn’t sandboxed"
@@ -4000,6 +4086,8 @@ msgstr "დაუცველი დამოკიდებულებებ�
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
+"პროგრამა ან მისი დამოკიდებულებები მხარდაჭერილი აღარაა და შეიძლება, საფრთხეს "
+"შეიცავდეს"
 
 #: src/gs-safety-context-dialog.c:415
 msgid ""
@@ -4558,6 +4646,7 @@ msgstr "საცავი"
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_app settings</a>."
 msgstr ""
+"დაკეშილი მონაცემები გასუფთავდება <a href=\"dummy\">_app settings</a>-დან."
 
 #: src/gs-summary-tile.c:139
 #, c-format
@@ -4800,6 +4889,8 @@ msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr ""
+"ამ განახლებას უსაფრთხოების პრობლემები გააჩნია. მეტი დეტალებისთვის "
+"დაუკავშირდით პროგრამის მომწოდებელს."
 
 #. TRANSLATORS: we ran out of disk space
 #: src/gs-update-monitor.c:1363
@@ -4814,6 +4905,9 @@ msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
 msgstr ""
+"უკაცრავად: განახლებების დაყენება ჩავარდა. დაელოდეთ სხვა განახლებას და "
+"თავიდან სცადეთ. თუ პრობლემა არ გადაწყდება, დაუკავშირდით პროგრამების "
+"მომწოდებელს."
 
 #. TRANSLATORS: This is the time when we last checked for updates
 #: src/gs-updates-page.c:255
@@ -4855,6 +4949,8 @@ msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
 msgstr ""
+"მობილური ფართოზოლოვანი მიერთებისას განახლებების შემოწმებამ, შეიძლება, "
+"საკმაოდ დიდი ხარჯი დაგიჯდეთ."
 
 #. TRANSLATORS: this is a link to the control-center network panel
 #: src/gs-updates-page.c:856
@@ -4921,6 +5017,8 @@ msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
 msgstr ""
+"მობილური ფართოზოლოვანი მიერთებისას განახლებების შემოწმებამ, შეიძლება, "
+"საკმაოდ დიდი ხარჯი დაგიჯდეთ"
 
 #: src/gs-updates-page.ui:222
 msgid "_Check Anyway"
@@ -4998,6 +5096,8 @@ msgstr "ქსელთან მიერთება გაზომვად�
 #: src/gs-updates-paused-banner.c:87
 msgid "Network connection prohibits large downloads - software updates paused"
 msgstr ""
+"ქსელურ მიერთებას დიდი ფაილების გადმოწერა არ შეუძლია - პროგრამის განახლებები "
+"შეჩერებულია"
 
 #: src/gs-updates-paused-banner.c:89
 msgid "Power saver mode is active - software updates paused"
@@ -5140,6 +5240,8 @@ msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
 msgstr ""
+"ზოგადი სისტემური განახლებები, როგორიცაა უსაფრთხოების და მოწყვლადობების "
+"განახლებები და წარმადობის გაუმჯობესებები."
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
 #: plugins/eos-updater/gs-plugin-eos-updater.c:689
@@ -5149,7 +5251,7 @@ msgstr "%s განახლება ახალი ფუნქციებ�
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:1306
 msgid "EOS update service could not fetch and apply the update."
-msgstr ""
+msgstr "EOS განახლების სერვისმა განახლება ვერ გადმოწერა და გადაატარა."
 
 #: plugins/epiphany/gs-plugin-epiphany.c:500
 #: plugins/epiphany/gs-plugin-epiphany.c:504
@@ -5175,6 +5277,8 @@ msgstr "ვერსიის აწევის ინფორმაციი�
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
+"განახლდით უახლესი ფუნქციებისთვის, წარმადობისა და სტაბილურობის "
+"გაუმჯობესებებისათვის."
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
 msgid "Flatpak Support"
@@ -5316,7 +5420,7 @@ msgstr "Flatpak-ის მეტამონაცემების მიღ�
 #: plugins/flatpak/gs-flatpak.c:3604
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
-msgstr ""
+msgstr "ჩავარდა დაზუსტება დამატებისთვის '%s': %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:94
 msgid "User Installation"
