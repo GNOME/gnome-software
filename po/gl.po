@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-02-19 17:02+0000\n"
-"PO-Revision-Date: 2024-02-22 18:03+0100\n"
+"POT-Creation-Date: 2024-02-22 17:04+0000\n"
+"PO-Revision-Date: 2024-03-11 09:35+0100\n"
 "Last-Translator: Fran Dieguez <fran.dieguez@gnome.org>\n"
 "Language-Team: Galician <proxecto@trasno.gal>\n"
 "Language: gl\n"
@@ -338,16 +338,12 @@ msgstr ""
 "e ocultar calquera aplicación privativa."
 
 #: data/org.gnome.software.gschema.xml:147
-#, fuzzy
-#| msgid ""
-#| "Set to 'true' to show only freely licensed apps and hide any proprietary "
-#| "apps."
 msgid ""
 "Set to 'true' to show only apps from developers whose identity has been "
 "verified."
 msgstr ""
-"Estabeleza a «verdadeiro» para mostrar só as aplicacións con licencia libre "
-"e ocultar calquera aplicación privativa."
+"Estabeleza a «verdadeiro» para mostrar só as aplicacións de desenvolvedores "
+"cuxa identidade foi verificada."
 
 #: data/org.gnome.software.gschema.xml:151
 msgid "The timestamp of the last received historical updates."
@@ -1591,13 +1587,7 @@ msgstr "Axuda a traducir %s"
 
 #. Translators: The placeholder is an app name
 #: src/gs-app-translation-dialog.c:71
-#, fuzzy, c-format
-#| msgid ""
-#| "%s is designed, developed, and translated by an international community "
-#| "of volunteers.\n"
-#| "\n"
-#| "This means that while it’s not yet available in your language, you can "
-#| "get involved and help translate it yourself."
+#, c-format
 msgid ""
 "%s is designed, developed, and translated by an international community of "
 "contributors.\n"
@@ -3167,12 +3157,7 @@ msgstr "Involu_crarse"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:121
-#, fuzzy, c-format
-#| msgid ""
-#| "This app is developed in the open by a community of volunteers, and "
-#| "released under the <a href=\"%s\">%s license</a>.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This app is developed in the open by an international community, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
@@ -3186,12 +3171,7 @@ msgstr ""
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:128
-#, fuzzy, c-format
-#| msgid ""
-#| "This app is developed in the open by a community of volunteers, and "
-#| "released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This app is developed in the open by an international community, and "
 "released under the %s license.\n"
@@ -3205,12 +3185,7 @@ msgstr ""
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:135
-#, fuzzy, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the <a href=\"%s\">%s license</a>.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This software is developed in the open by an international community, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
@@ -3224,12 +3199,7 @@ msgstr ""
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:142
-#, fuzzy, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This software is developed in the open by an international community, and "
 "released under the %s license.\n"
@@ -3616,11 +3586,8 @@ msgid "Automatic Update _Notifications"
 msgstr "_Notificacións de actualizacións automáticas"
 
 #: src/gs-prefs-dialog.ui:61
-#, fuzzy
-#| msgid "Show notifications when updates have been automatically installed"
 msgid "Notify when updates have been automatically installed"
-msgstr ""
-"Mostrar notificacións cando se instalaron actualizacións automaticamente"
+msgstr "Notificar cando se instalen actualizacións automaticamente"
 
 #: src/gs-prefs-dialog.ui:76
 msgid "Content Filters"
@@ -3632,7 +3599,7 @@ msgstr "Só mostrar software _libre"
 
 #: src/gs-prefs-dialog.ui:80
 msgid "Hide proprietary software when browsing and searching"
-msgstr ""
+msgstr "Ocultar o software privativo ao explorar e buscar"
 
 #: src/gs-prefs-dialog.ui:93
 msgid "Only Show _Verified Developers"
@@ -3650,6 +3617,9 @@ msgid ""
 "features are therefore paused when on metered network connections and when "
 "power saver is on."
 msgstr ""
+"Comprobar e descargar actualizacións usa datos e enerxía. As funcións de "
+"actualizacións automáticas están polo tanto pausadas cando use conexións de "
+"redes medidas ou o aforro de enerxía está activo."
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -3907,6 +3877,9 @@ msgid ""
 "Please provide a rating, summary and review text. Reviews should not be used "
 "to report problems: instead, contact the developer or your support provider."
 msgstr ""
+"Por favor forneza unha puntuación, resumo ou texto de reseña. As reseñas non "
+"deberían usarse para informar de problemas: no lugar, contacte co "
+"desenvolvedor ou use o fornecedor de asistencia técnica."
 
 #: src/gs-review-dialog.ui:100
 msgid "Review Summary"
@@ -4845,28 +4818,20 @@ msgid "Please check for available updates"
 msgstr "Comprobe as actualizacións de software"
 
 #: src/gs-update-monitor.c:223
-#, fuzzy
-#| msgid "Critical Software Update Ready to Install"
 msgid "Critical Updates Ready to Install"
 msgstr "As actualización de software críticas están listas para instalar"
 
 #: src/gs-update-monitor.c:224
-#, fuzzy
-#| msgid "Unable to install updates as download failed"
 msgid "Install critical updates as soon as possible"
-msgstr "Non foi posíbel instalar as actualizacións xa que a descarga fallou"
+msgstr "Instalar as actualizacións críticas tan pronto sexa posíbel"
 
 #: src/gs-update-monitor.c:227
-#, fuzzy
-#| msgid "Critical Software Updates Available to Download"
 msgid "Critical Updates Available to Download"
 msgstr "Hai actualizacións críticas de software dispoñíbeis para descargar"
 
 #: src/gs-update-monitor.c:228
-#, fuzzy
-#| msgid "Unable to install updates as download failed"
 msgid "Download critical updates as soon as possible"
-msgstr "Non foi posíbel instalar as actualizacións xa que a descarga fallou"
+msgstr "Descargar actualizacións críticas tan pronto sexa posíbel"
 
 #: src/gs-update-monitor.c:234
 msgid "Updates Ready to Install"
@@ -4874,7 +4839,7 @@ msgstr "Actualizacións listas para instalarse"
 
 #: src/gs-update-monitor.c:235
 msgid "Software updates are ready and waiting"
-msgstr "Hai actualizacións de software listas e agardando."
+msgstr "Hai actualizacións de software listas e agardando"
 
 #: src/gs-update-monitor.c:241
 msgid "Updates Available to Download"
@@ -5247,6 +5212,8 @@ msgstr ""
 #: src/gs-updates-paused-banner.c:87
 msgid "Network connection prohibits large downloads - software updates paused"
 msgstr ""
+"A conexión de rede prohibe as descargas grandes - actualizacións de software "
+"pausadas"
 
 #: src/gs-updates-paused-banner.c:89
 msgid "Power saver mode is active - software updates paused"
@@ -5660,42 +5627,42 @@ msgstr "O dispositivo non se pode usar namentres está pechada a tapa"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:213
 #, c-format
 msgid "%s Device Update"
 msgstr "Actualización de dispositivo %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:218
 #, c-format
 msgid "%s System Update"
 msgstr "Actualización de sistema %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:223
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "Actualización de controlador embebido de %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:238
+#: plugins/fwupd/gs-fwupd-app.c:228
 #, c-format
 msgid "%s ME Update"
 msgstr "Actualización de %s ME"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:243
+#: plugins/fwupd/gs-fwupd-app.c:233
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "Actualización de %s ME Corporativo"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:248
+#: plugins/fwupd/gs-fwupd-app.c:238
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "Actualización de %s ME de consumidor"
@@ -5703,7 +5670,7 @@ msgstr "Actualización de %s ME de consumidor"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:254
+#: plugins/fwupd/gs-fwupd-app.c:244
 #, c-format
 msgid "%s Controller Update"
 msgstr "Actualización de controlador %s"
@@ -5711,141 +5678,141 @@ msgstr "Actualización de controlador %s"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:260
+#: plugins/fwupd/gs-fwupd-app.c:250
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "Actualización de controlador de Thunderbolt de %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:265
+#: plugins/fwupd/gs-fwupd-app.c:255
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "Actualización do microcódigo da CPU %s"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:270
+#: plugins/fwupd/gs-fwupd-app.c:260
 #, c-format
 msgid "%s Configuration Update"
 msgstr "Actualización de configuración %s"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:274
+#: plugins/fwupd/gs-fwupd-app.c:264
 #, c-format
 msgid "%s Battery Update"
 msgstr "Actualización de batería %s"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:279
+#: plugins/fwupd/gs-fwupd-app.c:269
 #, c-format
 msgid "%s Camera Update"
 msgstr "Actualización de cámara %s"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:283
+#: plugins/fwupd/gs-fwupd-app.c:273
 #, c-format
 msgid "%s TPM Update"
 msgstr "Actualización de TPM %s"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:287
+#: plugins/fwupd/gs-fwupd-app.c:277
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "Actualización de área táctil %s"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:291
+#: plugins/fwupd/gs-fwupd-app.c:281
 #, c-format
 msgid "%s Mouse Update"
 msgstr "Actualización de rato %s"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:295
+#: plugins/fwupd/gs-fwupd-app.c:285
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "Actualización de teclado %s"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:289
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "Actualización de controlador do almacenamento %s"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:294
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "Actualización de controlador da rede %s"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:309
+#: plugins/fwupd/gs-fwupd-app.c:299
 #, c-format
 msgid "%s Display Update"
 msgstr "Actualización de pantalla %s"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:314
+#: plugins/fwupd/gs-fwupd-app.c:304
 #, c-format
 msgid "%s BMC Update"
 msgstr "Actualización de BMC %s"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:319
+#: plugins/fwupd/gs-fwupd-app.c:309
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "Actualización de Receptor USB %s"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:323
+#: plugins/fwupd/gs-fwupd-app.c:313
 #, c-format
 msgid "%s Drive Update"
 msgstr "Actualización de unidade %s"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:317
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr "Actualización de unidade flash %s"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:322
 #, c-format
 msgid "%s SSD Update"
 msgstr "Actualización de SSD %s"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:337
+#: plugins/fwupd/gs-fwupd-app.c:327
 #, c-format
 msgid "%s GPU Update"
 msgstr "Actualización de GPU %s"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:342
+#: plugins/fwupd/gs-fwupd-app.c:332
 #, c-format
 msgid "%s Dock Update"
 msgstr "Actualización de Dock %s"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:347
+#: plugins/fwupd/gs-fwupd-app.c:337
 #, c-format
 msgid "%s USB Dock Update"
 msgstr "Actualización de Receptor USB %s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1717
+#: plugins/fwupd/gs-plugin-fwupd.c:1716
 msgid "Firmware update could not be applied: "
 msgstr "Non foi posíbel aplicar a actualización de firmware: "
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1857
+#: plugins/fwupd/gs-plugin-fwupd.c:1856
 msgid "Firmware"
 msgstr "Firmware"
 
