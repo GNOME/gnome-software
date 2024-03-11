@@ -697,7 +697,7 @@ refine_app (GsPluginFedoraPkgdbCollections *self,
 		app_version = g_ascii_strtoull (gs_app_get_version (app), NULL, 10);
 
 	/* system updates and system upgrades are the same kind, only different version */
-	if (app_version != self->os_version)
+	if (app_version == 0 || app_version == self->os_version)
 		return TRUE;
 
 	/* find item */
