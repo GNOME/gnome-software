@@ -101,7 +101,7 @@ gs_updates_paused_banner_dispose (GObject *object)
 {
 	GsUpdatesPausedBanner *self = GS_UPDATES_PAUSED_BANNER (object);
 
-	g_clear_pointer (&self->banner, gtk_widget_unparent);
+	g_clear_object (&self->banner);
 
 	G_OBJECT_CLASS (gs_updates_paused_banner_parent_class)->dispose (object);
 }
@@ -145,7 +145,7 @@ gs_updates_paused_banner_set_property (GObject      *object,
 static void
 gs_updates_paused_banner_init (GsUpdatesPausedBanner *self)
 {
-	self->banner = adw_banner_new ("");
+	self->banner = g_object_ref_sink (adw_banner_new (""));
 	adw_bin_set_child (ADW_BIN (self), self->banner);
 
 	g_signal_connect_swapped (self->banner, "button-clicked",
