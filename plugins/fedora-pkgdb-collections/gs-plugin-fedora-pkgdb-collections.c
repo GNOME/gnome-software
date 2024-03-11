@@ -458,6 +458,10 @@ _is_valid_upgrade (GsPluginFedoraPkgdbCollections *self,
 	    item->version > self->os_version + 2)
 		return FALSE;
 
+	/* ignore End-Of-Life upgrades */
+	if (item->status == PKGDB_ITEM_STATUS_EOL)
+		return FALSE;
+
 	/* only interested in non-devel distros */
 	if (!g_settings_get_boolean (self->settings, "show-upgrade-prerelease")) {
 		if (item->status == PKGDB_ITEM_STATUS_DEVEL)
