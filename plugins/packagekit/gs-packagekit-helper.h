@@ -27,6 +27,9 @@ void		 gs_packagekit_helper_set_progress_app	(GsPackagekitHelper	*self,
 							 GsApp			*progress_app);
 void		 gs_packagekit_helper_set_progress_list	(GsPackagekitHelper	*self,
 							 GsAppList		*progress_list);
+void		 gs_packagekit_helper_set_allow_emit_updates_changed
+							(GsPackagekitHelper	*self,
+							 gboolean		 allow_emit_updates_changed);
 GsApp		*gs_packagekit_helper_get_app_by_id	(GsPackagekitHelper	*self,
 							 const gchar		*package_id);
 void		 gs_packagekit_helper_cb		(PkProgress		*progress,

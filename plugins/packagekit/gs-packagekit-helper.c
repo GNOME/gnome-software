@@ -20,6 +20,7 @@ struct _GsPackagekitHelper {
 	GsApp			*progress_app;
 	GsAppList		*progress_list;
 	GsPlugin		*plugin;
+	gboolean		 allow_emit_updates_changed;
 };
 
 G_DEFINE_TYPE (GsPackagekitHelper, gs_packagekit_helper, G_TYPE_OBJECT)
@@ -55,12 +56,23 @@ gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer use
 		 * have to be merged into PackageKit so the right #GsApp is
 		 * accessible to modify its download state.
 		 * */
-		if ((plugin_status == GS_PLUGIN_STATUS_INSTALLING ||
+		if ((self->allow_emit_updates_changed) &&
+		    (plugin_status == GS_PLUGIN_STATUS_INSTALLING ||
 		     plugin_status == GS_PLUGIN_STATUS_REMOVING) &&
 		    (app == NULL ||
 		     (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM &&
 		      gs_app_get_id (app) != NULL))) {
-			gs_plugin_updates_changed (plugin);
+			/* this callback can be called many times in a row; limit how often
+			   the GUI part is notified, to not refresh the Updates page too often */
+			static gint64 last_notify = 0;
+			gint64 current_time = g_get_real_time ();
+
+			/* Just out-of-blue chosen 3 minutes interval between notifications */
+			if (current_time - last_notify >= G_USEC_PER_SEC * 60 * 3) {
+				g_debug ("notify about updates-changed from %s", G_STRFUNC);
+				last_notify = current_time;
+				gs_plugin_updates_changed (plugin);
+			}
 		}
 	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
 		gint percentage = pk_progress_get_percentage (progress);
@@ -102,6 +114,26 @@ void
 gs_packagekit_helper_set_progress_list (GsPackagekitHelper *self, GsAppList *progress_list)
 {
 	g_set_object (&self->progress_list, progress_list);
+}
+
+/*
+ * gs_packagekit_helper_set_allow_emit_updates_changed:
+ * @self: a #GsPackagekitHelper
+ * @allow_emit_updates_changed: whether to allow emission of the updates-changed signal
+ *
+ * Set whether to allow emitting the #GsPlugin:updates-changed signal at any time through the task,
+ * or whether to block it.
+ *
+ * FIXME: This is only needed to work around a signal emission loop caused by interaction
+ * between the fedora-pkgdb-collections and PackageKit plugins. When the fedora-pkgdb-collections
+ * plugin is removed, this API should be removed.
+ * See !1817 and #2462.
+ */
+void
+gs_packagekit_helper_set_allow_emit_updates_changed (GsPackagekitHelper *self,
+						     gboolean allow_emit_updates_changed)
+{
+	self->allow_emit_updates_changed = allow_emit_updates_changed;
 }
 
 GsPlugin *
@@ -147,7 +179,8 @@ static void
 gs_packagekit_helper_init (GsPackagekitHelper *self)
 {
 	self->apps = g_hash_table_new_full (g_str_hash, g_str_equal,
-					      g_free, (GDestroyNotify) g_object_unref);
+					    g_free, (GDestroyNotify) g_object_unref);
+	self->allow_emit_updates_changed = TRUE;
 }
 
 GsPackagekitHelper *

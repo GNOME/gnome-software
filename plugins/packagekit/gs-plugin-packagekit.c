@@ -759,6 +759,7 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 
 	task_updates = gs_packagekit_task_new (plugin);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
 
 	results = pk_client_get_updates (PK_CLIENT (task_updates),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
@@ -1830,6 +1831,8 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) != 0) {
 		PkBitfield filter;
 		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+
+		gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
 
 		/* get the list of updates */
 		filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
@@ -3972,6 +3975,7 @@ gs_plugin_packagekit_download_async (GsPluginPackagekit  *self,
 	data->progress_list = g_object_ref (list);
 	data->interactive = interactive;
 	data->helper = gs_packagekit_helper_new (plugin);
+	gs_packagekit_helper_set_allow_emit_updates_changed (data->helper, FALSE);
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) download_data_free);
 
 	/* add any packages */
