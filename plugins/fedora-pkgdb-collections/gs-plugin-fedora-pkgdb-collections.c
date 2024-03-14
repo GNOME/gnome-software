@@ -393,7 +393,18 @@ _create_upgrade_from_info (GsPluginFedoraPkgdbCollections *self,
 
 	/* create */
 	app = gs_app_new (app_id);
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	switch (item->status) {
+	case PKGDB_ITEM_STATUS_ACTIVE:
+	case PKGDB_ITEM_STATUS_DEVEL:
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+		break;
+	case PKGDB_ITEM_STATUS_EOL:
+		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+		break;
+	default:
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+		break;
+	}
 	gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, item->name);
@@ -445,6 +456,10 @@ _is_valid_upgrade (GsPluginFedoraPkgdbCollections *self,
 	/* only interested in newer versions, but not more than N+2 */
 	if (item->version <= self->os_version ||
 	    item->version > self->os_version + 2)
+		return FALSE;
+
+	/* ignore End-Of-Life upgrades */
+	if (item->status == PKGDB_ITEM_STATUS_EOL)
 		return FALSE;
 
 	/* only interested in non-devel distros */
@@ -697,7 +712,7 @@ refine_app (GsPluginFedoraPkgdbCollections *self,
 		app_version = g_ascii_strtoull (gs_app_get_version (app), NULL, 10);
 
 	/* system updates and system upgrades are the same kind, only different version */
-	if (app_version != self->os_version)
+	if (app_version == 0 || app_version == self->os_version)
 		return TRUE;
 
 	/* find item */
