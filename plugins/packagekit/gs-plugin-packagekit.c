@@ -2510,6 +2510,44 @@ static void get_offline_update_permission_cb (GObject      *source_object,
                                               gpointer      user_data);
 
 static void
+gs_plugin_packagekit_get_properties_cb (GObject *source_object,
+					GAsyncResult *result,
+					gpointer user_data)
+{
+	PkControl *control = PK_CONTROL (source_object);
+	g_autoptr(GError) error = NULL;
+
+	if (pk_control_get_properties_finish (control, result, &error)) {
+		guint32 major, minor, micro;
+		g_autoptr(GString) string = g_string_new (NULL);
+
+		g_object_get (control,
+			      "version_major", &major,
+			      "version_minor", &minor,
+			      "version_micro", &micro,
+			      NULL);
+
+		g_string_append_printf (string, "PackageKit version: %u.%u.%u", major, minor, micro);
+
+		if (major != PK_MAJOR_VERSION || minor != PK_MINOR_VERSION || micro != PK_MICRO_VERSION) {
+			g_string_append_printf (string,
+						" (build version: %d.%d.%d)",
+						PK_MAJOR_VERSION,
+						PK_MINOR_VERSION,
+						PK_MICRO_VERSION);
+		}
+
+		g_debug ("%s", string->str);
+	} else {
+		g_debug ("Failed to get PackageKit properties: %s (build version: %d.%d.%d)",
+			 (error ? error->message : "Unknown error"),
+			 PK_MAJOR_VERSION,
+			 PK_MINOR_VERSION,
+			 PK_MICRO_VERSION);
+	}
+}
+
+static void
 gs_plugin_packagekit_setup_async (GsPlugin            *plugin,
                                   GCancellable        *cancellable,
                                   GAsyncReadyCallback  callback,
@@ -2518,10 +2556,8 @@ gs_plugin_packagekit_setup_async (GsPlugin            *plugin,
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GTask) task = NULL;
 
-	g_debug ("PackageKit version: %d.%d.%d",
-		PK_MAJOR_VERSION,
-		PK_MINOR_VERSION,
-		PK_MICRO_VERSION);
+	/* print real packagekit version, no need to wait for it */
+	pk_control_get_properties_async (self->control_proxy, cancellable, gs_plugin_packagekit_get_properties_cb, NULL);
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_setup_async);
