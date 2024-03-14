@@ -39,6 +39,7 @@ typedef struct
 	GtkWidget	*box_tag;
 	GtkWidget	*label_warning;
 	GtkWidget	*label_origin;
+	GtkWidget	*label_installed_box;
 	GtkWidget	*label_installed;
 	GtkWidget	*label_app_size;
 	gboolean	 colorful;
@@ -365,14 +366,14 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_UPDATABLE_LIVE:
 		case GS_APP_STATE_INSTALLED:
-			gtk_widget_set_visible (priv->label_installed, priv->show_installed);
+			gtk_widget_set_visible (priv->label_installed_box, priv->show_installed);
 			break;
 		default:
-			gtk_widget_set_visible (priv->label_installed, FALSE);
+			gtk_widget_set_visible (priv->label_installed_box, FALSE);
 			break;
 		}
 	} else {
-		gtk_widget_set_visible (priv->label_installed, FALSE);
+		gtk_widget_set_visible (priv->label_installed_box, FALSE);
 	}
 
 	/* name */
@@ -593,7 +594,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 	gtk_widget_set_visible (priv->box_tag,
 				gtk_widget_get_visible (priv->label_origin) ||
-				gtk_widget_get_visible (priv->label_installed) ||
+				gtk_widget_get_visible (priv->label_installed_box) ||
 				gtk_widget_get_visible (priv->label_warning));
 
 	gtk_label_set_max_width_chars (GTK_LABEL (priv->name_label),
@@ -1021,6 +1022,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, box_tag);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_app_size);
 }
