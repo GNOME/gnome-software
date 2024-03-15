@@ -142,6 +142,10 @@ typedef struct
 	GPtrArray		*relations;  /* (nullable) (element-type AsRelation) (owned) */
 	gboolean		 has_translations;
 	GsAppIconsState		 icons_state;
+	gboolean		 key_color_for_light_set;
+	GdkRGBA			 key_color_for_light;
+	gboolean		 key_color_for_dark_set;
+	GdkRGBA			 key_color_for_dark;
 } GsAppPrivate;
 
 typedef enum {
@@ -753,6 +757,18 @@ gs_app_to_string_append (GsApp *app, GString *str)
 				  color->red * 255.f,
 				  color->green * 255.f,
 				  color->blue * 255.f);
+	}
+	if (priv->key_color_for_light_set) {
+		gs_app_kv_printf (str, "key-color-for-light-scheme", "%.0f,%.0f,%.0f",
+				  priv->key_color_for_light.red * 255.f,
+				  priv->key_color_for_light.green * 255.f,
+				  priv->key_color_for_light.blue * 255.f);
+	}
+	if (priv->key_color_for_dark_set) {
+		gs_app_kv_printf (str, "key-color-for-dark-scheme", "%.0f,%.0f,%.0f",
+				  priv->key_color_for_dark.red * 255.f,
+				  priv->key_color_for_dark.green * 255.f,
+				  priv->key_color_for_dark.blue * 255.f);
 	}
 	keys = g_hash_table_get_keys (priv->metadata);
 	for (GList *l = keys; l != NULL; l = l->next) {
@@ -4647,6 +4663,8 @@ calculate_key_colors (GsApp *app)
 	 *   </custom>
 	 * </component>
 	 * ]|
+	 *
+	 * Note it's ignored when the appstream data defines `<branding/>` colors.
 	 */
 	overrides_str = gs_app_get_metadata_item (app, "GnomeSoftware::key-colors");
 	if (overrides_str != NULL) {
@@ -4826,6 +4844,121 @@ gs_app_get_user_key_colors (GsApp *app)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	return priv->user_key_colors;
+}
+
+/**
+ * gs_app_set_key_color_for_color_scheme:
+ * @app: a #GsApp
+ * @for_color_scheme: for which #GsColorScheme
+ * @rgba: (nullable): a #GdkRGBA to use, or %NULL to unset
+ *
+ * Sets preferred app color (key color) for the specified color scheme.
+ * When the @for_color_scheme is %GS_COLOR_SCHEME_ANY, then covers both
+ * color schemes, unless they've been previously set.
+ *
+ * Use %NULL @rgba to unset the color.
+ *
+ * Since: 47
+ **/
+void
+gs_app_set_key_color_for_color_scheme (GsApp *app,
+				       GsColorScheme for_color_scheme,
+				       const GdkRGBA *rgba)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_if_fail (GS_IS_APP (app));
+	switch (for_color_scheme) {
+	case GS_COLOR_SCHEME_ANY:
+		if (rgba != NULL) {
+			if (!priv->key_color_for_light_set) {
+				priv->key_color_for_light = *rgba;
+				priv->key_color_for_light_set = TRUE;
+			}
+			if (!priv->key_color_for_dark_set) {
+				priv->key_color_for_dark = *rgba;
+				priv->key_color_for_dark_set = TRUE;
+			}
+		} else {
+			priv->key_color_for_light_set = FALSE;
+			priv->key_color_for_dark_set = FALSE;
+		}
+		break;
+	case GS_COLOR_SCHEME_LIGHT:
+		if (rgba != NULL) {
+			priv->key_color_for_light = *rgba;
+			priv->key_color_for_light_set = TRUE;
+		} else {
+			priv->key_color_for_light_set = FALSE;
+		}
+		break;
+	case GS_COLOR_SCHEME_DARK:
+		if (rgba != NULL) {
+			priv->key_color_for_dark = *rgba;
+			priv->key_color_for_dark_set = TRUE;
+		} else {
+			priv->key_color_for_dark_set = FALSE;
+		}
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+}
+
+/**
+ * gs_app_get_key_color_for_color_scheme:
+ * @app: a #GsApp
+ * @for_color_scheme: for which #GsColorScheme
+ * @out_rgba: (out caller-allocates): a #GdkRGBA to store the value in
+ *
+ * Gets preferred app color (key color) previously set by
+ * the gs_app_set_key_color_for_color_scheme().
+ *
+ * When the @for_color_scheme is %GS_COLOR_SCHEME_ANY, then returns whichever
+ * color scheme's color is set, in no particular order.
+ *
+ * The @out_rgba is left untouched when no color for the @for_color_scheme
+ * had been set and returns %FALSE.
+ *
+ * Returns: %TRUE, when the color for the @for_color_scheme had been previously set
+ *    and the @out_rgba had been populated, %FALSE otherwise
+ *
+ * Since: 47
+ **/
+gboolean
+gs_app_get_key_color_for_color_scheme (GsApp *app,
+				       GsColorScheme for_color_scheme,
+				       GdkRGBA *out_rgba)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	switch (for_color_scheme) {
+	case GS_COLOR_SCHEME_ANY:
+		if (priv->key_color_for_light_set) {
+			*out_rgba = priv->key_color_for_light;
+			return TRUE;
+		}
+		if (priv->key_color_for_dark_set) {
+			*out_rgba = priv->key_color_for_dark;
+			return TRUE;
+		}
+		break;
+	case GS_COLOR_SCHEME_LIGHT:
+		if (priv->key_color_for_light_set) {
+			*out_rgba = priv->key_color_for_light;
+			return TRUE;
+		}
+		break;
+	case GS_COLOR_SCHEME_DARK:
+		if (priv->key_color_for_dark_set) {
+			*out_rgba = priv->key_color_for_dark;
+			return TRUE;
+		}
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+
+	return FALSE;
 }
 
 /**
