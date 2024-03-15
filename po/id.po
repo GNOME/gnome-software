@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-02-19 17:02+0000\n"
-"PO-Revision-Date: 2024-02-21 21:01+0700\n"
+"POT-Creation-Date: 2024-03-15 07:24+0000\n"
+"PO-Revision-Date: 2024-03-15 20:42+0700\n"
 "Last-Translator: Kukuh Syafaat <kukuhsyafaat@gnome.org>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
@@ -72,7 +72,7 @@ msgid "The update details"
 msgstr "Detail pemutakhiran"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2437
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2477
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "Proyek GNOME"
@@ -834,21 +834,21 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "Paket"
 
-#: src/gs-app-addon-row.c:95 src/gs-app-row.c:471
+#: src/gs-app-addon-row.c:95 src/gs-app-row.c:528
 msgid "Pending"
 msgstr "Tertunda"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:475 src/gs-details-page.c:401
+#: src/gs-app-addon-row.c:99 src/gs-app-row.c:532 src/gs-details-page.c:402
 msgid "Pending install"
 msgstr "Pemasangan tertunda"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:479 src/gs-details-page.c:408
+#: src/gs-app-addon-row.c:103 src/gs-app-row.c:536 src/gs-details-page.c:409
 msgid "Pending remove"
 msgstr "Penghapusan tertunda"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:214 src/gs-details-page.c:389
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:215 src/gs-details-page.c:390
 msgid "Installing"
 msgstr "Memasang"
 
@@ -858,7 +858,7 @@ msgstr "Menghapus"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being downloaded
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:228 src/gs-details-page.c:394
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:229 src/gs-details-page.c:395
 #: src/gs-details-page.ui:356
 msgid "Downloading"
 msgstr "Mengunduh"
@@ -869,13 +869,13 @@ msgstr "Mengunduh"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1043
-#: src/gs-details-page.c:1070 src/gs-details-page.ui:243 src/gs-page.c:437
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1044
+#: src/gs-details-page.c:1071 src/gs-details-page.ui:243 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Pasang"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1152
+#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1153
 msgid "_Uninstall…"
 msgstr "Hap_us pemasangan…"
 
@@ -998,7 +998,7 @@ msgstr "Deskripsi pemutakhiran tak tersedia."
 msgid "Update Details"
 msgstr "Detail Pemutakhiran"
 
-#: src/gs-app-details-page.ui:26 src/gs-app-row.c:535
+#: src/gs-app-details-page.ui:26 src/gs-app-row.c:592
 msgid "Requires additional permissions"
 msgstr "Membutuhkan izin tambahan"
 
@@ -1487,82 +1487,83 @@ msgstr "Tidak ada informasi peringkat usia yang tersedia"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily installed
-#: src/gs-app-row.c:155
+#: src/gs-app-row.c:156
 msgid "Visit Website"
 msgstr "Kunjungi Situs Web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:161
+#: src/gs-app-row.c:162
 msgid "Install…"
 msgstr "Pasang…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the app
-#: src/gs-app-row.c:169 src/gs-updates-section.ui:63
+#: src/gs-app-row.c:170 src/gs-updates-section.ui:63
 msgid "Cancel"
 msgstr "Batal"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily installed
-#: src/gs-app-row.c:177
+#: src/gs-app-row.c:178
 msgid "Install"
 msgstr "Pasang"
 
 #. TRANSLATORS: this is a button in the updates panel
-#: src/gs-app-row.c:186
+#: src/gs-app-row.c:187
 msgid "Download"
 msgstr "Unduh"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:190
+#: src/gs-app-row.c:191
 msgid "Update"
 msgstr "Mutakhiran"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily removed
-#: src/gs-app-row.c:197 src/gs-app-row.c:207
+#: src/gs-app-row.c:198 src/gs-app-row.c:208
 msgid "Uninstall…"
 msgstr "Hapus pemasangan…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being erased
-#: src/gs-app-row.c:221
+#: src/gs-app-row.c:222
 msgid "Uninstalling"
 msgstr "Menghapus pemasangan"
 
+#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:152
+#: src/gs-os-update-page.c:155 src/gs-os-update-page.c:182
+msgid "Critical update"
+msgstr "Pemutakhiran kritis"
+
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:344
+#: src/gs-app-row.c:401
 msgid "Device cannot be used during update."
 msgstr "Perangkat tidak dapat dipakai selama pemutakhiran."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:354 src/gs-shell-search-provider.c:270
+#: src/gs-app-row.c:411 src/gs-shell-search-provider.c:270
 #, c-format
 msgid "Source: %s"
 msgstr "Sumber: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:542
+#: src/gs-app-row.c:599
 #, c-format
 msgid "Renamed from %s"
 msgstr "Ganti nama dari %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:579 src/gs-details-page.ui:595
+#: src/gs-app-row.c:636 src/gs-details-page.ui:595
 msgid "Stopped Receiving Updates"
 msgstr "Berhenti Menerima Pemutakhiran"
 
 #: src/gs-app-row.ui:58
 msgid "Critical Update"
 msgstr "Pemutakhiran Kritis"
-
-#: src/gs-app-row.ui:60 src/gs-os-update-page.c:150 src/gs-os-update-page.c:153
-msgid "Critical update"
-msgstr "Pemutakhiran kritis"
 
 #: src/gs-app-row.ui:227 src/gs-feature-tile.c:574
 msgctxt "Single app"
@@ -2336,52 +2337,52 @@ msgstr "Tampilkan _Rinciannya"
 msgid "_Show Less"
 msgstr "Tampilkan Lebih Sedikit"
 
-#: src/gs-details-page.c:384
+#: src/gs-details-page.c:385
 msgid "Removing…"
 msgstr "Menghapus…"
 
-#: src/gs-details-page.c:399
+#: src/gs-details-page.c:400
 msgid "Requires restart to finish install"
 msgstr "Membutuhkan nyala ulang untuk menyelesaikan pemasangan"
 
-#: src/gs-details-page.c:406
+#: src/gs-details-page.c:407
 msgid "Requires restart to finish remove"
 msgstr "Membutuhkan nyala ulang untuk menyelesaikan penghapusan"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:423
+#: src/gs-details-page.c:424
 msgid "Pending installation…"
 msgstr "Pemasangan tertunda…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:429
+#: src/gs-details-page.c:430
 msgid "Pending update…"
 msgstr "Pemutakhiran tertunda…"
 
 #. Translators: This string is shown when downloading an app before install.
-#: src/gs-details-page.c:444 src/gs-upgrade-banner.c:180
+#: src/gs-details-page.c:445 src/gs-upgrade-banner.c:180
 msgid "Downloading…"
 msgstr "Mengunduh…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:447
+#: src/gs-details-page.c:448
 msgid "Preparing…"
 msgstr "Mempersiapkan…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:450
+#: src/gs-details-page.c:451
 msgid "Uninstalling…"
 msgstr "Menghapus pemasangan…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:577
+#: src/gs-details-page.c:578
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "%s tidak terpasang, tetapi itu masih punya data."
 
-#: src/gs-details-page.c:1060
+#: src/gs-details-page.c:1061
 msgid "_Restart"
 msgstr "Mu_lai ulang"
 
@@ -2389,62 +2390,62 @@ msgstr "Mu_lai ulang"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1084
+#: src/gs-details-page.c:1085
 msgid "_Install…"
 msgstr "_Pasang…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1297
+#: src/gs-details-page.c:1298
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s akan muncul dalam bahasa Inggris AS"
 
-#: src/gs-details-page.c:1305
+#: src/gs-details-page.c:1306
 msgid "This app will appear in US English"
 msgstr "Aplikasi ini akan muncul dalam bahasa Inggris AS"
 
-#: src/gs-details-page.c:1307
+#: src/gs-details-page.c:1308
 msgid "This software will appear in US English"
 msgstr "Perangkat lunak ini akan muncul dalam bahasa Inggris AS"
 
-#: src/gs-details-page.c:1342 src/gs-details-page.ui:76
+#: src/gs-details-page.c:1343 src/gs-details-page.ui:76
 msgid "Help _Translate"
 msgstr "Bantu Terjemahkan"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1407
+#: src/gs-details-page.c:1408
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Aplikasi Lain oleh %s"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1443
+#: src/gs-details-page.c:1444
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "Pengembang %s telah membuktikan kepemilikan %s"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1446
+#: src/gs-details-page.c:1447
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "Pengembang telah membuktikan kepemilikan %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1814
+#: src/gs-details-page.c:1815
 msgid "You need internet access to write a review"
 msgstr "Anda perlu akses internet untuk menulis ulasan"
 
-#: src/gs-details-page.c:1915
+#: src/gs-details-page.c:1916
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
 "Aplikasi ini tidak lagi menerima pemutakhiran, termasuk perbaikan keamanan"
 
-#: src/gs-details-page.c:1916
+#: src/gs-details-page.c:1917
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr "Aplikasi ini telah disediakan distribusi Anda dan tak boleh diganti."
 
-#: src/gs-details-page.c:1917
+#: src/gs-details-page.c:1918
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2452,20 +2453,20 @@ msgstr ""
 "Aplikasi ini tidak menyediakan tautan ke situs web, repositori kode, atau "
 "pelacak masalah."
 
-#: src/gs-details-page.c:1919
+#: src/gs-details-page.c:1920
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "Perangkat lunak ini tidak lagi menerima pemutakhiran, termasuk perbaikan "
 "keamanan"
 
-#: src/gs-details-page.c:1920
+#: src/gs-details-page.c:1921
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr ""
 "Perangkat lunak ini telah disediakan distribusi Anda dan tak boleh diganti."
 
-#: src/gs-details-page.c:1921
+#: src/gs-details-page.c:1922
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2473,12 +2474,12 @@ msgstr ""
 "Perangkat lunak ini tidak menyediakan tautan ke situs web, repositori kode, "
 "atau pelacak masalah."
 
-#: src/gs-details-page.c:2011 src/gs-details-page.c:2027
+#: src/gs-details-page.c:2012 src/gs-details-page.c:2028
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Tak bisa temukan \"%s\""
 
-#: src/gs-details-page.c:2375
+#: src/gs-details-page.c:2376
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Gagal mengirim ulasan bagi \"%s\": %s"
@@ -3333,28 +3334,36 @@ msgstr "Sumber tidak diketahui"
 msgid "Beta"
 msgstr "Beta"
 
+#. TRANSLATORS: This is the accessibility label for the row. First %s is
+#. * the name, second is a message signifying whether the update is
+#. * critical, and the last placeholder represents the version.
+#: src/gs-os-update-page.c:186
+#, c-format
+msgid "%s %s %s"
+msgstr "%s %s %s"
+
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:257
+#: src/gs-os-update-page.c:268
 msgid "Additions"
 msgstr "Penambahan"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:261
+#: src/gs-os-update-page.c:272
 msgid "Removals"
 msgstr "Penghapusan"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:265
+#: src/gs-os-update-page.c:276
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Pemutakhiran"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:269
+#: src/gs-os-update-page.c:280
 msgid "Downgrades"
 msgstr "Penurunan"
 
@@ -3432,7 +3441,7 @@ msgstr "Kategori Lain"
 msgid "No App Data Found"
 msgstr "Tak Ada Data Aplikasi Yang Ditemukan"
 
-#: lib/gs-plugin-loader.c:2802
+#: lib/gs-plugin-loader.c:2814
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Tak diketahui"
@@ -4647,7 +4656,7 @@ msgctxt "Header bar button for list of apps to be updated"
 msgid "_Updates"
 msgstr "Pembar_uan"
 
-#: src/gs-shell.ui:277 src/gs-shell.ui:367
+#: src/gs-shell.ui:274 src/gs-shell.ui:354
 msgid "Go back"
 msgstr "Kembali"
 
@@ -5100,11 +5109,11 @@ msgstr "Pergi daring untuk memeriksa pemutakhiran"
 msgid "_Network Settings"
 msgstr "Pe_ngaturan Jaringan"
 
-#: src/gs-updates-page.ui:275
+#: src/gs-updates-page.ui:262 src/gs-updates-page.ui:276
 msgid "Error"
 msgstr "Kesalahan"
 
-#: src/gs-updates-page.ui:276
+#: src/gs-updates-page.ui:277
 msgid "Updates are automatically managed"
 msgstr "Pemutakhiran dikelola secara otomatis"
 
@@ -5293,14 +5302,14 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:67
+#: plugins/core/gs-plugin-generic-updates.c:71
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3302
 msgid "System Updates"
 msgstr "Pemutakhiran Sistem"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:72
+#: plugins/core/gs-plugin-generic-updates.c:76
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3307
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
@@ -5339,7 +5348,7 @@ msgid "Downloading upgrade information…"
 msgstr "Mengunduh informasi peningkatan…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:402
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:413
 #: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:95
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
@@ -5354,135 +5363,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak adalah kerangka kerja untuk aplikasi desktop di Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:339
+#: plugins/flatpak/gs-flatpak.c:342
 #, c-format
 msgid "System folder %s"
 msgstr "Folder sistem %s"
 
-#: plugins/flatpak/gs-flatpak.c:340 plugins/flatpak/gs-flatpak.c:341
+#: plugins/flatpak/gs-flatpak.c:343 plugins/flatpak/gs-flatpak.c:344
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Subfolder rumah %s"
 
-#: plugins/flatpak/gs-flatpak.c:342
+#: plugins/flatpak/gs-flatpak.c:345
 msgid "Host system folders"
 msgstr "Folder sistem host"
 
-#: plugins/flatpak/gs-flatpak.c:343
+#: plugins/flatpak/gs-flatpak.c:346
 msgid "Host system configuration from /etc"
 msgstr "Konfigurasi sistem host dari /etc"
 
-#: plugins/flatpak/gs-flatpak.c:344
+#: plugins/flatpak/gs-flatpak.c:347
 msgid "Desktop folder"
 msgstr "Folder destop"
 
-#: plugins/flatpak/gs-flatpak.c:344
+#: plugins/flatpak/gs-flatpak.c:347
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Subfolder destop %s"
 
-#: plugins/flatpak/gs-flatpak.c:345
+#: plugins/flatpak/gs-flatpak.c:348
 msgid "Documents folder"
 msgstr "Folder dokumen"
 
-#: plugins/flatpak/gs-flatpak.c:345
+#: plugins/flatpak/gs-flatpak.c:348
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Subfolder dokumen %s"
 
-#: plugins/flatpak/gs-flatpak.c:346
+#: plugins/flatpak/gs-flatpak.c:349
 msgid "Music folder"
 msgstr "Folder Musik"
 
-#: plugins/flatpak/gs-flatpak.c:346
+#: plugins/flatpak/gs-flatpak.c:349
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Subfolder Musik %s"
 
-#: plugins/flatpak/gs-flatpak.c:347
+#: plugins/flatpak/gs-flatpak.c:350
 msgid "Pictures folder"
 msgstr "Folder Gambar"
 
-#: plugins/flatpak/gs-flatpak.c:347
+#: plugins/flatpak/gs-flatpak.c:350
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Subfolder Gambar %s"
 
-#: plugins/flatpak/gs-flatpak.c:348
+#: plugins/flatpak/gs-flatpak.c:351
 msgid "Public Share folder"
 msgstr "Folder Berbagi Publik"
 
-#: plugins/flatpak/gs-flatpak.c:348
+#: plugins/flatpak/gs-flatpak.c:351
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Subfolder Berbagi Publik %s"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:352
 msgid "Videos folder"
 msgstr "Folder Video"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:352
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Subfolder Video %s"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:353
 msgid "Templates folder"
 msgstr "Folder Templat"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:353
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Subfolder Templat %s"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:354
 msgid "User cache folder"
 msgstr "Folder singgahan pengguna"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:354
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Subfolder singgahan pengguna %s"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:355
 msgid "User configuration folder"
 msgstr "Folder konfigurasi pengguna"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:355
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Subfolder konfigurasi pengguna %s"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:356
 msgid "User data folder"
 msgstr "Folder data pengguna"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:356
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Subfolder data pengguna %s"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:357
 msgid "User runtime folder"
 msgstr "Folder runtime pengguna"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:357
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Subfolder runtime pengguna %s"
 
-#: plugins/flatpak/gs-flatpak.c:412
+#: plugins/flatpak/gs-flatpak.c:415
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Akses sistem berkas ke %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1376
+#: plugins/flatpak/gs-flatpak.c:1379
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Mendapatkan metadata flatpak untuk %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3604
+#: plugins/flatpak/gs-flatpak.c:3607
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Gagal memperbaiki tambahan '%s': %s"
@@ -5565,42 +5574,42 @@ msgstr "Perangkat tidak dapat digunakan saat lid tertutup"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:213
 #, c-format
 msgid "%s Device Update"
 msgstr "Pemutakhiran Perangkat %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:218
 #, c-format
 msgid "%s System Update"
 msgstr "Pemutakhiran Sistem %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:223
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "Pemutakhiran Pengontrol Tertanam %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:238
+#: plugins/fwupd/gs-fwupd-app.c:228
 #, c-format
 msgid "%s ME Update"
 msgstr "Pemutakhiran ME %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:243
+#: plugins/fwupd/gs-fwupd-app.c:233
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "Pemutakhiran ME Korporat %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:248
+#: plugins/fwupd/gs-fwupd-app.c:238
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "Pemutakhiran ME Konsumer %s"
@@ -5608,7 +5617,7 @@ msgstr "Pemutakhiran ME Konsumer %s"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:254
+#: plugins/fwupd/gs-fwupd-app.c:244
 #, c-format
 msgid "%s Controller Update"
 msgstr "Pemutakhiran Pengendali %s"
@@ -5616,141 +5625,141 @@ msgstr "Pemutakhiran Pengendali %s"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:260
+#: plugins/fwupd/gs-fwupd-app.c:250
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "Pemutakhiran Pengontrol Thunderbolt %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:265
+#: plugins/fwupd/gs-fwupd-app.c:255
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "Pemutakhiran Mikrokode CPU %s"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:270
+#: plugins/fwupd/gs-fwupd-app.c:260
 #, c-format
 msgid "%s Configuration Update"
 msgstr "Pemutakhiran Konfigurasi %s"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:274
+#: plugins/fwupd/gs-fwupd-app.c:264
 #, c-format
 msgid "%s Battery Update"
 msgstr "Pemutakhiran Baterai %s"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:279
+#: plugins/fwupd/gs-fwupd-app.c:269
 #, c-format
 msgid "%s Camera Update"
 msgstr "Pemutakhiran Kamera %s"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:283
+#: plugins/fwupd/gs-fwupd-app.c:273
 #, c-format
 msgid "%s TPM Update"
 msgstr "Pemutakhiran TPM %s"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:287
+#: plugins/fwupd/gs-fwupd-app.c:277
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "Pemutakhiran Touchpad %s"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:291
+#: plugins/fwupd/gs-fwupd-app.c:281
 #, c-format
 msgid "%s Mouse Update"
 msgstr "Pemutakhiran Tetikus %s"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:295
+#: plugins/fwupd/gs-fwupd-app.c:285
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "Pemutakhiran Papan Tik %s"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:289
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "Pemutakhiran Pengontrol Penyimpanan %s"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:294
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "Pemutakhiran Antarmuka Jaringan %s"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:309
+#: plugins/fwupd/gs-fwupd-app.c:299
 #, c-format
 msgid "%s Display Update"
 msgstr "Pemutakhiran Tampilan %s"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:314
+#: plugins/fwupd/gs-fwupd-app.c:304
 #, c-format
 msgid "%s BMC Update"
 msgstr "Pemutakhiran MBC %s"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:319
+#: plugins/fwupd/gs-fwupd-app.c:309
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "Pemutakhiran Penerima USB %s"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:323
+#: plugins/fwupd/gs-fwupd-app.c:313
 #, c-format
 msgid "%s Drive Update"
 msgstr "Pemutakhiran Drive %s"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:317
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr "Pemutakhiran Flash Disk %s"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:322
 #, c-format
 msgid "%s SSD Update"
 msgstr "Pemutakhiran SSD %s"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:337
+#: plugins/fwupd/gs-fwupd-app.c:327
 #, c-format
 msgid "%s GPU Update"
 msgstr "Pemutakhiran GPU %s"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:342
+#: plugins/fwupd/gs-fwupd-app.c:332
 #, c-format
 msgid "%s Dock Update"
 msgstr "Pemutakhiran Dok %s"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:347
+#: plugins/fwupd/gs-fwupd-app.c:337
 #, c-format
 msgid "%s USB Dock Update"
 msgstr "Pemutakhiran Dok USB %s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1717
+#: plugins/fwupd/gs-plugin-fwupd.c:1737
 msgid "Firmware update could not be applied: "
 msgstr "Pemutakhiran firmware tidak bisa diterapkan: "
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1857
+#: plugins/fwupd/gs-plugin-fwupd.c:1877
 msgid "Firmware"
 msgstr "Perangkat Tegar (Firmware)"
 
@@ -5804,11 +5813,11 @@ msgstr ""
 "Pemutakhiran perangkat lunak akan dinonaktifkan hingga pemutakhiran yang "
 "tidak ditandatangani dihapus atau diperbarui."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:349
+#: plugins/packagekit/gs-plugin-packagekit.c:355
 msgid "Packages"
 msgstr "Paket"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3155
+#: plugins/packagekit/gs-plugin-packagekit.c:3219
 msgid "Failed to install updates: "
 msgstr "Tidak bisa memasang pemutakhiran: "
 
