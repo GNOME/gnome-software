@@ -180,10 +180,25 @@ create_app_row (GsApp *app)
 	row_container = g_object_new (GTK_TYPE_LIST_BOX_ROW, "child", row, NULL);
 
 	critical_update_message = (gs_app_get_update_urgency (app) >= AS_URGENCY_KIND_CRITICAL) ? _("Critical update") : "";
-	/* TRANSLATORS: This is the accessibility label for the row. First %s is
-	 * the name, second is a message signifying whether the update is
-	 * critical, and the last placeholder represents the version. */
-	a11y_row_label = g_strdup_printf (_("%s %s %s"), gs_app_get_source_default (app), critical_update_message, gtk_label_get_text (GTK_LABEL (label))),
+
+	/* This is the accessibility label for the row. Since it’s a textual
+	 * representation of the row for the screen reader, the order its
+	 * components appear in needs to vary with the text direction, just like
+	 * the widgets do. */
+	if (gtk_widget_get_direction (GTK_WIDGET (row_container)) == GTK_TEXT_DIR_RTL) {
+		a11y_row_label = g_strjoin (" ",
+					    gtk_label_get_text (GTK_LABEL (label)),
+					    critical_update_message,
+					    gs_app_get_source_default (app),
+					    NULL);
+	} else {
+		a11y_row_label = g_strjoin (" ",
+					    gs_app_get_source_default (app),
+					    critical_update_message,
+					    gtk_label_get_text (GTK_LABEL (label)),
+					    NULL);
+	}
+
 	gtk_accessible_update_property (GTK_ACCESSIBLE (row_container), GTK_ACCESSIBLE_PROPERTY_LABEL, a11y_row_label, -1);
 
 	return row_container;
