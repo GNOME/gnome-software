@@ -39,6 +39,7 @@ typedef struct
 	GtkWidget	*box_tag;
 	GtkWidget	*label_warning;
 	GtkWidget	*label_origin;
+	GtkWidget	*label_installed_box;
 	GtkWidget	*label_installed;
 	GtkWidget	*label_app_size;
 	gboolean	 colorful;
@@ -292,6 +293,62 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 }
 
 static void
+append_to_name_if_meaningful (GPtrArray *name_parts, GtkLabel *label)
+{
+	const gchar *text = gtk_label_get_text (label);
+	if (gtk_widget_is_visible (GTK_WIDGET (label)) && text != NULL && text[0] != '\0') {
+		g_ptr_array_add (name_parts, (gpointer) text);
+	}
+}
+
+static void
+gs_app_row_update_accessible_name (GsAppRow *app_row)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+	/* typically not more than 3-4 of these widgets are actually visible, hence 5 below */
+	g_autoptr(GPtrArray) parts = g_ptr_array_new_null_terminated (5, NULL, TRUE);
+	g_autofree char *accessible_name = NULL;
+	gboolean is_rtl = gtk_widget_get_direction (GTK_WIDGET (app_row)) == GTK_TEXT_DIR_RTL;
+
+	/* As this is a complex widget, the screen reader doesn’t read it all
+	 * out correctly by default, so we provide an override label. The label
+	 * contains the textual versions of most of the widgets in the row, in
+	 * the order they appear visually. This order differs in RTL
+	 * environments, where each sub-row of the app row is reversed. In
+	 * practice, that means only the name/critical and the version. */
+
+	g_ptr_array_add (parts, (gpointer) gtk_label_get_text (GTK_LABEL (priv->name_label)));
+
+	if (gtk_widget_get_visible (priv->update_critical_image))
+		g_ptr_array_insert (parts, is_rtl ? 0 : -1, _("Critical update"));
+
+	append_to_name_if_meaningful (parts, GTK_LABEL (priv->description_label));
+
+	if (!is_rtl) {
+		append_to_name_if_meaningful (parts, GTK_LABEL (priv->version_current_label));
+		append_to_name_if_meaningful (parts, GTK_LABEL (priv->version_arrow_label));
+		append_to_name_if_meaningful (parts, GTK_LABEL (priv->version_update_label));
+	} else {
+		append_to_name_if_meaningful (parts, GTK_LABEL (priv->version_update_label));
+		append_to_name_if_meaningful (parts, GTK_LABEL (priv->version_arrow_label));
+		append_to_name_if_meaningful (parts, GTK_LABEL (priv->version_current_label));
+	}
+
+	/* each of these are visually on a separate row, so don’t need RTL treatment */
+	append_to_name_if_meaningful (parts, GTK_LABEL (priv->label_installed));
+	append_to_name_if_meaningful (parts, GTK_LABEL (priv->label_app_size));
+	append_to_name_if_meaningful (parts, GTK_LABEL (priv->label_origin));
+	append_to_name_if_meaningful (parts, GTK_LABEL (priv->system_updates_label));
+	append_to_name_if_meaningful (parts, GTK_LABEL (priv->label_warning));
+	append_to_name_if_meaningful (parts, GTK_LABEL (priv->label));
+
+	accessible_name = g_strjoinv (" ", (gchar **) parts->pdata);
+	gtk_accessible_update_property (GTK_ACCESSIBLE (app_row),
+					GTK_ACCESSIBLE_PROPERTY_LABEL, accessible_name,
+					-1);
+}
+
+static void
 gs_app_row_actually_refresh (GsAppRow *app_row)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
@@ -365,14 +422,14 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_UPDATABLE_LIVE:
 		case GS_APP_STATE_INSTALLED:
-			gtk_widget_set_visible (priv->label_installed, priv->show_installed);
+			gtk_widget_set_visible (priv->label_installed_box, priv->show_installed);
 			break;
 		default:
-			gtk_widget_set_visible (priv->label_installed, FALSE);
+			gtk_widget_set_visible (priv->label_installed_box, FALSE);
 			break;
 		}
 	} else {
-		gtk_widget_set_visible (priv->label_installed, FALSE);
+		gtk_widget_set_visible (priv->label_installed_box, FALSE);
 	}
 
 	/* name */
@@ -593,11 +650,13 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 	gtk_widget_set_visible (priv->box_tag,
 				gtk_widget_get_visible (priv->label_origin) ||
-				gtk_widget_get_visible (priv->label_installed) ||
+				gtk_widget_get_visible (priv->label_installed_box) ||
 				gtk_widget_get_visible (priv->label_warning));
 
 	gtk_label_set_max_width_chars (GTK_LABEL (priv->name_label),
 				       gtk_widget_get_visible (priv->description_label) ? 20 : -1);
+
+	gs_app_row_update_accessible_name (app_row);
 }
 
 static void
@@ -1021,6 +1080,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, box_tag);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_app_size);
 }
