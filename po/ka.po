@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-03-10 14:35+0000\n"
-"PO-Revision-Date: 2024-03-13 15:38+0100\n"
+"POT-Creation-Date: 2024-03-15 07:24+0000\n"
+"PO-Revision-Date: 2024-03-15 09:56+0100\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -826,21 +826,21 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "პაკეტი"
 
-#: src/gs-app-addon-row.c:95 src/gs-app-row.c:471
+#: src/gs-app-addon-row.c:95 src/gs-app-row.c:528
 msgid "Pending"
 msgstr "დარჩენილი"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:475 src/gs-details-page.c:402
+#: src/gs-app-addon-row.c:99 src/gs-app-row.c:532 src/gs-details-page.c:402
 msgid "Pending install"
 msgstr "დარჩენილი დასაყენებელი"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:479 src/gs-details-page.c:409
+#: src/gs-app-addon-row.c:103 src/gs-app-row.c:536 src/gs-details-page.c:409
 msgid "Pending remove"
 msgstr "დარჩენილი წასაშლელი"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:214 src/gs-details-page.c:390
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:215 src/gs-details-page.c:390
 msgid "Installing"
 msgstr "დაყენება"
 
@@ -850,7 +850,7 @@ msgstr "წაშლა"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being downloaded
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:228 src/gs-details-page.c:395
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:229 src/gs-details-page.c:395
 #: src/gs-details-page.ui:356
 msgid "Downloading"
 msgstr "გადმოწერა"
@@ -990,7 +990,7 @@ msgstr "განახლების აღწერა ხელმისა�
 msgid "Update Details"
 msgstr "კონტაქტის დეტალები"
 
-#: src/gs-app-details-page.ui:26 src/gs-app-row.c:535
+#: src/gs-app-details-page.ui:26 src/gs-app-row.c:592
 msgid "Requires additional permissions"
 msgstr "საჭიროა დამატებითი წვდომები"
 
@@ -1475,81 +1475,82 @@ msgstr "ასაკზე შეზღუდვის ინფორმაც�
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily installed
-#: src/gs-app-row.c:155
+#: src/gs-app-row.c:156
 msgid "Visit Website"
 msgstr "საიტზე გადასვლა"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:161
+#: src/gs-app-row.c:162
 msgid "Install…"
 msgstr "დაყენება…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the app
-#: src/gs-app-row.c:169 src/gs-updates-section.ui:63
+#: src/gs-app-row.c:170 src/gs-updates-section.ui:63
 msgid "Cancel"
 msgstr "გაუქმება"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily installed
-#: src/gs-app-row.c:177
+#: src/gs-app-row.c:178
 msgid "Install"
 msgstr "დაყენება"
 
 #. TRANSLATORS: this is a button in the updates panel
-#: src/gs-app-row.c:186
+#: src/gs-app-row.c:187
 msgid "Download"
 msgstr "გადმოწერა"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:190
+#: src/gs-app-row.c:191
 msgid "Update"
 msgstr "განახლება"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the app to be easily removed
-#: src/gs-app-row.c:197 src/gs-app-row.c:207
+#: src/gs-app-row.c:198 src/gs-app-row.c:208
 msgid "Uninstall…"
 msgstr "წაშლა…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being erased
-#: src/gs-app-row.c:221
+#: src/gs-app-row.c:222
 msgid "Uninstalling"
 msgstr "წაშლა"
 
+#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:152
+#: src/gs-os-update-page.c:155 src/gs-os-update-page.c:182
+msgid "Critical update"
+msgstr "კრიტიკული განახლება"
+
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:344
+#: src/gs-app-row.c:401
 msgid "Device cannot be used during update."
 msgstr "განახლებისას მოწყობილობას ვერ გამოიყენებთ."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:354 src/gs-shell-search-provider.c:270
+#: src/gs-app-row.c:411 src/gs-shell-search-provider.c:270
 #, c-format
 msgid "Source: %s"
 msgstr "წყარო: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:542
+#: src/gs-app-row.c:599
 #, c-format
 msgid "Renamed from %s"
 msgstr "სახელი გადაერქვა %s-დან"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:579 src/gs-details-page.ui:595
+#: src/gs-app-row.c:636 src/gs-details-page.ui:595
 msgid "Stopped Receiving Updates"
 msgstr "განახლებების მიღება შეჩერებულია"
 
 #: src/gs-app-row.ui:58
 msgid "Critical Update"
-msgstr "კრიტიკული განახლება"
-
-#: src/gs-app-row.ui:60 src/gs-os-update-page.c:150 src/gs-os-update-page.c:153
-msgid "Critical update"
 msgstr "კრიტიკული განახლება"
 
 #: src/gs-app-row.ui:227 src/gs-feature-tile.c:574
@@ -3316,28 +3317,37 @@ msgstr "უცნობი წყარო"
 msgid "Beta"
 msgstr "ბეტა"
 
+#. TRANSLATORS: This is the accessibility label for the row. First %s is
+#. * the name, second is a message signifying whether the update is
+#. * critical, and the last placeholder represents the version.
+#: src/gs-os-update-page.c:186
+#, c-format
+#| msgid "%s %s"
+msgid "%s %s %s"
+msgstr "%s %s %s"
+
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:257
+#: src/gs-os-update-page.c:268
 msgid "Additions"
 msgstr "დამატებები"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:261
+#: src/gs-os-update-page.c:272
 msgid "Removals"
 msgstr "წაშლები"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:265
+#: src/gs-os-update-page.c:276
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "განახლებები"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:269
+#: src/gs-os-update-page.c:280
 msgid "Downgrades"
 msgstr "ვერსიის ჩამოწევა"
 
@@ -5311,7 +5321,7 @@ msgid "Downloading upgrade information…"
 msgstr "ვერსიის აწევის ინფორმაციის გადმოწერა…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:402
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:413
 #: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:95
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
@@ -5784,7 +5794,7 @@ msgstr ""
 msgid "Packages"
 msgstr "პაკეტები"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3180
+#: plugins/packagekit/gs-plugin-packagekit.c:3219
 msgid "Failed to install updates: "
 msgstr "განახლებების დაყენების შეცდომა: "
 
@@ -6024,10 +6034,6 @@ msgstr "Snap ლინუქსის უნივერსალური პ�
 
 #~ msgid "Application Updates"
 #~ msgstr "აპლიკაციის განახლებები"
-
-#, c-format
-#~ msgid "%s %s"
-#~ msgstr "%s %s"
 
 #~ msgid "Name"
 #~ msgstr "სახელი"
