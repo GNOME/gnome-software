@@ -95,9 +95,10 @@ format_version_update (GsApp *app, GtkTextDirection direction)
 	    g_strcmp0 (version_current, version_update) != 0) {
 		switch (direction) {
 		case GTK_TEXT_DIR_RTL:
-			/* in RTL text containing only Latin scripts like versions, a→b will be
-			 * shown as b→a, so we should replace the current and update versions */
-			return g_strdup_printf ("%s → %s",
+			/* ensure the arrow is the right way round for the text direction,
+			 * as arrows are not bidi-mirrored automatically
+			 * See section 2 of http://www.unicode.org/L2/L2017/17438-bidi-math-fdbk.html */
+			return g_strdup_printf ("%s ← %s",
 						version_update,
 						version_current);
 		case GTK_TEXT_DIR_NONE:
