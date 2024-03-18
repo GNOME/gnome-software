@@ -777,6 +777,11 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 		guint64 size_download_bytes;
 
+		if (pk_package_get_info (package) == PK_INFO_ENUM_BLOCKED) {
+			g_debug ("Skipping blocked '%s' in list of packages to update", pk_package_get_id (package));
+			continue;
+		}
+
 		app = gs_plugin_packagekit_build_update_app (plugin, package);
 		all_downloaded = (all_downloaded &&
 				  gs_app_get_size_download (app, &size_download_bytes) == GS_SIZE_TYPE_VALID &&
@@ -4062,7 +4067,7 @@ update_system_filter_cb (PkPackage *package,
 			 gpointer user_data)
 {
 	PkInfoEnum info = pk_package_get_info (package);
-	return info != PK_INFO_ENUM_OBSOLETING && info != PK_INFO_ENUM_REMOVING;
+	return info != PK_INFO_ENUM_OBSOLETING && info != PK_INFO_ENUM_REMOVING && info != PK_INFO_ENUM_BLOCKED;
 }
 
 static void
