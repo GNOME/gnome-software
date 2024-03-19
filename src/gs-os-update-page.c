@@ -97,8 +97,10 @@ format_version_update (GsApp *app, GtkTextDirection direction)
 		case GTK_TEXT_DIR_RTL:
 			/* ensure the arrow is the right way round for the text direction,
 			 * as arrows are not bidi-mirrored automatically
-			 * See section 2 of http://www.unicode.org/L2/L2017/17438-bidi-math-fdbk.html */
-			return g_strdup_printf ("%s ← %s",
+			 * See section 2 of http://www.unicode.org/L2/L2017/17438-bidi-math-fdbk.html
+			 * Also escaping an LTR mark character at the beginning of the string to
+			 * prevent versions without a letter in them (e.g., +rc1) from messing up. */
+			return g_strdup_printf ("\xE2\x80\x8E%s ← %s",
 						version_update,
 						version_current);
 		case GTK_TEXT_DIR_NONE:
