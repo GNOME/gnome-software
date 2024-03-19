@@ -58,20 +58,14 @@ gs_toast_setup (AdwToast *self)
 		adw_toast_set_button_label (self, _("_Details"));
 	} else if (button != GS_TOAST_BUTTON_NONE) {
 		switch (button) {
-		case GS_TOAST_BUTTON_SOURCES:
-			adw_toast_set_button_label (self, _("Software Repositories"));
-			break;
 		case GS_TOAST_BUTTON_NO_SPACE:
-			adw_toast_set_button_label (self, _("Examine Disk"));
-			break;
-		case GS_TOAST_BUTTON_NETWORK_SETTINGS:
-			adw_toast_set_button_label (self, _("Network Settings"));
+			adw_toast_set_button_label (self, _("_Examine"));
 			break;
 		case GS_TOAST_BUTTON_RESTART_REQUIRED:
-			adw_toast_set_button_label (self, _("_Restart Now…"));
+			adw_toast_set_button_label (self, _("_Restart"));
 			break;
 		case GS_TOAST_BUTTON_DETAILS_URI:
-			adw_toast_set_button_label (self, _("Details"));
+			adw_toast_set_button_label (self, _("_Details"));
 			break;
 		default:
 			g_warn_if_reached ();
