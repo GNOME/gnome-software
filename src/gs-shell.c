@@ -698,25 +698,11 @@ save_back_entry (GsShell *shell)
 }
 
 static void
-gs_shell_plugin_events_sources_cb (GsShell *shell)
-{
-	gs_shell_show_sources (shell);
-}
-
-static void
 gs_shell_plugin_events_no_space_cb (GsShell *shell)
 {
 	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async ("baobab", &error))
 		g_warning ("failed to exec baobab: %s", error->message);
-}
-
-static void
-gs_shell_plugin_events_network_settings_cb (GsShell *shell)
-{
-	g_autoptr(GError) error = NULL;
-	if (!g_spawn_command_line_async ("gnome-control-center network", &error))
-		g_warning ("failed to exec gnome-control-center: %s", error->message);
 }
 
 static void
@@ -1151,19 +1137,11 @@ gs_shell_show_event_app_notify (GsShell *shell,
 				 G_CALLBACK (gs_shell_plugin_event_dismissed_cb), shell, G_CONNECT_SWAPPED);
 
 	switch (button) {
-	case GS_TOAST_BUTTON_SOURCES:
-		g_signal_connect_object (toast, "button-clicked",
-					 G_CALLBACK (gs_shell_plugin_events_sources_cb), shell, G_CONNECT_SWAPPED);
-		break;
 	case GS_TOAST_BUTTON_NO_SPACE:
 		if (gs_shell_has_disk_examination_app ()) {
 			g_signal_connect_object (toast, "button-clicked",
 						 G_CALLBACK (gs_shell_plugin_events_no_space_cb), shell, G_CONNECT_SWAPPED);
 		}
-		break;
-	case GS_TOAST_BUTTON_NETWORK_SETTINGS:
-		g_signal_connect_object (toast, "button-clicked",
-					 G_CALLBACK (gs_shell_plugin_events_network_settings_cb), shell, G_CONNECT_SWAPPED);
 		break;
 	case GS_TOAST_BUTTON_RESTART_REQUIRED:
 		g_signal_connect_object (toast, "button-clicked",
@@ -1270,6 +1248,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	const gchar *details_text = NULL;
 	const gchar *details_message = NULL;
 	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *suggested_details_message = NULL;
 	g_autofree gchar *str_origin = NULL;
 	GsPluginJob *job = gs_plugin_event_get_job (event);
 
@@ -1285,19 +1264,31 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 			if (gs_app_get_bundle_kind (origin) == AS_BUNDLE_KIND_CABINET) {
 				/* TRANSLATORS: failure text for the in-app notification */
 				toast_text = _("Unable to download firmware updates");
+				/* TRANSLATORS: failure text for the in-app notification,
+				 * where the %s is the source (e.g. "alt.fedoraproject.org") */
+				suggested_details_message = g_strdup_printf (_("Unable to download firmware updates from %s"),
+									     str_origin);
 			} else {
-				if (!gs_app_has_management_plugin (origin, NULL))
-					button = GS_TOAST_BUTTON_SOURCES;
+				/* TRANSLATORS: failure text for the in-app notification,
+				 * where the %s is the source (e.g. "alt.fedoraproject.org") */
+				suggested_details_message = g_strdup_printf (_("Unable to download updates from %s"),
+									     str_origin);
 			}
 		}
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: internet access required");
-		button = GS_TOAST_BUTTON_NETWORK_SETTINGS;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: not enough disk space");
+		if (origin != NULL) {
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the source (e.g. "alt.fedoraproject.org") */
+			suggested_details_message = g_strdup_printf (_("Unable to download updates from %s: not enough disk space"),
+								     str_origin);
+		}
 		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
@@ -1310,6 +1301,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: permission required");
+		suggested_details_message = g_strdup (_("Unable to download updates: you do not have permission to install software"));
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
@@ -1329,7 +1321,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, suggested_details_message, &details_text, &details_message))
 		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
@@ -1348,17 +1340,39 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	const gchar *details_text = NULL;
 	const gchar *details_message = NULL;
 	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *suggested_details_message = NULL;
 	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
+	g_autofree gchar *str_origin = NULL;
 
 	str_app = gs_shell_get_title_from_app (app);
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		toast_text = _("Unable to install: download failed");
+		if (origin != NULL) {
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the app name (e.g. "GIMP") and
+			 * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"  */
+			suggested_details_message = g_strdup_printf (_("Unable to install %s: failed download from %s"),
+								     str_app, str_origin);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "GIMP") */
+			suggested_details_message = g_strdup_printf (_("Unable to install %s: download failed"),
+								     str_app);
+		}
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		if (origin != NULL) {
 			toast_text = _("Unable to install: missing runtime");
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the app name (e.g. "GIMP")
+			 * and the second %s is the name of the runtime, e.g.
+			 * "GNOME SDK [flatpak.gnome.org]" */
+			suggested_details_message = g_strdup_printf (_("Unable to install %s: runtime %s unavailable"),
+								     str_app, str_origin);
 		} else {
 			tmp_toast_text = g_strdup_printf (_("Unable to install %s"), str_app);
 			toast_text = tmp_toast_text;
@@ -1367,27 +1381,49 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text  = _("Unable to install: internet access required");
-		button = GS_TOAST_BUTTON_NETWORK_SETTINGS;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to install: invalid app format");
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		toast_text = _("Unable to install: not enough disk space");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "GIMP") */
+		suggested_details_message = g_strdup_printf (_("Unable to install %s: not enough disk space"),
+							     str_app);
 		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
 		toast_text = _("Unable to install: authentication required");
+		/* TRANSLATORS: failure text for the in-app notification */
+		suggested_details_message = g_strdup_printf (_("Unable to install %s: authentication required"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
 		toast_text = _("Unable to install: invalid authentication");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "GIMP") */
+		suggested_details_message = g_strdup_printf (_("Unable to install %s: invalid authentication"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		toast_text = _("Unable to install: permission required");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "GIMP") */
+		suggested_details_message = g_strdup_printf (_("Unable to install %s: permission required"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
 		toast_text = _("Unable to install: device must be plugged in");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "Dell XPS 13") */
+		suggested_details_message = g_strdup_printf (_("Unable to install %s: device must be plugged in"),
+							     str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
 		toast_text = _("Unable to install: low battery");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "Dell XPS 13") */
+		suggested_details_message = g_strdup_printf (_("Unable to install %s: low battery"),
+							     str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1396,13 +1432,14 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		 * where the %s is the app name (e.g. "GIMP") */
 		tmp_toast_text = g_strdup_printf (_("Unable to install %s"), str_app);
 		toast_text = tmp_toast_text;
+		suggested_details_message = g_strdup_printf (_("Unable to install %s"), str_app);
 		suggested_details_text = error->message;
 	}
 
 	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, suggested_details_message, &details_text, &details_message))
 		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
@@ -1421,43 +1458,109 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	const gchar *details_text = NULL;
 	const gchar *details_message = NULL;
 	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *suggested_details_message = NULL;
 	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
+	g_autofree gchar *str_origin = NULL;
 
 	/* ignore any errors from background downloads */
 	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 		return TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
+		if (app != NULL && origin != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the app name (e.g. "GIMP") and
+			 * the second %s is the origin, e.g. "Fedora" or
+			 * "Fedora Project [fedoraproject.org]" */
+			suggested_details_message = g_strdup_printf (_("Unable to update %s from %s: download failed"),
+								     str_app, str_origin);
+		} else if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "GIMP") */
+			suggested_details_message = g_strdup_printf (_("Unable to update %s: download failed"),
+								     str_app);
+		} else if (origin != NULL) {
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the origin, e.g. "Fedora" or
+			 * "Fedora Project [fedoraproject.org]" */
+			suggested_details_message = g_strdup_printf (_("Unable to install updates from %s: download failed"),
+								     str_origin);
+		}
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: download failed");
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: internet access required");
-		button = GS_TOAST_BUTTON_NETWORK_SETTINGS;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: not enough disk space");
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "GIMP") */
+			suggested_details_message = g_strdup_printf (_("Unable to update %s: not enough disk space"),
+								     str_app);
+		}
 		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: authentication required");
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "GIMP") */
+			suggested_details_message = g_strdup_printf (_("Unable to update %s: authentication required"),
+								     str_app);
+		}
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: invalid authentication");
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "GIMP") */
+			suggested_details_message = g_strdup_printf (_("Unable to update %s: invalid authentication"),
+								     str_app);
+		}
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: permission required");
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "GIMP") */
+			suggested_details_message = g_strdup_printf (_("Unable to update %s: permission required"),
+								     str_app);
+		}
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: device must be plugged in");
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "Dell XPS 13") */
+			suggested_details_message = g_strdup_printf (_("Unable to update %s: device must be plugged in"),
+								     str_app);
+		}
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to update: low battery");
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "Dell XPS 13") */
+			suggested_details_message = g_strdup_printf (_("Unable to update %s: low battery"),
+								     str_app);
+		}
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1470,7 +1573,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 			toast_text = tmp_toast_text;
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification */
-			toast_text = _("Unable to install updates");
+			toast_text = _("Unable to update");
 		}
 		suggested_details_text = error->message;
 	}
@@ -1478,7 +1581,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, suggested_details_message, &details_text, &details_message))
 		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
@@ -1497,6 +1600,7 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 	const gchar *details_text = NULL;
 	const gchar *details_message = NULL;
 	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *suggested_details_message = NULL;
 	g_autofree gchar *str_app = NULL;
 	g_autofree gchar *str_origin = NULL;
 
@@ -1507,50 +1611,89 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 			str_origin = gs_shell_get_title_from_origin (origin);
 			/* TRANSLATORS: failure text for the in-app notification */
 			toast_text = _("Unable to upgrade");
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the distro name (e.g. "Fedora 25") and
+			 * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]" */
+			suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s from %s"),
+								     str_app, str_origin);
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification */
 			toast_text = _("Unable to upgrade: download failed");
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "GIMP") */
+			suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s: download failed"),
+								     str_app);
 		}
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to upgrade: internet access required");
-		button = GS_TOAST_BUTTON_NETWORK_SETTINGS;
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s: internet access required"),
+							     str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to upgrade: not enough disk space");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s: not enough disk space"),
+							     str_app);
 		button = GS_TOAST_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to upgrade: authentication required");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s: authentication required"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to upgrade: invalid authentication");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s: invalid authentication"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to upgrade: permission required");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s: permission required"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to upgrade: device must be plugged in");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s: device must be plugged in"),
+							     str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to upgrade: low battery");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s: low battery"),
+							     str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to upgrade");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		suggested_details_message = g_strdup_printf (_("Unable to upgrade to %s"), str_app);
 		suggested_details_text = error->message;
 	}
 
 	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, suggested_details_message, &details_text, &details_message))
 		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
@@ -1569,6 +1712,7 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	const gchar *details_text = NULL;
 	const gchar *details_message = NULL;
 	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *suggested_details_message = NULL;
 	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
 
@@ -1577,21 +1721,41 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to uninstall: authentication required");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "GIMP") */
+		suggested_details_message = g_strdup_printf (_("Unable to uninstall %s: authentication required"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		toast_text = _("Unable to uninstall: authentication invalid");
+		toast_text = _("Unable to uninstall: invalid authentication");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "GIMP") */
+		suggested_details_message = g_strdup_printf (_("Unable to uninstall %s: invalid authentication"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to uninstall: permission required");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "GIMP") */
+		suggested_details_message = g_strdup_printf (_("Unable to uninstall %s: permission required"),
+							     str_app);
 		suggested_details_text = error->message;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to uninstall: device must be plugged in");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "GIMP") */
+		suggested_details_message = g_strdup_printf (_("Unable to uninstall %s: device must be plugged in"),
+							     str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
 		/* TRANSLATORS: failure text for the in-app notification */
 		toast_text = _("Unable to uninstall: low battery");
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the app name (e.g. "GIMP") */
+		suggested_details_message = g_strdup_printf (_("Unable to uninstall %s: low battery"),
+							     str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
@@ -1603,13 +1767,14 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 		 * where the %s is the app name (e.g. "GIMP") */
 		tmp_toast_text = g_strdup_printf (_("Unable to uninstall %s"), str_app);
 		toast_text = tmp_toast_text;
+		suggested_details_message = g_strdup (toast_text);
 		suggested_details_text = error->message;
 	}
 
 	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, suggested_details_message, &details_text, &details_message))
 		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
@@ -1628,8 +1793,10 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 	const gchar *details_text = NULL;
 	const gchar *details_message = NULL;
 	const gchar *suggested_details_text = NULL;
+	g_autofree gchar *suggested_details_message = NULL;
 	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
+	g_autofree gchar *str_origin = NULL;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		if (app != NULL)
@@ -1644,7 +1811,15 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 			/* TRANSLATORS: failure text for the in-app notification */
 			toast_text = _("Sorry, something went wrong");
 		}
-		if (str_app == NULL || origin == NULL) {
+		if (str_app != NULL && origin != NULL) {
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the app name (e.g. "GIMP")
+			 * and the second %s is the name of the runtime, e.g.
+			 * "GNOME SDK [flatpak.gnome.org]" */
+			suggested_details_message = g_strdup_printf (_("Unable to launch %s: %s is not installed"),
+								     str_app, str_origin);
+		} else {
 			/* non-interactive generic */
 			if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 				return FALSE;
@@ -1669,7 +1844,7 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 	if (toast_text == NULL)
 		return FALSE;
 
-	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, NULL, &details_text, &details_message))
+	if (gs_shell_handle_events_more_info (shell, origin, suggested_details_text, suggested_details_message, &details_text, &details_message))
 		button = GS_TOAST_BUTTON_DETAILS_URI;
 
 	/* show in-app notification */
