@@ -70,6 +70,8 @@ gs_review_row_refresh (GsReviewRow *row)
 	gtk_label_set_text (GTK_LABEL (priv->date_label), text);
 	gtk_label_set_text (GTK_LABEL (priv->summary_label),
 			    as_review_get_summary (priv->review));
+	gtk_widget_set_tooltip_text (priv->summary_label,
+				     as_review_get_summary (priv->review));
 	gtk_label_set_text (GTK_LABEL (priv->text_label),
 			    as_review_get_description (priv->review));
 
