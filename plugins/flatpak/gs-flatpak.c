@@ -3668,7 +3668,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		components = g_hash_table_lookup (*inout_components_by_id, gs_app_get_id (app));
 	} else {
 		g_autoptr(GPtrArray) components_with_id = NULL;
-		*inout_components_by_id = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) g_ptr_array_unref);
+		*inout_components_by_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
 		components_with_id = xb_silo_query (self->silo, "components/component/id", 0, &error_local);
 		if (components_with_id == NULL) {
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
@@ -3683,7 +3683,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 			GPtrArray *comps = g_hash_table_lookup (*inout_components_by_id, comp_id);
 			if (comps == NULL) {
 				comps = g_ptr_array_new_with_free_func (g_object_unref);
-				g_hash_table_insert (*inout_components_by_id, (gpointer) comp_id, comps);
+				g_hash_table_insert (*inout_components_by_id, g_strdup (comp_id), comps);
 			}
 			g_ptr_array_add (comps, comp_node);
 			if (components == NULL && g_strcmp0 (id, comp_id) == 0)
