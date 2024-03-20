@@ -209,6 +209,13 @@ gs_plugin_job_refine_set_property (GObject      *object,
 }
 
 static gboolean
+gs_plugin_job_refine_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobRefine *self = GS_PLUGIN_JOB_REFINE (job);
+	return (self->job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
+}
+
+static gboolean
 app_is_valid_filter (GsApp    *app,
                      gpointer  user_data)
 {
@@ -892,6 +899,7 @@ gs_plugin_job_refine_class_init (GsPluginJobRefineClass *klass)
 	object_class->get_property = gs_plugin_job_refine_get_property;
 	object_class->set_property = gs_plugin_job_refine_set_property;
 
+	job_class->get_interactive = gs_plugin_job_refine_get_interactive;
 	job_class->run_async = gs_plugin_job_refine_run_async;
 	job_class->run_finish = gs_plugin_job_refine_run_finish;
 

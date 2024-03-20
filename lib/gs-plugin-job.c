@@ -20,7 +20,6 @@ typedef struct
 	GsPluginRefineJobFlags	 refine_job_flags;
 	GsPluginRefineFlags	 refine_flags;
 	GsAppListFilterFlags	 dedupe_flags;
-	gboolean		 interactive;
 	gboolean		 propagate_error;
 	guint			 max_results;
 	GsPlugin		*plugin;
@@ -40,7 +39,6 @@ enum {
 	PROP_REFINE_JOB_FLAGS,
 	PROP_REFINE_FLAGS,
 	PROP_DEDUPE_FLAGS,
-	PROP_INTERACTIVE,
 	PROP_APP,
 	PROP_LIST,
 	PROP_FILE,
@@ -88,8 +86,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (priv->refine_flags);
 		g_string_append_printf (str, " with refine-flags=%s", tmp);
 	}
-	if (priv->interactive)
-		g_string_append_printf (str, " with interactive=True");
 	if (priv->propagate_error)
 		g_string_append_printf (str, " with propagate-error=True");
 
@@ -193,20 +189,15 @@ gs_plugin_job_remove_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine
 	priv->refine_flags &= ~refine_flags;
 }
 
-void
-gs_plugin_job_set_interactive (GsPluginJob *self, gboolean interactive)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->interactive = interactive;
-}
-
 gboolean
 gs_plugin_job_get_interactive (GsPluginJob *self)
 {
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+	GsPluginJobClass *klass;
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
-	return priv->interactive;
+	klass = GS_PLUGIN_JOB_GET_CLASS (self);
+	if (klass->get_interactive == NULL)
+		return FALSE;
+	return klass->get_interactive (self);
 }
 
 void
@@ -363,9 +354,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_DEDUPE_FLAGS:
 		g_value_set_flags (value, priv->dedupe_flags);
 		break;
-	case PROP_INTERACTIVE:
-		g_value_set_boolean (value, priv->interactive);
-		break;
 	case PROP_SEARCH:
 		g_value_set_string (value, priv->search);
 		break;
@@ -407,9 +395,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_DEDUPE_FLAGS:
 		gs_plugin_job_set_dedupe_flags (self, g_value_get_flags (value));
-		break;
-	case PROP_INTERACTIVE:
-		gs_plugin_job_set_interactive (self, g_value_get_boolean (value));
 		break;
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
@@ -479,12 +464,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				    GS_TYPE_APP_LIST_FILTER_FLAGS, GS_APP_LIST_FILTER_FLAG_NONE,
 				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_DEDUPE_FLAGS, pspec);
-
-	pspec = g_param_spec_boolean ("interactive", NULL, NULL,
-				      FALSE,
-				      G_PARAM_READWRITE);
-
-	g_object_class_install_property (object_class, PROP_INTERACTIVE, pspec);
 
 	pspec = g_param_spec_string ("search", NULL, NULL,
 				     NULL,

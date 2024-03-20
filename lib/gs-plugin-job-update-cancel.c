@@ -115,6 +115,13 @@ gs_plugin_job_update_cancel_set_property (GObject *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_update_cancel_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobUpdateCancel *self = GS_PLUGIN_JOB_UPDATE_CANCEL (job);
+	return (self->flags & GS_PLUGIN_UPDATE_CANCEL_FLAGS_INTERACTIVE) != 0;
+}
+
 static void plugin_app_func_cb (GObject      *source_object,
 				GAsyncResult *result,
 				gpointer      user_data);
@@ -242,6 +249,7 @@ gs_plugin_job_update_cancel_class_init (GsPluginJobUpdateCancelClass *klass)
 	object_class->get_property = gs_plugin_job_update_cancel_get_property;
 	object_class->set_property = gs_plugin_job_update_cancel_set_property;
 
+	job_class->get_interactive = gs_plugin_job_update_cancel_get_interactive;
 	job_class->run_async = gs_plugin_job_update_cancel_run_async;
 	job_class->run_finish = gs_plugin_job_update_cancel_run_finish;
 

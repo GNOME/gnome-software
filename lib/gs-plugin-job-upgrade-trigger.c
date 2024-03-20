@@ -116,6 +116,13 @@ gs_plugin_job_upgrade_trigger_set_property (GObject *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_upgrade_trigger_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobUpgradeTrigger *self = GS_PLUGIN_JOB_UPGRADE_TRIGGER (job);
+	return (self->flags & GS_PLUGIN_UPGRADE_TRIGGER_FLAGS_INTERACTIVE) != 0;
+}
+
 static void plugin_app_func_cb (GObject      *source_object,
 				GAsyncResult *result,
 				gpointer      user_data);
@@ -243,6 +250,7 @@ gs_plugin_job_upgrade_trigger_class_init (GsPluginJobUpgradeTriggerClass *klass)
 	object_class->get_property = gs_plugin_job_upgrade_trigger_get_property;
 	object_class->set_property = gs_plugin_job_upgrade_trigger_set_property;
 
+	job_class->get_interactive = gs_plugin_job_upgrade_trigger_get_interactive;
 	job_class->run_async = gs_plugin_job_upgrade_trigger_run_async;
 	job_class->run_finish = gs_plugin_job_upgrade_trigger_run_finish;
 

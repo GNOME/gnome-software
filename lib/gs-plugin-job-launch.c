@@ -115,6 +115,13 @@ gs_plugin_job_launch_set_property (GObject *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_launch_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobLaunch *self = GS_PLUGIN_JOB_LAUNCH (job);
+	return (self->flags & GS_PLUGIN_LAUNCH_FLAGS_INTERACTIVE) != 0;
+}
+
 static void plugin_app_func_cb (GObject      *source_object,
 				GAsyncResult *result,
 				gpointer      user_data);
@@ -242,6 +249,7 @@ gs_plugin_job_launch_class_init (GsPluginJobLaunchClass *klass)
 	object_class->get_property = gs_plugin_job_launch_get_property;
 	object_class->set_property = gs_plugin_job_launch_set_property;
 
+	job_class->get_interactive = gs_plugin_job_launch_get_interactive;
 	job_class->run_async = gs_plugin_job_launch_run_async;
 	job_class->run_finish = gs_plugin_job_launch_run_finish;
 

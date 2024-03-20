@@ -167,6 +167,13 @@ gs_plugin_job_refresh_metadata_set_property (GObject      *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_refresh_metadata_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobRefreshMetadata *self = GS_PLUGIN_JOB_REFRESH_METADATA (job);
+	return (self->flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE) != 0;
+}
+
 static void refresh_progress_tuple_cb (gsize    bytes_downloaded,
                                        gsize    total_download_size,
                                        gpointer user_data);
@@ -491,6 +498,7 @@ gs_plugin_job_refresh_metadata_class_init (GsPluginJobRefreshMetadataClass *klas
 	object_class->get_property = gs_plugin_job_refresh_metadata_get_property;
 	object_class->set_property = gs_plugin_job_refresh_metadata_set_property;
 
+	job_class->get_interactive = gs_plugin_job_refresh_metadata_get_interactive;
 	job_class->run_async = gs_plugin_job_refresh_metadata_run_async;
 	job_class->run_finish = gs_plugin_job_refresh_metadata_run_finish;
 

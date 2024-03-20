@@ -126,6 +126,13 @@ gs_plugin_job_get_langpacks_set_property (GObject      *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_get_langpacks_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobGetLangpacks *self = GS_PLUGIN_JOB_GET_LANGPACKS (job);
+	return (self->flags & GS_PLUGIN_GET_LANGPACKS_FLAGS_INTERACTIVE) != 0;
+}
+
 static void plugin_app_func_cb (GObject      *source_object,
 				GAsyncResult *result,
 				gpointer      user_data);
@@ -293,6 +300,7 @@ gs_plugin_job_get_langpacks_class_init (GsPluginJobGetLangpacksClass *klass)
 	object_class->get_property = gs_plugin_job_get_langpacks_get_property;
 	object_class->set_property = gs_plugin_job_get_langpacks_set_property;
 
+	job_class->get_interactive = gs_plugin_job_get_langpacks_get_interactive;
 	job_class->run_async = gs_plugin_job_get_langpacks_run_async;
 	job_class->run_finish = gs_plugin_job_get_langpacks_run_finish;
 

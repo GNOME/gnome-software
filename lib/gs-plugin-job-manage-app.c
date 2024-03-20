@@ -118,6 +118,13 @@ gs_plugin_job_manage_app_set_property (GObject      *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_manage_app_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobManageApp *self = GS_PLUGIN_JOB_MANAGE_APP (job);
+	return (self->flags & GS_PLUGIN_MANAGE_APP_FLAGS_INTERACTIVE) != 0;
+}
+
 static void plugin_app_func_cb (GObject      *source_object,
 				GAsyncResult *result,
 				gpointer      user_data);
@@ -320,6 +327,7 @@ gs_plugin_job_manage_app_class_init (GsPluginJobManageAppClass *klass)
 	object_class->get_property = gs_plugin_job_manage_app_get_property;
 	object_class->set_property = gs_plugin_job_manage_app_set_property;
 
+	job_class->get_interactive = gs_plugin_job_manage_app_get_interactive;
 	job_class->run_async = gs_plugin_job_manage_app_run_async;
 	job_class->run_finish = gs_plugin_job_manage_app_run_finish;
 

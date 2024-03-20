@@ -143,6 +143,13 @@ gs_plugin_job_list_distro_upgrades_set_property (GObject      *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_list_distro_upgrades_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobListDistroUpgrades *self = GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (job);
+	return (self->flags & GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_INTERACTIVE) != 0;
+}
+
 static gint
 app_sort_version_cb (GsApp    *app1,
                      GsApp    *app2,
@@ -353,6 +360,7 @@ gs_plugin_job_list_distro_upgrades_class_init (GsPluginJobListDistroUpgradesClas
 	object_class->get_property = gs_plugin_job_list_distro_upgrades_get_property;
 	object_class->set_property = gs_plugin_job_list_distro_upgrades_set_property;
 
+	job_class->get_interactive = gs_plugin_job_list_distro_upgrades_get_interactive;
 	job_class->run_async = gs_plugin_job_list_distro_upgrades_run_async;
 	job_class->run_finish = gs_plugin_job_list_distro_upgrades_run_finish;
 
