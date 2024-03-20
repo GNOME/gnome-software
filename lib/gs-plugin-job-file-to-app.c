@@ -257,13 +257,14 @@ finish_op (GTask  *task,
 		if (refine_flags != GS_PLUGIN_REFINE_FLAGS_NONE) {
 			g_autoptr(GsPluginJob) refine_job = NULL;
 			GsPluginLoader *plugin_loader = g_task_get_task_data (task);
+			GsPluginRefineJobFlags job_flags;
 			self->did_refine = TRUE;
 			self->n_pending_ops++;
 
 			/* to not have filtered out repositories */
-			refine_flags |= GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING;
+			job_flags = GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING;
 
-			refine_job = gs_plugin_job_refine_new (self->in_progress_list, refine_flags);
+			refine_job = gs_plugin_job_refine_new (self->in_progress_list, job_flags, refine_flags);
 			gs_plugin_loader_job_process_async (plugin_loader, refine_job, g_task_get_cancellable (task),
 							    refine_job_finished_cb, g_object_ref (task));
 			return;

@@ -532,7 +532,10 @@ main (int argc, char **argv)
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			plugin_job = gs_plugin_job_refine_new_for_app (app, self->refine_flags);
+			plugin_job = gs_plugin_job_refine_new_for_app (app,
+								       self->interactive ? GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE :
+								       GS_PLUGIN_REFINE_JOB_FLAGS_NONE,
+								       self->refine_flags);
 			ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 							    NULL, &error);
 			if (!ret)

@@ -147,12 +147,12 @@ filter_valid_apps (GsApp    *app,
                    gpointer  user_data)
 {
 	GsPluginJobListApps *self = GS_PLUGIN_JOB_LIST_APPS (user_data);
-	GsPluginRefineFlags refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
+	GsPluginRefineJobFlags refine_job_flags = GS_PLUGIN_REFINE_JOB_FLAGS_NONE;
 
 	if (self->query)
-		refine_flags = gs_app_query_get_refine_flags (self->query);
+		refine_job_flags = gs_app_query_get_refine_job_flags (self->query);
 
-	return gs_plugin_loader_app_is_valid (app, refine_flags);
+	return gs_plugin_loader_app_is_valid (app, refine_job_flags);
 }
 
 static gboolean
@@ -324,6 +324,7 @@ finish_op (GTask  *task,
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	GsPluginLoader *plugin_loader = g_task_get_task_data (task);
 	g_autoptr(GsAppList) merged_list = NULL;
+	GsPluginRefineJobFlags refine_job_flags = GS_PLUGIN_REFINE_JOB_FLAGS_NONE;
 	GsPluginRefineFlags refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 	GsAppQueryLicenseType license_type = GS_APP_QUERY_LICENSE_ANY;
 	g_autoptr(GError) error_owned = g_steal_pointer (&error);
@@ -350,6 +351,7 @@ finish_op (GTask  *task,
 
 	/* run refine() on each one if required */
 	if (self->query != NULL) {
+		refine_job_flags = gs_app_query_get_refine_job_flags (self->query);
 		refine_flags = gs_app_query_get_refine_flags (self->query);
 		license_type = gs_app_query_get_license_type (self->query);
 	}
@@ -366,8 +368,8 @@ finish_op (GTask  *task,
 		g_autoptr(GsPluginJob) refine_job = NULL;
 
 		refine_job = gs_plugin_job_refine_new (merged_list,
-						       refine_flags |
-						       GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
+						       refine_job_flags | GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING,
+						       refine_flags);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
 						    refine_cb,
@@ -420,7 +422,7 @@ finish_task (GTask     *task,
 	if (self->query != NULL) {
 		license_type = gs_app_query_get_license_type (self->query);
 		developer_verified_type = gs_app_query_get_developer_verified_type (self->query);
-		disable_filtering = (gs_app_query_get_refine_flags (self->query) & GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING) != 0;
+		disable_filtering = (gs_app_query_get_refine_job_flags (self->query) & GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING) != 0;
 	}
 
 	if (!disable_filtering) {

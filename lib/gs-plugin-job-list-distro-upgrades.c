@@ -275,9 +275,9 @@ finish_op (GTask  *task,
 		 * information to be able to install the upgrade later if
 		 * requested. */
 		refine_job = gs_plugin_job_refine_new (merged_list,
+						       GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING,
 						       self->refine_flags |
-						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-						       GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
 						    refine_cb,

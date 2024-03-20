@@ -279,11 +279,12 @@ finish_op (GTask  *task,
 			g_autoptr(GsPluginJob) refine_job = NULL;
 			g_autoptr(GsAppList) list = gs_app_list_new ();
 			GsPluginLoader *plugin_loader = g_task_get_task_data (task);
+			GsPluginRefineJobFlags refine_job_flags = gs_plugin_job_get_refine_job_flags (GS_PLUGIN_JOB (self));
 			self->did_refine = TRUE;
 			self->n_pending_ops++;
 
 			gs_app_list_add (list, self->app);
-			refine_job = gs_plugin_job_refine_new (list, refine_flags | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
+			refine_job = gs_plugin_job_refine_new (list, refine_job_flags | GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING, refine_flags);
 			gs_plugin_loader_job_process_async (plugin_loader, refine_job, g_task_get_cancellable (task),
 							    refine_job_finished_cb, g_object_ref (task));
 			return;

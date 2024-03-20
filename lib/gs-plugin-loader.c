@@ -370,8 +370,8 @@ gs_plugin_loader_get_app_str (GsApp *app)
 }
 
 gboolean
-gs_plugin_loader_app_is_valid (GsApp               *app,
-                               GsPluginRefineFlags  refine_flags)
+gs_plugin_loader_app_is_valid (GsApp                  *app,
+                               GsPluginRefineJobFlags  job_flags)
 {
 	/* never show addons */
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON) {
@@ -441,7 +441,7 @@ gs_plugin_loader_app_is_valid (GsApp               *app,
 	}
 
 	/* don't show unconverted packages in the application view */
-	if (!(refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) &&
+	if (!(job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_ALLOW_PACKAGES) &&
 	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC &&
 	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_NONE) {
 		g_debug ("app invalid as only a %s: %s",
@@ -474,7 +474,7 @@ static gboolean
 gs_plugin_loader_app_is_valid_updatable (GsApp *app, gpointer user_data)
 {
 	GsPluginJob *plugin_job = user_data;
-	return gs_plugin_loader_app_is_valid (app, gs_plugin_job_get_refine_flags (plugin_job)) &&
+	return gs_plugin_loader_app_is_valid (app, gs_plugin_job_get_refine_job_flags (plugin_job)) &&
 		(gs_app_is_updatable (app) ||
 		 gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING ||
 		 gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
@@ -1798,9 +1798,10 @@ finish_setup_op (GTask *task)
 		g_autoptr(GsPluginJob) refine_job = NULL;
 
 		/* Require ID and Origin to get complete unique IDs */
-		refine_job = gs_plugin_job_refine_new (install_queue, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID |
-								      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-								      GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
+		refine_job = gs_plugin_job_refine_new (install_queue,
+						       GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING,
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID |
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
 						    finish_setup_install_queue_cb,
@@ -2506,7 +2507,7 @@ gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loade
 
 	plugin_loader->pending_apps_cancellable = g_cancellable_new ();
 
-	plugin_job = gs_plugin_job_refine_new (queue, GS_PLUGIN_REFINE_FLAGS_NONE);
+	plugin_job = gs_plugin_job_refine_new (queue, GS_PLUGIN_REFINE_JOB_FLAGS_NONE, GS_PLUGIN_REFINE_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 					    plugin_loader->pending_apps_cancellable,
 					    gs_plugin_loader_pending_apps_refined_cb,
@@ -2929,7 +2930,7 @@ gs_plugin_loader_app_create_async (GsPluginLoader *plugin_loader,
 	gs_app_list_add (list, app);
 
 	/* Refine the wildcard app. */
-	refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
+	refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
 	gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 					    cancellable,
 					    app_create_cb,
