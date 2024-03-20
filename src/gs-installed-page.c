@@ -421,6 +421,7 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 out:
 	if (gs_app_list_length (pending) > 0) {
 		plugin_job = gs_plugin_job_refine_new (pending,
+						       GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE,
 						       gs_installed_page_get_refine_flags (self));
 		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 						    self->cancellable,
@@ -452,7 +453,7 @@ filter_app_kinds_cb (GsApp    *app,
                      gpointer  user_data)
 {
 	/* Remove invalid apps. */
-	if (!gs_plugin_loader_app_is_valid (app, GS_PLUGIN_REFINE_FLAGS_NONE))
+	if (!gs_plugin_loader_app_is_valid (app, GS_PLUGIN_REFINE_JOB_FLAGS_NONE))
 		return FALSE;
 
 	switch (gs_app_get_kind (app)) {

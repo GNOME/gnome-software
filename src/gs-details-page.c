@@ -955,6 +955,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 		/* Make sure the changed instance contains the reviews and such */
 		plugin_job = gs_plugin_job_refine_new_for_app (self->app,
+							       GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE,
 							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
@@ -1959,6 +1960,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 	/* if these tasks fail (e.g. because we have no networking) then it's
 	 * of no huge importance if we don't get the required data */
 	plugin_job1 = gs_plugin_job_refine_new_for_app (self->app,
+							GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE,
 							GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 							GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 							GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
@@ -2109,8 +2111,8 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
 	plugin_job = gs_plugin_job_url_to_app_new (url, GS_PLUGIN_URL_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_DETAILS_PAGE_REFINE_FLAGS |
-						    GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES);
+	gs_plugin_job_set_refine_job_flags (plugin_job, GS_PLUGIN_REFINE_JOB_FLAGS_ALLOW_PACKAGES);
+	gs_plugin_job_set_refine_flags (plugin_job, GS_DETAILS_PAGE_REFINE_FLAGS);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_url_to_app_cb,
@@ -2134,7 +2136,7 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	g_cancellable_connect (self->cancellable, G_CALLBACK (gs_details_page_cancel_cb), self, NULL);
 
 	/* get extra details about the app */
-	plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_DETAILS_PAGE_REFINE_FLAGS);
+	plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE, GS_DETAILS_PAGE_REFINE_FLAGS);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_load_stage1_cb,

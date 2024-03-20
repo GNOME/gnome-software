@@ -242,6 +242,7 @@ gs_moderate_page_load (GsModeratePage *self)
 	}
 
 	plugin_job = gs_plugin_job_refine_new (list,
+					       GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE,
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |

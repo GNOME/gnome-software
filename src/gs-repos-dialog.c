@@ -519,7 +519,7 @@ refine_sources_cb (GObject *source_object,
 	if (gs_app_list_length (related_list) > 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
-		plugin_job = gs_plugin_job_refine_new (related_list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
+		plugin_job = gs_plugin_job_refine_new (related_list, GS_PLUGIN_REFINE_JOB_FLAGS_NONE, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
 		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 						    rd->dialog->cancellable,
 						    refine_sources_related_cb,
@@ -672,7 +672,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	rd = g_new0 (RefineData, 1);
 	rd->dialog = dialog;
 	rd->list = g_object_ref (refine_list);
-	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED);
+	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_JOB_FLAGS_NONE, GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
 					    refine_sources_cb,

@@ -818,8 +818,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-		               GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES;
+		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING;
 
 		search_data = g_ptr_array_index (self->array_search_data, i);
 		if (search_data->search_filename != NULL) {
@@ -828,6 +827,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			const gchar *provides_files[2] = { search_data->search_filename, NULL };
 
 			query = gs_app_query_new ("provides-files", provides_files,
+						  "refine-job_flags", GS_PLUGIN_REFINE_JOB_FLAGS_ALLOW_PACKAGES,
 						  "refine-flags", refine_flags,
 						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 						  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
