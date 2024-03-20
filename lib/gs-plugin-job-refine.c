@@ -16,7 +16,8 @@
  *
  * It’s used to query and add more data to a set of #GsApps. The data to be set
  * is controlled by the #GsPluginRefineFlags, and is looked up for all the apps
- * in a #GsAppList by the loaded plugins.
+ * in a #GsAppList by the loaded plugins. The job behavior is controlled by
+ * #GsPluginRefineJobFlags.
  *
  * This class is a wrapper around #GsPluginClass.refine_async, calling it for
  * all loaded plugins, with some additional refinements done on the results.
@@ -105,7 +106,8 @@ struct _GsPluginJobRefine
 
 	/* Input data. */
 	GsAppList *app_list;  /* (owned) */
-	GsPluginRefineFlags flags;
+	GsPluginRefineJobFlags job_flags;
+	GsPluginRefineFlags refine_flags;
 
 	/* Output data. */
 	GsAppList *result_list;  /* (owned) (nullable) */
@@ -119,10 +121,11 @@ G_DEFINE_TYPE (GsPluginJobRefine, gs_plugin_job_refine, GS_TYPE_PLUGIN_JOB)
 
 typedef enum {
 	PROP_APP_LIST = 1,
-	PROP_FLAGS,
+	PROP_JOB_FLAGS,
+	PROP_REFINE_FLAGS,
 } GsPluginJobRefineProperty;
 
-static GParamSpec *props[PROP_FLAGS + 1] = { NULL, };
+static GParamSpec *props[PROP_REFINE_FLAGS + 1] = { NULL, };
 
 static void
 gs_plugin_job_refine_dispose (GObject *object)
@@ -143,11 +146,11 @@ gs_plugin_job_refine_constructed (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_job_refine_parent_class)->constructed (object);
 
 	/* FIXME: the plugins should specify this, rather than hardcoding */
-	if (self->flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI |
-			   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME))
-		self->flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
-	if (self->flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)
-		self->flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
+	if ((self->refine_flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI |
+				  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)) != 0)
+		self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
+	if ((self->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) != 0)
+		self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
 }
 
 static void
@@ -162,8 +165,11 @@ gs_plugin_job_refine_get_property (GObject    *object,
 	case PROP_APP_LIST:
 		g_value_set_object (value, self->app_list);
 		break;
-	case PROP_FLAGS:
-		g_value_set_flags (value, self->flags);
+	case PROP_JOB_FLAGS:
+		g_value_set_flags (value, self->job_flags);
+		break;
+	case PROP_REFINE_FLAGS:
+		g_value_set_flags (value, self->refine_flags);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -186,10 +192,15 @@ gs_plugin_job_refine_set_property (GObject      *object,
 		self->app_list = g_value_dup_object (value);
 		g_object_notify_by_pspec (object, props[PROP_APP_LIST]);
 		break;
-	case PROP_FLAGS:
+	case PROP_JOB_FLAGS:
 		/* Construct only. */
-		g_assert (self->flags == 0);
-		self->flags = g_value_get_flags (value);
+		g_assert (self->job_flags == 0);
+		self->job_flags = g_value_get_flags (value);
+		break;
+	case PROP_REFINE_FLAGS:
+		/* Construct only. */
+		g_assert (self->refine_flags == 0);
+		self->refine_flags = g_value_get_flags (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -203,7 +214,7 @@ app_is_valid_filter (GsApp    *app,
 {
 	GsPluginJobRefine *self = GS_PLUGIN_JOB_REFINE (user_data);
 
-	return gs_plugin_loader_app_is_valid (app, self->flags);
+	return gs_plugin_loader_app_is_valid (app, self->job_flags);
 }
 
 static gint
@@ -248,7 +259,8 @@ typedef struct {
 	/* Input data. */
 	GsPluginLoader *plugin_loader;  /* (not nullable) (owned) */
 	GsAppList *list;  /* (not nullable) (owned) */
-	GsPluginRefineFlags flags;
+	GsPluginRefineJobFlags job_flags;
+	GsPluginRefineFlags refine_flags;
 
 	/* In-progress data. */
 	guint n_pending_ops;
@@ -283,13 +295,14 @@ refine_internal_data_free (RefineInternalData *data)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefineInternalData, refine_internal_data_free)
 
 static void
-run_refine_internal_async (GsPluginJobRefine   *self,
-                           GsPluginLoader      *plugin_loader,
-                           GsAppList           *list,
-                           GsPluginRefineFlags  flags,
-                           GCancellable        *cancellable,
-                           GAsyncReadyCallback  callback,
-                           gpointer             user_data)
+run_refine_internal_async (GsPluginJobRefine     *self,
+                           GsPluginLoader        *plugin_loader,
+                           GsAppList             *list,
+			   GsPluginRefineJobFlags job_flags,
+                           GsPluginRefineFlags    refine_flags,
+                           GCancellable          *cancellable,
+                           GAsyncReadyCallback    callback,
+                           gpointer               user_data)
 {
 	GPtrArray *plugins;  /* (element-type GsPlugin) */
 	g_autoptr(GTask) task = NULL;
@@ -304,7 +317,8 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 	data = data_owned = g_new0 (RefineInternalData, 1);
 	data->plugin_loader = g_object_ref (plugin_loader);
 	data->list = g_object_ref (list);
-	data->flags = flags;
+	data->job_flags = job_flags;
+	data->refine_flags = refine_flags;
 #ifdef HAVE_SYSPROF
 	data->plugin_begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
@@ -357,7 +371,7 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 
 		/* run the batched plugin symbol */
 		data->n_pending_ops++;
-		plugin_class->refine_async (plugin, list, flags,
+		plugin_class->refine_async (plugin, list, job_flags, refine_flags,
 					    cancellable, plugin_refine_cb, g_object_ref (task));
 	}
 
@@ -451,9 +465,9 @@ finish_refine_internal_op (GTask  *task,
 	RefineInternalData *data = g_task_get_task_data (task);
 	GsPluginLoader *plugin_loader = data->plugin_loader;
 	GsAppList *list = data->list;
-	GsPluginRefineFlags flags = data->flags;
+	GsPluginRefineJobFlags job_flags = data->job_flags;
+	GsPluginRefineFlags refine_flags = data->refine_flags;
 	GsOdrsProvider *odrs_provider;
-	GsOdrsProviderRefineFlags odrs_refine_flags = 0;
 	GPtrArray *plugins;  /* (element-type GsPlugin) */
 	gboolean anything_ran = FALSE;
 
@@ -506,21 +520,23 @@ finish_refine_internal_op (GTask  *task,
 
 		/* run the batched plugin symbol */
 		data->n_pending_ops++;
-		plugin_class->refine_async (plugin, list, flags,
+		plugin_class->refine_async (plugin, list, job_flags, refine_flags,
 					    cancellable, plugin_refine_cb, g_object_ref (task));
 	}
 
 	if (data->next_plugin_index == plugins->len) {
+		GsOdrsProviderRefineFlags odrs_refine_flags = 0;
+
 		/* Avoid the ODRS and rewrite refines being run multiple times. */
 		data->next_plugin_index++;
 
 		/* Add ODRS data if needed */
 		odrs_provider = gs_plugin_loader_get_odrs_provider (plugin_loader);
 
-		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) != 0)
 			odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS;
-		if (flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-			     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING))
+		if ((refine_flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+				     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING)) != 0)
 			odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS;
 
 		if (odrs_provider != NULL && odrs_refine_flags != 0) {
@@ -551,7 +567,7 @@ finish_refine_internal_op (GTask  *task,
 	gs_app_list_filter (list, app_is_non_wildcard, NULL);
 
 	/* ensure these are sorted by score */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) != 0) {
 		GPtrArray *reviews;
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
@@ -565,9 +581,9 @@ finish_refine_internal_op (GTask  *task,
 	data->n_pending_recursions = 1;
 
 	/* refine addons one layer deep */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) != 0) {
 		g_autoptr(GsAppList) addons_list = gs_app_list_new ();
-		GsPluginRefineFlags addons_flags = flags;
+		GsPluginRefineFlags addons_flags = refine_flags;
 
 		addons_flags &= ~(GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
 				  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
@@ -589,16 +605,16 @@ finish_refine_internal_op (GTask  *task,
 		if (gs_app_list_length (addons_list) > 0 && addons_flags != 0) {
 			data->n_pending_recursions++;
 			run_refine_internal_async (self, plugin_loader,
-						   addons_list, addons_flags,
+						   addons_list, job_flags, addons_flags,
 						   cancellable, recursive_internal_refine_cb,
 						   g_object_ref (task));
 		}
 	}
 
 	/* also do runtime */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) != 0) {
 		g_autoptr(GsAppList) runtimes_list = gs_app_list_new ();
-		GsPluginRefineFlags runtimes_flags = flags;
+		GsPluginRefineFlags runtimes_flags = refine_flags;
 
 		runtimes_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
 
@@ -613,16 +629,16 @@ finish_refine_internal_op (GTask  *task,
 		if (gs_app_list_length (runtimes_list) > 0 && runtimes_flags != 0) {
 			data->n_pending_recursions++;
 			run_refine_internal_async (self, plugin_loader,
-						   runtimes_list, runtimes_flags,
+						   runtimes_list, job_flags, runtimes_flags,
 						   cancellable, recursive_internal_refine_cb,
 						   g_object_ref (task));
 		}
 	}
 
 	/* also do related packages one layer deep */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) != 0) {
 		g_autoptr(GsAppList) related_list = gs_app_list_new ();
-		GsPluginRefineFlags related_flags = flags;
+		GsPluginRefineFlags related_flags = refine_flags;
 
 		related_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
 
@@ -641,7 +657,7 @@ finish_refine_internal_op (GTask  *task,
 		if (gs_app_list_length (related_list) > 0 && related_flags != 0) {
 			data->n_pending_recursions++;
 			run_refine_internal_async (self, plugin_loader,
-						   related_list, related_flags,
+						   related_list, job_flags, related_flags,
 						   cancellable, recursive_internal_refine_cb,
 						   g_object_ref (task));
 		}
@@ -741,7 +757,7 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 	g_task_set_task_data (task, g_object_ref (result_list), (GDestroyNotify) g_object_unref);
 
 	/* nothing to do */
-	if (self->flags == 0 ||
+	if (self->refine_flags == 0 ||
 	    gs_app_list_length (result_list) == 0) {
 		g_debug ("no refine flags set for transaction or app list is empty");
 		finish_run (task, result_list);
@@ -760,7 +776,7 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 
 	/* Start refining the apps. */
 	run_refine_internal_async (self, plugin_loader, result_list,
-				   self->flags, cancellable,
+				   self->job_flags, self->refine_flags, cancellable,
 				   run_cb, g_steal_pointer (&task));
 }
 
@@ -837,7 +853,7 @@ finish_run (GTask     *task,
 	 *
 	 * If the flag is not specified, filter by a variety of indicators of
 	 * what a ‘valid’ app is. */
-	if (self->flags & GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING)
+	if ((self->job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING) != 0)
 		gs_app_list_filter (result_list, app_is_non_wildcard, NULL);
 	else
 		gs_app_list_filter (result_list, app_is_valid_filter, self);
@@ -896,14 +912,28 @@ gs_plugin_job_refine_class_init (GsPluginJobRefineClass *klass)
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
-	 * GsPluginJobRefine:flags:
+	 * GsPluginJobRefine:job-flags:
+	 *
+	 * Flags to control how the job is run.
+	 *
+	 * Since: 47
+	 */
+	props[PROP_JOB_FLAGS] =
+		g_param_spec_flags ("job-flags", "Job Flags",
+				    "Flags to control how the job is run.",
+				     GS_TYPE_PLUGIN_REFINE_JOB_FLAGS, GS_PLUGIN_REFINE_JOB_FLAGS_NONE,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPluginJobRefine:refine-flags:
 	 *
 	 * Flags to control what to refine.
 	 *
-	 * Since: 42
+	 * Since: 47
 	 */
-	props[PROP_FLAGS] =
-		g_param_spec_flags ("flags", "Flags",
+	props[PROP_REFINE_FLAGS] =
+		g_param_spec_flags ("refine-flags", "Refine Flags",
 				    "Flags to control what to refine.",
 				     GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_NONE,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
@@ -920,41 +950,46 @@ gs_plugin_job_refine_init (GsPluginJobRefine *self)
 /**
  * gs_plugin_job_refine_new:
  * @app_list: the list of #GsApps to refine
- * @flags: flags to affect what is refined
+ * @job_flags: flags to influence the job behavior
+ * @refine_flags: flags to affect what is refined
  *
  * Create a new #GsPluginJobRefine for refining the given @app_list.
  *
  * Returns: (transfer full): a new #GsPluginJobRefine
- * Since: 42
+ * Since: 47
  */
 GsPluginJob *
-gs_plugin_job_refine_new (GsAppList           *app_list,
-                          GsPluginRefineFlags  flags)
+gs_plugin_job_refine_new (GsAppList *app_list,
+			  GsPluginRefineJobFlags job_flags,
+			  GsPluginRefineFlags refine_flags)
 {
 	return g_object_new (GS_TYPE_PLUGIN_JOB_REFINE,
 			     "app-list", app_list,
-			     "flags", flags,
+			     "job-flags", job_flags,
+			     "refine-flags", refine_flags,
 			     NULL);
 }
 
 /**
  * gs_plugin_job_refine_new_for_app:
  * @app: the #GsApp to refine
- * @flags: flags to affect what is refined
+ * @job_flags: flags to influence the job behavior
+ * @refine_flags: flags to affect what is refined
  *
  * Create a new #GsPluginJobRefine for refining the given @app.
  *
  * Returns: (transfer full): a new #GsPluginJobRefine
- * Since: 42
+ * Since: 47
  */
 GsPluginJob *
-gs_plugin_job_refine_new_for_app (GsApp               *app,
-                                  GsPluginRefineFlags  flags)
+gs_plugin_job_refine_new_for_app (GsApp *app,
+				  GsPluginRefineJobFlags job_flags,
+				  GsPluginRefineFlags refine_flags)
 {
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	gs_app_list_add (list, app);
 
-	return gs_plugin_job_refine_new (list, flags);
+	return gs_plugin_job_refine_new (list, job_flags, refine_flags);
 }
 
 /**
