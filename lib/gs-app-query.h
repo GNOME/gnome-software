@@ -110,6 +110,7 @@ G_DECLARE_FINAL_TYPE (GsAppQuery, gs_app_query, GS, APP_QUERY, GObject)
 GsAppQuery	*gs_app_query_new	(const gchar *first_property_name,
 					 ...) G_GNUC_NULL_TERMINATED;
 
+GsPluginRefineJobFlags	 gs_app_query_get_refine_job_flags (GsAppQuery *self);
 GsPluginRefineFlags	 gs_app_query_get_refine_flags	(GsAppQuery *self);
 guint			 gs_app_query_get_max_results	(GsAppQuery *self);
 GsAppListFilterFlags	 gs_app_query_get_dedupe_flags	(GsAppQuery *self);

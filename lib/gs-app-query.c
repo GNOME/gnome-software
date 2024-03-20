@@ -58,6 +58,7 @@ struct _GsAppQuery
 {
 	GObject parent;
 
+	GsPluginRefineJobFlags refine_job_flags;
 	GsPluginRefineFlags refine_flags;
 	guint max_results;
 	GsAppListFilterFlags dedupe_flags;
@@ -97,7 +98,8 @@ struct _GsAppQuery
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
 
 typedef enum {
-	PROP_REFINE_FLAGS = 1,
+	PROP_REFINE_JOB_FLAGS = 1,
+	PROP_REFINE_FLAGS,
 	PROP_MAX_RESULTS,
 	PROP_DEDUPE_FLAGS,
 	PROP_SORT_FUNC,
@@ -172,9 +174,10 @@ gs_app_query_constructed (GObject *object)
 
 	g_assert ((self->provides_tag != NULL) == (self->provides_type != GS_APP_QUERY_PROVIDES_UNKNOWN));
 
-	if (self->is_source != GS_APP_QUERY_TRISTATE_UNSET)
-		self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-				      GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING;
+	if (self->is_source != GS_APP_QUERY_TRISTATE_UNSET) {
+		self->refine_job_flags |= GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING;
+		self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION;
+	}
 }
 
 static void
@@ -186,6 +189,9 @@ gs_app_query_get_property (GObject    *object,
 	GsAppQuery *self = GS_APP_QUERY (object);
 
 	switch ((GsAppQueryProperty) prop_id) {
+	case PROP_REFINE_JOB_FLAGS:
+		g_value_set_flags (value, self->refine_job_flags);
+		break;
 	case PROP_REFINE_FLAGS:
 		g_value_set_flags (value, self->refine_flags);
 		break;
@@ -279,6 +285,11 @@ gs_app_query_set_property (GObject      *object,
 	GsAppQuery *self = GS_APP_QUERY (object);
 
 	switch ((GsAppQueryProperty) prop_id) {
+	case PROP_REFINE_JOB_FLAGS:
+		/* Construct only. */
+		g_assert (self->refine_job_flags == 0);
+		self->refine_job_flags = g_value_get_flags (value);
+		break;
 	case PROP_REFINE_FLAGS:
 		/* Construct only. */
 		g_assert (self->refine_flags == 0);
@@ -476,6 +487,20 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 	object_class->set_property = gs_app_query_set_property;
 	object_class->dispose = gs_app_query_dispose;
 	object_class->finalize = gs_app_query_finalize;
+
+	/**
+	 * GsAppQuery:refine-job-flags:
+	 *
+	 * Flags to specify how the refine job should behave, if at all.
+	 *
+	 * Since: 47
+	 */
+	props[PROP_REFINE_JOB_FLAGS] =
+		g_param_spec_flags ("refine-job-flags", "Refine Job Flags",
+				    "Flags to specify how the refine job should behave, if at all.",
+				    GS_TYPE_PLUGIN_REFINE_JOB_FLAGS, GS_PLUGIN_REFINE_JOB_FLAGS_NONE,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppQuery:refine-flags:
@@ -988,6 +1013,23 @@ gs_app_query_new (const gchar *first_property_name,
 	va_end (args);
 
 	return g_steal_pointer (&query);
+}
+
+/**
+ * gs_app_query_get_refine_job_flags:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:refine-job-flags.
+ *
+ * Returns: the refine job flags for the query
+ * Since: 47
+ */
+GsPluginRefineJobFlags
+gs_app_query_get_refine_job_flags (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_PLUGIN_REFINE_JOB_FLAGS_NONE);
+
+	return self->refine_job_flags;
 }
 
 /**
