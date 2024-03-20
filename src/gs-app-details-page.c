@@ -211,7 +211,6 @@ set_update_description (GsAppDetailsPage *self,
 		g_assert (self->refine_cancellable == NULL);
 		self->refine_cancellable = g_cancellable_new ();
 		plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_FLAGS_INTERACTIVE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS);
-		gs_plugin_job_set_interactive (plugin_job, TRUE);
 		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 						    self->refine_cancellable,
 						    refine_app_finished_cb,
