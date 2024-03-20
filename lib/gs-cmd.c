@@ -139,8 +139,6 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME;
 	if (g_strcmp0 (flag, "kudos") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS;
-	if (g_strcmp0 (flag, "content-rating") == 0)
-		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING;
 	g_set_error (error,
 		     GS_PLUGIN_ERROR,
 		     GS_PLUGIN_ERROR_NOT_SUPPORTED,
