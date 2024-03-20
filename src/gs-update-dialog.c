@@ -131,10 +131,10 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
 
 	query = gs_app_query_new ("is-historical-update", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						  GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_SEVERITY |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,

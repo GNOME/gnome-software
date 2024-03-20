@@ -570,7 +570,7 @@ details_activated (GSimpleAction *action,
 
 		/* find by launchable */
 		query = gs_app_query_new ("keywords", keywords,
-					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					  "sort-func", gs_utils_app_sort_match_value,
@@ -851,9 +851,9 @@ launch_activated (GSimpleAction *action,
 
 	keywords[0] = id;
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  "license-type", gs_shell_get_query_license_type (self->shell),

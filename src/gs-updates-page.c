@@ -613,7 +613,7 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 					GAsyncResult *res,
 					gpointer user_data)
 {
-	guint64 refine_flags;
+	guint64 require_flags;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GsUpdatesPage *self = user_data;
 	GsPageHelper *helper;
@@ -631,12 +631,12 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 
 	g_return_if_fail (GS_IS_UPDATES_PAGE (self));
 
-	refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
+	require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+		        GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE |
+		        GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_SEVERITY |
+		        GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION;
 
-	plugin_job = gs_plugin_job_refine_new_for_app (app, refine_flags);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_INTERACTIVE, require_flags);
 	gs_plugin_job_set_interactive (plugin_job, TRUE);
 	helper = gs_page_helper_new (self, app, plugin_job);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
@@ -648,7 +648,7 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 static void
 gs_updates_page_load (GsUpdatesPage *self)
 {
-	guint64 refine_flags;
+	guint64 require_flags;
 	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -659,14 +659,14 @@ gs_updates_page_load (GsUpdatesPage *self)
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++)
 		gs_updates_section_remove_all (self->sections[i]);
 
-	refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
+	require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+		        GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE |
+		        GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_SEVERITY |
+		        GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION;
 	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES);
 	self->action_cnt++;
 	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", refine_flags,
+				  "refine-require-flags", require_flags,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
@@ -680,10 +680,10 @@ gs_updates_page_load (GsUpdatesPage *self)
 
 	/* don't refresh every each time */
 	if ((self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPGRADES) == 0) {
-		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
+		require_flags |= GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPGRADE_REMOVED;
 		g_object_unref (plugin_job);
 		plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_INTERACTIVE,
-								     refine_flags);
+								     require_flags);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    plugin_job,
 						    self->cancellable,

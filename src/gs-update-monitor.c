@@ -811,7 +811,7 @@ get_updates (GsUpdateMonitor *monitor,
 	/* NOTE: this doesn't actually do any network access */
 	g_debug ("Getting updates");
 	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_SEVERITY,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
@@ -880,7 +880,7 @@ get_upgrades (GsUpdateMonitor *monitor)
 	 * package being up-to-date, or the metadata being auto-downloaded */
 	g_debug ("Getting upgrades");
 	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
-							     GS_PLUGIN_REFINE_FLAGS_NONE);
+							     GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
 					    monitor->update_cancellable,
@@ -990,7 +990,7 @@ check_language_pack (GsUpdateMonitor *monitor) {
 	locale = setlocale (LC_MESSAGES, NULL);
 
 	query = gs_app_query_new ("is-langpack-for-locale", locale,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 
@@ -1413,8 +1413,8 @@ cleanup_notifications_cb (gpointer user_data)
 	 * after startup, so don’t cancel it with refreshes/updates */
 	g_debug ("getting historical updates for fresh session");
 	query = gs_app_query_new ("is-historical-update", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						  GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	gs_plugin_job_set_propagate_error (plugin_job, TRUE);
