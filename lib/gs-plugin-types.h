@@ -38,18 +38,6 @@ typedef enum {
 } GsPluginStatus;
 
 /**
- * GsPluginFlags:
- * @GS_PLUGIN_FLAGS_NONE:		No flags set
- * @GS_PLUGIN_FLAGS_INTERACTIVE:	User initiated the job
- *
- * The flags for the plugin at this point in time.
- **/
-typedef enum {
-	GS_PLUGIN_FLAGS_NONE = 0,
-	GS_PLUGIN_FLAGS_INTERACTIVE = 1 << 4,
-} GsPluginFlags;
-
-/**
  * GsPluginError:
  * @GS_PLUGIN_ERROR_FAILED:			Generic failure
  * @GS_PLUGIN_ERROR_NOT_SUPPORTED:		Action not supported
