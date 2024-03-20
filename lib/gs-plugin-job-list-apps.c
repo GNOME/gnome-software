@@ -348,6 +348,7 @@ finish_op (GTask  *task,
 	GsPluginLoader *plugin_loader = g_task_get_task_data (task);
 	g_autoptr(GsAppList) merged_list = NULL;
 	GsPluginRefineFlags refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
+	GsPluginRefineRequireFlags require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE;
 	GsAppQueryLicenseType license_type = GS_APP_QUERY_LICENSE_ANY;
 	g_autoptr(GError) error_owned = g_steal_pointer (&error);
 
@@ -374,23 +375,24 @@ finish_op (GTask  *task,
 	/* run refine() on each one if required */
 	if (self->query != NULL) {
 		refine_flags = gs_app_query_get_refine_flags (self->query);
+		require_flags = gs_app_query_get_refine_require_flags (self->query);
 		license_type = gs_app_query_get_license_type (self->query);
 	}
 
-	if (!(refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) &&
+	if (!(require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE) &&
 	    license_type != GS_APP_QUERY_LICENSE_ANY) {
 		/* Needs the license information when filtering with it */
-		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE;
+		require_flags |= GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE;
 	}
 
 	if (merged_list != NULL &&
 	    gs_app_list_length (merged_list) > 0 &&
-	    refine_flags != GS_PLUGIN_REFINE_FLAGS_NONE) {
+	    require_flags != GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE) {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 
 		refine_job = gs_plugin_job_refine_new (merged_list,
-						       refine_flags |
-						       GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
+						       refine_flags | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING,
+						       require_flags);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
 						    refine_cb,

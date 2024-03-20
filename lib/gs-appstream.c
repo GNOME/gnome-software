@@ -45,7 +45,7 @@ gs_appstream_create_app (GsPlugin *plugin,
 
 	/* refine enough to get the unique ID */
 	if (!gs_appstream_refine_app (plugin, app_new, silo, component,
-				      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
+				      GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID,
 				      NULL, appstream_source_file, default_scope, error))
 		return NULL;
 
@@ -743,7 +743,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 GsApp *app,
 			 XbSilo *silo,
 			 XbNode *component,
-			 GsPluginRefineFlags refine_flags,
+			 GsPluginRefineRequireFlags require_flags,
 			 GHashTable *installed_by_desktopid,
 			 const gchar *appstream_source_file,
 			 AsComponentScope default_scope,
@@ -767,7 +767,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	had_icons = gs_app_has_icons (app);
 	had_sources = gs_app_get_sources (app)->len > 0;
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS) != 0) {
 		tmp = setlocale (LC_MESSAGES, NULL);
 		locale_has_translations = _gs_utils_locale_has_translations (tmp);
 	}
@@ -894,7 +894,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			break;
 		case ELEMENT_KIND_CATEGORIES:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES) != 0) {
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_CATEGORIES) != 0) {
 				g_autoptr(XbNode) cat_child = NULL;
 				g_autoptr(XbNode) cat_next = NULL;
 				for (cat_child = xb_node_get_child (child); cat_child != NULL; g_object_unref (cat_child), cat_child = g_steal_pointer (&cat_next)) {
@@ -914,7 +914,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 							if (g_strcmp0 (tmp, "Blacklisted") == 0)
 								gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
 
-							if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+							if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS) != 0 &&
 							    !gs_app_has_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED) &&
 							   g_strcmp0 (tmp, "Featured") == 0)
 								gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
@@ -922,7 +922,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 					}
 				}
 			}
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS) != 0 &&
 			    !gs_app_has_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED)) {
 				g_autoptr(XbNode) cat_child = NULL;
 				g_autoptr(XbNode) cat_next = NULL;
@@ -980,14 +980,14 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			} break;
 		case ELEMENT_KIND_DESCRIPTION:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) != 0) {
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION) != 0) {
 				g_autofree gchar *description = gs_appstream_format_description (child, NULL);
 				if (description != NULL)
 					gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, description);
 			}
 			break;
 		case ELEMENT_KIND_DEVELOPER:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME) > 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_DEVELOPER_NAME) > 0 &&
 			    gs_app_get_developer_name (app) == NULL) {
 				g_autoptr(XbNode) developer_child = NULL;
 				g_autoptr(XbNode) developer_next = NULL;
@@ -1006,13 +1006,13 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			break;
 		case ELEMENT_KIND_DEVELOPER_NAME:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME) > 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_DEVELOPER_NAME) > 0 &&
 			    developer_name_fallback == NULL) {
 				developer_name_fallback = xb_node_get_text (child);
 			}
 			break;
 		case ELEMENT_KIND_ICON:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) != 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON) != 0 &&
 			    !had_icons) {
 				/* This code deliberately does *not* check that the icon files or theme
 				 * icons exist, as that would mean doing disk I/O for all the apps in
@@ -1034,7 +1034,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				}
 			}
 			/* HiDPI icon */
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS) != 0 &&
 			    !gs_app_has_kudo (app, GS_APP_KUDO_HI_DPI_ICON) &&
 			    xb_node_get_attr_as_uint (child, "width") == 128) {
 				gs_app_add_kudo (app, GS_APP_KUDO_HI_DPI_ICON);
@@ -1063,7 +1063,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			break;
 		case ELEMENT_KIND_KEYWORDS:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS) != 0 &&
 			    !gs_app_has_kudo (app, GS_APP_KUDO_HAS_KEYWORDS)) {
 				g_autoptr(XbNode) kw_child = NULL;
 				g_autoptr(XbNode) kw_next = NULL;
@@ -1077,7 +1077,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			break;
 		case ELEMENT_KIND_KUDOS:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS) != 0 &&
 			    !gs_app_has_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED)) {
 				g_autoptr(XbNode) kudos_child = NULL;
 				g_autoptr(XbNode) kudos_next = NULL;
@@ -1091,7 +1091,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			break;
 		case ELEMENT_KIND_LANGUAGES:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0) {
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS) != 0) {
 				if (!locale_has_translations)
 					gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 
@@ -1155,7 +1155,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			g_ptr_array_add (legacy_pkgnames, g_object_ref (child));
 			break;
 		case ELEMENT_KIND_PROJECT_GROUP:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP) > 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROJECT_GROUP) > 0 &&
 			    gs_app_get_project_group (app) == NULL) {
 				tmp = xb_node_get_text (child);
 				if (tmp != NULL && gs_appstream_is_valid_project_group (tmp))
@@ -1163,7 +1163,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			break;
 		case ELEMENT_KIND_PROJECT_LICENSE:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) != 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE) != 0 &&
 			    gs_app_get_license (app) == NULL) {
 				tmp = xb_node_get_text (child);
 				if (tmp != NULL)
@@ -1215,7 +1215,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			} break;
 		case ELEMENT_KIND_RECOMMENDS:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) != 0) {
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS) != 0) {
 				if (!gs_appstream_refine_app_relation (app, child, AS_RELATION_KIND_RECOMMENDS, error))
 						return FALSE;
 			}
@@ -1223,7 +1223,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		case ELEMENT_KIND_RELEASES: {
 			g_autoptr(GPtrArray) current_version_history = gs_app_get_version_history (app);
 			gboolean needs_version_history = current_version_history == NULL || current_version_history->len == 0;
-			gboolean needs_update_details = (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) != 0 &&
+			gboolean needs_update_details = (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS) != 0 &&
 							silo != NULL && gs_app_is_updatable (app);
 			/* set the release date */
 			if (gs_app_get_release_date (app) == 0) {
@@ -1410,13 +1410,13 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			}
 			} break;
 		case ELEMENT_KIND_REQUIRES:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) != 0) {
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS) != 0) {
 				if (!gs_appstream_refine_app_relation (app, child, AS_RELATION_KIND_REQUIRES, error))
 						return FALSE;
 			}
 			break;
 		case ELEMENT_KIND_SCREENSHOTS:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS) != 0 &&
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SCREENSHOTS) != 0 &&
 			    gs_app_get_screenshots (app)->len == 0) {
 				g_autoptr(XbNode) scrs_child = NULL;
 				g_autoptr(XbNode) scrs_next = NULL;
@@ -1464,14 +1464,14 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			break;
 		case ELEMENT_KIND_SUPPORTS:
 			#if AS_CHECK_VERSION(0, 15, 0)
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) != 0) {
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS) != 0) {
 				if (!gs_appstream_refine_app_relation (app, child, AS_RELATION_KIND_SUPPORTS, error))
 						return FALSE;
 			}
 			#endif
 			break;
 		case ELEMENT_KIND_URL:
-			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) != 0) {
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL) != 0) {
 				const gchar *kind = xb_node_get_attr (child, "type");
 				if (kind != NULL) {
 					gs_app_set_url (app,
@@ -1519,7 +1519,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		}
 	}
 
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) != 0 &&
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON) != 0 &&
 	    !had_icons && !gs_app_has_icons (app)) {
 		/* If no icon found, try to inherit the icon from the .desktop file */
 		g_autofree gchar *xpath = NULL;
@@ -1586,13 +1586,13 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set addons */
-	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) != 0 &&
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ADDONS) != 0 &&
 	    plugin != NULL && silo != NULL) {
 		if (!gs_appstream_refine_add_addons (plugin, app, silo, appstream_source_file, default_scope, error))
 			return FALSE;
 	}
 
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) {
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS) {
 		if (!locale_has_translations)
 			gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 

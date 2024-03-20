@@ -1218,7 +1218,7 @@ invoke_plugin_loader_list_upgrades_assert_no_error (GsPluginLoader *plugin_loade
 	g_autoptr(GError) error = NULL;
 
 	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
-	                                                     GS_PLUGIN_REFINE_FLAGS_NONE);
+	                                                     GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 

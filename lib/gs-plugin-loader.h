@@ -114,7 +114,7 @@ void		 gs_plugin_loader_claim_job_error	(GsPluginLoader *plugin_loader,
 							 const GError *error);
 
 gboolean	 gs_plugin_loader_app_is_valid		(GsApp *app,
-							 GsPluginRefineFlags flags);
+							 GsPluginRefineFlags refine_flags);
 gboolean	 gs_plugin_loader_app_is_compatible	(GsPluginLoader *plugin_loader,
 							 GsApp *app);
 
