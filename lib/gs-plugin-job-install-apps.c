@@ -185,6 +185,13 @@ gs_plugin_job_install_apps_set_property (GObject      *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_install_apps_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobInstallApps *self = GS_PLUGIN_JOB_INSTALL_APPS (job);
+	return (self->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE) != 0;
+}
+
 static void
 app_needs_user_action_cb (GsPlugin     *plugin,
                           GsApp        *app,
@@ -462,6 +469,7 @@ gs_plugin_job_install_apps_class_init (GsPluginJobInstallAppsClass *klass)
 	object_class->get_property = gs_plugin_job_install_apps_get_property;
 	object_class->set_property = gs_plugin_job_install_apps_set_property;
 
+	job_class->get_interactive = gs_plugin_job_install_apps_get_interactive;
 	job_class->run_async = gs_plugin_job_install_apps_run_async;
 	job_class->run_finish = gs_plugin_job_install_apps_run_finish;
 

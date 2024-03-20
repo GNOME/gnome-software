@@ -104,6 +104,13 @@ gs_plugin_job_cancel_offline_update_set_property (GObject      *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_cancel_offline_update_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobCancelOfflineUpdate *self = GS_PLUGIN_JOB_CANCEL_OFFLINE_UPDATE (job);
+	return (self->flags & GS_PLUGIN_CANCEL_OFFLINE_UPDATE_FLAGS_INTERACTIVE);
+}
+
 static void plugin_func_cb (GObject      *source_object,
 			    GAsyncResult *result,
 			    gpointer      user_data);
@@ -227,6 +234,7 @@ gs_plugin_job_cancel_offline_update_class_init (GsPluginJobCancelOfflineUpdateCl
 	object_class->get_property = gs_plugin_job_cancel_offline_update_get_property;
 	object_class->set_property = gs_plugin_job_cancel_offline_update_set_property;
 
+	job_class->get_interactive = gs_plugin_job_cancel_offline_update_get_interactive;
 	job_class->run_async = gs_plugin_job_cancel_offline_update_run_async;
 	job_class->run_finish = gs_plugin_job_cancel_offline_update_run_finish;
 
