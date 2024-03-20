@@ -1429,12 +1429,13 @@ static void get_snaps_cb (GObject      *object,
                           gpointer      user_data);
 
 static void
-gs_plugin_snap_refine_async (GsPlugin            *plugin,
-                             GsAppList           *list,
-                             GsPluginRefineFlags  flags,
-                             GCancellable        *cancellable,
-                             GAsyncReadyCallback  callback,
-                             gpointer             user_data)
+gs_plugin_snap_refine_async (GsPlugin               *plugin,
+                             GsAppList              *list,
+                             GsPluginRefineJobFlags  job_flags,
+                             GsPluginRefineFlags     refine_flags,
+                             GCancellable           *cancellable,
+                             GAsyncReadyCallback     callback,
+                             gpointer                user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
@@ -1442,7 +1443,7 @@ gs_plugin_snap_refine_async (GsPlugin            *plugin,
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsAppList) snap_apps = NULL;
 	g_autoptr(GsPluginRefineData) data = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
@@ -1459,7 +1460,7 @@ gs_plugin_snap_refine_async (GsPlugin            *plugin,
 		gs_app_list_add (snap_apps, app);
 	}
 
-	data = gs_plugin_refine_data_new (snap_apps, flags);
+	data = gs_plugin_refine_data_new (snap_apps, job_flags, refine_flags);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) gs_plugin_refine_data_free);
 
 	client = get_client (self, interactive, &local_error);
@@ -1494,7 +1495,7 @@ get_snaps_cb (GObject      *object,
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	GsPluginRefineData *data = g_task_get_task_data (task);
 	GsAppList *list = data->list;
-	GsPluginRefineFlags flags = data->flags;
+	GsPluginRefineFlags refine_flags = data->refine_flags;
 	g_autoptr(GPtrArray) local_snaps = NULL;
 	g_autoptr(GError) local_error = NULL;
 
@@ -1528,7 +1529,7 @@ get_snaps_cb (GObject      *object,
 			store_channel = expand_channel_name (snapd_snap_get_channel (store_snap));
 
 		/* check if requested information requires us to go to the Snap Store */
-		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS)
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS) != 0)
 			need_details = TRUE;
 		if (channel != NULL && g_strcmp0 (store_channel, channel) != 0)
 			need_details = TRUE;
@@ -1623,7 +1624,7 @@ get_snaps_cb (GObject      *object,
 			g_type_class_unref (enum_class);
 		}
 
-		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS &&
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) != 0 &&
 		    self->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT &&
 		    confinement == SNAPD_CONFINEMENT_STRICT)
 			gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
@@ -1661,15 +1662,15 @@ get_snaps_cb (GObject      *object,
 			download_size_bytes = snapd_snap_get_download_size (store_snap);
 			gs_app_set_size_download (app, (download_size_bytes > 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, (guint64) download_size_bytes);
 
-			if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS && gs_app_get_screenshots (app)->len == 0)
+			if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS) != 0 && gs_app_get_screenshots (app)->len == 0)
 				refine_screenshots (app, store_snap);
 		}
 
 		/* load icon if requested */
-		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) != 0)
 			refine_icons (app, snap);
 
-		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
 		    gs_app_is_installed (app) &&
 		    gs_app_get_kind (app) != AS_COMPONENT_KIND_RUNTIME) {
 			if (gs_app_get_size_cache_data (app, NULL) != GS_SIZE_TYPE_VALID)
@@ -1685,7 +1686,7 @@ get_snaps_cb (GObject      *object,
 	}
 
 	/* Icons require async calls to get */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_list_length (list) > 0) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) != 0 && gs_app_list_length (list) > 0) {
 		GsApp *app = gs_app_list_index (list, 0);
 		snapd_client_get_icon_async (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, get_icon_cb, g_steal_pointer (&task));
 	} else {

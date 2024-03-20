@@ -131,6 +131,7 @@ gs_plugins_dummy_refine_func (GsPluginLoader *plugin_loader)
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
 	plugin_job = gs_plugin_job_refine_new_for_app (app,
+						       GS_PLUGIN_REFINE_JOB_FLAGS_NONE,
 						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL);
@@ -157,7 +158,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	app = gs_app_new ("chiron.desktop");
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
-	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_JOB_FLAGS_NONE, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -172,7 +173,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "true");
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_JOB_FLAGS_NONE, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -184,7 +185,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "false");
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_JOB_FLAGS_NONE, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -205,7 +206,7 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 
 	/* get the extra bits */
 	app = gs_app_new ("chiron.desktop");
-	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_JOB_FLAGS_NONE, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -326,7 +327,7 @@ static gboolean
 filter_valid_cb (GsApp    *app,
                  gpointer  user_data)
 {
-	return gs_plugin_loader_app_is_valid (app, GS_PLUGIN_REFINE_FLAGS_NONE);
+	return gs_plugin_loader_app_is_valid (app, GS_PLUGIN_REFINE_JOB_FLAGS_NONE);
 }
 
 static void

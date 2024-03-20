@@ -469,7 +469,7 @@ gs_plugin_epiphany_list_apps_async (GsPlugin              *plugin,
 static void
 refine_app (GsPluginEpiphany    *self,
 	    GsApp               *app,
-	    GsPluginRefineFlags  flags,
+	    GsPluginRefineFlags  refine_flags,
 	    GUri                *uri,
 	    const char          *url)
 {
@@ -565,7 +565,7 @@ refine_app (GsPluginEpiphany    *self,
 		name = g_app_info_get_name (G_APP_INFO (desktop_info));
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
 
-		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) {
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) != 0) {
 			g_autoptr(GFile) desktop_file = NULL;
 			const gchar *desktop_path;
 			guint64 install_date = 0;
@@ -587,7 +587,7 @@ refine_app (GsPluginEpiphany    *self,
 		}
 
 		icon_path = g_desktop_app_info_get_string (desktop_info, "Icon");
-		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE &&
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) != 0 &&
 		    icon_path) {
 			icon_file = g_file_new_for_path (icon_path);
 
@@ -598,7 +598,7 @@ refine_app (GsPluginEpiphany    *self,
 			if (file_info)
 				icon_size = g_file_info_get_size (file_info);
 		}
-		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON &&
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) != 0 &&
 		    !gs_app_has_icons (app) &&
 		    icon_path) {
 			g_autoptr(GIcon) icon = g_file_icon_new (icon_file);
@@ -879,18 +879,19 @@ static void refine_thread_cb (GTask        *task,
                               GCancellable *cancellable);
 
 static void
-gs_plugin_epiphany_refine_async (GsPlugin            *plugin,
-                                 GsAppList           *list,
-                                 GsPluginRefineFlags  flags,
-                                 GCancellable        *cancellable,
-                                 GAsyncReadyCallback  callback,
-                                 gpointer             user_data)
+gs_plugin_epiphany_refine_async (GsPlugin               *plugin,
+                                 GsAppList              *list,
+                                 GsPluginRefineJobFlags  job_flags,
+                                 GsPluginRefineFlags     refine_flags,
+                                 GCancellable           *cancellable,
+                                 GAsyncReadyCallback     callback,
+                                 gpointer                user_data)
 {
 	GsPluginEpiphany *self = GS_PLUGIN_EPIPHANY (plugin);
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, refine_flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_epiphany_refine_async);
 
 	/* Queue a job for the refine. */
@@ -907,9 +908,9 @@ refine_thread_cb (GTask        *task,
 {
 	GsPluginEpiphany *self = GS_PLUGIN_EPIPHANY (source_object);
 	GsPluginRefineData *data = task_data;
-	GsPluginRefineFlags flags = data->flags;
+	GsPluginRefineFlags refine_flags = data->refine_flags;
 	GsAppList *list = data->list;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (data->job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -936,7 +937,7 @@ refine_thread_cb (GTask        *task,
 		}
 
 		g_debug ("epiphany: refining app %s", gs_app_get_id (app));
-		gs_epiphany_refine_app (self, app, flags, url);
+		gs_epiphany_refine_app (self, app, refine_flags, url);
 		gs_epiphany_refine_app_state (GS_PLUGIN (self), app);
 
 		/* Usually the way to refine wildcard apps is to create a new

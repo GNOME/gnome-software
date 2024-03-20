@@ -2114,7 +2114,7 @@ resolve_installed_packages_app (GsPlugin *plugin,
 static gboolean
 resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
                                                GsApp *app,
-                                               GsPluginRefineFlags flags,
+                                               GsPluginRefineFlags refine_flags,
                                                GCancellable *cancellable,
                                                GError **error)
 {
@@ -2172,7 +2172,8 @@ resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
 static gboolean
 gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 			   GsAppList *list,
-			   GsPluginRefineFlags flags,
+			   GsPluginRefineJobFlags job_flags,
+			   GsPluginRefineFlags refine_flags,
 			   GCancellable *cancellable,
 			   GError **error)
 {
@@ -2190,7 +2191,7 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	g_auto(GStrv) layered_packages_strv = NULL;
 	g_auto(GStrv) layered_local_packages_strv = NULL;
 	g_autofree gchar *checksum = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
 
 	locker = g_mutex_locker_new (&self->mutex);
 
@@ -2267,7 +2268,7 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
 		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
 		    gs_app_get_source_default (app) == NULL) {
-			if (!resolve_appstream_source_file_to_package_name (plugin, app, flags, cancellable, error))
+			if (!resolve_appstream_source_file_to_package_name (plugin, app, refine_flags, cancellable, error))
 				return FALSE;
 		}
 		if (!gs_app_has_management_plugin (app, plugin))
@@ -2365,18 +2366,19 @@ static void refine_thread_cb (GTask        *task,
                               GCancellable *cancellable);
 
 static void
-gs_plugin_rpm_ostree_refine_async (GsPlugin            *plugin,
-                                   GsAppList           *list,
-                                   GsPluginRefineFlags  flags,
-                                   GCancellable        *cancellable,
-                                   GAsyncReadyCallback  callback,
-                                   gpointer             user_data)
+gs_plugin_rpm_ostree_refine_async (GsPlugin               *plugin,
+                                   GsAppList              *list,
+                                   GsPluginRefineJobFlags  job_flags,
+                                   GsPluginRefineFlags     refine_flags,
+                                   GCancellable           *cancellable,
+                                   GAsyncReadyCallback     callback,
+                                   gpointer                user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, refine_flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_refine_async);
 
 	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
@@ -2393,12 +2395,11 @@ refine_thread_cb (GTask        *task,
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	GsPluginRefineData *data = task_data;
 	GsAppList *list = data->list;
-	GsPluginRefineFlags flags = data->flags;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
-	if (!gs_rpm_ostree_refine_apps (plugin, list, flags, cancellable, &local_error))
+	if (!gs_rpm_ostree_refine_apps (plugin, list, data->job_flags, data->refine_flags, cancellable, &local_error))
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	else
 		g_task_return_boolean (task, TRUE);
@@ -2725,7 +2726,7 @@ gs_plugin_rpm_ostree_file_to_app_sync (GsPlugin *plugin,
 	tmp_list = gs_app_list_new ();
 	gs_app_list_add (tmp_list, app);
 
-	if (gs_rpm_ostree_refine_apps (plugin, tmp_list, 0, cancellable, error)) {
+	if (gs_rpm_ostree_refine_apps (plugin, tmp_list, GS_PLUGIN_REFINE_JOB_FLAGS_NONE, 0, cancellable, error)) {
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 

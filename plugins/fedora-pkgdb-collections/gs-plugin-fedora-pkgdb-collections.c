@@ -697,7 +697,7 @@ static gboolean
 refine_app (GsPluginFedoraPkgdbCollections *self,
             GPtrArray                      *distros,
             GsApp                          *app,
-            GsPluginRefineFlags             flags,
+            GsPluginRefineFlags             refine_flags,
             GCancellable                   *cancellable,
             GError                        **error)
 {
@@ -749,18 +749,19 @@ static void refine_cb (GObject      *source_object,
                        gpointer      user_data);
 
 static void
-gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin            *plugin,
-                                                 GsAppList           *list,
-                                                 GsPluginRefineFlags  flags,
-                                                 GCancellable        *cancellable,
-                                                 GAsyncReadyCallback  callback,
-                                                 gpointer             user_data)
+gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin               *plugin,
+                                                 GsAppList              *list,
+                                                 GsPluginRefineJobFlags  job_flags,
+                                                 GsPluginRefineFlags     refine_flags,
+                                                 GCancellable           *cancellable,
+                                                 GAsyncReadyCallback     callback,
+                                                 gpointer                user_data)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
 	g_autoptr(GTask) task = NULL;
 	gboolean refine_needed = FALSE;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, refine_flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_refine_async);
 
 	/* Check if any of the apps actually need to be refined by this plugin,
@@ -803,7 +804,7 @@ refine_cb (GObject      *source_object,
 
 	for (guint i = 0; i < gs_app_list_length (data->list); i++) {
 		GsApp *app = gs_app_list_index (data->list, i);
-		if (!refine_app (self, distros, app, data->flags, cancellable, &local_error)) {
+		if (!refine_app (self, distros, app, data->refine_flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}

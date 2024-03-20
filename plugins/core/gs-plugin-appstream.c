@@ -1136,18 +1136,19 @@ static void refine_thread_cb (GTask        *task,
                               GCancellable *cancellable);
 
 static void
-gs_plugin_appstream_refine_async (GsPlugin            *plugin,
-                                  GsAppList           *list,
-                                  GsPluginRefineFlags  flags,
-                                  GCancellable        *cancellable,
-                                  GAsyncReadyCallback  callback,
-                                  gpointer             user_data)
+gs_plugin_appstream_refine_async (GsPlugin               *plugin,
+                                  GsAppList              *list,
+                                  GsPluginRefineJobFlags  job_flags,
+                                  GsPluginRefineFlags     refine_flags,
+                                  GCancellable           *cancellable,
+                                  GAsyncReadyCallback     callback,
+                                  gpointer                user_data)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, refine_flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_appstream_refine_async);
 
 	/* Queue a job for the refine. */
@@ -1173,7 +1174,7 @@ refine_thread_cb (GTask        *task,
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
 	GsPluginRefineData *data = task_data;
 	GsAppList *list = data->list;
-	GsPluginRefineFlags flags = data->flags;
+	GsPluginRefineFlags refine_flags = data->refine_flags;
 	gboolean found = FALSE;
 	g_autoptr(GsAppList) app_list = NULL;
 	g_autoptr(GHashTable) apps_by_id = NULL;
@@ -1266,12 +1267,12 @@ refine_thread_cb (GTask        *task,
 			continue;
 
 		/* find by ID then fall back to package name */
-		if (!gs_plugin_refine_from_id (self, app, flags, apps_by_id, apps_by_origin_and_id, &found, &local_error)) {
+		if (!gs_plugin_refine_from_id (self, app, refine_flags, apps_by_id, apps_by_origin_and_id, &found, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 		if (!found) {
-			if (!gs_plugin_refine_from_pkgname (self, app, flags, &local_error)) {
+			if (!gs_plugin_refine_from_pkgname (self, app, refine_flags, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
@@ -1290,7 +1291,7 @@ refine_thread_cb (GTask        *task,
 		GsApp *app = gs_app_list_index (app_list, j);
 
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
-		    !refine_wildcard (self, app, list, flags, apps_by_id, cancellable, &local_error)) {
+		    !refine_wildcard (self, app, list, refine_flags, apps_by_id, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}

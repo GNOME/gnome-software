@@ -283,14 +283,14 @@ gs_plugin_repos_shutdown_finish (GsPlugin      *plugin,
 
 static void
 refine_app (GsApp               *app,
-            GsPluginRefineFlags  flags,
+            GsPluginRefineFlags  refine_flags,
             GHashTable          *filenames,
             GHashTable          *urls)
 {
 	const gchar *tmp;
 
 	/* not required */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
 		return;
 	if (gs_app_get_origin_hostname (app) != NULL)
 		return;
@@ -354,12 +354,13 @@ refine_app (GsApp               *app,
 }
 
 static void
-gs_plugin_repos_refine_async (GsPlugin            *plugin,
-                              GsAppList           *list,
-                              GsPluginRefineFlags  flags,
-                              GCancellable        *cancellable,
-                              GAsyncReadyCallback  callback,
-                              gpointer             user_data)
+gs_plugin_repos_refine_async (GsPlugin               *plugin,
+                              GsAppList              *list,
+                              GsPluginRefineJobFlags  job_flags,
+                              GsPluginRefineFlags     refine_flags,
+                              GCancellable           *cancellable,
+                              GAsyncReadyCallback     callback,
+                              gpointer                user_data)
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
 	g_autoptr(GHashTable) filenames = NULL;  /* (element-type utf8 filename) mapping origin to filename */
@@ -371,7 +372,7 @@ gs_plugin_repos_refine_async (GsPlugin            *plugin,
 	g_task_set_source_tag (task, gs_plugin_repos_refine_async);
 
 	/* nothing to do here */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0) {
 		g_task_return_boolean (task, TRUE);
 		return;
 	}
@@ -387,7 +388,7 @@ gs_plugin_repos_refine_async (GsPlugin            *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 
-		refine_app (app, flags, filenames, urls);
+		refine_app (app, refine_flags, filenames, urls);
 	}
 
 	g_task_return_boolean (task, TRUE);

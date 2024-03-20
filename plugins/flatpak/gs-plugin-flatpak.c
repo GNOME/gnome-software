@@ -633,18 +633,19 @@ static void refine_thread_cb (GTask        *task,
                               GCancellable *cancellable);
 
 static void
-gs_plugin_flatpak_refine_async (GsPlugin            *plugin,
-                                GsAppList           *list,
-                                GsPluginRefineFlags  flags,
-                                GCancellable        *cancellable,
-                                GAsyncReadyCallback  callback,
-                                gpointer             user_data)
+gs_plugin_flatpak_refine_async (GsPlugin               *plugin,
+                                GsAppList              *list,
+                                GsPluginRefineJobFlags  job_flags,
+                                GsPluginRefineFlags     refine_flags,
+                                GCancellable           *cancellable,
+                                GAsyncReadyCallback     callback,
+                                gpointer                user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, refine_flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_refine_async);
 
 	/* Queue a job to refine the apps. */
@@ -662,8 +663,8 @@ refine_thread_cb (GTask        *task,
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
 	GsPluginRefineData *data = task_data;
 	GsAppList *list = data->list;
-	GsPluginRefineFlags flags = data->flags;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	GsPluginRefineFlags refine_flags = data->refine_flags;
+	gboolean interactive = (data->job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0;
 	g_autoptr(GPtrArray) array_components_by_id = NULL; /* (element-type GHashTable) */
 	g_autoptr(GPtrArray) array_components_by_bundle = NULL; /* (element-type GHashTable) */
 	g_autoptr(GsAppList) app_list = NULL;
@@ -673,7 +674,7 @@ refine_thread_cb (GTask        *task,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (self, app, flags, interactive, cancellable, &local_error)) {
+		if (!refine_app (self, app, refine_flags, interactive, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -702,7 +703,7 @@ refine_thread_cb (GTask        *task,
 			GHashTable *components_by_id = array_components_by_id->pdata[i];
 			GHashTable *components_by_bundle = array_components_by_bundle->pdata[i];
 
-			if (!gs_flatpak_refine_wildcard (flatpak, app, list, flags, interactive, &components_by_id, &components_by_bundle,
+			if (!gs_flatpak_refine_wildcard (flatpak, app, list, refine_flags, interactive, &components_by_id, &components_by_bundle,
 							 cancellable, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;

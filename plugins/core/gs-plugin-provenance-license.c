@@ -135,12 +135,13 @@ refine_app (GsPluginProvenanceLicense  *self,
 }
 
 static void
-gs_plugin_provenance_license_refine_async (GsPlugin            *plugin,
-                                           GsAppList           *list,
-                                           GsPluginRefineFlags  flags,
-                                           GCancellable        *cancellable,
-                                           GAsyncReadyCallback  callback,
-                                           gpointer             user_data)
+gs_plugin_provenance_license_refine_async (GsPlugin               *plugin,
+                                           GsAppList              *list,
+                                           GsPluginRefineJobFlags  job_flags,
+                                           GsPluginRefineFlags     refine_flags,
+                                           GCancellable           *cancellable,
+                                           GAsyncReadyCallback     callback,
+                                           gpointer                user_data)
 {
 	GsPluginProvenanceLicense *self = GS_PLUGIN_PROVENANCE_LICENSE (plugin);
 	g_autoptr(GTask) task = NULL;
@@ -150,7 +151,7 @@ gs_plugin_provenance_license_refine_async (GsPlugin            *plugin,
 	g_task_set_source_tag (task, gs_plugin_provenance_license_refine_async);
 
 	/* nothing to do here */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0) {
 		g_task_return_boolean (task, TRUE);
 		return;
 	}
@@ -163,7 +164,7 @@ gs_plugin_provenance_license_refine_async (GsPlugin            *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (self, app, flags, cancellable, &local_error)) {
+		if (!refine_app (self, app, refine_flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
