@@ -1361,6 +1361,7 @@ gs_plugin_package_list_updates_process_results (GsPlugin *plugin,
 static gboolean
 gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 				  GsAppList *list,
+				  gboolean interactive,
 				  GCancellable *cancellable,
 				  GError **error)
 {
@@ -1372,7 +1373,7 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
 	task_updates = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
 	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
 
 	results = pk_client_get_updates (PK_CLIENT (task_updates),
@@ -2425,7 +2426,7 @@ gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
 			/* ask PK to simulate upgrading the system */
 			cache_age_save = pk_client_get_cache_age (data_unowned->client_refine);
 			pk_client_set_cache_age (data_unowned->client_refine, 60 * 60 * 24 * 7); /* once per week */
-			pk_client_set_interactive (data_unowned->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			pk_client_set_interactive (data_unowned->client_refine, (job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0);
 			pk_client_upgrade_system_async (data_unowned->client_refine,
 							pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
 							gs_app_get_version (app),
@@ -3229,10 +3230,10 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) local_error = NULL;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = FALSE; /* this is done in the background, thus not interactive */
 
 	list = gs_app_list_new ();
-	if (!gs_plugin_packagekit_add_updates (GS_PLUGIN (self), list, cancellable, &local_error)) {
+	if (!gs_plugin_packagekit_add_updates (GS_PLUGIN (self), list, interactive, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
