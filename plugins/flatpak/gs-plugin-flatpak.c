@@ -822,7 +822,7 @@ _ref_to_app (FlatpakTransaction *transaction,
 
 	/* search through each GsFlatpak */
 	return gs_plugin_flatpak_find_app_by_ref (self, ref,
-						  gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE),
+						  !flatpak_transaction_get_no_interaction (transaction),
 						  NULL, NULL);
 }
 
