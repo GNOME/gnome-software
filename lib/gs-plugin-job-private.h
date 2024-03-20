@@ -17,6 +17,7 @@ G_BEGIN_DECLS
 GsPluginAction		 gs_plugin_job_get_action		(GsPluginJob	*self);
 GsAppListFilterFlags	 gs_plugin_job_get_dedupe_flags		(GsPluginJob	*self);
 GsPluginRefineFlags	 gs_plugin_job_get_refine_flags		(GsPluginJob	*self);
+GsPluginRefineRequireFlags	 gs_plugin_job_get_refine_require_flags	(GsPluginJob	*self);
 gboolean		 gs_plugin_job_get_interactive		(GsPluginJob	*self);
 gboolean		 gs_plugin_job_get_propagate_error	(GsPluginJob	*self);
 guint			 gs_plugin_job_get_max_results		(GsPluginJob	*self);
