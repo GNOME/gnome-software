@@ -1641,6 +1641,32 @@ gs_plugin_action_from_string (const gchar *action)
 }
 
 /**
+ * gs_plugin_refine_job_flags_to_string:
+ * @refine_job_flags: some #GsPluginRefineJobFlags, e.g. %GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE
+ *
+ * Converts the refine job flags to a string.
+ *
+ * Returns: a string
+ *
+ * Since: 47
+ **/
+gchar *
+gs_plugin_refine_job_flags_to_string (GsPluginRefineJobFlags refine_job_flags)
+{
+	g_autoptr(GPtrArray) cstrs = g_ptr_array_new ();
+	if ((refine_job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_INTERACTIVE) != 0)
+		g_ptr_array_add (cstrs, (gpointer) "interactive");
+	if ((refine_job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_ALLOW_PACKAGES) != 0)
+		g_ptr_array_add (cstrs, (gpointer) "allow-packages");
+	if ((refine_job_flags & GS_PLUGIN_REFINE_JOB_FLAGS_DISABLE_FILTERING) != 0)
+		g_ptr_array_add (cstrs, (gpointer) "disable-filtering");
+	if (cstrs->len == 0)
+		return g_strdup ("none");
+	g_ptr_array_add (cstrs, NULL);
+	return g_strjoinv (",", (gchar**) cstrs->pdata);
+}
+
+/**
  * gs_plugin_refine_flags_to_string:
  * @refine_flags: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE
  *
@@ -1678,8 +1704,6 @@ gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 		g_ptr_array_add (cstrs, (gpointer) "require-related");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS)
 		g_ptr_array_add (cstrs, (gpointer) "require-addons");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES)
-		g_ptr_array_add (cstrs, (gpointer) "require-allow-packages");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY)
 		g_ptr_array_add (cstrs, (gpointer) "require-update-severity");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED)

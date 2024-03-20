@@ -44,6 +44,7 @@ GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,
 							 GsPluginRule	 rule);
 gpointer	 gs_plugin_get_symbol			(GsPlugin	*plugin,
 							 const gchar	*function_name);
+gchar		*gs_plugin_refine_job_flags_to_string	(GsPluginRefineJobFlags refine_job_flags);
 gchar		*gs_plugin_refine_flags_to_string	(GsPluginRefineFlags refine_flags);
 void		 gs_plugin_set_network_monitor		(GsPlugin		*plugin,
 							 GNetworkMonitor	*monitor);
