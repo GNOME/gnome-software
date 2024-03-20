@@ -1976,17 +1976,14 @@ gs_app_get_icon_for_size (GsApp       *app,
 		GIcon *icon = priv->icons->pdata[i];
 		g_autofree gchar *icon_str = g_icon_to_string (icon);
 		guint icon_width = gs_icon_get_width (icon);
-		guint icon_height = gs_icon_get_height (icon);
 		guint icon_scale = gs_icon_get_scale (icon);
 
 		g_debug ("\tConsidering icon of type %s (%s), width %u×%u",
 			 G_OBJECT_TYPE_NAME (icon), icon_str, icon_width, icon_scale);
 
 		/* To avoid excessive I/O, the loading of AppStream data does
-		 * not verify the existence of cached icons, which we do now.
-		 * Since AppStream only guarantees that the 64x64@1 cached icon
-		 * is present, ignore other icons if they do not exist. */
-		if (G_IS_FILE_ICON (icon) && !(icon_width == 64 && icon_height == 64 && icon_scale == 1)) {
+		 * not verify the existence of cached icons, which we do now. */
+		if (G_IS_FILE_ICON (icon)) {
 			GFile *file = g_file_icon_get_file (G_FILE_ICON (icon));
 			if (!g_file_query_exists (file, NULL)) {
 				continue;
