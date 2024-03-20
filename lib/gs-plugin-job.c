@@ -17,6 +17,7 @@
 
 typedef struct
 {
+	GsPluginRefineJobFlags	 refine_job_flags;
 	GsPluginRefineFlags	 refine_flags;
 	GsAppListFilterFlags	 dedupe_flags;
 	gboolean		 interactive;
@@ -36,6 +37,7 @@ enum {
 	PROP_0,
 	PROP_ACTION,
 	PROP_SEARCH,
+	PROP_REFINE_JOB_FLAGS,
 	PROP_REFINE_FLAGS,
 	PROP_DEDUPE_FLAGS,
 	PROP_INTERACTIVE,
@@ -78,6 +80,10 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	}
 	if (priv->dedupe_flags > 0)
 		g_string_append_printf (str, " with dedupe-flags=%" G_GUINT64_FORMAT, priv->dedupe_flags);
+	if (priv->refine_job_flags > 0) {
+		g_autofree gchar *tmp = gs_plugin_refine_job_flags_to_string (priv->refine_job_flags);
+		g_string_append_printf (str, " with refine-job-flags=%s", tmp);
+	}
 	if (priv->refine_flags > 0) {
 		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (priv->refine_flags);
 		g_string_append_printf (str, " with refine-flags=%s", tmp);
@@ -116,6 +122,14 @@ gs_plugin_job_to_string (GsPluginJob *self)
 }
 
 void
+gs_plugin_job_set_refine_job_flags (GsPluginJob *self, GsPluginRefineJobFlags refine_job_flags)
+{
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	priv->refine_job_flags = refine_job_flags;
+}
+
+void
 gs_plugin_job_set_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
 {
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
@@ -129,6 +143,14 @@ gs_plugin_job_set_dedupe_flags (GsPluginJob *self, GsAppListFilterFlags dedupe_f
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
 	priv->dedupe_flags = dedupe_flags;
+}
+
+GsPluginRefineJobFlags
+gs_plugin_job_get_refine_job_flags (GsPluginJob *self)
+{
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_JOB_FLAGS_NONE);
+	return priv->refine_job_flags;
 }
 
 GsPluginRefineFlags
@@ -332,6 +354,9 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_ACTION:
 		g_value_set_enum (value, priv->action);
 		break;
+	case PROP_REFINE_JOB_FLAGS:
+		g_value_set_flags (value, priv->refine_job_flags);
+		break;
 	case PROP_REFINE_FLAGS:
 		g_value_set_flags (value, priv->refine_flags);
 		break;
@@ -373,6 +398,9 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	switch (prop_id) {
 	case PROP_ACTION:
 		gs_plugin_job_set_action (self, g_value_get_enum (value));
+		break;
+	case PROP_REFINE_JOB_FLAGS:
+		gs_plugin_job_set_refine_job_flags (self, g_value_get_flags (value));
 		break;
 	case PROP_REFINE_FLAGS:
 		gs_plugin_job_set_refine_flags (self, g_value_get_flags (value));
@@ -436,6 +464,11 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				   GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
 				   G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_ACTION, pspec);
+
+	pspec = g_param_spec_flags ("refine-job-flags", NULL, NULL,
+				    GS_TYPE_PLUGIN_REFINE_JOB_FLAGS, GS_PLUGIN_REFINE_JOB_FLAGS_NONE,
+				    G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_REFINE_JOB_FLAGS, pspec);
 
 	pspec = g_param_spec_flags ("refine-flags", NULL, NULL,
 				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_NONE,
@@ -502,6 +535,7 @@ gs_plugin_job_init (GsPluginJob *self)
 {
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 
+	priv->refine_job_flags = GS_PLUGIN_REFINE_JOB_FLAGS_NONE;
 	priv->refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 	priv->dedupe_flags = GS_APP_LIST_FILTER_FLAG_KEY_ID |
 			     GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |

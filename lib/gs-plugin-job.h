@@ -35,6 +35,8 @@ struct _GsPluginJobClass
 	                        GError       **error);
 };
 
+void		 gs_plugin_job_set_refine_job_flags	(GsPluginJob	*self,
+							 GsPluginRefineJobFlags refine_job_flags);
 void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
 							 GsPluginRefineFlags refine_flags);
 void		 gs_plugin_job_set_dedupe_flags		(GsPluginJob	*self,
