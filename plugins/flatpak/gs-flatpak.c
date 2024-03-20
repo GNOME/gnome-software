@@ -3184,7 +3184,7 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 					const char *origin, /* (nullable) */
 					FlatpakInstalledRef *installed_ref, /* (nullable) */
 					GBytes *appstream_gz,
-					GsPluginRefineFlags flags,
+					GsPluginRefineRequireFlags require_flags,
 					gboolean interactive,
 					const gchar *silo_filename,
 					GHashTable *silo_installed_by_desktopid,
@@ -3321,7 +3321,7 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 	}
 
 	/* copy details from AppStream to app */
-	if (!gs_appstream_refine_app (self->plugin, app, silo, component_node, flags, silo_installed_by_desktopid,
+	if (!gs_appstream_refine_app (self->plugin, app, silo, component_node, require_flags, silo_installed_by_desktopid,
 				      silo_filename ? silo_filename : "", self->scope, error))
 		return FALSE;
 
@@ -3418,7 +3418,7 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 			     XbSilo *silo,
 			     const gchar *silo_filename,
 			     GHashTable *silo_installed_by_desktopid,
-			     GsPluginRefineFlags flags,
+			     GsPluginRefineRequireFlags require_flags,
 			     GHashTable *components_by_bundle,
 			     gboolean interactive,
 			     GCancellable *cancellable,
@@ -3502,13 +3502,13 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 							       flatpak_installed_ref_get_origin (installed_ref),
 							       installed_ref,
 							       appstream_gz,
-							       flags,
+							       require_flags,
 							       interactive,
 							       silo_filename, silo_installed_by_desktopid,
 							       cancellable, error);
 	}
 
-	if (!gs_appstream_refine_app (self->plugin, app, silo, component, flags, silo_installed_by_desktopid,
+	if (!gs_appstream_refine_app (self->plugin, app, silo, component, require_flags, silo_installed_by_desktopid,
 				      silo_filename ? silo_filename : "", self->scope, error))
 		return FALSE;
 
@@ -3520,7 +3520,7 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 static gboolean
 gs_flatpak_refine_app_internal (GsFlatpak *self,
                                 GsApp *app,
-                                GsPluginRefineFlags flags,
+                                GsPluginRefineRequireFlags require_flags,
                                 gboolean interactive,
 				gboolean force_state_update,
 				GHashTable *components_by_bundle,
@@ -3539,7 +3539,7 @@ gs_flatpak_refine_app_internal (GsFlatpak *self,
 
 	/* always do AppStream properties */
 	if (!gs_flatpak_refine_appstream (self, app, silo, silo_filename, silo_installed_by_desktopid,
-					  flags, components_by_bundle, interactive, cancellable, error))
+					  require_flags, components_by_bundle, interactive, cancellable, error))
 		return FALSE;
 
 	/* AppStream sets the source to appname/arch/branch */
@@ -3567,12 +3567,12 @@ gs_flatpak_refine_app_internal (GsFlatpak *self,
 	/* if the state was changed, perhaps set the version from the release */
 	if (old_state != gs_app_get_state (app)) {
 		if (!gs_flatpak_refine_appstream (self, app, silo, silo_filename, silo_installed_by_desktopid,
-						  flags, components_by_bundle, interactive, cancellable, error))
+						  require_flags, components_by_bundle, interactive, cancellable, error))
 			return FALSE;
 	}
 
 	/* version fallback */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) {
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION) {
 		if (gs_app_get_version (app) == NULL) {
 			const gchar *branch;
 			branch = gs_app_get_branch (app);
@@ -3581,7 +3581,7 @@ gs_flatpak_refine_app_internal (GsFlatpak *self,
 	}
 
 	/* size */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) {
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE) {
 		g_autoptr(GError) error_local = NULL;
 		if (!gs_plugin_refine_item_size (self, app, interactive,
 						 cancellable, &error_local)) {
@@ -3599,7 +3599,7 @@ gs_flatpak_refine_app_internal (GsFlatpak *self,
 		}
 	}
 
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE_DATA) != 0 &&
 	    gs_app_is_installed (app) &&
 	    gs_app_get_kind (app) != AS_COMPONENT_KIND_RUNTIME) {
 		if (gs_app_get_size_cache_data (app, NULL) != GS_SIZE_TYPE_VALID)
@@ -3617,7 +3617,7 @@ gs_flatpak_refine_app_internal (GsFlatpak *self,
 	}
 
 	/* origin-hostname */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) {
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_HOSTNAME) {
 		if (!gs_plugin_refine_item_origin_hostname (self, app, interactive,
 							    cancellable,
 							    error)) {
@@ -3627,8 +3627,8 @@ gs_flatpak_refine_app_internal (GsFlatpak *self,
 	}
 
 	/* permissions */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME ||
-	    flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME ||
+	    require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS) {
 		g_autoptr(GError) error_local = NULL;
 		if (!gs_plugin_refine_item_metadata (self, app, interactive,
 						     cancellable, &error_local)) {
@@ -3656,7 +3656,7 @@ gs_flatpak_refine_app_internal (GsFlatpak *self,
 void
 gs_flatpak_refine_addons (GsFlatpak *self,
 			  GsApp *parent_app,
-			  GsPluginRefineFlags flags,
+			  GsPluginRefineRequireFlags require_flags,
 			  GsAppState state,
 			  gboolean interactive,
 			  GCancellable *cancellable)
@@ -3681,7 +3681,7 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 		if (state != gs_app_get_state (addon))
 			continue;
 
-		if (!gs_flatpak_refine_app_internal (self, addon, flags, interactive, TRUE, NULL, silo, silo_filename,
+		if (!gs_flatpak_refine_app_internal (self, addon, require_flags, interactive, TRUE, NULL, silo, silo_filename,
 						     silo_installed_by_desktopid, cancellable, &local_error)) {
 			if (errors)
 				g_string_append_c (errors, '\n');
@@ -3708,7 +3708,7 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 gboolean
 gs_flatpak_refine_app (GsFlatpak *self,
 		       GsApp *app,
-		       GsPluginRefineFlags flags,
+		       GsPluginRefineRequireFlags require_flags,
 		       gboolean interactive,
 		       gboolean force_state_update,
 		       GCancellable *cancellable,
@@ -3722,13 +3722,13 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, &silo_filename, &silo_installed_by_desktopid, cancellable, error))
 		return FALSE;
 
-	return gs_flatpak_refine_app_internal (self, app, flags, interactive, force_state_update, NULL,
+	return gs_flatpak_refine_app_internal (self, app, require_flags, interactive, force_state_update, NULL,
 					       silo, silo_filename, silo_installed_by_desktopid, cancellable, error);
 }
 
 gboolean
 gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
-			    GsAppList *list, GsPluginRefineFlags refine_flags,
+			    GsAppList *list, GsPluginRefineRequireFlags require_flags,
 			    gboolean interactive,
 			    GHashTable **inout_components_by_id,
 			    GHashTable **inout_components_by_bundle,
@@ -3867,7 +3867,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 			g_debug ("Failed to get ref info for '%s' from wildcard '%s', skipping it...", gs_app_get_id (new), id);
 		} else {
 			GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardRefineNewApp, "Flatpak (refine new app)", NULL);
-			if (!gs_flatpak_refine_app_internal (self, new, refine_flags, interactive, FALSE, *inout_components_by_bundle,
+			if (!gs_flatpak_refine_app_internal (self, new, require_flags, interactive, FALSE, *inout_components_by_bundle,
 							     silo, silo_filename, silo_installed_by_desktopid, cancellable, error))
 				return FALSE;
 			GS_PROFILER_END_SCOPED (FlatpakRefineWildcardRefineNewApp);
@@ -4010,7 +4010,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			return NULL;
 		if (!gs_flatpak_refine_appstream_from_bytes (self, app, NULL, NULL,
 							     appstream_gz,
-							     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
+							     GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID,
 							     interactive,
 							     silo_filename, silo_installed_by_desktopid,
 							     cancellable, error))
@@ -4400,7 +4400,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* get extra AppStream data if available */
 	if (!gs_flatpak_refine_appstream (self, app, silo, silo_filename, silo_installed_by_desktopid,
-					  GS_PLUGIN_REFINE_FLAGS_MASK,
+					  GS_PLUGIN_REFINE_REQUIRE_FLAGS_MASK,
 					  NULL,
 					  interactive,
 					  cancellable,

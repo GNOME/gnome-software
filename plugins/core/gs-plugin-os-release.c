@@ -116,12 +116,13 @@ gs_plugin_os_release_setup_finish (GsPlugin      *plugin,
 }
 
 static void
-gs_plugin_os_release_refine_async (GsPlugin            *plugin,
-                                   GsAppList           *list,
-                                   GsPluginRefineFlags  flags,
-                                   GCancellable        *cancellable,
-                                   GAsyncReadyCallback  callback,
-                                   gpointer             user_data)
+gs_plugin_os_release_refine_async (GsPlugin                   *plugin,
+                                   GsAppList                  *list,
+                                   GsPluginRefineFlags         job_flags,
+                                   GsPluginRefineRequireFlags  require_flags,
+                                   GCancellable               *cancellable,
+                                   GAsyncReadyCallback         callback,
+                                   gpointer                    user_data)
 {
 	GsPluginOsRelease *self = GS_PLUGIN_OS_RELEASE (plugin);
 	g_autoptr(GTask) task = NULL;

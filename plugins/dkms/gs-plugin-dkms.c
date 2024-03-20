@@ -270,12 +270,13 @@ gs_dkms_got_secureboot_state_refine_cb (GObject *source_object,
 }
 
 static void
-gs_plugin_dkms_refine_async (GsPlugin            *plugin,
-                             GsAppList           *list,
-                             GsPluginRefineFlags  flags,
-                             GCancellable        *cancellable,
-                             GAsyncReadyCallback  callback,
-                             gpointer             user_data)
+gs_plugin_dkms_refine_async (GsPlugin                   *plugin,
+                             GsAppList                  *list,
+                             GsPluginRefineFlags         job_flags,
+                             GsPluginRefineRequireFlags  require_flags,
+                             GCancellable               *cancellable,
+                             GAsyncReadyCallback         callback,
+                             gpointer                    user_data)
 {
 	g_autoptr(GTask) task = NULL;
 	gboolean requires_akmods_key = FALSE;
