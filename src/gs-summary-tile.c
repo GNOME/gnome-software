@@ -116,7 +116,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 			icon = gs_app_get_icon_for_size (app,
 							 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
 							 gtk_widget_get_scale_factor (tile->image),
-							 "system-component-application");
+							 "application-x-executable");
 			gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
 			gtk_stack_set_visible_child_name (GTK_STACK (tile->image_stack), "image");
 			break;
