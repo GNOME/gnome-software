@@ -84,7 +84,7 @@ static GsPluginRefineFlags
 gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 {
 	if (g_strcmp0 (flag, "all") == 0)
-		return G_MAXINT32;
+		return GS_PLUGIN_REFINE_FLAGS_MASK;
 	if (g_strcmp0 (flag, "license") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE;
 	if (g_strcmp0 (flag, "url") == 0)
