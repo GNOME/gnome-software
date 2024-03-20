@@ -49,7 +49,6 @@ typedef struct
 	GHashTable		*cache;
 	GMutex			 cache_mutex;
 	GModule			*module;
-	GsPluginFlags		 flags;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
 	GHashTable		*vfuncs;		/* string:pointer */
 	GMutex			 vfuncs_mutex;
@@ -73,8 +72,7 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
 G_DEFINE_QUARK (gs-plugin-error-quark, gs_plugin_error)
 
 typedef enum {
-	PROP_FLAGS = 1,
-	PROP_SCALE,
+	PROP_SCALE = 1,
 	PROP_SESSION_BUS_CONNECTION,
 	PROP_SYSTEM_BUS_CONNECTION,
 } GsPluginProperty;
@@ -562,58 +560,6 @@ gs_plugin_get_network_available (GsPlugin *plugin)
 		return TRUE;
 	}
 	return g_network_monitor_get_network_available (priv->network_monitor);
-}
-
-/**
- * gs_plugin_has_flags:
- * @plugin: a #GsPlugin
- * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_INTERACTIVE
- *
- * Finds out if a plugin has a specific flag set.
- *
- * Returns: TRUE if the flag is set
- *
- * Since: 3.22
- **/
-gboolean
-gs_plugin_has_flags (GsPlugin *plugin, GsPluginFlags flags)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return (priv->flags & flags) > 0;
-}
-
-/**
- * gs_plugin_add_flags:
- * @plugin: a #GsPlugin
- * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_INTERACTIVE
- *
- * Adds specific flags to the plugin.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_add_flags (GsPlugin *plugin, GsPluginFlags flags)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	priv->flags |= flags;
-	g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_FLAGS]);
-}
-
-/**
- * gs_plugin_remove_flags:
- * @plugin: a #GsPlugin
- * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_INTERACTIVE
- *
- * Removes specific flags from the plugin.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_remove_flags (GsPlugin *plugin, GsPluginFlags flags)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	priv->flags &= ~flags;
-	g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_FLAGS]);
 }
 
 /**
@@ -1729,10 +1675,6 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
 	switch ((GsPluginProperty) prop_id) {
-	case PROP_FLAGS:
-		priv->flags = g_value_get_flags (value);
-		g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_FLAGS]);
-		break;
 	case PROP_SCALE:
 		gs_plugin_set_scale (plugin, g_value_get_uint (value));
 		break;
@@ -1759,9 +1701,6 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
 	switch ((GsPluginProperty) prop_id) {
-	case PROP_FLAGS:
-		g_value_set_flags (value, priv->flags);
-		break;
 	case PROP_SCALE:
 		g_value_set_uint (value, gs_plugin_get_scale (plugin));
 		break;
@@ -1787,18 +1726,6 @@ gs_plugin_class_init (GsPluginClass *klass)
 	object_class->get_property = gs_plugin_get_property;
 	object_class->dispose = gs_plugin_dispose;
 	object_class->finalize = gs_plugin_finalize;
-
-	/**
-	 * GsPlugin:flags:
-	 *
-	 * Flags which indicate various boolean properties of the plugin.
-	 *
-	 * These may change during the plugin’s lifetime.
-	 */
-	obj_props[PROP_FLAGS] =
-		g_param_spec_flags ("flags", NULL, NULL,
-				    GS_TYPE_PLUGIN_FLAGS, GS_PLUGIN_FLAGS_NONE,
-				    G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPlugin:scale:
