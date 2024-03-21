@@ -1873,6 +1873,8 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 		return gs_shell_show_event_file_to_app (shell, event);
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		return gs_shell_show_event_url_to_app (shell, event);
+	case GS_PLUGIN_ACTION_REFRESH_METADATA:
+		return gs_shell_show_event_refresh (shell, event);
 	default:
 		break;
 	}

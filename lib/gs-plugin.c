@@ -1535,6 +1535,8 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "repo-enable";
 	if (action == GS_PLUGIN_ACTION_DISABLE_REPO)
 		return "repo-disable";
+	if (action == GS_PLUGIN_ACTION_REFRESH_METADATA)
+		return "refresh-metadata";
 	return NULL;
 }
 
@@ -1583,6 +1585,8 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_ENABLE_REPO;
 	if (g_strcmp0 (action, "repo-disable") == 0)
 		return GS_PLUGIN_ACTION_DISABLE_REPO;
+	if (g_strcmp0 (action, "refresh-metadata") == 0)
+		return GS_PLUGIN_ACTION_REFRESH_METADATA;
 	return GS_PLUGIN_ACTION_UNKNOWN;
 }
 

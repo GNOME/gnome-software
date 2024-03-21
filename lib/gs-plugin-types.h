@@ -463,6 +463,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_REMOVE_REPO:		Remove a repository (Since: 41)
  * @GS_PLUGIN_ACTION_ENABLE_REPO:		Enable a repository (Since: 41)
  * @GS_PLUGIN_ACTION_DISABLE_REPO:		Disable a repository (Since: 41)
+ * @GS_PLUGIN_ACTION_REFRESH_METADATA:		Refresh metadata (Since: 47)
  *
  * The plugin action.
  **/
@@ -484,6 +485,7 @@ typedef enum {
 	GS_PLUGIN_ACTION_REMOVE_REPO,
 	GS_PLUGIN_ACTION_ENABLE_REPO,
 	GS_PLUGIN_ACTION_DISABLE_REPO,
+	GS_PLUGIN_ACTION_REFRESH_METADATA,
 	GS_PLUGIN_ACTION_LAST  /*< skip >*/
 } GsPluginAction;
 
