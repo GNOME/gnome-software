@@ -1282,6 +1282,7 @@ gs_plugin_loader_software_app_created_cb (GObject *source_object,
 				     "app", app,
 				     "error", error,
 				     NULL);
+	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 
 	gs_plugin_loader_add_event (plugin_loader, event);
 }
