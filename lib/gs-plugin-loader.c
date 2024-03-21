@@ -874,9 +874,6 @@ gs_plugin_loader_report_event_cb (GsPlugin *plugin,
 				  GsPluginEvent *event,
 				  GsPluginLoader *plugin_loader)
 {
-	GsPluginJob *plugin_job = gs_plugin_event_get_job (event);
-	if (plugin_job != NULL && gs_plugin_job_get_interactive (plugin_job))
-		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 	gs_plugin_loader_add_event (plugin_loader, event);
 }
 

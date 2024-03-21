@@ -1271,7 +1271,6 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	const gchar *details_message = NULL;
 	const gchar *suggested_details_text = NULL;
 	g_autofree gchar *str_origin = NULL;
-	GsPluginJob *job = gs_plugin_event_get_job (event);
 
 	/* ignore any errors from background downloads */
 	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
@@ -1315,14 +1314,8 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
-		if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job) &&
-		    !(gs_plugin_job_update_apps_get_flags (GS_PLUGIN_JOB_UPDATE_APPS (job)) & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
-			/* TRANSLATORS: failure text for the in-app notification */
-			toast_text = _("Unable to download updates");
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			toast_text = _("Unable to get list of updates");
-		}
+		/* TRANSLATORS: failure text for the in-app notification */
+		toast_text = _("Unable to get list of updates");
 		suggested_details_text = error->message;
 	}
 
@@ -1830,7 +1823,6 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 {
 	const GError *error;
 	GsPluginAction action;
-	GsPluginJob *job;
 
 	/* get error */
 	error = gs_plugin_event_get_error (event);
@@ -1843,16 +1835,6 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 						GS_TOAST_BUTTON_NONE, NULL, NULL);
 		return TRUE;
 	}
-
-	job = gs_plugin_event_get_job (event);
-	if (GS_IS_PLUGIN_JOB_REFRESH_METADATA (job))
-		return gs_shell_show_event_refresh (shell, event);
-	else if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job) &&
-		 !(gs_plugin_job_update_apps_get_flags (GS_PLUGIN_JOB_UPDATE_APPS (job)) & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD))
-		return gs_shell_show_event_refresh (shell, event);
-	else if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job) &&
-		 !(gs_plugin_job_update_apps_get_flags (GS_PLUGIN_JOB_UPDATE_APPS (job)) & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY))
-		return gs_shell_show_event_update (shell, event);
 
 	/* split up the events by action */
 	action = gs_plugin_event_get_action (event);
@@ -1875,6 +1857,8 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 		return gs_shell_show_event_url_to_app (shell, event);
 	case GS_PLUGIN_ACTION_REFRESH_METADATA:
 		return gs_shell_show_event_refresh (shell, event);
+	case GS_PLUGIN_ACTION_GET_UPDATES:
+		return gs_shell_show_event_update (shell, event);
 	default:
 		break;
 	}
