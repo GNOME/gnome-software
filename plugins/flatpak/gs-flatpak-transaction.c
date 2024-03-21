@@ -16,6 +16,7 @@ struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
 	GHashTable		*refhash;	/* ref:GsApp */
 	GError			*first_operation_error;
+	GsPluginAction		 action;
 	gboolean		 stop_on_first_error;
 };
 
@@ -30,9 +31,10 @@ G_DEFINE_TYPE (GsFlatpakTransaction, gs_flatpak_transaction, FLATPAK_TYPE_TRANSA
 
 typedef enum {
 	PROP_STOP_ON_FIRST_ERROR = 1,
+	PROP_ACTION,
 } GsFlatpakTransactionProperty;
 
-static GParamSpec *props[PROP_STOP_ON_FIRST_ERROR + 1] = { NULL, };
+static GParamSpec *props[PROP_ACTION + 1] = { NULL, };
 
 static void
 gs_flatpak_transaction_get_property (GObject    *object,
@@ -43,6 +45,9 @@ gs_flatpak_transaction_get_property (GObject    *object,
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (object);
 
 	switch ((GsFlatpakTransactionProperty) prop_id) {
+	case PROP_ACTION:
+		g_value_set_enum (value, self->action);
+		break;
 	case PROP_STOP_ON_FIRST_ERROR:
 		g_value_set_boolean (value, self->stop_on_first_error);
 		break;
@@ -61,6 +66,11 @@ gs_flatpak_transaction_set_property (GObject      *object,
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (object);
 
 	switch ((GsFlatpakTransactionProperty) prop_id) {
+	case PROP_ACTION:
+		/* Construct only. */
+		self->action = g_value_get_enum (value);
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
 	case PROP_STOP_ON_FIRST_ERROR:
 		/* Construct only. */
 		self->stop_on_first_error = g_value_get_boolean (value);
@@ -831,6 +841,21 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsFlatpakTransaction:action:
+	 *
+	 * A #GsPluginAction the transaction had been created for.
+	 *
+	 * Since: 47
+	 */
+	props[PROP_ACTION] =
+		g_param_spec_enum ("action",
+				   "Action",
+				   "A GsPluginAction the transaction had been created for.",
+				    GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 
 	signals[SIGNAL_REF_TO_APP] =
@@ -845,10 +870,12 @@ gs_flatpak_transaction_init (GsFlatpakTransaction *self)
 	self->refhash = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       g_free, (GDestroyNotify) g_object_unref);
 	self->stop_on_first_error = TRUE;
+	self->action = GS_PLUGIN_ACTION_UNKNOWN;
 }
 
 FlatpakTransaction *
-gs_flatpak_transaction_new (FlatpakInstallation	*installation,
+gs_flatpak_transaction_new (GsPluginAction action,
+			    FlatpakInstallation *installation,
 			    gboolean stop_on_first_error,
 			    GCancellable *cancellable,
 			    GError **error)
@@ -856,10 +883,18 @@ gs_flatpak_transaction_new (FlatpakInstallation	*installation,
 	GsFlatpakTransaction *self;
 	self = g_initable_new (GS_TYPE_FLATPAK_TRANSACTION,
 			       cancellable, error,
+			       "action", action,
 			       "installation", installation,
 			       "stop-on-first-error", stop_on_first_error,
 			       NULL);
 	if (self == NULL)
 		return NULL;
 	return FLATPAK_TRANSACTION (self);
+}
+
+GsPluginAction
+gs_flatpak_transaction_get_action (FlatpakTransaction *transaction)
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+	return self->action;
 }

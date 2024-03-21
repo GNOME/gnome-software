@@ -1489,7 +1489,8 @@ gs_flatpak_refresh_appstream (GsFlatpak     *self,
 			/* allow the plugin loader to decide if this should be
 			 * shown the user, possibly only for interactive jobs */
 			gs_flatpak_error_convert (&error_local);
-			event = gs_plugin_event_new ("error", error_local,
+			event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_REFRESH_METADATA,
+						     "error", error_local,
 						     NULL);
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -4258,7 +4259,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 		gs_flatpak_error_convert (&error_local);
 
-		event = gs_plugin_event_new ("app", app,
+		event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_FILE_TO_APP,
+					     "app", app,
 					     "error", error_local,
 					     NULL);
 		if (interactive)
@@ -4785,7 +4787,7 @@ gs_flatpak_purge_sync (GsFlatpak    *self,
 
 	if (unused_refs->len > 0) {
 		g_autoptr(FlatpakTransaction) transaction = NULL;
-		transaction = gs_flatpak_transaction_new (installation, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, cancellable, error);
+		transaction = gs_flatpak_transaction_new (GS_PLUGIN_ACTION_UNKNOWN, installation, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, cancellable, error);
 		if (transaction == NULL) {
 			g_prefix_error_literal (error, "failed to build transaction: ");
 			return FALSE;

@@ -953,7 +953,8 @@ _webflow_start (FlatpakTransaction *transaction,
 
 			gs_flatpak_error_convert (&error_local);
 
-			event = gs_plugin_event_new ("error", error_local,
+			event = gs_plugin_event_new ("action", gs_flatpak_transaction_get_action (transaction),
+						     "error", error_local,
 						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_report_event (plugin, event);
@@ -968,7 +969,8 @@ _webflow_start (FlatpakTransaction *transaction,
 
 			gs_flatpak_error_convert (&error_local);
 
-			event = gs_plugin_event_new ("error", error_local,
+			event = gs_plugin_event_new ("action", gs_flatpak_transaction_get_action (transaction),
+						     "error", error_local,
 						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_report_event (plugin, event);
@@ -995,6 +997,7 @@ _webflow_done (FlatpakTransaction *transaction,
  * repo is configured but doesn’t exist and can’t be created on disk. */
 static FlatpakTransaction *
 _build_transaction (GsPlugin      *plugin,
+		    GsPluginAction action,
                     GsFlatpak     *flatpak,
                     gboolean       stop_on_first_error,
                     gboolean       interactive,
@@ -1010,7 +1013,7 @@ _build_transaction (GsPlugin      *plugin,
 	installation_clone = g_object_ref (installation);
 
 	/* create transaction */
-	transaction = gs_flatpak_transaction_new (installation_clone, stop_on_first_error, cancellable, error);
+	transaction = gs_flatpak_transaction_new (action, installation_clone, stop_on_first_error, cancellable, error);
 	if (transaction == NULL) {
 		g_prefix_error (error, "failed to build transaction: ");
 		gs_flatpak_error_convert (error);
@@ -1155,7 +1158,9 @@ update_apps_thread_cb (GTask        *task,
 		 * This approach is the same as what the `flatpak` CLI uses in
 		 * `flatpak-builtins-update.c` in flatpak.
 		 */
-		transaction = _build_transaction (GS_PLUGIN (self), flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, interactive, cancellable, &local_error);
+		transaction = _build_transaction (GS_PLUGIN (self), GS_PLUGIN_ACTION_GET_UPDATES,
+						  flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS,
+						  interactive, cancellable, &local_error);
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
@@ -1169,7 +1174,8 @@ update_apps_thread_cb (GTask        *task,
 			 * be created, which is unlikely. */
 			gs_flatpak_error_convert (&local_error);
 
-			event = gs_plugin_event_new ("error", local_error,
+			event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_GET_UPDATES,
+						     "error", local_error,
 						     NULL);
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -1214,7 +1220,8 @@ update_apps_thread_cb (GTask        *task,
 
 				gs_flatpak_error_convert (&local_error);
 
-				event = gs_plugin_event_new ("error", local_error,
+				event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_GET_UPDATES,
+							     "error", local_error,
 							     "app", app,
 							     NULL);
 				if (interactive)
@@ -1255,7 +1262,8 @@ update_apps_thread_cb (GTask        *task,
 
 			gs_flatpak_error_convert (&local_error);
 
-			event = gs_plugin_event_new ("error", local_error,
+			event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_GET_UPDATES,
+						     "error", local_error,
 						     NULL);
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -1368,11 +1376,19 @@ gs_flatpak_cover_addons_in_transaction (GsPlugin *plugin,
 	}
 
 	if (errors) {
+		GsPluginAction action = GS_PLUGIN_ACTION_UNKNOWN;
 		g_autoptr(GsPluginEvent) event = NULL;
-		g_autoptr(GError) error_local = g_error_new_literal (GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
-			errors->str);
+		g_autoptr(GError) error_local = g_error_new_literal (GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED, errors->str);
 
-		event = gs_plugin_event_new ("error", error_local,
+		if (state == GS_APP_STATE_INSTALLING)
+			action = GS_PLUGIN_ACTION_INSTALL;
+		else if (state == GS_APP_STATE_REMOVING)
+			action = GS_PLUGIN_ACTION_REMOVE;
+		else
+			g_warn_if_reached ();
+
+		event = gs_plugin_event_new ("action", action,
+					     "error", error_local,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -1441,7 +1457,9 @@ remove_app_thread_cb (GTask *task,
 	}
 
 	/* build and run transaction */
-	transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, cancellable, &local_error);
+	transaction = _build_transaction (plugin, GS_PLUGIN_ACTION_REMOVE,
+					  flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR,
+					  interactive, cancellable, &local_error);
 	if (transaction == NULL) {
 		gs_flatpak_error_convert (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -1617,7 +1635,9 @@ install_app_thread_cb (GTask *task,
 	}
 
 	/* build */
-	transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, cancellable, &local_error);
+	transaction = _build_transaction (plugin, GS_PLUGIN_ACTION_REMOVE,
+					  flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR,
+					  interactive, cancellable, &local_error);
 	if (transaction == NULL) {
 		gs_flatpak_error_convert (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));

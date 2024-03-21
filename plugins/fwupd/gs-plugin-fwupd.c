@@ -1505,7 +1505,8 @@ install_install_cb (GObject      *source_object,
 
 		/* show the user this failed */
 		gs_plugin_fwupd_error_convert (&local_error);
-		event = gs_plugin_event_new ("app", self->app_current,
+		event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_INSTALL,
+					     "app", self->app_current,
 					     "error", local_error,
 					     NULL);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
@@ -1981,7 +1982,8 @@ finish_update_apps_op (GTask  *task,
 		g_prefix_error_literal (&event_error, _("Firmware update could not be applied: "));
 		gs_plugin_fwupd_error_convert (&event_error);
 
-		event = gs_plugin_event_new ("app", self->app_current,
+		event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_GET_UPDATES,
+					     "app", self->app_current,
 					     "error", event_error,
 					     NULL);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);

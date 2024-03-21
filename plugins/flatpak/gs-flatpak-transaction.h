@@ -22,10 +22,12 @@ typedef enum {
 
 G_DECLARE_FINAL_TYPE (GsFlatpakTransaction, gs_flatpak_transaction, GS, FLATPAK_TRANSACTION, FlatpakTransaction)
 
-FlatpakTransaction	*gs_flatpak_transaction_new		(FlatpakInstallation	*installation,
+FlatpakTransaction	*gs_flatpak_transaction_new		(GsPluginAction          action,
+								 FlatpakInstallation	*installation,
 								 gboolean		 stop_on_first_error,
 								 GCancellable		*cancellable,
 								 GError			**error);
+GsPluginAction		 gs_flatpak_transaction_get_action	(FlatpakTransaction	*transaction);
 GsApp			*gs_flatpak_transaction_get_app_by_ref	(FlatpakTransaction	*transaction,
 								 const gchar		*ref);
 void			 gs_flatpak_transaction_add_app		(FlatpakTransaction	*transaction,

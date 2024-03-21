@@ -4394,7 +4394,8 @@ download_get_updates_cb (GObject      *source_object,
 		if (local_error->domain == PK_CLIENT_ERROR) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
-			event = gs_plugin_event_new ("error", local_error,
+			event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_GET_UPDATES,
+						     "error", local_error,
 						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 			if (data->interactive)
@@ -4453,7 +4454,8 @@ download_update_packages_cb (GObject      *source_object,
 		if (local_error->domain == PK_CLIENT_ERROR) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
-			event = gs_plugin_event_new ("error", local_error,
+			event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_GET_UPDATES,
+						     "error", local_error,
 						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 			if (data->interactive)
