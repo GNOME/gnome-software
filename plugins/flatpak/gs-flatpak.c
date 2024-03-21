@@ -1491,6 +1491,8 @@ gs_flatpak_refresh_appstream (GsFlatpak     *self,
 			gs_flatpak_error_convert (&error_local);
 			event = gs_plugin_event_new ("error", error_local,
 						     NULL);
+			if (interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 			gs_plugin_report_event (self->plugin, event);
 			continue;
@@ -3616,6 +3618,8 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 
 		event = gs_plugin_event_new ("error", error_local,
 					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		gs_plugin_report_event (self->plugin, event);
 	}
@@ -4257,6 +4261,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		event = gs_plugin_event_new ("app", app,
 					     "error", error_local,
 					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		gs_plugin_report_event (self->plugin, event);
 		g_clear_error (&error_local);
