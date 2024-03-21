@@ -358,6 +358,7 @@ gs_plugin_job_get_langpacks_new (const gchar		  *locale,
 	g_return_val_if_fail (locale != NULL, NULL);
 
 	return g_object_new (GS_TYPE_PLUGIN_JOB_GET_LANGPACKS,
+			     "action", GS_PLUGIN_ACTION_GET_LANGPACKS,
 			     "locale", locale,
 			     "flags", flags,
 			     NULL);

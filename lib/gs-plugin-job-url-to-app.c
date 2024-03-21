@@ -444,6 +444,7 @@ gs_plugin_job_url_to_app_new (const gchar	   *url,
 	g_return_val_if_fail (url != NULL, NULL);
 
 	return g_object_new (GS_TYPE_PLUGIN_JOB_URL_TO_APP,
+			     "action", GS_PLUGIN_ACTION_URL_TO_APP,
 			     "url", url,
 			     "flags", flags,
 			     NULL);

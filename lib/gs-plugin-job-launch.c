@@ -307,6 +307,7 @@ gs_plugin_job_launch_new (GsApp *app,
 	g_return_val_if_fail (app == NULL || GS_IS_APP (app), NULL);
 
 	return g_object_new (GS_TYPE_PLUGIN_JOB_LAUNCH,
+			     "action", GS_PLUGIN_ACTION_LAUNCH,
 			     "app", app,
 			     "flags", flags,
 			     NULL);

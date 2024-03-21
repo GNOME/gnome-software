@@ -569,6 +569,7 @@ gs_plugin_job_update_apps_new (GsAppList               *apps,
                                GsPluginUpdateAppsFlags  flags)
 {
 	return g_object_new (GS_TYPE_PLUGIN_JOB_UPDATE_APPS,
+			     "action", GS_PLUGIN_ACTION_GET_UPDATES,
 			     "apps", apps,
 			     "flags", flags,
 			     NULL);

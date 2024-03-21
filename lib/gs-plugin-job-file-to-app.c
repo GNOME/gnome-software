@@ -400,6 +400,7 @@ gs_plugin_job_file_to_app_new (GFile		     *file,
 	g_return_val_if_fail (G_IS_FILE (file), NULL);
 
 	return g_object_new (GS_TYPE_PLUGIN_JOB_FILE_TO_APP,
+			     "action", GS_PLUGIN_ACTION_FILE_TO_APP,
 			     "file", file,
 			     "flags", flags,
 			     NULL);

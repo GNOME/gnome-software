@@ -308,6 +308,7 @@ gs_plugin_job_upgrade_trigger_new (GsApp *app,
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
 	return g_object_new (GS_TYPE_PLUGIN_JOB_UPGRADE_TRIGGER,
+			     "action", GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 			     "app", app,
 			     "flags", flags,
 			     NULL);

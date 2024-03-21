@@ -575,6 +575,7 @@ gs_plugin_job_refresh_metadata_new (guint64                      cache_age_secs,
                                     GsPluginRefreshMetadataFlags flags)
 {
 	return g_object_new (GS_TYPE_PLUGIN_JOB_REFRESH_METADATA,
+			     "action", GS_PLUGIN_ACTION_REFRESH_METADATA,
 			     "cache-age-secs", cache_age_secs,
 			     "flags", flags,
 			     NULL);

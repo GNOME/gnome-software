@@ -385,18 +385,24 @@ GsPluginJob *
 gs_plugin_job_manage_app_new (GsApp		     *app,
 			      GsPluginManageAppFlags  flags)
 {
+	GsPluginAction action = GS_PLUGIN_ACTION_UNKNOWN;
 	guint nops = 0;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
-	if ((flags & GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL) != 0)
+	if ((flags & GS_PLUGIN_MANAGE_APP_FLAGS_INSTALL) != 0) {
 		nops++;
-	if ((flags & GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE) != 0)
+		action = GS_PLUGIN_ACTION_INSTALL;
+	}
+	if ((flags & GS_PLUGIN_MANAGE_APP_FLAGS_REMOVE) != 0) {
 		nops++;
+		action = GS_PLUGIN_ACTION_REMOVE;
+	}
 
 	g_return_val_if_fail (nops == 1, NULL);
 
 	return g_object_new (GS_TYPE_PLUGIN_JOB_MANAGE_APP,
+			     "action", action,
 			     "app", app,
 			     "flags", flags,
 			     NULL);
