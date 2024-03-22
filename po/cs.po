@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-03-15 07:24+0000\n"
-"PO-Revision-Date: 2024-03-15 10:36+0100\n"
+"POT-Creation-Date: 2024-03-19 11:46+0000\n"
+"PO-Revision-Date: 2024-03-22 20:26+0100\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -75,7 +75,7 @@ msgid "The update details"
 msgstr "Podrobnosti o aktualizaci"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2477
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2506
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
@@ -1531,8 +1531,8 @@ msgstr "Odinstalovat…"
 msgid "Uninstalling"
 msgstr "Odinstalovává se"
 
-#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:152
-#: src/gs-os-update-page.c:155 src/gs-os-update-page.c:182
+#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:154
+#: src/gs-os-update-page.c:157 src/gs-os-update-page.c:184
 msgid "Critical update"
 msgstr "Kritická aktualizace"
 
@@ -3368,36 +3368,28 @@ msgstr "Neznámý zdroj"
 msgid "Beta"
 msgstr "Beta"
 
-#. TRANSLATORS: This is the accessibility label for the row. First %s is
-#. * the name, second is a message signifying whether the update is
-#. * critical, and the last placeholder represents the version.
-#: src/gs-os-update-page.c:186
-#, c-format
-msgid "%s %s %s"
-msgstr "%s %s %s"
-
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:268
+#: src/gs-os-update-page.c:285
 msgid "Additions"
 msgstr "Přidávání"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:272
+#: src/gs-os-update-page.c:289
 msgid "Removals"
 msgstr "Odstraňování"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:276
+#: src/gs-os-update-page.c:293
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Aktualizace"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:280
+#: src/gs-os-update-page.c:297
 msgid "Downgrades"
 msgstr "Ponižování"
 
@@ -3641,7 +3633,7 @@ msgstr "Nekompatibilní software"
 
 #: src/gs-removal-dialog.ui:35
 msgid "_Upgrade"
-msgstr "_Aktualizovat"
+msgstr "_Povýšit"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
 #: src/gs-repos-dialog.c:245
@@ -5322,7 +5314,7 @@ msgstr "Povýšení na novou verzi s novými funkcemi a vylepšeními."
 
 #: src/gs-upgrade-banner.ui:187
 msgid "_Restart & Upgrade…"
-msgstr "_Restartovat a aktualizovat…"
+msgstr "_Restartovat a povýšit…"
 
 #: src/gs-upgrade-banner.ui:215
 msgid "Remember to back up data and files before upgrading."
@@ -5887,6 +5879,10 @@ msgstr "Podpora pro Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap je univerzální linuxový balíček"
+
+#, c-format
+#~ msgid "%s %s %s"
+#~ msgstr "%s %s %s"
 
 #~ msgid "An important software update is ready to be installed."
 #~ msgstr "K instalaci je připravena důležitá aktualizace softwaru."
