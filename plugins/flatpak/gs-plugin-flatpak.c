@@ -778,6 +778,7 @@ static GsApp *
 gs_plugin_flatpak_find_app_by_ref (GsPluginFlatpak  *self,
                                    const gchar      *ref,
                                    gboolean          interactive,
+                                   GsApp            *alternate_of,
                                    GCancellable     *cancellable,
                                    GError          **error)
 {
@@ -790,6 +791,10 @@ gs_plugin_flatpak_find_app_by_ref (GsPluginFlatpak  *self,
 		app = gs_flatpak_ref_to_app (flatpak_tmp, ref, interactive, cancellable, &error_local);
 		if (app == NULL) {
 			g_debug ("%s", error_local->message);
+			continue;
+		}
+		if (alternate_of != NULL && alternate_of == app) {
+			g_debug ("skipping ref=%s->%s, due to being alternate_of", ref, gs_app_get_unique_id (app));
 			continue;
 		}
 		g_debug ("found ref=%s->%s", ref, gs_app_get_unique_id (app));
@@ -811,7 +816,7 @@ _ref_to_app (FlatpakTransaction *transaction,
 	/* search through each GsFlatpak */
 	return gs_plugin_flatpak_find_app_by_ref (self, ref,
 						  gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE),
-						  NULL, NULL);
+						  NULL, NULL, NULL);
 }
 
 static void
@@ -1739,6 +1744,7 @@ static GsApp *
 gs_plugin_flatpak_file_to_app_bundle (GsPluginFlatpak  *self,
                                       GFile            *file,
                                       gboolean          interactive,
+                                      GsApp            *alternate_of,
                                       GCancellable     *cancellable,
                                       GError          **error)
 {
@@ -1761,7 +1767,7 @@ gs_plugin_flatpak_file_to_app_bundle (GsPluginFlatpak  *self,
 
 	/* is this already installed or available in a configured remote */
 	ref = gs_flatpak_app_get_ref_display (app);
-	app_tmp = gs_plugin_flatpak_find_app_by_ref (self, ref, interactive, cancellable, NULL);
+	app_tmp = gs_plugin_flatpak_find_app_by_ref (self, ref, interactive, alternate_of, cancellable, NULL);
 	if (app_tmp != NULL)
 		return g_steal_pointer (&app_tmp);
 
@@ -1787,6 +1793,7 @@ static GsApp *
 gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
                                    GFile            *file,
                                    gboolean          interactive,
+                                   GsApp            *alternate_of,
                                    GCancellable     *cancellable,
                                    GError          **error)
 {
@@ -1809,7 +1816,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
 
 	/* is this already installed or available in a configured remote */
 	ref = gs_flatpak_app_get_ref_display (app);
-	app_tmp = gs_plugin_flatpak_find_app_by_ref (self, ref, interactive, cancellable, NULL);
+	app_tmp = gs_plugin_flatpak_find_app_by_ref (self, ref, interactive, alternate_of, cancellable, NULL);
 	if (app_tmp != NULL)
 		return g_steal_pointer (&app_tmp);
 
@@ -1831,6 +1838,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
 		runtime_tmp = gs_plugin_flatpak_find_app_by_ref (self,
 								 runtime_ref,
 								 interactive,
+								 alternate_of,
 								 cancellable,
 								 NULL);
 		if (runtime_tmp != NULL) {
@@ -1850,6 +1858,7 @@ static GsApp * /* (transfer full) */
 gs_plugin_flatpak_file_to_app (GsPluginFlatpak *self,
 			       GFile *file,
 			       gboolean interactive,
+			       GsApp *alternate_of,
 			       GCancellable *cancellable,
 			       GError **error)
 {
@@ -1871,11 +1880,11 @@ gs_plugin_flatpak_file_to_app (GsPluginFlatpak *self,
 		return NULL;
 
 	if (g_strv_contains (mimetypes_bundle, content_type))
-		app = gs_plugin_flatpak_file_to_app_bundle (self, file, interactive, cancellable, error);
+		app = gs_plugin_flatpak_file_to_app_bundle (self, file, interactive, alternate_of, cancellable, error);
 	else if (g_strv_contains (mimetypes_repo, content_type))
 		app = gs_plugin_flatpak_file_to_app_repo (self, file, interactive, cancellable, error);
 	else if (g_strv_contains (mimetypes_ref, content_type))
-		app = gs_plugin_flatpak_file_to_app_ref (self, file, interactive, cancellable, error);
+		app = gs_plugin_flatpak_file_to_app_ref (self, file, interactive, alternate_of, cancellable, error);
 
 	if (app != NULL) {
 		GsApp *runtime = gs_app_get_runtime (app);
@@ -1902,7 +1911,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
-	app = gs_plugin_flatpak_file_to_app (self, file, interactive, cancellable, error);
+	app = gs_plugin_flatpak_file_to_app (self, file, interactive, NULL, cancellable, error);
 	if (app != NULL)
 		gs_app_list_add (list, app);
 
@@ -2074,18 +2083,15 @@ list_apps_thread_cb (GTask        *task,
 	    gs_app_get_local_file (alternate_of) != NULL) {
 		g_autoptr(GsApp) app = NULL;
 		GFile *file = gs_app_get_local_file (alternate_of);
-		app = gs_plugin_flatpak_file_to_app (self, file, interactive, cancellable, NULL);
-		if (app != NULL) {
+		app = gs_plugin_flatpak_file_to_app (self, file, interactive, alternate_of, cancellable, NULL);
+		if (app != NULL && app != alternate_of) {
 			gs_app_set_local_file (app, file);
-			if (gs_app_get_scope (app) == gs_app_get_scope (alternate_of)) {
-				if (gs_app_get_scope (alternate_of) == AS_COMPONENT_SCOPE_SYSTEM)
-					gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
-				else
-					gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-			} else {
-				/* to have both scopes in the list */
-				gs_app_set_scope (app, gs_app_get_scope (alternate_of));
-			}
+			if (gs_app_get_scope (alternate_of) == AS_COMPONENT_SCOPE_SYSTEM)
+				gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
+			else
+				gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+			/* ensure both are considered */
+			gs_app_list_add (list, alternate_of);
 			gs_app_list_add (list, app);
 		}
 	}
