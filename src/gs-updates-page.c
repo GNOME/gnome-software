@@ -23,6 +23,11 @@
 #include "gs-upgrade-banner.h"
 #include "gs-application.h"
 
+/* The "updates-changed" is delays by 3 seconds; give it twice time to be delivered
+   and the page reload ignored when the signal comes within this time limit. It's
+   because the plugins can emit the signal when the they are refreshing metadata. */
+#define IGNORE_UPDATES_CHANGED_WITHIN_SECS 6
+
 typedef enum {
 	GS_UPDATES_PAGE_FLAG_NONE		= 0,
 	GS_UPDATES_PAGE_FLAG_HAS_UPDATES	= 1 << 0,
@@ -83,6 +88,7 @@ struct _GsUpdatesPage
 	GsUpdatesSection	*sections[GS_UPDATES_SECTION_KIND_LAST];
 
 	guint			 refresh_last_checked_id;
+	gint64			 last_loaded_time;
 };
 
 enum {
@@ -452,6 +458,8 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 		refresh_headerbar_updates_counter (self);
 		return;
 	}
+
+	self->last_loaded_time = g_get_real_time ();
 
 	/* add the results */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -1138,13 +1146,21 @@ static void
 gs_updates_page_changed_cb (GsPluginLoader *plugin_loader,
                             GsUpdatesPage *self)
 {
+	gint64 diff_secs;
+
 	/* if we do a live update and the upgrade is waiting to be deployed
 	 * then make sure all new packages are downloaded */
 	gs_updates_page_invalidate_downloaded_upgrade (self);
 
 	/* check to see if any apps in the app list are in a processing state */
 	if (gs_shell_update_are_updates_in_progress (self)) {
-		g_debug ("ignoring updates-changed as updates in progress");
+		g_debug ("updates-page: ignoring updates-changed as updates in progress");
+		return;
+	}
+
+	diff_secs = (g_get_real_time () - self->last_loaded_time) / G_USEC_PER_SEC;
+	if (diff_secs <= IGNORE_UPDATES_CHANGED_WITHIN_SECS) {
+		g_debug ("updates-page: ignoring updates-changed as did load only %" G_GINT64_FORMAT " secs ago", diff_secs);
 		return;
 	}
 
