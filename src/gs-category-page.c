@@ -658,25 +658,27 @@ gs_category_page_load_category (GsCategoryPage *self)
 	/* Add placeholders only when the content is not valid */
 	if (!self->content_valid) {
 		gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), NULL);
-		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
-						   MIN (30, gs_category_get_size (self->subcategory)));
-		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENT_APPS_TO_DISPLAY);
-		gtk_widget_set_visible (self->top_carousel, TRUE);
-		gtk_widget_set_visible (self->category_detail_box, TRUE);
-		gtk_widget_set_visible (self->recently_updated_flow_box, TRUE);
-
-		if (gs_plugin_loader_get_enabled (self->plugin_loader, "epiphany"))
-			gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->web_apps_flow_box), 12);
+		gtk_widget_set_visible (self->web_apps_flow_box, FALSE);
+		gtk_widget_set_visible (self->other_heading, FALSE);
 
 		if (featured_subcat != NULL) {
+			gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENT_APPS_TO_DISPLAY);
+
 			/* set up the placeholders as having the featured category is a good
 			 * indicator that there will be featured apps */
 			gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 6);
+			gtk_widget_set_visible (self->top_carousel, TRUE);
 			gtk_widget_set_visible (self->featured_flow_box, TRUE);
+			gtk_widget_set_visible (self->recently_updated_flow_box, TRUE);
+			gtk_widget_set_visible (self->category_detail_box, FALSE);
 		} else {
+			gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
+							   MIN (30, gs_category_get_size (self->subcategory)));
 			gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
-			gtk_widget_set_visible (self->featured_flow_box, FALSE);
 			gtk_widget_set_visible (self->top_carousel, FALSE);
+			gtk_widget_set_visible (self->featured_flow_box, FALSE);
+			gtk_widget_set_visible (self->recently_updated_flow_box, FALSE);
+			gtk_widget_set_visible (self->category_detail_box, TRUE);
 		}
 	}
 
