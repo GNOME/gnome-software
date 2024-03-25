@@ -15,9 +15,12 @@
 #include "gs-star-image.h"
 #include "gs-star-widget.h"
 
+#define STAR_SPACING     2 	/* pixels */
+
 typedef struct
 {
 	gboolean	 interactive;
+	gint		 selected_rating;
 	gint		 rating;
 	guint		 icon_size;
 	GtkWidget	*box1;
@@ -82,6 +85,42 @@ gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 						     "GsStarWidget::value"));
 	gs_star_widget_set_rating (star, rating);
 	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
+	priv->selected_rating = priv->rating;
+}
+
+static void
+gs_star_widget_button_entered_cb (GtkEventControllerMotion *controller,
+				  gdouble x, gdouble y,
+				  GsStarWidget *star)
+{
+	GsStarWidgetPrivate *priv;
+	gint rating;
+	GtkWidget *button;
+
+	priv = gs_star_widget_get_instance_private (star);
+	if (!priv->interactive)
+		return;
+
+	button = gtk_event_controller_get_widget (GTK_EVENT_CONTROLLER (controller));
+	rating = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
+						     "GsStarWidget::value"));
+	gs_star_widget_set_rating (star, rating);
+	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
+}
+
+static void
+gs_star_widget_button_left_cb (GtkEventControllerMotion *controller,
+			       gdouble x, gdouble y,
+			       GsStarWidget *star)
+{
+	GsStarWidgetPrivate *priv;
+
+	priv = gs_star_widget_get_instance_private (star);
+	if (!priv->interactive)
+		return;
+
+	gs_star_widget_set_rating (star, priv->selected_rating > 0 ? priv->selected_rating: 0);
+	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
 }
 
 /* Round to one digit, the same as the GsReviewHistogram */
@@ -132,10 +171,20 @@ gs_star_widget_refresh (GsStarWidget *star)
 		im = gs_star_image_new ();
 		gs_star_image_set_pixel_size (GS_STAR_IMAGE (im), (gint) priv->icon_size);
 
+		/* Add right margin for all but the last star. We use
+		 * this rather than GtkBox child 'spacing' property,
+		 * so the motion controllers attached to the buttons
+		 * will not trigger a 'leave' signal once the pointer
+		 * moves into the GtkBox 'spacing' area between the
+		 * stars, clearing the star selection */
+		if (i < G_N_ELEMENTS (priv->images) - 1)
+			gtk_widget_set_margin_end (im, STAR_SPACING);
+
 		priv->images[i] = im;
 
 		/* create button */
 		if (priv->interactive) {
+			GtkEventController *controller;
 			w = gtk_button_new ();
 			g_signal_connect (w, "clicked",
 					  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
@@ -144,6 +193,12 @@ gs_star_widget_refresh (GsStarWidget *star)
 					   GINT_TO_POINTER (rate_to_star[i]));
 			gtk_button_set_child (GTK_BUTTON (w), im);
 			gtk_widget_set_visible (im, TRUE);
+			controller = gtk_event_controller_motion_new ();
+			gtk_widget_add_controller (w, controller);
+			g_signal_connect (controller, "enter",
+					  G_CALLBACK (gs_star_widget_button_entered_cb), star);
+			g_signal_connect (controller, "leave",
+					  G_CALLBACK (gs_star_widget_button_left_cb), star);
 		} else {
 			w = im;
 		}
