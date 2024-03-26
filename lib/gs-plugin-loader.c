@@ -236,7 +236,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 {
 	/* reset progress */
 	switch (gs_plugin_job_get_action (helper->plugin_job)) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 		{
 			GsApp *app;
@@ -571,7 +570,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	GsPluginLoader *plugin_loader = helper->plugin_loader;
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	gboolean ret = TRUE;
 	gpointer func = NULL;
@@ -608,7 +606,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
@@ -672,12 +669,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 							plugin,
 							error_local,
 							error);
-	}
-
-	/* add app to the pending installation queue if necessary */
-	if (action == GS_PLUGIN_ACTION_INSTALL &&
-	    app != NULL && gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
-	        add_app_to_install_queue (plugin_loader, app);
 	}
 
 	GS_PROFILER_END_SCOPED (PluginLoader);
@@ -1045,27 +1036,26 @@ emit_pending_apps_idle (gpointer loader)
 
 static void
 gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
-				   GsPluginLoaderHelper *helper)
+                                   GsPluginJob    *plugin_job)
 {
-	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
+	GsAppList *list;
 
-	g_assert (gs_app_list_length (list) > 0);
+	if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job)) {
+		list = gs_plugin_job_install_apps_get_apps (GS_PLUGIN_JOB_INSTALL_APPS (plugin_job));
+		g_assert (gs_app_list_length (list) > 0);
 
-	switch (gs_plugin_job_get_action (helper->plugin_job)) {
-	case GS_PLUGIN_ACTION_INSTALL:
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
 			if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE_LOCAL)
 				add_app_to_install_queue (plugin_loader, app);
-			/* make sure the progress is properly initialized */
-			gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 		}
-		break;
-	case GS_PLUGIN_ACTION_REMOVE:
+	} else if (gs_plugin_job_get_action (plugin_job) == GS_PLUGIN_ACTION_REMOVE) {
+		list = gs_plugin_job_get_list (plugin_job);
+		g_assert (gs_app_list_length (list) > 0);
+
 		remove_apps_from_install_queue (plugin_loader, list);
-		break;
-	default:
-		break;
+	} else {
+		g_assert_not_reached ();
 	}
 
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
@@ -1073,9 +1063,16 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 
 static void
 gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
-				      GsPluginLoaderHelper *helper)
+                                      GsPluginJob    *plugin_job)
 {
-	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
+	GsAppList *list;
+
+	if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job))
+		list = gs_plugin_job_install_apps_get_apps (GS_PLUGIN_JOB_INSTALL_APPS (plugin_job));
+	else if (gs_plugin_job_get_action (plugin_job) == GS_PLUGIN_ACTION_REMOVE)
+		list = gs_plugin_job_get_list (plugin_job);
+	else
+		g_assert_not_reached ();
 
 	g_assert (gs_app_list_length (list) > 0);
 
@@ -2907,23 +2904,26 @@ gs_plugin_loader_new (GDBusConnection *session_bus_connection,
 }
 
 static void
-gs_plugin_loader_app_installed_cb (GObject *source,
-				   GAsyncResult *res,
-				   gpointer user_data)
+gs_plugin_loader_apps_installed_cb (GObject *source,
+				    GAsyncResult *res,
+				    gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsApp) app = GS_APP (user_data);
+	g_autoptr(GsAppList) apps = GS_APP_LIST (user_data);
 
 	ret = gs_plugin_loader_job_action_finish (plugin_loader,
-						   res,
-						   &error);
-	remove_app_from_install_queue (plugin_loader, app);
+						  res,
+						  &error);
+	remove_apps_from_install_queue (plugin_loader, apps);
 	if (!ret) {
-		gs_app_set_state_recover (app);
-		g_warning ("failed to install %s: %s",
-			   gs_app_get_unique_id (app), error->message);
+		for (guint i = 0; i < gs_app_list_length (apps); i++) {
+			GsApp *app = gs_app_list_index (apps, i);
+			gs_app_set_state_recover (app);
+			g_warning ("failed to install %s: %s",
+				   gs_app_get_unique_id (app), error->message);
+		}
 	}
 }
 
@@ -2993,6 +2993,7 @@ gs_plugin_loader_pending_apps_refined_cb (GObject      *source,
 	g_autoptr(GsAppList) old_queue = GS_APP_LIST (user_data);
 	g_autoptr(GsAppList) refined_queue = NULL;
 	g_autoptr(GsAppList) to_remove = NULL;
+	g_autoptr(GsAppList) to_install = NULL;
 	g_autoptr(GError) error = NULL;
 
 	refined_queue = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
@@ -3025,26 +3026,39 @@ gs_plugin_loader_pending_apps_refined_cb (GObject      *source,
 	if (gs_app_list_length (to_remove) > 0)
 		remove_apps_from_install_queue (plugin_loader, to_remove);
 
+	/* Install apps */
+	to_install = gs_app_list_new ();
+
 	for (guint i = 0; i < gs_app_list_length (refined_queue); i++) {
 		GsApp *app = gs_app_list_index (refined_queue, i);
-		g_autoptr(GsPluginJob) plugin_job = NULL;
 
 		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
+			g_autoptr(GsPluginJob) plugin_job = NULL;
+			g_autoptr(GsAppList) single_element_app_list = gs_app_list_new ();
+			gs_app_list_add (single_element_app_list, app);
+
 			plugin_job = gs_plugin_job_manage_repository_new (app,
 									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE |
 									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
+			gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
+							    plugin_loader->pending_apps_cancellable,
+							    gs_plugin_loader_apps_installed_cb,
+							    g_steal_pointer (&single_element_app_list));
 		} else {
-			/* The 'interactive' is needed for credentials prompt, otherwise it just fails */
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-							 "app", app,
-							 "interactive", TRUE,
-							 NULL);
+			gs_app_list_add (to_install, app);
 		}
+	}
 
+	if (gs_app_list_length (to_install) > 0) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		/* The 'interactive' is needed for credentials prompt, otherwise it just fails */
+		plugin_job = gs_plugin_job_install_apps_new (to_install,
+							     GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE);
 		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
-						    gs_app_get_cancellable (app),
-						    gs_plugin_loader_app_installed_cb,
-						    g_object_ref (app));
+						    plugin_loader->pending_apps_cancellable,
+						    gs_plugin_loader_apps_installed_cb,
+						    g_steal_pointer (&to_install));
 	}
 
 	g_clear_object (&plugin_loader->pending_apps_cancellable);
@@ -3200,9 +3214,8 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	GS_PROFILER_BEGIN_SCOPED (PluginLoader, sysprof_name, sysprof_message);
 
-	/* these change the pending count on the installed panel */
+	/* this changes the pending count on the installed panel */
 	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 		add_to_pending_array = TRUE;
 		break;
@@ -3212,14 +3225,14 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* add to pending list */
 	if (add_to_pending_array)
-		gs_plugin_loader_pending_apps_add (plugin_loader, helper);
+		gs_plugin_loader_pending_apps_add (plugin_loader, helper->plugin_job);
 
 	/* run each plugin */
 	if (!GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job)) {
 		if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
 			if (add_to_pending_array) {
 				gs_app_set_state_recover (gs_plugin_job_get_app (helper->plugin_job));
-				gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
+				gs_plugin_loader_pending_apps_remove (plugin_loader, helper->plugin_job);
 			}
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
@@ -3255,29 +3268,24 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* remove from pending list */
 	if (add_to_pending_array) {
-		GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
+		g_autoptr(GsAppList) addons = NULL;
+
 		/* The plugin can left the app queued for install when there is no network available,
 		   in which case the app cannot be removed from the install queue. */
-		if (action != GS_PLUGIN_ACTION_INSTALL ||
-		    gs_app_get_state (app) != GS_APP_STATE_QUEUED_FOR_INSTALL) {
-			g_autoptr(GsAppList) addons = NULL;
+		gs_plugin_loader_pending_apps_remove (plugin_loader, helper->plugin_job);
 
-			gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
-
-			/* unstage addons */
-			addons = gs_app_dup_addons (gs_plugin_job_get_app (helper->plugin_job));
-			for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-				GsApp *addon = gs_app_list_index (addons, i);
-				if (gs_app_get_to_be_installed (addon))
-					gs_app_set_to_be_installed (addon, FALSE);
-			}
+		/* unstage addons */
+		addons = gs_app_dup_addons (gs_plugin_job_get_app (helper->plugin_job));
+		for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
+			GsApp *addon = gs_app_list_index (addons, i);
+			if (gs_app_get_to_be_installed (addon))
+				gs_app_set_to_be_installed (addon, FALSE);
 		}
 	}
 
 	/* some functions are really required for proper operation */
 	switch (action) {
 	case GS_PLUGIN_ACTION_GET_UPDATES:
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_REMOVE:
 		if (!helper->anything_ran) {
@@ -3316,7 +3324,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* pick up new source id */
 	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 		gs_plugin_job_add_refine_flags (helper->plugin_job,
 		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
@@ -3507,10 +3514,6 @@ gs_plugin_loader_schedule_task (GsPluginLoader *plugin_loader,
 		/* set the pending-action to the app */
 		GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 		gs_app_set_pending_action (app, action);
-
-		if (action == GS_PLUGIN_ACTION_INSTALL &&
-		    gs_app_get_state (app) != GS_APP_STATE_AVAILABLE_LOCAL)
-			add_app_to_install_queue (plugin_loader, app);
 	}
 	g_thread_pool_push (plugin_loader->queued_ops_pool, g_object_ref (task), NULL);
 }
@@ -3523,6 +3526,7 @@ run_job_cb (GObject      *source_object,
 	GsPluginJob *plugin_job = GS_PLUGIN_JOB (source_object);
 	GsPluginJobClass *job_class;
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (g_task_get_source_object (task));
 	g_autoptr(GError) local_error = NULL;
 
 	GS_PROFILER_ADD_MARK_TAKE (PluginLoader,
@@ -3537,6 +3541,9 @@ run_job_cb (GObject      *source_object,
 	g_assert (job_class->run_finish != NULL);
 
 	if (!job_class->run_finish (plugin_job, result, &local_error)) {
+		if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job))
+			gs_plugin_loader_pending_apps_remove (plugin_loader, plugin_job);
+
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -3561,10 +3568,38 @@ run_job_cb (GObject      *source_object,
 		 * job_process_async() does. */
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
 		return;
+	} else if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job)) {
+		/* add apps to the pending installation queue if necessary */
+		GsAppList *apps = gs_plugin_job_install_apps_get_apps (GS_PLUGIN_JOB_INSTALL_APPS (plugin_job));
+		for (guint i = 0; i < gs_app_list_length (apps); i++) {
+			GsApp *app = gs_app_list_index (apps, i);
+
+			if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
+				add_app_to_install_queue (plugin_loader, app);
+			} else {
+				/* The plugin can left the app queued for install when there is no network available,
+				   in which case the app cannot be removed from the install queue. */
+				g_autoptr(GsAppList) addons = NULL;
+
+				gs_plugin_loader_pending_apps_remove (plugin_loader, plugin_job);
+
+				/* unstage addons */
+				addons = gs_app_dup_addons (app);
+				for (guint j = 0; addons != NULL && j < gs_app_list_length (addons); j++) {
+					GsApp *addon = gs_app_list_index (addons, j);
+					if (gs_app_get_to_be_installed (addon))
+						gs_app_set_to_be_installed (addon, FALSE);
+				}
+			}
+		}
+
+		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
+		 * pointer on success, thus return it. */
+		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+		return;
 	} else if (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (plugin_job) ||
 		   GS_IS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job)) {
+		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job)) {
 		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
 		 * pointer on success, thus return it. */
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
@@ -3730,6 +3765,10 @@ job_process_cb (GTask *task)
 		g_task_set_task_data (task, GSIZE_TO_POINTER (begin_time_nsec), NULL);
 #endif
 
+		/* these change the pending count on the installed panel */
+		if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job))
+			gs_plugin_loader_pending_apps_add (plugin_loader, plugin_job);
+
 		job_class->run_async (plugin_job, plugin_loader, cancellable,
 				      run_job_cb, g_object_ref (task));
 		return;
@@ -3802,7 +3841,6 @@ job_process_cb (GTask *task)
 	g_task_set_return_on_cancel (task, FALSE);
 
 	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 		/* these actions must be performed by the thread pool because we
 		 * want to limit the number of them running in parallel */
