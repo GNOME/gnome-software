@@ -1,7 +1,7 @@
 project('gnome-software', 'c',
   version : '47.alpha',
   license : 'GPL-2.0-or-later',
-  default_options : ['warning_level=1', 'c_std=c11'],
+  default_options : ['warning_level=2', 'c_std=c11'],
   meson_version : '>=0.58.0'
 )
 
@@ -41,7 +41,6 @@ test_args = [
   '-Wclobbered',
   '-Wdeclaration-after-statement',
   '-Wempty-body',
-  '-Wextra',
   '-Wformat=2',
   '-Wformat-nonliteral',
   '-Wformat-security',
