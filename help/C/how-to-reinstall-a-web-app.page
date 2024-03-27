@@ -1,0 +1,29 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic" id="how-to-reinstall-a-web-app">
+
+  <info>
+    <link type="guide" xref="index"/>
+    <desc>How to reinstall a Webapp</desc>
+  </info>
+
+  <title>How to reinstall a Webapp</title>
+
+  <section id="introduction">
+    <p>GNOME Software supports managing two types of web apps:</p>
+    <list type="numbered">
+      <item><p>Web apps for which AppStream metainfo has been shipped with Software. See <link href="https://gitlab.gnome.org/mwleeds/gnome-pwa-list/-/blob/main/README.md">README.md</link></p></item>
+      <item><p>Web apps which have been installed using <link href="https://apps.gnome.org/app/org.gnome.Epiphany/">GNOME Web</link></p></item>
+    </list>
+    <p>The first type are displayed as available to install in Software (when this functionality has been enabled by the distribution), whereas the second type only show up in Software after they have been installed in Web. If you uninstall such an app and want to reinstall it, you must do so using GNOME Web.</p>
+
+    <p>Here are the steps to follow to install a web app using GNOME Web:</p>
+    <list type="numbered">
+      <item><p>Navigate to the app's URL in Web, click the menu in the top right, and click on "Install Site as Web Application..."</p></item>
+      <item><p>Click the "Create" button to install the web app.</p></item>
+    </list>
+    <media type="image" src="uploads/4d9b9925e6a4b051fcdad9d95f3a0b7e/Screenshot_from_2022-05-16_13-14-47.png" mime="image/png" width="800"/>
+    <media type="image" src="uploads/6abbc6bbd9f18d4f889efff8dc80ad7e/Screenshot_from_2022-05-16_13-16-21.png" mime="image/png" width="400"/>
+    <p>The web app should now show up in Software's "Installed" tab.</p>
+  </section>
+
+</page>
