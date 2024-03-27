@@ -1047,7 +1047,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				if (!gs_app_get_has_translations (app)) {
 					g_autoptr(XbNode) langs_child = NULL;
 					g_autoptr(XbNode) langs_next = NULL;
-					g_auto(GStrv) variants = g_get_locale_variants (tmp);
+					g_auto(GStrv) variants = g_get_locale_variants (setlocale (LC_MESSAGES, NULL));
 
 					for (langs_child = xb_node_get_child (child); langs_child != NULL; g_object_unref (langs_child), langs_child = g_steal_pointer (&langs_next)) {
 						langs_next = xb_node_get_next (langs_child);
