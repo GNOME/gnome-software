@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-03-15 07:24+0000\n"
-"PO-Revision-Date: 2024-03-15 09:56+0100\n"
+"POT-Creation-Date: 2024-03-26 22:36+0000\n"
+"PO-Revision-Date: 2024-03-27 05:17+0100\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -70,7 +70,7 @@ msgid "The update details"
 msgstr "განახლების დეტალები"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2477
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2506
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "პროექტი \"GNOME\""
@@ -806,7 +806,7 @@ msgstr "ასაკის რეიტინგი"
 msgid "How to contribute missing information"
 msgstr "როგორ მოგაწოდოთ ნაკლული ინფორმაცია"
 
-#: lib/gs-app.c:6339
+#: lib/gs-app.c:6336
 msgid "Local file"
 msgstr "ლოკალური ფაილი"
 
@@ -815,13 +815,13 @@ msgstr "ლოკალური ფაილი"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6358 src/gs-safety-context-dialog.c:539
+#: lib/gs-app.c:6355 src/gs-safety-context-dialog.c:539
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6435 src/gs-safety-context-dialog.c:776
+#: lib/gs-app.c:6432 src/gs-safety-context-dialog.c:776
 #: src/gs-safety-context-dialog.ui:180
 msgid "Package"
 msgstr "პაკეტი"
@@ -1521,8 +1521,8 @@ msgstr "წაშლა…"
 msgid "Uninstalling"
 msgstr "წაშლა"
 
-#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:152
-#: src/gs-os-update-page.c:155 src/gs-os-update-page.c:182
+#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:154
+#: src/gs-os-update-page.c:157 src/gs-os-update-page.c:184
 msgid "Critical update"
 msgstr "კრიტიკული განახლება"
 
@@ -1602,7 +1602,7 @@ msgstr "შესვლა აუცილებელია"
 #: src/gs-basic-auth-dialog.ui:14 src/gs-common.c:296 src/gs-common.c:748
 #: src/gs-details-page.ui:331 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:26 src/gs-repos-dialog.c:175
-#: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:27 src/gs-review-row.c:241
+#: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:27 src/gs-review-row.c:243
 #: src/gs-updates-page.c:854 src/gs-updates-page.c:871
 #: src/gs-upgrade-banner.ui:201
 msgid "_Cancel"
@@ -3289,8 +3289,8 @@ msgstr ""
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
-msgid "Downloading Software Catalog"
-msgstr "პროგრამების კატალოგის გადმოწერა"
+msgid "Refreshing Data"
+msgstr "მონაცემების განახლება"
 
 #: src/gs-loading-page.ui:6
 msgid "Loading page"
@@ -3317,37 +3317,28 @@ msgstr "უცნობი წყარო"
 msgid "Beta"
 msgstr "ბეტა"
 
-#. TRANSLATORS: This is the accessibility label for the row. First %s is
-#. * the name, second is a message signifying whether the update is
-#. * critical, and the last placeholder represents the version.
-#: src/gs-os-update-page.c:186
-#, c-format
-#| msgid "%s %s"
-msgid "%s %s %s"
-msgstr "%s %s %s"
-
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:268
+#: src/gs-os-update-page.c:285
 msgid "Additions"
 msgstr "დამატებები"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:272
+#: src/gs-os-update-page.c:289
 msgid "Removals"
 msgstr "წაშლები"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:276
+#: src/gs-os-update-page.c:293
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "განახლებები"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:280
+#: src/gs-os-update-page.c:297
 msgid "Downgrades"
 msgstr "ვერსიის ჩამოწევა"
 
@@ -3868,12 +3859,12 @@ msgid "Unknown"
 msgstr "უცნობი"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:226
+#: src/gs-review-row.c:228
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr "შეგიძლიათ მოგვწეროთ აგრესიული, უხეში ან დამამცირებელი ქცევის შესახებ."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:231
+#: src/gs-review-row.c:233
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3884,13 +3875,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:239
+#: src/gs-review-row.c:241
 msgid "Report Review?"
 msgstr "გადავცე მიმოხილვა?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:244
+#: src/gs-review-row.c:246
 msgid "_Report"
 msgstr "_ანგარიში"
 
@@ -5794,7 +5785,7 @@ msgstr ""
 msgid "Packages"
 msgstr "პაკეტები"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3219
+#: plugins/packagekit/gs-plugin-packagekit.c:3238
 msgid "Failed to install updates: "
 msgstr "განახლებების დაყენების შეცდომა: "
 
@@ -5814,6 +5805,14 @@ msgstr "Snap -ის მხარდაჭერა"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap ლინუქსის უნივერსალური პაკეტია"
+
+#~ msgid "Downloading Software Catalog"
+#~ msgstr "პროგრამების კატალოგის გადმოწერა"
+
+#, c-format
+#~| msgid "%s %s"
+#~ msgid "%s %s %s"
+#~ msgstr "%s %s %s"
 
 #~ msgid "An important software update is ready to be installed."
 #~ msgstr "მნიშვნელოვანი პროგრამის განახლებები დასაყენებლად მზადაა."
