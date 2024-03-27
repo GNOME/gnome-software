@@ -1044,7 +1044,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				if (!locale_has_translations)
 					gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 
-				if (!gs_app_get_has_translations (app)) {
+				if (!gs_app_get_has_translations (app) &&
+				    !gs_app_has_kudo (app, GS_APP_KUDO_MY_LANGUAGE)) {
 					g_autoptr(XbNode) langs_child = NULL;
 					g_autoptr(XbNode) langs_next = NULL;
 					g_auto(GStrv) variants = g_get_locale_variants (setlocale (LC_MESSAGES, NULL));
@@ -1060,10 +1061,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 								 * only useful in combination with KUDO_MY_LANGUAGE */
 								gs_app_set_has_translations (app, TRUE);
 
-								if (gs_app_has_kudo (app, GS_APP_KUDO_MY_LANGUAGE))
-									break;
-
-								for (guint j = 0; variants[j]; j++) {
+								for (gsize j = 0; variants[j]; j++) {
 									if (g_strcmp0 (tmp, variants[j]) == 0) {
 										is_variant = TRUE;
 										break;
