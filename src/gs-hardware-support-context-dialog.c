@@ -470,6 +470,15 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 				[AS_DISPLAY_LENGTH_KIND_LARGE] = { 1024, 3840 },
 				[AS_DISPLAY_LENGTH_KIND_XLARGE] = { 3840, G_MAXUINT },
 			};
+#else
+			enum {
+				AS_DISPLAY_LENGTH_KIND_SMALL,
+				AS_DISPLAY_LENGTH_KIND_LARGE,
+			};
+			Range display_lengths[] = {
+				[AS_DISPLAY_LENGTH_KIND_SMALL] = { 360, 768 },
+				[AS_DISPLAY_LENGTH_KIND_LARGE] = { 1024, 3840 },
+			};
 #endif
 
 			any_display_relations_set = TRUE;
@@ -494,7 +503,6 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 				break;
 			}
 
-#if !AS_CHECK_VERSION(1, 0, 0)
 			if (evaluate_display_comparison (display_lengths[AS_DISPLAY_LENGTH_KIND_SMALL], comparator, relation_comparand)) {
 				*mobile_relation_kind_out = max_relation_kind (*mobile_relation_kind_out, as_relation_get_kind (relation));
 				*mobile_match_out = TRUE;
@@ -504,7 +512,6 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 				*desktop_relation_kind_out = max_relation_kind (*desktop_relation_kind_out, as_relation_get_kind (relation));
 				*desktop_match_out = TRUE;
 			}
-#endif
 
 			if (evaluate_display_comparison (current_display_comparand, comparator, relation_comparand)) {
 				*current_relation_kind_out = max_relation_kind (*current_relation_kind_out, as_relation_get_kind (relation));
