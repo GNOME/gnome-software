@@ -16,9 +16,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-03-15 07:24+0000\n"
-"PO-Revision-Date: 2024-03-15 08:00+0300\n"
-"Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
+"POT-Creation-Date: 2024-03-26 22:36+0000\n"
+"PO-Revision-Date: 2024-03-27 04:16+0300\n"
+"Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -80,7 +80,7 @@ msgid "The update details"
 msgstr "Güncelleme ayrıntıları"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2477
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2506
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "GNOME Projesi"
@@ -808,7 +808,7 @@ msgstr "Yaş Derecelendirmesi"
 msgid "How to contribute missing information"
 msgstr "Eksik bilgilere nasıl katkıda bulunulur"
 
-#: lib/gs-app.c:6339
+#: lib/gs-app.c:6336
 msgid "Local file"
 msgstr "Yerel dosya"
 
@@ -817,13 +817,13 @@ msgstr "Yerel dosya"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6358 src/gs-safety-context-dialog.c:539
+#: lib/gs-app.c:6355 src/gs-safety-context-dialog.c:539
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6435 src/gs-safety-context-dialog.c:776
+#: lib/gs-app.c:6432 src/gs-safety-context-dialog.c:776
 #: src/gs-safety-context-dialog.ui:180
 msgid "Package"
 msgstr "Paket"
@@ -1526,8 +1526,8 @@ msgstr "Kaldır…"
 msgid "Uninstalling"
 msgstr "Kaldırılıyor"
 
-#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:152
-#: src/gs-os-update-page.c:155 src/gs-os-update-page.c:182
+#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:154
+#: src/gs-os-update-page.c:157 src/gs-os-update-page.c:184
 msgid "Critical update"
 msgstr "Kritik güncelleme"
 
@@ -1605,7 +1605,7 @@ msgstr "Giriş Gerekiyor"
 #: src/gs-basic-auth-dialog.ui:14 src/gs-common.c:296 src/gs-common.c:748
 #: src/gs-details-page.ui:331 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:26 src/gs-repos-dialog.c:175
-#: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:27 src/gs-review-row.c:241
+#: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:27 src/gs-review-row.c:243
 #: src/gs-updates-page.c:854 src/gs-updates-page.c:871
 #: src/gs-upgrade-banner.ui:201
 msgid "_Cancel"
@@ -3119,8 +3119,8 @@ msgid ""
 "\n"
 "You can participate and help make it even better."
 msgstr ""
-"Bu uygulama, katkıcı topluluğunca açık olarak geliştirilmiş ve <a "
-"href=\"%s\">%s lisansıyla</a> dağıtılmıştır.\n"
+"Bu uygulama, katkıcı topluluğunca açık olarak geliştirilmiş ve <a href=\"%s"
+"\">%s lisansıyla</a> dağıtılmıştır.\n"
 "\n"
 "Katılarak daha iyi olmasını sağlayabilirsiniz."
 
@@ -3147,8 +3147,8 @@ msgid ""
 "\n"
 "You can participate and help make it even better."
 msgstr ""
-"Bu yazılım, katkıcı topluluğunca açık olarak geliştirilmiş ve <a "
-"href=\"%s\">%s lisansıyla</a> dağıtılmıştır.\n"
+"Bu yazılım, katkıcı topluluğunca açık olarak geliştirilmiş ve <a href=\"%s\">"
+"%s lisansıyla</a> dağıtılmıştır.\n"
 "\n"
 "Katılarak daha iyi olmasını sağlayabilirsiniz."
 
@@ -3292,8 +3292,8 @@ msgstr ""
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
-msgid "Downloading Software Catalog"
-msgstr "Yazılım Kataloğu İndiriliyor"
+msgid "Refreshing Data"
+msgstr "Veriler Yenileniyor"
 
 #: src/gs-loading-page.ui:6
 msgid "Loading page"
@@ -3320,36 +3320,28 @@ msgstr "Bilinmeyen kaynak"
 msgid "Beta"
 msgstr "Beta"
 
-#. TRANSLATORS: This is the accessibility label for the row. First %s is
-#. * the name, second is a message signifying whether the update is
-#. * critical, and the last placeholder represents the version.
-#: src/gs-os-update-page.c:186
-#, c-format
-msgid "%s %s %s"
-msgstr "%s %s %s"
-
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:268
+#: src/gs-os-update-page.c:285
 msgid "Additions"
 msgstr "Eklentiler"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:272
+#: src/gs-os-update-page.c:289
 msgid "Removals"
 msgstr "Kaldırılanlar"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:276
+#: src/gs-os-update-page.c:293
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Güncellemeler"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:280
+#: src/gs-os-update-page.c:297
 msgid "Downgrades"
 msgstr "Sürüm Düşürmeler"
 
@@ -3842,13 +3834,13 @@ msgstr "Kısa inceleme yaz"
 
 #: src/gs-review-dialog.ui:176
 msgid ""
-"Find what data is sent in our <a href=\"https://odrs.gnome.org/"
-"privacy\">privacy policy</a>. The full name attached to your account will be "
-"shown publicly."
+"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
+"\">privacy policy</a>. The full name attached to your account will be shown "
+"publicly."
 msgstr ""
-"Ne verisinin gönderildiğini <a href=\"https://odrs.gnome.org/"
-"privacy\">gizlilik ilkemizde</a> bulabilirsiniz. Hesabınıza ilişik tam "
-"adınız açıkça gösterilecektir."
+"Ne verisinin gönderildiğini <a href=\"https://odrs.gnome.org/privacy"
+"\">gizlilik ilkemizde</a> bulabilirsiniz. Hesabınıza ilişik tam adınız "
+"açıkça gösterilecektir."
 
 #: src/gs-review-histogram.c:72
 #, c-format
@@ -3867,13 +3859,13 @@ msgid "Unknown"
 msgstr "Bilinmeyen"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:226
+#: src/gs-review-row.c:228
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Küfürlü, kaba veya ayrımcı tutum içeren incelemeleri bildirebilirsiniz."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:231
+#: src/gs-review-row.c:233
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3883,13 +3875,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:239
+#: src/gs-review-row.c:241
 msgid "Report Review?"
 msgstr "İnceleme Bildirilsin Mi?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:244
+#: src/gs-review-row.c:246
 msgid "_Report"
 msgstr "_Bildir"
 
@@ -5810,7 +5802,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Paketler"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3219
+#: plugins/packagekit/gs-plugin-packagekit.c:3238
 msgid "Failed to install updates: "
 msgstr "Güncellemeler kurulamadı: "
 
@@ -5830,3 +5822,9 @@ msgstr "Snap Desteği"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap, bir evrensel Linux paketidir"
+
+#~ msgid "Downloading Software Catalog"
+#~ msgstr "Yazılım Kataloğu İndiriliyor"
+
+#~ msgid "%s %s %s"
+#~ msgstr "%s %s %s"
