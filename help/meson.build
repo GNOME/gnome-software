@@ -1,0 +1,25 @@
+help_files = [
+  'how-to-reinstall-a-web-app.page',
+  'index.page',
+  'software-licensing.page',
+  'software-metadata.page',
+]
+
+help_media = [
+  'figures/age-rating-tile.png',
+  'figures/carousel.png',
+  'figures/community-built.png',
+  'figures/hardware-support-tile.png',
+  'figures/install-webapp-step1.png',
+  'figures/install-webapp-step2.png',
+  'figures/links.png',
+  'figures/proprietary.png',
+  'figures/safety-tile.png',
+  'figures/storage-tile.png'
+]
+
+gnome.yelp (meson.project_name (),
+            sources: help_files,
+            media: help_media,
+            symlink_media: true,
+)
