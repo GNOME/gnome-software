@@ -414,7 +414,7 @@ gs_epiphany_refine_app_state (GsPlugin *plugin,
 		else {
 			gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 			gs_app_set_url_missing (app,
-						"https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/How-to-reinstall-a-web-app");
+						"help:gnome-software/how-to-reinstall-a-web-app");
 		}
 	}
 }

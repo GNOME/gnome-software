@@ -621,7 +621,7 @@ gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_t
 			uri = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
 	} else {
 		if (gs_app_get_license (self->app) == NULL) {
-			uri = "https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#license";
+			uri = "help:gnome-software/software-metadata#license";
 		} else {
 			license_url = as_get_license_url (gs_app_get_license (self->app));
 
@@ -636,7 +636,7 @@ gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_t
 				 * Ultimately, we could ship a user manual page to explain the
 				 * differences (so that it’s available offline), but that’s too
 				 * much work for right now. */
-				uri = "https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/Software-licensing";
+				uri = "help:gnome-software/software-licensing";
 			}
 		}
 	}

@@ -784,7 +784,7 @@ contribute_info_row_activated_cb (AdwButtonRow *row,
 {
 	GtkWidget *toplevel = GTK_WIDGET (gtk_widget_get_root (GTK_WIDGET (self)));
 
-	gs_show_uri (GTK_WINDOW (toplevel), "https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#hardware-support");
+	gs_show_uri (GTK_WINDOW (toplevel), "help:gnome-software/software-metadata#hardware-support");
 }
 
 static void
