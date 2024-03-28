@@ -1,6 +1,7 @@
 help_files = [
   'how-to-reinstall-a-web-app.page',
   'index.page',
+  'legal.xml',
   'software-licensing.page',
   'software-metadata.page',
 ]
