@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2024 Sid <sidtosh4@gmail.com>
+
 help_files = [
   'how-to-reinstall-a-web-app.page',
   'index.page',
@@ -16,7 +19,7 @@ help_media = [
   'figures/links.png',
   'figures/proprietary.png',
   'figures/safety-tile.png',
-  'figures/storage-tile.png'
+  'figures/storage-tile.png',
 ]
 
 gnome.yelp (meson.project_name (),
