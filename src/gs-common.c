@@ -66,15 +66,15 @@ gs_app_notify_installed (GsApp *app)
 	case AS_COMPONENT_KIND_DESKTOP_APP:
 		/* TRANSLATORS: this is the summary of a notification that an app
 		 * has been successfully installed */
-		summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
+		summary = g_strdup_printf (_("%s Installed"), gs_app_get_name (app));
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
 			/* TRANSLATORS: an app has been installed, but
 			 * needs a reboot to complete the installation */
-			body = _("A restart is required for the changes to take effect.");
+			body = _("A restart is required for the changes to take effect");
 		} else {
 			/* TRANSLATORS: this is the body of a notification that an app
 			 * has been successfully installed */
-			body = _("App is ready to be used.");
+			body = _("The app is ready to be used");
 		}
 		break;
 	default:
@@ -82,18 +82,18 @@ gs_app_notify_installed (GsApp *app)
 		    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
 			/* TRANSLATORS: this is the summary of a notification that OS updates
 			* have been successfully installed */
-			summary = g_strdup (_("System updates are now installed"));
+			summary = g_strdup (_("System Updates Installed"));
 			/* TRANSLATORS: this is the body of a notification that OS updates
 			* have been successfully installed */
 			body = _("Recently installed updates are available to review");
 		} else {
 			/* TRANSLATORS: this is the summary of a notification that a component
 			* has been successfully installed */
-			summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
+			summary = g_strdup_printf (_("%s Installed"), gs_app_get_name (app));
 			if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
 				/* TRANSLATORS: an app has been installed, but
 				* needs a reboot to complete the installation */
-				body = _("A restart is required for the changes to take effect.");
+				body = _("A restart is required for the changes to take effect");
 			}
 		}
 		break;
@@ -879,7 +879,7 @@ gs_utils_reboot_notify (GsAppList *list,
 	if (is_install) {
 		if (app_name) {
 			/* TRANSLATORS: The '%s' is replaced with the app name */
-			tmp = g_strdup_printf ("An app “%s” has been installed", app_name);
+			tmp = g_strdup_printf ("“%s” Installed", app_name);
 			title = tmp;
 		} else {
 			/* TRANSLATORS: we've just live-updated some apps */
@@ -889,7 +889,7 @@ gs_utils_reboot_notify (GsAppList *list,
 		}
 	} else if (app_name) {
 		/* TRANSLATORS: The '%s' is replaced with the app name */
-		tmp = g_strdup_printf ("An app “%s” has been removed", app_name);
+		tmp = g_strdup_printf ("“%s” Removed", app_name);
 		title = tmp;
 	} else {
 		/* TRANSLATORS: we've just removed some apps */
@@ -899,8 +899,8 @@ gs_utils_reboot_notify (GsAppList *list,
 	}
 
 	/* TRANSLATORS: the new apps will not be run until we restart */
-	body = ngettext ("A restart is required for it to take effect.",
-	                 "A restart is required for them to take effect.",
+	body = ngettext ("A restart is required for it to take effect",
+	                 "A restart is required for them to take effect",
 	                 gs_app_list_length (list));
 
 	n = g_notification_new (title);
