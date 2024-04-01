@@ -85,6 +85,7 @@ struct _GsPluginJobUpdateApps
 	guint n_pending_ops;
 	GHashTable *plugins_progress;  /* (element-type GsPlugin guint) (owned) (nullable) */
 	GSource *progress_source;  /* (owned) (nullable) */
+	guint last_reported_progress;
 
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec;
@@ -233,7 +234,8 @@ gs_plugin_job_update_apps_run_async (GsPluginJob         *job,
 	 * an overall progress for all the parallel operations. */
 	self->plugins_progress = g_hash_table_new (g_direct_hash, g_direct_equal);
 	self->progress_source = g_timeout_source_new (progress_update_period_ms);
-	g_source_set_callback (self->progress_source, progress_cb, g_object_ref (self), g_object_unref);
+	self->last_reported_progress = GS_APP_PROGRESS_UNKNOWN;
+	g_source_set_callback (self->progress_source, progress_cb, self, NULL);
 	g_source_attach (self->progress_source, g_main_context_get_thread_default ());
 
 	/* run each plugin, keeping a counter of pending operations which is
@@ -336,11 +338,14 @@ progress_cb (gpointer user_data)
 	if (all_unknown)
 		progress = GS_APP_PROGRESS_UNKNOWN;
 
-	/* Report progress via signal emission. */
-	/* FIXME: In future we could add explicit signals to notify that a
-	 * download operation is blocked on waiting for metered data permission
-	 * to download, so the UI can represent that better. */
-	g_signal_emit (self, signals[SIGNAL_PROGRESS], 0, (guint) progress);
+	if (progress != self->last_reported_progress) {
+		/* Report progress via signal emission. */
+		/* FIXME: In future we could add explicit signals to notify that a
+		 * download operation is blocked on waiting for metered data permission
+		 * to download, so the UI can represent that better. */
+		g_signal_emit (self, signals[SIGNAL_PROGRESS], 0, (guint) progress);
+		self->last_reported_progress = progress;
+	}
 
 	return G_SOURCE_CONTINUE;
 }

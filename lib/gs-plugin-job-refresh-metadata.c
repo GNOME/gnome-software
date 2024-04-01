@@ -81,6 +81,7 @@ struct _GsPluginJobRefreshMetadata
 		guint n_plugins_complete;
 	} plugins_progress;
 	GSource *progress_source;  /* (owned) (nullable) */
+	guint last_reported_progress;
 
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec;
@@ -213,7 +214,8 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 	 * function via the #GsPluginJobRefreshMetadata::progress signal, giving
 	 * an overall progress for all the parallel operations. */
 	self->progress_source = g_timeout_source_new (progress_update_period_ms);
-	g_source_set_callback (self->progress_source, progress_cb, g_object_ref (self), g_object_unref);
+	self->last_reported_progress = GS_APP_PROGRESS_UNKNOWN;
+	g_source_set_callback (self->progress_source, progress_cb, self, NULL);
 	g_source_attach (self->progress_source, g_main_context_get_thread_default ());
 
 	/* run each plugin, keeping a counter of pending operations which is
@@ -348,7 +350,10 @@ progress_cb (gpointer user_data)
 	progress += (100.0 / n_portions) * external_appstream_completion;
 #endif
 
-	g_signal_emit (self, signals[SIGNAL_PROGRESS], 0, (guint) progress);
+	if (progress != self->last_reported_progress) {
+		g_signal_emit (self, signals[SIGNAL_PROGRESS], 0, (guint) progress);
+		self->last_reported_progress = progress;
+	}
 
 	return G_SOURCE_CONTINUE;
 }
