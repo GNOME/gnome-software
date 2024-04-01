@@ -1140,6 +1140,7 @@ refine_thread_cb (GTask        *task,
 	g_autoptr(GHashTable) apps_by_id = NULL;
 	g_autoptr(GHashTable) apps_by_origin_and_id = NULL;
 	g_autoptr(GPtrArray) components = NULL;
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1152,6 +1153,8 @@ refine_thread_cb (GTask        *task,
 
 	apps_by_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
 	apps_by_origin_and_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
+
+	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 	components = xb_silo_query (self->silo, "components/component/id", 0, NULL);
 	for (guint i = 0; i < components->len; i++) {
