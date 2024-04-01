@@ -864,12 +864,23 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	if (self->app_local_file != NULL) {
 		if (gs_app_get_state (self->app_local_file) != GS_APP_STATE_INSTALLED &&
 		    gs_app_get_local_file (self->app_local_file) != NULL) {
-			GtkWidget *row = gs_origin_popover_row_new (self->app_local_file);
-			gtk_widget_set_visible (row, TRUE);
-			gtk_list_box_append (GTK_LIST_BOX (self->origin_popover_list_box), row);
-			first_row = row;
-			select_row = row;
-			n_rows++;
+			gboolean already_in_list = FALSE;
+			/* The app itself can be returned as an alternative too, thus check for it */
+			for (guint i = 0; i < gs_app_list_length (list); i++) {
+				GsApp *i_app = gs_app_list_index (list, i);
+				if (app_origin_equal (i_app, self->app_local_file)) {
+					already_in_list = TRUE;
+					break;
+				}
+			}
+			if (!already_in_list) {
+				GtkWidget *row = gs_origin_popover_row_new (self->app_local_file);
+				gtk_widget_set_visible (row, TRUE);
+				gtk_list_box_append (GTK_LIST_BOX (self->origin_popover_list_box), row);
+				first_row = row;
+				select_row = row;
+				n_rows++;
+			}
 		}
 
 		/* Do not allow change of the app by the packaging format when it's a local file */
