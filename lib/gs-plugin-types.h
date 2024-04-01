@@ -271,6 +271,20 @@ typedef enum {
 } GsPluginInstallAppsFlags;
 
 /**
+ * GsPluginUninstallAppsFlags:
+ * @GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to uninstall apps.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE = 0,
+	GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE = 1 << 0,
+} GsPluginUninstallAppsFlags;
+
+/**
  * GsPluginUpdateAppsFlags:
  * @GS_PLUGIN_UPDATE_APPS_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE: User initiated the job.
