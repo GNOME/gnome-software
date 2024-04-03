@@ -50,8 +50,7 @@ typedef struct {
 	GCancellable	*cancellable;
 	gulong		 notify_quirk_id;
 	GtkWidget	*dialog_install;
-	GsPluginJob	*job;  /* (nullable) (owned) */
-	GsPluginAction	 action;
+	GsPluginJob	*job;  /* (not nullable) (owned) */
 	GsShellInteraction interaction;
 	gboolean	 propagate_error;
 	gboolean	 remove_app_data_dir;
@@ -137,18 +136,10 @@ gs_page_app_installed_cb (GObject *source,
 	}
 	if (!ret) {
 		if (helper->propagate_error) {
-			if (helper->job != NULL)
-				gs_plugin_loader_claim_job_error (plugin_loader,
-								  NULL,
-								  helper->job,
-								  error);
-			else
-				gs_plugin_loader_claim_error (plugin_loader,
-							      NULL,
-							      helper->action,
-							      helper->app,
-							      helper->interaction == GS_SHELL_INTERACTION_FULL,
-							      error);
+			gs_plugin_loader_claim_job_error (plugin_loader,
+							  NULL,
+							  helper->job,
+							  error);
 		} else {
 			g_warning ("failed to install %s: %s", gs_app_get_id (helper->app), error->message);
 		}
