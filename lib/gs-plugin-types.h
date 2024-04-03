@@ -366,7 +366,6 @@ typedef enum {
  * GsPluginAction:
  * @GS_PLUGIN_ACTION_UNKNOWN:			Action is unknown
  * @GS_PLUGIN_ACTION_INSTALL:			Install an app
- * @GS_PLUGIN_ACTION_REMOVE:			Remove an app
  * @GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:		Download a distro upgrade
  * @GS_PLUGIN_ACTION_UPGRADE_TRIGGER:		Trigger a distro upgrade
  * @GS_PLUGIN_ACTION_LAUNCH:			Launch an app
@@ -387,7 +386,6 @@ typedef enum {
 typedef enum {
 	GS_PLUGIN_ACTION_UNKNOWN,
 	GS_PLUGIN_ACTION_INSTALL,
-	GS_PLUGIN_ACTION_REMOVE,
 	GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 	GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 	GS_PLUGIN_ACTION_LAUNCH,

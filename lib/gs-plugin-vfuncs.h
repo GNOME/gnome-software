@@ -160,35 +160,6 @@ gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_app_remove:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Remove the app.
- *
- * Plugins are expected to send progress notifications to the UI using
- * gs_app_set_progress() using the passed in @app.
- *
- * All functions can block, but should sent progress notifications, e.g. using
- * gs_app_set_progress() if they will take more than tens of milliseconds
- * to complete.
- *
- * On failure the error message returned will usually only be shown on the
- * console, but they can also be retrieved using gs_plugin_loader_get_events().
- *
- * NOTE: Once the action is complete, the plugin must set the new state of @app
- * to %GS_APP_STATE_AVAILABLE or %GS_APP_STATE_UNKNOWN if not known.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_app_upgrade_download:
  * @plugin: a #GsPlugin
  * @app: a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
