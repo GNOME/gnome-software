@@ -52,7 +52,6 @@ test_args = [
   '-Wimplicit-function-declaration',
   '-Werror=implicit-function-declaration',
   '-Winit-self',
-  '-Winline',
   '-Wmaybe-uninitialized',
   '-Wmissing-declarations',
   '-Wmissing-format-attribute',
