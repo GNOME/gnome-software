@@ -313,6 +313,7 @@ gs_page_install_app (GsPage *page,
 					    helper->cancellable,
 					    gs_page_app_installed_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 static void
@@ -381,8 +382,10 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 	plugin_job = gs_plugin_job_update_apps_new (list,
 						    GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
-	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
+
+	g_assert (helper->job == NULL);
 	helper->job = g_object_ref (plugin_job);
+	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 	helper->app_needs_user_action_id =
 		g_signal_connect (plugin_job, "app-needs-user-action",
@@ -392,6 +395,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					    helper->cancellable,
 					    gs_page_app_installed_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 static void
@@ -554,6 +558,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 						    helper->cancellable,
 						    gs_page_app_removed_cb,
 						    helper);
+		g_steal_pointer (&helper);
 		return;
 	}
 
