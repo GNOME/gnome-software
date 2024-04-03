@@ -169,34 +169,6 @@ gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
 	return refine_flags;
 }
 
-static guint
-gs_cmd_prompt_for_number (guint maxnum)
-{
-	gint retval;
-	guint answer = 0;
-
-	do {
-		char buffer[64];
-
-		/* swallow the \n at end of line too */
-		if (!fgets (buffer, sizeof (buffer), stdin))
-			break;
-		if (strlen (buffer) == sizeof (buffer) - 1)
-			continue;
-
-		/* get a number */
-		retval = sscanf (buffer, "%u", &answer);
-
-		/* positive */
-		if (retval == 1 && answer > 0 && answer <= maxnum)
-			break;
-
-		/* TRANSLATORS: the user isn't reading the question */
-		g_print (_("Please enter a number from 1 to %u: "), maxnum);
-	} while (TRUE);
-	return answer;
-}
-
 static GsPluginListAppsFlags
 get_list_apps_flags (GsCmdSelf *self)
 {
@@ -279,27 +251,8 @@ gs_cmd_install_remove_exec (GsCmdSelf *self, gboolean is_install, const gchar *n
 		plugin_job2 = gs_plugin_job_install_apps_new (list_filtered,
 							      self->interactive ? GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
 	} else {
-		/* get one GsApp */
-		if (gs_app_list_length (list_filtered) == 1) {
-			app = g_object_ref (gs_app_list_index (list_filtered, 0));
-		} else {
-			guint idx;
-			/* TRANSLATORS: asking the user to choose an app from a list */
-			g_print ("%s\n", _("Choose an app:"));
-			for (guint i = 0; i < gs_app_list_length (list_filtered); i++) {
-				GsApp *app_tmp = gs_app_list_index (list_filtered, i);
-				g_print ("%u.\t%s\n",
-					 i + 1,
-					 gs_app_get_unique_id (app_tmp));
-			}
-			idx = gs_cmd_prompt_for_number (gs_app_list_length (list_filtered));
-			app = g_object_ref (gs_app_list_index (list_filtered, idx - 1));
-		}
-
-		plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-						  "app", app,
-						  "interactive", self->interactive,
-						  NULL);
+		plugin_job2 = gs_plugin_job_uninstall_apps_new (list_filtered,
+								self->interactive ? GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
 	}
 
 	return gs_plugin_loader_job_action (self->plugin_loader, plugin_job2,
