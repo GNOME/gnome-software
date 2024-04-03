@@ -66,6 +66,7 @@ test_args = [
   '-Wno-strict-aliasing',
   '-Wno-suggest-attribute=format',
   '-Wno-unused-parameter',
+  '-Wnull-dereference',
   '-Wold-style-definition',
   '-Woverride-init',
   '-Wpacked',
