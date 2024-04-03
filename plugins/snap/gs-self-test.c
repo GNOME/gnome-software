@@ -351,9 +351,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gdk_pixbuf_get_height (pixbuf), ==, 128);
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_uninstall_apps_new (apps, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
 	gs_test_flush_main_context ();
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
