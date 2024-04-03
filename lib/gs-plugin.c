@@ -1386,7 +1386,7 @@ gs_plugin_error_to_string (GsPluginError error)
 
 /**
  * gs_plugin_action_to_function_name: (skip)
- * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ACTION_INSTALL
+ * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ACTION_REMOVE
  *
  * Converts the enumerated action to the vfunc name.
  *
@@ -1395,8 +1395,6 @@ gs_plugin_error_to_string (GsPluginError error)
 const gchar *
 gs_plugin_action_to_function_name (GsPluginAction action)
 {
-	if (action == GS_PLUGIN_ACTION_INSTALL)
-		return "gs_plugin_app_install";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
 		return "gs_plugin_app_remove";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
@@ -1424,7 +1422,7 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 
 /**
  * gs_plugin_action_to_string:
- * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ACTION_INSTALL
+ * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ACTION_REMOVE
  *
  * Converts the enumerated action to a string.
  *
@@ -1435,8 +1433,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 {
 	if (action == GS_PLUGIN_ACTION_UNKNOWN)
 		return "unknown";
-	if (action == GS_PLUGIN_ACTION_INSTALL)
-		return "install";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
 		return "remove";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
@@ -1476,15 +1472,13 @@ gs_plugin_action_to_string (GsPluginAction action)
  *
  * Converts the string to an enumerated action.
  *
- * Returns: a GsPluginAction, e.g. %GS_PLUGIN_ACTION_INSTALL
+ * Returns: a GsPluginAction, e.g. %GS_PLUGIN_ACTION_REMOVE
  *
  * Since: 3.26
  **/
 GsPluginAction
 gs_plugin_action_from_string (const gchar *action)
 {
-	if (g_strcmp0 (action, "install") == 0)
-		return GS_PLUGIN_ACTION_INSTALL;
 	if (g_strcmp0 (action, "remove") == 0)
 		return GS_PLUGIN_ACTION_REMOVE;
 	if (g_strcmp0 (action, "upgrade-download") == 0)

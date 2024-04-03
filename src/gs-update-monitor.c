@@ -913,9 +913,8 @@ get_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 		with_app_data = with_app_data_new (monitor, app);
 
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-							 "app", app,
-							 NULL);
+		plugin_job = gs_plugin_job_install_apps_new (app_list,
+							     GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
 						    monitor->update_cancellable,

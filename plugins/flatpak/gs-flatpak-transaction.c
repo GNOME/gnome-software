@@ -17,6 +17,7 @@ struct _GsFlatpakTransaction {
 	GHashTable		*refhash;	/* ref:GsApp */
 	GError			*first_operation_error;
 	gboolean		 stop_on_first_error;
+	FlatpakTransactionOperation *error_operation;  /* (nullable) (owned) */
 };
 
 enum {
@@ -70,6 +71,16 @@ gs_flatpak_transaction_set_property (GObject      *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
+}
+
+static void
+gs_flatpak_transaction_dispose (GObject *object)
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (object);
+
+	g_clear_object (&self->error_operation);
+
+	G_OBJECT_CLASS (gs_flatpak_transaction_parent_class)->dispose (object);
 }
 
 static void
@@ -654,6 +665,7 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 	const gchar *ref = flatpak_transaction_operation_get_ref (operation);
 
 	gs_app_set_state_recover (app);
+	g_set_object (&self->error_operation, operation);
 
 	if (g_error_matches (error, FLATPAK_ERROR, FLATPAK_ERROR_SKIPPED)) {
 		g_debug ("skipped to %s %s: %s",
@@ -797,6 +809,7 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 
 	object_class->get_property = gs_flatpak_transaction_get_property;
 	object_class->set_property = gs_flatpak_transaction_set_property;
+	object_class->dispose = gs_flatpak_transaction_dispose;
 	object_class->finalize = gs_flatpak_transaction_finalize;
 
 	transaction_class->ready = _transaction_ready;
@@ -862,4 +875,38 @@ gs_flatpak_transaction_new (FlatpakInstallation	*installation,
 	if (self == NULL)
 		return NULL;
 	return FLATPAK_TRANSACTION (self);
+}
+
+/**
+ * gs_flatpak_transaction_get_error_operation:
+ * @self: a #GsFlatpakTransaction
+ * @out_app: (out) (transfer none) (optional) (nullable): return location for
+ *     the #GsApp associated with the returned transaction operation, or %NULL
+ *     to ignore; the returned value may be %NULL if no error operation is set,
+ *     or if there’s no app associated with it
+ *
+ * Get the #FlatpakTransactionOperation which caused the most recent error in
+ * the transaction.
+ *
+ * For transactions with #GsFlatpakTransaction:stop-on-first-error set, this
+ * will be the operation that caused the fatal error.
+ *
+ * Returns: (nullable) (transfer none): the operation which caused the error, or
+ *     %NULL if none
+ * Since: 47
+ */
+FlatpakTransactionOperation *
+gs_flatpak_transaction_get_error_operation (GsFlatpakTransaction  *self,
+                                            GsApp                **out_app)
+{
+	g_return_val_if_fail (GS_IS_FLATPAK_TRANSACTION (self), NULL);
+
+	if (out_app != NULL) {
+		if (self->error_operation != NULL)
+			*out_app = _transaction_operation_get_app (self->error_operation);
+		else
+			*out_app = NULL;
+	}
+
+	return self->error_operation;
 }

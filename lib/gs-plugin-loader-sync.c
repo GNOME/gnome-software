@@ -226,10 +226,8 @@ gs_plugin_loader_setup (GsPluginLoader       *plugin_loader,
 
 	/* create temp object */
 	helper.res = NULL;
-	helper.context = g_main_context_new ();
+	helper.context = NULL;
 	helper.loop = g_main_loop_new (helper.context, FALSE);
-
-	g_main_context_push_thread_default (helper.context);
 
 	/* run async method */
 	gs_plugin_loader_setup_async (plugin_loader,
@@ -243,10 +241,7 @@ gs_plugin_loader_setup (GsPluginLoader       *plugin_loader,
 						helper.res,
 						error);
 
-	g_main_context_pop_thread_default (helper.context);
-
 	g_main_loop_unref (helper.loop);
-	g_main_context_unref (helper.context);
 	if (helper.res != NULL)
 		g_object_unref (helper.res);
 

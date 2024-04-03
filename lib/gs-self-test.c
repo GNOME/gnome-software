@@ -222,15 +222,20 @@ gs_plugin_func (void)
 	/* check enums converted */
 	for (guint i = 0; i < GS_PLUGIN_ACTION_LAST; i++) {
 		const gchar *tmp = gs_plugin_action_to_string (i);
-		if (tmp == NULL)
+		if (tmp == NULL) {
+			/* These do not have function, they exist only for better error messages. */
+			if (i == GS_PLUGIN_ACTION_INSTALL)
+				continue;
 			g_critical ("failed to convert %u", i);
+		}
 		g_assert_cmpint (gs_plugin_action_from_string (tmp), ==, i);
 	}
 	for (guint i = 1; i < GS_PLUGIN_ACTION_LAST; i++) {
 		const gchar *tmp = gs_plugin_action_to_function_name (i);
 		if (tmp == NULL) {
 			/* These do not have function, they exist only for better error messages. */
-			if (i == GS_PLUGIN_ACTION_INSTALL_REPO ||
+			if (i == GS_PLUGIN_ACTION_INSTALL ||
+			    i == GS_PLUGIN_ACTION_INSTALL_REPO ||
 			    i == GS_PLUGIN_ACTION_REMOVE_REPO ||
 			    i == GS_PLUGIN_ACTION_ENABLE_REPO ||
 			    i == GS_PLUGIN_ACTION_DISABLE_REPO)

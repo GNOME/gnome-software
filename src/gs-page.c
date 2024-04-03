@@ -172,7 +172,7 @@ gs_page_app_installed_cb (GObject *source,
 
 	/* only show this if the window is not active */
 	if (gs_app_is_installed (helper->app) &&
-	    helper->action == GS_PLUGIN_ACTION_INSTALL &&
+	    GS_IS_PLUGIN_JOB_INSTALL_APPS (helper->job) &&
 	    !gtk_window_is_active (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW))) &&
 	    ((helper->interaction) & GS_SHELL_INTERACTION_NOTIFY) != 0)
 		gs_app_notify_installed (helper->app);
@@ -301,20 +301,20 @@ gs_page_install_app (GsPage *page,
 	helper->propagate_error = TRUE;
 
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
-		helper->action = GS_PLUGIN_ACTION_INSTALL_REPO;
 		plugin_job = gs_plugin_job_manage_repository_new (helper->app,
 								  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL |
 								  ((interaction == GS_SHELL_INTERACTION_FULL) ?
 								   GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE : 0));
-		gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 	} else {
-		helper->action = GS_PLUGIN_ACTION_INSTALL;
-		plugin_job = gs_plugin_job_newv (helper->action,
-						 "interactive", (interaction == GS_SHELL_INTERACTION_FULL),
-						 "propagate-error", helper->propagate_error,
-						 "app", helper->app,
-						 NULL);
+		g_autoptr(GsAppList) list = gs_app_list_new ();
+		gs_app_list_add (list, app);
+		plugin_job = gs_plugin_job_install_apps_new (list,
+							     (interaction == GS_SHELL_INTERACTION_FULL) ? GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
 	}
+
+	g_assert (helper->job == NULL);
+	helper->job = g_object_ref (plugin_job);
+	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,

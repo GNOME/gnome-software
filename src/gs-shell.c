@@ -2028,11 +2028,12 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	else if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job) &&
 		 !(gs_plugin_job_update_apps_get_flags (GS_PLUGIN_JOB_UPDATE_APPS (job)) & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY))
 		return gs_shell_show_event_update (shell, event);
+	else if (GS_IS_PLUGIN_JOB_INSTALL_APPS (job))
+		return gs_shell_show_event_install (shell, event);
 
 	/* split up the events by action */
 	action = gs_plugin_event_get_action (event);
 	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_INSTALL_REPO:
 	case GS_PLUGIN_ACTION_ENABLE_REPO:
 		return gs_shell_show_event_install (shell, event);

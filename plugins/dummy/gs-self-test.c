@@ -42,6 +42,7 @@ gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) app_list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
 	GsPlugin *plugin;
@@ -51,9 +52,10 @@ gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "app", app,
-					 NULL);
+	app_list = gs_app_list_new ();
+	gs_app_list_add (app_list, app);
+	plugin_job = gs_plugin_job_install_apps_new (app_list,
+						     GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -595,7 +597,9 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) list = NULL;
         GsApp *app1 = NULL;
 	g_autoptr(GsApp) app2 = NULL;
+	g_autoptr(GsAppList) app2_list = NULL;
 	g_autoptr(GsApp) app3 = NULL;
+	g_autoptr(GsAppList) app3_list = NULL;
 	GsPlugin *plugin;
 	g_autoptr(GsPluginJob) plugin_job1 = NULL;
 	g_autoptr(GsPluginJob) plugin_job2 = NULL;
@@ -653,9 +657,10 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 					    &result1);
 
 	/* install an app */
-	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					  "app", app2,
-					  NULL);
+	app2_list = gs_app_list_new ();
+	gs_app_list_add (app2_list, app2);
+	plugin_job2 = gs_plugin_job_install_apps_new (app2_list,
+						      GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job2,
 					    NULL,
@@ -663,9 +668,9 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 					    &result2);
 
 	/* update an app */
-	list = gs_app_list_new ();
-	gs_app_list_add (list, app3);
-	plugin_job3 = gs_plugin_job_update_apps_new (list, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
+	app3_list = gs_app_list_new ();
+	gs_app_list_add (app3_list, app3);
+	plugin_job3 = gs_plugin_job_update_apps_new (app3_list, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job3,
 					    NULL,

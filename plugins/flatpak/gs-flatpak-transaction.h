@@ -33,5 +33,7 @@ void			 gs_flatpak_transaction_add_app		(FlatpakTransaction	*transaction,
 gboolean		 gs_flatpak_transaction_run		(FlatpakTransaction	*transaction,
 								 GCancellable		*cancellable,
 								 GError			**error);
+FlatpakTransactionOperation *gs_flatpak_transaction_get_error_operation (GsFlatpakTransaction  *self,
+									 GsApp                **out_app);
 
 G_END_DECLS

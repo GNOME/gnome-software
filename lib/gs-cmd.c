@@ -217,7 +217,7 @@ get_query_license_type (GsCmdSelf *self)
 }
 
 static gboolean
-gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, GError **error)
+gs_cmd_install_remove_exec (GsCmdSelf *self, gboolean is_install, const gchar *name, GError **error)
 {
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -255,7 +255,7 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 	}
 
 	/* filter */
-	if (action == GS_PLUGIN_ACTION_INSTALL)
+	if (is_install)
 		show_installed = FALSE;
 	list_filtered = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -270,32 +270,38 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "no components were in the correct state for '%s %s'",
-			     gs_plugin_action_to_string (action), name);
+			     is_install ? "install" : "remove", name);
 		return FALSE;
 	}
 
-	/* get one GsApp */
-	if (gs_app_list_length (list_filtered) == 1) {
-		app = g_object_ref (gs_app_list_index (list_filtered, 0));
+	/* install */
+	if (is_install) {
+		plugin_job2 = gs_plugin_job_install_apps_new (list_filtered,
+							      self->interactive ? GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
 	} else {
-		guint idx;
-		/* TRANSLATORS: asking the user to choose an app from a list */
-		g_print ("%s\n", _("Choose an app:"));
-		for (guint i = 0; i < gs_app_list_length (list_filtered); i++) {
-			GsApp *app_tmp = gs_app_list_index (list_filtered, i);
-			g_print ("%u.\t%s\n",
-				 i + 1,
-				 gs_app_get_unique_id (app_tmp));
+		/* get one GsApp */
+		if (gs_app_list_length (list_filtered) == 1) {
+			app = g_object_ref (gs_app_list_index (list_filtered, 0));
+		} else {
+			guint idx;
+			/* TRANSLATORS: asking the user to choose an app from a list */
+			g_print ("%s\n", _("Choose an app:"));
+			for (guint i = 0; i < gs_app_list_length (list_filtered); i++) {
+				GsApp *app_tmp = gs_app_list_index (list_filtered, i);
+				g_print ("%u.\t%s\n",
+					 i + 1,
+					 gs_app_get_unique_id (app_tmp));
+			}
+			idx = gs_cmd_prompt_for_number (gs_app_list_length (list_filtered));
+			app = g_object_ref (gs_app_list_index (list_filtered, idx - 1));
 		}
-		idx = gs_cmd_prompt_for_number (gs_app_list_length (list_filtered));
-		app = g_object_ref (gs_app_list_index (list_filtered, idx - 1));
+
+		plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+						  "app", app,
+						  "interactive", self->interactive,
+						  NULL);
 	}
 
-	/* install */
-	plugin_job2 = gs_plugin_job_newv (action,
-					  "app", app,
-					  "interactive", self->interactive,
-					  NULL);
 	return gs_plugin_loader_job_action (self->plugin_loader, plugin_job2,
 					    NULL, error);
 }
@@ -508,17 +514,10 @@ main (int argc, char **argv)
 				break;
 			}
 		}
-	} else if (argc == 4 && g_strcmp0 (argv[1], "action") == 0) {
-		GsPluginAction action = gs_plugin_action_from_string (argv[2]);
-		if (action == GS_PLUGIN_ACTION_UNKNOWN) {
-			ret = FALSE;
-			g_set_error (&error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "Did not recognise action '%s'", argv[2]);
-		} else {
-			ret = gs_cmd_action_exec (self, action, argv[3], &error);
-		}
+	} else if (argc == 3 && g_strcmp0 (argv[1], "install") == 0) {
+		ret = gs_cmd_install_remove_exec (self, TRUE, argv[2], &error);
+	} else if (argc == 3 && g_strcmp0 (argv[1], "remove") == 0) {
+		ret = gs_cmd_install_remove_exec (self, FALSE, argv[2], &error);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "action-upgrade-download") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		app = gs_app_new (argv[2]);
@@ -824,7 +823,7 @@ main (int argc, char **argv)
 				     "Did not recognise option, use 'installed', "
 				     "'updates', 'popular', 'get-categories', "
 				     "'get-category-apps', 'get-alternates', 'filename-to-app', "
-				     "'action install', 'action remove', "
+				     "'install', 'remove', "
 				     "'sources', 'refresh', 'launch' or 'search'");
 	}
 	if (!ret) {

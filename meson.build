@@ -1,7 +1,7 @@
 project('gnome-software', 'c',
   version : '47.alpha',
   license : 'GPL-2.0-or-later',
-  default_options : ['warning_level=1', 'c_std=c11'],
+  default_options : ['warning_level=2', 'c_std=c11'],
   meson_version : '>=0.58.0'
 )
 
@@ -23,7 +23,7 @@ conf.set_quoted('APPLICATION_ID', application_id)
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-gs_plugin_api_version = '20'
+gs_plugin_api_version = '21'
 conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 
 # private subdirectory of libdir for the private shared libgnomesoftware to live in
@@ -41,7 +41,9 @@ test_args = [
   '-Wclobbered',
   '-Wdeclaration-after-statement',
   '-Wempty-body',
-  '-Wextra',
+  '-Wenum-compare',
+  '-Wenum-conversion',
+  '-Wenum-int-mismatch',
   '-Wformat=2',
   '-Wformat-nonliteral',
   '-Wformat-security',

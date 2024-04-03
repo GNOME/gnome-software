@@ -95,6 +95,34 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefineCategoriesData, gs_plugin_refine_ca
 
 typedef struct {
 	GsAppList *apps;  /* (owned) (not nullable) */
+	GsPluginInstallAppsFlags flags;
+	GsPluginProgressCallback progress_callback;
+	gpointer progress_user_data;
+	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
+	gpointer app_needs_user_action_data;
+} GsPluginInstallAppsData;
+
+GsPluginInstallAppsData *gs_plugin_install_apps_data_new (GsAppList                          *apps,
+                                                          GsPluginInstallAppsFlags            flags,
+                                                          GsPluginProgressCallback            progress_callback,
+                                                          gpointer                            progress_user_data,
+                                                          GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                                          gpointer                            app_needs_user_action_data);
+GTask *gs_plugin_install_apps_data_new_task (gpointer                            source_object,
+                                             GsAppList                          *apps,
+                                             GsPluginInstallAppsFlags            flags,
+                                             GsPluginProgressCallback            progress_callback,
+                                             gpointer                            progress_user_data,
+                                             GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                             gpointer                            app_needs_user_action_data,
+                                             GCancellable                       *cancellable,
+                                             GAsyncReadyCallback                 callback,
+                                             gpointer                            user_data);
+void gs_plugin_install_apps_data_free (GsPluginInstallAppsData *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginInstallAppsData, gs_plugin_install_apps_data_free)
+
+typedef struct {
+	GsAppList *apps;  /* (owned) (not nullable) */
 	GsPluginUpdateAppsFlags flags;
 	GsPluginProgressCallback progress_callback;
 	gpointer progress_user_data;

@@ -89,6 +89,15 @@ static void gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self
 static gboolean gs_plugin_packagekit_refine_history_finish (GsPluginPackagekit  *self,
                                                             GAsyncResult        *result,
                                                             GError             **error);
+static void gs_plugin_packagekit_enable_repository_async (GsPlugin                      *plugin,
+                                                          GsApp                         *repository,
+                                                          GsPluginManageRepositoryFlags  flags,
+                                                          GCancellable                  *cancellable,
+                                                          GAsyncReadyCallback            callback,
+                                                          gpointer                       user_data);
+static gboolean gs_plugin_packagekit_enable_repository_finish (GsPlugin      *plugin,
+                                                               GAsyncResult  *result,
+                                                               GError       **error);
 static void gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
                                                    const gchar *key,
                                                    gpointer     user_data);
@@ -367,18 +376,15 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_app_origin_repo_enable (GsPluginPackagekit  *self,
-                                  PkTask              *task_enable_repo,
-                                  GsApp               *app,
-                                  GCancellable        *cancellable,
-                                  GError             **error)
+static GsApp *
+gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
+                                          GsApp               *app,
+                                          GError             **error)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsApp) repo_app = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(PkError) error_code = NULL;
 	const gchar *repo_id;
 
 	repo_id = gs_app_get_origin (app);
@@ -387,222 +393,544 @@ gs_plugin_app_origin_repo_enable (GsPluginPackagekit  *self,
 		                     GS_PLUGIN_ERROR,
 		                     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 		                     "origin not set");
-		return FALSE;
+		return NULL;
 	}
 
-	/* do sync call */
-	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
-	results = pk_client_repo_enable (PK_CLIENT (task_enable_repo),
-	                                 repo_id,
-	                                 TRUE,
-	                                 cancellable,
-	                                 gs_packagekit_helper_cb, helper,
-	                                 error);
-
-	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
-	if (results != NULL &&
-	    (error_code = pk_results_get_error_code (results)) != NULL &&
-	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
-		g_clear_error (error);
-	} else if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-		gs_utils_error_add_origin_id (error, app);
-		return FALSE;
+	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+	repo_app = g_hash_table_lookup (self->cached_sources, repo_id);
+	if (repo_app != NULL) {
+		g_object_ref (repo_app);
+	} else {
+		repo_app = gs_app_new (repo_id);
+		gs_app_set_management_plugin (repo_app, plugin);
+		gs_app_set_kind (repo_app, AS_COMPONENT_KIND_REPOSITORY);
+		gs_app_set_bundle_kind (repo_app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (repo_app, AS_COMPONENT_SCOPE_SYSTEM);
+		gs_app_add_quirk (repo_app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+		gs_plugin_packagekit_set_packaging_format (plugin, repo_app);
 	}
 
-	/* now that the repo is enabled, the app (not the repo!) moves from
-	 * UNAVAILABLE state to AVAILABLE */
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	g_clear_pointer (&locker, g_mutex_locker_free);
 
-	/* Construct a simple fake GsApp for the repository, used only by the signal handler */
-	repo_app = gs_app_new (repo_id);
-	gs_app_set_state (repo_app, GS_APP_STATE_INSTALLED);
-	gs_plugin_repository_changed (plugin, repo_app);
-
-	return TRUE;
+	return g_steal_pointer (&repo_app);
 }
 
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+typedef struct {
+	/* Input data. */
+	GsAppList *apps;  /* (owned) (not nullable) */
+	GsPluginInstallAppsFlags flags;
+	GsPluginProgressCallback progress_callback;
+	gpointer progress_user_data;
+
+	/* In-progress data. */
+	guint n_pending_enable_repo_ops;
+	guint n_pending_install_ops;
+	GError *saved_enable_repo_error;  /* (owned) (nullable) */
+	GError *saved_install_error;  /* (owned) (nullable) */
+	GsAppList *remote_apps_to_install;  /* (owned) (nullable) */
+	GsAppList *local_apps_to_install;  /* (owned) (nullable) */
+	GsPackagekitHelper *progress_data;  /* (owned) (nullable) */
+} InstallAppsData;
+
+static void
+install_apps_data_free (InstallAppsData *data)
+{
+	g_clear_object (&data->apps);
+	g_clear_object (&data->remote_apps_to_install);
+	g_clear_object (&data->local_apps_to_install);
+	g_clear_object (&data->progress_data);
+
+	/* Error should have been propagated by now, and all pending ops completed. */
+	g_assert (data->saved_enable_repo_error == NULL);
+	g_assert (data->saved_install_error == NULL);
+	g_assert (data->n_pending_enable_repo_ops == 0);
+	g_assert (data->n_pending_install_ops == 0);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (InstallAppsData, install_apps_data_free)
+
+static void finish_install_apps_enable_repo_op (GTask  *task,
+                                                GError *error);
+static void install_apps_enable_repo_cb (GObject      *source_object,
+                                         GAsyncResult *result,
+                                         gpointer      user_data);
+static void install_apps_remote_cb (GObject      *source_object,
+                                    GAsyncResult *result,
+                                    gpointer      user_data);
+static void install_apps_local_cb (GObject      *source_object,
+                                   GAsyncResult *result,
+                                   gpointer      user_data);
+static void finish_install_apps_install_op (GTask  *task,
+                                            GError *error);
+
+static void
+gs_plugin_packagekit_install_apps_async (GsPlugin                           *plugin,
+                                         GsAppList                          *apps,
+                                         GsPluginInstallAppsFlags            flags,
+                                         GsPluginProgressCallback            progress_callback,
+                                         gpointer                            progress_user_data,
+                                         GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                         gpointer                            app_needs_user_action_data,
+                                         GCancellable                       *cancellable,
+                                         GAsyncReadyCallback                 callback,
+                                         gpointer                            user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	g_autoptr(GsAppList) addons = NULL;
-	GPtrArray *source_ids;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(GTask) task = NULL;
+	InstallAppsData *data;
+	g_autoptr(InstallAppsData) data_owned = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(GHashTable) repos = NULL;
+	GHashTableIter iter;
+	gpointer value;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_install_apps_async);
+
+	data = data_owned = g_new0 (InstallAppsData, 1);
+	data->flags = flags;
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	data->apps = g_object_ref (apps);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) install_apps_data_free);
+
+	/* Start a load of operations in parallel to install the apps, in the
+	 * following structure:
+	 *
+	 *          gs_plugin_packagekit_install_apps_async
+	 *                             |
+	 *                    /--------+------------------------------------+--------------------------\
+	 *                    v                                             v                          v
+	 * gs_plugin_packagekit_enable_repository_async  gs_plugin_packagekit_enable_repository_async  …
+	 *                    |                                             |                          |
+	 *                    \--------+------------------------------------+--------------------------/
+	 *                             |
+	 *              /--------------+----------------\
+	 *              |                               |
+	 *              v                               v
+	 * pk_task_install_packages_async  pk_task_install_files_async
+	 *              |                               |
+	 *              \--------------+----------------/
+	 *                             |
+	 *                             v
+	 *                finish_install_apps_install_op
+	 *
+	 * When all installs are finished for all apps,
+	 * finish_install_apps_install_op() will return success/error for the
+	 * overall #GTask.
+	 *
+	 * FIXME: Tie @progress_callback to number of completed operations. */
+	data->n_pending_enable_repo_ops = 1;
+
+	/* Firstly, find all the apps which need their origin repo to be enabled
+	 * first, deduplicate the repos and enable them. */
+	repos = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_object_unref);
+
+	for (guint i = 0; i < gs_app_list_length (apps); i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+
+		/* enable repo, handled by dedicated function */
+		g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
+
+		if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
+			g_autoptr(GsApp) repo_app = NULL;
+			const gchar *repo_app_id;
+
+			repo_app = gs_plugin_packagekit_dup_app_origin_repo (self, app, &local_error);
+			if (repo_app == NULL) {
+				finish_install_apps_enable_repo_op (task, g_steal_pointer (&local_error));
+				return;
+			}
+
+			gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
+			repo_app_id = gs_app_get_id (repo_app);
+			g_hash_table_replace (repos, (gpointer) repo_app_id, g_steal_pointer (&repo_app));
+		}
+	}
+
+	/* Enable the repos. */
+	g_hash_table_iter_init (&iter, repos);
+
+	while (g_hash_table_iter_next (&iter, NULL, &value)) {
+		GsApp *repo_app = value;
+
+		data->n_pending_enable_repo_ops++;
+		gs_plugin_packagekit_enable_repository_async (plugin, repo_app,
+							      interactive ? GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE : GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_NONE,
+							      cancellable, install_apps_enable_repo_cb, g_object_ref (task));
+	}
+
+	finish_install_apps_enable_repo_op (task, NULL);
+}
+
+static void
+install_apps_enable_repo_cb (GObject      *source_object,
+                             GAsyncResult *result,
+                             gpointer      user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	gs_plugin_packagekit_enable_repository_finish (GS_PLUGIN (self), result, &local_error);
+	finish_install_apps_enable_repo_op (task, g_steal_pointer (&local_error));
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_install_apps_enable_repo_op (GTask  *task,
+                                    GError *error)
+{
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	InstallAppsData *data = g_task_get_task_data (task);
+	gboolean interactive = (data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+	g_autoptr(GPtrArray) overall_remote_package_ids = NULL;
+	g_autoptr(GPtrArray) overall_local_package_ids = NULL;
 	g_autoptr(PkTask) task_install = NULL;
-	const gchar *package_id;
-	guint i;
-	g_autofree gchar *local_filename = NULL;
-	g_auto(GStrv) package_ids = NULL;
-	g_autoptr(GPtrArray) array_package_ids = NULL;
-	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (error_owned != NULL && data->saved_enable_repo_error == NULL)
+		data->saved_enable_repo_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while enabling repos to install apps: %s", error_owned->message);
 
-	/* enable repo, handled by dedicated function */
-	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	g_assert (data->n_pending_enable_repo_ops > 0);
+	data->n_pending_enable_repo_ops--;
 
-	/* queue for install if installation needs the network */
-	if (!gs_plugin_get_network_available (plugin)) {
-		gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
-		return TRUE;
+	if (data->n_pending_enable_repo_ops > 0)
+		return;
+
+	/* If enabling any repos failed, abandon the entire operation.
+	 * Otherwise, carry on to installing apps. */
+	if (data->saved_enable_repo_error != NULL) {
+		g_autoptr(GsPluginEvent) event = NULL;
+
+		event = gs_plugin_event_new ("error", data->saved_enable_repo_error,
+					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	overall_remote_package_ids = g_ptr_array_new_with_free_func (NULL);
+	overall_local_package_ids = g_ptr_array_new_with_free_func (g_free);
+	data->remote_apps_to_install = gs_app_list_new ();
+	data->local_apps_to_install = gs_app_list_new ();
+
+	/* Mark all the unavailable apps as available, now that their repos
+	 * are enabled. */
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
+
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+
+		if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE)
+			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	}
+
+	/* Next, group the apps into those which need internet to install,
+	 * and those which can be installed locally, and grab their package
+	 * IDs ready to pass to PackageKit. */
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
+
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+
+		/* queue for install if installation needs the network */
+		if (!gs_plugin_get_network_available (GS_PLUGIN (self)) &&
+		    gs_app_get_state (app) != GS_APP_STATE_AVAILABLE_LOCAL) {
+			gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
+			continue;
+		}
+
+		switch (gs_app_get_state (app)) {
+		case GS_APP_STATE_AVAILABLE:
+		case GS_APP_STATE_UPDATABLE:
+		case GS_APP_STATE_QUEUED_FOR_INSTALL: {
+			GPtrArray *source_ids;
+			g_autoptr(GsAppList) addons = NULL;
+			g_autoptr(GPtrArray) array_package_ids = NULL;
+
+			source_ids = gs_app_get_source_ids (app);
+			if (source_ids->len == 0) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				g_set_error_literal (&local_error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						     "installing not available");
+
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_report_event (GS_PLUGIN (self), event);
+				g_clear_error (&local_error);
+
+				continue;
+			}
+
+			addons = gs_app_dup_addons (app);
+			array_package_ids = app_list_get_package_ids (addons,
+								      gs_app_get_to_be_installed,
+								      TRUE);
+
+			for (guint j = 0; j < source_ids->len; j++) {
+				const gchar *package_id = g_ptr_array_index (source_ids, j);
+				if (package_is_installed (package_id))
+					continue;
+				g_ptr_array_add (array_package_ids, (gpointer) package_id);
+			}
+
+			if (array_package_ids->len == 0) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				g_set_error_literal (&local_error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						     "no packages to install");
+
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_report_event (GS_PLUGIN (self), event);
+				g_clear_error (&local_error);
+
+				continue;
+			}
+
+			/* Add to the big array. */
+			g_ptr_array_extend_and_steal (overall_remote_package_ids,
+						      g_steal_pointer (&array_package_ids));
+
+			for (guint j = 0; j < gs_app_list_length (addons); j++) {
+				GsApp *addon = gs_app_list_index (addons, j);
+				if (gs_app_get_to_be_installed (addon))
+					gs_app_list_add (data->remote_apps_to_install, addon);
+			}
+			gs_app_list_add (data->remote_apps_to_install, app);
+
+			break;
+		}
+		case GS_APP_STATE_AVAILABLE_LOCAL: {
+			g_autofree gchar *local_filename = NULL;
+			g_auto(GStrv) package_ids = NULL;
+
+			if (gs_app_get_local_file (app) == NULL) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				g_set_error_literal (&local_error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						     "local package, but no filename");
+
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_report_event (GS_PLUGIN (self), event);
+				g_clear_error (&local_error);
+
+				continue;
+			}
+			local_filename = g_file_get_path (gs_app_get_local_file (app));
+			package_ids = g_strsplit (local_filename, "\t", -1);
+
+			/* Add to the big array. */
+			for (gsize j = 0; package_ids[j] != NULL; j++)
+				g_ptr_array_add (overall_local_package_ids, g_steal_pointer (&package_ids[j]));
+			gs_app_list_add (data->local_apps_to_install, app);
+
+			break;
+		}
+		default: {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			g_set_error (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "do not know how to install app in state %s",
+				     gs_app_state_to_string (gs_app_get_state (app)));
+
+			event = gs_plugin_event_new ("error", local_error,
+						     NULL);
+			if (interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (GS_PLUGIN (self), event);
+			g_clear_error (&local_error);
+
+			continue;
+		}
+		}
 	}
 
 	/* Set up a #PkTask to handle the D-Bus calls to packagekitd. */
-	task_install = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	data->progress_data = gs_packagekit_helper_new (GS_PLUGIN (self));
+	task_install = gs_packagekit_task_new (GS_PLUGIN (self));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, interactive);
 
-	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
-		/* get everything up front we need */
-		source_ids = gs_app_get_source_ids (app);
-		if (source_ids->len == 0) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "installing not available");
-			return FALSE;
+	data->n_pending_install_ops = 1;  /* to track setup */
+
+	/* Install the remote packages. */
+	if (overall_remote_package_ids->len > 0 &&
+	    !(data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_DOWNLOAD) &&
+	    !(data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY)) {
+		/* NULL-terminate the array. */
+		g_ptr_array_add (overall_remote_package_ids, NULL);
+
+		/* Update the app’s and its addons‘ states. */
+		for (guint i = 0; i < gs_app_list_length (data->remote_apps_to_install); i++) {
+			GsApp *app = gs_app_list_index (data->remote_apps_to_install, i);
+			gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+			gs_packagekit_helper_add_app (data->progress_data, app);
 		}
-		package_ids = g_new0 (gchar *, 2);
-		package_ids[0] = g_strdup (g_ptr_array_index (source_ids, 0));
 
-		/* enable the repo where the unavailable app is coming from */
-		if (!gs_plugin_app_origin_repo_enable (self, task_install, app, cancellable, error))
-			return FALSE;
+		data->n_pending_install_ops++;
+		pk_task_install_packages_async (task_install,
+		                                (gchar **) overall_remote_package_ids->pdata,
+		                                cancellable,
+		                                gs_packagekit_helper_cb, data->progress_data,
+		                                install_apps_remote_cb,
+		                                g_object_ref (task));
+	}
 
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+	/* And, in parallel, install the local packages. */
+	if (overall_local_package_ids->len > 0 &&
+	    !(data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY)) {
+		/* NULL-terminate the array. */
+		g_ptr_array_add (overall_local_package_ids, NULL);
 
-		/* FIXME: this is a hack, to allow PK time to re-initialize
-		 * everything in order to match an actual result. The root cause
-		 * is probably some kind of hard-to-debug race in the daemon. */
-		g_usleep (G_USEC_PER_SEC * 3);
+		/* Update the apps’ states. */
+		for (guint i = 0; i < gs_app_list_length (data->local_apps_to_install); i++) {
+			GsApp *app = gs_app_list_index (data->local_apps_to_install, i);
+			gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+			gs_packagekit_helper_add_app (data->progress_data, app);
+		}
 
-		/* actually install the package */
-		gs_packagekit_helper_add_app (helper, app);
+		data->n_pending_install_ops++;
+		pk_task_install_files_async (task_install,
+		                             (gchar **) overall_local_package_ids->pdata,
+		                             cancellable,
+		                             gs_packagekit_helper_cb, data->progress_data,
+		                             install_apps_local_cb,
+		                             g_object_ref (task));
+	}
 
-		results = pk_task_install_packages_sync (task_install,
-							 package_ids,
-							 cancellable,
-							 gs_packagekit_helper_cb, helper,
-							 error);
+	finish_install_apps_install_op (task, NULL);
+}
 
-		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
+static void
+install_apps_remote_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data)
+{
+	PkTask *task_install = PK_TASK (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	InstallAppsData *data = g_task_get_task_data (task);
+	gboolean interactive = (data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_task_generic_finish (task_install, result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
+		g_autoptr(GsPluginEvent) event = NULL;
+
+		for (guint i = 0; i < gs_app_list_length (data->remote_apps_to_install); i++) {
+			GsApp *app = gs_app_list_index (data->remote_apps_to_install, i);
 			gs_app_set_state_recover (app);
-			return FALSE;
 		}
 
-		/* state is known */
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 
-		/* if we remove the app again later, we should be able to
-		 * cancel the installation if we'd never installed it */
-		gs_app_set_allow_cancel (app, TRUE);
+		event = gs_plugin_event_new ("error", local_error,
+					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+		g_clear_error (&local_error);
+
+		finish_install_apps_install_op (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	for (guint i = 0; i < gs_app_list_length (data->remote_apps_to_install); i++) {
+		GsApp *app = gs_app_list_index (data->remote_apps_to_install, i);
+
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
 		/* no longer valid */
 		gs_app_clear_source_ids (app);
-		return TRUE;
 	}
 
-	/* get the list of available package ids to install */
-	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_AVAILABLE:
-	case GS_APP_STATE_UPDATABLE:
-	case GS_APP_STATE_QUEUED_FOR_INSTALL:
-		source_ids = gs_app_get_source_ids (app);
-		if (source_ids->len == 0) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "installing not available");
-			return FALSE;
-		}
+	finish_install_apps_install_op (task, NULL);
+}
 
-		addons = gs_app_dup_addons (app);
-		array_package_ids = app_list_get_package_ids (addons,
-							      gs_app_get_to_be_installed,
-							      TRUE);
+static void
+install_apps_local_cb (GObject      *source_object,
+                       GAsyncResult *result,
+                       gpointer      user_data)
+{
+	PkTask *task_install = PK_TASK (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	InstallAppsData *data = g_task_get_task_data (task);
+	gboolean interactive = (data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-		for (i = 0; i < source_ids->len; i++) {
-			package_id = g_ptr_array_index (source_ids, i);
-			if (package_is_installed (package_id))
-				continue;
-			g_ptr_array_add (array_package_ids, (gpointer) package_id);
-		}
+	results = pk_task_generic_finish (task_install, result, &local_error);
 
-		if (array_package_ids->len == 0) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "no packages to install");
-			return FALSE;
-		}
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
+		g_autoptr(GsPluginEvent) event = NULL;
 
-		/* NULL-terminate the array */
-		g_ptr_array_add (array_package_ids, NULL);
-
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-
-		for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-			GsApp *addon = gs_app_list_index (addons, i);
-			if (gs_app_get_to_be_installed (addon))
-				gs_app_set_state (addon, GS_APP_STATE_INSTALLING);
-		}
-		gs_packagekit_helper_add_app (helper, app);
-
-		results = pk_task_install_packages_sync (task_install,
-							 (gchar **) array_package_ids->pdata,
-							 cancellable,
-							 gs_packagekit_helper_cb, helper,
-							 error);
-
-		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-			for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-				GsApp *addon = gs_app_list_index (addons, i);
-				if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING)
-					gs_app_set_state_recover (addon);
-			}
+		for (guint i = 0; i < gs_app_list_length (data->local_apps_to_install); i++) {
+			GsApp *app = gs_app_list_index (data->local_apps_to_install, i);
 			gs_app_set_state_recover (app);
-			return FALSE;
 		}
 
-		/* state is known */
-		for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-			GsApp *addon = gs_app_list_index (addons, i);
-			if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING) {
-				gs_app_set_state (addon, GS_APP_STATE_INSTALLED);
-				gs_app_clear_source_ids (addon);
-			}
-		}
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 
-		break;
-	case GS_APP_STATE_AVAILABLE_LOCAL:
-		if (gs_app_get_local_file (app) == NULL) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "local package, but no filename");
-			return FALSE;
-		}
-		local_filename = g_file_get_path (gs_app_get_local_file (app));
-		package_ids = g_strsplit (local_filename, "\t", -1);
+		event = gs_plugin_event_new ("error", local_error,
+					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+		g_clear_error (&local_error);
 
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		gs_packagekit_helper_add_app (helper, app);
+		finish_install_apps_install_op (task, g_steal_pointer (&local_error));
+		return;
+	}
 
-		results = pk_task_install_files_sync (task_install,
-						      package_ids,
-						      cancellable,
-						      gs_packagekit_helper_cb, helper,
-						      error);
-
-		if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
+	for (guint i = 0; i < gs_app_list_length (data->local_apps_to_install); i++) {
+		GsApp *app = gs_app_list_index (data->local_apps_to_install, i);
 
 		/* state is known */
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
@@ -610,20 +938,46 @@ gs_plugin_app_install (GsPlugin *plugin,
 		/* get the new icon from the package */
 		gs_app_set_local_file (app, NULL);
 		gs_app_remove_all_icons (app);
-		break;
-	default:
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "do not know how to install app in state %s",
-			     gs_app_state_to_string (gs_app_get_state (app)));
-		return FALSE;
+
+		/* no longer valid */
+		gs_app_clear_source_ids (app);
 	}
 
-	/* no longer valid */
-	gs_app_clear_source_ids (app);
+	finish_install_apps_install_op (task, NULL);
+}
 
-	return TRUE;
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_install_apps_install_op (GTask  *task,
+                                GError *error)
+{
+	InstallAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && data->saved_install_error == NULL)
+		data->saved_install_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while installing apps: %s", error_owned->message);
+
+	g_assert (data->n_pending_install_ops > 0);
+	data->n_pending_install_ops--;
+
+	if (data->n_pending_install_ops > 0)
+		return;
+
+	/* Get the results of the parallel ops. */
+	if (data->saved_install_error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->saved_install_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_packagekit_install_apps_finish (GsPlugin      *plugin,
+                                          GAsyncResult  *result,
+                                          GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -4523,6 +4877,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->enable_repository_finish = gs_plugin_packagekit_enable_repository_finish;
 	plugin_class->disable_repository_async = gs_plugin_packagekit_disable_repository_async;
 	plugin_class->disable_repository_finish = gs_plugin_packagekit_disable_repository_finish;
+	plugin_class->install_apps_async = gs_plugin_packagekit_install_apps_async;
+	plugin_class->install_apps_finish = gs_plugin_packagekit_install_apps_finish;
 	plugin_class->update_apps_async = gs_plugin_packagekit_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_packagekit_update_apps_finish;
 }

@@ -38,6 +38,7 @@
 #include "gs-enums.h"
 #include "gs-plugin-job.h"
 #include "gs-plugin-job-private.h"
+#include "gs-plugin-job-install-apps.h"
 #include "gs-plugin-job-update-apps.h"
 #include "gs-plugin-types.h"
 #include "gs-utils.h"
@@ -146,6 +147,8 @@ job_contains_app_by_unique_id (GsPluginJob *job,
 	 * implement an interface to query which apps they are acting on. */
 	if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job))
 		apps = gs_plugin_job_update_apps_get_apps (GS_PLUGIN_JOB_UPDATE_APPS (job));
+	else if (GS_IS_PLUGIN_JOB_INSTALL_APPS (job))
+		apps = gs_plugin_job_install_apps_get_apps (GS_PLUGIN_JOB_INSTALL_APPS (job));
 
 	if (apps == NULL)
 		return FALSE;

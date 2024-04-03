@@ -1560,7 +1560,7 @@ gs_plugin_rpm_ostree_update_apps_async (GsPlugin                           *plug
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
 						    progress_callback, progress_user_data,
@@ -1893,13 +1893,47 @@ gs_rpmostree_repo_enable (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-                       GsApp *app,
-                       GCancellable *cancellable,
-                       GError **error)
+static void install_apps_thread_cb (GTask        *task,
+                                    gpointer      source_object,
+                                    gpointer      task_data,
+                                    GCancellable *cancellable);
+
+static void
+gs_plugin_rpm_ostree_install_apps_async (GsPlugin                           *plugin,
+                                         GsAppList                          *apps,
+                                         GsPluginInstallAppsFlags            flags,
+                                         GsPluginProgressCallback            progress_callback,
+                                         gpointer                            progress_user_data,
+                                         GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                         gpointer                            app_needs_user_action_data,
+                                         GCancellable                       *cancellable,
+                                         GAsyncReadyCallback                 callback,
+                                         gpointer                            user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE);
+
+	task = gs_plugin_install_apps_data_new_task (plugin, apps, flags,
+						    progress_callback, progress_user_data,
+						    app_needs_user_action_callback, app_needs_user_action_data,
+						    cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_install_apps_async);
+
+	/* Queue a job to install the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				install_apps_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+install_apps_thread_cb (GTask        *task,
+                        gpointer      source_object,
+                        gpointer      task_data,
+                        GCancellable *cancellable)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
+	GsPluginInstallAppsData *data = task_data;
 	const gchar *install_package = NULL;
 	g_autofree gchar *local_filename = NULL;
 	g_autofree gchar *transaction_address = NULL;
@@ -1909,109 +1943,132 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE;
 
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	assert_in_worker (self);
 
-	/* enable repo, handled by dedicated function */
-	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
-
-	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
-
-	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_AVAILABLE:
-	case GS_APP_STATE_QUEUED_FOR_INSTALL:
-		if (gs_app_get_source_default (app) == NULL) {
-			g_set_error_literal (error,
-			                     GS_PLUGIN_ERROR,
-			                     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			                     "no source set");
-			return FALSE;
-		}
-
-		install_package = gs_app_get_source_default (app);
-		break;
-	case GS_APP_STATE_AVAILABLE_LOCAL:
-		if (gs_app_get_local_file (app) == NULL) {
-			g_set_error_literal (error,
-			                     GS_PLUGIN_ERROR,
-			                     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			                     "local package, but no filename");
-			return FALSE;
-		}
-
-		local_filename = g_file_get_path (gs_app_get_local_file (app));
-		break;
-	default:
-		g_set_error (error,
-		             GS_PLUGIN_ERROR,
-		             GS_PLUGIN_ERROR_NOT_SUPPORTED,
-		             "do not know how to install app in state %s",
-		             gs_app_state_to_string (gs_app_get_state (app)));
-		return FALSE;
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
-	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
-		return FALSE;
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
 
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-	tp->app = g_object_ref (app);
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
 
-	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_NO_PULL_BASE);
-	done = FALSE;
-	while (!done) {
-		done = TRUE;
-		if (!rpmostree_update_deployment (os_proxy,
-						  install_package,
-						  NULL /* remove package */,
-						  local_filename,
-						  options,
-						  interactive,
-						  &transaction_address,
-						  cancellable,
-						  &local_error)) {
-			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
-				g_clear_error (&local_error);
-				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
-					gs_app_set_state_recover (app);
-					return FALSE;
-				}
-				done = FALSE;
-				continue;
+		/* enable repo, handled by dedicated function */
+		g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
+
+		switch (gs_app_get_state (app)) {
+		case GS_APP_STATE_AVAILABLE:
+		case GS_APP_STATE_QUEUED_FOR_INSTALL:
+			if (gs_app_get_source_default (app) == NULL) {
+				g_task_return_new_error (task,
+							 GS_PLUGIN_ERROR,
+							 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+							 "no source set");
+				return;
 			}
-			if (local_error)
-				g_propagate_error (error, g_steal_pointer (&local_error));
-			gs_rpmostree_error_convert (error);
-			gs_app_set_state_recover (app);
-			return FALSE;
+
+			install_package = gs_app_get_source_default (app);
+			break;
+		case GS_APP_STATE_AVAILABLE_LOCAL:
+			if (gs_app_get_local_file (app) == NULL) {
+				g_task_return_new_error (task,
+							 GS_PLUGIN_ERROR,
+							 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+							 "local package, but no filename");
+				return;
+			}
+
+			local_filename = g_file_get_path (gs_app_get_local_file (app));
+			break;
+		default:
+			g_task_return_new_error (task,
+						 GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "do not know how to install app in state %s",
+						 gs_app_state_to_string (gs_app_get_state (app)));
+			return;
 		}
+
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+		tp->app = g_object_ref (app);
+
+		options = make_rpmostree_options_variant (RPMOSTREE_OPTION_NO_PULL_BASE |
+							  ((data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_DOWNLOAD) ? RPMOSTREE_OPTION_CACHE_ONLY : 0) |
+							  ((data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY) ? RPMOSTREE_OPTION_DOWNLOAD_ONLY : 0));
+		done = FALSE;
+		while (!done) {
+			done = TRUE;
+			if (!rpmostree_update_deployment (os_proxy,
+							  install_package,
+							  NULL /* remove package */,
+							  local_filename,
+							  options,
+							  interactive,
+							  &transaction_address,
+							  cancellable,
+							  &local_error)) {
+				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+					g_clear_error (&local_error);
+					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+						gs_app_set_state_recover (app);
+						g_task_return_error (task, g_steal_pointer (&local_error));
+						return;
+					}
+					done = FALSE;
+					continue;
+				}
+
+				gs_app_set_state_recover (app);
+				gs_rpmostree_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+
+		/* FIXME: Tie @tp to data->progress_callback. */
+		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
+			                                         transaction_address,
+			                                         tp,
+			                                         interactive,
+			                                         cancellable,
+			                                         &local_error)) {
+			gs_app_set_state_recover (app);
+			gs_rpmostree_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		/* state is known */
+		gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
+
+		/* get the new icon from the package */
+		gs_app_set_local_file (app, NULL);
+		gs_app_remove_all_icons (app);
+
+		/* no longer valid */
+		gs_app_clear_source_ids (app);
 	}
 
-	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
-	                                                 transaction_address,
-	                                                 tp,
-	                                                 interactive,
-	                                                 cancellable,
-	                                                 error)) {
-		gs_rpmostree_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
-	}
+	g_task_return_boolean (task, TRUE);
+}
 
-	/* state is known */
-	gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
-
-	/* get the new icon from the package */
-	gs_app_set_local_file (app, NULL);
-	gs_app_remove_all_icons (app);
-
-	/* no longer valid */
-	gs_app_clear_source_ids (app);
-
-	return TRUE;
+static gboolean
+gs_plugin_rpm_ostree_install_apps_finish (GsPlugin      *plugin,
+                                          GAsyncResult  *result,
+                                          GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -3342,6 +3399,8 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->disable_repository_finish = gs_plugin_rpm_ostree_disable_repository_finish;
 	plugin_class->list_apps_async = gs_plugin_rpm_ostree_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_rpm_ostree_list_apps_finish;
+	plugin_class->install_apps_async = gs_plugin_rpm_ostree_install_apps_async;
+	plugin_class->install_apps_finish = gs_plugin_rpm_ostree_install_apps_finish;
 	plugin_class->update_apps_async = gs_plugin_rpm_ostree_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_rpm_ostree_update_apps_finish;
 }
