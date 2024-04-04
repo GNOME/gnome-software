@@ -723,7 +723,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 			g_ptr_array_extend_and_steal (overall_remote_package_ids,
 						      g_steal_pointer (&array_package_ids));
 
-			for (guint j = 0; j < gs_app_list_length (addons); j++) {
+			for (guint j = 0; addons != NULL && j < gs_app_list_length (addons); j++) {
 				GsApp *addon = gs_app_list_index (addons, j);
 				if (gs_app_get_to_be_installed (addon))
 					gs_app_list_add (data->remote_apps_to_install, addon);
