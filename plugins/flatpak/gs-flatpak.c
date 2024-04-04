@@ -3993,7 +3993,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			    GError **error)
 {
 	GsApp *runtime;
-	const gchar *remote_name;
+	const gchar *remote_name = NULL;
 	gboolean is_runtime, success;
 	gsize len = 0;
 	GList *txn_ops;
@@ -4152,6 +4152,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		}
 	}
 	g_assert (parsed_ref != NULL);
+	g_assert (remote_name != NULL);
 	g_list_free_full (g_steal_pointer (&txn_ops), g_object_unref);
 
 #if FLATPAK_CHECK_VERSION(1,13,1)
