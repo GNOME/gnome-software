@@ -1886,6 +1886,7 @@ install_apps_thread_cb (GTask        *task,
 				gs_flatpak_error_convert (&local_error);
 
 				event = gs_plugin_event_new ("error", local_error,
+							     "app", app,
 							     NULL);
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -1956,6 +1957,7 @@ install_apps_thread_cb (GTask        *task,
 				gs_flatpak_error_convert (&local_error);
 
 				event = gs_plugin_event_new ("error", local_error,
+							     "app", error_app,
 							     NULL);
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);

@@ -687,6 +687,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 						     "installing not available");
 
 				event = gs_plugin_event_new ("error", local_error,
+							     "app", app,
 							     NULL);
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -754,6 +755,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 						     "local package, but no filename");
 
 				event = gs_plugin_event_new ("error", local_error,
+							     "app", app,
 							     NULL);
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -783,6 +785,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 				     gs_app_state_to_string (gs_app_get_state (app)));
 
 			event = gs_plugin_event_new ("error", local_error,
+						     "app", app,
 						     NULL);
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);

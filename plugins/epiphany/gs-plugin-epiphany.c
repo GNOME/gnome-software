@@ -1153,6 +1153,7 @@ gs_plugin_epiphany_install_apps_async (GsPlugin                           *plugi
 				     gs_app_get_id (app), missing_element);
 
 			event = gs_plugin_event_new ("error", local_error,
+						     "app", app,
 						     NULL);
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -1241,6 +1242,7 @@ install_request_token_cb (GObject      *source_object,
 		gs_epiphany_error_convert (&local_error);
 
 		event = gs_plugin_event_new ("error", local_error,
+					     "app", app_data->app,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -1294,6 +1296,7 @@ install_install_cb (GObject      *source_object,
 		gs_epiphany_error_convert (&local_error);
 
 		event = gs_plugin_event_new ("error", local_error,
+					     "app", app_data->app,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);

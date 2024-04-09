@@ -1901,6 +1901,7 @@ install_app_cb (GObject      *source_object,
 		snapd_error_convert (&local_error);
 
 		event = gs_plugin_event_new ("error", local_error,
+					     "app", app_data->app,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
