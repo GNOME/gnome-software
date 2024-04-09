@@ -4157,6 +4157,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 #if FLATPAK_CHECK_VERSION(1,13,1)
 	/* fetch remote ref */
+	g_assert (remote_name != NULL);
 	remote_ref = flatpak_installation_fetch_remote_ref_sync (installation,
 							   remote_name,
 							   flatpak_ref_get_kind (parsed_ref),

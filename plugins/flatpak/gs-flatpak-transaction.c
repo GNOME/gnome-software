@@ -228,6 +228,7 @@ _transaction_ready (FlatpakTransaction *transaction)
 							"\n ├ %s (%p)", flatpak_transaction_operation_get_ref (related_to_op), related_to_op);
 			}
 			g_string_append (debug_message, "\n └ (end)");
+			g_assert (debug_message != NULL);  /* -Wnull-dereference false positive */
 			g_debug ("%s", debug_message->str);
 		}
 	}
