@@ -13,6 +13,8 @@ variables:
   G_MESSAGES_DEBUG: all
   MESON_COMMON_OPTIONS: "--werror --buildtype debug --wrap-mode=nodownload --prefix /usr -Dsoup2=true -Dwebapps=true -Dhardcoded_foss_webapps=false -Dhardcoded_proprietary_webapps=false"
   BUNDLE: "gnome-software-dev.flatpak"
+  # -O2 is needed for -Wnull-dereference to work:
+  CFLAGS: "-O2"
 
 .build:
   before_script:
