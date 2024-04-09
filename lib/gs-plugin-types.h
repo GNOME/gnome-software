@@ -271,6 +271,20 @@ typedef enum {
 } GsPluginInstallAppsFlags;
 
 /**
+ * GsPluginUninstallAppsFlags:
+ * @GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to uninstall apps.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE = 0,
+	GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE = 1 << 0,
+} GsPluginUninstallAppsFlags;
+
+/**
  * GsPluginUpdateAppsFlags:
  * @GS_PLUGIN_UPDATE_APPS_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE: User initiated the job.
@@ -352,7 +366,6 @@ typedef enum {
  * GsPluginAction:
  * @GS_PLUGIN_ACTION_UNKNOWN:			Action is unknown
  * @GS_PLUGIN_ACTION_INSTALL:			Install an app
- * @GS_PLUGIN_ACTION_REMOVE:			Remove an app
  * @GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:		Download a distro upgrade
  * @GS_PLUGIN_ACTION_UPGRADE_TRIGGER:		Trigger a distro upgrade
  * @GS_PLUGIN_ACTION_LAUNCH:			Launch an app
@@ -373,7 +386,6 @@ typedef enum {
 typedef enum {
 	GS_PLUGIN_ACTION_UNKNOWN,
 	GS_PLUGIN_ACTION_INSTALL,
-	GS_PLUGIN_ACTION_REMOVE,
 	GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 	GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 	GS_PLUGIN_ACTION_LAUNCH,

@@ -3615,6 +3615,7 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 			errors->str);
 
 		event = gs_plugin_event_new ("error", error_local,
+					     "app", parent_app,
 					     NULL);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		gs_plugin_report_event (self->plugin, event);

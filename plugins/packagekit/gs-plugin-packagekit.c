@@ -108,6 +108,15 @@ static void reload_proxy_settings_async (GsPluginPackagekit  *self,
 static gboolean reload_proxy_settings_finish (GsPluginPackagekit  *self,
                                               GAsyncResult        *result,
                                               GError             **error);
+static void gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
+                                               GsAppList           *list,
+                                               GsPluginRefineFlags  flags,
+                                               GCancellable        *cancellable,
+                                               GAsyncReadyCallback  callback,
+                                               gpointer             user_data);
+static gboolean gs_plugin_packagekit_refine_finish (GsPlugin      *plugin,
+                                                    GAsyncResult  *result,
+                                                    GError       **error);
 
 static void
 cached_sources_weak_ref_cb (gpointer user_data,
@@ -678,6 +687,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 						     "installing not available");
 
 				event = gs_plugin_event_new ("error", local_error,
+							     "app", app,
 							     NULL);
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -745,6 +755,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 						     "local package, but no filename");
 
 				event = gs_plugin_event_new ("error", local_error,
+							     "app", app,
 							     NULL);
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -774,6 +785,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 				     gs_app_state_to_string (gs_app_get_state (app)));
 
 			event = gs_plugin_event_new ("error", local_error,
+						     "app", app,
 						     NULL);
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -980,89 +992,266 @@ gs_plugin_packagekit_install_apps_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_app_remove (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
+typedef struct {
+	/* Input data. */
+	GsAppList *apps;  /* (owned) (not nullable) */
+	GsPluginUninstallAppsFlags flags;
+	GsPluginProgressCallback progress_callback;
+	gpointer progress_user_data;
+
+	/* In-progress data. */
+	GsAppList *apps_to_uninstall;  /* (owned) (nullable) */
+	GsPackagekitHelper *progress_data;  /* (owned) (nullable) */
+} UninstallAppsData;
+
+static void
+uninstall_apps_data_free (UninstallAppsData *data)
 {
-	const gchar *package_id;
-	GPtrArray *source_ids;
-	g_autoptr(GsAppList) addons = NULL;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_remove = NULL;
-	guint i;
-	guint cnt = 0;
-	g_autoptr(PkResults) results = NULL;
-	g_auto(GStrv) package_ids = NULL;
+	g_clear_object (&data->apps);
+	g_clear_object (&data->apps_to_uninstall);
+	g_clear_object (&data->progress_data);
 
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	g_free (data);
+}
 
-	/* disable repo, handled by dedicated function */
-	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UninstallAppsData, uninstall_apps_data_free)
 
-	/* get the list of available package ids to install */
-	source_ids = gs_app_get_source_ids (app);
-	if (source_ids->len == 0) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "removing not available");
-		return FALSE;
-	}
-	package_ids = g_new0 (gchar *, source_ids->len + 1);
-	for (i = 0; i < source_ids->len; i++) {
-		package_id = g_ptr_array_index (source_ids, i);
-		if (!package_is_installed (package_id))
+static void uninstall_apps_remove_cb (GObject      *source_object,
+                                      GAsyncResult *result,
+                                      gpointer      user_data);
+static void uninstall_apps_refine_cb (GObject      *source_object,
+                                      GAsyncResult *result,
+                                      gpointer      user_data);
+
+static void
+gs_plugin_packagekit_uninstall_apps_async (GsPlugin                           *plugin,
+                                           GsAppList                          *apps,
+                                           GsPluginUninstallAppsFlags          flags,
+                                           GsPluginProgressCallback            progress_callback,
+                                           gpointer                            progress_user_data,
+                                           GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                           gpointer                            app_needs_user_action_data,
+                                           GCancellable                       *cancellable,
+                                           GAsyncReadyCallback                 callback,
+                                           gpointer                            user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GTask) task = NULL;
+	UninstallAppsData *data;
+	g_autoptr(UninstallAppsData) data_owned = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(GPtrArray) overall_package_ids = NULL;
+	g_autoptr(PkTask) task_uninstall = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_uninstall_apps_async);
+
+	data = data_owned = g_new0 (UninstallAppsData, 1);
+	data->flags = flags;
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	data->apps = g_object_ref (apps);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) uninstall_apps_data_free);
+
+	overall_package_ids = g_ptr_array_new_with_free_func (NULL);
+	data->apps_to_uninstall = gs_app_list_new ();
+
+	/* Grab the package IDs from the apps ready to pass to PackageKit. */
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
+		GPtrArray *source_ids;
+		g_autoptr(GPtrArray) array_package_ids = NULL;
+
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 			continue;
-		package_ids[cnt++] = g_strdup (package_id);
-	}
-	if (cnt == 0) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no packages to remove");
-		return FALSE;
-	}
 
-	/* do the action */
-	gs_app_set_state (app, GS_APP_STATE_REMOVING);
-	gs_packagekit_helper_add_app (helper, app);
+		/* disable repo, handled by dedicated function */
+		g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
 
-	task_remove = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_remove), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+		source_ids = gs_app_get_source_ids (app);
+		if (source_ids->len == 0) {
+			g_autoptr(GsPluginEvent) event = NULL;
 
-	results = pk_task_remove_packages_sync (task_remove,
-						package_ids,
-						TRUE, GS_PACKAGEKIT_AUTOREMOVE,
-						cancellable,
-						gs_packagekit_helper_cb, helper,
-						error);
+			g_set_error_literal (&local_error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "uninstalling not available");
 
-	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-		gs_app_set_state_recover (app);
-		return FALSE;
-	}
+			event = gs_plugin_event_new ("error", local_error,
+						     "app", app,
+						     NULL);
+			if (interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (GS_PLUGIN (self), event);
+			g_clear_error (&local_error);
 
-	/* Make sure addons' state is updated as well */
-	addons = gs_app_dup_addons (app);
-	for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-		GsApp *addon = gs_app_list_index (addons, i);
-		if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLED) {
-			gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
-			gs_app_clear_source_ids (addon);
+			continue;
 		}
+
+		array_package_ids = g_ptr_array_new_with_free_func (NULL);
+
+		for (guint j = 0; j < source_ids->len; j++) {
+			const gchar *package_id = g_ptr_array_index (source_ids, j);
+			if (!package_is_installed (package_id))
+				continue;
+			g_ptr_array_add (array_package_ids, (gpointer) package_id);
+		}
+
+		if (array_package_ids->len == 0) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			g_set_error_literal (&local_error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "no packages to uninstall");
+
+			event = gs_plugin_event_new ("error", local_error,
+						     "app", app,
+						     NULL);
+			if (interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (GS_PLUGIN (self), event);
+			g_clear_error (&local_error);
+
+			continue;
+		}
+
+		/* Add to the big array. */
+		g_ptr_array_extend_and_steal (overall_package_ids,
+					      g_steal_pointer (&array_package_ids));
+		gs_app_list_add (data->apps_to_uninstall, app);
 	}
 
-	/* state is not known: we don't know if we can re-install this app */
-	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+	if (overall_package_ids->len == 0) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
-	/* no longer valid */
-	gs_app_clear_source_ids (app);
+	/* NULL-terminate the array. */
+	g_ptr_array_add (overall_package_ids, NULL);
 
-	return TRUE;
+	/* Set up a #PkTask to handle the D-Bus calls to packagekitd.
+	 * FIXME: Tie @progress_callback to number of completed operations. */
+	data->progress_data = gs_packagekit_helper_new (GS_PLUGIN (self));
+	task_uninstall = gs_packagekit_task_new (GS_PLUGIN (self));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_uninstall), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+
+	/* Update the app’s and its addons‘ states. */
+	for (guint i = 0; i < gs_app_list_length (data->apps_to_uninstall); i++) {
+		GsApp *app = gs_app_list_index (data->apps_to_uninstall, i);
+		gs_app_set_state (app, GS_APP_STATE_REMOVING);
+		gs_packagekit_helper_add_app (data->progress_data, app);
+	}
+
+	/* Uninstall the packages. */
+	pk_task_remove_packages_async (task_uninstall,
+	                               (gchar **) overall_package_ids->pdata,
+	                               TRUE  /* allow_deps */,
+	                               GS_PACKAGEKIT_AUTOREMOVE,
+	                               cancellable,
+	                               gs_packagekit_helper_cb, data->progress_data,
+	                               uninstall_apps_remove_cb,
+	                               g_steal_pointer (&task));
+}
+
+static void
+uninstall_apps_remove_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data)
+{
+	PkTask *task_uninstall = PK_TASK (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	UninstallAppsData *data = g_task_get_task_data (task);
+	gboolean interactive = (data->flags & GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_task_generic_finish (task_uninstall, result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
+		g_autoptr(GsPluginEvent) event = NULL;
+
+		for (guint i = 0; i < gs_app_list_length (data->apps_to_uninstall); i++) {
+			GsApp *app = gs_app_list_index (data->apps_to_uninstall, i);
+			gs_app_set_state_recover (app);
+		}
+
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
+
+		event = gs_plugin_event_new ("error", local_error,
+					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+		g_clear_error (&local_error);
+
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	for (guint i = 0; i < gs_app_list_length (data->apps_to_uninstall); i++) {
+		GsApp *app = gs_app_list_index (data->apps_to_uninstall, i);
+		g_autoptr(GsAppList) addons = NULL;
+
+		/* Make sure addons' state is updated as well */
+		addons = gs_app_dup_addons (app);
+		for (guint j = 0; addons != NULL && j < gs_app_list_length (addons); j++) {
+			GsApp *addon = gs_app_list_index (addons, j);
+			if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLED) {
+				gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
+				gs_app_clear_source_ids (addon);
+			}
+		}
+
+		/* state is not known: we don't know if we can re-install this app */
+		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+
+		/* no longer valid */
+		gs_app_clear_source_ids (app);
+	}
+
+	/* Refine the apps so their state is up to date again. */
+	gs_plugin_packagekit_refine_async (GS_PLUGIN (self),
+					   data->apps_to_uninstall,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
+					   cancellable,
+					   uninstall_apps_refine_cb,
+					   g_steal_pointer (&task));
+}
+
+static void
+uninstall_apps_refine_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_packagekit_refine_finish (GS_PLUGIN (self), result, &local_error)) {
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
+		g_debug ("Error refining apps after uninstall: %s", local_error->message);
+		g_clear_error (&local_error);
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_packagekit_uninstall_apps_finish (GsPlugin      *plugin,
+                                            GAsyncResult  *result,
+                                            GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -4879,6 +5068,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->disable_repository_finish = gs_plugin_packagekit_disable_repository_finish;
 	plugin_class->install_apps_async = gs_plugin_packagekit_install_apps_async;
 	plugin_class->install_apps_finish = gs_plugin_packagekit_install_apps_finish;
+	plugin_class->uninstall_apps_async = gs_plugin_packagekit_uninstall_apps_async;
+	plugin_class->uninstall_apps_finish = gs_plugin_packagekit_uninstall_apps_finish;
 	plugin_class->update_apps_async = gs_plugin_packagekit_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_packagekit_update_apps_finish;
 }

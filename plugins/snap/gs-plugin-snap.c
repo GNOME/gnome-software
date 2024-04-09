@@ -1901,6 +1901,7 @@ install_app_cb (GObject      *source_object,
 		snapd_error_convert (&local_error);
 
 		event = gs_plugin_event_new ("error", local_error,
+					     "app", app_data->app,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -2063,32 +2064,254 @@ gs_plugin_launch (GsPlugin *plugin,
 	return g_app_info_launch (info, NULL, NULL, error);
 }
 
-gboolean
-gs_plugin_app_remove (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
+typedef struct {
+	/* Input data. */
+	guint n_apps;
+	GsPluginUninstallAppsFlags flags;
+	GsPluginProgressCallback progress_callback;
+	gpointer progress_user_data;
+
+	/* In-progress data. */
+	guint n_pending_ops;
+	GError *saved_error;  /* (owned) (nullable) */
+
+	/* For progress reporting. */
+	guint n_uninstalls_started;
+} UninstallAppsData;
+
+static void
+uninstall_apps_data_free (UninstallAppsData *data)
+{
+	/* Error should have been propagated by now, and all pending ops completed. */
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UninstallAppsData, uninstall_apps_data_free)
+
+typedef struct {
+	GTask *task;  /* (owned) */
+	GsApp *app;  /* (owned) */
+	gchar *name;  /* (owned) (not nullable) */
+	gchar *channel;  /* (owned) (not nullable) */
+} UninstallSingleAppData;
+
+static void
+uninstall_single_app_data_free (UninstallSingleAppData *data)
+{
+	g_clear_object (&data->app);
+	g_clear_object (&data->task);
+	g_free (data->name);
+	g_free (data->channel);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UninstallSingleAppData, uninstall_single_app_data_free)
+
+static void uninstall_progress_cb (SnapdClient *client,
+                                   SnapdChange *change,
+                                   gpointer     deprecated,
+                                   gpointer     user_data);
+static void uninstall_app_cb (GObject      *source_object,
+                              GAsyncResult *result,
+                              gpointer      user_data);
+static void finish_uninstall_apps_op (GTask  *task,
+                                      GError *error);
+
+static void
+gs_plugin_snap_uninstall_apps_async (GsPlugin                           *plugin,
+                                     GsAppList                          *apps,
+                                     GsPluginUninstallAppsFlags          flags,
+                                     GsPluginProgressCallback            progress_callback,
+                                     gpointer                            progress_user_data,
+                                     GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                     gpointer                            app_needs_user_action_data,
+                                     GCancellable                       *cancellable,
+                                     GAsyncReadyCallback                 callback,
+                                     gpointer                            user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
+	g_autoptr(GTask) task = NULL;
+	UninstallAppsData *data;
+	g_autoptr(UninstallAppsData) data_owned = NULL;
+	gboolean interactive = flags & GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE;
 	g_autoptr(SnapdClient) client = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
 
-	/* We can only remove apps we know of */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_uninstall_apps_async);
 
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
+	data = data_owned = g_new0 (UninstallAppsData, 1);
+	data->flags = flags;
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	data->n_apps = gs_app_list_length (apps);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) uninstall_apps_data_free);
 
-	gs_app_set_state (app, GS_APP_STATE_REMOVING);
-	if (!snapd_client_remove2_sync (client, SNAPD_REMOVE_FLAGS_NONE, gs_app_get_metadata_item (app, "snap::name"), progress_cb, app, cancellable, error)) {
-		gs_app_set_state_recover (app);
-		snapd_error_convert (error);
-		return FALSE;
+	client = get_client (self, interactive, &local_error);
+	if (client == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	return TRUE;
+
+	/* Start a load of operations in parallel to uninstall the apps.
+	 *
+	 * When all uninstalls are finished for all apps, finish_uninstall_apps_op()
+	 * will return success/error for the overall #GTask. */
+	data->n_pending_ops = 1;
+	data->n_uninstalls_started = 0;
+
+	for (guint i = 0; i < data->n_apps; i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+		g_autoptr(UninstallSingleAppData) app_data = NULL;
+		const gchar *name;
+
+		/* We can only install apps we know of */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+
+		name = gs_app_get_metadata_item (app, "snap::name");
+
+		app_data = g_new0 (UninstallSingleAppData, 1);
+		app_data->task = g_object_ref (task);
+		app_data->app = g_object_ref (app);
+		app_data->name = g_strdup (name);
+
+		gs_app_set_state (app, GS_APP_STATE_REMOVING);
+
+		data->n_pending_ops++;
+		data->n_uninstalls_started++;
+		snapd_client_remove2_async (client,
+					    SNAPD_REMOVE_FLAGS_NONE,
+					    name,
+					    uninstall_progress_cb,
+					    app_data,
+					    cancellable,
+					    uninstall_app_cb,
+					    g_steal_pointer (&app_data));
+	}
+
+	finish_uninstall_apps_op (task, NULL);
+}
+
+static void
+uninstall_progress_cb (SnapdClient *client,
+                       SnapdChange *change,
+                       gpointer     deprecated,
+                       gpointer     user_data)
+{
+	UninstallSingleAppData *app_data = user_data;
+	GTask *task = app_data->task;
+	GsPluginSnap *self = g_task_get_source_object (task);
+	UninstallAppsData *data = g_task_get_task_data (task);
+	GPtrArray *tasks;
+	gint64 done = 0, total = 0;
+	guint percentage;
+
+	tasks = snapd_change_get_tasks (change);
+	for (guint i = 0; i < tasks->len; i++) {
+		SnapdTask *snap_task = tasks->pdata[i];
+
+		done += snapd_task_get_progress_done (snap_task);
+		total += snapd_task_get_progress_total (snap_task);
+	}
+
+	if (total > 0)
+		percentage = (guint) (100 * done / total);
+	else
+		percentage = GS_APP_PROGRESS_UNKNOWN;
+	gs_app_set_progress (app_data->app, percentage);
+
+	/* Basic progress reporting for the whole operation. If there’s more
+	 * than one app being uninstalled, it reports the number of completed
+	 * uninstalls. If there’s only one, it reports the same percentage as
+	 * above. */
+	if (data->progress_callback != NULL) {
+		guint overall_percentage;
+
+		if (data->n_uninstalls_started <= 1)
+			overall_percentage = percentage;
+		else
+			overall_percentage = (100 * (data->n_uninstalls_started - data->n_pending_ops)) / data->n_uninstalls_started;
+
+		data->progress_callback (GS_PLUGIN (self), overall_percentage, data->progress_user_data);
+	}
+}
+
+static void
+uninstall_app_cb (GObject      *source_object,
+                  GAsyncResult *result,
+                  gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(UninstallSingleAppData) app_data = g_steal_pointer (&user_data);
+	GTask *task = app_data->task;
+	GsPluginSnap *self = g_task_get_source_object (task);
+	UninstallAppsData *data = g_task_get_task_data (task);
+	gboolean interactive = (data->flags & GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
+
+	snapd_client_remove2_finish (client, result, &local_error);
+
+	if (local_error != NULL) {
+		g_autoptr(GsPluginEvent) event = NULL;
+
+		gs_app_set_state_recover (app_data->app);
+		snapd_error_convert (&local_error);
+
+		event = gs_plugin_event_new ("error", local_error,
+					     "app", app_data->app,
+					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+		g_clear_error (&local_error);
+
+		finish_uninstall_apps_op (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Uninstalled! */
+	gs_app_set_state (app_data->app, GS_APP_STATE_AVAILABLE);
+
+	finish_uninstall_apps_op (task, NULL);
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_uninstall_apps_op (GTask  *task,
+                          GError *error)
+{
+	UninstallAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while uninstalling apps: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops > 0)
+		return;
+
+	/* Get the results of the parallel ops. */
+	if (data->saved_error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->saved_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_snap_uninstall_apps_finish (GsPlugin      *plugin,
+                                      GAsyncResult  *result,
+                                      GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -2337,6 +2560,8 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	plugin_class->list_apps_finish = gs_plugin_snap_list_apps_finish;
 	plugin_class->install_apps_async = gs_plugin_snap_install_apps_async;
 	plugin_class->install_apps_finish = gs_plugin_snap_install_apps_finish;
+	plugin_class->uninstall_apps_async = gs_plugin_snap_uninstall_apps_async;
+	plugin_class->uninstall_apps_finish = gs_plugin_snap_uninstall_apps_finish;
 	plugin_class->update_apps_async = gs_plugin_snap_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_snap_update_apps_finish;
 }
