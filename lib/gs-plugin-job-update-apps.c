@@ -338,7 +338,7 @@ progress_cb (gpointer user_data)
 	if (all_unknown)
 		progress = GS_APP_PROGRESS_UNKNOWN;
 
-	if (progress != self->last_reported_progress) {
+	if ((guint) progress != self->last_reported_progress) {
 		/* Report progress via signal emission. */
 		/* FIXME: In future we could add explicit signals to notify that a
 		 * download operation is blocked on waiting for metered data permission

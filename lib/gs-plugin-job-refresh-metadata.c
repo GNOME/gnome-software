@@ -350,7 +350,7 @@ progress_cb (gpointer user_data)
 	progress += (100.0 / n_portions) * external_appstream_completion;
 #endif
 
-	if (progress != self->last_reported_progress) {
+	if ((guint) progress != self->last_reported_progress) {
 		g_signal_emit (self, signals[SIGNAL_PROGRESS], 0, (guint) progress);
 		self->last_reported_progress = progress;
 	}
