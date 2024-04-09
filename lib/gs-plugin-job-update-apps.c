@@ -162,6 +162,7 @@ gs_plugin_job_update_apps_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->apps == NULL);
 		self->apps = g_value_dup_object (value);
+		g_assert (self->apps != NULL);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	case PROP_FLAGS:
@@ -565,6 +566,8 @@ GsPluginJob *
 gs_plugin_job_update_apps_new (GsAppList               *apps,
                                GsPluginUpdateAppsFlags  flags)
 {
+	g_return_val_if_fail (GS_IS_APP_LIST (apps), NULL);
+
 	return g_object_new (GS_TYPE_PLUGIN_JOB_UPDATE_APPS,
 			     "apps", apps,
 			     "flags", flags,
