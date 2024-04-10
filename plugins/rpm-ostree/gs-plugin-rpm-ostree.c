@@ -3388,7 +3388,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GError **error)
 {
 	g_autoptr(GSubprocess) subprocess = NULL;
-	GInputStream *input_stream;
+	g_autofree gchar *stdout_data = NULL;
 
 	subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE, error,
 				       "rpm-ostree",
@@ -3399,54 +3399,41 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				       NULL);
 	if (subprocess == NULL)
 		return FALSE;
-	if (!g_subprocess_wait (subprocess, cancellable, error))
+	if (!g_subprocess_communicate_utf8 (subprocess, NULL, cancellable, &stdout_data, NULL, error))
 		return FALSE;
-	input_stream = g_subprocess_get_stdout_pipe (subprocess);
-	if (input_stream != NULL) {
-		g_autoptr(GByteArray) array = g_byte_array_new ();
-		gchar buffer[4096];
-		gsize nread = 0;
-		gboolean success;
+	if (stdout_data != NULL && *stdout_data != '\0') {
+		g_autoptr(GsApp) app = NULL;
+		g_autoptr(GIcon) ic = NULL;
 
-		while (success = g_input_stream_read_all (input_stream, buffer, sizeof (buffer), &nread, cancellable, error), success && nread > 0) {
-			g_byte_array_append (array, (const guint8 *) buffer, nread);
-		}
+		sanitize_update_history_text (stdout_data);
 
-		if (success && array->len > 0) {
-			g_autoptr(GsApp) app = NULL;
-			g_autoptr(GIcon) ic = NULL;
+		/* create new */
+		app = gs_app_new ("org.gnome.Software.RpmostreeUpdate");
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_app_set_name (app,
+				 GS_APP_QUALITY_NORMAL,
+				 /* TRANSLATORS: this is a group of updates that are not
+				  * packages and are not shown in the main list */
+				 _("System Updates"));
+		gs_app_set_summary (app,
+				    GS_APP_QUALITY_NORMAL,
+				    /* TRANSLATORS: this is a longer description of the
+				     * "System Updates" string */
+				    _("General system updates, such as security or bug fixes, and performance improvements."));
+		gs_app_set_description (app,
+					GS_APP_QUALITY_NORMAL,
+					gs_app_get_summary (app));
+		gs_app_set_update_details_text (app, stdout_data);
+		ic = g_themed_icon_new ("system-component-os-updates");
+		gs_app_add_icon (app, ic);
 
-			/* NUL-terminated the array, to use it as a string */
-			g_byte_array_append (array, (const guint8 *) "", 1);
+		gs_app_list_add (list, app);
 
-			sanitize_update_history_text ((gchar *) array->data);
-
-			/* create new */
-			app = gs_app_new ("org.gnome.Software.RpmostreeUpdate");
-			gs_app_set_management_plugin (app, plugin);
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-			gs_app_set_name (app,
-					 GS_APP_QUALITY_NORMAL,
-					 /* TRANSLATORS: this is a group of updates that are not
-					  * packages and are not shown in the main list */
-					 _("System Updates"));
-			gs_app_set_summary (app,
-					    GS_APP_QUALITY_NORMAL,
-					    /* TRANSLATORS: this is a longer description of the
-					     * "System Updates" string */
-					    _("General system updates, such as security or bug fixes, and performance improvements."));
-			gs_app_set_description (app,
-						GS_APP_QUALITY_NORMAL,
-						gs_app_get_summary (app));
-			gs_app_set_update_details_text (app, (const gchar *) array->data);
-			ic = g_themed_icon_new ("system-component-os-updates");
-			gs_app_add_icon (app, ic);
-
-			gs_app_list_add (list, app);
-		}
+		return TRUE;
 	}
 
-	return input_stream != NULL;
+	return FALSE;
 }
 
 static void
