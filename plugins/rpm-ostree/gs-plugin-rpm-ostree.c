@@ -138,14 +138,14 @@ gs_plugin_rpm_ostree_finalize (GObject *object)
 static void
 gs_plugin_rpm_ostree_init (GsPluginRpmOstree *self)
 {
+	g_mutex_init (&self->mutex);
+	g_mutex_init (&self->cached_sources_mutex);
+
 	/* only works on OSTree */
 	if (!g_file_test ("/run/ostree-booted", G_FILE_TEST_EXISTS)) {
 		gs_plugin_set_enabled (GS_PLUGIN (self), FALSE);
 		return;
 	}
-
-	g_mutex_init (&self->mutex);
-	g_mutex_init (&self->cached_sources_mutex);
 
 	/* open transaction */
 	rpmReadConfigFiles (NULL, NULL);
