@@ -927,8 +927,11 @@ window_keypress_handler (GtkEventControllerKey *key_controller,
                          GdkModifierType        state,
                          GsShell               *shell)
 {
+	GdkModifierType modifiers = state & GDK_MODIFIER_MASK;
+
 	/* handle ctrl+f shortcut */
-	if ((state & GDK_CONTROL_MASK) > 0 && keyval == GDK_KEY_f) {
+	if ((modifiers == GDK_CONTROL_MASK && keyval == GDK_KEY_f) ||
+	    (modifiers == (GDK_CONTROL_MASK | GDK_LOCK_MASK) && keyval == GDK_KEY_F)) {
 		if (!gtk_search_bar_get_search_mode (GTK_SEARCH_BAR (shell->search_bar))) {
 			GsShellMode mode = gs_shell_get_mode (shell);
 
