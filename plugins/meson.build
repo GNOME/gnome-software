@@ -47,3 +47,6 @@ endif
 if get_option('webapps')
   subdir('epiphany')
 endif
+if get_option('systemd-sysupdate')
+  subdir('systemd-sysupdate')
+endif

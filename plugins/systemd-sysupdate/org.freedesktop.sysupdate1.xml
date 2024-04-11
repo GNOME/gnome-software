@@ -1,0 +1,141 @@
+<!--
+This API has been manually extracted from GNOME OS with the following commands
+(with two dashes before bus-introspect, some XML parsers don't like two dashes
+in the middle of comments):
+- /usr/lib/systemd/systemd-sysupdated -bus-introspect /org/freedesktop/sysupdate1
+- /usr/lib/systemd/systemd-sysupdated -bus-introspect /org/freedesktop/sysupdate1/job
+- /usr/lib/systemd/systemd-sysupdated -bus-introspect /org/freedesktop/sysupdate1/target
+
+This data has been generated programmatically, as such it can be considered
+uncopyrightable. As it needs to be licensed to be included in GNOME Software,
+and for simplicity's sake, this file is treated as the rest of the source code
+of this plugin and is copyrighted and licensed in the same way.
+
+Cf. https://reuse.software/faq/#uncopyrightable for more information.
+
+Copyright (c) 2024 Codethink Limited
+Copyright (c) 2024 GNOME Foundation
+
+SPDX-License-Identifier: GPL-2.0-or-later
+-->
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"https://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+ <interface name="org.freedesktop.DBus.Peer">
+  <method name="Ping"/>
+  <method name="GetMachineId">
+   <arg type="s" name="machine_uuid" direction="out"/>
+  </method>
+ </interface>
+ <interface name="org.freedesktop.DBus.Introspectable">
+  <method name="Introspect">
+   <arg name="xml_data" type="s" direction="out"/>
+  </method>
+ </interface>
+ <interface name="org.freedesktop.DBus.Properties">
+  <method name="Get">
+   <arg name="interface_name" direction="in" type="s"/>
+   <arg name="property_name" direction="in" type="s"/>
+   <arg name="value" direction="out" type="v"/>
+  </method>
+  <method name="GetAll">
+   <arg name="interface_name" direction="in" type="s"/>
+   <arg name="props" direction="out" type="a{sv}"/>
+  </method>
+  <method name="Set">
+   <arg name="interface_name" direction="in" type="s"/>
+   <arg name="property_name" direction="in" type="s"/>
+   <arg name="value" direction="in" type="v"/>
+  </method>
+  <signal name="PropertiesChanged">
+   <arg type="s" name="interface_name"/>
+   <arg type="a{sv}" name="changed_properties"/>
+   <arg type="as" name="invalidated_properties"/>
+  </signal>
+ </interface>
+ <interface name="org.freedesktop.sysupdate1.Manager">
+  <method name="ListTargets">
+   <arg type="a(sso)" name="targets" direction="out"/>
+  </method>
+  <method name="ListJobs">
+   <arg type="a(tsuo)" name="jobs" direction="out"/>
+  </method>
+  <method name="ListAppStream">
+   <arg type="as" name="urls" direction="out"/>
+  </method>
+  <signal name="JobRemoved">
+   <arg type="t" name="id"/>
+   <arg type="o" name="path"/>
+   <arg type="i" name="status"/>
+  </signal>
+ </interface>
+ <interface name="org.freedesktop.sysupdate1.Job">
+  <property name="Id" type="t" access="read">
+   <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+  </property>
+  <property name="Type" type="s" access="read">
+   <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+  </property>
+  <property name="Offline" type="b" access="read">
+   <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+  </property>
+  <property name="Progress" type="u" access="read">
+  </property>
+  <method name="Cancel">
+  </method>
+ </interface>
+ <interface name="org.freedesktop.sysupdate1.Target">
+  <property name="Class" type="s" access="read">
+   <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+  </property>
+  <property name="Name" type="s" access="read">
+   <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+  </property>
+  <property name="Path" type="s" access="read">
+   <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+  </property>
+  <method name="List">
+   <arg type="t" name="flags" direction="in"/>
+   <arg type="as" name="versions" direction="out"/>
+  </method>
+  <method name="Describe">
+   <arg type="s" name="version" direction="in"/>
+   <arg type="t" name="flags" direction="in"/>
+   <arg type="s" name="json" direction="out"/>
+  </method>
+  <method name="CheckNew">
+   <arg type="s" name="new_version" direction="out"/>
+  </method>
+  <method name="Update">
+   <arg type="s" name="new_version" direction="in"/>
+   <arg type="t" name="flags" direction="in"/>
+   <arg type="s" name="new_version" direction="out"/>
+   <arg type="t" name="job_id" direction="out"/>
+   <arg type="o" name="job_path" direction="out"/>
+  </method>
+  <method name="Vacuum">
+   <arg type="u" name="instances" direction="out"/>
+   <arg type="u" name="disabled_transfers" direction="out"/>
+  </method>
+  <method name="GetAppStream">
+   <arg type="as" name="appstream" direction="out"/>
+  </method>
+  <method name="GetVersion">
+   <arg type="s" name="version" direction="out"/>
+  </method>>
+  <method name="ListFeatures">
+   <arg type="t" name="flags" direction="in"/>
+   <arg type="as" name="features" direction="out"/>
+  </method>
+  <method name="DescribeFeature">
+   <arg type="s" name="feature" direction="in"/>
+   <arg type="t" name="flags" direction="in"/>
+   <arg type="s" name="json" direction="out"/>
+  </method>
+  <method name="SetFeatureEnabled">
+   <arg type="s" name="feature" direction="in"/>
+   <arg type="i" name="enabled" direction="in"/>
+   <arg type="t" name="flags" direction="in"/>
+  </method>
+ </interface>
+</node>
