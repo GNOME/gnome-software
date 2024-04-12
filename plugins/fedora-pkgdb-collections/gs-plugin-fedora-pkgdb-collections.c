@@ -393,18 +393,10 @@ _create_upgrade_from_info (GsPluginFedoraPkgdbCollections *self,
 
 	/* create */
 	app = gs_app_new (app_id);
-	switch (item->status) {
-	case PKGDB_ITEM_STATUS_ACTIVE:
-	case PKGDB_ITEM_STATUS_DEVEL:
-		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-		break;
-	case PKGDB_ITEM_STATUS_EOL:
+	if (item->status == PKGDB_ITEM_STATUS_EOL)
 		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
-		break;
-	default:
+	else
 		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-		break;
-	}
 	gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, item->name);
@@ -729,17 +721,8 @@ refine_app (GsPluginFedoraPkgdbCollections *self,
 		return TRUE;
 
 	/* fix the state */
-	switch (item->status) {
-	case PKGDB_ITEM_STATUS_ACTIVE:
-	case PKGDB_ITEM_STATUS_DEVEL:
-		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-		break;
-	case PKGDB_ITEM_STATUS_EOL:
+	if (item->status == PKGDB_ITEM_STATUS_EOL)
 		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
-		break;
-	default:
-		break;
-	}
 
 	return TRUE;
 }
