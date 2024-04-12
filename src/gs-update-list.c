@@ -78,7 +78,8 @@ list_sort_func (GtkListBoxRow *a,
 {
 	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
 	GsApp *b1 = gs_app_row_get_app (GS_APP_ROW (b));
-	return g_strcmp0 (gs_app_get_name (a1), gs_app_get_name (b1));
+
+	return gs_utils_app_sort_kind (a1, b1);
 }
 
 static void

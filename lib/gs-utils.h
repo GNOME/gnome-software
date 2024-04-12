@@ -153,5 +153,7 @@ gint		 gs_utils_app_sort_priority	(GsApp			*app1,
 void		 gs_utils_gstring_replace	(GString		*str,
 						 const gchar		*find,
 						 const gchar		*replace);
+gint		 gs_utils_app_sort_kind		(GsApp			*app1,
+						 GsApp			*app2);
 
 G_END_DECLS

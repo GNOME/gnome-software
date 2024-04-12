@@ -1700,3 +1700,59 @@ gs_utils_gstring_replace (GString *str,
 	as_gstring_replace2 (str, find, replace, 0);
 #endif
 }
+
+static gint
+get_app_kind_rank (GsApp *app)
+{
+	switch (gs_app_get_kind (app)) {
+	case AS_COMPONENT_KIND_DESKTOP_APP:
+		return 2;
+	case AS_COMPONENT_KIND_WEB_APP:
+		return 3;
+	case AS_COMPONENT_KIND_RUNTIME:
+		return 4;
+	case AS_COMPONENT_KIND_ADDON:
+		return 5;
+	case AS_COMPONENT_KIND_CODEC:
+	case AS_COMPONENT_KIND_FONT:
+		return 6;
+	case AS_COMPONENT_KIND_INPUT_METHOD:
+		return 7;
+	default:
+		if (gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE)
+			return 1;
+		else
+			return 8;
+	}
+}
+
+/**
+ * gs_utils_app_sort_kind:
+ * @app1: a #GsApp
+ * @app2: another #GsApp
+ *
+ * Comparison function to sort apps by Appstream kind, then by
+ * increasing alphabetical order of name.
+ *
+ * This is useful for sorting apps with multiple kinds (E.g Updates /
+ * Updated pages), as opposed to category pages where all apps are of
+ * the same kind.
+ *
+ * Returns: < 0 if app1 is before app2, 0 if equal, > 0 if app1 is after app2
+ *
+ * Since: 47
+ **/
+gint
+gs_utils_app_sort_kind (GsApp *app1, GsApp *app2)
+{
+	gint rank1, rank2;
+
+	rank1 = get_app_kind_rank (app1);
+	rank2 = get_app_kind_rank (app2);
+
+	/* sort apps by name if they are of same kind */
+	if (rank1 == rank2)
+		return gs_utils_app_sort_name (app1, app2, NULL);
+
+	return rank1 < rank2 ? -1 : 1;
+}
