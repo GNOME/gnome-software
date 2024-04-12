@@ -1,5 +1,10 @@
 @define-color flatpak_packaging_color @blue_4;
 
+/* Fix for padding in updates-paused-banner */
+toolbarview.undershoot-top > revealer > windowhandle > box {
+	padding-bottom: 0px;
+}
+
 .details-page {
 	margin: 24px 0px;
 }
