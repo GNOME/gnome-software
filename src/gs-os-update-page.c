@@ -48,7 +48,7 @@ static guint signals[SIGNAL_LAST] = { 0 };
 
 struct _GsOsUpdatePage
 {
-	GtkBox		 parent_instance;
+	AdwNavigationPage parent_instance;
 
 	GtkWidget	*page;
 
