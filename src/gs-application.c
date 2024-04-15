@@ -258,7 +258,7 @@ about_activated (GSimpleAction *action,
 	};
 
 #if ADW_CHECK_VERSION(1,2,0)
-	adw_show_about_window (app->main_window,
+	adw_show_about_dialog (GTK_WIDGET (app->main_window),
 			       "application-name", g_get_application_name (),
 			       "application-icon", APPLICATION_ID,
 			       "developer-name", _("The GNOME Project"),
