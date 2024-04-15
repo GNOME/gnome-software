@@ -228,8 +228,6 @@ _refresh_cache_async (GsPluginFedoraPkgdbCollections *self,
                       GAsyncReadyCallback             callback,
                       gpointer                        user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (self);
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GFile) output_file = g_file_new_for_path (self->cachefn);
 	g_autoptr(SoupSession) soup_session = NULL;
@@ -247,11 +245,6 @@ _refresh_cache_async (GsPluginFedoraPkgdbCollections *self,
 			return;
 		}
 	}
-
-	/* download new file */
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading upgrade information…"));
 
 	soup_session = gs_build_soup_session ();
 
