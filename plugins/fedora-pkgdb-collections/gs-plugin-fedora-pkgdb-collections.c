@@ -40,6 +40,8 @@ struct _GsPluginFedoraPkgdbCollections {
 	/* Contents may vary throughout the plugin’s lifetime: */
 	gboolean	 is_valid;
 	GPtrArray	*distros;  /* (owned) (not nullable) (element-type PkgdbItem) */
+
+	GSList		*pending_refresh_tasks; /* (owned) (element-type GTask) */
 };
 
 G_DEFINE_TYPE (GsPluginFedoraPkgdbCollections, gs_plugin_fedora_pkgdb_collections, GS_TYPE_PLUGIN)
@@ -76,6 +78,7 @@ gs_plugin_fedora_pkgdb_collections_init (GsPluginFedoraPkgdbCollections *self)
 		return;
 	}
 	self->distros = g_ptr_array_new_with_free_func ((GDestroyNotify) _pkgdb_item_free);
+	self->pending_refresh_tasks = NULL;
 	self->settings = g_settings_new ("org.gnome.software");
 
 	/* old name */
@@ -102,6 +105,8 @@ gs_plugin_fedora_pkgdb_collections_finalize (GObject *object)
 	g_clear_pointer (&self->distros, g_ptr_array_unref);
 	g_clear_pointer (&self->os_name, g_free);
 	g_clear_pointer (&self->cachefn, g_free);
+
+	g_assert (self->pending_refresh_tasks == NULL);
 
 	G_OBJECT_CLASS (gs_plugin_fedora_pkgdb_collections_parent_class)->finalize (object);
 }
@@ -228,8 +233,6 @@ _refresh_cache_async (GsPluginFedoraPkgdbCollections *self,
                       GAsyncReadyCallback             callback,
                       gpointer                        user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (self);
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GFile) output_file = g_file_new_for_path (self->cachefn);
 	g_autoptr(SoupSession) soup_session = NULL;
@@ -243,26 +246,30 @@ _refresh_cache_async (GsPluginFedoraPkgdbCollections *self,
 		if (tmp < cache_age_secs) {
 			g_debug ("%s is only %" G_GUINT64_FORMAT " seconds old",
 				 self->cachefn, tmp);
-			g_task_return_boolean (task, TRUE);
+			if (self->pending_refresh_tasks == NULL)
+				g_task_return_boolean (task, TRUE);
+			else
+				self->pending_refresh_tasks = g_slist_prepend (self->pending_refresh_tasks, g_steal_pointer (&task));
 			return;
 		}
 	}
 
-	/* download new file */
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading upgrade information…"));
+	if (self->pending_refresh_tasks == NULL) {
+		self->pending_refresh_tasks = g_slist_prepend (self->pending_refresh_tasks, g_object_ref (task));
 
-	soup_session = gs_build_soup_session ();
+		soup_session = gs_build_soup_session ();
 
-	gs_download_file_async (soup_session,
-				FEDORA_PKGDB_COLLECTIONS_API_URI,
-				output_file,
-				G_PRIORITY_LOW,
-				NULL, NULL,  /* FIXME: progress reporting */
-				cancellable,
-				download_cb,
-				g_steal_pointer (&task));
+		gs_download_file_async (soup_session,
+					FEDORA_PKGDB_COLLECTIONS_API_URI,
+					output_file,
+					G_PRIORITY_LOW,
+					NULL, NULL,  /* FIXME: progress reporting */
+					cancellable,
+					download_cb,
+					g_steal_pointer (&task));
+	} else {
+		self->pending_refresh_tasks = g_slist_prepend (self->pending_refresh_tasks, g_steal_pointer (&task));
+	}
 }
 
 static void
@@ -274,11 +281,10 @@ download_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginFedoraPkgdbCollections *self = g_task_get_source_object (task);
 	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GError) wrapped_error = NULL;
 
 	if (!gs_download_file_finish (soup_session, result, &local_error) &&
 	    !g_error_matches (local_error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
-		g_autoptr(GError) wrapped_error = NULL;
-
 		/* Wrap in a GsPluginError. */
 		g_set_error_literal (&wrapped_error,
 				     GS_PLUGIN_ERROR,
@@ -286,14 +292,20 @@ download_cb (GObject      *source_object,
 				     local_error->message);
 
 		gs_utils_error_add_origin_id (&wrapped_error, self->cached_origin);
-		g_task_return_error (task, g_steal_pointer (&wrapped_error));
-		return;
+	} else {
+		/* success */
+		self->is_valid = FALSE;
 	}
 
-	/* success */
-	self->is_valid = FALSE;
-
-	g_task_return_boolean (task, TRUE);
+	for (GSList *link = self->pending_refresh_tasks; link != NULL; link = g_slist_next (link)) {
+		g_autoptr(GTask) pending_task = link->data;
+		if (wrapped_error != NULL)
+			g_task_return_error (pending_task, g_error_copy (wrapped_error));
+		else
+			g_task_return_boolean (pending_task, TRUE);
+	}
+	g_slist_free (self->pending_refresh_tasks);
+	self->pending_refresh_tasks = NULL;
 }
 
 static gboolean
