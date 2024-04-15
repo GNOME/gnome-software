@@ -889,12 +889,12 @@ gs_utils_reboot_notify (GsAppList *list,
 		}
 	} else if (app_name) {
 		/* TRANSLATORS: The '%s' is replaced with the app name */
-		tmp = g_strdup_printf ("“%s” Removed", app_name);
+		tmp = g_strdup_printf ("“%s” Uninstalled", app_name);
 		title = tmp;
 	} else {
-		/* TRANSLATORS: we've just removed some apps */
-		title = ngettext ("An app has been removed",
-				  "Apps have been removed",
+		/* TRANSLATORS: we've just uninstalled some apps */
+		title = ngettext ("An app has been uninstalled",
+				  "Apps have been uninstalled",
 				  gs_app_list_length (list));
 	}
 
