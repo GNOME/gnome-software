@@ -257,41 +257,20 @@ about_activated (GSimpleAction *action,
 		NULL
 	};
 
-#if ADW_CHECK_VERSION(1,2,0)
-	adw_show_about_dialog (GTK_WIDGET (app->main_window),
-			       "application-name", g_get_application_name (),
-			       "application-icon", APPLICATION_ID,
-			       "developer-name", _("The GNOME Project"),
-			       "version", get_version(),
-			       "website", "https://apps.gnome.org/Software",
-			       "support-url", "https://discourse.gnome.org/tag/gnome-software",
-			       "issue-url", "https://gitlab.gnome.org/GNOME/gnome-software/-/issues",
-			       "developers", developers,
-			       "designers", designers,
-			       "copyright", _("Copyright \xc2\xa9 2016–2023 GNOME Software contributors"),
-			       "license-type", GTK_LICENSE_GPL_2_0,
-			       "translator-credits", _("translator-credits"),
-			       NULL);
-#else
-	GtkAboutDialog *dialog;
-	dialog = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
-	gtk_about_dialog_set_authors (dialog, developers);
-	gtk_about_dialog_set_copyright (dialog, _("Copyright \xc2\xa9 2016–2023 GNOME Software contributors"));
-	gtk_about_dialog_set_license_type (dialog, GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_logo_icon_name (dialog, APPLICATION_ID);
-	gtk_about_dialog_set_translator_credits (dialog, _("translator-credits"));
-	gtk_about_dialog_set_version (dialog, get_version ());
-	gtk_about_dialog_set_program_name (dialog, g_get_application_name ());
-
-	/* TRANSLATORS: this is the title of the about window */
-	gtk_window_set_title (GTK_WINDOW (dialog), _("About Software"));
-
-	/* TRANSLATORS: well, we seem to think so, anyway */
-	gtk_about_dialog_set_comments (dialog, _("A nice way to manage the "
-						 "software on your system."));
-
-	gs_shell_modal_dialog_present (app->shell, GTK_WINDOW (dialog));
-#endif
+adw_show_about_dialog (GTK_WIDGET (app->main_window),
+		       "application-name", g_get_application_name (),
+		       "application-icon", APPLICATION_ID,
+		       "developer-name", _("The GNOME Project"),
+		       "version", get_version(),
+		       "website", "https://apps.gnome.org/Software",
+		       "support-url", "https://discourse.gnome.org/tag/gnome-software",
+		       "issue-url", "https://gitlab.gnome.org/GNOME/gnome-software/-/issues",
+		       "developers", developers,
+		       "designers", designers,
+		       "copyright", _("Copyright \xc2\xa9 2016–2023 GNOME Software contributors"),
+		       "license-type", GTK_LICENSE_GPL_2_0,
+		       "translator-credits", _("translator-credits"),
+		       NULL);
 }
 
 static void
