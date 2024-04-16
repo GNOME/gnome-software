@@ -90,7 +90,9 @@ gs_installed_page_get_app_section (GsApp *app)
 	if (state == GS_APP_STATE_INSTALLING ||
 	    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
 	    state == GS_APP_STATE_REMOVING ||
-	    state == GS_APP_STATE_DOWNLOADING)
+	    state == GS_APP_STATE_DOWNLOADING ||
+	    state == GS_APP_STATE_PENDING_INSTALL ||
+	    state == GS_APP_STATE_PENDING_REMOVE)
 		return GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING;
 
 	if (kind == AS_COMPONENT_KIND_DESKTOP_APP) {
@@ -300,7 +302,9 @@ gs_installed_page_notify_state_changed_cb (GsApp *app,
 	    state != GS_APP_STATE_REMOVING &&
 	    state != GS_APP_STATE_DOWNLOADING &&
 	    state != GS_APP_STATE_UPDATABLE &&
-	    state != GS_APP_STATE_UPDATABLE_LIVE)
+	    state != GS_APP_STATE_UPDATABLE_LIVE &&
+	    state != GS_APP_STATE_PENDING_INSTALL &&
+	    state != GS_APP_STATE_PENDING_REMOVE)
 		gs_installed_page_unreveal_row (app_row);
 	else
 		gs_installed_page_maybe_move_app_row (self, app_row);
@@ -694,9 +698,10 @@ gs_installed_page_add_pending_apps (GsInstalledPage *self,
 
 	for (guint i = 0; i < gs_app_list_length (list); ++i) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_is_installed (app)) {
+		if (gs_app_is_installed (app) &&
+		    gs_app_get_state (app) != GS_APP_STATE_PENDING_INSTALL &&
+		    gs_app_get_state (app) != GS_APP_STATE_PENDING_REMOVE)
 			continue;
-		}
 
 		/* never show OS upgrades, we handle the scheduling and
 		 * cancellation in GsUpgradeBanner */
