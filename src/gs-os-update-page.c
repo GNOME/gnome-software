@@ -48,9 +48,8 @@ static guint signals[SIGNAL_LAST] = { 0 };
 
 struct _GsOsUpdatePage
 {
-	GtkBox		 parent_instance;
+	AdwNavigationPage parent_instance;
 
-	GtkWidget	*description_group;
 	GtkWidget	*page;
 
 	GsApp		*app;  /* (owned) (nullable) */
@@ -374,7 +373,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 
 	if (app) {
 		adw_navigation_page_set_title (ADW_NAVIGATION_PAGE (page), gs_app_get_name (app));
-		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->description_group), gs_app_get_description (app));
+		adw_preferences_page_set_description (ADW_PREFERENCES_PAGE (page->page), gs_app_get_description (app));
 
 		/* add new apps */
 		related = gs_app_get_related (app);
@@ -390,7 +389,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 		}
 	} else {
 		adw_navigation_page_set_title (ADW_NAVIGATION_PAGE (page), NULL);
-		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->description_group), NULL);
+		adw_preferences_page_set_description (ADW_PREFERENCES_PAGE (page->page), NULL);
 	}
 
 	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APP]);
@@ -491,7 +490,6 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-os-update-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, description_group);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, page);
 }
 
