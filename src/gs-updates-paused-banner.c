@@ -82,13 +82,13 @@ update_banner_title (GsUpdatesPausedBanner *self)
 		adw_banner_set_button_label (ADW_BANNER (self->banner), NULL);
 
 		if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_METERED)
-			title = _("Network connection is metered - software updates paused");
+			title = _("Network connection is metered — software updates paused");
 		else if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_NO_LARGE_DOWNLOADS)
-			title = _("Network connection prohibits large downloads - software updates paused");
+			title = _("Network connection prohibits large downloads — software updates paused");
 		else if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_POWER_SAVER)
-			title = _("Power saver mode is active - software updates paused");
+			title = _("Power saver mode is active — software updates paused");
 		else if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_GAME_MODE)
-			title = _("Game mode is active - software updates paused");
+			title = _("Game mode is active — software updates paused");
 		else
 			g_assert_not_reached ();
 	}
