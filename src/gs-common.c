@@ -115,6 +115,14 @@ gs_app_notify_installed (GsApp *app)
 						       gs_app_get_id (app),
 						       plugin_name);
 	}
+
+	if (gs_app_has_icons (app)) {
+		g_autoptr(GIcon) icon = NULL;
+		icon = gs_app_get_icon_for_size (app, 48, 1, NULL);
+		if (icon)
+			g_notification_set_icon (n, icon);
+	}
+
 	g_notification_set_default_action_and_target  (n, "app.details", "(ss)",
 						       gs_app_get_unique_id (app), "");
 	#ifdef TESTDATADIR
