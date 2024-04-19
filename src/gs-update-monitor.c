@@ -549,6 +549,11 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		if (_should_auto_update (app)) {
 			g_debug ("auto-updating %s", gs_app_get_unique_id (app));
 			gs_app_list_add (update_online, app);
+		} else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
+			/* if the app state is back to INSTALLED already, keep it in the
+			 * apps list passed to the job so update_finished_cb can notify
+			 * about this update along with the others */
+			gs_app_list_add (update_online, app);
 		} else {
 			gs_app_list_add (update_offline, app);
 		}
