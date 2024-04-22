@@ -240,11 +240,11 @@ block_scheduler_schedule_cb (GObject      *source_object,
 	data = g_new0 (BlockData, 1);
 	data->schedule_entry = g_object_ref (schedule_entry);
 	data->notify_id = g_signal_connect_object (schedule_entry, "notify::download-now",
-						   (GCallback) download_now_cb, task, G_CONNECT_DEFAULT);
+						   G_CALLBACK (download_now_cb), task, G_CONNECT_DEFAULT);
 	data->invalidated_id = g_signal_connect_object (schedule_entry, "invalidated",
-							(GCallback) invalidated_cb, task, G_CONNECT_DEFAULT);
+							G_CALLBACK (invalidated_cb), task, G_CONNECT_DEFAULT);
 	data->cancelled_id = g_cancellable_connect (cancellable,
-						    (GCallback) cancelled_cb, task, (GDestroyNotify) g_object_unref);
+						    G_CALLBACK (cancelled_cb), task, g_object_unref);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) block_data_free);
 
 	/* Do the initial check. */
