@@ -548,29 +548,9 @@
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkListBoxRow" id="version_history_button">
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <property name="orientation">horizontal</property>
-                                            <property name="halign">center</property>
-                                            <property name="margin_top">12</property>
-                                            <property name="margin_bottom">12</property>
-                                            <child>
-                                              <object class="GtkLabel">
-                                                <property name="xalign">0</property>
-                                                <property name="yalign">0.5</property>
-                                                <property name="label" translatable="yes">Version History</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkImage">
-                                                <property name="icon-name">go-next-symbolic</property>
-                                                <property name="margin_start">6</property>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
+                                      <object class="AdwButtonRow" id="version_history_button_row">
+                                        <property name="title" translatable="yes">Version History</property>
+                                        <property name="end-icon-name">go-next-symbolic</property>
                                       </object>
                                     </child>
                                   </object>
@@ -1147,30 +1127,10 @@
                                               </object>
                                             </child>
                                             <child>
-                                              <object class="GtkListBoxRow" id="button_review">
-                                                <property name="can_focus">True</property>
-                                                <child>
-                                                  <object class="GtkBox">
-                                                    <property name="orientation">horizontal</property>
-                                                    <property name="halign">center</property>
-                                                    <property name="margin_top">12</property>
-                                                    <property name="margin_bottom">12</property>
-                                                    <child>
-                                                      <object class="GtkLabel">
-                                                        <property name="xalign">0</property>
-                                                        <property name="yalign">0.5</property>
-                                                        <property name="use_underline">True</property>
-                                                        <property name="label" translatable="yes" comments="Translators: Button opening a dialog where the users can write and publish their opinions about the apps.">Write R_eview</property>
-                                                      </object>
-                                                    </child>
-                                                    <child>
-                                                      <object class="GtkImage">
-                                                        <property name="icon-name">go-next-symbolic</property>
-                                                        <property name="margin_start">6</property>
-                                                      </object>
-                                                    </child>
-                                                  </object>
-                                                </child>
+                                              <object class="AdwButtonRow" id="write_review_button_row">
+                                                <property name="title" translatable="yes" comments="Translators: Button opening a dialog where the users can write and publish their opinions about the apps.">Write R_eview</property>
+                                                <property name="end-icon-name">go-next-symbolic</property>
+                                                <property name="use-underline">True</property>
                                               </object>
                                             </child>
                                           </object>
@@ -1184,30 +1144,9 @@
                                               <class name="boxed-list"/>
                                             </style>
                                             <child>
-                                              <object class="GtkListBoxRow" id="button_all_reviews">
-                                                <property name="can_focus">True</property>
-                                                <child>
-                                                  <object class="GtkBox">
-                                                    <property name="orientation">horizontal</property>
-                                                    <property name="halign">center</property>
-                                                    <property name="margin_top">12</property>
-                                                    <property name="margin_bottom">12</property>
-                                                    <child>
-                                                      <object class="GtkLabel">
-                                                        <property name="xalign">0</property>
-                                                        <property name="yalign">0.5</property>
-                                                        <property name="use_underline">True</property>
-                                                        <property name="label" translatable="yes" comments="Translators: Button opening a dialog showing all reviews for an app.">All Reviews</property>
-                                                      </object>
-                                                    </child>
-                                                    <child>
-                                                      <object class="GtkImage">
-                                                        <property name="icon-name">go-next-symbolic</property>
-                                                        <property name="margin_start">6</property>
-                                                      </object>
-                                                    </child>
-                                                  </object>
-                                                </child>
+                                              <object class="AdwButtonRow" id="all_reviews_button_row">
+                                                <property name="title" translatable="yes" comments="Translators: Button opening a dialog showing all reviews for an app.">All Reviews</property>
+                                                <property name="end-icon-name">go-next-symbolic</property>
                                               </object>
                                             </child>
                                           </object>
