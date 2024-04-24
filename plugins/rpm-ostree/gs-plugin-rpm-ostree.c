@@ -3186,6 +3186,7 @@ static void
 sanitize_update_history_text (gchar *text)
 {
 	gchar *read_pos = text, *write_pos = text;
+	gsize text_len = strlen (text);
 
 	#define skip_after(_chr) G_STMT_START { \
 		while (*read_pos != '\0' && *read_pos != '\n' && *read_pos != (_chr)) { \
@@ -3249,6 +3250,19 @@ sanitize_update_history_text (gchar *text)
 
 	if (read_pos != write_pos)
 		*write_pos = '\0';
+
+	/* The logs can have thousands kilobytes of data, which is not good for GtkLabel,
+	   which has (together with Pango) a hard time to process it and show it (high CPU
+	   use for seconds or even minutes).
+
+	   Cut the log in 4KB, which is not so big and not so small part of the log.
+	   This will be extended to parse the output and split the texts by package in the future. */
+	if (write_pos - text + strlen ("…") > 4096) {
+		write_pos = g_utf8_offset_to_pointer (text, g_utf8_strlen (text, 4096));
+		*write_pos = '\0';
+		if (write_pos - text + strlen ("…") < text_len - 1)
+			strcat (write_pos, "…");
+	}
 }
 
 gboolean
