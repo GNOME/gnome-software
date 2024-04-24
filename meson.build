@@ -136,6 +136,7 @@ gtk = dependency('gtk4',
       'build-tests=false',
       'introspection=disabled',
       'demos=false',
+      'vulkan=disabled',
     ]
   )
 glib = dependency('glib-2.0', version : '>= 2.70.0')
@@ -150,7 +151,7 @@ else
   libsoupapiversion = '3.0'
 endif
 libadwaita = dependency('libadwaita-1',
-  version: '>=1.5',
+  version: '>=1.6.alpha',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'examples=false',
