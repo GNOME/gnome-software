@@ -54,15 +54,8 @@
   <file>style-dark.css</file>
   <file>style-hc.css</file>
   <file preprocess="xml-stripblanks" alias="up-to-date.svg">../data/assets/up-to-date.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-addon.svg">../data/icons/system-component-addon.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-application.svg">../data/icons/system-component-application.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-codecs.svg">../data/icons/system-component-codecs.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-driver.svg">../data/icons/system-component-driver.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-firmware.svg">../data/icons/system-component-firmware.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-input-sources.svg">../data/icons/system-component-input-sources.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-language.svg">../data/icons/system-component-language.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-os-updates.svg">../data/icons/system-component-os-updates.svg</file>
-  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/system-component-runtime.svg">../data/icons/system-component-runtime.svg</file>
+  <!-- We need to ship an icon for apps in the dummy plugin to use; choose an icon we’re already shipping, to not increase the size of the compiled gresource -->
+  <file preprocess="xml-stripblanks" alias="icons/scalable/apps/org.gnome.Software.Dummy.svg">../data/icons/org.gnome.Software.Learn.svg</file>
   <file preprocess="xml-stripblanks" alias="icons/scalable/categories/org.gnome.Software.Create.svg">../data/icons/org.gnome.Software.Create.svg</file>
   <file preprocess="xml-stripblanks" alias="icons/scalable/categories/org.gnome.Software.Develop.svg">../data/icons/org.gnome.Software.Develop.svg</file>
   <file preprocess="xml-stripblanks" alias="icons/scalable/categories/org.gnome.Software.Learn.svg">../data/icons/org.gnome.Software.Learn.svg</file>

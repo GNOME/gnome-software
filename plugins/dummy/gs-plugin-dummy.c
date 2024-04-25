@@ -378,7 +378,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		return FALSE;
 
 	/* use a generic stock icon */
-	ic = g_themed_icon_new ("system-component-driver");
+	ic = g_themed_icon_new ("org.gnome.Software.Dummy");
 
 	/* add a live updatable normal application */
 	app = gs_app_new ("chiron.desktop");
@@ -892,7 +892,7 @@ refine_app (GsPluginDummy        *self,
 		if (gs_app_get_summary (app) == NULL)
 			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "tmp");
 		if (!gs_app_has_icons (app)) {
-			g_autoptr(GIcon) ic = g_themed_icon_new ("system-component-driver");
+			g_autoptr(GIcon) ic = g_themed_icon_new ("org.gnome.Software.Dummy");
 			gs_app_add_icon (app, ic);
 		}
 	}
@@ -1136,7 +1136,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 					g_timeout_add_seconds (1, gs_plugin_dummy_poll_cb, plugin);
 
 				/* use a generic stock icon */
-				icon = g_themed_icon_new ("system-component-driver");
+				icon = g_themed_icon_new ("org.gnome.Software.Dummy");
 
 				/* add a live updatable normal application */
 				app = gs_app_new ("chiron.desktop");
