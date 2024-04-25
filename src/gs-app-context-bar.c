@@ -226,8 +226,8 @@ typedef enum
 {
 	/* The code in this file relies on the fact that these enum values
 	 * numerically increase as they get more unsafe. */
-	SAFETY_PRIVILEGED,
 	SAFETY_SAFE,
+	SAFETY_PRIVILEGED,
 	SAFETY_PROBABLY_SAFE,
 	SAFETY_POTENTIALLY_UNSAFE,
 	SAFETY_UNSAFE
