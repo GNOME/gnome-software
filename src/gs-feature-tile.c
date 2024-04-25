@@ -11,6 +11,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <adwaita.h>
 
 #include "gs-feature-tile.h"
 #include "gs-layout-manager.h"
@@ -35,6 +36,11 @@ enum {
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
+
+/* Foreground (text) colours for the feature tile, hard coded here because they
+ * can’t be queried from CSS unless they’re actively in use. */
+static const GdkRGBA fg_light_rgba = { 1.0, 1.0, 1.0, 1.0 };
+static const GdkRGBA fg_dark_rgba = { 0.0, 0.0, 0.0, 1.0 };
 
 static void
 gs_feature_tile_layout_allocate (GtkLayoutManager *layout_manager,
@@ -422,145 +428,186 @@ gs_feature_tile_refresh (GsFeatureTile *tile)
 					 gs_css_get_markup_for_id (css, "summary"));
 		tile->markup_cache = markup;
 	} else if (markup == NULL) {
-		GArray *key_colors = gs_app_get_key_colors (app);
-		g_autofree gchar *css = NULL;
-
-		/* If there is no override CSS for the app, default to a solid
-		 * background colour based on the app’s key colors.
-		 *
-		 * Choose an arbitrary key color from the app’s key colors, and
-		 * ensure that it’s:
-		 *  - a light, not too saturated version of the dominant color
-		 *    of the icon
-		 *  - always light enough that grey text is visible on it
-		 *
-		 * Cache the result until the app’s key colours change, as the
-		 * amount of calculation going on here is not entirely trivial.
-		 */
-		if (key_colors != tile->key_colors_cache) {
-			g_autoptr(GArray) colors = NULL;
+		GdkRGBA chosen_color_by_app;
+		GsColorScheme color_scheme = adw_style_manager_get_dark (adw_style_manager_get_for_display (
+					     gtk_widget_get_display (GTK_WIDGET (tile)))) ? GS_COLOR_SCHEME_DARK : GS_COLOR_SCHEME_LIGHT;
+		if (gs_app_get_key_color_for_color_scheme (app, color_scheme, &chosen_color_by_app)) {
+			g_autofree gchar *css = NULL;
+			GsHSBC hsbc, fg_light_hsbc, fg_dark_hsbc;
 			GdkRGBA fg_rgba;
-			GsHSBC fg_hsbc;
-			const GsHSBC *chosen_hsbc;
-			GsHSBC chosen_hsbc_modified;
-			gboolean use_chosen_hsbc = FALSE;
 
-			/* Look up the foreground colour for the feature tile,
-			 * which is the colour of the text. This should always
-			 * be provided as a named colour by the theme.
-			 *
-			 * Knowing the foreground colour allows calculation of
-			 * the contrast between candidate background colours and
-			 * the foreground which will be rendered on top of them.
-			 *
-			 * We want to choose a background colour with at least
-			 * @min_abs_contrast contrast with the foreground, so
-			 * that the text is legible.
-			 */
-			gtk_widget_get_color (GTK_WIDGET (tile), &fg_rgba);
+			/* Choose good contrast text color for the provided background */
+			gtk_rgb_to_hsv (chosen_color_by_app.red, chosen_color_by_app.green, chosen_color_by_app.blue,
+					&hsbc.hue, &hsbc.saturation, &hsbc.brightness);
+			gtk_rgb_to_hsv (fg_light_rgba.red, fg_light_rgba.green, fg_light_rgba.blue,
+					&fg_light_hsbc.hue, &fg_light_hsbc.saturation, &fg_light_hsbc.brightness);
+			gtk_rgb_to_hsv (fg_dark_rgba.red, fg_dark_rgba.green, fg_dark_rgba.blue,
+					&fg_dark_hsbc.hue, &fg_dark_hsbc.saturation, &fg_dark_hsbc.brightness);
 
-			gtk_rgb_to_hsv (fg_rgba.red, fg_rgba.green, fg_rgba.blue,
-					&fg_hsbc.hue, &fg_hsbc.saturation, &fg_hsbc.brightness);
+			/* Choose the foreground (text) colour by how well it contrasts with the app-controlled background colour */
+			if (wcag_contrast (&fg_light_hsbc, &hsbc) >= wcag_contrast (&fg_dark_hsbc, &hsbc))
+				fg_rgba = fg_light_rgba;
+			else
+				fg_rgba = fg_dark_rgba;
 
-			g_debug ("FG color: RGB: (%f, %f, %f), HSB: (%f, %f, %f)",
-				 fg_rgba.red, fg_rgba.green, fg_rgba.blue,
-				 fg_hsbc.hue, fg_hsbc.saturation, fg_hsbc.brightness);
+			g_debug ("Using provided background colour for %s color scheme for %s RGB: (%f, %f, %f) with text color RGB (%f, %f, %f)",
+				 color_scheme == GS_COLOR_SCHEME_LIGHT ? "ligth" : "dark",
+				 gs_app_get_id (app),
+				 chosen_color_by_app.red, chosen_color_by_app.green, chosen_color_by_app.blue,
+				 fg_rgba.red, fg_rgba.green, fg_rgba.blue);
 
-			/* Convert all the RGBA key colours to HSB, and
-			 * calculate their contrast against the foreground
-			 * colour.
-			 *
-			 * The contrast is calculated as the Weber contrast,
-			 * which is valid for small amounts of foreground colour
-			 * (i.e. text) against larger background areas. Contrast
-			 * is strictly calculated using luminance, but it’s OK
-			 * to subjectively calculate it using brightness, as
-			 * brightness is the subjective impression of luminance.
-			 */
-			if (key_colors != NULL)
-				colors = g_array_sized_new (FALSE, FALSE, sizeof (GsHSBC), key_colors->len);
-
-			g_debug ("Candidate background colors for %s:", gs_app_get_id (app));
-			for (guint i = 0; key_colors != NULL && i < key_colors->len; i++) {
-				const GdkRGBA *rgba = &g_array_index (key_colors, GdkRGBA, i);
-				GsHSBC hsbc;
-
-				gtk_rgb_to_hsv (rgba->red, rgba->green, rgba->blue,
-						&hsbc.hue, &hsbc.saturation, &hsbc.brightness);
-				hsbc.contrast = wcag_contrast (&fg_hsbc, &hsbc);
-				g_array_append_val (colors, hsbc);
-
-				g_debug (" • RGB: (%f, %f, %f), HSB: (%f, %f, %f), contrast: %f",
-					 rgba->red, rgba->green, rgba->blue,
-					 hsbc.hue, hsbc.saturation, hsbc.brightness,
-					 hsbc.contrast);
-			}
-
-			/* Sort the candidate background colours to find the
-			 * most appropriate one. */
-			g_array_sort (colors, colors_sort_cb);
-
-			/* If the developer/distro has provided override colours,
-			 * use them. If there’s more than one override colour,
-			 * use the one with the highest contrast with the
-			 * foreground colour, unmodified. If there’s only one,
-			 * modify it as below.
-			 *
-			 * If there are no override colours, take the top colour
-			 * after sorting above. If it’s not good enough, modify
-			 * its brightness to improve the contrast, and clamp its
-			 * saturation to the valid range.
-			 *
-			 * If there are no colours, fall through and leave @css
-			 * as %NULL. */
-			if (gs_app_get_user_key_colors (app) &&
-			    colors != NULL &&
-			    colors->len > 1) {
-				g_array_sort (colors, colors_sort_contrast_cb);
-
-				chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
-				chosen_hsbc_modified = *chosen_hsbc;
-
-				use_chosen_hsbc = TRUE;
-			} else if (colors != NULL && colors->len > 0) {
-				chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
-				chosen_hsbc_modified = *chosen_hsbc;
-
-				chosen_hsbc_modified.saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
-
-				if (chosen_hsbc->contrast >= -min_abs_contrast &&
-				    chosen_hsbc->contrast <= min_abs_contrast)
-					chosen_hsbc_modified.brightness = wcag_contrast_find_brightness (&fg_hsbc, &chosen_hsbc_modified, min_abs_contrast);
-
-				use_chosen_hsbc = TRUE;
-			}
-
-			if (use_chosen_hsbc) {
-				GdkRGBA chosen_rgba;
-
-				gtk_hsv_to_rgb (chosen_hsbc_modified.hue,
-						chosen_hsbc_modified.saturation,
-						chosen_hsbc_modified.brightness,
-						&chosen_rgba.red, &chosen_rgba.green, &chosen_rgba.blue);
-
-				g_debug ("Chosen background colour for %s (saturation %s, brightness %s): RGB: (%f, %f, %f), HSB: (%f, %f, %f)",
-					 gs_app_get_id (app),
-					 (chosen_hsbc_modified.saturation == chosen_hsbc->saturation) ? "not modified" : "modified",
-					 (chosen_hsbc_modified.brightness == chosen_hsbc->brightness) ? "not modified" : "modified",
-					 chosen_rgba.red, chosen_rgba.green, chosen_rgba.blue,
-					 chosen_hsbc_modified.hue, chosen_hsbc_modified.saturation, chosen_hsbc_modified.brightness);
-
-				css = g_strdup_printf ("background-color: rgb(%.0f,%.0f,%.0f);",
-						       chosen_rgba.red * 255.f,
-						       chosen_rgba.green * 255.f,
-						       chosen_rgba.blue * 255.f);
-			}
+			css = g_strdup_printf ("background-color: rgb(%.0f,%.0f,%.0f); color: rgb(%.0f,%.0f,%.0f);",
+					       chosen_color_by_app.red * 255.f,
+					       chosen_color_by_app.green * 255.f,
+					       chosen_color_by_app.blue * 255.f,
+					       fg_rgba.red * 255.f,
+					       fg_rgba.green * 255.f,
+					       fg_rgba.blue * 255.f);
 
 			gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, css);
 			gs_utils_widget_set_css (tile->title, &tile->title_provider, NULL);
 			gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, NULL);
+		} else {
+			GArray *key_colors = gs_app_get_key_colors (app);
+			g_autofree gchar *css = NULL;
 
-			tile->key_colors_cache = key_colors;
+			/* If there is no override CSS for the app, default to a solid
+			 * background colour based on the app’s key colors.
+			 *
+			 * Choose an arbitrary key color from the app’s key colors, and
+			 * ensure that it’s:
+			 *  - a light, not too saturated version of the dominant color
+			 *    of the icon
+			 *  - always light enough that grey text is visible on it
+			 *
+			 * Cache the result until the app’s key colours change, as the
+			 * amount of calculation going on here is not entirely trivial.
+			 */
+			if (key_colors != tile->key_colors_cache) {
+				g_autoptr(GArray) colors = NULL;
+				GdkRGBA fg_rgba;
+				GsHSBC fg_hsbc;
+				const GsHSBC *chosen_hsbc;
+				GsHSBC chosen_hsbc_modified;
+				gboolean use_chosen_hsbc = FALSE;
+
+				/* Look up the foreground colour for the feature tile,
+				 * which is the colour of the text. This should always
+				 * be provided as a named colour by the theme.
+				 *
+				 * Knowing the foreground colour allows calculation of
+				 * the contrast between candidate background colours and
+				 * the foreground which will be rendered on top of them.
+				 *
+				 * We want to choose a background colour with at least
+				 * @min_abs_contrast contrast with the foreground, so
+				 * that the text is legible.
+				 */
+				gtk_widget_get_color (GTK_WIDGET (tile), &fg_rgba);
+
+				gtk_rgb_to_hsv (fg_rgba.red, fg_rgba.green, fg_rgba.blue,
+						&fg_hsbc.hue, &fg_hsbc.saturation, &fg_hsbc.brightness);
+
+				g_debug ("FG color: RGB: (%f, %f, %f), HSB: (%f, %f, %f)",
+					 fg_rgba.red, fg_rgba.green, fg_rgba.blue,
+					 fg_hsbc.hue, fg_hsbc.saturation, fg_hsbc.brightness);
+
+				/* Convert all the RGBA key colours to HSB, and
+				 * calculate their contrast against the foreground
+				 * colour.
+				 *
+				 * The contrast is calculated as the Weber contrast,
+				 * which is valid for small amounts of foreground colour
+				 * (i.e. text) against larger background areas. Contrast
+				 * is strictly calculated using luminance, but it’s OK
+				 * to subjectively calculate it using brightness, as
+				 * brightness is the subjective impression of luminance.
+				 */
+				if (key_colors != NULL)
+					colors = g_array_sized_new (FALSE, FALSE, sizeof (GsHSBC), key_colors->len);
+
+				g_debug ("Candidate background colors for %s:", gs_app_get_id (app));
+				for (guint i = 0; key_colors != NULL && i < key_colors->len; i++) {
+					const GdkRGBA *rgba = &g_array_index (key_colors, GdkRGBA, i);
+					GsHSBC hsbc;
+
+					gtk_rgb_to_hsv (rgba->red, rgba->green, rgba->blue,
+							&hsbc.hue, &hsbc.saturation, &hsbc.brightness);
+					hsbc.contrast = wcag_contrast (&fg_hsbc, &hsbc);
+					g_array_append_val (colors, hsbc);
+
+					g_debug (" • RGB: (%f, %f, %f), HSB: (%f, %f, %f), contrast: %f",
+						 rgba->red, rgba->green, rgba->blue,
+						 hsbc.hue, hsbc.saturation, hsbc.brightness,
+						 hsbc.contrast);
+				}
+
+				/* Sort the candidate background colours to find the
+				 * most appropriate one. */
+				g_array_sort (colors, colors_sort_cb);
+
+				/* If the developer/distro has provided override colours,
+				 * use them. If there’s more than one override colour,
+				 * use the one with the highest contrast with the
+				 * foreground colour, unmodified. If there’s only one,
+				 * modify it as below.
+				 *
+				 * If there are no override colours, take the top colour
+				 * after sorting above. If it’s not good enough, modify
+				 * its brightness to improve the contrast, and clamp its
+				 * saturation to the valid range.
+				 *
+				 * If there are no colours, fall through and leave @css
+				 * as %NULL. */
+				if (gs_app_get_user_key_colors (app) &&
+				    colors != NULL &&
+				    colors->len > 1) {
+					g_array_sort (colors, colors_sort_contrast_cb);
+
+					chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
+					chosen_hsbc_modified = *chosen_hsbc;
+
+					use_chosen_hsbc = TRUE;
+				} else if (colors != NULL && colors->len > 0) {
+					chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
+					chosen_hsbc_modified = *chosen_hsbc;
+
+					chosen_hsbc_modified.saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
+
+					if (chosen_hsbc->contrast >= -min_abs_contrast &&
+					    chosen_hsbc->contrast <= min_abs_contrast)
+						chosen_hsbc_modified.brightness = wcag_contrast_find_brightness (&fg_hsbc, &chosen_hsbc_modified, min_abs_contrast);
+
+					use_chosen_hsbc = TRUE;
+				}
+
+				if (use_chosen_hsbc) {
+					GdkRGBA chosen_rgba;
+
+					gtk_hsv_to_rgb (chosen_hsbc_modified.hue,
+							chosen_hsbc_modified.saturation,
+							chosen_hsbc_modified.brightness,
+							&chosen_rgba.red, &chosen_rgba.green, &chosen_rgba.blue);
+
+					g_debug ("Chosen background colour for %s (saturation %s, brightness %s): RGB: (%f, %f, %f), HSB: (%f, %f, %f)",
+						 gs_app_get_id (app),
+						 (chosen_hsbc_modified.saturation == chosen_hsbc->saturation) ? "not modified" : "modified",
+						 (chosen_hsbc_modified.brightness == chosen_hsbc->brightness) ? "not modified" : "modified",
+						 chosen_rgba.red, chosen_rgba.green, chosen_rgba.blue,
+						 chosen_hsbc_modified.hue, chosen_hsbc_modified.saturation, chosen_hsbc_modified.brightness);
+
+					css = g_strdup_printf ("background-color: rgb(%.0f,%.0f,%.0f);",
+							       chosen_rgba.red * 255.f,
+							       chosen_rgba.green * 255.f,
+							       chosen_rgba.blue * 255.f);
+				}
+
+				gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, css);
+				gs_utils_widget_set_css (tile->title, &tile->title_provider, NULL);
+				gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, NULL);
+
+				tile->key_colors_cache = key_colors;
+			}
 		}
 	}
 
