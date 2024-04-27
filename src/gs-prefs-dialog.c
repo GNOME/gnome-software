@@ -18,7 +18,7 @@
 
 struct _GsPrefsDialog
 {
-	AdwPreferencesWindow	 parent_instance;
+	AdwPreferencesDialog	 parent_instance;
 	GSettings		*settings;
 
 	GCancellable		*cancellable;
@@ -36,7 +36,7 @@ struct _GsPrefsDialog
 	AdwActionRow		*show_only_verified_apps_row;
 };
 
-G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, ADW_TYPE_PREFERENCES_WINDOW)
+G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, ADW_TYPE_PREFERENCES_DIALOG)
 
 static void
 gs_prefs_dialog_filters_changed_cb (GsPrefsDialog *self)
@@ -134,11 +134,10 @@ gs_prefs_dialog_class_init (GsPrefsDialogClass *klass)
 }
 
 GtkWidget *
-gs_prefs_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
+gs_prefs_dialog_new (GsPluginLoader *plugin_loader)
 {
 	GsPrefsDialog *dialog;
 	dialog = g_object_new (GS_TYPE_PREFS_DIALOG,
-			       "transient-for", parent,
 			       NULL);
 	dialog->plugin_loader = g_object_ref (plugin_loader);
 	return GTK_WIDGET (dialog);
