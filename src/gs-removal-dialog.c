@@ -17,12 +17,12 @@
 
 struct _GsRemovalDialog
 {
-	AdwWindow		 parent_instance;
+	AdwDialog		 parent_instance;
 	GtkLabel		*label;
 	GtkWidget		*listbox;
 };
 
-G_DEFINE_TYPE (GsRemovalDialog, gs_removal_dialog, ADW_TYPE_WINDOW)
+G_DEFINE_TYPE (GsRemovalDialog, gs_removal_dialog, ADW_TYPE_DIALOG)
 
 enum {
 	SIGNAL_RESPONSE,
