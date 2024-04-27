@@ -18,10 +18,9 @@ typedef void (*GsBasicAuthCallback) (const gchar *user, const gchar *password, g
 
 #define GS_TYPE_BASIC_AUTH_DIALOG (gs_basic_auth_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, GS, BASIC_AUTH_DIALOG, AdwWindow)
+G_DECLARE_FINAL_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, GS, BASIC_AUTH_DIALOG, AdwDialog)
 
-GtkWidget	*gs_basic_auth_dialog_new		(GtkWindow		*parent,
-							 const gchar		*remote,
+GtkWidget	*gs_basic_auth_dialog_new		(const gchar		*remote,
 							 const gchar		*realm,
 							 GsBasicAuthCallback	 callback,
 							 gpointer		 callback_data);

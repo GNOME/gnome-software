@@ -16,7 +16,7 @@
 
 struct _GsBasicAuthDialog
 {
-	AdwWindow		 parent_instance;
+	AdwDialog		 parent_instance;
 
 	GsBasicAuthCallback	 callback;
 	gpointer		 callback_data;
@@ -28,15 +28,18 @@ struct _GsBasicAuthDialog
 	GtkEntry		*password_entry;
 };
 
-G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, ADW_TYPE_WINDOW)
+G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, ADW_TYPE_DIALOG)
 
 static void
 cancel_button_clicked_cb (GsBasicAuthDialog *dialog)
 {
-	/* abort the basic auth request */
-	dialog->callback (NULL, NULL, dialog->callback_data);
+	if (dialog->callback != NULL) {
+		/* abort the basic auth request */
+		dialog->callback (NULL, NULL, dialog->callback_data);
+		dialog->callback = NULL;
+	}
 
-	gtk_window_close (GTK_WINDOW (dialog));
+	adw_dialog_close (ADW_DIALOG (dialog));
 }
 
 static void
@@ -48,10 +51,13 @@ login_button_clicked_cb (GsBasicAuthDialog *dialog)
 	user = gtk_editable_get_text (GTK_EDITABLE (dialog->user_entry));
 	password = gtk_editable_get_text (GTK_EDITABLE (dialog->password_entry));
 
-	/* submit the user/password to basic auth */
-	dialog->callback (user, password, dialog->callback_data);
+	if (dialog->callback != NULL) {
+		/* submit the user/password to basic auth */
+		dialog->callback (user, password, dialog->callback_data);
+		dialog->callback = NULL;
+	}
 
-	gtk_window_close (GTK_WINDOW (dialog));
+	adw_dialog_close (ADW_DIALOG (dialog));
 }
 
 static void
@@ -95,6 +101,13 @@ close_cb (GtkWidget *widget, GVariant *args, gpointer user_data)
 }
 
 static void
+gs_basic_auth_dialog_map (GtkWidget *widget)
+{
+	GTK_WIDGET_CLASS (gs_basic_auth_dialog_parent_class)->map (widget);
+	gtk_widget_grab_focus (GTK_WIDGET (GS_BASIC_AUTH_DIALOG (widget)->user_entry));
+}
+
+static void
 gs_basic_auth_dialog_init (GsBasicAuthDialog *dialog)
 {
 	gtk_widget_init_template (GTK_WIDGET (dialog));
@@ -104,6 +117,8 @@ static void
 gs_basic_auth_dialog_class_init (GsBasicAuthDialogClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
+	widget_class->map = gs_basic_auth_dialog_map;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-basic-auth-dialog.ui");
 
@@ -115,13 +130,11 @@ gs_basic_auth_dialog_class_init (GsBasicAuthDialogClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, dialog_validate);
 	gtk_widget_class_bind_template_callback (widget_class, cancel_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, login_button_clicked_cb);
-
-	gtk_widget_class_add_binding (widget_class, GDK_KEY_Escape, 0, close_cb, NULL);
+	gtk_widget_class_bind_template_callback (widget_class, close_cb);
 }
 
 GtkWidget *
-gs_basic_auth_dialog_new (GtkWindow *parent,
-                          const gchar *remote,
+gs_basic_auth_dialog_new (const gchar *remote,
                           const gchar *realm,
                           GsBasicAuthCallback callback,
                           gpointer callback_data)
@@ -129,7 +142,6 @@ gs_basic_auth_dialog_new (GtkWindow *parent,
 	GsBasicAuthDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_BASIC_AUTH_DIALOG,
-	                       "transient-for", parent,
 	                       NULL);
 	dialog->callback = callback;
 	dialog->callback_data = callback_data;
