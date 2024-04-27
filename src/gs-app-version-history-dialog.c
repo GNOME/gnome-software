@@ -17,12 +17,12 @@
 
 struct _GsAppVersionHistoryDialog
 {
-	AdwWindow	 parent_instance;
+	AdwDialog	 parent_instance;
 	GsApp		*app;
 	GtkWidget	*listbox;
 };
 
-G_DEFINE_TYPE (GsAppVersionHistoryDialog, gs_app_version_history_dialog, ADW_TYPE_WINDOW)
+G_DEFINE_TYPE (GsAppVersionHistoryDialog, gs_app_version_history_dialog, ADW_TYPE_DIALOG)
 
 static void
 populate_version_history (GsAppVersionHistoryDialog *dialog,
@@ -80,18 +80,14 @@ gs_app_version_history_dialog_class_init (GsAppVersionHistoryDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-version-history-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryDialog, listbox);
-
-	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 GtkWidget *
-gs_app_version_history_dialog_new (GtkWindow *parent, GsApp *app)
+gs_app_version_history_dialog_new (GsApp *app)
 {
 	GsAppVersionHistoryDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_APP_VERSION_HISTORY_DIALOG,
-			       "transient-for", parent,
-			       "modal", TRUE,
 			       NULL);
 	populate_version_history (dialog, app);
 
