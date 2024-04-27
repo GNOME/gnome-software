@@ -23,7 +23,7 @@
 
 struct _GsReviewDialog
 {
-	AdwWindow	 parent_instance;
+	AdwDialog	 parent_instance;
 
 	GtkWidget       *toast_overlay;
 	GtkWidget	*star;
@@ -35,7 +35,7 @@ struct _GsReviewDialog
 	guint		 timer_id;
 };
 
-G_DEFINE_TYPE (GsReviewDialog, gs_review_dialog, ADW_TYPE_WINDOW)
+G_DEFINE_TYPE (GsReviewDialog, gs_review_dialog, ADW_TYPE_DIALOG)
 
 enum {
 	SIGNAL_SEND,
@@ -212,7 +212,7 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 	g_signal_connect_swapped (buffer, "changed",
 				  G_CALLBACK (gs_review_dialog_changed_cb), dialog);
 	g_signal_connect_swapped (dialog->cancel_button, "clicked",
-				  G_CALLBACK (gtk_window_destroy), dialog);
+				  G_CALLBACK (adw_dialog_force_close), dialog);
 	g_signal_connect_swapped (dialog->post_button, "clicked",
 				  G_CALLBACK (gs_review_dialog_post_button_clicked_cb), dialog);
 

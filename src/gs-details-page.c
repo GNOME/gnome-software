@@ -2402,7 +2402,7 @@ gs_details_page_write_review (GsDetailsPage *self)
 	dialog = gs_review_dialog_new ();
 	g_signal_connect (dialog, "send",
 			  G_CALLBACK (gs_details_page_review_send_cb), self);
-	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
+	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (self));
 }
 
 static void

@@ -15,7 +15,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_REVIEW_DIALOG (gs_review_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsReviewDialog, gs_review_dialog, GS, REVIEW_DIALOG, AdwWindow)
+G_DECLARE_FINAL_TYPE (GsReviewDialog, gs_review_dialog, GS, REVIEW_DIALOG, AdwDialog)
 
 GtkWidget	*gs_review_dialog_new		(void);
 gint		 gs_review_dialog_get_rating	(GsReviewDialog	*dialog);
