@@ -10,17 +10,12 @@
           <object class="AdwHeaderBar"/>
         </child>
         <property name="content">
-          <object class="GtkScrolledWindow">
+          <object class="AdwPreferencesPage">
             <child>
-              <object class="AdwClamp">
-                <property name="margin-start">12</property>
-                <property name="margin-end">12</property>
-                <property name="margin-bottom">18</property>
-                <property name="margin-top">18</property>
+              <object class="AdwPreferencesGroup">
                 <child>
                   <object class="GtkListBox" id="listbox">
                     <property name="selection-mode">none</property>
-                    <property name="valign">start</property>
                     <style>
                       <class name="boxed-list"/>
                     </style>
