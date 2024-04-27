@@ -612,7 +612,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (row), FALSE);
 #endif
 		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _("Enable New Repositories"));
-		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added."));
+		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added"));
 		gtk_widget_set_visible (row, TRUE);
 
 		anchor = g_strdup_printf ("<a href=\"%s\">%s</a>",
