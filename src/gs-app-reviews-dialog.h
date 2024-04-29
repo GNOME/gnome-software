@@ -16,10 +16,9 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_APP_REVIEWS_DIALOG (gs_app_reviews_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsAppReviewsDialog, gs_app_reviews_dialog, GS, APP_REVIEWS_DIALOG, AdwWindow)
+G_DECLARE_FINAL_TYPE (GsAppReviewsDialog, gs_app_reviews_dialog, GS, APP_REVIEWS_DIALOG, AdwDialog)
 
-GtkWidget	*gs_app_reviews_dialog_new	(GtkWindow	*parent,
-						 GsApp		*app,
+GtkWidget	*gs_app_reviews_dialog_new	(GsApp		*app,
 						 GsOdrsProvider	*odrs_provider,
 						 GsPluginLoader	*plugin_loader);
 

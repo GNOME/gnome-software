@@ -1613,12 +1613,8 @@ featured_review_list_row_activated_cb (GtkListBox *list_box,
 	g_assert (GS_IS_ODRS_PROVIDER (self->odrs_provider));
 
 	if (self->app_reviews_dialog == NULL) {
-		GtkWindow *parent;
-
-		parent = GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (list_box), GTK_TYPE_WINDOW));
-
 		self->app_reviews_dialog =
-			gs_app_reviews_dialog_new (parent, self->app,
+			gs_app_reviews_dialog_new (self->app,
 						   self->odrs_provider, self->plugin_loader);
 		g_object_bind_property (self, "odrs-provider",
 					self->app_reviews_dialog, "odrs-provider", 0);
@@ -1628,7 +1624,7 @@ featured_review_list_row_activated_cb (GtkListBox *list_box,
 					  G_CALLBACK (app_reviews_dialog_destroy_cb), self);
 	}
 
-	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (self->app_reviews_dialog));
+	adw_dialog_present (ADW_DIALOG (self->app_reviews_dialog), GTK_WIDGET (self));
 }
 
 static void gs_details_page_addon_install_cb (GsAppAddonRow *row, gpointer user_data);
