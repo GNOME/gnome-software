@@ -333,7 +333,7 @@ fedora_third_party_repos_switch_notify_cb (GObject *object,
 	GsReposDialog *self = user_data;
 
 	gs_fedora_third_party_switch (self->third_party,
-				      gtk_switch_get_active (GTK_SWITCH (object)),
+				      adw_switch_row_get_active (ADW_SWITCH_ROW (object)),
 				      TRUE,
 				      self->cancellable,
 				      fedora_third_party_switch_done_cb,
@@ -604,21 +604,15 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		g_autofree gchar *hint = NULL;
 		g_autofree gchar *section_id = NULL;
 
-		widget = gtk_switch_new ();
-		gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
-		gtk_switch_set_active (GTK_SWITCH (widget), dialog->third_party_enabled);
-		g_signal_connect_object (widget, "notify::active",
+		row = adw_switch_row_new ();
+		adw_switch_row_set_active (ADW_SWITCH_ROW (row), dialog->third_party_enabled);
+		g_signal_connect_object (row, "notify::active",
 					 G_CALLBACK (fedora_third_party_repos_switch_notify_cb), dialog, 0);
-		gtk_widget_set_visible (widget, TRUE);
-
-		row = adw_action_row_new ();
 #if ADW_CHECK_VERSION(1,2,0)
 		adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (row), FALSE);
 #endif
 		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _("Enable New Repositories"));
-		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added."));
-		adw_action_row_set_activatable_widget (ADW_ACTION_ROW (row), widget);
-		adw_action_row_add_suffix (ADW_ACTION_ROW (row), widget);
+		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added"));
 		gtk_widget_set_visible (row, TRUE);
 
 		anchor = g_strdup_printf ("<a href=\"%s\">%s</a>",
