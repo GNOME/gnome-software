@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.18.3 -->
 <interface>
-  <requires lib="gtk+" version="3.10"/>
-  <template class="GsReviewDialog" parent="AdwWindow">
+  <template class="GsReviewDialog" parent="AdwDialog">
     <property name="title" translatable="yes" comments="Translators: Title of the dialog box where the users can write and publish their opinions about the apps.">Write a Review</property>
-    <property name="modal">True</property>
-    <property name="default_width">480</property>
-    <property name="default_height">560</property>
-    <property name="destroy_with_parent">True</property>
-    <child>
-      <object class="GtkShortcutController">
-        <property name="scope">managed</property>
-        <child>
-          <object class="GtkShortcut">
-            <property name="trigger">Escape</property>
-            <property name="action">action(window.close)</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <property name="content">
+    <property name="content-width">480</property>
+    <property name="content-height">560</property>
+    <property name="child">
       <object class="AdwToastOverlay" id="toast_overlay">
         <property name="child">
           <object class="AdwToolbarView">
