@@ -12,14 +12,15 @@ help_files = [
 help_media = [
   'figures/age-rating-tile.png',
   'figures/carousel.png',
-  'figures/community-built.png',
+  'figures/community-built.svg',
   'figures/hardware-support-tile.png',
   'figures/install-webapp-step1.png',
   'figures/install-webapp-step2.png',
   'figures/links.png',
-  'figures/proprietary.png',
+  'figures/proprietary-and-special.svg',
   'figures/safety-tile.png',
   'figures/storage-tile.png',
+  'figures/unknown.svg',
 ]
 
 gnome.yelp (meson.project_name (),
