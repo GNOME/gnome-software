@@ -876,24 +876,21 @@ tile_clicked_cb (GtkWidget *widget,
                  gpointer   user_data)
 {
 	GsAppContextBar *self = GS_APP_CONTEXT_BAR (user_data);
-	GtkWindow *dialog;
-	GtkRoot *root = gtk_widget_get_root (widget);
+	AdwDialog *dialog;
 
-	if (GTK_IS_WINDOW (root)) {
-		if (widget == self->tiles[STORAGE_TILE].tile)
-			dialog = GTK_WINDOW (gs_storage_context_dialog_new (self->app));
-		else if (widget == self->tiles[SAFETY_TILE].tile)
-			dialog = GTK_WINDOW (gs_safety_context_dialog_new (self->app));
-		else if (widget == self->tiles[HARDWARE_SUPPORT_TILE].tile)
-			dialog = GTK_WINDOW (gs_hardware_support_context_dialog_new (self->app));
-		else if (widget == self->tiles[AGE_RATING_TILE].tile)
-			dialog = GTK_WINDOW (gs_age_rating_context_dialog_new (self->app));
-		else
-			g_assert_not_reached ();
+	if (widget == self->tiles[STORAGE_TILE].tile)
+		dialog = ADW_DIALOG (gs_storage_context_dialog_new (self->app));
+	else if (widget == self->tiles[SAFETY_TILE].tile)
+		dialog = ADW_DIALOG (gs_safety_context_dialog_new (self->app));
+	else if (widget == self->tiles[HARDWARE_SUPPORT_TILE].tile)
+		dialog = ADW_DIALOG (gs_hardware_support_context_dialog_new (self->app));
+	else if (widget == self->tiles[AGE_RATING_TILE].tile)
+		dialog = ADW_DIALOG (gs_age_rating_context_dialog_new (self->app));
+	else
+		g_assert_not_reached ();
 
-		gtk_window_set_transient_for (dialog, GTK_WINDOW (root));
-		gtk_widget_set_visible (GTK_WIDGET (dialog), TRUE);
-	}
+	adw_dialog_present (dialog, GTK_WIDGET (self));
+
 }
 
 static void

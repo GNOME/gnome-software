@@ -19,11 +19,11 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_INFO_WINDOW (gs_info_window_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsInfoWindow, gs_info_window, GS, INFO_WINDOW, AdwWindow)
+G_DECLARE_DERIVABLE_TYPE (GsInfoWindow, gs_info_window, GS, INFO_WINDOW, AdwDialog)
 
 struct _GsInfoWindowClass
 {
-	AdwWindowClass	 parent_class;
+	AdwDialogClass	 parent_class;
 };
 
 GsInfoWindow	*gs_info_window_new	(void);
