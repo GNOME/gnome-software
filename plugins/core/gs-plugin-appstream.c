@@ -46,8 +46,8 @@ struct _GsPluginAppstream
 	GPtrArray		*file_monitors; /* (owned) (element-type GFileMonitor) */
 	/* The stamps help to avoid locking the silo lock in the main thread
 	   and also to detect changes while loading other appstream data. */
-	gint			 file_monitor_stamp; /* the file monitor stamp, increased on every file monitor change */
-	gint			 file_monitor_stamp_current; /* the currently known file monitor stamp, checked for changes */
+	gint			 silo_change_stamp; /* the silo change stamp, increased on every silo change */
+	gint			 silo_change_stamp_current; /* the currently known silo change stamp, checked for changes */
 };
 
 G_DEFINE_TYPE (GsPluginAppstream, gs_plugin_appstream, GS_TYPE_PLUGIN)
@@ -224,7 +224,7 @@ gs_plugin_appstream_file_monitor_changed_cb (GFileMonitor *monitor,
 					     gpointer user_data)
 {
 	GsPluginAppstream *self = user_data;
-	g_atomic_int_inc (&self->file_monitor_stamp);
+	g_atomic_int_inc (&self->silo_change_stamp);
 }
 
 static void
@@ -550,7 +550,7 @@ gs_plugin_appstream_ref_silo (GsPluginAppstream  *self,
 	locker = g_mutex_locker_new (&self->silo_lock);
 	/* everything is okay */
 	if (self->silo != NULL && xb_silo_is_valid (self->silo) &&
-	    g_atomic_int_get (&self->file_monitor_stamp_current) == g_atomic_int_get (&self->file_monitor_stamp)) {
+	    g_atomic_int_get (&self->silo_change_stamp_current) == g_atomic_int_get (&self->silo_change_stamp)) {
 		if (out_silo_filename != NULL)
 			*out_silo_filename = g_strdup (self->silo_filename);
 		if (out_silo_installed_by_desktopid != NULL)
@@ -568,7 +568,7 @@ gs_plugin_appstream_ref_silo (GsPluginAppstream  *self,
 	g_clear_pointer (&self->silo_installed_by_id, g_hash_table_unref);
 	self->default_scope = AS_COMPONENT_SCOPE_UNKNOWN;
 	g_ptr_array_set_size (self->file_monitors, 0);
-	g_atomic_int_set (&self->file_monitor_stamp_current, g_atomic_int_get (&self->file_monitor_stamp));
+	g_atomic_int_set (&self->silo_change_stamp_current, g_atomic_int_get (&self->silo_change_stamp));
 
 	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
 	old_thread_default = g_main_context_ref_thread_default ();
@@ -707,7 +707,7 @@ gs_plugin_appstream_ref_silo (GsPluginAppstream  *self,
 	if (old_thread_default != NULL)
 		g_main_context_push_thread_default (old_thread_default);
 
-	if (g_atomic_int_get (&self->file_monitor_stamp_current) != g_atomic_int_get (&self->file_monitor_stamp)) {
+	if (g_atomic_int_get (&self->silo_change_stamp_current) != g_atomic_int_get (&self->silo_change_stamp)) {
 		g_ptr_array_set_size (parent_appdata, 0);
 		g_ptr_array_set_size (parent_appstream, 0);
 		g_debug ("appstream: File monitors reported change while loading appstream data, reloading...");
@@ -800,8 +800,8 @@ gs_plugin_appstream_reload (GsPlugin *plugin)
 	}
 
 	self = GS_PLUGIN_APPSTREAM (plugin);
-	/* simpler than getting the silo and setting it invalid */
-	g_atomic_int_inc (&self->file_monitor_stamp);
+	/* Invalidate the reference to the current silo */
+	g_atomic_int_inc (&self->silo_change_stamp);
 }
 
 static gint
