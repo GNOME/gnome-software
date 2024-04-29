@@ -38,7 +38,7 @@ typedef struct
 
 static void gs_info_window_buildable_init (GtkBuildableIface *iface);
 
-G_DEFINE_TYPE_WITH_CODE (GsInfoWindow, gs_info_window, ADW_TYPE_WINDOW,
+G_DEFINE_TYPE_WITH_CODE (GsInfoWindow, gs_info_window, ADW_TYPE_DIALOG,
 			 G_ADD_PRIVATE (GsInfoWindow)
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE, gs_info_window_buildable_init))
 
@@ -84,8 +84,6 @@ gs_info_window_class_init (GsInfoWindowClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-info-window.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsInfoWindow, view);
-
-	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 /**
