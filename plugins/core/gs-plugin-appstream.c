@@ -36,7 +36,7 @@ struct _GsPluginAppstream
 	GsWorkerThread		*worker;  /* (owned) */
 
 	XbSilo			*silo;
-	GRWLock			 silo_lock;
+	GMutex			 silo_lock;
 	gchar			*silo_filename;
 	GHashTable		*silo_installed_by_desktopid;
 	GHashTable		*silo_installed_by_id;
@@ -65,7 +65,7 @@ gs_plugin_appstream_dispose (GObject *object)
 	g_clear_pointer (&self->silo_installed_by_desktopid, g_hash_table_unref);
 	g_clear_pointer (&self->silo_installed_by_id, g_hash_table_unref);
 	g_clear_object (&self->settings);
-	g_rw_lock_clear (&self->silo_lock);
+	g_mutex_clear (&self->silo_lock);
 	g_clear_object (&self->worker);
 	g_clear_pointer (&self->file_monitors, g_ptr_array_unref);
 
@@ -77,9 +77,7 @@ gs_plugin_appstream_init (GsPluginAppstream *self)
 {
 	GApplication *application = g_application_get_default ();
 
-	/* XbSilo needs external locking as we destroy the silo and build a new
-	 * one when something changes */
-	g_rw_lock_init (&self->silo_lock);
+	g_mutex_init (&self->silo_lock);
 
 	/* require settings */
 	self->settings = g_settings_new ("org.gnome.software");
@@ -530,10 +528,13 @@ gs_add_appstream_metainfo_location (GPtrArray *locations, const gchar *root)
 			 g_build_filename (root, "appdata", NULL));
 }
 
-static gboolean
-gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
-                                GCancellable       *cancellable,
-                                GError            **error)
+static XbSilo *
+gs_plugin_appstream_ref_silo (GsPluginAppstream  *self,
+                              gchar             **out_silo_filename,
+                              GHashTable        **out_silo_installed_by_desktopid,
+                              GHashTable        **out_silo_installed_by_id,
+                              GCancellable       *cancellable,
+                              GError            **error)
 {
 	const gchar *test_xml;
 	g_autofree gchar *blobfn = NULL;
@@ -541,21 +542,25 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 	g_autoptr(XbNode) n = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GPtrArray) installed = NULL;
-	g_autoptr(GRWLockReaderLocker) reader_locker = NULL;
-	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
 	g_autoptr(GPtrArray) parent_appstream = NULL;
 	g_autoptr(GMainContext) old_thread_default = NULL;
 
-	reader_locker = g_rw_lock_reader_locker_new (&self->silo_lock);
+	locker = g_mutex_locker_new (&self->silo_lock);
 	/* everything is okay */
 	if (self->silo != NULL && xb_silo_is_valid (self->silo) &&
-	    g_atomic_int_get (&self->file_monitor_stamp_current) == g_atomic_int_get (&self->file_monitor_stamp))
-		return TRUE;
-	g_clear_pointer (&reader_locker, g_rw_lock_reader_locker_free);
+	    g_atomic_int_get (&self->file_monitor_stamp_current) == g_atomic_int_get (&self->file_monitor_stamp)) {
+		if (out_silo_filename != NULL)
+			*out_silo_filename = g_strdup (self->silo_filename);
+		if (out_silo_installed_by_desktopid != NULL)
+			*out_silo_installed_by_desktopid = self->silo_installed_by_desktopid ? g_hash_table_ref (self->silo_installed_by_desktopid) : NULL;
+		if (out_silo_installed_by_id != NULL)
+			*out_silo_installed_by_id = self->silo_installed_by_id ? g_hash_table_ref (self->silo_installed_by_id) : NULL;
+		return g_object_ref (self->silo);
+	}
 
 	/* drat! silo needs regenerating */
-	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
  reload:
 	g_clear_object (&self->silo);
 	g_clear_pointer (&self->silo_filename, g_free);
@@ -594,7 +599,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 		if (!xb_builder_source_load_xml (source, test_xml,
 						 XB_BUILDER_SOURCE_FLAG_NONE,
 						 error))
-			return FALSE;
+			return NULL;
 		fixup1 = xb_builder_fixup_new ("AddOriginKeywords",
 					       gs_plugin_appstream_add_origin_keyword_cb,
 					       self, NULL);
@@ -640,7 +645,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 			if (!gs_plugin_appstream_load_appstream (self, builder, fn, cancellable, error)) {
 				if (old_thread_default != NULL)
 					g_main_context_push_thread_default (old_thread_default);
-				return FALSE;
+				return NULL;
 			}
 		}
 		for (guint i = 0; i < parent_appdata->len; i++) {
@@ -648,7 +653,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 			if (!gs_plugin_appstream_load_appdata (self, builder, fn, cancellable, error)) {
 				if (old_thread_default != NULL)
 					g_main_context_push_thread_default (old_thread_default);
-				return FALSE;
+				return NULL;
 			}
 		}
 		for (guint i = 0; i < parent_desktop->len; i++) {
@@ -657,7 +662,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 			if (!gs_appstream_load_desktop_files (builder, dir, NULL, &file_monitor, cancellable, error)) {
 				if (old_thread_default != NULL)
 					g_main_context_push_thread_default (old_thread_default);
-				return FALSE;
+				return NULL;
 			}
 			gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
 		}
@@ -678,7 +683,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 					      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					      error);
 	if (blobfn == NULL)
-		return FALSE;
+		return NULL;
 	file = g_file_new_for_path (blobfn);
 	g_debug ("ensuring %s", blobfn);
 
@@ -696,7 +701,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 	if (self->silo == NULL) {
 		if (old_thread_default != NULL)
 			g_main_context_push_thread_default (old_thread_default);
-		return FALSE;
+		return NULL;
 	}
 
 	if (old_thread_default != NULL)
@@ -717,7 +722,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "No AppStream data found");
-		return FALSE;
+		return NULL;
 	}
 
 	g_clear_object (&n);
@@ -768,7 +773,13 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 	}
 
 	/* success */
-	return TRUE;
+	if (out_silo_filename != NULL)
+		*out_silo_filename = g_strdup (self->silo_filename);
+	if (out_silo_installed_by_desktopid != NULL)
+		*out_silo_installed_by_desktopid = self->silo_installed_by_desktopid ? g_hash_table_ref (self->silo_installed_by_desktopid) : NULL;
+	if (out_silo_installed_by_id != NULL)
+		*out_silo_installed_by_id = self->silo_installed_by_id ? g_hash_table_ref (self->silo_installed_by_id) : NULL;
+	return g_object_ref (self->silo);
 }
 
 static void
@@ -776,7 +787,6 @@ gs_plugin_appstream_reload (GsPlugin *plugin)
 {
 	GsPluginAppstream *self;
 	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	guint sz;
 
 	g_return_if_fail (GS_IS_PLUGIN_APPSTREAM (plugin));
@@ -790,9 +800,8 @@ gs_plugin_appstream_reload (GsPlugin *plugin)
 	}
 
 	self = GS_PLUGIN_APPSTREAM (plugin);
-	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
-	if (self->silo != NULL)
-		xb_silo_invalidate (self->silo);
+	/* simpler than getting the silo and setting it invalid */
+	g_atomic_int_inc (&self->file_monitor_stamp);
 }
 
 static gint
@@ -834,11 +843,13 @@ setup_thread_cb (GTask        *task,
                  GCancellable *cancellable)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
+	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
-	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error))
+	silo = gs_plugin_appstream_ref_silo (self, NULL, NULL, NULL, cancellable, &local_error);
+	if (silo == NULL)
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	else
 		g_task_return_boolean (task, TRUE);
@@ -910,21 +921,21 @@ url_to_app_thread_cb (GTask *task,
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
 	GsPluginUrlToAppData *data = task_data;
 	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
+	silo = gs_plugin_appstream_ref_silo (self, NULL, NULL, NULL, cancellable, &local_error);
+	if (silo == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 	list = gs_app_list_new ();
 
-	if (gs_appstream_url_to_app (GS_PLUGIN (self), self->silo, list, data->url, cancellable, &local_error))
+	if (gs_appstream_url_to_app (GS_PLUGIN (self), silo, list, data->url, cancellable, &local_error))
 		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 	else
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -1006,17 +1017,14 @@ gs_plugin_appstream_set_compulsory_quirk (GsApp *app, XbNode *component)
 static gboolean
 gs_plugin_appstream_refine_state (GsPluginAppstream  *self,
                                   GsApp              *app,
+                                  GHashTable         *silo_installed_by_id,
                                   GError            **error)
 {
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
-
 	/* Ignore apps with no ID */
-	if (gs_app_get_id (app) == NULL)
+	if (gs_app_get_id (app) == NULL || silo_installed_by_id == NULL)
 		return TRUE;
 
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-
-	if (g_hash_table_contains (self->silo_installed_by_id, gs_app_get_id (app)))
+	if (g_hash_table_contains (silo_installed_by_id, gs_app_get_id (app)))
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	return TRUE;
 }
@@ -1027,19 +1035,20 @@ gs_plugin_refine_from_id (GsPluginAppstream    *self,
                           GsPluginRefineFlags   flags,
 			  GHashTable           *apps_by_id,
 			  GHashTable           *apps_by_origin_and_id,
+                          XbSilo               *silo,
+                          const gchar          *silo_filename,
+                          GHashTable           *silo_installed_by_desktopid,
+                          GHashTable           *silo_installed_by_id,
                           gboolean             *found,
                           GError              **error)
 {
 	const gchar *id, *origin;
 	GPtrArray *components;
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
 
 	/* not enough info to find */
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		return TRUE;
-
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 	origin = gs_app_get_origin_appstream (app);
 
@@ -1056,15 +1065,15 @@ gs_plugin_refine_from_id (GsPluginAppstream    *self,
 
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
-		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo, component, flags, self->silo_installed_by_desktopid,
-					      self->silo_filename ? self->silo_filename : "", self->default_scope, error))
+		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, silo, component, flags, silo_installed_by_desktopid,
+					      silo_filename ? silo_filename : "", self->default_scope, error))
 			return FALSE;
 		gs_plugin_appstream_set_compulsory_quirk (app, component);
 	}
 
 	/* if an installed desktop or appdata file exists set to installed */
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
-		if (!gs_plugin_appstream_refine_state (self, app, error))
+		if (!gs_plugin_appstream_refine_state (self, app, silo_installed_by_id, error))
 			return FALSE;
 	}
 
@@ -1077,6 +1086,10 @@ static gboolean
 gs_plugin_refine_from_pkgname (GsPluginAppstream    *self,
                                GsApp                *app,
                                GsPluginRefineFlags   flags,
+                               XbSilo               *silo,
+                               const gchar          *silo_filename,
+                               GHashTable           *silo_installed_by_desktopid,
+                               GHashTable           *silo_installed_by_id,
                                GError              **error)
 {
 	GPtrArray *sources = gs_app_get_sources (app);
@@ -1089,33 +1102,30 @@ gs_plugin_refine_from_pkgname (GsPluginAppstream    *self,
 	/* find all apps when matching any prefixes */
 	for (guint j = 0; j < sources->len; j++) {
 		const gchar *pkgname = g_ptr_array_index (sources, j);
-		g_autoptr(GRWLockReaderLocker) locker = NULL;
 		g_autoptr(GString) xpath = g_string_new (NULL);
 		g_autoptr(XbNode) component = NULL;
-
-		locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 		/* prefer actual apps and then fallback to anything else */
 		xb_string_append_union (xpath, "components/component[@type='desktop-application']/pkgname[text()='%s']/..", pkgname);
 		xb_string_append_union (xpath, "components/component[@type='console-application']/pkgname[text()='%s']/..", pkgname);
 		xb_string_append_union (xpath, "components/component[@type='web-application']/pkgname[text()='%s']/..", pkgname);
 		xb_string_append_union (xpath, "components/component/pkgname[text()='%s']/..", pkgname);
-		component = xb_silo_query_first (self->silo, xpath->str, &error_local);
+		component = xb_silo_query_first (silo, xpath->str, &error_local);
 		if (component == NULL) {
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 				continue;
 			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
 		}
-		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo, component, flags, self->silo_installed_by_desktopid,
-					      self->silo_filename ? self->silo_filename : "", self->default_scope, error))
+		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, silo, component, flags, silo_installed_by_desktopid,
+					      silo_filename ? silo_filename : "", self->default_scope, error))
 			return FALSE;
 		gs_plugin_appstream_set_compulsory_quirk (app, component);
 	}
 
 	/* if an installed desktop or appdata file exists set to installed */
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
-		if (!gs_plugin_appstream_refine_state (self, app, error))
+		if (!gs_plugin_appstream_refine_state (self, app, silo_installed_by_id, error))
 			return FALSE;
 	}
 
@@ -1153,6 +1163,10 @@ static gboolean refine_wildcard (GsPluginAppstream    *self,
                                  GsAppList            *list,
                                  GsPluginRefineFlags   refine_flags,
 				 GHashTable           *apps_by_id,
+                                 XbSilo               *silo,
+                                 const gchar          *silo_filename,
+                                 GHashTable           *silo_installed_by_desktopid,
+                                 GHashTable           *silo_installed_by_id,
                                  GCancellable         *cancellable,
                                  GError              **error);
 
@@ -1171,13 +1185,17 @@ refine_thread_cb (GTask        *task,
 	g_autoptr(GHashTable) apps_by_id = NULL;
 	g_autoptr(GHashTable) apps_by_origin_and_id = NULL;
 	g_autoptr(GPtrArray) components = NULL;
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
+	g_autofree gchar *silo_filename = NULL;
+	g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
+	g_autoptr(GHashTable) silo_installed_by_id = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
+	silo = gs_plugin_appstream_ref_silo (self, &silo_filename, &silo_installed_by_desktopid, &silo_installed_by_id, cancellable, &local_error);
+	if (silo == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -1185,9 +1203,7 @@ refine_thread_cb (GTask        *task,
 	apps_by_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
 	apps_by_origin_and_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
 
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-
-	components = xb_silo_query (self->silo, "components/component/id", 0, NULL);
+	components = xb_silo_query (silo, "components/component/id", 0, NULL);
 	for (guint i = 0; components != NULL && i < components->len; i++) {
 		XbNode *node = g_ptr_array_index (components, i);
 		g_autoptr(XbNode) component_node = xb_node_get_parent (node);
@@ -1234,7 +1250,7 @@ refine_thread_cb (GTask        *task,
 	}
 
 	g_clear_pointer (&components, g_ptr_array_unref);
-	components = xb_silo_query (self->silo, "component/id", 0, NULL);
+	components = xb_silo_query (silo, "component/id", 0, NULL);
 	for (guint i = 0; components != NULL && i < components->len; i++) {
 		XbNode *node = g_ptr_array_index (components, i);
 		g_autoptr(XbNode) component_node = xb_node_get_parent (node);
@@ -1262,12 +1278,14 @@ refine_thread_cb (GTask        *task,
 			continue;
 
 		/* find by ID then fall back to package name */
-		if (!gs_plugin_refine_from_id (self, app, flags, apps_by_id, apps_by_origin_and_id, &found, &local_error)) {
+		if (!gs_plugin_refine_from_id (self, app, flags, apps_by_id, apps_by_origin_and_id, silo, silo_filename,
+					       silo_installed_by_desktopid, silo_installed_by_id, &found, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 		if (!found) {
-			if (!gs_plugin_refine_from_pkgname (self, app, flags, &local_error)) {
+			if (!gs_plugin_refine_from_pkgname (self, app, flags, silo, silo_filename,
+							    silo_installed_by_desktopid, silo_installed_by_id, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
@@ -1286,7 +1304,8 @@ refine_thread_cb (GTask        *task,
 		GsApp *app = gs_app_list_index (app_list, j);
 
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
-		    !refine_wildcard (self, app, list, flags, apps_by_id, cancellable, &local_error)) {
+		    !refine_wildcard (self, app, list, flags, apps_by_id, silo, silo_filename,
+				      silo_installed_by_desktopid, silo_installed_by_id,cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -1311,19 +1330,20 @@ refine_wildcard (GsPluginAppstream    *self,
                  GsAppList            *list,
                  GsPluginRefineFlags   refine_flags,
 		 GHashTable           *apps_by_id,
+                 XbSilo               *silo,
+                 const gchar          *silo_filename,
+                 GHashTable           *silo_installed_by_desktopid,
+                 GHashTable           *silo_installed_by_id,
                  GCancellable         *cancellable,
                  GError              **error)
 {
 	const gchar *id;
 	GPtrArray *components;
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
 
 	/* not enough info to find */
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		return TRUE;
-
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 	components = g_hash_table_lookup (apps_by_id, id);
 	if (components == NULL)
@@ -1333,20 +1353,20 @@ refine_wildcard (GsPluginAppstream    *self,
 		g_autoptr(GsApp) new = NULL;
 
 		/* new app */
-		new = gs_appstream_create_app (GS_PLUGIN (self), self->silo, component, self->silo_filename ? self->silo_filename : "",
+		new = gs_appstream_create_app (GS_PLUGIN (self), silo, component, silo_filename ? silo_filename : "",
 					       self->default_scope, error);
 		if (new == NULL)
 			return FALSE;
 		gs_app_set_scope (new, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_subsume_metadata (new, app);
-		if (!gs_appstream_refine_app (GS_PLUGIN (self), new, self->silo, component, refine_flags, self->silo_installed_by_desktopid,
-					      self->silo_filename ? self->silo_filename : "", self->default_scope, error))
+		if (!gs_appstream_refine_app (GS_PLUGIN (self), new, silo, component, refine_flags, silo_installed_by_desktopid,
+					      silo_filename ? silo_filename : "", self->default_scope, error))
 			return FALSE;
 		gs_plugin_appstream_set_compulsory_quirk (new, component);
 
 		/* if an installed desktop or appdata file exists set to installed */
 		if (gs_app_get_state (new) == GS_APP_STATE_UNKNOWN) {
-			if (!gs_plugin_appstream_refine_state (self, new, error))
+			if (!gs_plugin_appstream_refine_state (self, new, silo_installed_by_id, error))
 				return FALSE;
 		}
 
@@ -1398,21 +1418,20 @@ refine_categories_thread_cb (GTask        *task,
                              GCancellable *cancellable)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 	GsPluginRefineCategoriesData *data = task_data;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
+	silo = gs_plugin_appstream_ref_silo (self, NULL, NULL, NULL, cancellable, &local_error);
+	if (silo == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-
-	if (!gs_appstream_refine_category_sizes (self->silo, data->list, cancellable, &local_error)) {
+	if (!gs_appstream_refine_category_sizes (silo, data->list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -1462,7 +1481,7 @@ list_apps_thread_cb (GTask        *task,
                      GCancellable *cancellable)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	GsPluginListAppsData *data = task_data;
 	GDateTime *released_since = NULL;
@@ -1516,65 +1535,64 @@ list_apps_thread_cb (GTask        *task,
 	}
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
+	silo = gs_plugin_appstream_ref_silo (self, NULL, NULL, NULL, cancellable, &local_error);
+	if (silo == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-
 	if (released_since != NULL &&
-	    !gs_appstream_add_recent (GS_PLUGIN (self), self->silo, list, age_secs,
+	    !gs_appstream_add_recent (GS_PLUGIN (self), silo, list, age_secs,
 				      cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (is_curated != GS_APP_QUERY_TRISTATE_UNSET &&
-	    !gs_appstream_add_popular (self->silo, list, cancellable, &local_error)) {
+	    !gs_appstream_add_popular (silo, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (is_featured != GS_APP_QUERY_TRISTATE_UNSET &&
-	    !gs_appstream_add_featured (self->silo, list, cancellable, &local_error)) {
+	    !gs_appstream_add_featured (silo, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (category != NULL &&
-	    !gs_appstream_add_category_apps (GS_PLUGIN (self), self->silo, category, list, cancellable, &local_error)) {
+	    !gs_appstream_add_category_apps (GS_PLUGIN (self), silo, category, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (is_installed == GS_APP_QUERY_TRISTATE_TRUE &&
-	    !gs_appstream_add_installed (GS_PLUGIN (self), self->silo, list, cancellable, &local_error)) {
+	    !gs_appstream_add_installed (GS_PLUGIN (self), silo, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (deployment_featured != NULL &&
-	    !gs_appstream_add_deployment_featured (self->silo, deployment_featured, list,
+	    !gs_appstream_add_deployment_featured (silo, deployment_featured, list,
 						   cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (developers != NULL &&
-	    !gs_appstream_search_developer_apps (GS_PLUGIN (self), self->silo, developers, list, cancellable, &local_error)) {
+	    !gs_appstream_search_developer_apps (GS_PLUGIN (self), silo, developers, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (keywords != NULL &&
-	    !gs_appstream_search (GS_PLUGIN (self), self->silo, keywords, list, cancellable, &local_error)) {
+	    !gs_appstream_search (GS_PLUGIN (self), silo, keywords, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (alternate_of != NULL &&
-	    !gs_appstream_add_alternates (self->silo, alternate_of, list, cancellable, &local_error)) {
+	    !gs_appstream_add_alternates (silo, alternate_of, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -1623,12 +1641,14 @@ refresh_metadata_thread_cb (GTask        *task,
                             GCancellable *cancellable)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
+	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
 	/* Checking the silo will refresh it if needed. */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error))
+	silo = gs_plugin_appstream_ref_silo (self, NULL, NULL, NULL, cancellable, &local_error);
+	if (silo == NULL)
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	else
 		g_task_return_boolean (task, TRUE);
