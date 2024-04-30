@@ -1157,7 +1157,7 @@ refine_thread_cb (GTask        *task,
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 	components = xb_silo_query (self->silo, "components/component/id", 0, NULL);
-	for (guint i = 0; i < components->len; i++) {
+	for (guint i = 0; components != NULL && i < components->len; i++) {
 		XbNode *node = g_ptr_array_index (components, i);
 		g_autoptr(XbNode) component_node = xb_node_get_parent (node);
 		g_autoptr(XbNode) components_node = xb_node_get_parent (component_node);
