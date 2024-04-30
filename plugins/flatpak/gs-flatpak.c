@@ -54,9 +54,11 @@ struct _GsFlatpak {
 	AsComponentScope	 scope;
 	GsPlugin		*plugin;
 	XbSilo			*silo;
-	GRWLock			 silo_lock;
+	GMutex			 silo_lock;
 	gchar			*silo_filename;
 	GHashTable		*silo_installed_by_desktopid;
+	gint			 silo_change_stamp;
+	gint			 silo_change_stamp_current;
 	gchar			*id;
 	guint			 changed_id;
 	GHashTable		*app_silos;
@@ -654,10 +656,7 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 static void
 gs_flatpak_invalidate_silo (GsFlatpak *self)
 {
-	g_rw_lock_writer_lock (&self->silo_lock);
-	if (self->silo != NULL)
-		xb_silo_invalidate (self->silo);
-	g_rw_lock_writer_unlock (&self->silo_lock);
+	g_atomic_int_inc (&self->silo_change_stamp);
 }
 
 static void
@@ -1085,32 +1084,39 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 		g_debug ("Failed to read flatpak .desktop files in %s: %s", path, error_local->message);
 }
 
-static gboolean
-gs_flatpak_rescan_appstream_store (GsFlatpak *self,
-				   gboolean interactive,
-				   GCancellable *cancellable,
-				   GError **error)
+static XbSilo *
+gs_flatpak_ref_silo (GsFlatpak *self,
+		     gboolean interactive,
+		     gchar **out_silo_filename,
+		     GHashTable **out_silo_installed_by_desktopid,
+		     GCancellable *cancellable,
+		     GError **error)
 {
 	g_autofree gchar *blobfn = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(GPtrArray) desktop_paths = NULL;
-	g_autoptr(GRWLockReaderLocker) reader_locker = NULL;
-	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(XbBuilder) builder = NULL;
 	g_autoptr(GMainContext) old_thread_default = NULL;
 
-	reader_locker = g_rw_lock_reader_locker_new (&self->silo_lock);
+	locker = g_mutex_locker_new (&self->silo_lock);
 	/* everything is okay */
-	if (self->silo != NULL && xb_silo_is_valid (self->silo))
-		return TRUE;
-	g_clear_pointer (&reader_locker, g_rw_lock_reader_locker_free);
+	if (self->silo != NULL && xb_silo_is_valid (self->silo) &&
+	    g_atomic_int_get (&self->silo_change_stamp_current) == g_atomic_int_get (&self->silo_change_stamp)) {
+		if (out_silo_filename != NULL)
+			*out_silo_filename = g_strdup (self->silo_filename);
+		if (out_silo_installed_by_desktopid != NULL && self->silo_installed_by_desktopid)
+			*out_silo_installed_by_desktopid = g_hash_table_ref (self->silo_installed_by_desktopid);
+		return g_object_ref (self->silo);
+	}
 
 	/* drat! silo needs regenerating */
-	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
+ reload:
 	g_clear_object (&self->silo);
 	g_clear_pointer (&self->silo_filename, g_free);
 	g_clear_pointer (&self->silo_installed_by_desktopid, g_hash_table_unref);
+	g_atomic_int_set (&self->silo_change_stamp_current, g_atomic_int_get (&self->silo_change_stamp));
 
 	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
 	old_thread_default = g_main_context_ref_thread_default ();
@@ -1138,7 +1144,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 						      error);
 	if (xremotes == NULL) {
 		gs_flatpak_error_convert (error);
-		return FALSE;
+		return NULL;
 	}
 	for (guint i = 0; i < xremotes->len; i++) {
 		g_autoptr(GError) error_local = NULL;
@@ -1152,7 +1158,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 				 flatpak_remote_get_name (xremote), error_local->message);
 			if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 				gs_flatpak_error_convert (error);
-				return FALSE;
+				return NULL;
 			}
 		}
 	}
@@ -1176,7 +1182,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 					      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					      error);
 	if (blobfn == NULL)
-		return FALSE;
+		return NULL;
 	file = g_file_new_for_path (blobfn);
 	g_debug ("ensuring %s", blobfn);
 
@@ -1194,6 +1200,17 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 
 	if (old_thread_default != NULL)
 		g_main_context_push_thread_default (old_thread_default);
+
+	if (g_atomic_int_get (&self->silo_change_stamp_current) != g_atomic_int_get (&self->silo_change_stamp)) {
+		g_clear_pointer (&blobfn, g_free);
+		g_clear_pointer (&xremotes, g_ptr_array_unref);
+		g_clear_pointer (&desktop_paths, g_ptr_array_unref);
+		g_clear_pointer (&old_thread_default, g_main_context_unref);
+		g_clear_object (&file);
+		g_clear_object (&builder);
+		g_debug ("flatpak: Reported change while loading appstream data, reloading...");
+		goto reload;
+	}
 
 	if (self->silo != NULL) {
 		g_autoptr(GPtrArray) installed = NULL;
@@ -1218,66 +1235,46 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 		info_filename = xb_silo_query_first (self->silo, "/info/filename", NULL);
 		if (info_filename != NULL)
 			self->silo_filename = g_strdup (xb_node_get_text (info_filename));
+
+		if (out_silo_filename != NULL)
+			*out_silo_filename = g_strdup (self->silo_filename);
+		if (out_silo_installed_by_desktopid != NULL && self->silo_installed_by_desktopid)
+			*out_silo_installed_by_desktopid = g_hash_table_ref (self->silo_installed_by_desktopid);
+		return g_object_ref (self->silo);
 	}
 
-	/* success */
-	return self->silo != NULL;
+	return NULL;
 }
 
 static gboolean
 gs_flatpak_rescan_app_data (GsFlatpak *self,
 			    gboolean interactive,
+			    XbSilo **out_silo,
+			    gchar **out_silo_filename,
+			    GHashTable **out_silo_installed_by_desktopid,
 			    GCancellable *cancellable,
 			    GError **error)
 {
+	g_autoptr(XbSilo) silo = NULL;
+
 	if (self->requires_full_rescan) {
 		gboolean res = gs_flatpak_refresh (self, 60, interactive, cancellable, error);
-		if (res)
+		if (res) {
 			self->requires_full_rescan = FALSE;
-		else
+		} else {
 			gs_flatpak_internal_data_changed (self);
-		return res;
+			return res;
+		}
 	}
 
-	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error)) {
+	silo = gs_flatpak_ref_silo (self, interactive, out_silo_filename, out_silo_installed_by_desktopid, cancellable, error);
+	if (silo == NULL) {
 		gs_flatpak_internal_data_changed (self);
 		return FALSE;
 	}
 
-	return TRUE;
-}
-
-/* Returns with a read lock held on @self->silo_lock on success.
-   The *locker should be NULL when being called. */
-static gboolean
-ensure_flatpak_silo_with_locker (GsFlatpak            *self,
-				 GRWLockReaderLocker **locker,
-				 gboolean              interactive,
-				 GCancellable         *cancellable,
-				 GError              **error)
-{
-	/* should not hold the lock when called */
-	g_return_val_if_fail (*locker == NULL, FALSE);
-
-	/* ensure valid */
-	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
-		return FALSE;
-
-	*locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-
-	while (self->silo == NULL) {
-		g_clear_pointer (locker, g_rw_lock_reader_locker_free);
-
-		if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error)) {
-			gs_flatpak_internal_data_changed (self);
-			return FALSE;
-		}
-
-		/* At this point either rescan_appstream_store() returned an error or it successfully
-		 * initialised self->silo. There is the possibility that another thread will invalidate
-		 * the silo before we regain the lock. If so, we’ll have to rescan again. */
-		*locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	}
+	if (out_silo != NULL)
+		*out_silo = g_steal_pointer (&silo);
 
 	return TRUE;
 }
@@ -1412,6 +1409,7 @@ gs_flatpak_refresh_appstream (GsFlatpak     *self,
 {
 	gboolean ret;
 	g_autoptr(GPtrArray) xremotes = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
 	/* get remotes */
 	xremotes = flatpak_installation_list_remotes (gs_flatpak_get_installation (self, interactive),
@@ -1498,7 +1496,8 @@ gs_flatpak_refresh_appstream (GsFlatpak     *self,
 	}
 
 	/* ensure the AppStream silo is up to date */
-	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error)) {
+	silo = gs_flatpak_ref_silo (self, interactive, NULL, NULL, cancellable, error);
+	if (silo == NULL) {
 		gs_flatpak_internal_data_changed (self);
 		return FALSE;
 	}
@@ -1646,7 +1645,7 @@ gs_flatpak_add_sources (GsFlatpak *self,
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 
 	/* refresh */
-	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, NULL, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	/* get installed apps and runtimes */
@@ -2080,7 +2079,7 @@ gs_flatpak_add_updates (GsFlatpak *self,
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 
 	/* ensure valid */
-	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, NULL, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	/* get all the updatable apps and runtimes */
@@ -2390,10 +2389,8 @@ gs_flatpak_create_fake_ref (GsApp *app, GError **error)
 	return xref;
 }
 
-/* the _unlocked() version doesn't call gs_flatpak_rescan_app_data,
- * in order to avoid taking the writer lock on self->silo_lock */
 static gboolean
-gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
+gs_flatpak_refine_app_state_internal (GsFlatpak *self,
                                       GsApp *app,
                                       gboolean interactive,
 				      gboolean force_state_update,
@@ -2505,10 +2502,10 @@ gs_flatpak_refine_app_state (GsFlatpak *self,
                              GError **error)
 {
 	/* ensure valid */
-	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, NULL, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	return gs_flatpak_refine_app_state_unlocked (self, app, interactive, force_state_update, cancellable, error);
+	return gs_flatpak_refine_app_state_internal (self, app, interactive, force_state_update, cancellable, error);
 }
 
 static GsApp *
@@ -2594,7 +2591,7 @@ gs_flatpak_create_runtime (GsFlatpak   *self,
 	gs_flatpak_app_set_ref_name (app, split[0]);
 	gs_flatpak_app_set_ref_arch (app, split[1]);
 
-	if (!gs_flatpak_refine_app_state_unlocked (self, app, interactive, FALSE, NULL, &local_error))
+	if (!gs_flatpak_refine_app_state_internal (self, app, interactive, FALSE, NULL, &local_error))
 		g_debug ("Failed to refine state for runtime '%s': %s", gs_app_get_unique_id (app), local_error->message);
 
 	/* save in the cache */
@@ -2984,7 +2981,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 
 		/* is the app_runtime already installed? */
 		app_runtime = gs_app_get_runtime (app);
-		if (!gs_flatpak_refine_app_state_unlocked (self,
+		if (!gs_flatpak_refine_app_state_internal (self,
 		                                           app_runtime,
 		                                           interactive,
 							   FALSE,
@@ -3096,6 +3093,8 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 					GBytes *appstream_gz,
 					GsPluginRefineFlags flags,
 					gboolean interactive,
+					const gchar *silo_filename,
+					GHashTable *silo_installed_by_desktopid,
 					GCancellable *cancellable,
 					GError **error)
 {
@@ -3229,8 +3228,8 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 	}
 
 	/* copy details from AppStream to app */
-	if (!gs_appstream_refine_app (self->plugin, app, silo, component_node, flags, self->silo_installed_by_desktopid,
-				      self->silo_filename ? self->silo_filename : "", self->scope, error))
+	if (!gs_appstream_refine_app (self->plugin, app, silo, component_node, flags, silo_installed_by_desktopid,
+				      silo_filename ? silo_filename : "", self->scope, error))
 		return FALSE;
 
 	if (gs_app_get_origin (app))
@@ -3324,6 +3323,8 @@ static gboolean
 gs_flatpak_refine_appstream (GsFlatpak *self,
 			     GsApp *app,
 			     XbSilo *silo,
+			     const gchar *silo_filename,
+			     GHashTable *silo_installed_by_desktopid,
 			     GsPluginRefineFlags flags,
 			     GHashTable *components_by_bundle,
 			     gboolean interactive,
@@ -3410,11 +3411,12 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 							       appstream_gz,
 							       flags,
 							       interactive,
+							       silo_filename, silo_installed_by_desktopid,
 							       cancellable, error);
 	}
 
-	if (!gs_appstream_refine_app (self->plugin, app, silo, component, flags, self->silo_installed_by_desktopid,
-				      self->silo_filename ? self->silo_filename : "", self->scope, error))
+	if (!gs_appstream_refine_app (self->plugin, app, silo, component, flags, silo_installed_by_desktopid,
+				      silo_filename ? silo_filename : "", self->scope, error))
 		return FALSE;
 
 	/* use the default release as the version number */
@@ -3423,13 +3425,15 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 }
 
 static gboolean
-gs_flatpak_refine_app_unlocked (GsFlatpak *self,
+gs_flatpak_refine_app_internal (GsFlatpak *self,
                                 GsApp *app,
                                 GsPluginRefineFlags flags,
                                 gboolean interactive,
 				gboolean force_state_update,
 				GHashTable *components_by_bundle,
-                                GRWLockReaderLocker **locker,
+                                XbSilo *silo,
+				const gchar *silo_filename,
+				GHashTable *silo_installed_by_desktopid,
                                 GCancellable *cancellable,
                                 GError **error)
 {
@@ -3440,13 +3444,9 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_FLATPAK)
 		return TRUE;
 
-	g_clear_pointer (locker, g_rw_lock_reader_locker_free);
-
-	if (!ensure_flatpak_silo_with_locker (self, locker, interactive, cancellable, error))
-		return FALSE;
-
 	/* always do AppStream properties */
-	if (!gs_flatpak_refine_appstream (self, app, self->silo, flags, components_by_bundle, interactive, cancellable, error))
+	if (!gs_flatpak_refine_appstream (self, app, silo, silo_filename, silo_installed_by_desktopid,
+					  flags, components_by_bundle, interactive, cancellable, error))
 		return FALSE;
 
 	/* AppStream sets the source to appname/arch/branch */
@@ -3456,7 +3456,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	}
 
 	/* check the installed state */
-	if (!gs_flatpak_refine_app_state_unlocked (self, app, interactive, force_state_update, cancellable, error)) {
+	if (!gs_flatpak_refine_app_state_internal (self, app, interactive, force_state_update, cancellable, error)) {
 		g_prefix_error (error, "failed to get state: ");
 		return FALSE;
 	}
@@ -3473,7 +3473,8 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 
 	/* if the state was changed, perhaps set the version from the release */
 	if (old_state != gs_app_get_state (app)) {
-		if (!gs_flatpak_refine_appstream (self, app, self->silo, flags, components_by_bundle, interactive, cancellable, error))
+		if (!gs_flatpak_refine_appstream (self, app, silo, silo_filename, silo_installed_by_desktopid,
+						  flags, components_by_bundle, interactive, cancellable, error))
 			return FALSE;
 	}
 
@@ -3567,10 +3568,15 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 			  gboolean interactive,
 			  GCancellable *cancellable)
 {
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
+	g_autofree gchar *silo_filename = NULL;
+	g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
 	g_autoptr(GsAppList) addons = NULL;
 	g_autoptr(GString) errors = NULL;
 	guint ii, sz;
+
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, &silo_filename, &silo_installed_by_desktopid, cancellable, NULL))
+		return;
 
 	addons = gs_app_dup_addons (parent_app);
 	sz = addons ? gs_app_list_length (addons) : 0;
@@ -3582,7 +3588,8 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 		if (state != gs_app_get_state (addon))
 			continue;
 
-		if (!gs_flatpak_refine_app_unlocked (self, addon, flags, interactive, TRUE, NULL, &locker, cancellable, &local_error)) {
+		if (!gs_flatpak_refine_app_internal (self, addon, flags, interactive, TRUE, NULL, silo, silo_filename,
+						     silo_installed_by_desktopid, cancellable, &local_error)) {
 			if (errors)
 				g_string_append_c (errors, '\n');
 			else
@@ -3614,13 +3621,16 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
+	g_autofree gchar *silo_filename = NULL;
 
 	/* ensure valid */
-	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, &silo_filename, &silo_installed_by_desktopid, cancellable, error))
 		return FALSE;
 
-	return gs_flatpak_refine_app_unlocked (self, app, flags, interactive, force_state_update, NULL, &locker, cancellable, error);
+	return gs_flatpak_refine_app_internal (self, app, flags, interactive, force_state_update, NULL,
+					       silo, silo_filename, silo_installed_by_desktopid, cancellable, error);
 }
 
 gboolean
@@ -3634,7 +3644,9 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 	const gchar *id;
 	GPtrArray* components = NULL;
 	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
+	g_autofree gchar *silo_filename = NULL;
 
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcard, "Flatpak (refine wildcard)", NULL);
 
@@ -3643,7 +3655,8 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 	if (id == NULL)
 		return TRUE;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	silo = gs_flatpak_ref_silo (self, interactive, &silo_filename, &silo_installed_by_desktopid, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
 
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardQuerySilo, "Flatpak (query silo)", NULL);
@@ -3653,7 +3666,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 	} else {
 		g_autoptr(GPtrArray) components_with_id = NULL;
 		*inout_components_by_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
-		components_with_id = xb_silo_query (self->silo, "components/component/id", 0, &error_local);
+		components_with_id = xb_silo_query (silo, "components/component/id", 0, &error_local);
 		if (components_with_id == NULL) {
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 				return TRUE;
@@ -3686,7 +3699,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		g_autoptr(GPtrArray) bundles = NULL;
 
 		*inout_components_by_bundle = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
-		bundles = xb_silo_query (self->silo, "/components/component/bundle[@type='flatpak']", 0, NULL);
+		bundles = xb_silo_query (silo, "/components/component/bundle[@type='flatpak']", 0, NULL);
 		for (guint b = 0; bundles != NULL && b < bundles->len; b++) {
 			XbNode *bundle_node = g_ptr_array_index (bundles, b);
 			g_autoptr(XbNode) component_node = xb_node_get_parent (bundle_node);
@@ -3709,7 +3722,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		g_autoptr(GsApp) new = NULL;
 
 		GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardCreateAppstreamApp, "Flatpak (create Appstream app)", NULL);
-		new = gs_appstream_create_app (self->plugin, self->silo, component, self->silo_filename ? self->silo_filename : "",
+		new = gs_appstream_create_app (self->plugin, silo, component, silo_filename ? silo_filename : "",
 					       self->scope, error);
 		GS_PROFILER_END_SCOPED (FlatpakRefineWildcardCreateAppstreamApp);
 
@@ -3761,7 +3774,8 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 			g_debug ("Failed to get ref info for '%s' from wildcard '%s', skipping it...", gs_app_get_id (new), id);
 		} else {
 			GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardRefineNewApp, "Flatpak (refine new app)", NULL);
-			if (!gs_flatpak_refine_app_unlocked (self, new, refine_flags, interactive, FALSE, *inout_components_by_bundle, &locker, cancellable, error))
+			if (!gs_flatpak_refine_app_internal (self, new, refine_flags, interactive, FALSE, *inout_components_by_bundle,
+							     silo, silo_filename, silo_installed_by_desktopid, cancellable, error))
 				return FALSE;
 			GS_PROFILER_END_SCOPED (FlatpakRefineWildcardRefineNewApp);
 
@@ -3894,10 +3908,18 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	/* load AppStream */
 	appstream_gz = flatpak_bundle_ref_get_appstream (xref_bundle);
 	if (appstream_gz != NULL) {
+		g_autofree gchar *silo_filename = NULL;
+		g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
+		g_autoptr(XbSilo) tmp_silo = NULL;
+
+		tmp_silo = gs_flatpak_ref_silo (self, interactive, &silo_filename, &silo_installed_by_desktopid, cancellable, error);
+		if (tmp_silo == NULL)
+			return NULL;
 		if (!gs_flatpak_refine_appstream_from_bytes (self, app, NULL, NULL,
 							     appstream_gz,
 							     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
 							     interactive,
+							     silo_filename, silo_installed_by_desktopid,
 							     cancellable, error))
 			return NULL;
 	} else {
@@ -3995,6 +4017,9 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
 	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(XbSilo) tmp_silo = NULL;
+	g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
+	g_autofree gchar *silo_filename = NULL;
 	g_autofree gchar *origin_url = NULL;
 	g_autofree gchar *ref_comment = NULL;
 	g_autofree gchar *ref_description = NULL;
@@ -4274,8 +4299,12 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		g_debug ("showing AppStream data: %s", xml);
 	}
 
+	tmp_silo = gs_flatpak_ref_silo (self, interactive, &silo_filename, &silo_installed_by_desktopid, cancellable, error);
+	if (tmp_silo == NULL)
+		return NULL;
+
 	/* get extra AppStream data if available */
-	if (!gs_flatpak_refine_appstream (self, app, silo,
+	if (!gs_flatpak_refine_appstream (self, app, silo, silo_filename, silo_installed_by_desktopid,
 					  GS_PLUGIN_REFINE_FLAGS_MASK,
 					  NULL,
 					  interactive,
@@ -4296,17 +4325,16 @@ gs_flatpak_search (GsFlatpak *self,
 		   GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GMutexLocker) app_silo_locker = NULL;
 	g_autoptr(GPtrArray) silos_to_remove = g_ptr_array_new ();
+	g_autoptr(XbSilo) silo = NULL;
 	GHashTableIter iter;
 	gpointer key, value;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	if (!gs_appstream_search (self->plugin, self->silo, values, list_tmp,
-				  cancellable, error))
+	if (!gs_appstream_search (self->plugin, silo, values, list_tmp, cancellable, error))
 		return FALSE;
 
 	gs_flatpak_ensure_remote_title (self, interactive, cancellable);
@@ -4353,8 +4381,8 @@ gs_flatpak_search (GsFlatpak *self,
 	}
 
 	for (guint i = 0; i < silos_to_remove->len; i++) {
-		const char *silo = g_ptr_array_index (silos_to_remove, i);
-		g_hash_table_remove (self->app_silos, silo);
+		const char *app_ref = g_ptr_array_index (silos_to_remove, i);
+		g_hash_table_remove (self->app_silos, app_ref);
 	}
 
 	return TRUE;
@@ -4369,17 +4397,16 @@ gs_flatpak_search_developer_apps (GsFlatpak *self,
 				  GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GMutexLocker) app_silo_locker = NULL;
 	g_autoptr(GPtrArray) silos_to_remove = g_ptr_array_new ();
+	g_autoptr(XbSilo) silo = NULL;
 	GHashTableIter iter;
 	gpointer key, value;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	if (!gs_appstream_search_developer_apps (self->plugin, self->silo, values, list_tmp,
-						 cancellable, error))
+	if (!gs_appstream_search_developer_apps (self->plugin, silo, values, list_tmp, cancellable, error))
 		return FALSE;
 
 	gs_flatpak_ensure_remote_title (self, interactive, cancellable);
@@ -4426,8 +4453,8 @@ gs_flatpak_search_developer_apps (GsFlatpak *self,
 	}
 
 	for (guint i = 0; i < silos_to_remove->len; i++) {
-		const char *silo = g_ptr_array_index (silos_to_remove, i);
-		g_hash_table_remove (self->app_silos, silo);
+		const char *app_ref = g_ptr_array_index (silos_to_remove, i);
+		g_hash_table_remove (self->app_silos, app_ref);
 	}
 
 	return TRUE;
@@ -4441,14 +4468,12 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 			      GCancellable *cancellable,
 			      GError **error)
 {
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	return gs_appstream_add_category_apps (self->plugin, self->silo,
-					       category, list,
-					       cancellable, error);
+	return gs_appstream_add_category_apps (self->plugin, silo, category, list, cancellable, error);
 }
 
 gboolean
@@ -4458,12 +4483,12 @@ gs_flatpak_refine_category_sizes (GsFlatpak     *self,
                                   GCancellable  *cancellable,
                                   GError       **error)
 {
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	return gs_appstream_refine_category_sizes (self->silo, list, cancellable, error);
+	return gs_appstream_refine_category_sizes (silo, list, cancellable, error);
 }
 
 gboolean
@@ -4474,13 +4499,12 @@ gs_flatpak_add_popular (GsFlatpak *self,
 			GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	if (!gs_appstream_add_popular (self->silo, list_tmp,
-				       cancellable, error))
+	if (!gs_appstream_add_popular (silo, list_tmp, cancellable, error))
 		return FALSE;
 
 	gs_app_list_add_list (list, list_tmp);
@@ -4496,13 +4520,12 @@ gs_flatpak_add_featured (GsFlatpak *self,
 			 GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	if (!gs_appstream_add_featured (self->silo, list_tmp,
-					cancellable, error))
+	if (!gs_appstream_add_featured (silo, list_tmp, cancellable, error))
 		return FALSE;
 
 	gs_app_list_add_list (list, list_tmp);
@@ -4518,12 +4541,12 @@ gs_flatpak_add_deployment_featured (GsFlatpak *self,
 				    GCancellable *cancellable,
 				    GError **error)
 {
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	return gs_appstream_add_deployment_featured (self->silo, deployments, list, cancellable, error);
+	return gs_appstream_add_deployment_featured (silo, deployments, list, cancellable, error);
 }
 
 gboolean
@@ -4535,13 +4558,12 @@ gs_flatpak_add_alternates (GsFlatpak *self,
 			   GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	if (!gs_appstream_add_alternates (self->silo, app, list_tmp,
-					  cancellable, error))
+	if (!gs_appstream_add_alternates (silo, app, list_tmp, cancellable, error))
 		return FALSE;
 
 	gs_app_list_add_list (list, list_tmp);
@@ -4558,13 +4580,12 @@ gs_flatpak_add_recent (GsFlatpak *self,
 		       GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	if (!gs_appstream_add_recent (self->plugin, self->silo, list_tmp, age,
-				      cancellable, error))
+	if (!gs_appstream_add_recent (self->plugin, silo, list_tmp, age, cancellable, error))
 		return FALSE;
 
 	gs_flatpak_claim_app_list (self, list_tmp, interactive);
@@ -4582,12 +4603,12 @@ gs_flatpak_url_to_app (GsFlatpak *self,
 		       GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
-	if (!gs_appstream_url_to_app (self->plugin, self->silo, list_tmp, url, cancellable, error))
+	if (!gs_appstream_url_to_app (self->plugin, silo, list_tmp, url, cancellable, error))
 		return FALSE;
 
 	gs_flatpak_claim_app_list (self, list_tmp, interactive);
@@ -4638,10 +4659,8 @@ gs_flatpak_finalize (GObject *object)
 		g_signal_handler_disconnect (self->monitor, self->changed_id);
 		self->changed_id = 0;
 	}
-	if (self->silo != NULL)
-		g_object_unref (self->silo);
-	if (self->monitor != NULL)
-		g_object_unref (self->monitor);
+	g_clear_object (&self->silo);
+	g_clear_object (&self->monitor);
 	g_clear_pointer (&self->silo_filename, g_free);
 	g_clear_pointer (&self->silo_installed_by_desktopid, g_hash_table_unref);
 
@@ -4654,7 +4673,7 @@ gs_flatpak_finalize (GObject *object)
 	g_object_unref (self->plugin);
 	g_hash_table_unref (self->broken_remotes);
 	g_mutex_clear (&self->broken_remotes_mutex);
-	g_rw_lock_clear (&self->silo_lock);
+	g_mutex_clear (&self->silo_lock);
 	g_hash_table_unref (self->app_silos);
 	g_mutex_clear (&self->app_silos_mutex);
 	g_clear_pointer (&self->remote_title, g_hash_table_unref);
@@ -4675,7 +4694,7 @@ gs_flatpak_init (GsFlatpak *self)
 {
 	/* XbSilo needs external locking as we destroy the silo and build a new
 	 * one when something changes */
-	g_rw_lock_init (&self->silo_lock);
+	g_mutex_init (&self->silo_lock);
 
 	g_mutex_init (&self->installed_refs_mutex);
 	self->installed_refs = NULL;
