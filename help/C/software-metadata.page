@@ -117,9 +117,35 @@
 
   <section id="links">
     <title>Links</title>
-    <media type="image" src="figures/links.png" style="floatend floatright" mime="image/png"/>
-    <p>GNOME Software displays a list of links for an application, giving the user access to related resources. This includes the application’s home page, its bug reporting page, a way to donate to the application’s developers, and information on contributing translations to the application.</p>
-    <p>Some or all of these links may be present depending on whether they are listed in the application’s metainfo.</p>
+    <media type="image" src="figures/links.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
+    <p>GNOME Software displays a list of application resource links in the link tile. They are as follows:</p>
+    <table>
+      <tr>
+	<td><p><media type="image" src="figures/links/webpage-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Website link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/links/money-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Donation link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/links/flag-outline-thin-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Translation contribution link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/links/computer-fail-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Bug reporting link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/links/help-link-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Help link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/links/community-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Contact link</p></td>
+      </tr>
+    </table>
+    <p>Some or all of these links may be present depending on whether they are listed in the application’s metainfo file.</p>
     <p>You can improve the links:</p>
     <list>
       <item>
@@ -174,14 +200,17 @@
 
   <section id="how-to-add-missing-links">
     <title>How to add missing links</title>
-    <p>The links for an application are stored as <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code> elements</link> within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>The links for an application are stored as <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
     <p>Add as many of the link types documented in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url">appstream specification</link> as are available for the application. If no suitable page exists for a given link type, it doesn’t have to be included.</p>
-    <p>For example:</p>
+    <p>For example, here are the resource links for GNOME Software app:</p>
     <code type="xml"><![CDATA[
-<url type="bugtracker">https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new</url>
+<url type="bugtracker">https://gitlab.gnome.org/GNOME/gnome-software/-/issues</url>
+<url type="contact">https://discourse.gnome.org/tag/gnome-software</url>
+<url type="contribute">https://welcome.gnome.org/app/Software/</url>
 <url type="donation">https://www.gnome.org/donate/</url>
-<url type="homepage">https://wiki.gnome.org/Design/Apps/Software</url>
-<url type="translate">https://wiki.gnome.org/TranslationProject</url>]]></code>
+<url type="homepage">https://apps.gnome.org/Software</url>
+<url type="translate">https://l10n.gnome.org/module/gnome-software/</url>
+<url type="vcs-browser">https://gitlab.gnome.org/GNOME/gnome-software/</url>]]></code>
   </section>
 
   <section id="how-to-add-missing-hardware-information">
