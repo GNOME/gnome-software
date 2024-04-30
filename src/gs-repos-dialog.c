@@ -115,7 +115,7 @@ _enable_repo (InstallRemoveData *install_data)
 }
 
 static void
-enable_repo_response_cb (AdwMessageDialog *confirm_dialog,
+enable_repo_response_cb (AdwAlertDialog *confirm_dialog,
 			 const gchar *response,
 			 gpointer user_data)
 {
@@ -149,7 +149,7 @@ enable_repo (GsReposDialog *dialog,
 
 	/* user needs to confirm acceptance of an agreement */
 	if (gs_app_get_agreement (repo) != NULL) {
-		GtkWidget *confirm_dialog;
+		AdwDialog *confirm_dialog;
 		g_autofree gchar *message = NULL;
 		g_autoptr(GError) error = NULL;
 
@@ -167,23 +167,22 @@ enable_repo (GsReposDialog *dialog,
 		}
 
 		/* ask for confirmation */
-		confirm_dialog = adw_message_dialog_new (GTK_WINDOW (dialog),
-							 /* TRANSLATORS: window title */
-							 _("Enable Third-Party Software Repository?"),
-							 message);
-		adw_message_dialog_add_responses (ADW_MESSAGE_DIALOG (confirm_dialog),
-						  "cancel",  _("_Cancel"),
-						  /* TRANSLATORS: button to accept the agreement */
-						  "enable", _("_Enable"),
-						  NULL);
+		/* TRANSLATORS: "Enable Third-Party Software Repository?" is
+		 * the confirmation dialog title */
+		confirm_dialog = adw_alert_dialog_new (_("Enable Third-Party Software Repository?"),
+						       message);
+		adw_alert_dialog_add_responses (ADW_ALERT_DIALOG (confirm_dialog),
+						"cancel",  _("_Cancel"),
+						/* TRANSLATORS: button to accept the agreement */
+						"enable", _("_Enable"),
+						NULL);
 
 		/* handle this async */
 		g_signal_connect (confirm_dialog, "response",
 				  G_CALLBACK (enable_repo_response_cb),
 				  g_steal_pointer (&install_data));
 
-		gtk_window_set_modal (GTK_WINDOW (confirm_dialog), TRUE);
-		gtk_window_present (GTK_WINDOW (confirm_dialog));
+		adw_dialog_present (confirm_dialog, GTK_WIDGET (dialog));
 		return;
 	}
 
@@ -192,7 +191,7 @@ enable_repo (GsReposDialog *dialog,
 }
 
 static void
-remove_repo_response_cb (AdwMessageDialog *confirm_dialog,
+remove_repo_response_cb (AdwAlertDialog *confirm_dialog,
                          const gchar *response,
                          gpointer user_data)
 {
@@ -232,7 +231,7 @@ remove_confirm_repo (GsReposDialog *dialog,
 		     GsPluginManageRepositoryFlags operation)
 {
 	InstallRemoveData *remove_data;
-	GtkWidget *confirm_dialog;
+	AdwDialog *confirm_dialog;
 	g_autofree gchar *message = NULL;
 
 	remove_data = g_slice_new0 (InstallRemoveData);
@@ -246,28 +245,26 @@ remove_confirm_repo (GsReposDialog *dialog,
 			gs_app_get_name (repo));
 
 	/* ask for confirmation */
-	confirm_dialog = adw_message_dialog_new (GTK_WINDOW (dialog),
-						 operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE ? _("Disable Repository?") : _("Remove Repository?"),
+	confirm_dialog = adw_alert_dialog_new (operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE ? _("Disable Repository?") : _("Remove Repository?"),
 						 message);
-	adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (confirm_dialog),
+	adw_alert_dialog_add_response (ADW_ALERT_DIALOG (confirm_dialog),
 					 "cancel",  _("_Cancel"));
 
 	if (operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE) {
 		/* TRANSLATORS: this is button text to disable a repo */
-		adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (confirm_dialog), "disable",  _("_Disable"));
-		adw_message_dialog_set_response_appearance (ADW_MESSAGE_DIALOG (confirm_dialog), "disable", ADW_RESPONSE_DESTRUCTIVE);
+		adw_alert_dialog_add_response (ADW_ALERT_DIALOG (confirm_dialog), "disable",  _("_Disable"));
+		adw_alert_dialog_set_response_appearance (ADW_ALERT_DIALOG (confirm_dialog), "disable", ADW_RESPONSE_DESTRUCTIVE);
 	} else {
 		/* TRANSLATORS: this is button text to remove a repo */
-		adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (confirm_dialog), "remove",  _("_Remove"));
-		adw_message_dialog_set_response_appearance (ADW_MESSAGE_DIALOG (confirm_dialog), "remove", ADW_RESPONSE_DESTRUCTIVE);
+		adw_alert_dialog_add_response (ADW_ALERT_DIALOG (confirm_dialog), "remove",  _("_Remove"));
+		adw_alert_dialog_set_response_appearance (ADW_ALERT_DIALOG (confirm_dialog), "remove", ADW_RESPONSE_DESTRUCTIVE);
 	}
 
 	/* handle this async */
 	g_signal_connect (confirm_dialog, "response",
 			  G_CALLBACK (remove_repo_response_cb), remove_data);
 
-	gtk_window_set_modal (GTK_WINDOW (confirm_dialog), TRUE);
-	gtk_window_present (GTK_WINDOW (confirm_dialog));
+	adw_dialog_present (confirm_dialog, GTK_WIDGET (dialog));
 
 	gs_repo_row_mark_busy (row);
 }
