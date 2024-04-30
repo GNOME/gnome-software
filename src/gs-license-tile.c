@@ -43,7 +43,7 @@ struct _GsLicenseTile
 	GtkWidget	*lozenges[3];
 	GtkLabel	*title_label;
 	GtkLabel	*description_label;
-	GtkLabel	*get_involved_label;
+	AdwButtonRow	*get_involved_button_row;
 };
 
 G_DEFINE_TYPE (GsLicenseTile, gs_license_tile, GTK_TYPE_WIDGET)
@@ -236,8 +236,8 @@ gs_license_tile_refresh (GsLicenseTile *self)
 
 	gtk_label_set_label (self->title_label, title);
 	gtk_label_set_label (self->description_label, description);
-	gtk_widget_set_visible (GTK_WIDGET (self->get_involved_label), get_involved_visible);
-	gtk_label_set_label (self->get_involved_label, get_involved_label);
+	gtk_widget_set_visible (GTK_WIDGET (self->get_involved_button_row), get_involved_visible);
+	adw_preferences_row_set_title (ADW_PREFERENCES_ROW (self->get_involved_button_row), get_involved_label);
 }
 
 static void
@@ -345,7 +345,7 @@ gs_license_tile_class_init (GsLicenseTileClass *klass)
 	gtk_widget_class_bind_template_child_full (widget_class, "lozenge2", FALSE, G_STRUCT_OFFSET (GsLicenseTile, lozenges[2]));
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, title_label);
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, description_label);
-	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, get_involved_label);
+	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, get_involved_button_row);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_license_tile_row_activated_cb);
 

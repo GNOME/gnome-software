@@ -151,12 +151,12 @@ struct _GsDetailsPage
 	GtkWidget		*list_box_reviews_summary;
 	GtkWidget		*list_box_version_history;
 	GtkWidget		*row_latest_version;
-	GtkWidget		*version_history_button;
+	GtkWidget		*version_history_button_row;
 	GtkWidget		*box_reviews;
 	GtkWidget		*box_reviews_internal;
 	GtkWidget		*histogram;
 	GtkWidget		*histogram_row;
-	GtkWidget		*button_review;
+	GtkWidget		*write_review_button_row;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
 	GtkWidget		*stack_details;
@@ -1489,7 +1489,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->list_box_version_history, TRUE);
 	}
 
-	gtk_widget_set_visible (self->version_history_button, version_history != NULL && version_history->len > 1);
+	gtk_widget_set_visible (self->version_history_button_row, version_history != NULL && version_history->len > 1);
 
 	/* are we trying to replace something in the baseos */
 	gtk_widget_set_visible (self->infobar_details_package_baseos,
@@ -1805,19 +1805,19 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	}
 
 	/* show the button only if the user never reviewed */
-	gtk_widget_set_visible (self->button_review, show_review_button);
+	gtk_widget_set_visible (self->write_review_button_row, show_review_button);
 	if (!gs_app_is_installed (self->app)) {
-		gtk_widget_set_visible (self->button_review, FALSE);
-		gtk_widget_set_sensitive (self->button_review, FALSE);
+		gtk_widget_set_visible (self->write_review_button_row, FALSE);
+		gtk_widget_set_sensitive (self->write_review_button_row, FALSE);
 		gtk_widget_set_sensitive (self->star, FALSE);
 	} else if (gs_plugin_loader_get_network_available (self->plugin_loader)) {
-		gtk_widget_set_sensitive (self->button_review, TRUE);
+		gtk_widget_set_sensitive (self->write_review_button_row, TRUE);
 		gtk_widget_set_sensitive (self->star, TRUE);
-		gtk_widget_set_tooltip_text (self->button_review, NULL);
+		gtk_widget_set_tooltip_text (self->write_review_button_row, NULL);
 	} else {
-		gtk_widget_set_sensitive (self->button_review, FALSE);
+		gtk_widget_set_sensitive (self->write_review_button_row, FALSE);
 		gtk_widget_set_sensitive (self->star, FALSE);
-		gtk_widget_set_tooltip_text (self->button_review,
+		gtk_widget_set_tooltip_text (self->write_review_button_row,
 					     /* TRANSLATORS: we need a remote server to process */
 					     _("You need internet access to write a review"));
 	}
@@ -1828,7 +1828,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	gtk_widget_set_visible (self->list_box_reviews_summary,
 				show_reviews &&
 				(gtk_widget_get_visible (self->histogram_row) ||
-				 gtk_widget_get_visible (self->button_review)));
+				 gtk_widget_get_visible (self->write_review_button_row)));
 	gtk_widget_set_visible (self->box_reviews,
 				reviews->len > 0 ||
 				gtk_widget_get_visible (self->list_box_reviews_summary));
@@ -2718,12 +2718,12 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews_summary);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, row_latest_version);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, version_history_button);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, version_history_button_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews_internal);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram_row);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_review);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, write_review_button_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
