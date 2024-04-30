@@ -22,7 +22,7 @@
 
 struct _GsReposDialog
 {
-	AdwWindow	 parent_instance;
+	AdwDialog	 parent_instance;
 	GSettings	*settings;
 	GsFedoraThirdParty *third_party;
 	gboolean	 third_party_enabled;
@@ -37,7 +37,7 @@ struct _GsReposDialog
 	GtkWidget	*stack;
 };
 
-G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, ADW_TYPE_WINDOW)
+G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, ADW_TYPE_DIALOG)
 
 static void reload_third_party_repos (GsReposDialog *dialog);
 
@@ -856,18 +856,14 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_page);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
-
-	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 GtkWidget *
-gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
+gs_repos_dialog_new (GsPluginLoader *plugin_loader)
 {
 	GsReposDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_REPOS_DIALOG,
-			       "transient-for", parent,
-			       "modal", TRUE,
 			       NULL);
 	dialog->third_party = gs_fedora_third_party_new (plugin_loader);
 	set_plugin_loader (dialog, plugin_loader);
