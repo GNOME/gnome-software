@@ -2335,7 +2335,7 @@ gs_shell_show_installed_updates (GsShell *shell)
 
 	dialog = gs_update_dialog_new (shell->plugin_loader);
 
-	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
+	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (shell));
 }
 
 void

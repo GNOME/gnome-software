@@ -20,7 +20,7 @@
 
 struct _GsUpdateDialog
 {
-	AdwWindow	 parent_instance;
+	AdwDialog	 parent_instance;
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
@@ -34,7 +34,7 @@ struct _GsUpdateDialog
 	gboolean	 showing_installed_updates;
 };
 
-G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, ADW_TYPE_WINDOW)
+G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, ADW_TYPE_DIALOG)
 
 typedef enum {
 	PROP_PLUGIN_LOADER = 1,
@@ -148,7 +148,7 @@ unset_focus (GtkWidget *widget)
 {
 	GtkWidget *focus;
 
-	focus = gtk_window_get_focus (GTK_WINDOW (widget));
+	focus = adw_dialog_get_focus (ADW_DIALOG (widget));
 	if (GTK_IS_LABEL (focus))
 		gtk_label_select_region (GTK_LABEL (focus), 0, 0);
 }
@@ -328,8 +328,6 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, window_title);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, default_page);
-
-	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 GtkWidget *
