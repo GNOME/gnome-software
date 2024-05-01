@@ -29,6 +29,7 @@
                     <property name="subtitle" translatable="yes">Automatically check for and download updates</property>
                     <property name="activatable-widget">automatic_updates_radio</property>
                     <property name="use-underline">True</property>
+                    <property name="use-markup">False</property>
                     <child type="prefix">
                       <object class="GtkCheckButton" id="automatic_updates_radio">
                         <property name="valign">center</property>
@@ -43,6 +44,7 @@
                     <property name="subtitle" translatable="yes">Checking for and downloading updates must be done manually</property>
                     <property name="activatable-widget">manual_updates_radio</property>
                     <property name="use-underline">True</property>
+                    <property name="use-markup">False</property>
                     <child type="prefix">
                       <object class="GtkCheckButton" id="manual_updates_radio">
                         <property name="valign">center</property>
@@ -60,6 +62,7 @@
                     <property name="title" translatable="yes">Automatic Update _Notifications</property>
                     <property name="subtitle" translatable="yes">Notify when updates have been automatically installed</property>
                     <property name="use-underline">True</property>
+                    <property name="use-markup">False</property>
                   </object>
                 </child>
               </object>
@@ -72,6 +75,7 @@
                     <property name="title" translatable="yes">Only Show _Free Software</property>
                     <property name="subtitle" translatable="yes">Hide proprietary software when browsing and searching</property>
                     <property name="use-underline">True</property>
+                    <property name="use-markup">False</property>
                   </object>
                 </child>
                 <child>
@@ -79,6 +83,7 @@
                     <property name="title" translatable="yes">Only Show _Verified Developers</property>
                     <property name="subtitle" translatable="yes">Show only apps from developers whose identity has been verified</property>
                     <property name="use-underline">True</property>
+                    <property name="use-markup">False</property>
                   </object>
                 </child>
               </object>
