@@ -23,6 +23,7 @@ help_media = [
   'figures/links/money-symbolic.svg',
   'figures/links.svg',
   'figures/links/webpage-symbolic.svg',
+  'figures/no-links.svg',
   'figures/proprietary-and-special.svg',
   'figures/safety-tile.png',
   'figures/storage-tile.png',
