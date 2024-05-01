@@ -4,6 +4,7 @@
   SPDX-FileCopyrightText: 2021, 2022, 2023 Philip Withnall <philip@tecnocode.co.uk>
   SPDX-FileCopyrightText: 2021, 2022, 2024 Will Thompson <wjt@endlessos.org>
   SPDX-FileCopyrightText: 2024 Milan Crha <mcrha@redhat.com>
+  SPDX-FileCopyrightText: 2024 Sid <sidtosh4@gmail.com>
 -->
 <page xmlns="http://projectmallard.org/1.0/"
       xmlns:its="http://www.w3.org/2005/11/its"
@@ -33,6 +34,22 @@
 
   <title>Software Metadata</title>
   <links type="section"/>
+
+  <section id="screenshots">
+    <title>Screenshots</title>
+    <media type="image" src="figures/app-screenshot.png" style="floatend floatright" mime="image/png" its:translate="no"/>
+    <p>GNOME Software displays the screenshots on the details page for an application. This typically should include screenshots of various windows / dialogs of the application, so the user would get a quick grasp of the application's features, look and feel etc.</p>
+    <p>When more than one screenshot is present in the application’s metainfo file, GNOME Software will show the screenshots in a carousel, as shown here where the screenshots from GNOME Software app is shown in a carousel.</p>
+    <p>In cases when the application’s metainfo file doesn't contain any screenshot, then a missing image icon will be displayed as shown in the second image here.</p>
+    <p>Screenshots might become outdated as the application's UI changes. So, even if GNOME Software shows screenshots for an app, it's important to check if these screenshots are up-to-date or outdated.</p>
+    <p>You can improve app screenshot information:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-add-missing-app-screenshots">How to add missing app screenshots</link></p>
+      </item>
+    </list>
+    <media type="image" src="figures/no-screenshots.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
+  </section>
 
   <section id="hardware-support">
     <title>Hardware support</title>
@@ -214,6 +231,24 @@
 <url type="translate">https://l10n.gnome.org/module/gnome-software/</url>
 <url type="vcs-browser">https://gitlab.gnome.org/GNOME/gnome-software/</url>]]></code>
   </section>
+
+  <section id="how-to-add-missing-app-screenshots">
+    <title>How to add missing app screenshots</title>
+    <p>The screenshot information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-screenshots"><code>&lt;screenshots&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>Recommended number of screenshots for an app is between 5 to 10. Screenshots should ideally be in the PNG format with 16:9 aspect ratio and minuminum width of 620 pixels.</p>
+    <p>For example, here are the screenshot entries for GNOME Software app:</p>
+    <code type="xml"><![CDATA[
+<screenshots>
+  <screenshot type="default">
+    <image>https://gitlab.gnome.org/GNOME/gnome-software/raw/HEAD/data/metainfo/ss-overview.png</image>
+    <caption>Overview panel</caption>
+  </screenshot>
+  <screenshot>
+    <image>https://gitlab.gnome.org/GNOME/gnome-software/raw/HEAD/data/metainfo/ss-details.png</image>
+    <caption>Details panel</caption>
+  </screenshot>
+</screenshots>]]></code>
+</section>
 
   <section id="how-to-add-missing-hardware-information">
     <title>How to add missing hardware information</title>

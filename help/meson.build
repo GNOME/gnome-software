@@ -11,6 +11,7 @@ help_files = [
 
 help_media = [
   'figures/age-rating-tile.png',
+  'figures/app-screenshot.png',
   'figures/carousel.png',
   'figures/community-built.svg',
   'figures/hardware-support-tile.png',
@@ -24,6 +25,7 @@ help_media = [
   'figures/links.svg',
   'figures/links/webpage-symbolic.svg',
   'figures/no-links.svg',
+  'figures/no-screenshots.svg',
   'figures/proprietary-and-special.svg',
   'figures/safety-tile.png',
   'figures/storage-tile.png',
