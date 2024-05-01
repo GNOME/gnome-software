@@ -62,7 +62,7 @@ struct _GsSafetyContextDialog
 	GBinding		*source_label_binding;  /* (owned) (nullable) */
 	GtkWidget		*packagename_row;
 	GtkWidget		*sdk_row;
-	GtkImage		*sdk_eol_image;
+	GtkWidget		*sdk_eol_button;
 };
 
 G_DEFINE_TYPE (GsSafetyContextDialog, gs_safety_context_dialog, GS_TYPE_INFO_WINDOW)
@@ -542,7 +542,7 @@ update_sdk (GsSafetyContextDialog *self)
 
 		adw_action_row_set_subtitle (ADW_ACTION_ROW (self->sdk_row), label);
 
-		gtk_widget_set_visible (GTK_WIDGET (self->sdk_eol_image), is_eol);
+		gtk_widget_set_visible (self->sdk_eol_button, is_eol);
 	}
 
 	/* Only show the row if a runtime was found. */
@@ -669,7 +669,7 @@ gs_safety_context_dialog_class_init (GsSafetyContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, source_row);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, packagename_row);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_row);
-	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_eol_image);
+	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_eol_button);
 }
 
 /**

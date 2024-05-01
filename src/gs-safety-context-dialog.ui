@@ -97,15 +97,15 @@
                 <property name="title" translatable="yes">SDK</property>
                 <property name="focusable">False</property>
                 <child type="suffix">
-                  <object class="GtkImage" id="sdk_eol_image">
+                  <object class="GtkMenuButton" id="sdk_eol_button">
+                    <property name="tooltip-text" translatable="yes">More Information</property>
                     <property name="icon-name">dialog-warning-symbolic</property>
+                    <property name="popover">sdk_info_popover</property>
+                    <property name="valign">center</property>
                     <style>
+                      <class name="flat"/>
                       <class name="error"/>
                     </style>
-                    <accessibility>
-                      <property name="label" translatable="yes">Outdated SDK version</property>
-                      <relation name="labelled-by">sdk_row</relation>
-                    </accessibility>
                   </object>
                 </child>
                 <style>
@@ -130,4 +130,23 @@
       </object>
     </child>
   </template>
+  <object class="GtkPopover" id="sdk_info_popover">
+    <property name="position">bottom</property>
+    <property name="visible">False</property>
+    <property name="child">
+      <object class="GtkLabel">
+        <property name="halign">center</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+        <property name="label" translatable="yes">This app uses an outdated version of the software platform (SDK) and might contain bugs or security vulnerabilities which will not be fixed.</property>
+        <property name="wrap">True</property>
+        <property name="max-width-chars">50</property>
+        <property name="valign">center</property>
+        <!--This is a hack so the popover contents can be read by the screen reader. See https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/1891-->
+        <property name="selectable" bind-source="sdk_info_popover" bind-property="visible" bind-flags="invert-boolean">True</property>
+      </object>
+    </property>
+  </object>
 </interface>
