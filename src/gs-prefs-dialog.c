@@ -98,14 +98,6 @@ gs_prefs_dialog_init (GsPrefsDialog *dialog)
 				 G_CALLBACK (gs_prefs_dialog_filters_changed_cb), dialog, G_CONNECT_SWAPPED);
 	g_signal_connect_object (dialog->show_only_verified_apps_row, "notify::active",
 				 G_CALLBACK (gs_prefs_dialog_filters_changed_cb), dialog, G_CONNECT_SWAPPED);
-
-#if ADW_CHECK_VERSION(1,2,0)
-	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->automatic_updates_row), FALSE);
-	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->manual_updates_row), FALSE);
-	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->automatic_update_notifications_row), FALSE);
-	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->show_only_free_apps_row), FALSE);
-	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->show_only_verified_apps_row), FALSE);
-#endif
 }
 
 static void
