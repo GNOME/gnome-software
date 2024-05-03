@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-04-25 14:04+0000\n"
-"PO-Revision-Date: 2024-05-02 18:33+0100\n"
+"POT-Creation-Date: 2024-05-02 17:46+0000\n"
+"PO-Revision-Date: 2024-05-03 22:07+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -3315,7 +3315,7 @@ msgstr "Licença especial"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:201
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This app is developed under the special license <a href=\"%s\">%s</a>.\n"
 "\n"
@@ -3324,11 +3324,11 @@ msgstr ""
 "Esta aplicação foi desenvolvida sob uma licença especial <a href=\"%s\">%s</"
 "a>.\n"
 "\n"
-"Pode ser que consiga ou não contribuir para esta aplicação."
+"Poderá, ou não, contribuir para esta aplicação."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:208
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This app is developed under the special license “%s”.\n"
 "\n"
@@ -3336,29 +3336,23 @@ msgid ""
 msgstr ""
 "Esta aplicação é desenvolvida sob a licença especial “%s”.\n"
 "\n"
-"Pode ser que consigas ou não contribuir para esta aplicação."
+"Poderá, ou não, contribuir para esta aplicação."
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:215
-#, fuzzy, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the <a href=\"%s\">%s license</a>.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This software is developed under the special license <a href=\"%s\">%s</a>.\n"
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
-"Este software é desenvolvido abertamente por uma comunidade de voluntários e "
-"disponibilizado sob a licença <a href=\"%s\">%s licença</a>.\n"
+"Este software é desenvolvido sob a licença especial <a href=\"%s\">%s</a>.\n"
 "\n"
-"Pode contribuir e ajudar a torná-lo ainda melhor."
+"Poderá, ou não, contribuir para este programa."
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:223
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This software is developed under the special license “%s”.\n"
 "\n"
@@ -3366,7 +3360,7 @@ msgid ""
 msgstr ""
 "Este software é desenvolvido sob a licença especial “%s”.\n"
 "\n"
-"Pode ser que consigas ou não contribuir para este software."
+"Poderá, ou não, contribuir para este software."
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
@@ -3599,28 +3593,23 @@ msgid "_Automatic"
 msgstr "Automática"
 
 #: src/gs-prefs-dialog.ui:27
-#, fuzzy
-#| msgid "Automatically download and install updates"
 msgid "Automatically check for and download updates"
-msgstr "Transferir e instalar atualizações automaticamente"
+msgstr "Procurar e transferir atualizações automaticamente"
 
 #: src/gs-prefs-dialog.ui:41
 msgid "_Manual"
 msgstr "_Manual"
 
 #: src/gs-prefs-dialog.ui:42
-#, fuzzy
 msgid "Checking for and downloading updates must be done manually"
 msgstr ""
-"A verificação e o download de atualizações devem ser feitos manualmente"
+"A verificação e a transferência de atualizações devem ser feitos manualmente"
 
 #: src/gs-prefs-dialog.ui:60
 msgid "Automatic Update _Notifications"
 msgstr "_Notificações de atualizações automáticas"
 
 #: src/gs-prefs-dialog.ui:61
-#, fuzzy
-#| msgid "Show notifications when updates have been automatically installed"
 msgid "Notify when updates have been automatically installed"
 msgstr ""
 "Mostrar notificações quando atualizações forem instaladas automaticamente"
@@ -3634,31 +3623,28 @@ msgid "Only Show _Free Software"
 msgstr "Mostrar apenas software _livre"
 
 #: src/gs-prefs-dialog.ui:80
-#, fuzzy
 msgid "Hide proprietary software when browsing and searching"
-msgstr "Ocultar software proprietário ao navegar e pesquisar"
+msgstr "Ocultar software proprietário ao navegar e procurar"
 
 #: src/gs-prefs-dialog.ui:93
-#, fuzzy
 msgid "Only Show _Verified Developers"
 msgstr "Mostrar Apenas Programadores _Verificados"
 
 #: src/gs-prefs-dialog.ui:94
-#, fuzzy
 msgid "Show only apps from developers whose identity has been verified"
 msgstr ""
 "Mostrar apenas aplicações de programadores cuja identidade foi verificada"
 
 #: src/gs-prefs-dialog.ui:120
-#, fuzzy
 msgid ""
 "Checking for and downloading updates uses data and power. Automatic update "
 "features are therefore paused when on metered network connections and when "
 "power saver is on."
 msgstr ""
-"Verificar e descarregar atualizações utiliza dados e energia. Por isso, as "
-"funcionalidades de atualização automática são pausadas quando em conexões de "
-"rede tarifadas e quando o modo de poupança de energia está ativo."
+"A verificação e transferência de atualizações utilizam dados e energia. "
+"Assim, as funcionalidades de atualização automática são pausadas quando em "
+"ligações de rede com tarifação fixa e quando o modo de poupança de energia "
+"está ativado."
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -3913,13 +3899,12 @@ msgid "_Send"
 msgstr "_Enviar"
 
 #: src/gs-review-dialog.ui:65
-#, fuzzy
 msgid ""
 "Please provide a rating, summary and review text. Reviews should not be used "
 "to report problems: instead, contact the developer or your support provider."
 msgstr ""
 "Por favor, forneça uma classificação, resumo e texto de avaliação. As "
-"avaliações não devem ser usadas para relatar problemas: em vez disso, "
+"avaliações não devem ser usadas para reportar problemas: em vez disso, "
 "contacte o programador ou o seu fornecedor de suporte."
 
 #: src/gs-review-dialog.ui:111
@@ -4093,10 +4078,8 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:230
-#, fuzzy
-#| msgid "System Device Access"
 msgid "Input Device Access"
-msgstr "Acesso ao dispositivo do sistema"
+msgstr "Acesso ao Dispositivo de Entrada"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:238
@@ -4104,7 +4087,6 @@ msgid "Microphone Access"
 msgstr "Acesso ao microfone"
 
 #: src/gs-safety-context-dialog.c:239
-#, fuzzy
 msgid "Can listen using microphones without asking permission"
 msgstr "Pode ouvir usando microfones sem pedir permissão"
 
@@ -4124,7 +4106,6 @@ msgid "Screen Contents Access"
 msgstr "Acesso aos conteúdos do ecrã"
 
 #: src/gs-safety-context-dialog.c:255
-#, fuzzy
 msgid "Can access the contents of the screen or other windows"
 msgstr "Pode aceder aos conteúdos do ecrã ou de outras janelas"
 
@@ -4238,7 +4219,6 @@ msgstr ""
 "inseguros"
 
 #: src/gs-safety-context-dialog.c:415
-#, fuzzy
 msgid ""
 "This app does not specify what license it is developed under, and may be "
 "proprietary"
@@ -4247,7 +4227,6 @@ msgstr ""
 "proprietária"
 
 #: src/gs-safety-context-dialog.c:416
-#, fuzzy
 msgid ""
 "This software does not specify what license it is developed under, and may "
 "be proprietary"
@@ -4270,13 +4249,13 @@ msgstr ""
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-safety-context-dialog.c:438
-#, fuzzy, c-format
+#, c-format
 msgid "This app is developed under the special license “%s”"
 msgstr "Esta aplicação é desenvolvida sob a licença especial “%s”"
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-safety-context-dialog.c:441
-#, fuzzy, c-format
+#, c-format
 msgid "This software is developed under the special license “%s”"
 msgstr "Este software é desenvolvido sob a licença especial “%s”"
 
@@ -4486,16 +4465,12 @@ msgid "Unable to get list of updates"
 msgstr "Não foi possível obter a lista de atualizações"
 
 #: src/gs-shell.c:1357
-#, fuzzy
-#| msgid "Unable to install %s as download failed"
 msgid "Unable to install: download failed"
-msgstr "Não foi possível instalar %s porque a transferência falhou"
+msgstr "Não foi possível instalar: transferência falhada"
 
 #: src/gs-shell.c:1361
-#, fuzzy
-#| msgid "Unable to install updates"
 msgid "Unable to install: missing runtime"
-msgstr "Não foi possível instalar atualizações"
+msgstr "Não foi possível instalar: runtime em falta"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
@@ -4506,76 +4481,52 @@ msgstr "Não foi possível instalar %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1369
-#, fuzzy
-#| msgid "Unable to install: internet access was required but wasn’t available"
 msgid "Unable to install: internet access required"
-msgstr ""
-"Não foi possível instalar: acesso à Internet é necessário mas não está "
-"disponível"
+msgstr "Não foi possível instalar: é necessário acesso à Internet"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1373
-#, fuzzy
-#| msgid "Unable to install: the app has an invalid format"
 msgid "Unable to install: invalid app format"
-msgstr "Não foi possível instalar: a aplicação tem um formato inválido"
+msgstr "Não foi possível instalar: formato de aplicação inválido"
 
 #: src/gs-shell.c:1376
-#, fuzzy
-#| msgid "Unable to install %s: not enough disk space"
 msgid "Unable to install: not enough disk space"
-msgstr "Não foi possível instalar %s: sem espaço em disco"
+msgstr "Não foi possível instalar: espaço em disco insuficiente"
 
 #: src/gs-shell.c:1379
-#, fuzzy
-#| msgid "Unable to install %s: authentication was required"
 msgid "Unable to install: authentication required"
-msgstr "Não foi possível instalar %s: autenticação é necessária"
+msgstr "Não foi possível instalar: autenticação necessária"
 
 #: src/gs-shell.c:1382
-#, fuzzy
-#| msgid "Failed to install file: authentication failed"
 msgid "Unable to install: invalid authentication"
-msgstr "Falha ao instalar o ficheiro: a autenticação falhou"
+msgstr "Não foi possível instalar: autenticação inválida"
 
 #: src/gs-shell.c:1385
-#, fuzzy
-#| msgid "Unable to install %s: AC power is required"
 msgid "Unable to install: permission required"
-msgstr "Não foi possível instalar %s: necessària a ligação à corrente elétrica"
+msgstr "Não foi possível instalar: permissão necessária"
 
 #: src/gs-shell.c:1388
-#, fuzzy
-#| msgid "Unable to install %s: AC power is required"
 msgid "Unable to install: device must be plugged in"
-msgstr "Não foi possível instalar %s: necessària a ligação à corrente elétrica"
+msgstr "Não foi possível instalar: o dispositivo tem de estar ligado"
 
 #: src/gs-shell.c:1390
-#, fuzzy
-#| msgid "Unable to install updates"
 msgid "Unable to install: low battery"
-msgstr "Não foi possível instalar atualizações"
+msgstr "Não foi possível instalar: bateria fraca"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1433
-#, fuzzy
-#| msgid "Unable to update %s as download failed"
 msgid "Unable to update: download failed"
-msgstr "Não foi possível atualizar %s porque a transferência falhou"
+msgstr "Não foi possível atualizar: transferência falhada"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1457
-#, fuzzy
-#| msgid "Unable to update %s: AC power is required"
 msgid "Unable to update: device must be plugged in"
-msgstr "Não foi possível atualizar %s: necessária ligação à corrente elétrica"
+msgstr "Não foi possível atualizar: o dispositivo tem de estar ligado"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1460
-#, fuzzy
-#| msgid "Unable to update %s"
 msgid "Unable to update: low battery"
-msgstr "Não foi possível atualizar %s"
+msgstr "Não foi possível atualizar: bateria fraca"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
@@ -4591,62 +4542,43 @@ msgstr "Não foi possível instalar atualizações"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1509 src/gs-shell.c:1546
-#, fuzzy
-#| msgid "Unable to upgrade to %s"
 msgid "Unable to upgrade"
-msgstr "Não foi possível atualizar para o %s"
+msgstr "Não foi possível atualizar"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1512
-#, fuzzy
-#| msgid "Unable to upgrade to %s as download failed"
 msgid "Unable to upgrade: download failed"
-msgstr "Não foi possível atualizar para o %s porque a transferência falhou"
+msgstr "Não foi possível atualizar: transferência falhada"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1517
-#, fuzzy
-#| msgid "Unable to upgrade to %s: authentication was required"
 msgid "Unable to upgrade: internet access required"
-msgstr "Não foi possível atualizar para o %s: autenticação obrigatória"
+msgstr "Não foi possível atualizar: é necessário acesso à Internet"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1521
-#, fuzzy
-#| msgid "Unable to upgrade to %s: not enough disk space"
 msgid "Unable to upgrade: not enough disk space"
-msgstr ""
-"Não foi possível atualizar para o %s: não há espaço suficiente em disco"
+msgstr "Não foi possível atualizar: espaço em disco insuficiente"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1525
-#, fuzzy
-#| msgid "Unable to upgrade to %s: authentication was required"
 msgid "Unable to upgrade: authentication required"
-msgstr "Não foi possível atualizar para o %s: autenticação obrigatória"
+msgstr "Não foi possível atualizar: autenticação necessária"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1529
-#, fuzzy
-#| msgid "Unable to upgrade to %s: authentication was invalid"
 msgid "Unable to upgrade: invalid authentication"
-msgstr "Não foi possível atualizar para o %s: autenticação inválida"
+msgstr "Não foi possível atualizar: autenticação inválida"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1533
-#, fuzzy
-#| msgid "Unable to upgrade to %s: AC power is required"
 msgid "Unable to upgrade: permission required"
-msgstr ""
-"Não foi possível atualizar para o %s: necessária ligação à corrente elétrica"
+msgstr "Não foi possível atualizar: permissão necessária"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1537
-#, fuzzy
-#| msgid "Unable to upgrade to %s: AC power is required"
 msgid "Unable to upgrade: device must be plugged in"
-msgstr ""
-"Não foi possível atualizar para o %s: necessária ligação à corrente elétrica"
+msgstr "Não foi possível atualizar: o dispositivo tem de estar ligado"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1540
@@ -4660,31 +4592,23 @@ msgstr "Não foi possível desinstalar: autenticação necessária"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1583
-#, fuzzy
-#| msgid "Unable to install %s: authentication was invalid"
 msgid "Unable to uninstall: authentication invalid"
-msgstr "Não foi possível instalar %s: autenticação inválida"
+msgstr "Não foi possível desinstalar: autenticação inválida"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1587
-#, fuzzy
-#| msgid "Unable to install %s: AC power is required"
 msgid "Unable to uninstall: permission required"
-msgstr "Não foi possível instalar %s: necessària a ligação à corrente elétrica"
+msgstr "Não foi possível desinstalar: permissão necessária"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1591
-#, fuzzy
-#| msgid "Unable to install %s: AC power is required"
 msgid "Unable to uninstall: device must be plugged in"
-msgstr "Não foi possível instalar %s: necessària a ligação à corrente elétrica"
+msgstr "Não foi possível desinstalar: o dispositivo tem de estar ligado"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1594
-#, fuzzy
-#| msgid "Unable to install updates"
 msgid "Unable to uninstall: low battery"
-msgstr "Não foi possível instalar atualizações"
+msgstr "Não foi possível desinstalar: bateria fraca"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
@@ -4696,10 +4620,9 @@ msgstr "Não foi possível desinstalar %s"
 #. TRANSLATORS: failure text for the in-app notification, where the '%s' is
 #. replaced with the app name (e.g. "GIMP")
 #: src/gs-shell.c:1640
-#, fuzzy, c-format
-#| msgid "Unable to contact %s"
+#, c-format
 msgid "Unable to launch %s"
-msgstr "Não foi possível ligar-se a %s"
+msgstr "Não foi possível iniciar %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #. TRANSLATORS: we failed to get a proper error code
@@ -4711,32 +4634,23 @@ msgstr "Lamentamos, alguma coisa correu mal"
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1655 src/gs-shell.c:1699 src/gs-shell.c:1743
 #: src/gs-shell.c:1793
-#, fuzzy
-#| msgid "Not enough disk space — free up some space and try again"
 msgid "Not enough disk space for operation"
-msgstr ""
-"Não há espaço suficiente em disco. Liberte algum espaço e tente novamente"
+msgstr "Espaço em disco insuficiente para a operação"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1691
-#, fuzzy
-#| msgid "Unable to install %s as not supported"
 msgid "Unable to install: file type not supported"
-msgstr "Não foi possível instalar %s porque a aplicação não é suportada"
+msgstr "Não foi possível instalar: tipo de ficheiro não suportado"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1695 src/gs-shell.c:1739
-#, fuzzy
-#| msgid "Failed to install: authentication failed"
 msgid "Unable to install: authentication failed"
-msgstr "Falha ao instalar: a autenticação falhou"
+msgstr "Não foi possível instalar: falha na autenticação"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1735
-#, fuzzy
-#| msgid "Unable to install %s"
 msgid "Unable to install"
-msgstr "Não foi possível instalar %s"
+msgstr "Não foi possível instalar"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
@@ -4748,23 +4662,18 @@ msgstr "Não foi possível ligar-se a %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
 #: src/gs-shell.c:1797
-#, fuzzy
-#| msgid "Software needs to be restarted to use new plugins."
 msgid "Restart Software to use new plugins"
-msgstr "O Software necessita de ser reiniciado para usar os novos plugins."
+msgstr "Reiniciar o software para usar novos plugins"
 
 #. TRANSLATORS: need to be connected to the AC power
 #: src/gs-shell.c:1801
-#, fuzzy
 msgid "Device needs to be plugged in"
 msgstr "O dispositivo precisa de estar ligado"
 
 #. TRANSLATORS: not enough juice to do this safely
 #: src/gs-shell.c:1804
-#, fuzzy
-#| msgid "The battery level is too low"
 msgid "Battery level is too low"
-msgstr "A bateria não tem carga suficiente"
+msgstr "O nível da bateria está muito baixo"
 
 #: src/gs-shell.ui:7
 msgid "_Software Repositories"
@@ -4885,7 +4794,6 @@ msgstr "%s (A instalar)"
 
 #: src/gs-summary-tile.c:149
 #, c-format
-#| msgid "Downloading"
 msgid "%s (Downloading)"
 msgstr "%s (a transferir)"
 
@@ -4929,62 +4837,44 @@ msgid "No Updates Installed"
 msgstr "Sem atualizações instaladas"
 
 #: src/gs-update-monitor.c:216
-#, fuzzy
-#| msgid "Software Updates Are Out of Date"
 msgid "Updates Are Out of Date"
-msgstr "As atualizações de software estão desatualizadas"
+msgstr "As Atualizações de Software estão desatualizadas"
 
 #: src/gs-update-monitor.c:217
 msgid "Please check for available updates"
 msgstr "Verificar se existem atualizações disponíveis"
 
 #: src/gs-update-monitor.c:223
-#, fuzzy
-#| msgid "Critical Software Update Ready to Install"
 msgid "Critical Updates Ready to Install"
-msgstr "Atualização crítica pronta para instalar"
+msgstr "Atualizações críticas prontas para instalar"
 
 #: src/gs-update-monitor.c:224
-#, fuzzy
-#| msgid "Unable to install updates as download failed"
 msgid "Install critical updates as soon as possible"
-msgstr "Não foi possível instalar atualizações porque a transferência falhou"
+msgstr "Instalar atualizações críticas o mais rapidamente possível"
 
 #: src/gs-update-monitor.c:227
-#, fuzzy
-#| msgid "Critical Software Updates Available to Download"
 msgid "Critical Updates Available to Download"
 msgstr "Atualizações críticas disponíveis para transferir"
 
 #: src/gs-update-monitor.c:228
-#, fuzzy
-#| msgid "Unable to install updates as download failed"
 msgid "Download critical updates as soon as possible"
-msgstr "Não foi possível instalar atualizações porque a transferência falhou"
+msgstr "Transferir atualizações críticas o mais rapidamente possível"
 
 #: src/gs-update-monitor.c:234
-#, fuzzy
-#| msgid "Software Updates Ready to Install"
 msgid "Updates Ready to Install"
 msgstr "Atualizações prontas para instalar"
 
 #: src/gs-update-monitor.c:235
-#, fuzzy
-#| msgid "Software updates are waiting and ready to be installed."
 msgid "Software updates are ready and waiting"
-msgstr "Atualizações estão em espera e prontas para serem instaladas."
+msgstr "Atualizações estão prontas e à espera para serem instaladas"
 
 #: src/gs-update-monitor.c:241
-#, fuzzy
-#| msgid "Software Updates Available to Download"
 msgid "Updates Available to Download"
 msgstr "Atualizações disponíveis para transferir"
 
 #: src/gs-update-monitor.c:242
-#, fuzzy
-#| msgid "Software Updates Downloaded"
 msgid "Software updates can be downloaded"
-msgstr "Atualizações de software transferidas"
+msgstr "Atualizações de software podem ser transferidas"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
 #: src/gs-update-monitor.c:358
@@ -5154,9 +5044,9 @@ msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
 msgstr ""
-"Lamentamos: a atualização falhou a instalação. Aguarde por outra atualização "
-"e tente novamente. Se o problema persistir, contacte o seu fornecedor de "
-"programas."
+"Lamentamos: falha na instalação da atualização. Aguarde por outra "
+"atualização e tente novamente. Se o problema persistir, contacte o seu "
+"fornecedor de programas."
 
 #. TRANSLATORS: This is the time when we last checked for updates
 #: src/gs-updates-page.c:255
@@ -5244,17 +5134,13 @@ msgstr "Página das atualizações"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:58
-#, fuzzy
-#| msgid "Loading Updates…"
 msgid "Loading Updates"
-msgstr "A carregar atualizações…"
+msgstr "A Carregar Atualizações"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:71
-#, fuzzy
-#| msgid "This could take a while."
 msgid "This could take a while"
-msgstr "Isto pode levar algum tempo."
+msgstr "Isto pode demorar algum tempo"
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:179
@@ -5266,14 +5152,10 @@ msgid "Use Mobile Data?"
 msgstr "Usar dados móveis?"
 
 #: src/gs-updates-page.ui:219
-#, fuzzy
-#| msgid ""
-#| "Checking for updates when using mobile broadband could cause you to incur "
-#| "charges."
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
-msgstr "Procurar atualizações em redes de banda larga pode incorrer em custos."
+msgstr "Procurar atualizações em redes de banda larga pode incorrer em custos"
 
 #: src/gs-updates-page.ui:222
 msgid "_Check Anyway"
@@ -5284,10 +5166,8 @@ msgid "No Connection"
 msgstr "Sem ligação"
 
 #: src/gs-updates-page.ui:239
-#, fuzzy
-#| msgid "Go online to check for updates."
 msgid "Go online to check for updates"
-msgstr "Procurar atualizações online."
+msgstr "Ligue-se à Internet para procurar atualizações"
 
 #: src/gs-updates-page.ui:242
 msgid "_Network Settings"
@@ -5298,19 +5178,14 @@ msgid "Error"
 msgstr "Erro"
 
 #: src/gs-updates-page.ui:277
-#, fuzzy
-#| msgid "Updates are automatically managed."
 msgid "Updates are automatically managed"
-msgstr "As atualizações são geridas automaticamente."
+msgstr "As atualizações são geridas automaticamente"
 
 #: src/gs-updates-paused-banner.c:45
-#, fuzzy
-#| msgid "Software Updates Failed"
 msgid "Software Updates Paused"
-msgstr "Falha na atualização de software"
+msgstr "Atualizações de Software em Pausa"
 
 #: src/gs-updates-paused-banner.c:48
-#, fuzzy
 msgid ""
 "Automatic software updates have been paused for the following reasons:\n"
 msgstr ""
