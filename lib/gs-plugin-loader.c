@@ -2729,7 +2729,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	g_autofree gchar *user_hash = NULL;
 	g_autoptr(GError) local_error = NULL;
 	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
-	const guint odrs_review_n_results_max = 20;
+	const guint odrs_review_n_results_max = 50;
 	const gchar *locale;
 
 	plugin_loader->setup_complete_cancellable = g_cancellable_new ();
