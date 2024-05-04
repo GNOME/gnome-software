@@ -580,6 +580,15 @@ sanitize_license_text_cb (GBinding *binding,
 }
 
 static void
+contribute_info_row_activated_cb (AdwButtonRow *row,
+				  GsSafetyContextDialog *self)
+{
+	GtkWidget *toplevel = GTK_WIDGET (gtk_widget_get_root (GTK_WIDGET (self)));
+
+	gs_show_uri (GTK_WINDOW (toplevel), "https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#safety");
+}
+
+static void
 gs_safety_context_dialog_init (GsSafetyContextDialog *self)
 {
 	g_type_ensure (GS_TYPE_LOZENGE);
@@ -670,6 +679,8 @@ gs_safety_context_dialog_class_init (GsSafetyContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, packagename_row);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_row);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_eol_button);
+
+	gtk_widget_class_bind_template_callback (widget_class, contribute_info_row_activated_cb);
 }
 
 /**
