@@ -9,68 +9,56 @@
       <object class="AdwPreferencesPage">
         <child>
           <object class="AdwPreferencesGroup">
-
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
-                <property name="spacing">8</property>
-
+                <property name="spacing">12</property>
                 <child>
-                  <object class="GtkBox">
-                    <property name="margin-bottom">16</property>
-                    <property name="margin-start">20</property>
-                    <property name="margin-end">20</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
-
-                    <child>
-                      <object class="GsLozenge" id="lozenge">
-                        <property name="circular">True</property>
-                        <style>
-                          <class name="large"/>
-                          <class name="grey"/>
-                        </style>
-                        <accessibility>
-                          <relation name="labelled-by">title</relation>
-                        </accessibility>
-                      </object>
-                    </child>
-
-                    <child>
-                      <object class="GtkLabel" id="title">
-                        <!-- this is a placeholder: the text is actually set in code -->
-                        <property name="justify">center</property>
-                        <property name="label">Shortwave is appropriate for children</property>
-                        <property name="wrap">True</property>
-                        <property name="xalign">0.5</property>
-                        <style>
-                          <class name="title-2"/>
-                        </style>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-
-                <child>
-                  <object class="GtkListBox" id="attributes_list">
-                    <property name="selection_mode">none</property>
-                    <property name="halign">fill</property>
-                    <property name="valign">start</property>
+                  <object class="GsLozenge" id="lozenge">
+                    <property name="circular">True</property>
                     <style>
-                      <class name="boxed-list"/>
+                      <class name="large"/>
+                      <class name="grey"/>
                     </style>
-                    <!-- Rows are added in code -->
-                    <placeholder/>
+                    <accessibility>
+                      <relation name="labelled-by">title</relation>
+                    </accessibility>
                   </object>
                 </child>
-
                 <child>
-                  <object class="GtkLinkButton">
-                    <property name="label" translatable="yes">How to contribute missing information</property>
-                    <property name="margin-top">16</property>
-                    <property name="uri">https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#age-rating</property>
+                  <object class="GtkLabel" id="title">
+                    <property name="justify">center</property>
+                    <property name="label">Shortwave is appropriate for children</property>
+                    <property name="wrap">True</property>
+                    <property name="xalign">0.5</property>
+                    <style>
+                      <class name="title-2"/>
+                    </style>
                   </object>
                 </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <child>
+              <object class="GtkListBox" id="attributes_list">
+                <property name="selection_mode">none</property>
+                <style>
+                  <class name="boxed-list"/>
+                </style>
+                <placeholder/>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <child>
+              <object class="GtkLinkButton">
+                <property name="label" translatable="yes">How to contribute missing information</property>
+                <property name="uri">https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#age-rating</property>
               </object>
             </child>
           </object>
