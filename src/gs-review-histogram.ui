@@ -10,10 +10,10 @@
         <property name="margin-bottom">12</property>
         <property name="margin-start">12</property>
         <property name="margin-end">12</property>
-	<child>
+        <child>
           <object class="GtkLabel" id="label_value">
-	    <property name="halign">start</property>
-	    <property name="valign">center</property>
+            <property name="halign">start</property>
+            <property name="valign">center</property>
             <property name="label">0</property>
             <attributes>
               <attribute name="scale" value="5.0"/>
@@ -28,7 +28,7 @@
             </layout>
           </object>
         </child>
-	<child>
+        <child>
           <object class="GtkBox" id="value_vbox">
             <property name="orientation">vertical</property>
             <property name="spacing">8</property>
@@ -38,7 +38,7 @@
             <property name="vexpand">True</property>
             <property name="margin-start">6</property>
             <property name="margin-top">8</property>
-	    <child>
+            <child>
               <object class="GtkBox" id="star_value_box">
                 <property name="orientation">horizontal</property>
                 <property name="spacing">6</property>
@@ -81,10 +81,10 @@
                 </child>
               </object>
             </child>
-	    <child>
+            <child>
               <object class="GtkLabel" id="label_n_stars">
-	        <property name="halign">start</property>
-	        <property name="valign">center</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
                 <property name="label" translatable="yes">out of 5 stars</property>
                 <attributes>
                   <attribute name="scale" value="0.8"/>
@@ -99,14 +99,14 @@
             </layout>
           </object>
         </child>
-	<child>
+        <child>
           <object class="GtkGrid" id="grid2">
             <property name="row-spacing">2</property>
             <property name="column-spacing">2</property>
             <style>
               <class name="review-histogram"/>
             </style>
-	    <child>
+            <child>
               <object class="GsReviewBar" id="bar5">
                 <property name="margin-end">5</property>
                 <property name="halign">fill</property>
