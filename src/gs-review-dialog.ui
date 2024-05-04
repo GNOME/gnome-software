@@ -13,7 +13,6 @@
               <object class="AdwHeaderBar">
                 <property name="show_start_title_buttons">False</property>
                 <property name="show_end_title_buttons">False</property>
-                <property name="hexpand">True</property>
                 <property name="title-widget">
                   <object class="AdwWindowTitle">
                     <property name="title" bind-source="GsReviewDialog" bind-property="title" bind-flags="sync-create"/>
@@ -40,7 +39,6 @@
             <property name="content">
               <object class="AdwPreferencesPage">
                 <property name="description" translatable="yes">Please provide a rating, summary and review text. Reviews should not be used to report problems: instead, contact the developer or your support provider.</property>
-                <property name="vexpand">True</property>
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
