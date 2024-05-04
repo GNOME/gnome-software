@@ -39,6 +39,7 @@
             </child>
             <property name="content">
               <object class="AdwPreferencesPage">
+                <property name="description" translatable="yes">Please provide a rating, summary and review text. Reviews should not be used to report problems: instead, contact the developer or your support provider.</property>
                 <property name="vexpand">True</property>
                 <child>
                   <object class="AdwPreferencesGroup">
@@ -46,21 +47,6 @@
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkLabel" id="developer_name_label">
-                            <property name="label" translatable="yes">Please provide a rating, summary and review text. Reviews should not be used to report problems: instead, contact the developer or your support provider.</property>
-                            <property name="justify">center</property>
-                            <property name="valign">fill</property>
-                            <property name="wrap">True</property>
-                            <property name="wrap-mode">word-char</property>
-                            <property name="xalign">0.5</property>
-                            <property name="yalign">0.5</property>
-                            <property name="margin-bottom">12</property>
-                            <style>
-                              <class name="dim-label"/>
-                            </style>
-                          </object>
-                        </child>
                         <child>
                           <object class="GsStarWidget" id="star">
                             <property name="halign">center</property>
