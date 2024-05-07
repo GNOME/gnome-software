@@ -85,8 +85,6 @@ review_button_clicked_cb (GsReviewRow        *row,
 						review, self->cancellable,
 						&local_error);
 		break;
-	case GS_REVIEW_ACTION_DISMISS:
-		/* The dismiss action is only used from the moderate page. */
 	default:
 		g_assert_not_reached ();
 	}

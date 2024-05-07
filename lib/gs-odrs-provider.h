@@ -106,20 +106,9 @@ gboolean	 gs_odrs_provider_downvote_review	(GsOdrsProvider		 *self,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
 							 GError			**error);
-gboolean	 gs_odrs_provider_dismiss_review	(GsOdrsProvider		 *self,
-							 GsApp			 *app,
-							 AsReview		 *review,
-							 GCancellable		 *cancellable,
-							 GError			**error);
 gboolean	 gs_odrs_provider_remove_review		(GsOdrsProvider		 *self,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
 							 GError			**error);
-
-gboolean	 gs_odrs_provider_add_unvoted_reviews	(GsOdrsProvider		 *self,
-							 GsAppList		 *list,
-							 GCancellable		 *cancellable,
-							 GError			**error);
-
 G_END_DECLS
