@@ -24,7 +24,6 @@
 #include "gs-basic-auth-dialog.h"
 #include "gs-details-page.h"
 #include "gs-installed-page.h"
-#include "gs-moderate-page.h"
 #include "gs-loading-page.h"
 #include "gs-search-page.h"
 #include "gs-overview-page.h"
@@ -50,7 +49,6 @@ static const gchar *page_name[] = {
 	"details",
 	"category",
 	"extras",
-	"moderate",
 	"loading",
 };
 
@@ -453,7 +451,6 @@ gs_shell_get_mode_is_main (GsShellMode mode)
 	case GS_SHELL_MODE_DETAILS:
 	case GS_SHELL_MODE_CATEGORY:
 	case GS_SHELL_MODE_EXTRAS:
-	case GS_SHELL_MODE_MODERATE:
 		return FALSE;
 	default:
 		return TRUE;
@@ -2237,7 +2234,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	odrs_provider = gs_plugin_loader_get_odrs_provider (shell->plugin_loader);
 	gs_details_page_set_odrs_provider (GS_DETAILS_PAGE (shell->pages[GS_SHELL_MODE_DETAILS]), odrs_provider);
-	gs_moderate_page_set_odrs_provider (GS_MODERATE_PAGE (shell->pages[GS_SHELL_MODE_MODERATE]), odrs_provider);
 
 	/* coldplug */
 	gs_shell_rescan_events (shell);
@@ -2660,7 +2656,6 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));
 	gtk_widget_class_bind_template_child_full (widget_class, "updates_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_UPDATES]));
 	gtk_widget_class_bind_template_child_full (widget_class, "installed_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_INSTALLED]));
-	gtk_widget_class_bind_template_child_full (widget_class, "moderate_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_MODERATE]));
 	gtk_widget_class_bind_template_child_full (widget_class, "loading_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_LOADING]));
 	gtk_widget_class_bind_template_child_full (widget_class, "search_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_SEARCH]));
 	gtk_widget_class_bind_template_child_full (widget_class, "details_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_DETAILS]));
@@ -2696,7 +2691,6 @@ gs_shell_init (GsShell *shell)
 	g_type_ensure (GS_TYPE_EXTRAS_PAGE);
 	g_type_ensure (GS_TYPE_INSTALLED_PAGE);
 	g_type_ensure (GS_TYPE_LOADING_PAGE);
-	g_type_ensure (GS_TYPE_MODERATE_PAGE);
 	g_type_ensure (GS_TYPE_OVERVIEW_PAGE);
 	g_type_ensure (GS_TYPE_SEARCH_PAGE);
 	g_type_ensure (GS_TYPE_UPDATES_PAGE);

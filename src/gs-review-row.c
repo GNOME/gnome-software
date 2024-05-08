@@ -26,7 +26,6 @@ typedef struct
 	GtkWidget	*text_label;
 	GtkWidget	*button_yes;
 	GtkWidget	*button_no;
-	GtkWidget	*button_dismiss;
 	GtkWidget	*button_report;
 	GtkWidget	*button_remove;
 	GtkWidget	*box_voting;
@@ -81,8 +80,7 @@ gs_review_row_refresh (GsReviewRow *row)
 
 	/* set actions up */
 	if ((priv->actions & (1 << GS_REVIEW_ACTION_UPVOTE |
-			1 << GS_REVIEW_ACTION_DOWNVOTE |
-			1 << GS_REVIEW_ACTION_DISMISS)) == 0) {
+			1 << GS_REVIEW_ACTION_DOWNVOTE)) == 0) {
 		gtk_widget_set_visible (priv->box_voting, FALSE);
 	} else {
 		gtk_widget_set_visible (priv->box_voting, TRUE);
@@ -90,8 +88,6 @@ gs_review_row_refresh (GsReviewRow *row)
 					priv->actions & 1 << GS_REVIEW_ACTION_UPVOTE);
 		gtk_widget_set_visible (priv->button_no,
 					priv->actions & 1 << GS_REVIEW_ACTION_DOWNVOTE);
-		gtk_widget_set_visible (priv->button_dismiss,
-					priv->actions & 1 << GS_REVIEW_ACTION_DISMISS);
 	}
 	gtk_widget_set_visible (priv->button_remove,
 				priv->actions & 1 << GS_REVIEW_ACTION_REMOVE);
@@ -186,7 +182,6 @@ gs_review_row_class_init (GsReviewRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, text_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_yes);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_no);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_dismiss);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_report);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_remove);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, box_voting);
@@ -253,13 +248,6 @@ gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 }
 
 static void
-gs_review_row_button_clicked_dismiss_cb (GtkButton *button, GsReviewRow *row)
-{
-	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_REVIEW_ACTION_DISMISS);
-}
-
-static void
 gs_review_row_button_clicked_remove_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
@@ -308,9 +296,6 @@ gs_review_row_new (AsReview *review)
 				 row, 0);
 	g_signal_connect_object (priv->button_no, "clicked",
 				 G_CALLBACK (gs_review_row_button_clicked_downvote_cb),
-				 row, 0);
-	g_signal_connect_object (priv->button_dismiss, "clicked",
-				 G_CALLBACK (gs_review_row_button_clicked_dismiss_cb),
 				 row, 0);
 	g_signal_connect_object (priv->button_report, "clicked",
 				 G_CALLBACK (gs_review_row_button_clicked_report_cb),

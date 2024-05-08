@@ -1069,20 +1069,6 @@ gs_odrs_provider_vote (GsOdrsProvider  *self,
 	return TRUE;
 }
 
-static GsApp *
-gs_odrs_provider_create_app_dummy (const gchar *id)
-{
-	GsApp *app = gs_app_new (id);
-	g_autoptr(GString) str = NULL;
-	str = g_string_new (id);
-	gs_utils_gstring_replace (str, ".desktop", "");
-	g_string_prepend (str, "No description is available for ");
-	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Unknown App");
-	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "App not found");
-	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, str->str);
-	return app;
-}
-
 static void
 gs_odrs_provider_init (GsOdrsProvider *self)
 {
@@ -1830,31 +1816,6 @@ gs_odrs_provider_downvote_review (GsOdrsProvider  *self,
 }
 
 /**
- * gs_odrs_provider_dismiss_review:
- * @self: a #GsOdrsProvider
- * @app: the app whose review is being dismissed
- * @review: the review to dismiss
- * @cancellable: (nullable): a #GCancellable, or %NULL
- * @error: return location for a #GError
- *
- * Dismiss (ignore) @review on @app when moderating.
- *
- * Returns: %TRUE on success, %FALSE otherwise
- * Since: 41
- */
-gboolean
-gs_odrs_provider_dismiss_review (GsOdrsProvider  *self,
-                                 GsApp           *app,
-                                 AsReview        *review,
-                                 GCancellable    *cancellable,
-                                 GError         **error)
-{
-	g_autofree gchar *uri = NULL;
-	uri = g_strdup_printf ("%s/dismiss", self->review_server);
-	return gs_odrs_provider_vote (self, review, uri, cancellable, error);
-}
-
-/**
  * gs_odrs_provider_remove_review:
  * @self: a #GsOdrsProvider
  * @app: the app whose review is being removed
@@ -1881,122 +1842,6 @@ gs_odrs_provider_remove_review (GsOdrsProvider  *self,
 
 	/* update the local app */
 	gs_app_remove_review (app, review);
-
-	return TRUE;
-}
-
-/**
- * gs_odrs_provider_add_unvoted_reviews:
- * @self: a #GsOdrsProvider
- * @list: list of apps to add unvoted reviews to
- * @cancellable: (nullable): a #GCancellable, or %NULL
- * @error: return location for a #GError
- *
- * Add the unmoderated reviews for each app in @list to the apps.
- *
- * Returns: %TRUE on success, %FALSE otherwise
- * Since: 41
- */
-gboolean
-gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
-                                      GsAppList       *list,
-                                      GCancellable    *cancellable,
-                                      GError         **error)
-{
-	guint status_code;
-	guint i;
-	gconstpointer downloaded_data;
-	gsize downloaded_data_length;
-	g_autofree gchar *uri = NULL;
-	g_autoptr(GHashTable) hash = NULL;
-	g_autoptr(JsonParser) json_parser = NULL;
-	g_autoptr(GPtrArray) reviews = NULL;
-	g_autoptr(SoupMessage) msg = NULL;
-#if SOUP_CHECK_VERSION(3, 0, 0)
-	g_autoptr(GBytes) bytes = NULL;
-#endif
-	g_autoptr(GError) local_error = NULL;
-
-	/* create the GET data *with* the machine hash so we can later
-	 * review the app ourselves */
-	uri = g_strdup_printf ("%s/moderate/%s/%s",
-			       self->review_server,
-			       self->user_hash,
-			       setlocale (LC_MESSAGES, NULL));
-	msg = soup_message_new (SOUP_METHOD_GET, uri);
-#if SOUP_CHECK_VERSION(3, 0, 0)
-	bytes = soup_session_send_and_read (self->session, msg, cancellable, error);
-	if (bytes == NULL)
-		return FALSE;
-
-	downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
-	status_code = soup_message_get_status (msg);
-#else
-	status_code = soup_session_send_message (self->session, msg);
-	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
-	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
-#endif
-	if (status_code != SOUP_STATUS_OK) {
-		g_autoptr(GInputStream) input_stream = g_memory_input_stream_new_from_data (downloaded_data, downloaded_data_length, NULL);
-		if (!gs_odrs_provider_parse_success (input_stream, error))
-			return FALSE;
-		/* not sure what to do here */
-		g_set_error_literal (error,
-				     GS_ODRS_PROVIDER_ERROR,
-				     GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
-				     "status code invalid");
-		return FALSE;
-	}
-	g_debug ("odrs returned: %.*s", (gint) downloaded_data_length, (const gchar *) downloaded_data);
-
-	/* nothing */
-	if (downloaded_data == NULL) {
-		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
-			g_set_error_literal (error,
-					     GS_ODRS_PROVIDER_ERROR,
-					     GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
-					     "server couldn't be reached");
-		else
-			g_set_error_literal (error,
-					     GS_ODRS_PROVIDER_ERROR,
-					     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
-					     "server returned no data");
-		return FALSE;
-	}
-
-	/* parse the data and find the array of ratings */
-	json_parser = json_parser_new_immutable ();
-	if (!json_parser_load_from_data (json_parser, downloaded_data, downloaded_data_length, &local_error)) {
-		g_set_error (error,
-			     GS_ODRS_PROVIDER_ERROR,
-			     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
-			     "Error parsing ODRS data: %s", local_error->message);
-		return FALSE;
-	}
-
-	reviews = gs_odrs_provider_parse_reviews (self, json_parser, error);
-	if (reviews == NULL)
-		return FALSE;
-
-	/* look at all the reviews; faking app objects */
-	hash = g_hash_table_new_full (g_str_hash, g_str_equal,
-				      g_free, g_object_unref);
-	for (i = 0; i < reviews->len; i++) {
-		GsApp *app;
-		AsReview *review;
-		const gchar *app_id;
-
-		/* same app? */
-		review = g_ptr_array_index (reviews, i);
-		app_id = as_review_get_metadata_item (review, "app_id");
-		app = g_hash_table_lookup (hash, app_id);
-		if (app == NULL) {
-			app = gs_odrs_provider_create_app_dummy (app_id);
-			gs_app_list_add (list, app);
-			g_hash_table_insert (hash, g_strdup (app_id), app);
-		}
-		gs_app_add_review (app, review);
-	}
 
 	return TRUE;
 }

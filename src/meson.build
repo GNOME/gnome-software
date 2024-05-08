@@ -56,7 +56,6 @@ gnome_software_sources = [
   'gs-loading-page.c',
   'gs-lozenge.c',
   'gs-main.c',
-  'gs-moderate-page.c',
   'gs-overview-page.c',
   'gs-origin-popover-row.c',
   'gs-os-update-page.c',
