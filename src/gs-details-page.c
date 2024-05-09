@@ -2350,8 +2350,8 @@ gs_details_page_app_launch_button_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
-gs_details_page_review_send_cb (GtkDialog *dialog,
-				GsDetailsPage *self)
+gs_details_page_review_send_cb (GsReviewDialog *dialog,
+				GsDetailsPage  *self)
 {
 	g_autofree gchar *text = NULL;
 	g_autoptr(GDateTime) now = NULL;
@@ -2387,7 +2387,7 @@ gs_details_page_review_send_cb (GtkDialog *dialog,
 	gs_details_page_refresh_reviews (self);
 
 	/* unmap the dialog */
-	gtk_window_destroy (GTK_WINDOW (dialog));
+	adw_dialog_force_close (ADW_DIALOG (dialog));
 }
 
 static void
