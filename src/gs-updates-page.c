@@ -68,6 +68,7 @@ struct _GsUpdatesPage
 	GtkWidget		*button_updates_offline;
 	GtkWidget		*updates_failed_page;
 	GtkLabel		*uptodate_description;
+	GtkLabel		*label_last_checked;
 	GtkWidget		*scrolledwindow_updates;
 	GtkWidget		*spinner_updates;
 	GtkWidget		*stack_updates;
@@ -253,8 +254,14 @@ gs_updates_page_refresh_last_checked (GsUpdatesPage *self)
 
 		/* TRANSLATORS: This is the time when we last checked for updates */
 		last_checked = g_strdup_printf (_("Last checked: %s"), checked_str);
+
+		/* only shown in uptodate view */
 		gtk_label_set_label (self->uptodate_description, last_checked);
 		gtk_widget_set_visible (GTK_WIDGET (self->uptodate_description), TRUE);
+
+		/* shown when updates are available */
+		gtk_label_set_label (self->label_last_checked, last_checked);
+		gtk_widget_set_visible (GTK_WIDGET (self->label_last_checked), TRUE);
 
 		if (hours_ago < 1)
 			interval = 60;
@@ -269,12 +276,14 @@ gs_updates_page_refresh_last_checked (GsUpdatesPage *self)
 			gs_updates_page_refresh_last_checked_cb, self);
 	} else {
 		gtk_widget_set_visible (GTK_WIDGET (self->uptodate_description), FALSE);
+		gtk_widget_set_visible (GTK_WIDGET (self->label_last_checked), FALSE);
 	}
 }
 
 static void
 gs_updates_page_update_ui_state (GsUpdatesPage *self)
 {
+	const gchar *visible_child_name;
 	gboolean allow_mobile_refresh = TRUE;
 
 	gs_updates_page_remove_last_checked_timeout (self);
@@ -386,7 +395,9 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 				self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 
 	/* last checked label */
-	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (self->stack_updates)), "uptodate") == 0)
+	visible_child_name = gtk_stack_get_visible_child_name (GTK_STACK (self->stack_updates));
+	if (g_strcmp0 (visible_child_name, "uptodate") == 0 ||
+	    g_strcmp0 (visible_child_name, "view") == 0)
 		gs_updates_page_refresh_last_checked (self);
 
 	/* update the counter in headerbar */
@@ -1392,6 +1403,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_offline);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_failed_page);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, uptodate_description);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_last_checked);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, scrolledwindow_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, stack_updates);
