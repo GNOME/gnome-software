@@ -112,8 +112,9 @@ button_clicked_cb (GtkButton *button,
 {
 	GsAppTranslationDialog *self = GS_APP_TRANSLATION_DIALOG (user_data);
 	const gchar *url = get_url_for_app (self->app);
+	GtkWidget *toplevel = GTK_WIDGET (gtk_widget_get_root (GTK_WIDGET (self)));
 
-	gs_show_uri (GTK_WINDOW (self), url);
+	gs_show_uri (GTK_WINDOW (toplevel), url);
 }
 
 static void

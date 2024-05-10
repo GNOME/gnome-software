@@ -648,10 +648,10 @@ gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_t
 static void
 gs_details_page_translation_banner_clicked_cb (GsDetailsPage *self)
 {
-	GtkWindow *window;
+	AdwDialog *dialog;
 
-	window = GTK_WINDOW (gs_app_translation_dialog_new (self->app));
-	gs_shell_modal_dialog_present (self->shell, window);
+	dialog = ADW_DIALOG (gs_app_translation_dialog_new (self->app));
+	adw_dialog_present (dialog, GTK_WIDGET (self));
 }
 
 static void
