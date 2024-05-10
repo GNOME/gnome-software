@@ -2306,8 +2306,8 @@ gs_appstream_load_desktop_fn (XbBuilder     *builder,
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for desktop files */
-	xb_builder_source_add_adapter (source, "application/x-desktop",
-				       gs_appstream_load_desktop_cb, NULL, NULL);
+	xb_builder_source_add_simple_adapter (source, "application/x-desktop",
+					      gs_appstream_load_desktop_cb, NULL, NULL);
 
 	/* add source */
 	if (!xb_builder_source_load_file (source, file, 0, cancellable, error))
