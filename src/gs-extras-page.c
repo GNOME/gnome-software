@@ -1093,16 +1093,13 @@ gs_extras_page_search_printer_drivers (GsExtrasPage *self, gchar **device_ids)
 	for (i = 0; i < len; i++) {
 		SearchData *search_data;
 		gchar *p;
-		guint n_fields;
 		g_autofree gchar *tag = NULL;
 		g_autofree gchar *mfg = NULL;
 		g_autofree gchar *mdl = NULL;
 		g_auto(GStrv) fields = NULL;
 
 		fields = g_strsplit (device_ids[i], ";", 0);
-		n_fields = g_strv_length (fields);
-		mfg = mdl = NULL;
-		for (j = 0; j < n_fields && (!mfg || !mdl); j++) {
+		for (j = 0; fields != NULL && fields[j] != NULL && (mfg == NULL || mdl == NULL); j++) {
 			if (mfg == NULL && g_str_has_prefix (fields[j], "MFG:"))
 				mfg = g_strdup (fields[j] + 4);
 			else if (mdl == NULL && g_str_has_prefix (fields[j], "MDL:"))
