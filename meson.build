@@ -125,7 +125,7 @@ appstream = dependency('appstream',
 )
 
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
-libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxmlb_dep'])
+libxmlb = dependency('xmlb', version : '>= 0.3.4', fallback : ['libxmlb', 'libxmlb_dep'])
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
 gmodule = dependency('gmodule-2.0')
 gtk = dependency('gtk4',
