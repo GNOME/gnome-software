@@ -1553,6 +1553,33 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
+static void
+gs_appstream_read_silo_info_from_component (XbNode *component,
+					    gchar **out_silo_filename,
+					    AsComponentScope *out_scope)
+{
+	const gchar *tmp;
+
+	g_return_if_fail (component != NULL);
+	if (out_silo_filename != NULL) {
+		*out_silo_filename = NULL;
+
+		tmp = xb_node_query_text (component, "info/filename", NULL);
+		if (tmp == NULL)
+			tmp = xb_node_query_text (component, "../info/filename", NULL);
+		if (tmp != NULL)
+			*out_silo_filename = g_strdup (tmp);
+	}
+
+	if (out_scope) {
+		tmp = xb_node_query_text (component, "../info/scope", NULL);
+		if (tmp != NULL)
+			*out_scope = as_component_scope_from_string (tmp);
+		else
+			*out_scope = AS_COMPONENT_SCOPE_UNKNOWN;
+	}
+}
+
 typedef struct {
 	guint16			 match_value;
 	XbQuery			*query;
@@ -1656,16 +1683,9 @@ gs_appstream_do_search (GsPlugin *plugin,
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
-	if (components->len > 0) {
-		g_autoptr(XbNode) filename_node = NULL;
-		g_autoptr(XbNode) scope_node = NULL;
-		filename_node = xb_silo_query_first (silo, "info/filename", NULL);
-		if (filename_node != NULL)
-			silo_filename = g_strdup (xb_node_get_text (filename_node));
-		scope_node = xb_silo_query_first (silo, "info/scope", NULL);
-		if (scope_node != NULL && xb_node_get_text (scope_node) != NULL)
-			default_scope = as_component_scope_from_string (xb_node_get_text (scope_node));
-	}
+	if (components->len > 0)
+		gs_appstream_read_silo_info_from_component (g_ptr_array_index (components, 0), &silo_filename, &default_scope);
+
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
 		guint16 match_value = gs_appstream_silo_search_component (array, component, values);
@@ -2026,16 +2046,9 @@ gs_appstream_add_recent (GsPlugin *plugin,
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
-	if (array->len > 0) {
-		g_autoptr(XbNode) filename_node = NULL;
-		g_autoptr(XbNode) scope_node = NULL;
-		filename_node = xb_silo_query_first (silo, "info/filename", NULL);
-		if (filename_node != NULL)
-			silo_filename = g_strdup (xb_node_get_text (filename_node));
-		scope_node = xb_silo_query_first (silo, "info/scope", NULL);
-		if (scope_node != NULL && xb_node_get_text (scope_node) != NULL)
-			default_scope = as_component_scope_from_string (xb_node_get_text (scope_node));
-	}
+	if (array->len > 0)
+		gs_appstream_read_silo_info_from_component (g_ptr_array_index (array, 0), &silo_filename, &default_scope);
+
 	/* This is to cover mistakes when the release date is set in the future,
 	   to not have it picked for too long. */
 	max_future_timestamp = now + (3 * 24 * 60 * 60);
