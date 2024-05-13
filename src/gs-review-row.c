@@ -202,7 +202,7 @@ gs_review_row_button_clicked_downvote_cb (GtkButton *button, GsReviewRow *row)
 }
 
 static void
-gs_review_row_confirm_cb (AdwMessageDialog *dialog, const gchar *response, GsReviewRow *row)
+gs_review_row_confirm_cb (AdwAlertDialog *dialog, const gchar *response, GsReviewRow *row)
 {
 	if (g_strcmp0 (response, "report") == 0) {
 		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
@@ -213,8 +213,7 @@ gs_review_row_confirm_cb (AdwMessageDialog *dialog, const gchar *response, GsRev
 static void
 gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 {
-	GtkWidget *dialog;
-	GtkRoot *root;
+	AdwDialog *dialog;
 	g_autoptr(GString) str = NULL;
 
 	str = g_string_new ("");
@@ -228,23 +227,20 @@ gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 	g_string_append (str, _("Once reported, a review will be hidden until "
 				"it has been checked by an administrator."));
 
-	root = gtk_widget_get_root (GTK_WIDGET (button));
-	dialog = adw_message_dialog_new (GTK_WINDOW (root),
-					 /* TRANSLATORS: window title when
-					  * reporting a user-submitted review
-					  * for moderation */
-					 _("Report Review?"), str->str);
-	adw_message_dialog_add_responses (ADW_MESSAGE_DIALOG (dialog),
-					  "cancel",  _("_Cancel"),
-					  /* TRANSLATORS: button text when
-					   * sending a review for moderation */
-					  "report",  _("_Report"),
-					  NULL);
-	adw_message_dialog_set_response_appearance (ADW_MESSAGE_DIALOG (dialog),
-						    "report", ADW_RESPONSE_DESTRUCTIVE);
+	/* TRANSLATORS: window title when reporting a user-submitted review
+	 * for moderation */
+	dialog = adw_alert_dialog_new (_("Report Review?"), str->str);
+	adw_alert_dialog_add_responses (ADW_ALERT_DIALOG (dialog),
+					"cancel",  _("_Cancel"),
+					/* TRANSLATORS: button text when
+					 * * sending a review for moderation */
+					"report",  _("_Report"),
+					NULL);
+	adw_alert_dialog_set_response_appearance (ADW_ALERT_DIALOG (dialog),
+						  "report", ADW_RESPONSE_DESTRUCTIVE);
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_review_row_confirm_cb), row);
-	gtk_window_present (GTK_WINDOW (dialog));
+	adw_dialog_present (dialog, GTK_WIDGET (row));
 }
 
 static void
