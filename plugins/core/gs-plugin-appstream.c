@@ -369,7 +369,6 @@ gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), (gssize) -1, g_free);
 }
 
-#if LIBXMLB_CHECK_VERSION(0,3,1)
 static gboolean
 gs_plugin_appstream_tokenize_cb (XbBuilderFixup *self,
 				 XbBuilderNode *bn,
@@ -390,7 +389,6 @@ gs_plugin_appstream_tokenize_cb (XbBuilderFixup *self,
 		xb_builder_node_tokenize_text (bn);
 	return TRUE;
 }
-#endif
 
 static gboolean
 gs_plugin_appstream_load_appstream_fn (GsPluginAppstream  *self,
@@ -404,9 +402,7 @@ gs_plugin_appstream_load_appstream_fn (GsPluginAppstream  *self,
 	g_autoptr(XbBuilderFixup) fixup1 = NULL;
 	g_autoptr(XbBuilderFixup) fixup2 = NULL;
 	g_autoptr(XbBuilderFixup) fixup3 = NULL;
-#if LIBXMLB_CHECK_VERSION(0,3,1)
 	g_autoptr(XbBuilderFixup) fixup4 = NULL;
-#endif
 	g_autoptr(XbBuilderFixup) fixup5 = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
@@ -451,13 +447,11 @@ gs_plugin_appstream_load_appstream_fn (GsPluginAppstream  *self,
 	xb_builder_fixup_set_max_depth (fixup3, 1);
 	xb_builder_source_add_fixup (source, fixup3);
 
-#if LIBXMLB_CHECK_VERSION(0,3,1)
 	fixup4 = xb_builder_fixup_new ("TextTokenize",
 				       gs_plugin_appstream_tokenize_cb,
 				       NULL, NULL);
 	xb_builder_fixup_set_max_depth (fixup4, 2);
 	xb_builder_source_add_fixup (source, fixup4);
-#endif
 
 	/* prepend media_baseurl to remote relative URLs */
 	fixup5 = xb_builder_fixup_new ("MediaBaseUrl",
