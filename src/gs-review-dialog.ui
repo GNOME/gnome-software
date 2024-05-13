@@ -13,7 +13,6 @@
               <object class="AdwHeaderBar">
                 <property name="show_start_title_buttons">False</property>
                 <property name="show_end_title_buttons">False</property>
-                <property name="hexpand">True</property>
                 <property name="title-widget">
                   <object class="AdwWindowTitle">
                     <property name="title" bind-source="GsReviewDialog" bind-property="title" bind-flags="sync-create"/>
@@ -39,28 +38,13 @@
             </child>
             <property name="content">
               <object class="AdwPreferencesPage">
-                <property name="vexpand">True</property>
+                <property name="description" translatable="yes">Please provide a rating, summary and review text. Reviews should not be used to report problems: instead, contact the developer or your support provider.</property>
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkLabel" id="developer_name_label">
-                            <property name="label" translatable="yes">Please provide a rating, summary and review text. Reviews should not be used to report problems: instead, contact the developer or your support provider.</property>
-                            <property name="justify">center</property>
-                            <property name="valign">fill</property>
-                            <property name="wrap">True</property>
-                            <property name="wrap-mode">word-char</property>
-                            <property name="xalign">0.5</property>
-                            <property name="yalign">0.5</property>
-                            <property name="margin-bottom">12</property>
-                            <style>
-                              <class name="dim-label"/>
-                            </style>
-                          </object>
-                        </child>
                         <child>
                           <object class="GsStarWidget" id="star">
                             <property name="halign">center</property>
@@ -85,85 +69,75 @@
                 <child>
                   <object class="AdwPreferencesGroup">
                     <child>
-                      <object class="GtkListBox">
-                        <property name="selection_mode">none</property>
-                        <property name="halign">fill</property>
-                        <property name="valign">start</property>
+                      <object class="AdwEntryRow" id="summary_entry">
+                        <property name="activatable">False</property>
+                        <property name="focusable">False</property>
+                        <property name="title" translatable="yes">Review Summary</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesRow" id="review_row">
+                        <property name="activatable">False</property>
+                        <property name="focusable">False</property>
                         <style>
-                          <class name="boxed-list"/>
+                          <class name="review-row"/>
                         </style>
                         <child>
-                          <object class="AdwEntryRow" id="summary_entry">
-                            <property name="activatable">False</property>
-                            <property name="focusable">False</property>
-                            <property name="title" translatable="yes">Review Summary</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkListBoxRow" id="review_row">
-                            <property name="activatable">False</property>
-                            <property name="focusable">False</property>
-                            <style>
-                              <class name="review-row"/>
-                            </style>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="vexpand">True</property>
                             <child>
                               <object class="GtkBox">
-                                <property name="orientation">vertical</property>
-                                <property name="vexpand">True</property>
+                                <property name="valign">center</property>
+                                <property name="hexpand">False</property>
+                                <style>
+                                  <class name="header"/>
+                                </style>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkBox" id="title_box">
+                                    <property name="orientation">vertical</property>
                                     <property name="valign">center</property>
-                                    <property name="hexpand">False</property>
+                                    <property name="hexpand">True</property>
                                     <style>
-                                      <class name="header"/>
+                                      <class name="title"/>
                                     </style>
                                     <child>
-                                      <object class="GtkBox" id="title_box">
-                                        <property name="orientation">vertical</property>
-                                        <property name="valign">center</property>
-                                        <property name="hexpand">True</property>
+                                      <object class="GtkLabel">
+                                        <property name="ellipsize">none</property>
+                                        <property name="label" translatable="yes" context="app review" comments="Translators: This is where the users enter their opinions about the apps.">Write a short review</property>
+                                        <property name="lines">0</property>
+                                        <property name="mnemonic-widget">review_row</property>
+                                        <property name="wrap">True</property>
+                                        <property name="wrap-mode">word-char</property>
+                                        <property name="xalign">0</property>
                                         <style>
+                                          <class name="dim-label"/>
                                           <class name="title"/>
                                         </style>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <property name="ellipsize">none</property>
-                                            <property name="label" translatable="yes" context="app review" comments="Translators: This is where the users enter their opinions about the apps.">Write a short review</property>
-                                            <property name="lines">0</property>
-                                            <property name="mnemonic-widget">review_row</property>
-                                            <property name="wrap">True</property>
-                                            <property name="wrap-mode">word-char</property>
-                                            <property name="xalign">0</property>
-                                            <style>
-                                              <class name="dim-label"/>
-                                              <class name="title"/>
-                                            </style>
-                                          </object>
-                                        </child>
                                       </object>
                                     </child>
-                                    <child>
-                                      <object class="GtkImage" id="edit_icon">
-                                        <property name="valign">center</property>
-                                        <property name="can-target">False</property>
-                                        <property name="icon-name">document-edit-symbolic</property>
-                                        <style>
-                                          <class name="edit-icon"/>
-                                        </style>
-                                      </object>
-                                    </child>
-                                   </object>
+                                  </object>
                                 </child>
                                 <child>
-                                  <object class="GtkTextView" id="text_view">
-                                    <property name="can_focus">True</property>
-                                    <property name="height-request">120</property>
-                                    <property name="wrap-mode">word-char</property>
+                                  <object class="GtkImage" id="edit_icon">
+                                    <property name="valign">center</property>
+                                    <property name="can-target">False</property>
+                                    <property name="icon-name">document-edit-symbolic</property>
                                     <style>
-                                      <class name="review-textbox"/>
+                                      <class name="edit-icon"/>
                                     </style>
                                   </object>
                                 </child>
+                               </object>
+                            </child>
+                            <child>
+                              <object class="GtkTextView" id="text_view">
+                                <property name="can_focus">True</property>
+                                <property name="height-request">120</property>
+                                <property name="wrap-mode">word-char</property>
+                                <style>
+                                  <class name="review-textbox"/>
+                                </style>
                               </object>
                             </child>
                           </object>
