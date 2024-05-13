@@ -3,8 +3,7 @@
   <requires lib="gtk+" version="3.10"/>
   <template class="GsAppTranslationDialog" parent="GsInfoWindow">
     <property name="title" translatable="yes">Translations</property>
-    <property name="default-width">480</property>
-    <property name="default-height">375</property>
+    <property name="content-width">480</property>
     <child>
       <object class="AdwPreferencesPage">
         <child>
@@ -19,7 +18,6 @@
 
                 <child>
                   <object class="GtkBox">
-                    <property name="margin-top">20</property>
                     <property name="margin-bottom">20</property>
                     <property name="margin-start">20</property>
                     <property name="margin-end">20</property>
