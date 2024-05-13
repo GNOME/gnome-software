@@ -459,7 +459,7 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 		 * not device pixels. */
 		if (as_relation_get_item_kind (relation) == AS_RELATION_ITEM_KIND_DISPLAY_LENGTH) {
 			AsRelationCompare comparator = as_relation_get_compare (relation);
-			Range current_display_comparand, relation_comparand;
+			Range current_display_comparand, relation_comparand = { 0, G_MAXUINT };
 
 #if !AS_CHECK_VERSION(1, 0, 0)
 			/* From https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length */
