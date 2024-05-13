@@ -842,7 +842,6 @@ gs_flatpak_filter_noenumerate_cb (XbBuilderFixup *self,
 	return TRUE;
 }
 
-#if LIBXMLB_CHECK_VERSION(0,3,0)
 static gboolean
 gs_flatpak_tokenize_cb (XbBuilderFixup *self,
 			XbBuilderNode *bn,
@@ -862,7 +861,6 @@ gs_flatpak_tokenize_cb (XbBuilderFixup *self,
 		xb_builder_node_tokenize_text (bn);
 	return TRUE;
 }
-#endif
 
 static void
 fixup_flatpak_appstream_xml (XbBuilderSource *source,
@@ -871,9 +869,7 @@ fixup_flatpak_appstream_xml (XbBuilderSource *source,
 	g_autoptr(XbBuilderFixup) fixup1 = NULL;
 	g_autoptr(XbBuilderFixup) fixup2 = NULL;
 	g_autoptr(XbBuilderFixup) fixup3 = NULL;
-#if LIBXMLB_CHECK_VERSION(0,3,0)
 	g_autoptr(XbBuilderFixup) fixup5 = NULL;
-#endif
 
 	/* add the flatpak search keyword */
 	fixup1 = xb_builder_fixup_new ("AddKeywordFlatpak",
@@ -896,13 +892,11 @@ fixup_flatpak_appstream_xml (XbBuilderSource *source,
 	xb_builder_fixup_set_max_depth (fixup3, 2);
 	xb_builder_source_add_fixup (source, fixup3);
 
-#if LIBXMLB_CHECK_VERSION(0,3,0)
 	fixup5 = xb_builder_fixup_new ("TextTokenize",
 				       gs_flatpak_tokenize_cb,
 				       NULL, NULL);
 	xb_builder_fixup_set_max_depth (fixup5, 2);
 	xb_builder_source_add_fixup (source, fixup5);
-#endif
 
 	if (origin != NULL) {
 		g_autoptr(XbBuilderFixup) fixup4 = NULL;
@@ -3265,13 +3259,8 @@ get_renamed_component (GsFlatpak *self,
 {
 	const gchar *origin = gs_app_get_origin (app);
 	const gchar *renamed_to;
-#if LIBXMLB_CHECK_VERSION(0, 3, 0)
 	g_autoptr(XbQuery) query = NULL;
 	g_auto(XbQueryContext) context = XB_QUERY_CONTEXT_INIT ();
-#else
-	g_autofree gchar *xpath = NULL;
-	g_autofree gchar *source_safe = NULL;
-#endif
 	g_autoptr(FlatpakRemoteRef) remote_ref = NULL;
 	g_autoptr(XbNode) component = NULL;
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
@@ -3290,17 +3279,10 @@ get_renamed_component (GsFlatpak *self,
 	if (renamed_to == NULL)
 		return NULL;
 
-#if LIBXMLB_CHECK_VERSION(0, 3, 0)
 	query = xb_silo_lookup_query (silo, "components[@origin=?]/component/bundle[@type='flatpak'][text()=?]/..");
 	xb_value_bindings_bind_str (xb_query_context_get_bindings (&context), 0, origin, NULL);
 	xb_value_bindings_bind_str (xb_query_context_get_bindings (&context), 1, renamed_to, NULL);
 	component = xb_silo_query_first_with_context (silo, query, &context, NULL);
-#else
-	source_safe = xb_string_escape (renamed_to);
-	xpath = g_strdup_printf ("components[@origin='%s']/component/bundle[@type='flatpak'][text()='%s']/..",
-				 origin, source_safe);
-	component = xb_silo_query_first (silo, xpath, NULL);
-#endif
 
 	/* Get the previous name so it can be displayed in the UI */
 	if (component != NULL) {

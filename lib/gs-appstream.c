@@ -1605,14 +1605,9 @@ gs_appstream_silo_search_component2 (GPtrArray *array, XbNode *component, const 
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GPtrArray) n = NULL;
 		GsAppstreamSearchHelper *helper = g_ptr_array_index (array, i);
-#if LIBXMLB_CHECK_VERSION(0, 3, 0)
 		g_auto(XbQueryContext) context = XB_QUERY_CONTEXT_INIT ();
 		xb_value_bindings_bind_str (xb_query_context_get_bindings (&context), 0, search, NULL);
 		n = xb_node_query_with_context (component, helper->query, &context, NULL);
-#else
-		xb_query_bind_str (helper->query, 0, search, NULL);
-		n = xb_node_query_full (component, helper->query, NULL);
-#endif
 		if (n != NULL)
 			match_value |= helper->match_value;
 	}
@@ -2306,8 +2301,8 @@ gs_appstream_load_desktop_fn (XbBuilder     *builder,
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for desktop files */
-	xb_builder_source_add_adapter (source, "application/x-desktop",
-				       gs_appstream_load_desktop_cb, NULL, NULL);
+	xb_builder_source_add_simple_adapter (source, "application/x-desktop",
+					      gs_appstream_load_desktop_cb, NULL, NULL);
 
 	/* add source */
 	if (!xb_builder_source_load_file (source, file, 0, cancellable, error))
