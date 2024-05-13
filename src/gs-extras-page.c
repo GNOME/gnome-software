@@ -1103,9 +1103,9 @@ gs_extras_page_search_printer_drivers (GsExtrasPage *self, gchar **device_ids)
 		n_fields = g_strv_length (fields);
 		mfg = mdl = NULL;
 		for (j = 0; j < n_fields && (!mfg || !mdl); j++) {
-			if (g_str_has_prefix (fields[j], "MFG:"))
+			if (mfg == NULL && g_str_has_prefix (fields[j], "MFG:"))
 				mfg = g_strdup (fields[j] + 4);
-			else if (g_str_has_prefix (fields[j], "MDL:"))
+			else if (mdl == NULL && g_str_has_prefix (fields[j], "MDL:"))
 				mdl = g_strdup (fields[j] + 4);
 		}
 
