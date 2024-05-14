@@ -1109,7 +1109,7 @@ gs_updates_page_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
 	                  self);
 	gs_removal_dialog_show_upgrade_removals (GS_REMOVAL_DIALOG (dialog),
 	                                         upgrade);
-	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
+	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (self));
 }
 
 static void

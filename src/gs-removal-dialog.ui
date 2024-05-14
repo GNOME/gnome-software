@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="GsRemovalDialog" parent="AdwWindow">
-    <property name="modal">True</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="icon_name">dialog-question</property>
+  <template class="GsRemovalDialog" parent="AdwDialog">
     <property name="title" translatable="yes">Incompatible Software</property>
-    <property name="width-request">318</property>
-    <property name="default-width">470</property>
-    <property name="default-height">400</property>
-    <property name="content">
+    <property name="content-width">470</property>
+    <property name="content-height">400</property>
+    <property name="child">
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar">
@@ -43,53 +39,15 @@
           </object>
         </child>
         <property name="content">
-          <object class="GtkBox" id="box">
-            <property name="margin-top">20</property>
-            <property name="margin-start">30</property>
-            <property name="margin-end">30</property>
-            <property name="spacing">30</property>
+          <object class="AdwPreferencesPage" id="prefs_page">
             <child>
-              <object class="GtkBox" id="message_area">
-                <property name="orientation">vertical</property>
-                <property name="spacing">10</property>
-                <property name="hexpand">True</property>
+              <object class="AdwPreferencesGroup">
                 <child>
-                  <object class="GtkLabel" id="label">
-                    <property name="margin-bottom">2</property>
-                    <property name="halign">fill</property>
-                    <property name="valign">start</property>
-                    <property name="vexpand">False</property>
-                    <property name="justify">center</property>
-                    <property name="wrap">True</property>
-                    <property name="width-chars">40</property>
-                    <property name="max-width-chars">40</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow">
-                    <property name="can_focus">True</property>
-                    <property name="min_content_height">160</property>
-                    <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
-                    <property name="halign">fill</property>
-                    <property name="hexpand">True</property>
-                    <property name="valign">fill</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkListBox" id="listbox">
-                        <property name="halign">fill</property>
-                        <property name="valign">start</property>
-                        <property name="selection_mode">none</property>
-                        <property name="valign">start</property>
-                        <property name="margin-start">4</property>
-                        <property name="margin-end">4</property>
-                        <property name="margin-top">4</property>
-                        <property name="margin-bottom">4</property>
-                        <style>
-                          <class name="boxed-list" />
-                        </style>
-                      </object>
-                    </child>
+                  <object class="GtkListBox" id="listbox">
+                    <property name="selection_mode">none</property>
+                    <style>
+                      <class name="boxed-list" />
+                    </style>
                   </object>
                 </child>
               </object>

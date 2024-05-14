@@ -17,12 +17,12 @@
 
 struct _GsRemovalDialog
 {
-	AdwWindow		 parent_instance;
-	GtkLabel		*label;
+	AdwDialog		 parent_instance;
+	AdwPreferencesPage	*prefs_page;
 	GtkWidget		*listbox;
 };
 
-G_DEFINE_TYPE (GsRemovalDialog, gs_removal_dialog, ADW_TYPE_WINDOW)
+G_DEFINE_TYPE (GsRemovalDialog, gs_removal_dialog, ADW_TYPE_DIALOG)
 
 enum {
 	SIGNAL_RESPONSE,
@@ -97,7 +97,7 @@ gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
 				  "and will be automatically removed during upgrade."),
 				  name_version);
 
-	gtk_label_set_text (self->label, text);
+	adw_preferences_page_set_description (self->prefs_page, text);
 
 	removals = gs_app_get_related (upgrade);
 	for (guint i = 0; i < gs_app_list_length (removals); i++) {
@@ -129,14 +129,7 @@ upgrade_clicked_cb (GtkWidget *widget,
 static void
 gs_removal_dialog_init (GsRemovalDialog *self)
 {
-	GtkSettings *settings;
-	gboolean use_caret;
-
 	gtk_widget_init_template (GTK_WIDGET (self));
-
-	settings = gtk_widget_get_settings (GTK_WIDGET (self));
-	g_object_get (settings, "gtk-keynav-use-caret", &use_caret, NULL);
-	gtk_label_set_selectable (self->label, use_caret);
 
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->listbox),
 	                            list_sort_func,
@@ -150,7 +143,7 @@ gs_removal_dialog_class_init (GsRemovalDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-removal-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsRemovalDialog, label);
+	gtk_widget_class_bind_template_child (widget_class, GsRemovalDialog, prefs_page);
 	gtk_widget_class_bind_template_child (widget_class, GsRemovalDialog, listbox);
 	gtk_widget_class_bind_template_callback (widget_class, cancel_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, upgrade_clicked_cb);
