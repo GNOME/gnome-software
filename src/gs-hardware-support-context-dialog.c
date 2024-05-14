@@ -779,6 +779,15 @@ app_notify_cb (GObject    *obj,
 }
 
 static void
+contribute_info_row_activated_cb (AdwButtonRow *row,
+				  GsHardwareSupportContextDialog *self)
+{
+	GtkWidget *toplevel = GTK_WIDGET (gtk_widget_get_root (GTK_WIDGET (self)));
+
+	gs_show_uri (GTK_WINDOW (toplevel), "https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#safety");
+}
+
+static void
 gs_hardware_support_context_dialog_init (GsHardwareSupportContextDialog *self)
 {
 	g_type_ensure (GS_TYPE_LOZENGE);
@@ -864,6 +873,8 @@ gs_hardware_support_context_dialog_class_init (GsHardwareSupportContextDialogCla
 	gtk_widget_class_bind_template_child (widget_class, GsHardwareSupportContextDialog, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsHardwareSupportContextDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsHardwareSupportContextDialog, relations_list);
+
+	gtk_widget_class_bind_template_callback (widget_class, contribute_info_row_activated_cb);
 }
 
 /**

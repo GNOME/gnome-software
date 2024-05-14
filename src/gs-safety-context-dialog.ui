@@ -121,9 +121,11 @@
         <child>
           <object class="AdwPreferencesGroup">
             <child>
-              <object class="GtkLinkButton">
-                <property name="label" translatable="yes">How to contribute missing information</property>
-                <property name="uri">https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#safety</property>
+              <object class="AdwButtonRow">
+                <property name="title" translatable="yes">_How to contribute missing information</property>
+                <property name="end-icon-name">external-link-symbolic</property>
+                <property name="use-underline">True</property>
+                <signal name="activated" handler="contribute_info_row_activated_cb"/>
               </object>
             </child>
           </object>

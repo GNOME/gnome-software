@@ -1089,6 +1089,15 @@ sort_cb (GtkListBoxRow *row1,
 }
 
 static void
+contribute_info_row_activated_cb (AdwButtonRow *row,
+				  GsAgeRatingContextDialog *self)
+{
+	GtkWidget *toplevel = GTK_WIDGET (gtk_widget_get_root (GTK_WIDGET (self)));
+
+	gs_show_uri (GTK_WINDOW (toplevel), "https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#safety");
+}
+
+static void
 gs_age_rating_context_dialog_init (GsAgeRatingContextDialog *self)
 {
 	g_type_ensure (GS_TYPE_LOZENGE);
@@ -1177,6 +1186,8 @@ gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, attributes_list);
+
+	gtk_widget_class_bind_template_callback (widget_class, contribute_info_row_activated_cb);
 }
 
 /**
