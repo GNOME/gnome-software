@@ -34,16 +34,15 @@ static void
 details_button_clicked_cb (GsUpdatesPausedBanner *self)
 {
 	GtkRoot *root;
-	GtkWidget *dialog;
+	AdwDialog *dialog;
 	g_autoptr(GString) body = NULL;
 	GtkWidget *label;
 
 	g_assert (GS_IS_UPDATES_PAUSED_BANNER (self));
 
 	root = gtk_widget_get_root (GTK_WIDGET (self));
-	dialog = adw_message_dialog_new (GTK_WINDOW (root),
-					 _("Software Updates Paused"),
-					 NULL);
+	dialog = adw_alert_dialog_new (_("Software Updates Paused"),
+				       NULL);
 
 	body = g_string_new (_("Automatic software updates have been paused for the following reasons:\n"));
 	if (self->updates_paused_flags & GS_UPDATES_PAUSED_BANNER_FLAGS_METERED)
@@ -60,11 +59,11 @@ details_button_clicked_cb (GsUpdatesPausedBanner *self)
 	gtk_label_set_wrap_mode (GTK_LABEL (label), PANGO_WRAP_WORD_CHAR);
 	gtk_label_set_max_width_chars (GTK_LABEL (label), 40);
 
-	adw_message_dialog_set_extra_child (ADW_MESSAGE_DIALOG (dialog), label);
-	adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (dialog),
-					 "close", _("_Close"));
+	adw_alert_dialog_set_extra_child (ADW_ALERT_DIALOG (dialog), label);
+	adw_alert_dialog_add_response (ADW_ALERT_DIALOG (dialog),
+				       "close", _("_Close"));
 
-	gtk_window_present (GTK_WINDOW (dialog));
+	adw_dialog_present (dialog, GTK_WIDGET (root));
 }
 
 static void
