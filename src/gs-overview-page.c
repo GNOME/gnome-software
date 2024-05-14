@@ -52,7 +52,7 @@ struct _GsOverviewPage
 	gboolean		 third_party_needs_question;
 	gchar		       **deployment_featured;
 
-	GtkWidget		*dialog_third_party;
+	AdwDialog		*dialog_third_party;
 	GtkWidget		*featured_carousel;
 	GtkWidget		*box_curated;
 	GtkWidget		*box_recent;
@@ -84,9 +84,9 @@ enum {
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static void
-third_party_response_cb (AdwMessageDialog *dialog,
-                         const gchar *response,
-                         GsOverviewPage *self);
+third_party_response_cb (AdwAlertDialog *dialog,
+			 const gchar *response,
+			 GsOverviewPage *self);
 
 static void
 gs_overview_page_invalidate (GsOverviewPage *self)
@@ -721,8 +721,7 @@ refresh_third_party_repo (GsOverviewPage *self)
 		return;
 
 	if (self->third_party_needs_question && !self->dialog_third_party) {
-		GtkRoot *root;
-		GtkWidget *dialog;
+		AdwDialog *dialog;
 		g_autofree gchar *link = NULL;
 		g_autofree gchar *body = NULL;
 
@@ -738,27 +737,25 @@ refresh_third_party_repo (GsOverviewPage *self)
 		body = g_strdup_printf (_("Provides access to additional software from %s. Some proprietary software is included.\n\nYou can enable those repositories later in Software Repositories preferences."),
 					link);
 
-		root = gtk_widget_get_root (GTK_WIDGET (self));
-		dialog = adw_message_dialog_new (GTK_WINDOW (root),
-						 /* TRANSLATORS: Heading asking whether to turn third party software repositories on of off. */
-						 _("Enable Third Party Software Repositories?"),
-						 body);
-		adw_message_dialog_set_body_use_markup (ADW_MESSAGE_DIALOG (dialog), TRUE);
-		adw_message_dialog_add_responses (ADW_MESSAGE_DIALOG (dialog),
-						  /* TRANSLATORS: button to keep the third party software repositories off */
-						  "ignore", _("_Ignore"),
-						  /* TRANSLATORS: button to turn on third party software repositories */
-						  "enable", _("_Enable"),
-						  NULL);
+		/* TRANSLATORS: Heading asking whether to turn third party software repositories on of off. */
+		dialog = adw_alert_dialog_new (_("Enable Third Party Software Repositories?"),
+					       body);
+		adw_alert_dialog_set_body_use_markup (ADW_ALERT_DIALOG (dialog), TRUE);
+		adw_alert_dialog_add_responses (ADW_ALERT_DIALOG (dialog),
+						/* TRANSLATORS: button to keep the third party software repositories off */
+						"ignore", _("_Ignore"),
+						/* TRANSLATORS: button to turn on third party software repositories */
+						"enable", _("_Enable"),
+						NULL);
 		g_signal_connect (dialog, "response",
 				  G_CALLBACK (third_party_response_cb), self);
-		gtk_window_present (GTK_WINDOW (dialog));
+		adw_dialog_present (dialog, GTK_WIDGET (self->shell));
 		g_signal_connect (dialog, "destroy",
 				  G_CALLBACK (third_party_destroy_cb), self);
 
 		self->dialog_third_party = dialog;
 	} else if (!self->third_party_needs_question && self->dialog_third_party) {
-		gtk_window_destroy (GTK_WINDOW (self->dialog_third_party));
+		adw_dialog_force_close (self->dialog_third_party);
 	}
 }
 
@@ -1150,7 +1147,7 @@ gs_overview_page_refresh_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-third_party_response_cb (AdwMessageDialog *dialog,
+third_party_response_cb (AdwAlertDialog *dialog,
                          const gchar *response,
                          GsOverviewPage *self)
 {
@@ -1289,7 +1286,7 @@ gs_overview_page_dispose (GObject *object)
 	g_clear_pointer (&self->category_hash, g_hash_table_unref);
 	g_clear_pointer (&self->deployment_featured, g_strfreev);
 	if (self->dialog_third_party)
-		gtk_window_destroy (GTK_WINDOW (self->dialog_third_party));
+		adw_dialog_force_close (self->dialog_third_party);
 
 	G_OBJECT_CLASS (gs_overview_page_parent_class)->dispose (object);
 }
