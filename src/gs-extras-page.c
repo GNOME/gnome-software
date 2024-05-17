@@ -57,8 +57,8 @@ struct _GsExtrasPage
 	gchar			 *caller_app_name;
 	gchar			 *install_resources_ident;
 
-	GtkWidget		 *label_failed;
-	GtkWidget		 *label_no_results;
+	AdwStatusPage		 *failed_page;
+	AdwStatusPage		 *no_results_page;
 	GtkWidget		 *list_box_results;
 	GtkWidget		 *scrolledwindow;
 	GtkWidget		 *spinner;
@@ -606,7 +606,7 @@ show_search_results (GsExtrasPage *self)
 		/* no results */
 		g_debug ("extras: failed to find any results, %u", n_missing);
 		str = build_no_results_label (self);
-		gtk_label_set_label (GTK_LABEL (self->label_no_results), str);
+		adw_status_page_set_description (self->no_results_page, str);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_NO_RESULTS);
 	} else {
 		/* show what we got */
@@ -647,7 +647,7 @@ search_files_cb (GObject *source_object,
 		}
 		g_warning ("failed to find any search results: %s", error->message);
 		str = g_strdup_printf (_("Failed to find any search results: %s"), error->message);
-		gtk_label_set_label (GTK_LABEL (self->label_failed), str);
+		adw_status_page_set_description (self->failed_page, str);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 		return;
 	}
@@ -704,7 +704,7 @@ file_to_app_cb (GObject *source_object,
 
 			g_warning ("failed to find any search results: %s", error->message);
 			str = g_strdup_printf (_("Failed to find any search results: %s"), error->message);
-			gtk_label_set_label (GTK_LABEL (self->label_failed), str);
+			adw_status_page_set_description (self->failed_page, str);
 			gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 			return;
 		}
@@ -744,7 +744,7 @@ get_search_what_provides_cb (GObject *source_object,
 		}
 		g_warning ("failed to find any search results: %s", error->message);
 		str = g_strdup_printf (_("Failed to find any search results: %s"), error->message);
-		gtk_label_set_label (GTK_LABEL (self->label_failed), str);
+		adw_status_page_set_description (self->failed_page, str);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 		return;
 	}
@@ -1443,8 +1443,8 @@ gs_extras_page_class_init (GsExtrasPageClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-extras-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, label_failed);
-	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, label_no_results);
+	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, failed_page);
+	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, no_results_page);
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, list_box_results);
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, scrolledwindow);
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, spinner);
