@@ -1091,6 +1091,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 
 	assert_in_worker (self);
 
+	/* refresh metadata */
 	{
 		g_autofree gchar *transaction_address = NULL;
 		g_autoptr(GsApp) progress_app = NULL;
@@ -1144,63 +1145,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 	if (data->cache_age_secs == G_MAXUINT64)
 		return TRUE;
 
-	{
-		g_autofree gchar *transaction_address = NULL;
-		g_autoptr(GSettings) settings = NULL;
-		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
-		g_autoptr(GVariant) options = NULL;
-		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
-		gboolean download_only;
-
-		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
-			return FALSE;
-
-		settings = g_settings_new ("org.gnome.software");
-		/* in rpm-ostree, when automatic updates are on, the download_only is off,
-		   to immediately install the updates, not only download them, thus the next
-		   machine restart applies the update. */
-		download_only = !g_settings_get_boolean (settings, "download-updates");
-
-		tp->app = g_object_ref (progress_app);
-		tp->plugin = g_object_ref (plugin);
-
-		options = make_rpmostree_options_variant (download_only ? RPMOSTREE_OPTION_DOWNLOAD_ONLY : RPMOSTREE_OPTION_NONE);
-		done = FALSE;
-		while (!done) {
-			done = TRUE;
-			if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
-								options,
-								interactive ? G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION : G_DBUS_CALL_FLAGS_NONE,
-								-1  /* timeout */,
-								NULL /* fd list */,
-								&transaction_address,
-								NULL /* fd list out */,
-								cancellable,
-								&local_error)) {
-				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
-					g_clear_error (&local_error);
-					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
-						return FALSE;
-					done = FALSE;
-					continue;
-				}
-				g_propagate_error (error, g_steal_pointer (&local_error));
-				gs_rpmostree_error_convert (error);
-				return FALSE;
-			}
-		}
-
-		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
-		                                                 transaction_address,
-		                                                 tp,
-		                                                 interactive,
-		                                                 cancellable,
-		                                                 error)) {
-			gs_rpmostree_error_convert (error);
-			return FALSE;
-		}
-	}
-
+	/* check what can be updated */
 	{
 		g_autofree gchar *transaction_address = NULL;
 		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
