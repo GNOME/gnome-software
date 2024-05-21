@@ -184,8 +184,8 @@ static const struct {
 		N_("Alcohol"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding references to alcohol"),
-		"pub-symbolic",
-		NULL,
+		"alcohol-use-symbolic",
+		"alcohol-use-none-symbolic",
 	},
 	{
 		"drugs-narcotics",
@@ -194,8 +194,8 @@ static const struct {
 		N_("Narcotics"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding references to illicit drugs"),
-		"cigarette-symbolic",
-		"cigarette-none-symbolic",
+		"drug-use-symbolic",
+		"drug-use-none-symbolic",
 	},
 	{
 		"drugs-tobacco",
@@ -204,8 +204,8 @@ static const struct {
 		N_("Tobacco"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding references to tobacco products"),
-		"cigarette-symbolic",
-		"cigarette-none-symbolic",
+		"smoking-symbolic",
+		"smoking-none-symbolic",
 	},
 	{
 		"sex-nudity",
@@ -254,8 +254,8 @@ static const struct {
 		N_("Discrimination"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding discriminatory language of any kind"),
-		"chat-symbolic",
-		"chat-none-symbolic",
+		"strong-language-symbolic",
+		"strong-language-none-symbolic",
 	},
 	{
 		"money-advertising",
@@ -264,8 +264,8 @@ static const struct {
 		N_("Advertising"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding advertising of any kind"),
-		"money-symbolic",
-		"money-none-symbolic",
+		"advertising-symbolic",
+		"advertising-none-symbolic",
 	},
 	{
 		"money-gambling",
@@ -410,7 +410,7 @@ static const struct {
 		N_("Human Remains"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding visible dead human remains"),
-		"graveyard-symbolic",
+		"human-remains-symbolic",
 		NULL,
 	},
 	{
@@ -513,7 +513,7 @@ content_rating_group_get_icon_name (GsAgeRatingGroupType group_type,
 {
 	switch (group_type) {
 	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
-		return negative_version ? "cigarette-none-symbolic" : "cigarette-symbolic";
+		return negative_version ? "smoking-none-symbolic" : "smoking-symbolic";
 	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
 		return negative_version ? "strong-language-none-symbolic" : "strong-language-symbolic";
 	case GS_AGE_RATING_GROUP_TYPE_MONEY:

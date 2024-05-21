@@ -172,7 +172,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE) &&
 				    filesystem_read == NULL && filesystem_full == NULL,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
-				    "folder-documents-symbolic",
+				    "folder-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("No Permissions"),
 				    _("App is fully sandboxed"),
@@ -238,7 +238,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "computer-chip-symbolic",
+				    "permissions-system-devices-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("System Device Access"),
 				    _("Can access system devices which require elevated permissions"),
@@ -246,7 +246,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SCREEN) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "screen-privacy-symbolic",
+				    "permissions-screen-contents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Screen Contents Access"),
 				    _("Can access the contents of the screen or other windows"),
@@ -254,7 +254,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_X11) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "desktop-symbolic",
+				    "computer-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Legacy Windowing System"),
 				    _("Uses a legacy windowing system"),
@@ -282,7 +282,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "folder-documents-symbolic",
+				    "folder-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Full File System Read/Write Access"),
 				    _("Can read and write all data on the file system"),
@@ -300,7 +300,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ) != 0 &&
 				     !(perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL)),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "folder-documents-symbolic",
+				    "folder-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Full File System Read Access"),
 				    _("Can read all data on the file system"),
@@ -343,7 +343,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 			add_permission_row (self->permissions_list, &chosen_rating,
 					    TRUE,
 					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-					    "folder-documents-symbolic",
+					    "folder-symbolic",
 					    fs_title,
 					    _("Can read and write all data in the directory"),
 					    NULL, NULL, NULL);
@@ -354,7 +354,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 			add_permission_row (self->permissions_list, &chosen_rating,
 					    TRUE,
 					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-					    "folder-documents-symbolic",
+					    "folder-symbolic",
 					    fs_title,
 					    _("Can read all data in the directory"),
 					    NULL, NULL, NULL);
@@ -370,7 +370,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 						    GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ)) &&
 				    filesystem_read == NULL && filesystem_full == NULL,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
-				    "folder-documents-symbolic",
+				    "folder-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("No File System Access"),
 				    _("Cannot access the file system at all"),
@@ -455,21 +455,21 @@ update_permissions_list (GsSafetyContextDialog *self)
 	/* Update the UI. */
 	switch (chosen_rating) {
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL:
-		icon_name = "safety-symbolic";
+		icon_name = "app-safety-symbolic";
 		/* Translators: The app is considered privileged, aka provided by the distribution.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is privileged"), gs_app_get_name (self->app));
 		css_class = "grey";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
-		icon_name = "safety-symbolic";
+		icon_name = "app-safety-symbolic";
 		/* Translators: The app is considered safe to install and run.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is safe"), gs_app_get_name (self->app));
 		css_class = "green";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION:
-		icon_name = "safety-symbolic";
+		icon_name = "app-safety-symbolic";
 		/* Translators: The app is considered probably safe to install and run.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is probably safe"), gs_app_get_name (self->app));

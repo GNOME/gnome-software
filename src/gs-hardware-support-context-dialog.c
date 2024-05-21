@@ -585,19 +585,19 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 				  desktop_relation_kind,
 				  desktop_match ? MATCH_STATE_MATCH : MATCH_STATE_NO_MATCH,
 				  any_display_relations_set,
-				  "desktop-symbolic",
+				  "computer-symbolic",
 				  _("Desktop Support"),
 				  _("Supports being used on a large screen"),
 				  "dialog-question-symbolic",
 				  _("Desktop Support Unknown"),
 				  _("Not enough information to know if large screens are supported"),
-				  "desktop-symbolic",
+				  "computer-symbolic",
 				  _("Desktop Only"),
 				  _("Requires a large screen"),
-				  "desktop-symbolic",
+				  "computer-symbolic",
 				  _("Desktop Support"),
 				  _("Supports being used on a large screen"),
-				  "desktop-symbolic",
+				  "computer-symbolic",
 				  _("Desktop Not Supported"),
 				  _("Cannot be used on a large screen"));
 
@@ -681,19 +681,19 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 			  control_relations[AS_CONTROL_KIND_TOUCH],
 			  has_touchscreen ? MATCH_STATE_MATCH : MATCH_STATE_NO_MATCH,
 			  any_control_relations_set,
-			  "phone-symbolic",
+			  "device-support-touch-symbolic",
 			  _("Touchscreen Support"),
 			  _("Requires a touchscreen"),
 			  "dialog-question-symbolic",
 			  _("Touchscreen Support Unknown"),
 			  _("Not enough information to know if touchscreens are supported"),
-			  "phone-symbolic",
+			  "device-support-touch-symbolic",
 			  _("Touchscreen Required"),
 			  _("Requires a touchscreen"),
-			  "phone-symbolic",
+			  "device-support-touch-symbolic",
 			  _("Touchscreen Support"),
 			  _("Supports touchscreens"),
-			  "phone-symbolic",
+			  "device-support-touch-symbolic",
 			  _("Touchscreen Not Supported"),
 			  _("Cannot be used with a touchscreen"));
 
@@ -718,7 +718,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 	/* Update the UI. */
 	switch (chosen_rating) {
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL:
-		icon_name = "desktop-symbolic";
+		icon_name = "computer-symbolic";
 		/* Translators: It’s unknown whether this app is supported on
 		 * the current hardware. The placeholder is the app name. */
 		title = g_strdup_printf (_("%s probably works on this device"), gs_app_get_name (self->app));
