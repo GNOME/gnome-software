@@ -39,6 +39,7 @@
 #include <sys/stat.h>
 #include <libsoup/soup.h>
 
+#include "gs-icon.h"
 #include "gs-remote-icon.h"
 #include "gs-utils.h"
 
@@ -334,6 +335,7 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	const gchar *uri;
 	g_autofree gchar *cache_filename = NULL;
 	g_autoptr(GdkPixbuf) cached_pixbuf = NULL;
+	GIcon *icon = NULL;
 	GStatBuf stat_buf;
 
 	g_return_val_if_fail (GS_IS_REMOTE_ICON (self), FALSE);
@@ -349,16 +351,18 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	if (cache_filename == NULL)
 		return FALSE;
 
+	icon = G_ICON (self);
+
 	/* Already in cache and not older than 30 days */
 	if (g_stat (cache_filename, &stat_buf) != -1 &&
 	    S_ISREG (stat_buf.st_mode) &&
 	    (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24 * 30)) {
 		gint width = 0, height = 0;
 		/* Ensure the downloaded image dimensions are stored on the icon */
-		if (!g_object_get_data (G_OBJECT (self), "width") &&
+		if (!gs_icon_get_width (icon) &&
 		    gdk_pixbuf_get_file_info (cache_filename, &width, &height)) {
-			g_object_set_data (G_OBJECT (self), "width", GINT_TO_POINTER (width));
-			g_object_set_data (G_OBJECT (self), "height", GINT_TO_POINTER (height));
+			gs_icon_set_width (icon, width);
+			gs_icon_set_height (icon, height);
 		}
 		return TRUE;
 	}
@@ -368,8 +372,8 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 		return FALSE;
 
 	/* Ensure the dimensions are set correctly on the icon. */
-	g_object_set_data (G_OBJECT (self), "width", GUINT_TO_POINTER (gdk_pixbuf_get_width (cached_pixbuf)));
-	g_object_set_data (G_OBJECT (self), "height", GUINT_TO_POINTER (gdk_pixbuf_get_height (cached_pixbuf)));
+	gs_icon_set_width (icon, gdk_pixbuf_get_width (cached_pixbuf));
+	gs_icon_set_height (icon, gdk_pixbuf_get_height (cached_pixbuf));
 
 	return TRUE;
 }
