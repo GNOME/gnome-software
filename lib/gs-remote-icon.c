@@ -364,6 +364,8 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 			gs_icon_set_width (icon, width);
 			gs_icon_set_height (icon, height);
 		}
+		/* since it's a dimension from the file it's always at scale 1 */
+		gs_icon_set_scale (icon, 1);
 		return TRUE;
 	}
 
@@ -374,6 +376,8 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	/* Ensure the dimensions are set correctly on the icon. */
 	gs_icon_set_width (icon, gdk_pixbuf_get_width (cached_pixbuf));
 	gs_icon_set_height (icon, gdk_pixbuf_get_height (cached_pixbuf));
+	/* since it's a dimension from the file it's always at scale 1 */
+	gs_icon_set_scale (icon, 1);
 
 	return TRUE;
 }
