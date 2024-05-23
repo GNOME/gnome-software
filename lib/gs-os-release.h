@@ -30,5 +30,6 @@ const gchar		*gs_os_release_get_cpe_name		(GsOsRelease	*os_release);
 const gchar		*gs_os_release_get_distro_codename	(GsOsRelease	*os_release);
 const gchar		*gs_os_release_get_home_url		(GsOsRelease	*os_release);
 const gchar		*gs_os_release_get_logo			(GsOsRelease	*os_release);
+const gchar		*gs_os_release_get_vendor_name		(GsOsRelease	*os_release);
 
 G_END_DECLS
