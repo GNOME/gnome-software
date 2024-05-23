@@ -536,35 +536,35 @@ update_safety_tile (GsAppContextBar *self)
 	/* Update the UI. */
 	switch (chosen_rating) {
 	case SAFETY_PRIVILEGED:
-		icon_name = "app-safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered privileged, aka provided by the distribution.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Privileged");
 		css_class = "grey";
 		break;
 	case SAFETY_SAFE:
-		icon_name = "app-safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered safe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Safe");
 		css_class = "green";
 		break;
 	case SAFETY_PROBABLY_SAFE:
-		icon_name = "app-safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered probably safe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Probably Safe");
 		css_class = "yellow";
 		break;
 	case SAFETY_POTENTIALLY_UNSAFE:
-		icon_name = "dialog-question-symbolic";
+		icon_name = "app-safety-unknown-symbolic";
 		/* Translators: The app is considered potentially unsafe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Potentially Unsafe");
 		css_class = "orange";
 		break;
 	case SAFETY_UNSAFE:
-		icon_name = "dialog-warning-symbolic";
+		icon_name = "app-safety-unsafe-symbolic";
 		/* Translators: The app is considered unsafe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Unsafe");

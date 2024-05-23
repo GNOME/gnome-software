@@ -149,7 +149,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		css_class = "grey";
 		lozenge_icon_names[0] = "community-blocked-symbolic";
 		lozenge_icon_names[1] = "dialog-warning-symbolic";
-		lozenge_icon_names[2] = "community-none-symbolic";
+		lozenge_icon_names[2] = "software-license-symbolic";
 		get_involved_visible = TRUE;
 		get_involved_label = _("_Learn More");
 
@@ -166,8 +166,8 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		title = _("Proprietary");
 		css_class = "yellow";
 		lozenge_icon_names[0] = "community-blocked-symbolic";
-		lozenge_icon_names[1] = "dialog-warning-symbolic";
-		lozenge_icon_names[2] = "community-none-symbolic";
+		lozenge_icon_names[1] = "proprietary-code-symbolic";
+		lozenge_icon_names[2] = "software-license-symbolic";
 		get_involved_visible = TRUE;
 		get_involved_label = _("_Learn More");
 
@@ -190,7 +190,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		title = _("Special License");
 		css_class = "yellow";
 		lozenge_icon_names[0] = "community-blocked-symbolic";
-		lozenge_icon_names[1] = "dialog-warning-symbolic";
+		lozenge_icon_names[1] = "software-license-symbolic";
 		lozenge_icon_names[2] = "community-none-symbolic";
 		get_involved_visible = FALSE;
 		get_involved_label = _("_Learn More");

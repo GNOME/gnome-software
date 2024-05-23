@@ -172,7 +172,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE) &&
 				    filesystem_read == NULL && filesystem_full == NULL,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
-				    "folder-symbolic",
+				    "permissions-sandboxed-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("No Permissions"),
 				    _("App is fully sandboxed"),
@@ -230,7 +230,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_PULSEAUDIO_DEVICES) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION,
-				    "audio-input-microphone-symbolic",
+				    "permissions-microphone-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Microphone Access"),
 				    _("Can listen using microphones without asking permission"),
@@ -254,7 +254,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_X11) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "device-support-desktop-symbolic",
+				    "permissions-legacy-windowing-system-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Legacy Windowing System"),
 				    _("Uses a legacy windowing system"),
@@ -262,7 +262,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "dialog-warning-symbolic",
+				    "permissions-warning-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Arbitrary Permissions"),
 				    _("Can acquire arbitrary permissions"),
@@ -380,7 +380,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	add_permission_row (self->permissions_list, &chosen_rating,
 			    gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED),
 			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
-			    "app-installed-symbolic",
+			    "app-verified-symbolic",
 			    /* Translators: This indicates an app was written and released by a developer who has been verified.
 			     * It’s used in a context tile, so should be short. */
 			    _("App developer is verified"),
@@ -392,7 +392,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    gs_app_get_runtime (self->app) != NULL &&
 			    gs_app_get_metadata_item (gs_app_get_runtime (self->app), "GnomeSoftware::EolReason") != NULL),
 			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-			    "dialog-warning-symbolic",
+			    "permissions-warning-symbolic",
 			    /* Translators: This indicates an app uses an outdated SDK.
 			     * It’s used in a context tile, so should be short. */
 			    _("Insecure Dependencies"),
@@ -405,7 +405,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    TRUE,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
-				    "dialog-warning-symbolic",
+				    "permissions-warning-symbolic",
 				    /* Translators: This indicates an app does not specify which license it's developed under. */
 				    _("Unknown License"),
 				    gs_app_is_application (self->app) ?
@@ -421,7 +421,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    TRUE,
 				    license_rating,
-				    "dialog-warning-symbolic",
+				    "proprietary-code-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Proprietary Code"),
 				    _("The source code is not public, so it cannot be independently audited and might be unsafe"),
@@ -442,11 +442,11 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    !gs_app_get_license_is_free (self->app),
 				    license_rating,
-				    "dialog-warning-symbolic",
+				    "software-license-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Special License"),
 				    description,
-				    "app-installed-symbolic",
+				    "auditable-code-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Auditable Code"),
 				    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
@@ -455,35 +455,35 @@ update_permissions_list (GsSafetyContextDialog *self)
 	/* Update the UI. */
 	switch (chosen_rating) {
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL:
-		icon_name = "app-safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered privileged, aka provided by the distribution.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is privileged"), gs_app_get_name (self->app));
 		css_class = "grey";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
-		icon_name = "app-safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered safe to install and run.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is safe"), gs_app_get_name (self->app));
 		css_class = "green";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION:
-		icon_name = "app-safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered probably safe to install and run.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is probably safe"), gs_app_get_name (self->app));
 		css_class = "yellow";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
-		icon_name = "dialog-question-symbolic";
+		icon_name = "app-safety-unknown-symbolic";
 		/* Translators: The app is considered potentially unsafe to install and run.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is potentially unsafe"), gs_app_get_name (self->app));
 		css_class = "orange";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT:
-		icon_name = "dialog-warning-symbolic";
+		icon_name = "permissions-warning-symbolic";
 		/* Translators: The app is considered unsafe to install and run.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s is unsafe"), gs_app_get_name (self->app));

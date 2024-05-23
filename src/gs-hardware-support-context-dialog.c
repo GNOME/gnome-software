@@ -588,7 +588,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 				  "device-support-desktop-symbolic",
 				  _("Desktop Support"),
 				  _("Supports being used on a large screen"),
-				  "dialog-question-symbolic",
+				  "device-support-unknown-symbolic",
 				  _("Desktop Support Unknown"),
 				  _("Not enough information to know if large screens are supported"),
 				  "device-support-desktop-symbolic",
@@ -608,7 +608,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 				  "device-support-mobile-symbolic",
 				  _("Mobile Support"),
 				  _("Supports being used on a small screen"),
-				  "dialog-question-symbolic",
+				  "device-support-unknown-symbolic",
 				  _("Mobile Support Unknown"),
 				  _("Not enough information to know if small screens are supported"),
 				  "device-support-mobile-symbolic",
@@ -644,7 +644,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 			  "input-keyboard-symbolic",
 			  _("Keyboard Support"),
 			  _("Requires a keyboard"),
-			  "dialog-question-symbolic",
+			  "device-support-unknown-symbolic",
 			  _("Keyboard Support Unknown"),
 			  _("Not enough information to know if keyboards are supported"),
 			  "input-keyboard-symbolic",
@@ -664,7 +664,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 			  "input-mouse-symbolic",
 			  _("Mouse Support"),
 			  _("Requires a mouse or pointing device"),
-			  "dialog-question-symbolic",
+			  "device-support-unknown-symbolic",
 			  _("Mouse Support Unknown"),
 			  _("Not enough information to know if mice or pointing devices are supported"),
 			  "input-mouse-symbolic",
@@ -684,7 +684,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 			  "device-support-touch-symbolic",
 			  _("Touchscreen Support"),
 			  _("Requires a touchscreen"),
-			  "dialog-question-symbolic",
+			  "device-support-unknown-symbolic",
 			  _("Touchscreen Support Unknown"),
 			  _("Not enough information to know if touchscreens are supported"),
 			  "device-support-touch-symbolic",
@@ -725,21 +725,21 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 		css_class = "grey";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
-		icon_name = "app-installed-symbolic";
+		icon_name = "device-supported-symbolic";
 		/* Translators: The app will work on the current hardware.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s works on this device"), gs_app_get_name (self->app));
 		css_class = "green";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_INFORMATION:
-		icon_name = "app-installed-symbolic";
+		icon_name = "device-supported-symbolic";
 		/* Translators: The app will possbily work on the current hardware.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s possibly works on this device"), gs_app_get_name (self->app));
 		css_class = "yellow";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
-		icon_name = "dialog-question-symbolic";
+		icon_name = "device-support-unknown-symbolic";
 		/* Translators: The app may not work fully on the current hardware.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s will not work properly on this device"), gs_app_get_name (self->app));
