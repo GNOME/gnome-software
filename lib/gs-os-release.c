@@ -45,6 +45,18 @@ static void gs_os_release_initable_iface_init (GInitableIface *iface);
 G_DEFINE_TYPE_WITH_CODE (GsOsRelease, gs_os_release, G_TYPE_OBJECT,
 			 G_IMPLEMENT_INTERFACE(G_TYPE_INITABLE, gs_os_release_initable_iface_init))
 
+static void
+gs_os_release_set_string_nonempty (gchar **inout_string,
+				   const gchar *value)
+{
+	if (*inout_string == value)
+		return;
+
+	g_clear_pointer (inout_string, g_free);
+	if (value != NULL && *value != '\0')
+		*inout_string = g_strdup (value);
+}
+
 static gboolean
 gs_os_release_initable_init (GInitable *initable,
 			     GCancellable *cancellable,
@@ -90,47 +102,49 @@ gs_os_release_initable_init (GInitable *initable,
 
 		/* match fields we're interested in */
 		if (g_strcmp0 (lines[i], "NAME") == 0) {
-			os_release->name = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->name, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "VERSION") == 0) {
-			os_release->version = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->version, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "ID") == 0) {
-			os_release->id = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->id, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "ID_LIKE") == 0) {
+			if (os_release->id_like != NULL)
+				g_strfreev (os_release->id_like);
 			os_release->id_like = g_strsplit (tmp, " ", 0);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "VERSION_ID") == 0) {
-			os_release->version_id = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->version_id, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "PRETTY_NAME") == 0) {
-			os_release->pretty_name = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->pretty_name, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "CPE_NAME") == 0) {
-			os_release->cpe_name = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->cpe_name, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "UBUNTU_CODENAME") == 0) {
-			os_release->distro_codename = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->distro_codename, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "HOME_URL") == 0) {
-			os_release->home_url = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->home_url, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "LOGO") == 0) {
-			os_release->logo = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->logo, tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "VENDOR_NAME") == 0) {
-			os_release->vendor_name = g_strdup (tmp);
+			gs_os_release_set_string_nonempty (&os_release->vendor_name, tmp);
 			continue;
 		}
 	}
