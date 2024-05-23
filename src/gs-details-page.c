@@ -1374,7 +1374,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 			{ 128, NULL },
 			{ 96, NULL },
 			{ 64, NULL },
-			{ 128, "application-x-executable" },
+			{ 128, "org.gnome.Software.Generic" },
 		};
 
 		for (gsize i = 0; i < G_N_ELEMENTS (icon_fallbacks) && icon == NULL; i++) {

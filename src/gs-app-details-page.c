@@ -264,7 +264,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		icon = gs_app_get_icon_for_size (app,
 						 icon_size,
 						 gtk_widget_get_scale_factor (GTK_WIDGET (page)),
-						 "application-x-executable");
+						 "org.gnome.Software.Generic");
 	}
 
 	display = gdk_display_get_default ();
