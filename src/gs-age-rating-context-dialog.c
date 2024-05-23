@@ -184,8 +184,8 @@ static const struct {
 		N_("Alcohol"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding references to alcohol"),
-		"pub-symbolic",
-		NULL,
+		"alcohol-use-symbolic",
+		"alcohol-use-none-symbolic",
 	},
 	{
 		"drugs-narcotics",
@@ -194,8 +194,8 @@ static const struct {
 		N_("Narcotics"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding references to illicit drugs"),
-		"cigarette-symbolic",
-		"cigarette-none-symbolic",
+		"drug-use-symbolic",
+		"drug-use-none-symbolic",
 	},
 	{
 		"drugs-tobacco",
@@ -204,8 +204,8 @@ static const struct {
 		N_("Tobacco"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding references to tobacco products"),
-		"cigarette-symbolic",
-		"cigarette-none-symbolic",
+		"smoking-symbolic",
+		"smoking-none-symbolic",
 	},
 	{
 		"sex-nudity",
@@ -254,8 +254,8 @@ static const struct {
 		N_("Discrimination"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding discriminatory language of any kind"),
-		"chat-symbolic",
-		"chat-none-symbolic",
+		"strong-language-symbolic",
+		"strong-language-none-symbolic",
 	},
 	{
 		"money-advertising",
@@ -264,8 +264,8 @@ static const struct {
 		N_("Advertising"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding advertising of any kind"),
-		"money-symbolic",
-		"money-none-symbolic",
+		"advertising-symbolic",
+		"advertising-none-symbolic",
 	},
 	{
 		"money-gambling",
@@ -274,8 +274,8 @@ static const struct {
 		N_("Gambling"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding gambling of any kind"),
-		"money-symbolic",
-		"money-none-symbolic",
+		"gambling-symbolic",
+		"gambling-none-symbolic",
 	},
 	{
 		"money-purchasing",
@@ -294,8 +294,8 @@ static const struct {
 		N_("Chat Between Users"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding ways to chat with other users"),
-		"chat-symbolic",
-		"chat-none-symbolic",
+		"messaging-symbolic",
+		"messaging-none-symbolic",
 	},
 	{
 		"social-audio",
@@ -304,8 +304,8 @@ static const struct {
 		N_("Audio Chat Between Users"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding ways to talk with other users"),
-		"audio-headset-symbolic",
-		NULL,
+		"audio-chat-symbolic",
+		"audio-chat-none-symbolic",
 	},
 	{
 		"social-contacts",
@@ -314,7 +314,7 @@ static const struct {
 		N_("Contact Details"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding sharing of social network usernames or email addresses"),
-		"contact-new-symbolic",
+		"contacts-symbolic",
 		NULL,
 	},
 	{
@@ -324,7 +324,7 @@ static const struct {
 		N_("Identifying Information"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding sharing of user information with third parties"),
-		"x-office-address-book-symbolic",
+		"social-info-symbolic",
 		NULL,
 	},
 	{
@@ -360,8 +360,8 @@ static const struct {
 		N_("Homosexuality"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding references to homosexuality"),
-		"nudity-symbolic",
-		"nudity-none-symbolic",
+		"gay-content-symbolic",
+		"gay-content-none-symbolic",
 	},
 	{
 		"sex-prostitution",
@@ -410,7 +410,7 @@ static const struct {
 		N_("Human Remains"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
 		N_("No information regarding visible dead human remains"),
-		"graveyard-symbolic",
+		"human-remains-symbolic",
 		NULL,
 	},
 	{
@@ -513,7 +513,7 @@ content_rating_group_get_icon_name (GsAgeRatingGroupType group_type,
 {
 	switch (group_type) {
 	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
-		return negative_version ? "cigarette-none-symbolic" : "cigarette-symbolic";
+		return negative_version ? "smoking-none-symbolic" : "smoking-symbolic";
 	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
 		return negative_version ? "strong-language-none-symbolic" : "strong-language-symbolic";
 	case GS_AGE_RATING_GROUP_TYPE_MONEY:
@@ -521,7 +521,7 @@ content_rating_group_get_icon_name (GsAgeRatingGroupType group_type,
 	case GS_AGE_RATING_GROUP_TYPE_SEX:
 		return negative_version ? "nudity-none-symbolic" : "nudity-symbolic";
 	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
-		return negative_version ? "chat-none-symbolic" : "chat-symbolic";
+		return negative_version ? "messaging-none-symbolic" : "messaging-symbolic";
 	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
 		return negative_version ? "violence-none-symbolic" : "violence-symbolic";
 	default:
