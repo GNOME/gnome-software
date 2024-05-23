@@ -301,7 +301,7 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 
 	packaging_icon = gs_app_get_metadata_item (self->app, "GnomeSoftware::PackagingIcon");
 	if (packaging_icon == NULL)
-		packaging_icon = "package-x-generic-symbolic";
+		packaging_icon = "package-generic-symbolic";
 
 	packaging_base_css_color = gs_app_get_metadata_item (self->app, "GnomeSoftware::PackagingBaseCssColor");
 
