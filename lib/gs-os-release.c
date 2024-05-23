@@ -37,6 +37,7 @@ struct _GsOsRelease
 	gchar			*distro_codename;
 	gchar			*home_url;
 	gchar			*logo;
+	gchar			*vendor_name;
 };
 
 static void gs_os_release_initable_iface_init (GInitableIface *iface);
@@ -126,6 +127,10 @@ gs_os_release_initable_init (GInitable *initable,
 		}
 		if (g_strcmp0 (lines[i], "LOGO") == 0) {
 			os_release->logo = g_strdup (tmp);
+			continue;
+		}
+		if (g_strcmp0 (lines[i], "VENDOR_NAME") == 0) {
+			os_release->vendor_name = g_strdup (tmp);
 			continue;
 		}
 	}
@@ -304,6 +309,23 @@ gs_os_release_get_logo (GsOsRelease *os_release)
 	return os_release->logo;
 }
 
+/**
+ * gs_os_release_get_vendor_name:
+ * @os_release: A #GsOsRelease
+ *
+ * Gets the vendor name from the os-release parser.
+ *
+ * Returns: (nullable): a string, or %NULL
+ *
+ * Since: 47
+ **/
+const gchar *
+gs_os_release_get_vendor_name (GsOsRelease *os_release)
+{
+	g_return_val_if_fail (GS_IS_OS_RELEASE (os_release), NULL);
+	return os_release->vendor_name;
+}
+
 static void
 gs_os_release_finalize (GObject *object)
 {
@@ -318,6 +340,7 @@ gs_os_release_finalize (GObject *object)
 	g_free (os_release->distro_codename);
 	g_free (os_release->home_url);
 	g_free (os_release->logo);
+	g_free (os_release->vendor_name);
 
 	G_OBJECT_CLASS (gs_os_release_parent_class)->finalize (object);
 }
