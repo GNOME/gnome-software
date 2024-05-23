@@ -783,17 +783,6 @@ gs_updates_page_show_network_settings (GsUpdatesPage *self)
 }
 
 static void
-gs_updates_page_refresh_settings_cb (AdwMessageDialog *dialog,
-                                     const gchar *response,
-                                     GsUpdatesPage *self)
-{
-	if (g_strcmp0 (response, "settings") == 0) {
-		/* open the control center */
-		gs_updates_page_show_network_settings (self);
-	}
-}
-
-static void
 gs_updates_page_refresh_check_cb (AdwMessageDialog *dialog,
                                   const gchar *response,
                                   GsUpdatesPage *self)
@@ -860,22 +849,6 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 				  self);
 		gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 
-	/* no network connection */
-	} else {
-		dialog = adw_message_dialog_new (parent_window,
-						 /* TRANSLATORS: can't do updates check */
-						 _("No Network"),
-						 /* TRANSLATORS: we need network to do the updates check */
-						 _("Internet access is required to check for updates."));
-		adw_message_dialog_add_responses (ADW_MESSAGE_DIALOG (dialog),
-						  "cancel",  _("_Cancel"),
-						  /* TRANSLATORS: this is a link to the control-center network panel */
-						  "settings",  _("Network _Settings"),
-						  NULL);
-		g_signal_connect (dialog, "response",
-				  G_CALLBACK (gs_updates_page_refresh_settings_cb),
-				  self);
-		gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 	}
 }
 
