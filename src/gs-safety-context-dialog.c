@@ -172,7 +172,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE) &&
 				    filesystem_read == NULL && filesystem_full == NULL,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
-				    "folder-documents-symbolic",
+				    "folder-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("No Permissions"),
 				    _("App is fully sandboxed"),
@@ -270,7 +270,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SETTINGS) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "preferences-system-symbolic",
+				    "emblem-system-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("User Settings"),
 				    _("Can access and change user settings"),
@@ -282,7 +282,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "folder-documents-symbolic",
+				    "folder-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Full File System Read/Write Access"),
 				    _("Can read and write all data on the file system"),
@@ -300,7 +300,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ) != 0 &&
 				     !(perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL)),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "folder-documents-symbolic",
+				    "folder-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Full File System Read Access"),
 				    _("Can read all data on the file system"),
@@ -343,7 +343,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 			add_permission_row (self->permissions_list, &chosen_rating,
 					    TRUE,
 					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-					    "folder-documents-symbolic",
+					    "folder-symbolic",
 					    fs_title,
 					    _("Can read and write all data in the directory"),
 					    NULL, NULL, NULL);
@@ -354,7 +354,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 			add_permission_row (self->permissions_list, &chosen_rating,
 					    TRUE,
 					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-					    "folder-documents-symbolic",
+					    "folder-symbolic",
 					    fs_title,
 					    _("Can read all data in the directory"),
 					    NULL, NULL, NULL);
@@ -370,7 +370,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 						    GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ)) &&
 				    filesystem_read == NULL && filesystem_full == NULL,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
-				    "folder-documents-symbolic",
+				    "folder-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("No File System Access"),
 				    _("Cannot access the file system at all"),
