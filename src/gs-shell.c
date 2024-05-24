@@ -2339,8 +2339,8 @@ gs_shell_show_sources (GsShell *shell)
 {
 	GtkWidget *dialog;
 
-	dialog = gs_repos_dialog_new (GTK_WINDOW (shell), shell->plugin_loader);
-	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
+	dialog = gs_repos_dialog_new (shell->plugin_loader);
+	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (shell));
 }
 
 void

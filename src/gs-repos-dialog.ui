@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="3.10"/>
-  <template class="GsReposDialog" parent="AdwWindow">
-    <property name="modal">True</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="icon_name">dialog-information</property>
+  <template class="GsReposDialog" parent="AdwDialog">
     <property name="title" translatable="yes">Software Repositories</property>
-    <property name="width-request">318</property>
-    <property name="default-width">640</property>
-    <property name="default-height">576</property>
-
-    <child>
+    <property name="content-width">640</property>
+    <property name="content-height">576</property>
+    <property name="child">
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar">
-            <property name="show_start_title_buttons">True</property>
-            <property name="show_end_title_buttons">True</property>
             <property name="title-widget">
               <object class="AdwWindowTitle">
                 <property name="title" bind-source="GsReposDialog" bind-property="title" bind-flags="sync-create"/>
@@ -69,6 +61,6 @@
           </object>
         </property>
       </object>
-    </child>
+    </property>
   </template>
 </interface>
