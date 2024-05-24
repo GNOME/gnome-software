@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-03-19 11:46+0000\n"
+"POT-Creation-Date: 2024-05-03 21:30+0000\n"
 "PO-Revision-Date: 2024-03-20 22:01+0100\n"
 "Last-Translator: Quique Serrano <qserrano@outlook.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -75,7 +75,7 @@ msgid "The update details"
 msgstr "Detalls de l'actualització"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2506
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2530
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "El projecte GNOME"
@@ -827,7 +827,7 @@ msgstr "Valoració per edat"
 msgid "How to contribute missing information"
 msgstr "Com afegir-hi la informació que falta"
 
-#: lib/gs-app.c:6339
+#: lib/gs-app.c:6336
 msgid "Local file"
 msgstr "Fitxer local"
 
@@ -836,13 +836,13 @@ msgstr "Fitxer local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6358 src/gs-safety-context-dialog.c:539
+#: lib/gs-app.c:6355 src/gs-safety-context-dialog.c:539
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6435 src/gs-safety-context-dialog.c:776
+#: lib/gs-app.c:6432 src/gs-safety-context-dialog.c:776
 #: src/gs-safety-context-dialog.ui:180
 msgid "Package"
 msgstr "Paquet"
@@ -882,13 +882,13 @@ msgstr "S'està baixant"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1044
-#: src/gs-details-page.c:1071 src/gs-details-page.ui:243 src/gs-page.c:437
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1055
+#: src/gs-details-page.c:1082 src/gs-details-page.ui:243 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Instal·la"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1153
+#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1164
 msgid "_Uninstall…"
 msgstr "_Desinstal·la…"
 
@@ -1420,7 +1420,7 @@ msgid "Unsafe"
 msgstr "Insegur"
 
 #: src/gs-app-context-bar.c:648 src/gs-app-context-bar.c:680
-#: src/gs-hardware-support-context-dialog.c:608
+#: src/gs-hardware-support-context-dialog.c:615
 msgid "Mobile Only"
 msgstr "Només mòbil"
 
@@ -1430,7 +1430,7 @@ msgstr "Només funciona en una pantalla petita"
 
 #: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:687
 #: src/gs-app-context-bar.c:694 src/gs-app-context-bar.c:744
-#: src/gs-app-context-bar.c:749 src/gs-hardware-support-context-dialog.c:588
+#: src/gs-app-context-bar.c:749 src/gs-hardware-support-context-dialog.c:595
 msgid "Desktop Only"
 msgstr "Només en escriptori"
 
@@ -1438,21 +1438,21 @@ msgstr "Només en escriptori"
 msgid "Only works on a large screen"
 msgstr "Només funciona en una pantalla gran"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:626
+#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:633
 msgid "Screen Size Mismatch"
 msgstr "La mida de la pantalla no coincideix"
 
-#: src/gs-app-context-bar.c:660 src/gs-hardware-support-context-dialog.c:627
+#: src/gs-app-context-bar.c:660 src/gs-hardware-support-context-dialog.c:634
 msgid "Doesn’t support your current screen size"
 msgstr "No és compatible amb la mida de la pantalla actual"
 
-#: src/gs-app-context-bar.c:681 src/gs-hardware-support-context-dialog.c:679
-#: src/gs-hardware-support-context-dialog.c:685
+#: src/gs-app-context-bar.c:681 src/gs-hardware-support-context-dialog.c:686
+#: src/gs-hardware-support-context-dialog.c:692
 msgid "Requires a touchscreen"
 msgstr "Requereix una pantalla tàctil"
 
-#: src/gs-app-context-bar.c:688 src/gs-hardware-support-context-dialog.c:639
-#: src/gs-hardware-support-context-dialog.c:645
+#: src/gs-app-context-bar.c:688 src/gs-hardware-support-context-dialog.c:646
+#: src/gs-hardware-support-context-dialog.c:652
 msgid "Requires a keyboard"
 msgstr "Requereix un teclat"
 
@@ -1627,7 +1627,7 @@ msgstr "Cal autenticació"
 #: src/gs-basic-auth-dialog.ui:14 src/gs-common.c:296 src/gs-common.c:748
 #: src/gs-details-page.ui:331 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:26 src/gs-repos-dialog.c:175
-#: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:27 src/gs-review-row.c:241
+#: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:38 src/gs-review-row.c:243
 #: src/gs-updates-page.c:854 src/gs-updates-page.c:871
 #: src/gs-upgrade-banner.ui:201
 msgid "_Cancel"
@@ -1639,7 +1639,7 @@ msgstr "_Entra"
 
 #. Translators: Placeholder text for a login entry.
 #. Translators: It's an origin scope, 'User' or 'System' installation
-#: src/gs-basic-auth-dialog.ui:62 src/gs-origin-popover-row.ui:138
+#: src/gs-basic-auth-dialog.ui:62 src/gs-origin-popover-row.ui:130
 msgid "User"
 msgstr "Usuari"
 
@@ -2405,7 +2405,7 @@ msgstr "S'està desinstal·lant…"
 msgid "%s is not installed, but it still has data present."
 msgstr "%s no està instal·lat, però encara en queden dades."
 
-#: src/gs-details-page.c:1061
+#: src/gs-details-page.c:1072
 msgid "_Restart"
 msgstr "_Reinicia"
 
@@ -2413,65 +2413,65 @@ msgstr "_Reinicia"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1085
+#: src/gs-details-page.c:1096
 msgid "_Install…"
 msgstr "_Instal·la…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1298
+#: src/gs-details-page.c:1309
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s apareixerà en anglès americà"
 
-#: src/gs-details-page.c:1306
+#: src/gs-details-page.c:1317
 msgid "This app will appear in US English"
 msgstr "Aquesta aplicació apareixerà en anglès americà"
 
-#: src/gs-details-page.c:1308
+#: src/gs-details-page.c:1319
 msgid "This software will appear in US English"
 msgstr "Aquesta aplicació apareixerà en anglès americà"
 
-#: src/gs-details-page.c:1343 src/gs-details-page.ui:76
+#: src/gs-details-page.c:1354 src/gs-details-page.ui:76
 msgid "Help _Translate"
 msgstr "_Ajudeu a traduir-lo"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1408
+#: src/gs-details-page.c:1419
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Altres aplicacions de %s"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1444
+#: src/gs-details-page.c:1455
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "El desenvolupador %s ha demostrat la propietat de %s"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1447
+#: src/gs-details-page.c:1458
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "El desenvolupador ha demostrat la propietat de %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1815
+#: src/gs-details-page.c:1826
 msgid "You need internet access to write a review"
 msgstr "Cal accés a Internet perquè pugueu escriure una ressenya"
 
-#: src/gs-details-page.c:1916
+#: src/gs-details-page.c:1927
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
 "Aquesta aplicació ja no rep actualitzacions, ni tampoc correccions de "
 "seguretat"
 
-#: src/gs-details-page.c:1917
+#: src/gs-details-page.c:1928
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "Aquesta aplicació ja es proporciona amb la vostra distribució i no heu de "
 "substituir-la."
 
-#: src/gs-details-page.c:1918
+#: src/gs-details-page.c:1929
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2479,13 +2479,13 @@ msgstr ""
 "Aquesta aplicació no proporciona cap enllaç a un lloc web, repositori de "
 "codi o sistema de gestió d'incidents."
 
-#: src/gs-details-page.c:1920
+#: src/gs-details-page.c:1931
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "Aquest programari ja no rep actualitzacions, ni tampoc correccions de "
 "seguretat"
 
-#: src/gs-details-page.c:1921
+#: src/gs-details-page.c:1932
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2493,7 +2493,7 @@ msgstr ""
 "Aquest programari ja es proporciona amb la vostra distribució i no heu de "
 "substituir-ho."
 
-#: src/gs-details-page.c:1922
+#: src/gs-details-page.c:1933
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2501,12 +2501,12 @@ msgstr ""
 "Aquest programari no proporciona cap enllaç a un lloc web, repositori de "
 "codi o sistema de gestió d'incidents."
 
-#: src/gs-details-page.c:2012 src/gs-details-page.c:2028
+#: src/gs-details-page.c:2023 src/gs-details-page.c:2039
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "No s'ha trobat «%s»"
 
-#: src/gs-details-page.c:2376
+#: src/gs-details-page.c:2387
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "No s'ha pogut enviar la ressenya de «%s»: %s"
@@ -2874,211 +2874,211 @@ msgstr "Següent"
 msgid "Featured Apps List"
 msgstr "Llista d'aplicacions destacades"
 
-#: src/gs-hardware-support-context-dialog.c:582
-#: src/gs-hardware-support-context-dialog.c:591
+#: src/gs-hardware-support-context-dialog.c:589
+#: src/gs-hardware-support-context-dialog.c:598
 msgid "Desktop Support"
 msgstr "Compatibilitat amb escriptori"
 
-#: src/gs-hardware-support-context-dialog.c:583
-#: src/gs-hardware-support-context-dialog.c:592
+#: src/gs-hardware-support-context-dialog.c:590
+#: src/gs-hardware-support-context-dialog.c:599
 msgid "Supports being used on a large screen"
 msgstr "Es pot utilitzar en una pantalla gran"
 
-#: src/gs-hardware-support-context-dialog.c:585
+#: src/gs-hardware-support-context-dialog.c:592
 msgid "Desktop Support Unknown"
 msgstr "Compatibilitat amb escriptori desconeguda"
 
-#: src/gs-hardware-support-context-dialog.c:586
+#: src/gs-hardware-support-context-dialog.c:593
 msgid "Not enough information to know if large screens are supported"
 msgstr ""
 "No hi ha prou informació per a saber si és compatible amb pantalles grans"
 
-#: src/gs-hardware-support-context-dialog.c:589
+#: src/gs-hardware-support-context-dialog.c:596
 msgid "Requires a large screen"
 msgstr "Requereix una pantalla gran"
 
-#: src/gs-hardware-support-context-dialog.c:594
+#: src/gs-hardware-support-context-dialog.c:601
 msgid "Desktop Not Supported"
 msgstr "No és compatible amb escriptori"
 
-#: src/gs-hardware-support-context-dialog.c:595
+#: src/gs-hardware-support-context-dialog.c:602
 msgid "Cannot be used on a large screen"
 msgstr "No pot ser usat en una pantalla gran"
 
-#: src/gs-hardware-support-context-dialog.c:602
-#: src/gs-hardware-support-context-dialog.c:611
+#: src/gs-hardware-support-context-dialog.c:609
+#: src/gs-hardware-support-context-dialog.c:618
 msgid "Mobile Support"
 msgstr "Compatibilitat amb mòbil"
 
-#: src/gs-hardware-support-context-dialog.c:603
-#: src/gs-hardware-support-context-dialog.c:612
+#: src/gs-hardware-support-context-dialog.c:610
+#: src/gs-hardware-support-context-dialog.c:619
 msgid "Supports being used on a small screen"
 msgstr "Es pot utilitzar en una pantalla petita"
 
-#: src/gs-hardware-support-context-dialog.c:605
+#: src/gs-hardware-support-context-dialog.c:612
 msgid "Mobile Support Unknown"
 msgstr "Compatibilitat amb mòbil desconeguda"
 
-#: src/gs-hardware-support-context-dialog.c:606
+#: src/gs-hardware-support-context-dialog.c:613
 msgid "Not enough information to know if small screens are supported"
 msgstr ""
 "No hi ha prou informació per a saber si és compatible amb pantalles petites"
 
-#: src/gs-hardware-support-context-dialog.c:609
+#: src/gs-hardware-support-context-dialog.c:616
 msgid "Requires a small screen"
 msgstr "Requereix una pantalla petita"
 
-#: src/gs-hardware-support-context-dialog.c:614
+#: src/gs-hardware-support-context-dialog.c:621
 msgid "Mobile Not Supported"
 msgstr "No és compatible amb mòbil"
 
-#: src/gs-hardware-support-context-dialog.c:615
+#: src/gs-hardware-support-context-dialog.c:622
 msgid "Cannot be used on a small screen"
 msgstr "No es pot utilitzar amb una pantalla petita"
 
-#: src/gs-hardware-support-context-dialog.c:638
-#: src/gs-hardware-support-context-dialog.c:647
+#: src/gs-hardware-support-context-dialog.c:645
+#: src/gs-hardware-support-context-dialog.c:654
 msgid "Keyboard Support"
 msgstr "Compatibilitat de teclat"
 
-#: src/gs-hardware-support-context-dialog.c:641
+#: src/gs-hardware-support-context-dialog.c:648
 msgid "Keyboard Support Unknown"
 msgstr "Compatibilitat de teclat desconeguda"
 
-#: src/gs-hardware-support-context-dialog.c:642
+#: src/gs-hardware-support-context-dialog.c:649
 msgid "Not enough information to know if keyboards are supported"
 msgstr "No hi ha prou informació per a saber si és compatible amb teclats"
 
-#: src/gs-hardware-support-context-dialog.c:644
+#: src/gs-hardware-support-context-dialog.c:651
 msgid "Keyboard Required"
 msgstr "Requereix teclat"
 
-#: src/gs-hardware-support-context-dialog.c:648
+#: src/gs-hardware-support-context-dialog.c:655
 msgid "Supports keyboards"
 msgstr "Compatible amb teclats"
 
-#: src/gs-hardware-support-context-dialog.c:650
+#: src/gs-hardware-support-context-dialog.c:657
 msgid "Keyboard Not Supported"
 msgstr "No és compatible amb teclat"
 
-#: src/gs-hardware-support-context-dialog.c:651
+#: src/gs-hardware-support-context-dialog.c:658
 msgid "Cannot be used with a keyboard"
 msgstr "No es pot usar amb un teclat"
 
-#: src/gs-hardware-support-context-dialog.c:658
-#: src/gs-hardware-support-context-dialog.c:667
+#: src/gs-hardware-support-context-dialog.c:665
+#: src/gs-hardware-support-context-dialog.c:674
 msgid "Mouse Support"
 msgstr "Compatibilitat amb ratolí"
 
-#: src/gs-hardware-support-context-dialog.c:659
-#: src/gs-hardware-support-context-dialog.c:665
+#: src/gs-hardware-support-context-dialog.c:666
+#: src/gs-hardware-support-context-dialog.c:672
 msgid "Requires a mouse or pointing device"
 msgstr "Requereix un ratolí o un dispositiu assenyalador"
 
-#: src/gs-hardware-support-context-dialog.c:661
+#: src/gs-hardware-support-context-dialog.c:668
 msgid "Mouse Support Unknown"
 msgstr "Compatibilitat amb ratolí desconeguda"
 
-#: src/gs-hardware-support-context-dialog.c:662
+#: src/gs-hardware-support-context-dialog.c:669
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
 "No hi ha prou informació per a saber si és compatible amb ratolins o "
 "dispositius assenyaladors"
 
-#: src/gs-hardware-support-context-dialog.c:664
+#: src/gs-hardware-support-context-dialog.c:671
 msgid "Mouse Required"
 msgstr "Requereix un ratolí"
 
-#: src/gs-hardware-support-context-dialog.c:668
+#: src/gs-hardware-support-context-dialog.c:675
 msgid "Supports mice and pointing devices"
 msgstr "És compatible amb ratolins i dispositius assenyaladors"
 
-#: src/gs-hardware-support-context-dialog.c:670
+#: src/gs-hardware-support-context-dialog.c:677
 msgid "Mouse Not Supported"
 msgstr "No és compatible amb ratolí"
 
-#: src/gs-hardware-support-context-dialog.c:671
+#: src/gs-hardware-support-context-dialog.c:678
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "No es pot usar amb un ratolí o un dispositiu assenyalador"
 
-#: src/gs-hardware-support-context-dialog.c:678
-#: src/gs-hardware-support-context-dialog.c:687
+#: src/gs-hardware-support-context-dialog.c:685
+#: src/gs-hardware-support-context-dialog.c:694
 msgid "Touchscreen Support"
 msgstr "Compatibilitat amb pantalla tàctil"
 
-#: src/gs-hardware-support-context-dialog.c:681
+#: src/gs-hardware-support-context-dialog.c:688
 msgid "Touchscreen Support Unknown"
 msgstr "Compatibilitat amb pantalla tàctil desconeguda"
 
-#: src/gs-hardware-support-context-dialog.c:682
+#: src/gs-hardware-support-context-dialog.c:689
 msgid "Not enough information to know if touchscreens are supported"
 msgstr ""
 "No hi ha prou informació per a saber si és compatible amb pantalles tàctils"
 
-#: src/gs-hardware-support-context-dialog.c:684
+#: src/gs-hardware-support-context-dialog.c:691
 msgid "Touchscreen Required"
 msgstr "Requereix pantalla tàctil"
 
-#: src/gs-hardware-support-context-dialog.c:688
+#: src/gs-hardware-support-context-dialog.c:695
 msgid "Supports touchscreens"
 msgstr "Compatible amb pantalla tàctil"
 
-#: src/gs-hardware-support-context-dialog.c:690
+#: src/gs-hardware-support-context-dialog.c:697
 msgid "Touchscreen Not Supported"
 msgstr "No és compatible amb pantalla tàctil"
 
-#: src/gs-hardware-support-context-dialog.c:691
+#: src/gs-hardware-support-context-dialog.c:698
 msgid "Cannot be used with a touchscreen"
 msgstr "No pot ser usat en una pantalla tàctil"
 
-#: src/gs-hardware-support-context-dialog.c:704
+#: src/gs-hardware-support-context-dialog.c:711
 msgid "Gamepad Required"
 msgstr "Requereix un comandament de joc"
 
-#: src/gs-hardware-support-context-dialog.c:705
+#: src/gs-hardware-support-context-dialog.c:712
 msgid "Requires a gamepad"
 msgstr "Requereix un comandament de joc"
 
-#: src/gs-hardware-support-context-dialog.c:707
+#: src/gs-hardware-support-context-dialog.c:714
 msgid "Gamepad Support"
 msgstr "Compatibilitat amb comandament de joc"
 
-#: src/gs-hardware-support-context-dialog.c:708
+#: src/gs-hardware-support-context-dialog.c:715
 msgid "Supports gamepads"
 msgstr "Compatible amb comandaments de joc"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:717
+#: src/gs-hardware-support-context-dialog.c:724
 #, c-format
 msgid "%s probably works on this device"
 msgstr "%s probablement funciona en aquest dispositiu"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:724
+#: src/gs-hardware-support-context-dialog.c:731
 #, c-format
 msgid "%s works on this device"
 msgstr "%s funciona en aquest dispositiu"
 
 #. Translators: The app will possbily work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:731
+#: src/gs-hardware-support-context-dialog.c:738
 #, c-format
 msgid "%s possibly works on this device"
 msgstr "%s probablement funciona en aquest dispositiu"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:738
+#: src/gs-hardware-support-context-dialog.c:745
 #, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s no funcionarà correctament en aquest dispositiu"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:745
+#: src/gs-hardware-support-context-dialog.c:752
 #, c-format
 msgid "%s will not work on this device"
 msgstr "%s no funcionarà en aquest dispositiu"
@@ -3304,8 +3304,8 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
-"Aquesta aplicació es desenvolupa sota la llicència especial <a href=\"%s\">"
-"%s</a>.\n"
+"Aquesta aplicació es desenvolupa sota la llicència especial <a "
+"href=\"%s\">%s</a>.\n"
 "\n"
 "És possible que no pugueu contribuir a aquesta aplicació."
 
@@ -3329,8 +3329,8 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
-"Aquest programari es desenvolupa sota la llicència especial <a href=\"%s\">"
-"%s</a>.\n"
+"Aquest programari es desenvolupa sota la llicència especial <a "
+"href=\"%s\">%s</a>.\n"
 "\n"
 "És possible que no pugueu contribuir a aquest programari."
 
@@ -3372,7 +3372,7 @@ msgid "Unknown source"
 msgstr "Font desconeguda"
 
 #. Translators: It's like a beta version of the software, a test version
-#: src/gs-origin-popover-row.ui:108
+#: src/gs-origin-popover-row.ui:104
 msgid "Beta"
 msgstr "Beta"
 
@@ -3876,11 +3876,11 @@ msgid "Write a Review"
 msgstr "Escriviu una ressenya"
 
 #. Translators: A button to publish the user's opinion about the app.
-#: src/gs-review-dialog.ui:35
+#: src/gs-review-dialog.ui:46
 msgid "_Send"
 msgstr "_Enviar"
 
-#: src/gs-review-dialog.ui:54
+#: src/gs-review-dialog.ui:65
 msgid ""
 "Please provide a rating, summary and review text. Reviews should not be used "
 "to report problems: instead, contact the developer or your support provider."
@@ -3889,21 +3889,21 @@ msgstr ""
 "d'utilitzar per informar de problemes: en lloc d'això, poseu-vos en contacte "
 "amb el desenvolupador o el vostre proveïdor de suport."
 
-#: src/gs-review-dialog.ui:100
+#: src/gs-review-dialog.ui:111
 msgid "Review Summary"
 msgstr "Resum de la ressenya"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:132
+#: src/gs-review-dialog.ui:143
 msgctxt "app review"
 msgid "Write a short review"
 msgstr "Escriviu una ressenya"
 
-#: src/gs-review-dialog.ui:176
+#: src/gs-review-dialog.ui:187
 msgid ""
-"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
-"\">privacy policy</a>. The full name attached to your account will be shown "
-"publicly."
+"Find what data is sent in our <a href=\"https://odrs.gnome.org/"
+"privacy\">privacy policy</a>. The full name attached to your account will be "
+"shown publicly."
 msgstr ""
 "Conegueu quines dades s'envien en la nostra <a href=\"https://odrs.gnome.org/"
 "privacy\">política de privadesa</a>. El vostre nom complet relacionat amb el "
@@ -3927,12 +3927,12 @@ msgid "Unknown"
 msgstr "Desconegut"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:226
+#: src/gs-review-row.c:228
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr "Podeu informar de contingut abusiu, groller o discriminatori."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:231
+#: src/gs-review-row.c:233
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3943,13 +3943,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:239
+#: src/gs-review-row.c:241
 msgid "Report Review?"
 msgstr "Voleu informar d'una ressenya?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:244
+#: src/gs-review-row.c:246
 msgid "_Report"
 msgstr "_Informe"
 
@@ -4742,7 +4742,7 @@ msgstr "Dependències necessàries"
 
 #: src/gs-storage-context-dialog.c:178
 msgid "Shared system components required by this app"
-msgstr "Components de sistema compartits necessaris per aquesta aplicació"
+msgstr "Components de sistema compartits necessaris per a aquesta aplicació"
 
 #: src/gs-storage-context-dialog.c:188
 msgctxt "Download size"
@@ -4759,8 +4759,8 @@ msgstr "Emmagatzematge"
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_app settings</a>."
 msgstr ""
-"Les dades emmagatzemades en memòria cau es poden netejar des dels <a href="
-"\"dummy\">_paràmetres de l'aplicació</a>."
+"Les dades emmagatzemades en memòria cau es poden netejar des dels <a "
+"href=\"dummy\">_paràmetres de l'aplicació</a>."
 
 #: src/gs-summary-tile.c:139
 #, c-format
@@ -4826,7 +4826,7 @@ msgstr "Comprova si hi ha actualitzacions"
 
 #: src/gs-update-monitor.c:223
 msgid "Critical Updates Ready to Install"
-msgstr "Les actualització crítiques estan a punt per a instal·lar"
+msgstr "Les actualitzacions crítiques estan a punt per a instal·lar"
 
 #: src/gs-update-monitor.c:224
 msgid "Install critical updates as soon as possible"
@@ -5405,7 +5405,7 @@ msgid "Downloading upgrade information…"
 msgstr "S'està baixant la informació de l'actualització…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:413
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:405
 #: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:95
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
@@ -5567,17 +5567,17 @@ msgstr "Instal·lació de sistema"
 msgid "App ID"
 msgstr "Identificador de l'aplicació"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1338
+#: plugins/flatpak/gs-plugin-flatpak.c:1343
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "No s'ha pogut afegir al complement «%s»: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1352
+#: plugins/flatpak/gs-plugin-flatpak.c:1357
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "No s'ha pogut afegir al complement «%s»: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1619
+#: plugins/flatpak/gs-plugin-flatpak.c:1624
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5597,8 +5597,8 @@ msgstr "La bateria és massa baixa per a realitzar l'actualització"
 #, c-format
 msgid "System power is too low to perform the update (%u%%, requires %u%%)"
 msgstr ""
-"La bateria és massa baixa per a realitzar l'actualització (%u%%, requereix %u"
-"%%)"
+"La bateria és massa baixa per a realitzar l'actualització (%u%%, requereix "
+"%u%%)"
 
 #. TRANSLATORS: for example, a Bluetooth mouse that is in powersave mode
 #: plugins/fwupd/gs-fwupd-app.c:76
@@ -5878,7 +5878,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Paquets"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3219
+#: plugins/packagekit/gs-plugin-packagekit.c:3238
 msgid "Failed to install updates: "
 msgstr "No s'han pogut instal·lar les actualitzacions: "
 
