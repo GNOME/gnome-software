@@ -1114,6 +1114,9 @@ gs_application_startup (GApplication *application)
 	g_application_withdraw_notification (application, "upgrades-downloaded");
 	g_application_withdraw_notification (application, "offline-updates");
 	g_application_withdraw_notification (application, "eol");
+	#ifdef ENABLE_DKMS
+	g_application_withdraw_notification (application, "dkms-key-pending");
+	#endif
 
 	/* Set up the plugins. */
 	gs_plugin_loader_setup_async (app->plugin_loader,

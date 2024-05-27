@@ -13,6 +13,9 @@ subdir('dummy')
 subdir('fedora-langpacks')
 subdir('fedora-pkgdb-collections')
 
+if get_option('dkms')
+  subdir('dkms')
+endif
 if get_option('eos_updater')
   subdir('eos-updater')
 endif

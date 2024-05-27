@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+<!--
+  SPDX-License-Identifier: GPL-2.0-or-later
+  SPDX-FileCopyrightText: 2024 Red Hat
+-->
+<policyconfig>
+  <vendor>GNOME Software</vendor>
+  <vendor_url>https://apps.gnome.org/Software</vendor_url>
+  <action id="org.gnome.software.akmods-test">
+    <description>Test akmods key in Shim UEFI</description>
+    <message>Authentication is required to test akmods key in Shim UEFI</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">@libexecdir@/gnome-software-dkms-helper</annotate>
+    <annotate key="org.freedesktop.policykit.exec.argv1">--test-akmods</annotate>
+  </action>
+  <action id="org.gnome.software.akmods-enroll">
+    <description>Enroll akmods key to Shim UEFI</description>
+    <message>Authentication is required to enroll akmods key to Shim UEFI</message>
+    <defaults>
+      <allow_any>auth_admin_keep</allow_any>
+      <allow_active>auth_admin_keep</allow_active>
+      <allow_inactive>auth_admin_keep</allow_inactive>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">@libexecdir@/gnome-software-dkms-helper</annotate>
+    <annotate key="org.freedesktop.policykit.exec.argv1">--enroll-akmods</annotate>
+  </action>
+  <action id="org.gnome.software.dkms-test">
+    <description>Test DKMS key in Shim UEFI</description>
+    <message>Authentication is required to test DKMS key in Shim UEFI</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">@libexecdir@/gnome-software-dkms-helper</annotate>
+    <annotate key="org.freedesktop.policykit.exec.argv1">--test-dkms</annotate>
+  </action>
+  <action id="org.gnome.software.dkms-enroll">
+    <description>Enroll DKMS key to Shim UEFI</description>
+    <message>Authentication is required to enroll DKMS key to Shim UEFI</message>
+    <defaults>
+      <allow_any>auth_admin_keep</allow_any>
+      <allow_active>auth_admin_keep</allow_active>
+      <allow_inactive>auth_admin_keep</allow_inactive>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">@libexecdir@/gnome-software-dkms-helper</annotate>
+    <annotate key="org.freedesktop.policykit.exec.argv1">--enroll-dkms</annotate>
+  </action>
+</policyconfig>

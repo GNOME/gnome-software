@@ -286,6 +286,7 @@ conf.set_quoted('LIBEXECDIR',
                 join_paths(get_option('prefix'),
                            get_option('libexecdir')))
 conf.set('ENABLE_EXTERNAL_APPSTREAM', get_option('external_appstream'))
+conf.set('ENABLE_DKMS', get_option('dkms'))
 configure_file(
   output : 'config.h',
   configuration : conf

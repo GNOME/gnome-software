@@ -105,6 +105,13 @@ gnome_software_dependencies = [
   libxmlb,
 ]
 
+if get_option('dkms')
+  gnome_software_sources += [
+    'gs-dkms-dialog.h',
+    'gs-dkms-dialog.c',
+  ]
+endif
+
 if get_option('packagekit')
   gnome_software_sources += [
     'gs-dbus-helper.c',
