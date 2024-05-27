@@ -6319,8 +6319,11 @@ gs_app_dup_origin_ui (GsApp *app,
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE) &&
 	    gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY) {
 		os_release = gs_os_release_new (NULL);
-		if (os_release != NULL)
-			origin_str = gs_os_release_get_name (os_release);
+		if (os_release != NULL) {
+			origin_str = gs_os_release_get_vendor_name (os_release);
+			if (origin_str == NULL)
+				origin_str = gs_os_release_get_name (os_release);
+		}
 	}
 
 	priv = gs_app_get_instance_private (app);
