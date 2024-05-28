@@ -79,6 +79,7 @@ void		 gs_shell_show_extras_search	(GsShell	*shell,
 						 const gchar	*ident);
 void		 gs_shell_show_uri		(GsShell	*shell,
 						 const gchar	*url);
+gboolean	 gs_shell_is_running		(GsShell	*self);
 void		 gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);

@@ -2196,6 +2196,23 @@ details_page_app_clicked_cb (GsDetailsPage *page,
 	gs_shell_show_app (shell, app);
 }
 
+/**
+ * gs_shell_is_running:
+ * @self: a #GsShell
+ *
+ * Check whether the @self has been already set up, which roughly means
+ * the gs_shell_setup() has been called.
+ *
+ * Returns: whether the @self has been already set up
+ *
+ * Since: 48
+ **/
+gboolean
+gs_shell_is_running (GsShell *self)
+{
+	return self->plugin_loader != NULL;
+}
+
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
