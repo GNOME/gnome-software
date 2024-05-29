@@ -1232,10 +1232,11 @@ install_device_request_cb (FwupdClient *client, FwupdRequest *request, GTask *ta
 	GsPluginFwupd *self = g_task_get_source_object (task);
 	InstallData *data = g_task_get_task_data (task);
 	g_autoptr(AsScreenshot) ss = as_screenshot_new ();
-	g_autofree gchar *str = fwupd_request_to_string (request);
 
 	/* check the device ID is correct */
-	g_debug ("got FwupdRequest: %s", str);
+	g_debug ("got FwupdRequest: %s for %s",
+		 fwupd_request_get_id (request),
+		 fwupd_request_get_device_id (request));
 	if (g_strcmp0 (data->device_id, FWUPD_DEVICE_ID_ANY) != 0 &&
 	    g_strcmp0 (data->device_id, fwupd_request_get_device_id (request)) != 0) {
 		g_warning ("received request for %s, but updating %s",
