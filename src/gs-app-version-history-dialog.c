@@ -29,6 +29,8 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 			  GsApp			    *app)
 {
 	g_autoptr(GPtrArray) version_history = NULL;
+	const gchar *app_version;
+	gboolean can_check_whether_the_version_is_installed;
 
 	/* remove previous */
 	gs_widget_remove_all (dialog->listbox, (GsRemoveFunc) gtk_list_box_remove);
@@ -40,23 +42,31 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 		gs_app_version_history_row_set_always_expanded (GS_APP_VERSION_HISTORY_ROW (row), TRUE);
 		gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (row),
 						     gs_app_get_version (app),
-						     gs_app_get_release_date (app), NULL);
+						     gs_app_get_release_date (app), NULL, FALSE);
 		gtk_list_box_append (GTK_LIST_BOX (dialog->listbox), row);
 		gtk_widget_set_visible (row, TRUE);
 		return;
 	}
 
+	app_version = gs_app_get_version_ui (app);
+	can_check_whether_the_version_is_installed = app_version != NULL && version_history->len > 1 && gs_app_is_installed (app);
+
 	/* add each */
 	for (guint i = 0; i < version_history->len; i++) {
 		GtkWidget *row;
 		AsRelease *version = g_ptr_array_index (version_history, i);
+		gboolean is_installed = FALSE;
+
+		if (can_check_whether_the_version_is_installed)
+			is_installed = g_strcmp0 (as_release_get_version (version), app_version) == 0;
 
 		row = gs_app_version_history_row_new ();
 		gs_app_version_history_row_set_always_expanded (GS_APP_VERSION_HISTORY_ROW (row), TRUE);
 		gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (row),
 						     as_release_get_version (version),
 						     as_release_get_timestamp (version),
-						     as_release_get_description (version));
+						     as_release_get_description (version),
+						     is_installed);
 
 		gtk_list_box_append (GTK_LIST_BOX (dialog->listbox), row);
 		gtk_widget_set_visible (row, TRUE);
