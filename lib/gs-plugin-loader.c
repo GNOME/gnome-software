@@ -3199,15 +3199,8 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 				gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_FILE_TO_APP);
 				gs_plugin_job_set_file (helper->plugin_job, file);
 				helper->function_name = gs_plugin_action_to_function_name (GS_PLUGIN_ACTION_FILE_TO_APP);
-				if (gs_plugin_loader_run_results (helper, cancellable, &local_error)) {
-					for (guint j = 0; j < gs_app_list_length (list); j++) {
-						GsApp *app = gs_app_list_index (list, j);
-						if (gs_app_get_local_file (app) == NULL)
-							gs_app_set_local_file (app, gs_plugin_job_get_file (helper->plugin_job));
-					}
-				} else {
+				if (!gs_plugin_loader_run_results (helper, cancellable, &local_error))
 					g_debug ("Failed to convert file:// URI to app using file-to-app action: %s", local_error->message);
-				}
 				gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_URL_TO_APP);
 				gs_plugin_job_set_file (helper->plugin_job, NULL);
 			}
@@ -3239,18 +3232,6 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* filter to reduce to a sane set */
 	gs_plugin_loader_job_sorted_truncation (helper->plugin_job, list);
-
-	/* set the local file on any of the returned results */
-	switch (action) {
-	case GS_PLUGIN_ACTION_FILE_TO_APP:
-		for (guint j = 0; j < gs_app_list_length (list); j++) {
-			GsApp *app = gs_app_list_index (list, j);
-			if (gs_app_get_local_file (app) == NULL)
-				gs_app_set_local_file (app, gs_plugin_job_get_file (helper->plugin_job));
-		}
-	default:
-		break;
-	}
 
 	/* run refine() on each one if required */
 	if (gs_plugin_job_get_refine_flags (helper->plugin_job) != 0 &&
