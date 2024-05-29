@@ -22,6 +22,7 @@ struct _GsAppVersionHistoryRow
 	GtkWidget	*version_number_label;
 	GtkWidget	*version_date_label;
 	GtkWidget	*version_description_box;
+	GtkWidget	*installed_label;
 };
 
 G_DEFINE_TYPE (GsAppVersionHistoryRow, gs_app_version_history_row, GTK_TYPE_LIST_BOX_ROW)
@@ -83,6 +84,7 @@ gs_app_version_history_row_class_init (GsAppVersionHistoryRowClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryRow, version_number_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryRow, version_date_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryRow, version_description_box);
+	gtk_widget_class_bind_template_child (widget_class, GsAppVersionHistoryRow, installed_label);
 
 	/**
 	 * GsAppVersionHistoryRow:always-expanded:
@@ -115,6 +117,7 @@ gs_app_version_history_row_init (GsAppVersionHistoryRow *row)
  *   or `0` if unknown
  * @version_description: (nullable): Pango Markup for the full human readable
  *   description of the release, or %NULL if unknown
+ * @is_installed: whether the row corresponds to the currently installed version
  *
  * Set information about the release represented by this version history row.
  */
@@ -122,7 +125,8 @@ void
 gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 				     const char *version_number,
 				     guint64     version_date,
-				     const char *version_description)
+				     const char *version_description,
+				     gboolean is_installed)
 {
 	g_autofree char *version_date_string = NULL;
 	g_autofree char *version_date_string_tooltip = NULL;
@@ -169,6 +173,8 @@ gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 
 	if (version_date_string_tooltip != NULL)
 		gtk_widget_set_tooltip_text (row->version_date_label, version_date_string_tooltip);
+
+	gtk_widget_set_visible (row->installed_label, is_installed);
 }
 
 GtkWidget *
