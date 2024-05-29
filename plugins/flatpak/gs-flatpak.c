@@ -586,6 +586,7 @@ gs_flatpak_create_app (GsFlatpak *self,
 		       FlatpakRef *xref,
 		       FlatpakRemote *xremote,
 		       gboolean interactive,
+		       gboolean allow_cached,
 		       GCancellable *cancellable)
 {
 	GsApp *app_cached;
@@ -597,7 +598,7 @@ gs_flatpak_create_app (GsFlatpak *self,
 	if (origin != NULL) {
 		gs_flatpak_set_app_origin (self, app, origin, xremote, interactive, cancellable);
 
-		if (!(self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY)) {
+		if (allow_cached && !(self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY)) {
 			/* return the ref'd cached copy, only if the origin is known */
 			app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
 			if (app_cached != NULL)
@@ -622,7 +623,7 @@ gs_flatpak_create_app (GsFlatpak *self,
 	 * hash table uses as_utils_data_id_equal() as the equal func and a NULL
 	 * origin becomes a "*" in gs_utils_build_unique_id().
 	 */
-	if (origin != NULL && !(self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY))
+	if (origin != NULL && allow_cached && !(self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY))
 		gs_plugin_cache_add (self->plugin, NULL, app);
 
 	/* no existing match, just steal the temp object */
@@ -1592,7 +1593,7 @@ gs_flatpak_create_installed (GsFlatpak *self,
 
 	/* create new object */
 	origin = flatpak_installed_ref_get_origin (xref);
-	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref), xremote, interactive, cancellable);
+	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref), xremote, interactive, TRUE, cancellable);
 
 	/* Set the state to installed only from some states, to not override the updatable-live or other states */
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
@@ -1790,7 +1791,7 @@ gs_flatpak_ref_to_app (GsFlatpak *self,
 			g_autofree gchar *ref_tmp = flatpak_ref_format_ref (xref);
 			if (g_strcmp0 (ref, ref_tmp) == 0) {
 				const gchar *origin = flatpak_remote_get_name (xremote);
-				return gs_flatpak_create_app (self, origin, xref, xremote, interactive, cancellable);
+				return gs_flatpak_create_app (self, origin, xref, xremote, interactive, TRUE, cancellable);
 			}
 		}
 	}
@@ -3873,7 +3874,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	}
 
 	/* load metadata */
-	app = gs_flatpak_create_app (self, NULL, FLATPAK_REF (xref_bundle), NULL, interactive, cancellable);
+	app = gs_flatpak_create_app (self, NULL, FLATPAK_REF (xref_bundle), NULL, interactive, FALSE, cancellable);
 	if (unrefined)
 		return g_steal_pointer (&app);
 
@@ -4077,7 +4078,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		}
 
 		/* early return */
-		app = gs_flatpak_create_app (self, NULL, parsed_ref, NULL, interactive, cancellable);
+		app = gs_flatpak_create_app (self, NULL, parsed_ref, NULL, interactive, FALSE, cancellable);
 		return g_steal_pointer (&app);
 	}
 
@@ -4153,9 +4154,9 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		gs_flatpak_error_convert (error);
 		return NULL;
 	}
-	app = gs_flatpak_create_app (self, remote_name, FLATPAK_REF (remote_ref), NULL, interactive, cancellable);
+	app = gs_flatpak_create_app (self, remote_name, FLATPAK_REF (remote_ref), NULL, interactive, FALSE, cancellable);
 #else
-	app = gs_flatpak_create_app (self, remote_name, parsed_ref, NULL, interactive, cancellable);
+	app = gs_flatpak_create_app (self, remote_name, parsed_ref, NULL, interactive, FALSE, cancellable);
 	gs_app_set_size_download (app, (app_download_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, app_download_size);
 	gs_app_set_size_installed (app, (app_installed_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, app_installed_size);
 #endif
