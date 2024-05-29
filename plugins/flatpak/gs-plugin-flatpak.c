@@ -2249,6 +2249,10 @@ gs_plugin_flatpak_file_to_app (GsPluginFlatpak *self,
 				g_debug ("Failed to refine runtime: %s", error_local->message);
 		}
 		gs_plugin_flatpak_ensure_scope (GS_PLUGIN (self), app);
+		/* It can return a cached app when the app is available in one of the remotes.
+		   Cached apps cannot have set the local file property. */
+		if (gs_plugin_cache_lookup (GS_PLUGIN (self), gs_app_get_unique_id (app)) != app)
+			gs_app_set_local_file (app, file);
 	}
 
 	return app;
