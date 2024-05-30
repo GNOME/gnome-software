@@ -84,22 +84,6 @@ gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_update_cancel:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Cancels the offline update of @app.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_app_upgrade_download:
  * @plugin: a #GsPlugin
  * @app: a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM

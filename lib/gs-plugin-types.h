@@ -305,6 +305,20 @@ typedef enum {
 } GsPluginUpdateAppsFlags;
 
 /**
+ * GsPluginCancelOfflineUpdateFlags:
+ * @GS_PLUGIN_CANCEL_OFFLINE_UPDATE_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_CANCEL_OFFLINE_UPDATE_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to cancel a pending offline update.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_CANCEL_OFFLINE_UPDATE_FLAGS_NONE		= 0,
+	GS_PLUGIN_CANCEL_OFFLINE_UPDATE_FLAGS_INTERACTIVE	= 1 << 0,
+} GsPluginCancelOfflineUpdateFlags;
+
+/**
  * GsPluginProgressCallback:
  * @plugin: the #GsPlugin reporting its progress
  * @progress: the percentage completion (0–100 inclusive), or
@@ -369,7 +383,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:		Download a distro upgrade
  * @GS_PLUGIN_ACTION_UPGRADE_TRIGGER:		Trigger a distro upgrade
  * @GS_PLUGIN_ACTION_LAUNCH:			Launch an app
- * @GS_PLUGIN_ACTION_UPDATE_CANCEL:		Cancel the update
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an app
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an app
  * @GS_PLUGIN_ACTION_GET_LANGPACKS:		Get appropriate language pack
@@ -386,7 +399,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 	GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 	GS_PLUGIN_ACTION_LAUNCH,
-	GS_PLUGIN_ACTION_UPDATE_CANCEL,
 	GS_PLUGIN_ACTION_FILE_TO_APP,
 	GS_PLUGIN_ACTION_URL_TO_APP,
 	GS_PLUGIN_ACTION_GET_LANGPACKS,

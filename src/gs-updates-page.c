@@ -965,9 +965,7 @@ upgrade_reboot_failed_cb (GObject *source,
 	}
 
 	/* cancel trigger */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL,
-					 "app", app,
-					 NULL);
+	plugin_job = gs_plugin_job_cancel_offline_update_new (GS_PLUGIN_CANCEL_OFFLINE_UPDATE_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    _cancel_trigger_failed_cb,

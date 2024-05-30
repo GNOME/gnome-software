@@ -301,7 +301,7 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 		g_warning ("Calling reboot failed: %s", error->message);
 
 	/* cancel trigger */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL, NULL);
+	plugin_job = gs_plugin_job_cancel_offline_update_new (GS_PLUGIN_CANCEL_OFFLINE_UPDATE_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
 					    app->cancellable,
 					    cancel_trigger_failed_cb,
