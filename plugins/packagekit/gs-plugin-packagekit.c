@@ -370,80 +370,6 @@ app_list_get_package_ids (GsAppList       *apps,
 	return g_steal_pointer (&list_package_ids);
 }
 
-gboolean
-gs_plugin_add_sources (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	PkBitfield filter;
-	PkRepoDetail *rd;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_sources = NULL;
-	const gchar *id;
-	guint i;
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GPtrArray) array = NULL;
-
-	/* ask PK for the repo details */
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
-					 PK_FILTER_ENUM_NOT_DEVELOPMENT,
-					 -1);
-
-	task_sources = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_sources), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
-	results = pk_client_get_repo_list (PK_CLIENT (task_sources),
-					   filter,
-					   cancellable,
-					   gs_packagekit_helper_cb, helper,
-					   error);
-
-	if (!gs_plugin_packagekit_results_valid (results, cancellable, error))
-		return FALSE;
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
-	if (self->cached_sources == NULL)
-		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-	array = pk_results_get_repo_detail_array (results);
-	for (i = 0; i < array->len; i++) {
-		g_autoptr(GsApp) app = NULL;
-		rd = g_ptr_array_index (array, i);
-		id = pk_repo_detail_get_id (rd);
-		app = g_hash_table_lookup (self->cached_sources, id);
-		if (app == NULL) {
-			app = gs_app_new (id);
-			gs_app_set_management_plugin (app, plugin);
-			gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
-			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-			gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-			gs_app_set_state (app, pk_repo_detail_get_enabled (rd) ?
-					  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
-			gs_app_set_name (app,
-					 GS_APP_QUALITY_HIGHEST,
-					 pk_repo_detail_get_description (rd));
-			gs_app_set_summary (app,
-					    GS_APP_QUALITY_HIGHEST,
-					    pk_repo_detail_get_description (rd));
-			gs_plugin_packagekit_set_packaging_format (plugin, app);
-			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "300");
-			gs_app_set_origin_ui (app, _("Packages"));
-			g_hash_table_insert (self->cached_sources, g_strdup (id), app);
-			g_object_weak_ref (G_OBJECT (app), cached_sources_weak_ref_cb, self);
-		} else {
-			g_object_ref (app);
-			/* The repo-related apps are those installed; due to re-using
-			   cached app, make sure the list is populated from fresh data. */
-			gs_app_list_remove_all (gs_app_get_related (app));
-		}
-		gs_app_list_add (list, app);
-	}
-
-	return TRUE;
-}
-
 static GsApp *
 gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
                                           GsApp               *app,
@@ -1572,6 +1498,66 @@ gs_packagekit_add_historical_updates_sync (GsPlugin *plugin,
 	return TRUE;
 }
 
+static void
+gs_packagekit_list_sources_cb (GObject *source_object,
+			       GAsyncResult *result,
+			       gpointer user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (g_task_get_source_object (task));
+	GsPlugin *plugin = GS_PLUGIN (self);
+
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+	if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+	if (self->cached_sources == NULL)
+		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	array = pk_results_get_repo_detail_array (results);
+	for (guint i = 0; i < array->len; i++) {
+		g_autoptr(GsApp) app = NULL;
+		PkRepoDetail *rd = g_ptr_array_index (array, i);
+		const gchar *id = pk_repo_detail_get_id (rd);
+		app = g_hash_table_lookup (self->cached_sources, id);
+		if (app == NULL) {
+			app = gs_app_new (id);
+			gs_app_set_management_plugin (app, plugin);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
+			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+			gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+			gs_app_set_state (app, pk_repo_detail_get_enabled (rd) ?
+					  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
+			gs_app_set_name (app,
+					 GS_APP_QUALITY_HIGHEST,
+					 pk_repo_detail_get_description (rd));
+			gs_app_set_summary (app,
+					    GS_APP_QUALITY_HIGHEST,
+					    pk_repo_detail_get_description (rd));
+			gs_plugin_packagekit_set_packaging_format (plugin, app);
+			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "300");
+			gs_app_set_origin_ui (app, _("Packages"));
+			g_hash_table_insert (self->cached_sources, g_strdup (id), app);
+			g_object_weak_ref (G_OBJECT (app), cached_sources_weak_ref_cb, self);
+		} else {
+			g_object_ref (app);
+			/* The repo-related apps are those installed; due to re-using
+			   cached app, make sure the list is populated from fresh data. */
+			gs_app_list_remove_all (gs_app_get_related (app));
+		}
+		gs_app_list_add (list, app);
+	}
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
 static void list_apps_cb (GObject      *source_object,
                           GAsyncResult *result,
                           gpointer      user_data);
@@ -1593,6 +1579,7 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppQueryTristate is_historical_update = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_source = GS_APP_QUERY_TRISTATE_UNSET;
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GTask) task = NULL;
 
@@ -1605,15 +1592,18 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 		provides_type = gs_app_query_get_provides (query, &provides_tag);
 		is_for_update = gs_app_query_get_is_for_update (query);
 		is_historical_update = gs_app_query_get_is_historical_update (query);
+		is_source = gs_app_query_get_is_source (query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once. */
 	if ((provides_files == NULL &&
 	     provides_tag == NULL &&
 	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
-	     is_historical_update == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     is_historical_update == GS_APP_QUERY_TRISTATE_UNSET &&
+	     is_source == GS_APP_QUERY_TRISTATE_UNSET) ||
 	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_historical_update == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_source == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -1663,6 +1653,16 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 			g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 		else
 			g_task_return_error (task, g_steal_pointer (&local_error));
+	} else if (is_source == GS_APP_QUERY_TRISTATE_TRUE) {
+		/* ask PK for the repo details */
+		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
+						 PK_FILTER_ENUM_NOT_DEVELOPMENT,
+						 -1);
+		pk_client_get_repo_list_async (PK_CLIENT (task_list_apps),
+					       filter,
+					       cancellable,
+					       gs_packagekit_helper_cb, helper,
+					       gs_packagekit_list_sources_cb, g_steal_pointer (&task));
 	} else {
 		g_assert_not_reached ();
 	}

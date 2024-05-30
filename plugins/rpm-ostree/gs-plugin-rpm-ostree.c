@@ -3001,119 +3001,21 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 	return g_steal_pointer (&list);
 }
 
-static void list_apps_thread_cb (GTask        *task,
-                                 gpointer      source_object,
-                                 gpointer      task_data,
-                                 GCancellable *cancellable);
-
-static void
-gs_plugin_rpm_ostree_list_apps_async (GsPlugin              *plugin,
-                                      GsAppQuery            *query,
-                                      GsPluginListAppsFlags  flags,
-                                      GCancellable          *cancellable,
-                                      GAsyncReadyCallback    callback,
-                                      gpointer               user_data)
+static GsAppList * /* (transfer full) */
+list_apps_sources_sync (GsPluginRpmOstree *self,
+			gboolean interactive,
+			GsRPMOSTreeOS *os_proxy,
+			GsRPMOSTreeSysroot *sysroot_proxy,
+			GCancellable *cancellable,
+			GError **error)
 {
-	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
-	g_autoptr(GTask) task = NULL;
-	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
-
-	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
-						  cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_rpm_ostree_list_apps_async);
-
-	/* Queue a job to get the apps. */
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
-				list_apps_thread_cb, g_steal_pointer (&task));
-}
-
-/* Run in @worker. */
-static void
-list_apps_thread_cb (GTask        *task,
-                     gpointer      source_object,
-                     gpointer      task_data,
-                     GCancellable *cancellable)
-{
-	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
-	g_autoptr(GsAppList) list = NULL;
-	GsPluginListAppsData *data = task_data;
-	const gchar *provides_tag = NULL;
-	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
-	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
-	GsAppQueryTristate is_historical_update = GS_APP_QUERY_TRISTATE_UNSET;
-	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
-	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
-	gboolean interactive = (data->flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE) != 0;
-
-	assert_in_worker (self);
-
-	if (data->query != NULL) {
-		provides_type = gs_app_query_get_provides (data->query, &provides_tag);
-		is_for_update = gs_app_query_get_is_for_update (data->query);
-		is_historical_update = gs_app_query_get_is_historical_update (data->query);
-	}
-
-	/* Currently only support a subset of query properties, and only one set at once. */
-	if ((provides_tag == NULL &&
-	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
-	     is_historical_update == GS_APP_QUERY_TRISTATE_UNSET) ||
-	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
-	    is_historical_update == GS_APP_QUERY_TRISTATE_FALSE ||
-	    gs_app_query_get_n_properties_set (data->query) != 1) {
-		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
-					 "Unsupported query");
-		return;
-	}
-
-	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error) ||
-	    !gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	if (provides_tag != NULL) {
-		list = list_apps_provides_sync (self, interactive, os_proxy, sysroot_proxy, provides_type, provides_tag, cancellable, &local_error);
-	} else if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
-		list = list_apps_for_update_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
-	} else if (is_historical_update == GS_APP_QUERY_TRISTATE_TRUE) {
-		list = list_apps_historical_updates_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
-	}
-
-	if (list != NULL)
-		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-	else
-		g_task_return_error (task, g_steal_pointer (&local_error));
-}
-
-static GsAppList *
-gs_plugin_rpm_ostree_list_apps_finish (GsPlugin      *plugin,
-                                       GAsyncResult  *result,
-                                       GError       **error)
-{
-	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_add_sources (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
-	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
-	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
 	g_autoptr(GVariant) repos = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
+	GsPlugin *plugin = GS_PLUGIN (self);
 	gsize n_children;
 	gboolean done;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
-	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
-		return FALSE;
 
 	done = FALSE;
 	while (!done) {
@@ -3135,9 +3037,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 			gs_rpmostree_error_convert (&local_error);
 			/*  Ignore error when the corresponding D-Bus method does not exist */
 			if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED))
-				return TRUE;
+				return g_steal_pointer (&list);
 			g_propagate_error (error, g_steal_pointer (&local_error));
-			return FALSE;
+			return NULL;
 		}
 	}
 
@@ -3191,7 +3093,106 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_list_add (list, app);
 	}
 
-	return TRUE;
+	return g_steal_pointer (&list);
+}
+
+static void list_apps_thread_cb (GTask        *task,
+                                 gpointer      source_object,
+                                 gpointer      task_data,
+                                 GCancellable *cancellable);
+
+static void
+gs_plugin_rpm_ostree_list_apps_async (GsPlugin              *plugin,
+                                      GsAppQuery            *query,
+                                      GsPluginListAppsFlags  flags,
+                                      GCancellable          *cancellable,
+                                      GAsyncReadyCallback    callback,
+                                      gpointer               user_data)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+
+	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
+						  cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_list_apps_async);
+
+	/* Queue a job to get the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				list_apps_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+list_apps_thread_cb (GTask        *task,
+                     gpointer      source_object,
+                     gpointer      task_data,
+                     GCancellable *cancellable)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
+	g_autoptr(GsAppList) list = NULL;
+	GsPluginListAppsData *data = task_data;
+	const gchar *provides_tag = NULL;
+	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
+	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_historical_update = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_source = GS_APP_QUERY_TRISTATE_UNSET;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	gboolean interactive = (data->flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE) != 0;
+
+	assert_in_worker (self);
+
+	if (data->query != NULL) {
+		provides_type = gs_app_query_get_provides (data->query, &provides_tag);
+		is_for_update = gs_app_query_get_is_for_update (data->query);
+		is_historical_update = gs_app_query_get_is_historical_update (data->query);
+		is_source = gs_app_query_get_is_source (data->query);
+	}
+
+	/* Currently only support a subset of query properties, and only one set at once. */
+	if ((provides_tag == NULL &&
+	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
+	     is_historical_update == GS_APP_QUERY_TRISTATE_UNSET &&
+	     is_source == GS_APP_QUERY_TRISTATE_UNSET) ||
+	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_historical_update == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_source == GS_APP_QUERY_TRISTATE_FALSE ||
+	    gs_app_query_get_n_properties_set (data->query) != 1) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+		return;
+	}
+
+	if (!gs_rpmostree_ref_proxies (self, interactive, &os_proxy, &sysroot_proxy, cancellable, &local_error) ||
+	    !gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (provides_tag != NULL) {
+		list = list_apps_provides_sync (self, interactive, os_proxy, sysroot_proxy, provides_type, provides_tag, cancellable, &local_error);
+	} else if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
+		list = list_apps_for_update_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
+	} else if (is_historical_update == GS_APP_QUERY_TRISTATE_TRUE) {
+		list = list_apps_historical_updates_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
+	} else if (is_source == GS_APP_QUERY_TRISTATE_TRUE) {
+		list = list_apps_sources_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
+	}
+
+	if (list != NULL)
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static GsAppList *
+gs_plugin_rpm_ostree_list_apps_finish (GsPlugin      *plugin,
+                                       GAsyncResult  *result,
+                                       GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static void enable_repository_thread_cb (GTask        *task,

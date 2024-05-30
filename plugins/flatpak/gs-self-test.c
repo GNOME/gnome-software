@@ -334,7 +334,9 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* check the source now exists */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES, NULL);
+	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_clear_object (&query);
 	sources = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (sources != NULL);
@@ -711,6 +713,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) sources2 = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsAppList) runtime_list = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
@@ -759,7 +762,9 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* check the number of sources */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES, NULL);
+	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_clear_object (&query);
 	sources = gs_plugin_loader_job_process (plugin_loader, plugin_job,
 						NULL, &error);
 	g_assert_no_error (error);
@@ -783,7 +788,9 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* check the number of sources */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES, NULL);
+	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_clear_object (&query);
 	sources2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (sources2 != NULL);
@@ -845,6 +852,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) sources2 = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsAppList) runtime_list = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
@@ -919,7 +927,9 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* check the number of sources */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES, NULL);
+	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_clear_object (&query);
 	sources = gs_plugin_loader_job_process (plugin_loader, plugin_job,
 						NULL, &error);
 	g_assert_no_error (error);
@@ -942,7 +952,9 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* check the number of sources */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES, NULL);
+	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_clear_object (&query);
 	sources2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (sources2 != NULL);
@@ -1334,7 +1346,9 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* there should be no sources now */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES, NULL);
+	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_clear_object (&query);
 	sources = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (sources != NULL);
