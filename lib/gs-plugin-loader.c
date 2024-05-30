@@ -577,7 +577,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, app, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
 		{
 			GsPluginResultsFunc plugin_func = func;

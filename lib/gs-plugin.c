@@ -1409,8 +1409,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_url_to_app";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "gs_plugin_add_sources";
-	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
-		return "gs_plugin_add_updates_historical";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "gs_plugin_add_langpacks";
 	return NULL;
@@ -1443,8 +1441,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
 		return "url-to-app";
-	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
-		return "get-updates-historical";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "get-langpacks";
 	if (action == GS_PLUGIN_ACTION_INSTALL_REPO)
@@ -1485,8 +1481,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)
 		return GS_PLUGIN_ACTION_URL_TO_APP;
-	if (g_strcmp0 (action, "get-updates-historical") == 0)
-		return GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL;
 	if (g_strcmp0 (action, "get-langpacks") == 0)
 		return GS_PLUGIN_ACTION_GET_LANGPACKS;
 	if (g_strcmp0 (action, "repo-install") == 0)

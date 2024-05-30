@@ -138,5 +138,7 @@ GsAppQueryDeveloperVerifiedType
 			 gs_app_query_get_developer_verified_type
 							 (GsAppQuery *self);
 GsAppQueryTristate	 gs_app_query_get_is_for_update	 (GsAppQuery *self);
+GsAppQueryTristate	 gs_app_query_get_is_historical_update
+							 (GsAppQuery *self);
 
 G_END_DECLS

@@ -84,25 +84,6 @@ gboolean	 gs_plugin_add_sources			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_updates_historical
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get the list of historical updates, i.e. the updates that have just been
- * installed.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_updates_historical	(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_launch:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
