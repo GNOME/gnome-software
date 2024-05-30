@@ -130,23 +130,19 @@ gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 {
 	g_autofree char *version_date_string = NULL;
 	g_autofree char *version_date_string_tooltip = NULL;
+	g_autofree char *version_tmp = NULL;
 
 	if (version_number == NULL || *version_number == '\0')
 		return;
 
+	version_tmp = g_strdup_printf (_("Version %s"), version_number);
+	gtk_label_set_label (GTK_LABEL (row->version_number_label), version_tmp);
+
 	if (version_description != NULL && *version_description != '\0') {
-		g_autofree char *version_tmp = NULL;
-		version_tmp = g_strdup_printf (_("New in Version %s"), version_number);
-		gtk_label_set_label (GTK_LABEL (row->version_number_label), version_tmp);
 		gs_description_box_set_text (GS_DESCRIPTION_BOX (row->version_description_box), version_description);
 		gtk_widget_remove_css_class (row->version_description_box, "dim-label");
 	} else {
-		g_autofree char *version_tmp = NULL;
-		const gchar *version_description_fallback;
-		version_tmp = g_strdup_printf (_("Version %s"), version_number);
-		gtk_label_set_label (GTK_LABEL (row->version_number_label), version_tmp);
-		version_description_fallback = _("No details for this release");
-		gs_description_box_set_text (GS_DESCRIPTION_BOX (row->version_description_box), version_description_fallback);
+		gs_description_box_set_text (GS_DESCRIPTION_BOX (row->version_description_box), _("No details for this release"));
 		gtk_widget_add_css_class (row->version_description_box, "dim-label");
 	}
 
