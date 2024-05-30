@@ -1365,8 +1365,8 @@ gs_app_query_get_developer_verified_type (GsAppQuery *self)
  *
  * Get the value of #GsAppQuery:is-for-update.
  *
- * Returns: %GS_APP_QUERY_TRISTATE_TRUE if query only for apps, which can be updated,
- *   %GS_APP_QUERY_TRISTATE_FALSE if query only for apps, which cannot be updated, or
+ * Returns: %GS_APP_QUERY_TRISTATE_TRUE if query is only for apps which can be updated,
+ *   %GS_APP_QUERY_TRISTATE_FALSE if query is only for apps which cannot be updated, or
  *   %GS_APP_QUERY_TRISTATE_UNSET if it doesn’t matter
  * Since: 47
  */
@@ -1384,8 +1384,8 @@ gs_app_query_get_is_for_update (GsAppQuery *self)
  *
  * Get the value of #GsAppQuery:is-historical-update.
  *
- * Returns: %GS_APP_QUERY_TRISTATE_TRUE if query only for apps, which had been recently updated,
- *   %GS_APP_QUERY_TRISTATE_FALSE if query only for apps, which had not been recently updated, or
+ * Returns: %GS_APP_QUERY_TRISTATE_TRUE if query is only for apps which had been recently updated,
+ *   %GS_APP_QUERY_TRISTATE_FALSE if query is only for apps which had not been recently updated, or
  *   %GS_APP_QUERY_TRISTATE_UNSET if it doesn’t matter
  * Since: 47
  */
