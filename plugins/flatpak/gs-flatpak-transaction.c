@@ -688,11 +688,11 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 		g_warning ("failed to %s %s (non fatal): %s",
 		           _flatpak_transaction_operation_type_to_string (operation_type),
 		           ref,
-		           error->message);
+		           error != NULL ? error->message : "unknown error");
 		return TRUE; /* continue */
 	}
 
-	if (self->first_operation_error == NULL) {
+	if (self->first_operation_error == NULL && error != NULL) {
 		g_propagate_error (&self->first_operation_error,
 		                   g_error_copy (error));
 		if (app != NULL)
