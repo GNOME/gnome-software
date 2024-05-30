@@ -2739,6 +2739,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, plugin);
+	gs_app_set_local_file (app, file);
 	if (h) {
 		const gchar *str;
 
