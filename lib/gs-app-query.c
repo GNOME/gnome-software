@@ -870,8 +870,8 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 	/**
 	 * GsAppQuery:is-for-update:
 	 *
-	 * Whether include only apps, which can be updated (%GS_APP_QUERY_TRISTATE_TRUE), or
-	 * the apps, which cannot be updated (%GS_APP_QUERY_TRISTATE_FALSE).
+	 * Whether to include only apps which can be updated (%GS_APP_QUERY_TRISTATE_TRUE), or
+	 * apps which cannot be updated (%GS_APP_QUERY_TRISTATE_FALSE).
 	 *
 	 * If this is %GS_APP_QUERY_TRISTATE_UNSET, then it doesn't matter.
 	 *
@@ -879,7 +879,7 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 	 */
 	props[PROP_IS_FOR_UPDATE] =
 		g_param_spec_enum ("is-for-update", "Is For Update",
-				   "Whether include only apps, which can be updated.",
+				   "Whether to include only apps which can be updated.",
 				   GS_TYPE_APP_QUERY_TRISTATE,
 				   GS_APP_QUERY_TRISTATE_UNSET,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
