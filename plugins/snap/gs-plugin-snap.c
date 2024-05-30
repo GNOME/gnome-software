@@ -584,6 +584,9 @@ static void list_alternative_apps_nonsnap_get_store_snap_cb (GObject      *sourc
 static void list_apps_cb (GObject      *source_object,
                           GAsyncResult *result,
                           gpointer      user_data);
+static void list_apps_for_update_cb (GObject      *source_object,
+                                     GAsyncResult *result,
+                                     gpointer      user_data);
 static void finish_list_apps_op (GTask  *task,
                                  GError *error);
 
@@ -604,6 +607,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	GsCategory *category = NULL;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
+	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	const gchar * const *keywords = NULL;
 	GsApp *alternate_of = NULL;
 	const gchar * const *sections = NULL;
@@ -627,6 +631,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 		is_installed = gs_app_query_get_is_installed (query);
 		keywords = gs_app_query_get_keywords (query);
 		alternate_of = gs_app_query_get_alternate_of (query);
+		is_for_update = gs_app_query_get_is_for_update (query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once.
@@ -635,9 +640,11 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 	     category == NULL &&
 	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
 	     keywords == NULL &&
-	     alternate_of == NULL) ||
+	     alternate_of == NULL &&
+	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -652,6 +659,13 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 		data->n_pending_ops++;
 		snapd_client_get_snaps_async (client, SNAPD_GET_SNAPS_FLAGS_NONE, NULL,
 					      cancellable, list_installed_apps_cb, g_steal_pointer (&task));
+		return;
+	}
+
+	/* Get the list of refreshable snaps */
+	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
+		data->n_pending_ops++;
+		snapd_client_find_refreshable_async (client, cancellable, list_apps_for_update_cb, g_steal_pointer (&task));
 		return;
 	}
 
@@ -869,6 +883,42 @@ list_apps_cb (GObject      *source_object,
 			g_autoptr(GsApp) app = NULL;
 
 			app = snap_to_app (self, snap, NULL);
+			gs_app_list_add (data->results_list, app);
+		}
+	} else {
+		snapd_error_convert (&local_error);
+	}
+
+	finish_list_apps_op (task, g_steal_pointer (&local_error));
+}
+
+static void
+list_apps_for_update_cb (GObject *source_object,
+			 GAsyncResult *result,
+			 gpointer user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
+	GsPluginSnap *self = g_task_get_source_object (task);
+	ListAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GPtrArray) snaps = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	snaps = snapd_client_find_refreshable_finish (client, result, &local_error);
+	if (snaps != NULL) {
+		store_snap_cache_update (self, snaps, FALSE);
+
+		for (guint i = 0; i < snaps->len; i++) {
+			SnapdSnap *snap = g_ptr_array_index (snaps, i);
+			g_autoptr(GsApp) app = NULL;
+
+			app = snap_to_app (self, snap, NULL);
+
+			/* If for some reason the app is already getting updated, then
+			 * don't change its state */
+			if (gs_app_get_state (app) != GS_APP_STATE_INSTALLING)
+				gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
+
 			gs_app_list_add (data->results_list, app);
 		}
 	} else {
@@ -2312,50 +2362,6 @@ gs_plugin_snap_uninstall_apps_finish (GsPlugin      *plugin,
                                       GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_add_updates (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
-	g_autoptr(GPtrArray) apps = NULL;
-	g_autoptr(SnapdClient) client = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-	g_autoptr(GError) error_local = NULL;
-
-	client = get_client (self, interactive, &error_local);
-	if (client == NULL) {
-		g_debug ("Failed to get client to get updates: %s", error_local->message);
-		return TRUE;
-	}
-
-	/* Get the list of refreshable snaps */
-	apps = snapd_client_find_refreshable_sync (client, cancellable, &error_local);
-	if (apps == NULL) {
-		g_warning ("Failed to find refreshable snaps: %s", error_local->message);
-		return TRUE;
-	}
-
-	for (guint i = 0; i < apps->len; i++) {
-		SnapdSnap *snap = g_ptr_array_index (apps, i);
-		g_autoptr(GsApp) app = NULL;
-
-		/* Convert SnapdSnap to a GsApp */
-		app = snap_to_app (self, snap, NULL);
-
-		/* If for some reason the app is already getting updated, then
-		 * don't change its state */
-		if (gs_app_get_state (app) != GS_APP_STATE_INSTALLING)
-			gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-
-		/* Add GsApp to updatable GsAppList */
-		gs_app_list_add (list, app);
-	}
-
-	return TRUE;
 }
 
 typedef struct {

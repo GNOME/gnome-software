@@ -89,6 +89,7 @@ struct _GsAppQuery
 	GsAppQueryProvidesType provides_type;
 	GsAppQueryLicenseType license_type;
 	GsAppQueryDeveloperVerifiedType developer_verified_type;
+	GsAppQueryTristate is_for_update;
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -117,9 +118,10 @@ typedef enum {
 	PROP_PROVIDES_TYPE,
 	PROP_LICENSE_TYPE,
 	PROP_DEVELOPER_VERIFIED_TYPE,
+	PROP_IS_FOR_UPDATE,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_DEVELOPER_VERIFIED_TYPE + 1] = { NULL, };
+static GParamSpec *props[PROP_IS_FOR_UPDATE + 1] = { NULL, };
 
 static gchar **
 gs_app_query_sanitize_keywords (const gchar * const *terms)
@@ -244,6 +246,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_DEVELOPER_VERIFIED_TYPE:
 		g_value_set_enum (value, self->developer_verified_type);
+		break;
+	case PROP_IS_FOR_UPDATE:
+		g_value_set_enum (value, self->is_for_update);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -389,6 +394,11 @@ gs_app_query_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ANY);
 		self->developer_verified_type = g_value_get_enum (value);
+		break;
+	case PROP_IS_FOR_UPDATE:
+		/* Construct only. */
+		g_assert (self->is_for_update == GS_APP_QUERY_TRISTATE_UNSET);
+		self->is_for_update = g_value_get_enum (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -857,6 +867,24 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:is-for-update:
+	 *
+	 * Whether include only apps, which can be updated (%GS_APP_QUERY_TRISTATE_TRUE), or
+	 * the apps, which cannot be updated (%GS_APP_QUERY_TRISTATE_FALSE).
+	 *
+	 * If this is %GS_APP_QUERY_TRISTATE_UNSET, then it doesn't matter.
+	 *
+	 * Since: 47
+	 */
+	props[PROP_IS_FOR_UPDATE] =
+		g_param_spec_enum ("is-for-update", "Is For Update",
+				   "Whether include only apps, which can be updated.",
+				   GS_TYPE_APP_QUERY_TRISTATE,
+				   GS_APP_QUERY_TRISTATE_UNSET,
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -866,6 +894,7 @@ gs_app_query_init (GsAppQuery *self)
 	self->is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	self->is_featured = GS_APP_QUERY_TRISTATE_UNSET;
 	self->is_installed = GS_APP_QUERY_TRISTATE_UNSET;
+	self->is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	self->provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	self->license_type = GS_APP_QUERY_LICENSE_ANY;
 	self->developer_verified_type = GS_APP_QUERY_DEVELOPER_VERIFIED_ANY;
@@ -1037,6 +1066,8 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 	if (self->alternate_of != NULL)
 		n++;
 	if (self->provides_tag != NULL)
+		n++;
+	if (self->is_for_update != GS_APP_QUERY_TRISTATE_UNSET)
 		n++;
 
 	return n;
@@ -1295,4 +1326,23 @@ gs_app_query_get_developer_verified_type (GsAppQuery *self)
 	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_DEVELOPER_VERIFIED_ANY);
 
 	return self->developer_verified_type;
+}
+
+/**
+ * gs_app_query_get_is_for_update:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:is-for-update.
+ *
+ * Returns: %GS_APP_QUERY_TRISTATE_TRUE if query only for apps, which can be updated,
+ *   %GS_APP_QUERY_TRISTATE_FALSE if query only for apps, which cannot be updated, or
+ *   %GS_APP_QUERY_TRISTATE_UNSET if it doesn’t matter
+ * Since: 47
+ */
+GsAppQueryTristate
+gs_app_query_get_is_for_update (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_UNSET);
+
+	return self->is_for_update;
 }

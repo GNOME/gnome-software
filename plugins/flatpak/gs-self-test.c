@@ -1513,10 +1513,12 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 
 	/* get the updates list */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
-					 NULL);
+	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_clear_object (&query);
 	list_updates = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1777,10 +1779,12 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* get the updates list */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
-					 NULL);
+	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	g_clear_object (&query);
 	list_updates = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);

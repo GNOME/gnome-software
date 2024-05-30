@@ -177,6 +177,22 @@ filter_developer_verified_apps (GsApp    *app,
 }
 
 static gboolean
+filter_updatable_apps (GsApp    *app,
+                       gpointer  user_data)
+{
+	return (gs_app_is_updatable (app) ||
+		gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING ||
+		gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
+}
+
+static gboolean
+filter_nonupdatable_apps (GsApp    *app,
+                          gpointer  user_data)
+{
+	return !gs_app_is_updatable (app);
+}
+
+static gboolean
 app_filter_qt_for_gtk_and_compatible (GsApp    *app,
                                       gpointer  user_data)
 {
@@ -411,6 +427,7 @@ finish_task (GTask     *task,
 	gpointer sort_func_data = NULL;
 	GsAppQueryLicenseType license_type = GS_APP_QUERY_LICENSE_ANY;
 	GsAppQueryDeveloperVerifiedType developer_verified_type = GS_APP_QUERY_DEVELOPER_VERIFIED_ANY;
+	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppListFilterFunc filter_func = NULL;
 	gpointer filter_func_data = NULL;
 	guint max_results = 0;
@@ -425,12 +442,17 @@ finish_task (GTask     *task,
 	if (self->query != NULL) {
 		license_type = gs_app_query_get_license_type (self->query);
 		developer_verified_type = gs_app_query_get_developer_verified_type (self->query);
+		is_for_update = gs_app_query_get_is_for_update (self->query);
 	}
 
 	if (license_type == GS_APP_QUERY_LICENSE_FOSS)
 		gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
 	if (developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY)
 		gs_app_list_filter (merged_list, filter_developer_verified_apps, self);
+	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE)
+		gs_app_list_filter (merged_list, filter_updatable_apps, self);
+	else if (is_for_update == GS_APP_QUERY_TRISTATE_FALSE)
+		gs_app_list_filter (merged_list, filter_nonupdatable_apps, self);
 
 	/* Caller-specified filtering. */
 	if (self->query != NULL)

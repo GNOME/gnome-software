@@ -1299,30 +1299,15 @@ gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 }
 
 static gboolean
-gs_plugin_packagekit_add_updates (GsPlugin *plugin,
-				  GsAppList *list,
-				  GCancellable *cancellable,
-				  GError **error)
+gs_plugin_package_list_updates_process_results (GsPlugin *plugin,
+						PkResults *results,
+						GsAppList *list,
+						GCancellable *cancellable,
+						GError **error)
 {
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_updates = NULL;
-	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GsApp) first_app = NULL;
 	gboolean all_downloaded = TRUE;
-
-	/* do sync call */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-
-	task_updates = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
-
-	results = pk_client_get_updates (PK_CLIENT (task_updates),
-					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
 
 	if (!gs_plugin_packagekit_results_valid (results, cancellable, error))
 		return FALSE;
@@ -1363,16 +1348,50 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_updates (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
+static gboolean
+gs_plugin_packagekit_add_updates (GsPlugin *plugin,
+				  GsAppList *list,
+				  GCancellable *cancellable,
+				  GError **error)
 {
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkTask) task_updates = NULL;
+	g_autoptr(PkResults) results = NULL;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+
+	task_updates = gs_packagekit_task_new (plugin);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
+
+	results = pk_client_get_updates (PK_CLIENT (task_updates),
+					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
+					 cancellable,
+					 gs_packagekit_helper_cb, helper,
+					 error);
+
+	return gs_plugin_package_list_updates_process_results (plugin, results, list, cancellable, error);
+}
+
+static void
+gs_packagekit_list_updates_cb (GObject *source_object,
+			       GAsyncResult *result,
+			       gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GError) local_error = NULL;
-	if (!gs_plugin_packagekit_add_updates (plugin, list, cancellable, &local_error))
+
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+	if (!gs_plugin_package_list_updates_process_results (GS_PLUGIN (g_task_get_source_object (task)), results, list,
+							     g_task_get_cancellable (task), &local_error)) {
 		g_debug ("Failed to get updates: %s", local_error->message);
-	return TRUE;
+	}
+
+	/* only log about the errors, do not propagate them to the caller */
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 }
 
 static void list_apps_cb (GObject      *source_object,
@@ -1391,13 +1410,33 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkTask) task_list_apps = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	const gchar *const *provides_files = NULL;
+	const gchar *provides_tag = NULL;
+	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
+	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GTask) task = NULL;
-	const gchar *provides_tag = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_list_apps_async);
 	g_task_set_task_data (task, g_object_ref (helper), g_object_unref);
+
+	if (query != NULL) {
+		provides_files = gs_app_query_get_provides_files (query);
+		provides_type = gs_app_query_get_provides (query, &provides_tag);
+		is_for_update = gs_app_query_get_is_for_update (query);
+	}
+
+	/* Currently only support a subset of query properties, and only one set at once. */
+	if ((provides_files == NULL &&
+	     provides_tag == NULL &&
+	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET) ||
+	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
+	    gs_app_query_get_n_properties_set (query) != 1) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+		return;
+	}
 
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
@@ -1405,17 +1444,17 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 	task_list_apps = gs_packagekit_task_new (plugin);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_list_apps), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
 
-	if (gs_app_query_get_provides_files (query) != NULL) {
+	if (provides_files != NULL) {
 		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
 						 PK_FILTER_ENUM_ARCH,
 						 -1);
 		pk_client_search_files_async (PK_CLIENT (task_list_apps),
 					      filter,
-					      (gchar **) gs_app_query_get_provides_files (query),
+					      (gchar **) provides_files,
 					      cancellable,
 					      gs_packagekit_helper_cb, helper,
 					      list_apps_cb, g_steal_pointer (&task));
-	} else if (gs_app_query_get_provides (query, &provides_tag) != GS_APP_QUERY_PROVIDES_UNKNOWN) {
+	} else if (provides_type != GS_APP_QUERY_PROVIDES_UNKNOWN) {
 		const gchar * const provides_tag_strv[2] = { provides_tag, NULL };
 
 		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
@@ -1428,9 +1467,15 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 					       cancellable,
 					       gs_packagekit_helper_cb, helper,
 					       list_apps_cb, g_steal_pointer (&task));
+	} else if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
+		gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
+		pk_client_get_updates_async (PK_CLIENT (task_list_apps),
+					     pk_bitfield_value (PK_FILTER_ENUM_NONE),
+					     cancellable,
+					     gs_packagekit_helper_cb, helper,
+					     gs_packagekit_list_updates_cb, g_steal_pointer (&task));
 	} else {
-		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
-					 "Unsupported query");
+		g_assert_not_reached ();
 	}
 }
 
