@@ -530,7 +530,7 @@ update_safety_tile (GsAppContextBar *self)
 	 * “App comes from a trusted source; Auditable code; No permissions”
 	 * If concatenating strings as a list using a separator like this is not
 	 * possible in your language, please file an issue against gnome-software:
-	 * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new */
+	 * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/ */
 	description = g_strjoinv (_("; "), (gchar **) descriptions->pdata);
 
 	/* Update the UI. */
@@ -813,7 +813,7 @@ build_age_rating_description (AsContentRating *content_rating)
 	 * “References to alcoholic beverages; Moderated chat functionality between users”
 	 * If concatenating strings as a list using a separator like this is not
 	 * possible in your language, please file an issue against gnome-software:
-	 * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new */
+	 * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/ */
 	return g_strjoinv (_("; "), (gchar **) descriptions->pdata);
 }
 
