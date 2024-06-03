@@ -149,33 +149,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 		gs_app_set_management_plugin (app, plugin);
 }
 
-static gboolean
-gs_plugin_dummy_delay (GsPlugin *plugin,
-		       GsApp *app,
-		       guint timeout_ms,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	gboolean ret = TRUE;
-	guint i;
-	guint timeout_us = timeout_ms * 10;
-
-	/* do blocking delay in 1% increments */
-	for (i = 0; i < 100; i++) {
-		g_usleep (timeout_us);
-		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
-			gs_utils_error_convert_gio (error);
-			ret = FALSE;
-			break;
-		}
-		if (app != NULL)
-			gs_app_set_progress (app, i);
-		gs_plugin_status_update (plugin, app,
-					 GS_PLUGIN_STATUS_DOWNLOADING);
-	}
-	return ret;
-}
-
 typedef struct {
 	GsApp *app;  /* (owned) (nullable) */
 	guint percent_complete;
