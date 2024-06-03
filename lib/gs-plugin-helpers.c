@@ -202,7 +202,7 @@ gs_plugin_list_apps_data_free (GsPluginListAppsData *data)
 
 /**
  * gs_plugin_manage_repository_data_new:
- * @repository: (not-nullable) (transfer none): a repository to manage
+ * @repository: (not nullable) (transfer none): a repository to manage
  * @flags: manage repository flags
  *
  * Common context data for a call to #GsPluginClass.install_repository_async,
@@ -226,7 +226,7 @@ gs_plugin_manage_repository_data_new (GsApp			   *repository,
 /**
  * gs_plugin_manage_repository_data_new_task:
  * @source_object: task source object
- * @repository: (not-nullable) (transfer none): a repository to manage
+ * @repository: (not nullable) (transfer none): a repository to manage
  * @flags: manage repository flags
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -676,7 +676,7 @@ gs_plugin_cancel_offline_update_data_free (GsPluginCancelOfflineUpdateData *data
 
 /**
  * gs_plugin_download_upgrade_data_new:
- * @app: (not-nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
+ * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
  *
  * Common context data for a call to #GsPluginClass.download_upgrade_async.
@@ -698,7 +698,7 @@ gs_plugin_download_upgrade_data_new (GsApp                        *app,
 /**
  * gs_plugin_download_upgrade_data_new_task:
  * @source_object: task source object
- * @app: (not-nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
+ * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -743,7 +743,7 @@ gs_plugin_download_upgrade_data_free (GsPluginDownloadUpgradeData *data)
 
 /**
  * gs_plugin_trigger_upgrade_data_new:
- * @app: (not-nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
+ * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
  *
  * Common context data for a call to #GsPluginClass.trigger_upgrade_async.
@@ -765,7 +765,7 @@ gs_plugin_trigger_upgrade_data_new (GsApp                       *app,
 /**
  * gs_plugin_trigger_upgrade_data_new_task:
  * @source_object: task source object
- * @app: (not-nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
+ * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
