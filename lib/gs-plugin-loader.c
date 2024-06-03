@@ -568,12 +568,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_LAUNCH:
-		{
-			GsPluginActionFunc plugin_func = func;
-			ret = plugin_func (plugin, app, cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
 		{
 			GsPluginFileToAppFunc plugin_func = func;
@@ -3185,26 +3179,9 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 		}
 	}
 
-	/* some functions are really required for proper operation */
-	switch (action) {
-	case GS_PLUGIN_ACTION_LAUNCH:
-		if (!helper->anything_ran) {
-			g_set_error (&error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no plugin could handle %s",
-				     gs_plugin_action_to_string (action));
-			g_task_return_error (task, error);
-			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
-			return;
-		}
-		break;
-	default:
-		if (!helper->anything_ran && !GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job)) {
-			g_debug ("no plugin could handle %s",
-				 gs_plugin_action_to_string (action));
-		}
-		break;
+	if (!helper->anything_ran && !GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job)) {
+		g_debug ("no plugin could handle %s",
+			 gs_plugin_action_to_string (action));
 	}
 
 	/* filter to reduce to a sane set */
@@ -3484,7 +3461,8 @@ run_job_cb (GObject      *source_object,
 		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job) ||
 		   GS_IS_PLUGIN_JOB_CANCEL_OFFLINE_UPDATE (plugin_job) ||
 		   GS_IS_PLUGIN_JOB_DOWNLOAD_UPGRADE (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_TRIGGER_UPGRADE (plugin_job)) {
+		   GS_IS_PLUGIN_JOB_TRIGGER_UPGRADE (plugin_job) ||
+		   GS_IS_PLUGIN_JOB_LAUNCH (plugin_job)) {
 		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
 		 * pointer on success, thus return it. */
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);

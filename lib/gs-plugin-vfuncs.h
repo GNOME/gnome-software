@@ -64,26 +64,6 @@ void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
 							 GsApp		*app);
 
 /**
- * gs_plugin_launch:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Launch the specified app using a plugin-specific method.
- * This is normally setting some environment or launching a specific binary.
- *
- * Plugins can simply use gs_plugin_app_launch() if no plugin-specific
- * functionality is required.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_file_to_app:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList

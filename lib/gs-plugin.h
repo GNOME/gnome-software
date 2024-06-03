@@ -113,6 +113,10 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @trigger_upgrade_finish: (nullable): Finish method for
  *   @trigger_upgrade_async. Must be implemented if
  *   @trigger_upgrade_async is implemented. (Since: 47)
+ * @launch_async: (nullable): Launch the specified app using a plugin-specific method. (Since: 47)
+ * @launch_finish: (nullable): Finish method for
+ *   @launch_async. Must be implemented if
+ *   @launch_async is implemented. (Since: 47)
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -316,6 +320,16 @@ struct _GsPluginClass
 								 GAsyncResult			*result,
 								 GError				**error);
 
+	void			(*launch_async)			(GsPlugin			*plugin,
+								 GsApp				*app,
+								 GsPluginLaunchFlags		 flags,
+								 GCancellable			*cancellable,
+								 GAsyncReadyCallback		 callback,
+								 gpointer			 user_data);
+	gboolean		(*launch_finish)		(GsPlugin			*plugin,
+								 GAsyncResult			*result,
+								 GError				**error);
+
 	gpointer		 padding[23];
 };
 
@@ -362,21 +376,29 @@ GsAppList	*gs_plugin_list_cached			(GsPlugin	*plugin);
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
-gboolean	 gs_plugin_app_launch			(GsPlugin	*plugin,
+void		 gs_plugin_app_launch_async		(GsPlugin	*plugin,
 							 GsApp		*app,
+							 GsPluginLaunchFlags flags,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	user_data);
+gboolean	 gs_plugin_app_launch_finish		(GsPlugin	*plugin,
+							 GAsyncResult	*result,
 							 GError		**error);
 typedef gboolean (* GsPluginPickDesktopFileCallback)	(GsPlugin	*plugin,
 							 GsApp		*app,
 							 const gchar	*filename,
-							 GKeyFile	*key_file);
+							 GKeyFile	*key_file,
+							 gpointer	 user_data);
 /**
  * GsPluginPickDesktopFileCallback:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
  * @filename: a .desktop file name
  * @key_file: a #GKeyFile with @filename loaded
+ * @user_data: callback user data
  *
- * A callback used by gs_plugin_app_launch_filtered() to filter which
+ * A callback used by gs_plugin_app_launch_filtered_async() to filter which
  * of the candidate .desktop files should be used to launch the @app.
  *
  * Returns: %TRUE, when the @key_file should be used, %FALSE to continue
@@ -384,10 +406,16 @@ typedef gboolean (* GsPluginPickDesktopFileCallback)	(GsPlugin	*plugin,
  *
  * Since: 43
  **/
-gboolean	 gs_plugin_app_launch_filtered		(GsPlugin	*plugin,
+void		 gs_plugin_app_launch_filtered_async	(GsPlugin	*plugin,
 							 GsApp		*app,
+							 GsPluginLaunchFlags flags,
 							 GsPluginPickDesktopFileCallback cb,
-							 gpointer	user_data,
+							 gpointer	cb_user_data,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback async_callback,
+							 gpointer	async_user_data);
+gboolean	 gs_plugin_app_launch_filtered_finish	(GsPlugin	*plugin,
+							 GAsyncResult	*result,
 							 GError		**error);
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 void		 gs_plugin_reload			(GsPlugin	*plugin);
