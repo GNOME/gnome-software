@@ -1489,11 +1489,12 @@ gs_plugin_rpm_ostree_update_apps_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
-                               GsApp *app,
-                               GCancellable *cancellable,
-                               GError **error)
+static gboolean
+gs_plugin_rpm_ostree_trigger_upgrade_sync (GsPlugin *plugin,
+					   GsApp *app,
+					   gboolean interactive,
+					   GCancellable *cancellable,
+					   GError **error)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	const char *packages[] = { NULL };
@@ -1505,7 +1506,6 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -1586,6 +1586,50 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 
 	/* success */
 	return TRUE;
+}
+
+static void
+trigger_upgrade_thread_cb (GTask        *task,
+			   gpointer      source_object,
+			   gpointer      task_data,
+			   GCancellable *cancellable)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	GsPluginTriggerUpgradeData *data = task_data;
+	g_autoptr(GError) local_error = NULL;
+	gboolean interactive = (data->flags & GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_INTERACTIVE) != 0;
+
+	if (gs_plugin_rpm_ostree_trigger_upgrade_sync (plugin, data->app, interactive, cancellable, &local_error))
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static void
+gs_plugin_rpm_ostree_trigger_upgrade_async (GsPlugin *plugin,
+					    GsApp *app,
+					    GsPluginTriggerUpgradeFlags flags,
+					    GCancellable *cancellable,
+					    GAsyncReadyCallback callback,
+					    gpointer user_data)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_trigger_upgrade_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_trigger_upgrade_async);
+
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				trigger_upgrade_thread_cb, g_steal_pointer (&task));
+}
+
+static gboolean
+gs_plugin_rpm_ostree_trigger_upgrade_finish (GsPlugin      *plugin,
+					     GAsyncResult  *result,
+					     GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -2368,11 +2412,12 @@ gs_plugin_rpm_ostree_refine_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_app_upgrade_download (GsPlugin *plugin,
-                                GsApp *app,
-                                GCancellable *cancellable,
-                                GError **error)
+static gboolean
+gs_plugin_rpm_ostree_download_upgrade_sync (GsPlugin *plugin,
+					    GsApp *app,
+					    gboolean interactive,
+					    GCancellable *cancellable,
+					    GError **error)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	const char *packages[] = { NULL };
@@ -2384,7 +2429,6 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -2463,6 +2507,49 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	return TRUE;
 }
 
+static void
+download_upgrade_thread_cb (GTask        *task,
+			    gpointer      source_object,
+			    gpointer      task_data,
+			    GCancellable *cancellable)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	GsPluginDownloadUpgradeData *data = task_data;
+	g_autoptr(GError) local_error = NULL;
+	gboolean interactive = (data->flags & GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE) != 0;
+
+	if (gs_plugin_rpm_ostree_download_upgrade_sync (plugin, data->app, interactive, cancellable, &local_error))
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static void
+gs_plugin_rpm_ostree_download_upgrade_async (GsPlugin *plugin,
+					     GsApp *app,
+					     GsPluginDownloadUpgradeFlags flags,
+					     GCancellable *cancellable,
+					     GAsyncReadyCallback callback,
+					     gpointer user_data)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_download_upgrade_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_download_upgrade_async);
+
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				download_upgrade_thread_cb, g_steal_pointer (&task));
+}
+
+static gboolean
+gs_plugin_rpm_ostree_download_upgrade_finish (GsPlugin      *plugin,
+					      GAsyncResult  *result,
+					      GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
 
 static gboolean
 plugin_rpmostree_pick_rpm_desktop_file_cb (GsPlugin *plugin,
@@ -3462,6 +3549,10 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->uninstall_apps_finish = gs_plugin_rpm_ostree_uninstall_apps_finish;
 	plugin_class->update_apps_async = gs_plugin_rpm_ostree_update_apps_async;
 	plugin_class->update_apps_finish = gs_plugin_rpm_ostree_update_apps_finish;
+	plugin_class->download_upgrade_async = gs_plugin_rpm_ostree_download_upgrade_async;
+	plugin_class->download_upgrade_finish = gs_plugin_rpm_ostree_download_upgrade_finish;
+	plugin_class->trigger_upgrade_async = gs_plugin_rpm_ostree_trigger_upgrade_async;
+	plugin_class->trigger_upgrade_finish = gs_plugin_rpm_ostree_trigger_upgrade_finish;
 }
 
 GType

@@ -319,6 +319,34 @@ typedef enum {
 } GsPluginCancelOfflineUpdateFlags;
 
 /**
+ * GsPluginDownloadUpgradeFlags:
+ * @GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to download an upgrade.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE		= 0,
+	GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE	= 1 << 0,
+} GsPluginDownloadUpgradeFlags;
+
+/**
+ * GsPluginTriggerUpgradeFlags:
+ * @GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to trigger an upgrade.
+ *
+ * Since: 47
+ */
+typedef enum {
+	GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_NONE		= 0,
+	GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_INTERACTIVE	= 1 << 0,
+} GsPluginTriggerUpgradeFlags;
+
+/**
  * GsPluginProgressCallback:
  * @plugin: the #GsPlugin reporting its progress
  * @progress: the percentage completion (0–100 inclusive), or
@@ -381,7 +409,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_UNKNOWN:			Action is unknown
  * @GS_PLUGIN_ACTION_INSTALL:			Install an app
  * @GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:		Download a distro upgrade
- * @GS_PLUGIN_ACTION_UPGRADE_TRIGGER:		Trigger a distro upgrade
  * @GS_PLUGIN_ACTION_LAUNCH:			Launch an app
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an app
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an app
@@ -397,7 +424,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_UNKNOWN,
 	GS_PLUGIN_ACTION_INSTALL,
 	GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-	GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 	GS_PLUGIN_ACTION_LAUNCH,
 	GS_PLUGIN_ACTION_FILE_TO_APP,
 	GS_PLUGIN_ACTION_URL_TO_APP,

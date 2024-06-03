@@ -149,33 +149,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 		gs_app_set_management_plugin (app, plugin);
 }
 
-static gboolean
-gs_plugin_dummy_delay (GsPlugin *plugin,
-		       GsApp *app,
-		       guint timeout_ms,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	gboolean ret = TRUE;
-	guint i;
-	guint timeout_us = timeout_ms * 10;
-
-	/* do blocking delay in 1% increments */
-	for (i = 0; i < 100; i++) {
-		g_usleep (timeout_us);
-		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
-			gs_utils_error_convert_gio (error);
-			ret = FALSE;
-			break;
-		}
-		if (app != NULL)
-			gs_app_set_progress (app, i);
-		gs_plugin_status_update (plugin, app,
-					 GS_PLUGIN_STATUS_DOWNLOADING);
-	}
-	return ret;
-}
-
 typedef struct {
 	GsApp *app;  /* (owned) (nullable) */
 	guint percent_complete;
@@ -1433,34 +1406,86 @@ gs_plugin_dummy_refresh_metadata_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
-			        GCancellable *cancellable, GError **error)
+static void
+download_upgrade_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
 {
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+	GsPluginDownloadUpgradeData *data = g_task_get_task_data (task);
+
+	if (!gs_plugin_dummy_delay_finish (plugin, result, &local_error)) {
+		gs_app_set_state_recover (data->app);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	} else {
+		gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
+static void
+gs_plugin_dummy_download_upgrade_async (GsPlugin                     *plugin,
+                                        GsApp                        *app,
+                                        GsPluginDownloadUpgradeFlags  flags,
+                                        GCancellable                 *cancellable,
+                                        GAsyncReadyCallback           callback,
+                                        gpointer                      user_data)
+{
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_download_upgrade_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_download_upgrade_async);
+
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	g_debug ("starting download");
 	gs_app_set_state (app, GS_APP_STATE_DOWNLOADING);
-	if (!gs_plugin_dummy_delay (plugin, app, 5000, cancellable, error)) {
-		gs_app_set_state_recover (app);
-		return FALSE;
-	}
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-	return TRUE;
+	gs_plugin_dummy_delay_async (plugin, app, 5000, cancellable, download_upgrade_cb, g_steal_pointer (&task));
 }
 
-gboolean
-gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
-			       GCancellable *cancellable, GError **error)
+static gboolean
+gs_plugin_dummy_download_upgrade_finish (GsPlugin      *plugin,
+					 GAsyncResult  *result,
+					 GError       **error)
 {
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+gs_plugin_dummy_trigger_upgrade_async (GsPlugin                    *plugin,
+                                       GsApp                       *app,
+                                       GsPluginTriggerUpgradeFlags  flags,
+                                       GCancellable                *cancellable,
+                                       GAsyncReadyCallback          callback,
+                                       gpointer                     user_data)
+{
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_trigger_upgrade_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_trigger_upgrade_async);
+
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* NOP */
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_dummy_trigger_upgrade_finish (GsPlugin      *plugin,
+					GAsyncResult  *result,
+					GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -1513,6 +1538,10 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->update_apps_finish = gs_plugin_dummy_update_apps_finish;
 	plugin_class->cancel_offline_update_async = gs_plugin_dummy_cancel_offline_update_async;
 	plugin_class->cancel_offline_update_finish = gs_plugin_dummy_cancel_offline_update_finish;
+	plugin_class->download_upgrade_async = gs_plugin_dummy_download_upgrade_async;
+	plugin_class->download_upgrade_finish = gs_plugin_dummy_download_upgrade_finish;
+	plugin_class->trigger_upgrade_async = gs_plugin_dummy_trigger_upgrade_async;
+	plugin_class->trigger_upgrade_finish = gs_plugin_dummy_trigger_upgrade_finish;
 }
 
 GType

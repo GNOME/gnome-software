@@ -68,9 +68,9 @@
  * plugin calling the `Poll()` method on the `eos-updater` daemon to check for a
  * new update.
  *
- * Calling gs_plugin_app_upgrade_download() will result in this plugin calling
+ * Calling GsPluginClass::download_upgrade_async() will result in this plugin calling
  * a sequence of methods on the `eos-updater` daemon to check for, download and
- * apply an update. Typically, gs_plugin_app_upgrade_download() should be called
+ * apply an update. Typically, GsPluginClass::download_upgrade_async() should be called
  * once `eos-updater` is already in the `UpdateAvailable` state. It will report
  * progress information, with the first 75 percentage points of the progress
  * reporting the download progress, and the final 25 percentage points reporting
@@ -88,10 +88,9 @@
  * main thread and *must not block*. As they all call D-Bus methods, the work
  * they do is minimal and hence is OK to happen in the main thread.
  *
- * The other functions (gs_plugin_app_upgrade_download(),
- * etc.) are called in #GTask worker threads. They are allowed to call methods
- * on the proxy; the main thread is only allowed to receive signals and check
- * properties on the proxy, to avoid blocking.
+ * The other functions are called in #GTask worker threads. They are allowed to
+ * call methods on the proxy; the main thread is only allowed to receive signals
+ * and check properties on the proxy, to avoid blocking.
  *
  * `updater_proxy`, `os_upgrade` and `cancellable` are only set in
  * gs_plugin_eos_updater_setup(), and are both internally thread-safe — so they can both be
@@ -1480,46 +1479,41 @@ gs_plugin_eos_updater_app_upgrade_download_finish (GsPluginEosUpdater  *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
-{
-	GAsyncResult **result_out = user_data;
-
-	g_assert (result_out != NULL && *result_out == NULL);
-	*result_out = g_object_ref (result);
-	g_main_context_wakeup (g_main_context_get_thread_default ());
-}
-
-/* This is called in a #GTask worker thread.
- *
- * It’s used to download the update if it’s been listed in the UI as a major
- * upgrade. The download process is the same. */
-gboolean
-gs_plugin_app_upgrade_download (GsPlugin *plugin,
-				GsApp *app,
-			        GCancellable *cancellable,
-				GError **error)
-{
-	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-	g_autoptr(GMainContext) context = g_main_context_new ();
-	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
-	g_autoptr(GAsyncResult) result = NULL;
-
-	/* FIXME: This should eventually be moved to the new plugin API. For now,
-	 * since this old function runs in a worker thread, run in a loop until
-	 * the async download completes. */
-	gs_plugin_eos_updater_app_upgrade_download_async (self, app, interactive, cancellable, async_result_cb, &result);
-	while (result == NULL)
-		g_main_context_iteration (context, TRUE);
-	return gs_plugin_eos_updater_app_upgrade_download_finish (self, result, error);
-}
-
 static void upgrade_download_cb (GObject      *source_object,
                                  GAsyncResult *result,
                                  gpointer      user_data);
+
+/* Called in the main thread.
+ *
+ * It’s used to download the update if it’s been listed in the UI as a major
+ * upgrade. The download process is the same. */
+static void
+gs_plugin_eos_updater_download_upgrade_async (GsPlugin                     *plugin,
+                                              GsApp                        *app,
+                                              GsPluginDownloadUpgradeFlags  flags,
+                                              GCancellable                 *cancellable,
+                                              GAsyncReadyCallback           callback,
+                                              gpointer                      user_data)
+{
+	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE) != 0;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_eos_updater_download_upgrade_async);
+
+	g_debug ("%s", G_STRFUNC);
+
+	gs_plugin_eos_updater_app_upgrade_download_async (self, app, interactive, cancellable, upgrade_download_cb, g_steal_pointer (&task));
+}
+
+static gboolean
+gs_plugin_eos_updater_download_upgrade_finish (GsPlugin      *plugin,
+                                               GAsyncResult  *result,
+                                               GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
 
 /* Called in the main thread.
  *
@@ -1622,6 +1616,8 @@ gs_plugin_eos_updater_class_init (GsPluginEosUpdaterClass *klass)
 	plugin_class->update_apps_finish = gs_plugin_eos_updater_update_apps_finish;
 	plugin_class->list_apps_async = gs_plugin_eos_updater_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_eos_updater_list_apps_finish;
+	plugin_class->download_upgrade_async = gs_plugin_eos_updater_download_upgrade_async;
+	plugin_class->download_upgrade_finish = gs_plugin_eos_updater_download_upgrade_finish;
 }
 
 GType

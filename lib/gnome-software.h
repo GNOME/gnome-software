@@ -31,12 +31,14 @@
 #include <gs-plugin-helpers.h>
 #include <gs-plugin-job.h>
 #include <gs-plugin-job-cancel-offline-update.h>
+#include <gs-plugin-job-download-upgrade.h>
 #include <gs-plugin-job-list-apps.h>
 #include <gs-plugin-job-list-categories.h>
 #include <gs-plugin-job-list-distro-upgrades.h>
 #include <gs-plugin-job-manage-repository.h>
 #include <gs-plugin-job-refine.h>
 #include <gs-plugin-job-refresh-metadata.h>
+#include <gs-plugin-job-trigger-upgrade.h>
 #include <gs-plugin-job-install-apps.h>
 #include <gs-plugin-job-uninstall-apps.h>
 #include <gs-plugin-job-update-apps.h>
