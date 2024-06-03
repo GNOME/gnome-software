@@ -202,7 +202,7 @@
                                             <property name="name">overview</property>
                                             <property name="title" translatable="yes" comments="Translators: A label for a button to show all available software.">_Explore</property>
                                             <property name="use-underline">True</property>
-                                            <property name="icon-name">explore-symbolic</property>
+                                            <property name="icon-name">software-explore-symbolic</property>
                                             <property name="child">
                                               <object class="GsOverviewPage" id="overview_page">
                                               </object>
@@ -216,7 +216,7 @@
                                                  See https://gitlab.gnome.org/GNOME/gtk/-/issues/3134 -->
                                             <property name="title" translatable="yes" comments="Translators: A label for a button to show only software which is already installed." context="List of installed apps">_Installed</property>
                                             <property name="use-underline">True</property>
-                                            <property name="icon-name">app-installed-symbolic</property>
+                                            <property name="icon-name">software-installed-symbolic</property>
                                             <property name="child">
                                               <object class="GsInstalledPage" id="installed_page">
                                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
@@ -238,7 +238,7 @@
                                             <property name="name">updates</property>
                                             <property name="title" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install." context="Header bar button for list of apps to be updated">_Updates</property>
                                             <property name="use-underline">True</property>
-                                            <property name="icon-name">emblem-synchronizing-symbolic</property>
+                                            <property name="icon-name">software-updates-symbolic</property>
                                             <property name="badge-number" bind-source="updates_page" bind-property="counter" bind-flags="sync-create"/>
                                             <property name="visible" bind-source="updates_page" bind-property="visible" bind-flags="sync-create"/>
                                             <property name="child">

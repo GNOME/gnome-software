@@ -89,7 +89,7 @@ add_permissions_row (GsAppDetailsPage *page,
 	if (is_warning_row)
 		gtk_widget_add_css_class (row, "permission-row-warning");
 
-	image = gtk_image_new_from_icon_name ("dialog-warning-symbolic");
+	image = gtk_image_new_from_icon_name ("permissions-warning-symbolic");
 	if (!is_warning_row)
 		gtk_widget_set_opacity (image, 0);
 
@@ -264,7 +264,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		icon = gs_app_get_icon_for_size (app,
 						 icon_size,
 						 gtk_widget_get_scale_factor (GTK_WIDGET (page)),
-						 "application-x-executable");
+						 "org.gnome.Software.Generic");
 	}
 
 	display = gdk_display_get_default ();

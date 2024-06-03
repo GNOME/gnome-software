@@ -513,7 +513,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	icon = gs_app_get_icon_for_size (priv->app,
 					 gtk_image_get_pixel_size (GTK_IMAGE (priv->image)),
 					 gtk_widget_get_scale_factor (priv->image),
-					 "application-x-executable");
+					 "org.gnome.Software.Generic");
 	gtk_image_set_from_gicon (GTK_IMAGE (priv->image), icon);
 
 	if (missing_search_result)

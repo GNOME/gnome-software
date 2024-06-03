@@ -101,9 +101,9 @@ gs_license_tile_refresh (GsLicenseTile *self)
 
 		title = _("Community Built");
 		css_class = "green";
-		lozenge_icon_names[0] = "heart-filled-symbolic";
+		lozenge_icon_names[0] = "community-supported-symbolic";
 		lozenge_icon_names[1] = "community-symbolic";
-		lozenge_icon_names[2] = "thumbs-up-symbolic";
+		lozenge_icon_names[2] = "community-approved-symbolic";
 #if AS_CHECK_VERSION(0, 15, 3)
 		get_involved_visible = (gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE) != NULL ||
 					gs_app_get_url (self->app, AS_URL_KIND_CONTRIBUTE) != NULL);
@@ -147,9 +147,9 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	} else if (gs_app_get_license (self->app) == NULL) {
 		title = _("Unknown License");
 		css_class = "grey";
-		lozenge_icon_names[0] = "hand-open-symbolic";
+		lozenge_icon_names[0] = "community-blocked-symbolic";
 		lozenge_icon_names[1] = "dialog-warning-symbolic";
-		lozenge_icon_names[2] = "community-none-symbolic";
+		lozenge_icon_names[2] = "software-license-symbolic";
 		get_involved_visible = TRUE;
 		get_involved_label = _("_Learn More");
 
@@ -165,9 +165,9 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	} else if (g_ascii_strncasecmp (gs_app_get_license (self->app), "LicenseRef-proprietary", strlen ("LicenseRef-proprietary")) == 0) {
 		title = _("Proprietary");
 		css_class = "yellow";
-		lozenge_icon_names[0] = "hand-open-symbolic";
-		lozenge_icon_names[1] = "dialog-warning-symbolic";
-		lozenge_icon_names[2] = "community-none-symbolic";
+		lozenge_icon_names[0] = "community-blocked-symbolic";
+		lozenge_icon_names[1] = "proprietary-code-symbolic";
+		lozenge_icon_names[2] = "software-license-symbolic";
 		get_involved_visible = TRUE;
 		get_involved_label = _("_Learn More");
 
@@ -189,8 +189,8 @@ gs_license_tile_refresh (GsLicenseTile *self)
 
 		title = _("Special License");
 		css_class = "yellow";
-		lozenge_icon_names[0] = "hand-open-symbolic";
-		lozenge_icon_names[1] = "dialog-warning-symbolic";
+		lozenge_icon_names[0] = "community-blocked-symbolic";
+		lozenge_icon_names[1] = "software-license-symbolic";
 		lozenge_icon_names[2] = "community-none-symbolic";
 		get_involved_visible = FALSE;
 		get_involved_label = _("_Learn More");

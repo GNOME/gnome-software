@@ -536,35 +536,35 @@ update_safety_tile (GsAppContextBar *self)
 	/* Update the UI. */
 	switch (chosen_rating) {
 	case SAFETY_PRIVILEGED:
-		icon_name = "safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered privileged, aka provided by the distribution.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Privileged");
 		css_class = "grey";
 		break;
 	case SAFETY_SAFE:
-		icon_name = "safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered safe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Safe");
 		css_class = "green";
 		break;
 	case SAFETY_PROBABLY_SAFE:
-		icon_name = "safety-symbolic";
+		icon_name = "app-safety-ok-symbolic";
 		/* Translators: The app is considered probably safe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Probably Safe");
 		css_class = "yellow";
 		break;
 	case SAFETY_POTENTIALLY_UNSAFE:
-		icon_name = "dialog-question-symbolic";
+		icon_name = "app-safety-unknown-symbolic";
 		/* Translators: The app is considered potentially unsafe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Potentially Unsafe");
 		css_class = "orange";
 		break;
 	case SAFETY_UNSAFE:
-		icon_name = "dialog-warning-symbolic";
+		icon_name = "app-safety-unsafe-symbolic";
 		/* Translators: The app is considered unsafe to install and run.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Unsafe");
@@ -644,18 +644,18 @@ update_hardware_support_tile (GsAppContextBar *self)
 		 * summarise the restrictions into a single context tile. */
 		if (!current_match &&
 		    !mobile_match && mobile_relation_kind == AS_RELATION_KIND_REQUIRES) {
-			icon_name = "phone-symbolic";
+			icon_name = "device-support-mobile-symbolic";
 			title = _("Mobile Only");
 			description = _("Only works on a small screen");
 			css_class = "red";
 		} else if (!current_match &&
 			   !desktop_match && desktop_relation_kind == AS_RELATION_KIND_REQUIRES) {
-			icon_name = "desktop-symbolic";
+			icon_name = "device-support-desktop-symbolic";
 			title = _("Desktop Only");
 			description = _("Only works on a large screen");
 			css_class = "red";
 		} else if (!current_match && current_relation_kind == AS_RELATION_KIND_REQUIRES) {
-			icon_name = "desktop-symbolic";
+			icon_name = "device-support-desktop-symbolic";
 			title = _("Screen Size Mismatch");
 			description = _("Doesn’t support your current screen size");
 			css_class = "red";
@@ -676,7 +676,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 	if (icon_name == NULL &&
 	    control_relations[AS_CONTROL_KIND_TOUCH] == AS_RELATION_KIND_REQUIRES &&
 	    !has_touchscreen) {
-		icon_name = "phone-symbolic";
+		icon_name = "device-support-mobile-symbolic";
 		title = _("Mobile Only");
 		description = _("Requires a touchscreen");
 		css_class = "red";
@@ -724,7 +724,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 	    control_relations[AS_CONTROL_KIND_KEYBOARD] == AS_RELATION_KIND_RECOMMENDS &&
 	    control_relations[AS_CONTROL_KIND_POINTING] == AS_RELATION_KIND_RECOMMENDS) {
 #endif
-		icon_name = "adaptive-symbolic";
+		icon_name = "device-support-adaptive-symbolic";
 		/* Translators: This is used in a context tile to indicate that
 		 * an app works on phones, tablets *and* desktops. It should be
 		 * short and in title case. */
@@ -740,23 +740,23 @@ update_hardware_support_tile (GsAppContextBar *self)
 	 * support desktop, and none support mobile. */
 	if (icon_name == NULL) {
 		if (!has_keyboard || !has_mouse) {
-			icon_name = "desktop-symbolic";
+			icon_name = "device-support-desktop-symbolic";
 			title = _("Desktop Only");
 			description = _("Probably requires a keyboard or mouse");
 			css_class = "yellow";
 		} else {
-			icon_name = "desktop-symbolic";
+			icon_name = "device-support-desktop-symbolic";
 			title = _("Desktop Only");
 			description = _("Works on desktops and laptops");
 			css_class = "grey";
 		}
 	}
 
-	/* Update the UI. The `adaptive-symbolic` icon needs a special size to
+	/* Update the UI. The `device-support-adaptive-symbolic` icon needs a special size to
 	 * be set, as it is wider than it is tall. Setting the size ensures it’s
 	 * rendered at the right height. */
 	gs_lozenge_set_icon_name (GS_LOZENGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge), icon_name);
-	gs_lozenge_set_pixel_size (GS_LOZENGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge), g_str_equal (icon_name, "adaptive-symbolic") ? 56 : -1);
+	gs_lozenge_set_pixel_size (GS_LOZENGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge), g_str_equal (icon_name, "device-support-adaptive-symbolic") ? 56 : -1);
 
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].title, title);
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].description, description);
@@ -768,7 +768,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 
 	gtk_widget_add_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, css_class);
 
-	if (g_str_equal (icon_name, "adaptive-symbolic"))
+	if (g_str_equal (icon_name, "device-support-adaptive-symbolic"))
 		gtk_widget_add_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "wide-image");
 	else
 		gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "wide-image");
