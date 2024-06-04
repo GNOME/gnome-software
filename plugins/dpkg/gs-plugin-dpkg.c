@@ -2,6 +2,7 @@
  * vi:set noexpandtab tabstop=8 shiftwidth=8:
  *
  * Copyright (C) 2011-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2024 GNOME Foundation, Inc.
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -33,57 +34,111 @@ gs_plugin_dpkg_init (GsPluginDpkg *self)
 	}
 }
 
-static gboolean
-gs_plugin_dpkg_file_to_app_sync (GsPlugin *plugin,
-				 GFile *file,
-				 GsAppList *list,
-				 GCancellable *cancellable,
-				 GError **error)
+static void get_content_type_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+static void subprocess_communicate_cb (GObject      *source_object,
+                                       GAsyncResult *result,
+                                       gpointer      user_data);
+
+static void
+gs_plugin_dpkg_file_to_app_async (GsPlugin *plugin,
+				  GFile *file,
+				  GsPluginFileToAppFlags flags,
+				  GCancellable *cancellable,
+				  GAsyncReadyCallback callback,
+				  gpointer user_data)
 {
-	guint i;
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dpkg_file_to_app_async);
+
+	/* does this match any of the mimetypes we support */
+	gs_utils_get_content_type_async (file, cancellable, get_content_type_cb, g_steal_pointer (&task));
+}
+
+static void
+get_content_type_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	GFile *file = G_FILE (source_object);
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GSubprocess) subprocess = NULL;
 	g_autofree gchar *content_type = NULL;
-	g_autofree gchar *output = NULL;
-	g_auto(GStrv) argv = NULL;
-	g_auto(GStrv) tokens = NULL;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GString) str = NULL;
 	const gchar *mimetypes[] = {
 		"application/vnd.debian.binary-package",
 		NULL };
 
-	/* does this match any of the mimetypes we support */
-	content_type = gs_utils_get_content_type (file, cancellable, error);
-	if (content_type == NULL)
-		return FALSE;
-	if (!g_strv_contains (mimetypes, content_type))
-		return TRUE;
-
-	/* exec sync */
-	argv = g_new0 (gchar *, 5);
-	argv[0] = g_strdup (DPKG_DEB_BINARY);
-	argv[1] = g_strdup ("--showformat=${Package}\\n"
-			    "${Version}\\n"
-			    "${License}\\n"
-			    "${Installed-Size}\\n"
-			    "${Homepage}\\n"
-			    "${Description}");
-	argv[2] = g_strdup ("-W");
-	argv[3] = g_file_get_path (file);
-	if (!g_spawn_sync (NULL, argv, NULL,
-			   G_SPAWN_SEARCH_PATH | G_SPAWN_STDERR_TO_DEV_NULL,
-			   NULL, NULL, &output, NULL, NULL, error)) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
+	content_type = gs_utils_get_content_type_finish (file, result, &local_error);
+	if (content_type == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	} else if (!g_strv_contains (mimetypes, content_type)) {
+		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+		return;
 	}
 
-	/* parse output */
+	/* exec sync */
+	subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE |
+				       G_SUBPROCESS_FLAGS_STDERR_SILENCE,
+				       &local_error,
+				       DPKG_DEB_BINARY,
+				       "--showformat=${Package}\\n"
+				       "${Version}\\n"
+				       "${License}\\n"
+				       "${Installed-Size}\\n"
+				       "${Homepage}\\n"
+				       "${Description}",
+				       "-W",
+				       g_file_peek_path (file),
+				       NULL);
+
+	if (subprocess == NULL) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_subprocess_communicate_async (subprocess, NULL, cancellable,
+					subprocess_communicate_cb, g_steal_pointer (&task));
+}
+
+static void
+subprocess_communicate_cb (GObject      *source_object,
+                           GAsyncResult *result,
+                           gpointer      user_data)
+{
+	GSubprocess *subprocess = G_SUBPROCESS (source_object);
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
+	GsPluginFileToAppData *data = g_task_get_task_data (task);
+	GsPluginDpkg *self = g_task_get_source_object (task);
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GBytes) stdout_buf = NULL;
+	const char *output;
+	g_auto(GStrv) tokens = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GString) str = NULL;
+
+	if (!g_subprocess_communicate_finish (subprocess, result, &stdout_buf, NULL, &local_error)) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* parse output; assume it doesn’t contain any nul bytes */
+	output = g_bytes_get_data (stdout_buf, NULL);
 	tokens = g_strsplit (output, "\n", 0);
 	if (g_strv_length (tokens) < 6) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "dpkg-deb output format incorrect:\n\"%s\"\n", output);
-		return FALSE;
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "dpkg-deb output format incorrect:\n“%s”", output);
+		return;
 	}
 
 	/* create app */
@@ -98,13 +153,13 @@ gs_plugin_dpkg_file_to_app_sync (GsPlugin *plugin,
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, tokens[5]);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_local_file (app, file);
+	gs_app_set_local_file (app, data->file);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
-			     gs_plugin_get_name (plugin));
+			     gs_plugin_get_name (GS_PLUGIN (self)));
 
 	/* multiline text */
 	str = g_string_new ("");
-	for (i = 6; tokens[i] != NULL; i++) {
+	for (guint i = 6; tokens[i] != NULL; i++) {
 		if (g_strcmp0 (tokens[i], " .") == 0) {
 			if (str->len > 0)
 				g_string_truncate (str, str->len - 1);
@@ -120,39 +175,8 @@ gs_plugin_dpkg_file_to_app_sync (GsPlugin *plugin,
 
 	/* success */
 	gs_app_list_add (list, app);
-	return TRUE;
-}
 
-static void
-gs_plugin_dpkg_file_to_app_thread (GTask *task,
-				   gpointer source_object,
-				   gpointer task_data,
-				   GCancellable *cancellable)
-{
-	GsPlugin *plugin = GS_PLUGIN (source_object);
-	GsPluginFileToAppData *data = task_data;
-	g_autoptr(GsAppList) list = gs_app_list_new ();
-	g_autoptr(GError) local_error = NULL;
-
-	if (gs_plugin_dpkg_file_to_app_sync (plugin, data->file, list, cancellable, &local_error))
-		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-	else
-		g_task_return_error (task, g_steal_pointer (&local_error));
-}
-
-static void
-gs_plugin_dpkg_file_to_app_async (GsPlugin *plugin,
-				  GFile *file,
-				  GsPluginFileToAppFlags flags,
-				  GCancellable *cancellable,
-				  GAsyncReadyCallback callback,
-				  gpointer user_data)
-{
-	g_autoptr(GTask) task = NULL;
-
-	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_dpkg_file_to_app_async);
-	g_task_run_in_thread (task, gs_plugin_dpkg_file_to_app_thread);
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 }
 
 static GsAppList *
