@@ -25,9 +25,9 @@ help_media = [
   'figures/scalable/no-screenshots.svg',
   'figures/scalable/symbolic/community-symbolic.svg',
   'figures/scalable/symbolic/computer-fail-symbolic.svg',
-  'figures/scalable/symbolic/flag-outline-thin-symbolic.svg',
+  'figures/scalable/symbolic/donate-symbolic.svg',
   'figures/scalable/symbolic/help-link-symbolic.svg',
-  'figures/scalable/symbolic/money-symbolic.svg',
+  'figures/scalable/symbolic/translations-symbolic.svg',
   'figures/scalable/symbolic/webpage-symbolic.svg',
   'figures/storage-tile.png',
 ]
