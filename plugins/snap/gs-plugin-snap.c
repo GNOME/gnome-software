@@ -441,70 +441,25 @@ snap_to_app (GsPluginSnap *self, SnapdSnap *snap, const gchar *branch)
 	return g_steal_pointer (&app);
 }
 
-static gboolean
-gs_plugin_snap_url_to_app_sync (GsPlugin *plugin,
-				const gchar *url,
-				gboolean interactive,
-				GsAppList *list,
-				GCancellable *cancellable,
-				GError **error)
-{
-	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
-	g_autoptr(SnapdClient) client = NULL;
-	g_autofree gchar *scheme = NULL;
-	g_autofree gchar *path = NULL;
-	g_autoptr(GPtrArray) snaps = NULL;
-	g_autoptr(GsApp) app = NULL;
+typedef struct {
+	char *url;  /* (owned) (not nullable) */
+	GsPluginUrlToAppFlags flags;
 
-	/* not us */
-	scheme = gs_utils_get_url_scheme (url);
-	if (g_strcmp0 (scheme, "snap") != 0 &&
-	    g_strcmp0 (scheme, "appstream") != 0)
-		return TRUE;
-
-	/* Create client. */
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
-
-	/* create app */
-	path = gs_utils_get_url_path (url);
-	snaps = find_snaps (self, client,
-			    SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_NAME,
-			    NULL, path, cancellable, NULL);
-	if (snaps == NULL || snaps->len < 1) {
-		g_clear_pointer (&snaps, g_ptr_array_unref);
-		/* This works for the appstream:// URL-s */
-		snaps = find_snaps (self, client,
-				    SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_COMMON_ID,
-				    NULL, path, cancellable, NULL);
-	}
-	if (snaps == NULL || snaps->len < 1)
-		return TRUE;
-
-	app = snap_to_app (self, g_ptr_array_index (snaps, 0), NULL);
-	gs_app_list_add (list, app);
-
-	return TRUE;
-}
+	gboolean tried_match_common_id;
+} UrlToAppData;
 
 static void
-gs_plugin_snap_url_to_app_thread (GTask *task,
-				  gpointer source_object,
-				  gpointer task_data,
-				  GCancellable *cancellable)
+url_to_app_data_free (UrlToAppData *data)
 {
-	g_autoptr(GsAppList) list = gs_app_list_new ();
-	g_autoptr(GError) local_error = NULL;
-	GsPlugin *plugin = GS_PLUGIN (source_object);
-	GsPluginUrlToAppData *data = task_data;
-	gboolean interactive = (data->flags & GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE) != 0;
-
-	if (gs_plugin_snap_url_to_app_sync (plugin, data->url, interactive, list, cancellable, &local_error))
-		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-	else
-		g_task_return_error (task, g_steal_pointer (&local_error));
+	g_free (data->url);
+	g_free (data);
 }
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UrlToAppData, url_to_app_data_free)
+
+static void url_to_app_find_section_cb (GObject      *source_object,
+                                        GAsyncResult *result,
+                                        gpointer      user_data);
 
 static void
 gs_plugin_snap_url_to_app_async (GsPlugin *plugin,
@@ -514,11 +469,91 @@ gs_plugin_snap_url_to_app_async (GsPlugin *plugin,
 				 GAsyncReadyCallback callback,
 				 gpointer user_data)
 {
+	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(UrlToAppData) data = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE) != 0;
+	g_autoptr(SnapdClient) client = NULL;
+	g_autofree gchar *scheme = NULL;
+	g_autofree gchar *path = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, cancellable, callback, user_data);
+	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_snap_url_to_app_async);
-	g_task_run_in_thread (task, gs_plugin_snap_url_to_app_thread);
+
+	data = g_new0 (UrlToAppData, 1);
+	data->url = g_strdup (url);
+	data->flags = flags;
+
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) url_to_app_data_free);
+
+	/* not us */
+	scheme = gs_utils_get_url_scheme (url);
+	if (g_strcmp0 (scheme, "snap") != 0 &&
+	    g_strcmp0 (scheme, "appstream") != 0) {
+		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+		return;
+	}
+
+	/* Create client. */
+	client = get_client (self, interactive, &local_error);
+	if (client == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* create app */
+	path = gs_utils_get_url_path (url);
+	snapd_client_find_section_async (client,
+					 SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_NAME,
+					 NULL, path, cancellable,
+					 url_to_app_find_section_cb, g_steal_pointer (&task));
+}
+
+static void
+url_to_app_find_section_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
+	GsPluginSnap *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	UrlToAppData *data = g_task_get_task_data (task);
+	g_autoptr(GPtrArray) snaps = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	snaps = snapd_client_find_section_finish (client, result, NULL, &local_error);
+
+	if ((snaps == NULL || snaps->len < 1) &&
+	    !data->tried_match_common_id) {
+		g_autofree char *path = NULL;
+
+		/* This works for the appstream:// URL-s */
+		data->tried_match_common_id = TRUE;
+
+		path = gs_utils_get_url_path (data->url);
+		snapd_client_find_section_async (client,
+						 SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_COMMON_ID,
+						 NULL, path, cancellable,
+						 url_to_app_find_section_cb, g_steal_pointer (&task));
+		return;
+	}
+
+	if (snaps != NULL)
+		store_snap_cache_update (self, snaps, FALSE);
+
+	if (snaps == NULL || snaps->len < 1) {
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+		return;
+	}
+
+	app = snap_to_app (self, g_ptr_array_index (snaps, 0), NULL);
+	gs_app_list_add (list, app);
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 }
 
 static GsAppList *
