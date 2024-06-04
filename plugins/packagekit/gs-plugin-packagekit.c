@@ -5,6 +5,7 @@
  * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
  * Copyright (C) 2017 Canonical Ltd
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
+ * Copyright (C) 2024 GNOME Foundation, Inc.
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -3630,74 +3631,6 @@ gs_plugin_packagekit_refine_history_finish (GsPluginPackagekit  *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-gs_plugin_packagekit_refresh_guess_app_id (GsPluginPackagekit  *self,
-                                           GsApp               *app,
-                                           const gchar         *filename,
-                                           GCancellable        *cancellable,
-                                           GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_auto(GStrv) files = NULL;
-	g_autoptr(PkTask) task_local = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GPtrArray) array = NULL;
-	g_autoptr(GString) basename_best = g_string_new (NULL);
-
-	/* get file list so we can work out ID */
-	files = g_strsplit (filename, "\t", -1);
-	gs_packagekit_helper_add_app (helper, app);
-
-	task_local = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
-	results = pk_client_get_files_local (PK_CLIENT (task_local),
-					     files,
-					     cancellable,
-					     gs_packagekit_helper_cb, helper,
-					     error);
-
-	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-		gs_utils_error_add_origin_id (error, app);
-		return FALSE;
-	}
-	array = pk_results_get_files_array (results);
-	if (array->len == 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "no files for %s", filename);
-		return FALSE;
-	}
-
-	/* find the smallest length desktop file, on the logic that
-	 * ${app}.desktop is going to be better than ${app}-${action}.desktop */
-	for (guint i = 0; i < array->len; i++) {
-		PkFiles *item = g_ptr_array_index (array, i);
-		gchar **fns = pk_files_get_files (item);
-		for (guint j = 0; fns[j] != NULL; j++) {
-			if (g_str_has_prefix (fns[j], "/etc/yum.repos.d/") &&
-			    g_str_has_suffix (fns[j], ".repo")) {
-				gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
-			}
-			if (g_str_has_prefix (fns[j], "/usr/share/applications/") &&
-			    g_str_has_suffix (fns[j], ".desktop")) {
-				g_autofree gchar *basename = g_path_get_basename (fns[j]);
-				if (basename_best->len == 0 ||
-				    strlen (basename) < basename_best->len)
-					g_string_assign (basename_best, basename);
-			}
-		}
-	}
-	if (basename_best->len > 0) {
-		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-		gs_app_set_id (app, basename_best->str);
-	}
-
-	return TRUE;
-}
-
 static void
 add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 {
@@ -3713,68 +3646,79 @@ add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 }
 
-static gboolean
-gs_plugin_packagekit_local_check_installed (GsPluginPackagekit  *self,
-                                            PkTask              *task_local,
-                                            GsApp               *app,
-                                            GCancellable        *cancellable,
-                                            GError             **error)
-{
-	PkBitfield filter;
-	const gchar *names[] = { gs_app_get_source_default (app), NULL };
-	g_autoptr(GPtrArray) packages = NULL;
-	g_autoptr(PkResults) results = NULL;
+typedef struct {
+	GFile *file;  /* (not nullable) (owned) */
+	GsPluginFileToAppFlags flags;
 
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
-					 PK_FILTER_ENUM_ARCH,
-					 PK_FILTER_ENUM_INSTALLED,
-					 -1);
-	results = pk_client_resolve (PK_CLIENT (task_local), filter, (gchar **) names,
-				     cancellable, NULL, NULL, error);
-	if (results == NULL) {
-		gs_plugin_packagekit_error_convert (error, cancellable);
-		return FALSE;
-	}
-	packages = pk_results_get_package_array (results);
-	if (packages->len > 0) {
-		gboolean is_higher_version = FALSE;
-		const gchar *app_version = gs_app_get_version (app);
-		for (guint i = 0; i < packages->len; i++){
-			PkPackage *pkg = g_ptr_array_index (packages, i);
-			gs_app_add_source_id (app, pk_package_get_id (pkg));
-			gs_plugin_packagekit_set_package_name (app, pkg);
-			if (!is_higher_version &&
-			    as_vercmp_simple (pk_package_get_version (pkg), app_version) < 0)
-				is_higher_version = TRUE;
-		}
-		if (!is_higher_version) {
-			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-		}
-	}
-	return TRUE;
+	GsApp *app;  /* (nullable) (owned) */
+} FileToAppData;
+
+static void
+file_to_app_data_free (FileToAppData *data)
+{
+	g_clear_object (&data->file);
+	g_clear_object (&data->app);
+	g_free (data);
 }
 
-static gboolean
-gs_plugin_packagekit_file_to_app_sync (GsPlugin *plugin,
-				       GFile *file,
-				       GsAppList *list,
-				       GCancellable *cancellable,
-				       GError **error)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (FileToAppData, file_to_app_data_free)
+
+static void file_to_app_get_content_type_cb (GObject      *source_object,
+                                             GAsyncResult *result,
+                                             gpointer      user_data);
+static void file_to_app_get_details_local_cb (GObject      *source_object,
+                                              GAsyncResult *result,
+                                              gpointer      user_data);
+static void file_to_app_resolve_cb (GObject      *source_object,
+                                    GAsyncResult *result,
+                                    gpointer      user_data);
+static void file_to_app_get_files_cb (GObject      *source_object,
+                                      GAsyncResult *result,
+                                      gpointer      user_data);
+
+static void
+gs_plugin_packagekit_file_to_app_async (GsPlugin *plugin,
+					GFile *file,
+					GsPluginFileToAppFlags flags,
+					GCancellable *cancellable,
+					GAsyncReadyCallback callback,
+					gpointer user_data)
 {
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	const gchar *package_id;
-	PkDetails *item;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(FileToAppData) data = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_file_to_app_async);
+
+	data = g_new0 (FileToAppData, 1);
+	data->file = g_object_ref (file);
+	data->flags = flags;
+
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) file_to_app_data_free);
+
+	/* does this match any of the mimetypes we support */
+	gs_utils_get_content_type_async (file, cancellable,
+					 file_to_app_get_content_type_cb,
+					 g_steal_pointer (&task));
+}
+
+static void
+file_to_app_get_content_type_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data)
+{
+	GFile *file = G_FILE (source_object);
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
+	g_autoptr(GError) local_error = NULL;
+	GsPlugin *plugin = g_task_get_source_object (task);
+	FileToAppData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	gboolean interactive = (data->flags & GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE);
+	g_autoptr(GsPackagekitHelper) helper = NULL;
 	g_autoptr(PkTask) task_local = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autofree gchar *content_type = NULL;
-	g_autofree gchar *filename = NULL;
-	g_autofree gchar *packagename = NULL;
+	g_autofree char *content_type = NULL;
+	g_autofree char *filename = NULL;
 	g_auto(GStrv) files = NULL;
-	g_auto(GStrv) split = NULL;
-	g_autoptr(GPtrArray) array = NULL;
-	g_autoptr(GsApp) app = NULL;
 	const gchar *mimetypes[] = {
 		"application/x-app-package",
 		"application/x-deb",
@@ -3784,45 +3728,80 @@ gs_plugin_packagekit_file_to_app_sync (GsPlugin *plugin,
 		NULL };
 
 	/* does this match any of the mimetypes we support */
-	content_type = gs_utils_get_content_type (file, cancellable, error);
-	if (content_type == NULL)
-		return FALSE;
-	if (!g_strv_contains (mimetypes, content_type))
-		return TRUE;
+	content_type = gs_utils_get_content_type_finish (file, result, &local_error);
+	if (content_type == NULL) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	} else if (!g_strv_contains (mimetypes, content_type)) {
+		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+		return;
+	}
 
 	/* get details */
 	filename = g_file_get_path (file);
 	files = g_strsplit (filename, "\t", -1);
 
 	task_local = gs_packagekit_task_new (plugin);
+	helper = gs_packagekit_helper_new (plugin);
 	pk_client_set_cache_age (PK_CLIENT (task_local), G_MAXUINT);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_local), helper);
 
-	results = pk_client_get_details_local (PK_CLIENT (task_local),
-					       files,
-					       cancellable,
-					       gs_packagekit_helper_cb, helper,
-					       error);
+	pk_client_get_details_local_async (PK_CLIENT (task_local),
+					   files,
+					   cancellable,
+					   gs_packagekit_helper_cb, g_steal_pointer (&helper),
+					   file_to_app_get_details_local_cb,
+					   g_steal_pointer (&task));
+}
 
-	if (!gs_plugin_packagekit_results_valid (results, cancellable, error))
-		return FALSE;
+static void
+file_to_app_get_details_local_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data)
+{
+	PkTask *task_local = PK_TASK (source_object);
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
+	g_autoptr(GError) local_error = NULL;
+	GsPlugin *plugin = g_task_get_source_object (task);
+	FileToAppData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	const gchar *package_id;
+	PkDetails *item;
+	g_autoptr(PkResults) results = NULL;
+	g_autofree gchar *filename = NULL;
+	g_autofree gchar *packagename = NULL;
+	g_auto(GStrv) split = NULL;
+	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GsApp) app = NULL;
+	PkBitfield filter;
+	const gchar *names[2] = { NULL, };
+
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+	if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
+		g_prefix_error (&local_error, "Failed to resolve package_ids: ");
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	/* get results */
+	filename = g_file_get_path (data->file);
 	array = pk_results_get_details_array (results);
 	if (array->len == 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "no details for %s", filename);
-		return FALSE;
-	}
-	if (array->len > 1) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "too many details [%u] for %s",
-			     array->len, filename);
-		return FALSE;
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_INVALID_FORMAT,
+					 "No details for %s", filename);
+		return;
+	} else if (array->len > 1) {
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_INVALID_FORMAT,
+					 "Too many details [%u] for %s",
+					 array->len, filename);
+		return;
 	}
 
 	/* create application */
@@ -3831,20 +3810,22 @@ gs_plugin_packagekit_file_to_app_sync (GsPlugin *plugin,
 	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
+
 	package_id = pk_details_get_package_id (item);
 	split = pk_package_id_split (package_id);
 	if (split == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "invalid package-id: %s", package_id);
-		return FALSE;
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_INVALID_FORMAT,
+					 "Invalid package-id: %s", package_id);
+		return;
 	}
+
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
-	gs_app_set_local_file (app, file);
+	gs_app_set_local_file (app, data->file);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
 			    pk_details_get_summary (item));
@@ -3875,58 +3856,145 @@ gs_plugin_packagekit_file_to_app_sync (GsPlugin *plugin,
 					split[PK_PACKAGE_ID_ARCH]);
 	gs_app_set_metadata (app, "GnomeSoftware::packagename-value", packagename);
 
+	data->app = g_steal_pointer (&app);
+
 	/* is already installed? */
-	if (!gs_plugin_packagekit_local_check_installed (self,
-							 task_local,
-							 app,
-							 cancellable,
-							 error))
-		return FALSE;
+	names[0] = gs_app_get_source_default (data->app);
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+					 PK_FILTER_ENUM_ARCH,
+					 PK_FILTER_ENUM_INSTALLED,
+					 -1);
+	pk_client_resolve_async (PK_CLIENT (task_local),
+				 filter, (gchar **) names,
+				 cancellable, NULL, NULL,
+				 file_to_app_resolve_cb,
+				 g_steal_pointer (&task));
+}
+
+static void
+file_to_app_resolve_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data)
+{
+	PkTask *task_local = PK_TASK (source_object);
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
+	g_autoptr(GError) local_error = NULL;
+	FileToAppData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPackagekitHelper *helper;
+	g_autoptr(PkResults) results = NULL;
+	g_autofree gchar *filename = NULL;
+	g_auto(GStrv) files = NULL;
+	g_autoptr(GPtrArray) packages = NULL;
+
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+	if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
+		g_prefix_error (&local_error, "Failed to resolve whether package is installed: ");
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	packages = pk_results_get_package_array (results);
+	if (packages->len > 0) {
+		gboolean is_higher_version = FALSE;
+		const gchar *app_version = gs_app_get_version (data->app);
+
+		for (guint i = 0; i < packages->len; i++){
+			PkPackage *pkg = g_ptr_array_index (packages, i);
+			gs_app_add_source_id (data->app, pk_package_get_id (pkg));
+			gs_plugin_packagekit_set_package_name (data->app, pkg);
+			if (!is_higher_version &&
+			    as_vercmp_simple (pk_package_get_version (pkg), app_version) < 0)
+				is_higher_version = TRUE;
+		}
+
+		if (!is_higher_version) {
+			gs_app_set_state (data->app, GS_APP_STATE_UNKNOWN);
+			gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
+		}
+	}
 
 	/* look for a desktop file so we can use a valid application id */
-	if (!gs_plugin_packagekit_refresh_guess_app_id (self,
-							app,
-							filename,
-							cancellable,
-							error))
-		return FALSE;
+	filename = g_file_get_path (data->file);
 
-	gs_app_list_add (list, app);
-	return TRUE;
+	/* get file list so we can work out ID */
+	files = g_strsplit (filename, "\t", -1);
+	helper = gs_packagekit_task_get_helper (GS_PACKAGEKIT_TASK (task_local));
+	gs_packagekit_helper_add_app (helper, data->app);
+
+	pk_client_get_files_local_async (PK_CLIENT (task_local),
+					 files,
+					 cancellable,
+					 gs_packagekit_helper_cb, helper,
+					 file_to_app_get_files_cb,
+					 g_steal_pointer (&task));
 }
 
 static void
-gs_plugin_packagekit_file_to_app_thread (GTask *task,
-					 gpointer source_object,
-					 gpointer task_data,
-					 GCancellable *cancellable)
+file_to_app_get_files_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data)
 {
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	g_autoptr(GError) local_error = NULL;
-	GsPlugin *plugin = GS_PLUGIN (source_object);
-	GsPluginFileToAppData *data = task_data;
+	FileToAppData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(PkResults) results = NULL;
+	g_autofree char *filename = NULL;
+	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GString) basename_best = g_string_new (NULL);
 
-	if (gs_plugin_packagekit_file_to_app_sync (plugin, data->file, list, cancellable, &local_error))
-		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-	else if (local_error != NULL)
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+	if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
+		gs_utils_error_add_origin_id (&local_error, data->app);
+		g_prefix_error (&local_error, "Failed to resolve files in local package: ");
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 		g_task_return_error (task, g_steal_pointer (&local_error));
-	else
-		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
-}
+		return;
+	}
 
-static void
-gs_plugin_packagekit_file_to_app_async (GsPlugin *plugin,
-					GFile *file,
-					GsPluginFileToAppFlags flags,
-					GCancellable *cancellable,
-					GAsyncReadyCallback callback,
-					gpointer user_data)
-{
-	g_autoptr(GTask) task = NULL;
+	filename = g_file_get_path (data->file);
+	array = pk_results_get_files_array (results);
+	if (array->len == 0) {
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_INVALID_FORMAT,
+					 "No files for %s", filename);
+		return;
+	}
 
-	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_packagekit_file_to_app_async);
-	g_task_run_in_thread (task, gs_plugin_packagekit_file_to_app_thread);
+	/* find the smallest length desktop file, on the logic that
+	 * ${app}.desktop is going to be better than ${app}-${action}.desktop */
+	for (guint i = 0; i < array->len; i++) {
+		PkFiles *item = g_ptr_array_index (array, i);
+		const char * const *fns = (const char * const *) pk_files_get_files (item);
+
+		for (guint j = 0; fns[j] != NULL; j++) {
+			if (g_str_has_prefix (fns[j], "/etc/yum.repos.d/") &&
+			    g_str_has_suffix (fns[j], ".repo")) {
+				gs_app_add_quirk (data->app, GS_APP_QUIRK_HAS_SOURCE);
+			}
+			if (g_str_has_prefix (fns[j], "/usr/share/applications/") &&
+			    g_str_has_suffix (fns[j], ".desktop")) {
+				g_autofree gchar *basename = g_path_get_basename (fns[j]);
+				if (basename_best->len == 0 ||
+				    strlen (basename) < basename_best->len)
+					g_string_assign (basename_best, basename);
+			}
+		}
+	}
+
+	if (basename_best->len > 0) {
+		gs_app_set_kind (data->app, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_set_id (data->app, basename_best->str);
+	}
+
+	/* Success */
+	gs_app_list_add (list, data->app);
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 }
 
 static GsAppList *
