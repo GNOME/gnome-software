@@ -941,3 +941,70 @@ gs_plugin_file_to_app_data_free (GsPluginFileToAppData *data)
 	g_clear_object (&data->file);
 	g_free (data);
 }
+
+/**
+ * gs_plugin_url_to_app_data_new:
+ * @url: (not nullable): a URL
+ * @flags: operation flags
+ *
+ * Common context data for a call to #GsPluginClass.url_to_app_async.
+ *
+ * Returns: (transfer full): context data structure
+ * Since: 47
+ */
+GsPluginUrlToAppData *
+gs_plugin_url_to_app_data_new (const gchar          *url,
+			       GsPluginUrlToAppFlags flags)
+{
+	g_autoptr(GsPluginUrlToAppData) data = g_new0 (GsPluginUrlToAppData, 1);
+	data->url = g_strdup (url);
+	data->flags = flags;
+
+	return g_steal_pointer (&data);
+}
+
+/**
+ * gs_plugin_url_to_app_data_new_task:
+ * @source_object: task source object
+ * @url: (not nullable): a URL
+ * @flags: operation flags
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: function to call once asynchronous operation is finished
+ * @user_data: data to pass to @callback
+ *
+ * Create a #GTask for a url-to-app operation with the given arguments. The task
+ * data will be set to a #GsPluginUrlToAppData containing the given context.
+ *
+ * This is essentially a combination of gs_plugin_url_to_app_data_new(),
+ * g_task_new() and g_task_set_task_data().
+ *
+ * Returns: (transfer full): new #GTask with the given context data
+ * Since: 47
+ */
+GTask *
+gs_plugin_url_to_app_data_new_task (gpointer              source_object,
+				    const gchar          *url,
+				    GsPluginUrlToAppFlags flags,
+				    GCancellable         *cancellable,
+				    GAsyncReadyCallback   callback,
+				    gpointer              user_data)
+{
+	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
+	g_task_set_task_data (task, gs_plugin_url_to_app_data_new (url, flags), (GDestroyNotify) gs_plugin_url_to_app_data_free);
+	return g_steal_pointer (&task);
+}
+
+/**
+ * gs_plugin_url_to_app_data_free:
+ * @data: (transfer full): a #GsPluginUrlToAppData
+ *
+ * Free the given @data.
+ *
+ * Since: 47
+ */
+void
+gs_plugin_url_to_app_data_free (GsPluginUrlToAppData *data)
+{
+	g_free (data->url);
+	g_free (data);
+}

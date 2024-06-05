@@ -4005,68 +4005,99 @@ gs_plugin_packagekit_file_to_app_finish (GsPlugin      *plugin,
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_url_to_app (GsPlugin *plugin,
-		      GsAppList *list,
-		      const gchar *url,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	g_autofree gchar *scheme = NULL;
-	g_autofree gchar *path = NULL;
-	const gchar *id = NULL;
-	const gchar * const *id_like = NULL;
-	g_auto(GStrv) package_ids = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsOsRelease) os_release = NULL;
-	g_autoptr(GPtrArray) packages = NULL;
-	g_autoptr(GPtrArray) details = NULL;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkClient) client_url_to_app = NULL;
+static void gs_plugin_packagekit_url_to_app_resolved_cb (GObject      *source_object,
+                                                         GAsyncResult *result,
+                                                         gpointer      user_data);
 
-	path = gs_utils_get_url_path (url);
+static void
+gs_plugin_packagekit_url_to_app_async (GsPlugin *plugin,
+				       const gchar *url,
+				       GsPluginUrlToAppFlags flags,
+				       GCancellable *cancellable,
+				       GAsyncReadyCallback callback,
+				       gpointer user_data)
+{
+	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
+	g_autoptr(GsPackagekitHelper) helper = NULL;
+	g_autoptr(PkTask) task_resolve = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_url_to_app_async);
 
 	/* only do this for apt:// on debian or debian-like distros */
-	os_release = gs_os_release_new (error);
+	os_release = gs_os_release_new (&local_error);
 	if (os_release == NULL) {
-		g_prefix_error (error, "failed to determine OS information:");
-		return FALSE;
-	} else  {
+		g_prefix_error_literal (&local_error, "Failed to determine OS information: ");
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	} else {
+		const gchar *id = NULL;
+		const gchar * const *id_like = NULL;
+		g_autofree gchar *scheme = NULL;
 		id = gs_os_release_get_id (os_release);
 		id_like = gs_os_release_get_id_like (os_release);
 		scheme = gs_utils_get_url_scheme (url);
 		if (!(g_strcmp0 (scheme, "apt") == 0 &&
 		     (g_strcmp0 (id, "debian") == 0 ||
-		      g_strv_contains (id_like, "debian")))) {
-			return TRUE;
+		      (id_like != NULL && g_strv_contains (id_like, "debian"))))) {
+			g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+			return;
 		}
 	}
 
+	package_ids = g_new0 (gchar *, 2);
+	package_ids[0] = gs_utils_get_url_path (url);
+
+	task_resolve = gs_packagekit_task_new (plugin);
+	helper = gs_packagekit_helper_new (plugin);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_resolve), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE,
+				  flags & GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_resolve), helper);
+
+	pk_client_resolve_async (PK_CLIENT (task_resolve),
+				 pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
+				 package_ids,
+				 cancellable,
+				 gs_packagekit_helper_cb, g_steal_pointer (&helper),
+				 gs_plugin_packagekit_url_to_app_resolved_cb, g_steal_pointer (&task));
+}
+
+static void
+gs_plugin_packagekit_url_to_app_resolved_cb (GObject *source_object,
+					     GAsyncResult *result,
+					     gpointer user_data)
+{
+	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (g_task_get_source_object (task));
+	GsPluginUrlToAppData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPlugin *plugin = GS_PLUGIN (self);
+	g_autofree gchar *path = NULL;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GPtrArray) packages = NULL;
+	g_autoptr(GPtrArray) details = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+	if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
+		g_prefix_error (&local_error, "Failed to resolve package_ids: ");
+		gs_plugin_packagekit_error_convert (&local_error, cancellable);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	path = gs_utils_get_url_path (data->url);
+	list = gs_app_list_new ();
 	app = gs_app_new (NULL);
 	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_add_source (app, path);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-
-	package_ids = g_new0 (gchar *, 2);
-	package_ids[0] = g_strdup (path);
-
-	client_url_to_app = pk_client_new ();
-	pk_client_set_interactive (client_url_to_app, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
-	results = pk_client_resolve (client_url_to_app,
-				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
-				     package_ids,
-				     cancellable,
-				     gs_packagekit_helper_cb, helper,
-				     error);
-
-	if (!gs_plugin_packagekit_results_valid (results, cancellable, error)) {
-		g_prefix_error (error, "failed to resolve package_ids: ");
-		return FALSE;
-	}
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
@@ -4076,24 +4107,35 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 		g_autoptr(GHashTable) details_collection = NULL;
 		g_autoptr(GHashTable) prepared_updates = NULL;
 
-		if (gs_app_get_local_file (app) != NULL)
-			return TRUE;
+		if (gs_app_get_local_file (app) == NULL) {
+			details_collection = gs_plugin_packagekit_details_array_to_hash (details);
 
-		details_collection = gs_plugin_packagekit_details_array_to_hash (details);
+			g_mutex_lock (&self->prepared_updates_mutex);
+			prepared_updates = g_hash_table_ref (self->prepared_updates);
+			g_mutex_unlock (&self->prepared_updates_mutex);
 
-		g_mutex_lock (&self->prepared_updates_mutex);
-		prepared_updates = g_hash_table_ref (self->prepared_updates);
-		g_mutex_unlock (&self->prepared_updates_mutex);
-
-		gs_plugin_packagekit_resolve_packages_app (GS_PLUGIN (self), packages, app);
-		gs_plugin_packagekit_refine_details_app (plugin, details_collection, prepared_updates, app);
+			gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
+			gs_plugin_packagekit_refine_details_app (plugin, details_collection, prepared_updates, app);
+		}
 
 		gs_app_list_add (list, app);
 	} else {
-		g_warning ("no results returned");
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_INVALID_FORMAT,
+					 "No files for %s", data->url);
+		return;
 	}
 
-	return TRUE;
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_packagekit_url_to_app_finish (GsPlugin      *plugin,
+					GAsyncResult  *result,
+					GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static gchar *
@@ -5357,6 +5399,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->launch_finish = gs_plugin_packagekit_launch_finish;
 	plugin_class->file_to_app_async = gs_plugin_packagekit_file_to_app_async;
 	plugin_class->file_to_app_finish = gs_plugin_packagekit_file_to_app_finish;
+	plugin_class->url_to_app_async = gs_plugin_packagekit_url_to_app_async;
+	plugin_class->url_to_app_finish = gs_plugin_packagekit_url_to_app_finish;
 }
 
 GType

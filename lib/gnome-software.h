@@ -44,6 +44,7 @@
 #include <gs-plugin-job-install-apps.h>
 #include <gs-plugin-job-uninstall-apps.h>
 #include <gs-plugin-job-update-apps.h>
+#include <gs-plugin-job-url-to-app.h>
 #include <gs-plugin-vfuncs.h>
 #include <gs-remote-icon.h>
 #include <gs-rewrite-resources.h>
