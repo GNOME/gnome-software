@@ -715,6 +715,19 @@ static void
 gs_plugin_packagekit_set_update_app_state (GsApp *app,
 					   PkPackage *package)
 {
+#if PK_CHECK_VERSION(1, 3, 0)
+	if (pk_package_get_info (package) == PK_INFO_ENUM_REMOVE ||
+	    pk_package_get_info (package) == PK_INFO_ENUM_REMOVING ||
+	    pk_package_get_info (package) == PK_INFO_ENUM_OBSOLETE ||
+	    pk_package_get_info (package) == PK_INFO_ENUM_OBSOLETING) {
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	} else if (pk_package_get_info (package) == PK_INFO_ENUM_INSTALL ||
+		   pk_package_get_info (package) == PK_INFO_ENUM_INSTALLING) {
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	} else {
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+	}
+#else
 	if (pk_package_get_info (package) == PK_INFO_ENUM_REMOVING ||
 	    pk_package_get_info (package) == PK_INFO_ENUM_OBSOLETING) {
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
@@ -723,6 +736,7 @@ gs_plugin_packagekit_set_update_app_state (GsApp *app,
 	} else {
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 	}
+#endif
 }
 
 static GsApp *
@@ -4081,7 +4095,15 @@ update_system_filter_cb (PkPackage *package,
 			 gpointer user_data)
 {
 	PkInfoEnum info = pk_package_get_info (package);
+#if PK_CHECK_VERSION(1, 3, 0)
+	return info != PK_INFO_ENUM_OBSOLETE &&
+	       info != PK_INFO_ENUM_OBSOLETING &&
+	       info != PK_INFO_ENUM_REMOVE &&
+	       info != PK_INFO_ENUM_REMOVING &&
+	       info != PK_INFO_ENUM_BLOCKED;
+#else
 	return info != PK_INFO_ENUM_OBSOLETING && info != PK_INFO_ENUM_REMOVING && info != PK_INFO_ENUM_BLOCKED;
+#endif
 }
 
 static void
