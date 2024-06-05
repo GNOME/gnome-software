@@ -568,14 +568,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_FILE_TO_APP:
-		{
-			GsPluginFileToAppFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
-					   gs_plugin_job_get_file (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		{
 			GsPluginUrlToAppFunc plugin_func = func;
@@ -3224,8 +3216,7 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 
 	/* check the local files have an icon set */
 	switch (action) {
-	case GS_PLUGIN_ACTION_URL_TO_APP:
-	case GS_PLUGIN_ACTION_FILE_TO_APP: {
+	case GS_PLUGIN_ACTION_URL_TO_APP: {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 		g_autoptr(GAsyncResult) refine_result = NULL;
 		g_autoptr(GsAppList) new_list = NULL;
@@ -3284,8 +3275,7 @@ gs_plugin_loader_process_old_api_job_cb (gpointer task_data,
 	}
 
 	/* only allow one result */
-	if (action == GS_PLUGIN_ACTION_URL_TO_APP ||
-	    action == GS_PLUGIN_ACTION_FILE_TO_APP) {
+	if (action == GS_PLUGIN_ACTION_URL_TO_APP) {
 		if (gs_app_list_length (list) == 0) {
 			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
 			g_autoptr(GError) error_local = NULL;
@@ -3410,6 +3400,10 @@ run_job_cb (GObject      *source_object,
 		return;
 	} else if (GS_IS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job)) {
 		GsAppList *list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
+		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+		return;
+	} else if (GS_IS_PLUGIN_JOB_FILE_TO_APP (plugin_job)) {
+		GsAppList *list = gs_plugin_job_file_to_app_get_result_list (GS_PLUGIN_JOB_FILE_TO_APP (plugin_job));
 		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 		return;
 	} else if (GS_IS_PLUGIN_JOB_REFRESH_METADATA (plugin_job)) {

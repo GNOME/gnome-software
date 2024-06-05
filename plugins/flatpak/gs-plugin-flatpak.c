@@ -2268,22 +2268,56 @@ gs_plugin_flatpak_file_to_app (GsPluginFlatpak *self,
 	return app;
 }
 
-gboolean
-gs_plugin_file_to_app (GsPlugin *plugin,
-		       GsAppList *list,
-		       GFile *file,
-		       GCancellable *cancellable,
-		       GError **error)
+static void
+file_to_app_thread_cb (GTask *task,
+		       gpointer source_object,
+		       gpointer task_data,
+		       GCancellable *cancellable)
 {
 	g_autoptr(GsApp) app = NULL;
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsPluginFileToAppData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE) != 0;
 
-	app = gs_plugin_flatpak_file_to_app (self, file, interactive, NULL, cancellable, error);
-	if (app != NULL)
+	app = gs_plugin_flatpak_file_to_app (self, data->file, interactive, NULL, cancellable, &local_error);
+	if (app != NULL) {
+		g_autoptr(GsAppList) list = gs_app_list_new ();
 		gs_app_list_add (list, app);
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+	} else if (local_error != NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	} else {
+		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+	}
+}
 
-	return TRUE;
+static void
+gs_plugin_flatpak_file_to_app_async (GsPlugin *plugin,
+				     GFile *file,
+				     GsPluginFileToAppFlags flags,
+				     GCancellable *cancellable,
+				     GAsyncReadyCallback callback,
+				     gpointer user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
+	gboolean interactive = (flags & GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE) != 0;
+
+	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_file_to_app_async);
+
+	/* Queue a job to get the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				file_to_app_thread_cb, g_steal_pointer (&task));
+}
+
+static GsAppList *
+gs_plugin_flatpak_file_to_app_finish (GsPlugin      *plugin,
+				      GAsyncResult  *result,
+				      GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static void refine_categories_thread_cb (GTask        *task,
@@ -2903,6 +2937,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->update_apps_finish = gs_plugin_flatpak_update_apps_finish;
 	plugin_class->launch_async = gs_plugin_flatpak_launch_async;
 	plugin_class->launch_finish = gs_plugin_flatpak_launch_finish;
+	plugin_class->file_to_app_async = gs_plugin_flatpak_file_to_app_async;
+	plugin_class->file_to_app_finish = gs_plugin_flatpak_file_to_app_finish;
 }
 
 GType

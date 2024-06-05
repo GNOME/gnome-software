@@ -509,12 +509,11 @@ main (int argc, char **argv)
 	} else if (argc == 3 && g_strcmp0 (argv[1], "filename-to-app") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		file = g_file_new_for_path (argv[2]);
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
-						 "file", file,
-						 "refine-flags", self->refine_flags,
-						 "max-results", self->max_results,
-						 "interactive", self->interactive,
-						 NULL);
+		plugin_job = gs_plugin_job_file_to_app_new (file,
+							    self->interactive ? GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE :
+							    GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+		gs_plugin_job_set_refine_flags (plugin_job, self->refine_flags);
+		gs_plugin_job_set_max_results (plugin_job, self->max_results);
 		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job, NULL, &error);
 		if (app == NULL) {
 			ret = FALSE;

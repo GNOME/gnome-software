@@ -40,7 +40,6 @@ struct _GsPluginJobCancelOfflineUpdate
 	/* In-progress data. */
 	GError *saved_error;  /* (owned) (nullable) */
 	guint n_pending_ops;
-	gboolean did_refine;
 };
 
 G_DEFINE_TYPE (GsPluginJobCancelOfflineUpdate, gs_plugin_job_cancel_offline_update, GS_TYPE_PLUGIN_JOB)

@@ -31,9 +31,7 @@ gs_plugins_dpkg_func (GsPluginLoader *plugin_loader)
 	fn = gs_test_get_filename (TESTDATADIR, "chiron-1.1-1.deb");
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
-					 "file", file,
-					 NULL);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
