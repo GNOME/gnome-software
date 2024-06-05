@@ -409,9 +409,12 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 			gs_app_set_size_installed (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
 		if (gs_app_get_size_download (app, NULL) == GS_SIZE_TYPE_UNKNOWN)
 			gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
-	}
-	if (gs_app_get_version (app) == NULL)
+	} else if (pk_package_get_info (package) == PK_INFO_ENUM_AVAILABLE) {
+		if (gs_app_get_update_version (app) == NULL)
+			gs_app_set_update_version (app, pk_package_get_version (package));
+	} else if (gs_app_get_version (app) == NULL) {
 		gs_app_set_version (app, pk_package_get_version (package));
+	}
 	gs_app_set_name (app,
 			 GS_APP_QUALITY_LOWEST,
 			 pk_package_get_name (package));
