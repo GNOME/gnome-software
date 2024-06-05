@@ -305,13 +305,11 @@ finish_refine_op (GTask     *task,
 			g_debug ("expected one, but received %u apps for %s", gs_app_list_length (self->result_list), str);
 		}
 
-		/* Ensure the local file and icon is set on all the apps. */
+		/* Ensure the icon is set on all the apps. */
 		if (self->result_list != NULL) {
 			for (guint i = 0; i < gs_app_list_length (self->result_list); i++) {
 				GsApp *app = gs_app_list_index (self->result_list, i);
 
-				if (gs_app_get_local_file (app) == NULL)
-					gs_app_set_local_file (app, self->file);
 				if (!gs_app_has_icons (app)) {
 					g_autoptr(GIcon) ic = NULL;
 					const gchar *icon_name;
