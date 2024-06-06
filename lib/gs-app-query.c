@@ -92,6 +92,7 @@ struct _GsAppQuery
 	GsAppQueryTristate is_for_update;
 	GsAppQueryTristate is_historical_update;
 	GsAppQueryTristate is_source;
+	gchar *is_langpack_for_locale;  /* (nullable) (owned) */
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -123,9 +124,10 @@ typedef enum {
 	PROP_IS_FOR_UPDATE,
 	PROP_IS_HISTORICAL_UPDATE,
 	PROP_IS_SOURCE,
+	PROP_IS_LANGPACK_FOR_LOCALE,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_IS_SOURCE + 1] = { NULL, };
+static GParamSpec *props[PROP_IS_LANGPACK_FOR_LOCALE + 1] = { NULL, };
 
 static gchar **
 gs_app_query_sanitize_keywords (const gchar * const *terms)
@@ -259,6 +261,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_IS_SOURCE:
 		g_value_set_enum (value, self->is_source);
+		break;
+	case PROP_IS_LANGPACK_FOR_LOCALE:
+		g_value_set_string (value, self->is_langpack_for_locale);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -420,6 +425,11 @@ gs_app_query_set_property (GObject      *object,
 		g_assert (self->is_source == GS_APP_QUERY_TRISTATE_UNSET);
 		self->is_source = g_value_get_enum (value);
 		break;
+	case PROP_IS_LANGPACK_FOR_LOCALE:
+		/* Construct only. */
+		g_assert (self->is_langpack_for_locale == NULL);
+		self->is_langpack_for_locale = g_value_dup_string (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -458,6 +468,7 @@ gs_app_query_finalize (GObject *object)
 	g_clear_pointer (&self->released_since, g_date_time_unref);
 	g_clear_pointer (&self->keywords, g_strfreev);
 	g_clear_pointer (&self->provides_tag, g_free);
+	g_clear_pointer (&self->is_langpack_for_locale, g_free);
 
 	G_OBJECT_CLASS (gs_app_query_parent_class)->finalize (object);
 }
@@ -944,6 +955,35 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:is-langpack-for-locale: (nullable)
+	 *
+	 * A locale to match against.
+	 *
+	 * If this is non-%NULL, only apps which provide a system language pack
+	 * for the given locale are returned.
+	 *
+	 * If this is %NULL, apps are not filtered by being a langpack.
+	 *
+	 * The locale is in the form as documented in
+	 * [`setlocale(3)`](man:setlocale(3)):
+	 *
+	 * ```
+	 * language[_territory][.codeset][@modifier]
+	 * ```
+	 *
+	 * e.g. `ja_JP.UTF-8` or `en_GB.iso88591` or `uz_UZ.utf8@cyrillic` or
+	 * `de_DE@euro`.
+	 *
+	 * Since: 49
+	 */
+	props[PROP_IS_LANGPACK_FOR_LOCALE] =
+		g_param_spec_string ("is-langpack-for-locale", "Is Langpack for Locale",
+				     "A locale to match against",
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -1133,6 +1173,8 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 	if (self->is_historical_update != GS_APP_QUERY_TRISTATE_UNSET)
 		n++;
 	if (self->is_source != GS_APP_QUERY_TRISTATE_UNSET)
+		n++;
+	if (self->is_langpack_for_locale != NULL)
 		n++;
 
 	return n;
@@ -1449,4 +1491,22 @@ gs_app_query_get_is_source (GsAppQuery *self)
 	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_UNSET);
 
 	return self->is_source;
+}
+
+/**
+ * gs_app_query_get_is_langpack_for_locale:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:is-langpack-for-locale.
+ *
+ * Returns: (nullable): a locale to filter for langpacks with, or %NULL to
+ *   not filter
+ * Since: 49
+ */
+const gchar *
+gs_app_query_get_is_langpack_for_locale (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	return self->is_langpack_for_locale;
 }
