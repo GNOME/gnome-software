@@ -294,13 +294,23 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 		case PK_INFO_ENUM_AVAILABLE:
 			state = GS_APP_STATE_AVAILABLE;
 			break;
+#if PK_CHECK_VERSION(1, 3, 0)
+		case PK_INFO_ENUM_INSTALL:
+#endif
 		case PK_INFO_ENUM_INSTALLING:
 		case PK_INFO_ENUM_UPDATING:
+#if PK_CHECK_VERSION(1, 3, 0)
+		case PK_INFO_ENUM_OBSOLETE:
+		case PK_INFO_ENUM_DOWNGRADE:
+#endif
 		case PK_INFO_ENUM_DOWNGRADING:
 		case PK_INFO_ENUM_OBSOLETING:
 		case PK_INFO_ENUM_UNTRUSTED:
 			break;
 		case PK_INFO_ENUM_UNAVAILABLE:
+#if PK_CHECK_VERSION(1, 3, 0)
+		case PK_INFO_ENUM_REMOVE:
+#endif
 		case PK_INFO_ENUM_REMOVING:
 			state =  GS_APP_STATE_UNAVAILABLE;
 			break;
