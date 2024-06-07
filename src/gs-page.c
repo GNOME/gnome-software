@@ -569,6 +569,59 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					     "re-install the repository to use them again."),
 					   gs_app_get_name (app));
 		break;
+	case AS_COMPONENT_KIND_ADDON:
+	case AS_COMPONENT_KIND_INPUT_METHOD:
+		/* TRANSLATORS: this is a prompt message, and '%s' is the
+		 * name of an addon or an input method */
+		title = g_strdup_printf (_("Uninstall %s?"),
+					 gs_app_get_name (app));
+		/* TRANSLATORS: longer dialog text */
+		message = g_strdup_printf (_("It will not be possible to "
+					     "use %s after removal."),
+					   gs_app_get_name (app));
+		break;
+	case AS_COMPONENT_KIND_RUNTIME:
+		/* TRANSLATORS: this is a prompt message, and '%s' is the
+		 * name of a runtime */
+		title = g_strdup_printf (_("Uninstall %s?"),
+					 gs_app_get_name (app));
+		/* TRANSLATORS: longer dialog text */
+		message = g_strdup_printf (_("It will not be possible to use "
+					     "any apps which depend on %s after removal."),
+					   gs_app_get_name (app));
+		break;
+	case AS_COMPONENT_KIND_FONT:
+		/* TRANSLATORS: this is a prompt message, and '%s' is the
+		 * name of a font */
+		title = g_strdup_printf (_("Uninstall %s?"),
+					 gs_app_get_name (app));
+		/* TRANSLATORS: longer dialog text */
+		message = g_strdup_printf (_("It will not be possible to use %s "
+					     "after removal, and any documents which use "
+					     "it will appear in a different font."),
+					   gs_app_get_name (app));
+		break;
+	case AS_COMPONENT_KIND_CODEC:
+		/* TRANSLATORS: this is a prompt message, and '%s' is the
+		 * name of a codec */
+		title = g_strdup_printf (_("Uninstall %s?"),
+					 gs_app_get_name (app));
+		/* TRANSLATORS: longer dialog text */
+		message = g_strdup_printf (_("It will not be possible to use %s "
+					     "after removal. This may mean some media files "
+					     "will no longer be playable."),
+					   gs_app_get_name (app));
+		break;
+	case AS_COMPONENT_KIND_FIRMWARE:
+		/* TRANSLATORS: this is a prompt message, and '%s' is the
+		 * name of a firmware */
+		title = g_strdup_printf (_("Uninstall %s?"),
+					 gs_app_get_name (app));
+		/* TRANSLATORS: longer dialog text */
+		message = g_strdup_printf (_("Hardware which depends on %s may no "
+					     "longer function correctly after removal."),
+					   gs_app_get_name (app));
+		break;
 	default:
 		app_data_dir = gs_utils_get_app_data_dir (app);
 
