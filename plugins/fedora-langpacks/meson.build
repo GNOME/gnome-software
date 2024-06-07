@@ -15,6 +15,7 @@ if get_option('tests')
   test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
+  cargs += ['-DLOCALPLUGINDIR_PACKAGEKIT="' + meson.current_build_dir() + '/../packagekit"']
   e = executable(
     'gs-self-test-fedora-langpacks',
     compiled_schemas,
