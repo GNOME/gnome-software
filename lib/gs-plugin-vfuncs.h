@@ -63,22 +63,4 @@ GType		 gs_plugin_query_type			(void);
 void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
 							 GsApp		*app);
 
-/**
- * gs_plugin_add_langpacks:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @locale: a #LANGUAGE_CODE or #LOCALE, e.g. "ja" or "ja_JP"
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Returns a list of language packs, as per input language code or locale.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_langpacks		(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 const gchar    *locale,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
 G_END_DECLS

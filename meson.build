@@ -23,7 +23,7 @@ conf.set_quoted('APPLICATION_ID', application_id)
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-gs_plugin_api_version = '22'
+gs_plugin_api_version = '23'
 conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 
 datadir = join_paths(get_option('prefix'), get_option('datadir'))
