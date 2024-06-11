@@ -10,12 +10,10 @@ help_files = [
 ]
 
 help_media = [
-  'figures/age-rating-tile.png',
+  'figures/app-context-bar.png',
   'figures/app-screenshot.png',
   'figures/carousel.png',
-  'figures/hardware-support-tile.png',
   'figures/install-webapp-from-gnome-web.png',
-  'figures/safety-tile.png',
   'figures/scalable/license-community-built.svg',
   'figures/scalable/license-proprietary-and-special.svg',
   'figures/scalable/license-unknown.svg',
@@ -28,7 +26,6 @@ help_media = [
   'figures/scalable/symbolic/help-link-symbolic.svg',
   'figures/scalable/symbolic/translations-symbolic.svg',
   'figures/scalable/symbolic/webpage-symbolic.svg',
-  'figures/storage-tile.png',
 ]
 
 gnome.yelp (meson.project_name (),
