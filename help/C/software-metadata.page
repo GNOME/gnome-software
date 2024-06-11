@@ -56,22 +56,42 @@
     <p>App context bar in GNOME Software is a collection of tiles on the details page for an application, which display the following details.</p>
     <list>
       <item>
-	<p><link xref="#hardware-support">Hardware support</link></p>
-      </item>
-      <item>
-	<p><link xref="#age-rating">Age rating</link></p>
+	<p><link xref="#storage">Storage</link></p>
       </item>
       <item>
 	<p><link xref="#safety">Safety</link></p>
       </item>
       <item>
-	<p><link xref="#storage">Storage</link></p>
+	<p><link xref="#hardware-support">Hardware support</link></p>
+      </item>
+      <item>
+	<p><link xref="#age-rating">Age rating</link></p>
       </item>
     </list>
 
     <p>Below is the app context bar for GNOME Software app.</p>
     <media type="image" src="figures/app-context-bar.png" mime="image/png"/>
+    <p>The tiles are displayed in the order listed above (starting with <code>Storage</code> tile on the left).</p>
     <p>Each tile is covered in detail below.</p>
+  </section>
+
+  <section id="storage">
+    <title>Storage</title>
+    <p>GNOME Software displays a storage tile on the details page for an application. If the application is not installed, this displays the estimated download size needed to install it. If the application is installed, it displays the storage space used by the application.</p>
+    <p>The sizes are calculated from data provided by the GNOME Software backend (such as flatpak or an RPM), and are not specified in the metadata provided by the application. There is nothing you can do to affect this tile by editing an application’s metainfo file. It’s listed here for completeness.</p>
+  </section>
+
+  <section id="safety">
+    <title>Safety</title>
+    <p>GNOME Software displays a safety tile on the details page for an application. This summarises information about whether the app can be considered safe to install and run, or whether caution may be required before trusting it.</p>
+    <p>This tile combines information about the permissions which the app requests when it runs (such as permission to read your files), with information about how the app was developed. Free software applications, where the source code is publicly readable, can be more secure than proprietary ones, as they can be audited.</p>
+    <p>The dialog which appears when the tile is clicked lists the different permissions the app requests, plus some information about its license and runtime.</p>
+    <p>You can improve the safety information:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-fix-incorrect-safety-and-permissions-information">How to fix incorrect safety and permissions information</link></p>
+      </item>
+    </list>
   </section>
 
   <section id="hardware-support">
@@ -113,25 +133,6 @@
 	<p><link xref="#how-to-add-missing-content-rating-information">How to add missing content rating information</link></p>
       </item>
     </list>
-  </section>
-
-  <section id="safety">
-    <title>Safety</title>
-    <p>GNOME Software displays a safety tile on the details page for an application. This summarises information about whether the app can be considered safe to install and run, or whether caution may be required before trusting it.</p>
-    <p>This tile combines information about the permissions which the app requests when it runs (such as permission to read your files), with information about how the app was developed. Free software applications, where the source code is publicly readable, can be more secure than proprietary ones, as they can be audited.</p>
-    <p>The dialog which appears when the tile is clicked lists the different permissions the app requests, plus some information about its license and runtime.</p>
-    <p>You can improve the safety information:</p>
-    <list>
-      <item>
-	<p><link xref="#how-to-fix-incorrect-safety-and-permissions-information">How to fix incorrect safety and permissions information</link></p>
-      </item>
-    </list>
-  </section>
-
-  <section id="storage">
-    <title>Storage</title>
-    <p>GNOME Software displays a storage tile on the details page for an application. If the application is not installed, this displays the estimated download size needed to install it. If the application is installed, it displays the storage space used by the application.</p>
-    <p>The sizes are calculated from data provided by the GNOME Software backend (such as flatpak or an RPM), and are not specified in the metadata provided by the application. There is nothing you can do to affect this tile by editing an application’s metainfo file. It’s listed here for completeness.</p>
   </section>
 
   <section id="license">
@@ -267,6 +268,28 @@
 </screenshots>]]></code>
 </section>
 
+  <section id="how-to-fix-incorrect-safety-and-permissions-information">
+    <title>How to fix incorrect safety and permissions information</title>
+    <p>The safety and permissions information for an application comes from different sources depending on how the application is packaged. For traditionally packaged applications, for example in RPM or DEB format, there is no safety or permissions information available and nothing can currently be done to add it to an application.</p>
+    <p>For flatpak applications, the information comes from the application’s <link href="https://docs.flatpak.org/en/latest/manifests.html">flatpak manifest</link>, specifying what holes in the sandbox the application requires. Each of these holes typically contributes to lowering the displayed safety level of the application in gnome-software — moving it from ‘safe’ to ‘potentially unsafe’ to ‘unsafe’.</p>
+    <p>In order to improve the safety level of an application, its sandboxing must be made as tight as possible, by removing <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html">sandbox permissions</link> where they’re not needed, and using <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">portals</link> instead of sandbox permissions where possible. Use of portals does not lower the displayed safety level of an application in gnome-software.</p>
+    <p>For example, if the application requests read/write access to the full file system (<code>--filesystem=host</code>), does it actually need that, or does it only need to access files in a few specific locations? If so, the <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">file portal</link> could be used, or more specific <link type="seealso" href="https://docs.flatpak.org/en/latest/sandbox-permissions.html#filesystem-access">file system permissions</link> could be specified.</p>
+    <p>If the application works on Wayland, and only needs to work on X11 as a fallback, without using special X11 features, could it use <code>--socket=fallback-x11</code> rather than <code>--socket=x11</code>?</p>
+    <p>Guidance about specific permissions, or other packaging formats, may be added here in future.</p>
+    <p>Further reading:</p>
+    <list>
+      <item>
+	<p><link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html"/></p>
+      </item>
+      <item>
+	<p><link href="https://docs.flatpak.org/en/latest/manifests.html"/></p>
+      </item>
+      <item>
+	<p><link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals"/></p>
+      </item>
+    </list>
+  </section>
+
   <section id="how-to-add-missing-hardware-information">
     <title>How to add missing hardware information</title>
     <p>The hardware information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations"><code>&lt;requires&gt;</code>, <code>&lt;recommends&gt;</code> and <code>&lt;supports&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
@@ -298,28 +321,6 @@
       </item>
       <item>
 	<p><link href="https://github.com/ximion/appstream/issues/312"/></p>
-      </item>
-    </list>
-  </section>
-
-  <section id="how-to-fix-incorrect-safety-and-permissions-information">
-    <title>How to fix incorrect safety and permissions information</title>
-    <p>The safety and permissions information for an application comes from different sources depending on how the application is packaged. For traditionally packaged applications, for example in RPM or DEB format, there is no safety or permissions information available and nothing can currently be done to add it to an application.</p>
-    <p>For flatpak applications, the information comes from the application’s <link href="https://docs.flatpak.org/en/latest/manifests.html">flatpak manifest</link>, specifying what holes in the sandbox the application requires. Each of these holes typically contributes to lowering the displayed safety level of the application in gnome-software — moving it from ‘safe’ to ‘potentially unsafe’ to ‘unsafe’.</p>
-    <p>In order to improve the safety level of an application, its sandboxing must be made as tight as possible, by removing <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html">sandbox permissions</link> where they’re not needed, and using <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">portals</link> instead of sandbox permissions where possible. Use of portals does not lower the displayed safety level of an application in gnome-software.</p>
-    <p>For example, if the application requests read/write access to the full file system (<code>--filesystem=host</code>), does it actually need that, or does it only need to access files in a few specific locations? If so, the <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">file portal</link> could be used, or more specific <link type="seealso" href="https://docs.flatpak.org/en/latest/sandbox-permissions.html#filesystem-access">file system permissions</link> could be specified.</p>
-    <p>If the application works on Wayland, and only needs to work on X11 as a fallback, without using special X11 features, could it use <code>--socket=fallback-x11</code> rather than <code>--socket=x11</code>?</p>
-    <p>Guidance about specific permissions, or other packaging formats, may be added here in future.</p>
-    <p>Further reading:</p>
-    <list>
-      <item>
-	<p><link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html"/></p>
-      </item>
-      <item>
-	<p><link href="https://docs.flatpak.org/en/latest/manifests.html"/></p>
-      </item>
-      <item>
-	<p><link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals"/></p>
       </item>
     </list>
   </section>
