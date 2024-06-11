@@ -243,21 +243,6 @@
     <p>Apps are typically hosted in <link href="https://gitlab.com/explore?sort=stars_desc">Gitlab</link> or <link href="https://github.com/explore">Github</link>. For example, GNOME apps are hosted in <link href="https://gitlab.gnome.org/GNOME?sort=stars_desc">gitlab.gnome.org</link></p>
   </section>
 
-  <section id="how-to-add-missing-links">
-    <title>How to add missing links</title>
-    <p>The links for an application are stored as <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
-    <p>Add as many of the link types documented in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url">appstream specification</link> as are available for the application. If no suitable page exists for a given link type, it doesn’t have to be included.</p>
-    <p>For example, here are the resource links for GNOME Software app:</p>
-    <code type="xml"><![CDATA[
-<url type="bugtracker">https://gitlab.gnome.org/GNOME/gnome-software/-/issues</url>
-<url type="contact">https://discourse.gnome.org/tag/gnome-software</url>
-<url type="contribute">https://welcome.gnome.org/app/Software/</url>
-<url type="donation">https://www.gnome.org/donate/</url>
-<url type="homepage">https://apps.gnome.org/Software</url>
-<url type="translate">https://l10n.gnome.org/module/gnome-software/</url>
-<url type="vcs-browser">https://gitlab.gnome.org/GNOME/gnome-software/</url>]]></code>
-  </section>
-
   <section id="how-to-add-missing-app-screenshots">
     <title>How to add missing app screenshots</title>
     <p>The screenshot information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-screenshots"><code>&lt;screenshots&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
@@ -331,6 +316,21 @@
 	<p><link href="https://github.com/ximion/appstream/issues/312"/></p>
       </item>
     </list>
+  </section>
+
+  <section id="how-to-add-missing-links">
+    <title>How to add missing links</title>
+    <p>The links for an application are stored as <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>Add as many of the link types documented in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url">appstream specification</link> as are available for the application. If no suitable page exists for a given link type, it doesn’t have to be included.</p>
+    <p>For example, here are the resource links for GNOME Software app:</p>
+    <code type="xml"><![CDATA[
+<url type="bugtracker">https://gitlab.gnome.org/GNOME/gnome-software/-/issues</url>
+<url type="contact">https://discourse.gnome.org/tag/gnome-software</url>
+<url type="contribute">https://welcome.gnome.org/app/Software/</url>
+<url type="donation">https://www.gnome.org/donate/</url>
+<url type="homepage">https://apps.gnome.org/Software</url>
+<url type="translate">https://l10n.gnome.org/module/gnome-software/</url>
+<url type="vcs-browser">https://gitlab.gnome.org/GNOME/gnome-software/</url>]]></code>
   </section>
 
   <section id="how-to-set-the-carousel-tile-background-colour">
