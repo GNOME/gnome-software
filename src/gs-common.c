@@ -1417,12 +1417,10 @@ void
 gs_show_uri (GtkWindow *parent,
 	     const char *uri)
 {
-	g_autoptr (GFile) file = NULL;
-	g_autoptr (GtkFileLauncher) launcher = NULL;
+	g_autoptr (GtkUriLauncher) launcher = NULL;
 
-	file = g_file_new_for_uri (uri);
-	launcher = gtk_file_launcher_new (file);
-	gtk_file_launcher_launch (launcher, parent, NULL, NULL, NULL);
+	launcher = gtk_uri_launcher_new (uri);
+	gtk_uri_launcher_launch (launcher, parent, NULL, NULL, NULL);
 }
 
 /**
