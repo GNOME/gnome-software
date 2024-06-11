@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+  SPDX-License-Identifier: CC-BY-SA-3.0
+  SPDX-FileCopyrightText: 2022 Phaedrus Leeds <mwleeds@protonmail.com>
+  SPDX-FileCopyrightText: 2024 Sid <sidtosh4@gmail.com>
+-->
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" id="how-to-reinstall-a-web-app">
+
+  <info>
+    <link type="guide" xref="index"/>
+
+    <credit type="author">
+      <name>Phaedrus Leeds</name>
+      <email>mwleeds@protonmail.com</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>How to reinstall a Webapp</desc>
+  </info>
+
+  <title>How to reinstall a Webapp</title>
+
+  <section id="introduction">
+    <p>GNOME Software supports managing two types of web apps:</p>
+    <list type="numbered">
+      <item><p>Web apps for which AppStream metainfo has been shipped with Software. See <link href="https://gitlab.gnome.org/mwleeds/gnome-pwa-list/-/blob/main/README.md">README.md</link>.</p></item>
+      <item><p>Web apps which have been installed using <link href="https://apps.gnome.org/Epiphany/">GNOME Web</link>.</p></item>
+    </list>
+    <p>The first type are displayed as available to install in Software (when this functionality has been enabled by the distribution), whereas the second type only show up in Software after they have been installed via GNOME Web. If you uninstall such an app and want to reinstall it, you must do so using GNOME Web.</p>
+
+    <p>Here are the steps to install a web app using GNOME Web:</p>
+    <steps>
+      <item><p>Click the app <gui style="button">Menu</gui> button in the top right as shown in the image below.</p></item>
+      <item><p>Click on <gui style="menuitem">Install as Web App…</gui> menu item. This should open the web app creation dialog.</p></item>
+      <item><p>Click the <gui style="button">Create</gui> button to create and install the web app.</p></item>
+    </steps>
+    <media type="image" src="figures/install-webapp-from-gnome-web.png" mime="image/png" width="800" its:translate="no"/>
+    <p>The web app should now show up in Software’s <gui style="tab">Installed</gui> tab.</p>
+  </section>
+
+</page>

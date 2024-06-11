@@ -315,6 +315,7 @@ if get_option('external_appstream')
 endif
 subdir('po')
 subdir('doc')
+subdir('help')
 
 # FIXME: remove when https://github.com/mesonbuild/meson/issues/837 fixed
 meson.add_install_script('meson_post_install.sh')

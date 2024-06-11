@@ -1,0 +1,372 @@
+<?xml version="1.0"?>
+<!--
+  SPDX-License-Identifier: CC-BY-SA-3.0
+  SPDX-FileCopyrightText: 2021, 2022, 2023 Philip Withnall <philip@tecnocode.co.uk>
+  SPDX-FileCopyrightText: 2021, 2022, 2024 Will Thompson <wjt@endlessos.org>
+  SPDX-FileCopyrightText: 2024 Milan Crha <mcrha@redhat.com>
+  SPDX-FileCopyrightText: 2024 Sid <sidtosh4@gmail.com>
+-->
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" id="software-metadata">
+
+  <info>
+    <link type="guide" xref="index"/>
+    <link type="seealso" xref="software-licensing"/>
+
+    <credit type="author">
+      <name>Philip Withnall</name>
+      <email>philip@tecnocode.co.uk</email>
+    </credit>
+    <credit type="author">
+      <name>Will Thompson</name>
+      <email>wjt@endlessos.org</email>
+    </credit>
+    <credit type="author">
+      <name>Milan Crha</name>
+      <email>mcrha@redhat.com</email>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>How GNOME Software uses metadata</desc>
+  </info>
+
+  <title>Software Metadata</title>
+  <links type="section"/>
+
+  <section id="screenshots">
+    <title>Screenshots</title>
+    <media type="image" src="figures/app-screenshot.png" style="floatend floatright" mime="image/png" its:translate="no"/>
+    <p>GNOME Software displays the screenshots on the details page for an application. This typically should include screenshots of various windows / dialogs of the application, so the user would get a quick grasp of the application's features, look and feel etc.</p>
+    <p>When more than one screenshot is present in the application’s metainfo file, GNOME Software will show the screenshots in a carousel, as shown here where the screenshots from GNOME Software app is shown in a carousel.</p>
+    <p>In cases when the application’s metainfo file doesn't contain any screenshot, then a missing image icon will be displayed as shown in the second image here.</p>
+    <p>Screenshots might become outdated as the application's UI changes. So, even if GNOME Software shows screenshots for an app, it's important to check if these screenshots are up-to-date or outdated.</p>
+    <p>You can improve app screenshot information:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-add-missing-app-screenshots">How to add missing app screenshots</link></p>
+      </item>
+    </list>
+    <media type="image" src="figures/scalable/no-screenshots.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
+  </section>
+
+  <section id="app-context-bar">
+    <title>App context bar</title>
+    <p>App context bar in GNOME Software is a collection of tiles on the details page for an application, which display the following details.</p>
+    <list>
+      <item>
+	<p><link xref="#storage">Storage</link></p>
+      </item>
+      <item>
+	<p><link xref="#safety">Safety</link></p>
+      </item>
+      <item>
+	<p><link xref="#hardware-support">Hardware support</link></p>
+      </item>
+      <item>
+	<p><link xref="#age-rating">Age rating</link></p>
+      </item>
+    </list>
+
+    <p>Below is the app context bar for GNOME Software app.</p>
+    <p xmlns:its="http://www.w3.org/2005/11/its" its:locNote="Translators: Refer below steps to generate this image:
+							      1. Run 'gnome-software --details=org.gnome.Software.desktop' in console (as normal user).
+							      2. This should launch the gnome-software app and automatically switch to 'GNOME Software' app's details page.
+							      3. It may take some time if some background tasks are running. Wait for the app's details page to load.
+							      4. Scroll down to take the screenshot of the app context bar.">
+      <media type="image" src="figures/app-context-bar.png" mime="image/png"/>
+    </p>
+
+
+    <p xmlns:its="http://www.w3.org/2005/11/its" its:locNote="Translators: This text needs to be adjusted for RTL languages as the tiles will be reversed in the UI.">The tiles are displayed in the order listed above (starting with <code>Storage</code> tile on the left).</p>
+    <p>Each tile is covered in detail below.</p>
+  </section>
+
+  <section id="storage">
+    <title>Storage</title>
+    <p>GNOME Software displays a storage tile on the details page for an application. If the application is not installed, this displays the estimated download size needed to install it. If the application is installed, it displays the storage space used by the application.</p>
+    <p>The sizes are calculated from data provided by the GNOME Software backend (such as flatpak or an RPM), and are not specified in the metadata provided by the application. There is nothing you can do to affect this tile by editing an application’s metainfo file. It’s listed here for completeness.</p>
+  </section>
+
+  <section id="safety">
+    <title>Safety</title>
+    <p>GNOME Software displays a safety tile on the details page for an application. This summarises information about whether the app can be considered safe to install and run, or whether caution may be required before trusting it.</p>
+    <p>This tile combines information about the permissions which the app requests when it runs (such as permission to read your files), with information about how the app was developed. Free software applications, where the source code is publicly readable, can be more secure than proprietary ones, as they can be audited.</p>
+    <p>The dialog which appears when the tile is clicked lists the different permissions the app requests, plus some information about its license and runtime.</p>
+    <p>You can improve the safety information:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-fix-incorrect-safety-and-permissions-information">How to fix incorrect safety and permissions information</link></p>
+      </item>
+    </list>
+  </section>
+
+  <section id="hardware-support">
+    <title>Hardware support</title>
+    <p>
+      GNOME Software displays a hardware support tile on the details page
+      for an application. This combines information about the hardware
+      requirements of the application, and the hardware capabilities of
+      the computer, with the aim of highlighting incompatibilities or
+      missing requirements — or to indicate that the application should
+      work correctly with no incompatibilities.
+    </p>
+
+    <p>Currently, the code looks at the following hardware. More may be supported in future.</p>
+    <list>
+      <item><p>Whether a touchpad, mouse or keyboard is present/needed</p></item>
+      <item><p>Whether a gamepad is needed</p></item>
+      <item><p>The minimum and recommended display size that the app can scale to</p></item>
+    </list>
+
+    <p>It’s not possible to reliably detect whether a gamepad is <em>present</em>, as they are often left disconnected due to not being needed for normal computer use.</p>
+    <p>The dialog which appears when the tile is clicked lists the different hardware requirements of the app, and whether any of them are not met.</p>
+    <p>You can improve the hardware information:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-add-missing-hardware-information">How to add missing hardware information</link></p>
+      </item>
+    </list>
+  </section>
+
+  <section id="age-rating">
+    <title>Age rating</title>
+    <p>GNOME Software displays an age rating tile on the details page for an application. This shows what age range the application should be suitable for, based on different kinds of content which the application has declared it contains. This information is summarised in a format similar to the game or film rating certificates for your country.</p>
+    <p>For example, this will highlight whether a game contains violence, or whether an application contains in-app advertising.</p>
+    <p>The dialog which appears when the tile is clicked lists the different types of content in the application and how severe that content is.</p>
+    <p>You can improve the age rating information:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-add-missing-content-rating-information">How to add missing content rating information</link></p>
+      </item>
+    </list>
+  </section>
+
+  <section id="license">
+    <title>License</title>
+    <media type="image" src="figures/scalable/license-community-built.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
+    <media type="image" src="figures/scalable/license-proprietary-and-special.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
+    <p>GNOME Software displays a tile indicating whether an application is <link type="seealso" href="https://en.wikipedia.org/wiki/Free_and_open-source_software">free software</link> or whether its license is proprietary, special or unknown. This tile includes more detailed information about the project’s license. This tile also lists some of the benefits of free software. <link type="seealso" xref="software-licensing#introduction">Learn more</link></p>
+    <p>Sometimes the license information isn’t correct for an application, and hence an application which is actually free software will be shown as ‘proprietary’. Similarly, sometimes the license information is unknown.</p>
+    <p>GNOME Software highlights free and open-source licenses in green, proprietary and special licenses in yellow as shown here. Unknown licenses are highlighted in grey.</p>
+    <p>You can add or improve the license information:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-fix-incorrect-licensing-information">How to fix incorrect licensing information</link></p>
+      </item>
+    </list>
+  </section>
+
+  <section id="links">
+    <title>Links</title>
+    <media type="image" src="figures/scalable/links.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
+    <p>GNOME Software displays a list of application resource links in the link tile. They are as follows:</p>
+    <table>
+      <tr>
+	<td><p><media type="image" src="figures/scalable/symbolic/webpage-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Website link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/scalable/symbolic/donate-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Donation link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/scalable/symbolic/translations-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Translation contribution link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/scalable/symbolic/computer-fail-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Bug reporting link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/scalable/symbolic/help-link-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Help link</p></td>
+      </tr>
+      <tr>
+	<td><p><media type="image" src="figures/scalable/symbolic/contact-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
+	<td><p>Contact link</p></td>
+      </tr>
+    </table>
+    <p>Some or all of these links may be present depending on whether they are listed in the application’s metainfo file.</p>
+    <p>In cases when the application’s metainfo file doesn't contain any link, the following tile with a question mark will be displayed.</p>
+    <media type="image" src="figures/scalable/no-links.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
+    <p>You can improve the links:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-add-missing-links">How to add missing links</link></p>
+      </item>
+    </list>
+  </section>
+
+  <section id="carousel-tile">
+    <title>Carousel tile</title>
+    <media type="image" src="figures/carousel.png" style="floatend floatright" mime="image/png" its:translate="no"/>
+    <p>Applications which are featured by GNOME Software are displayed in a carousel at the top of the main window. Each carousel tile has a background colour which is automatically extracted from the application’s icon. Sometimes this background colour is not quite right for the application and needs to be specified explicitly by the application developer.</p>
+    <p>The set of applications which are featured is decided by the Linux distribution maintainers.</p>
+    <p>You can improve the carousel tile:</p>
+    <list>
+      <item>
+	<p><link xref="#how-to-set-the-carousel-tile-background-colour">How to set the carousel tile background colour</link></p>
+      </item>
+    </list>
+  </section>
+
+  <section id="where-metadata-comes-from">
+    <title>Where metadata comes from</title>
+    <p>The metadata used to specify what hardware a piece of software requires, what ages of user it is suitable for, and factors which contribute to how safe it might be to install, all come from the metainfo file for that software.</p>
+    <p>The metainfo file is an XML file. Its file format is specified in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/">AppStream specification</link>.</p>
+    <p>Click <link href="https://gitlab.gnome.org/GNOME/nautilus/-/blob/main/data/org.gnome.Nautilus.metainfo.xml.in.in">here</link> to see the metainfo file for GNOME Files app.</p>
+    <p>Note: 'appdata' is the older term for 'metainfo'.</p>
+  </section>
+
+  <section id="what-happens-if-metadata-is-missing">
+    <title>What happens if metadata is missing</title>
+    <p>If some metadata is missing for an application, GNOME Software can only guess what it might be, and hence can’t present much information in its interfaces. The guesses GNOME Software makes are based on the fact that most software is designed for desktop computers.</p>
+    <p><em style="strong">You can help improve the metadata for an application!</em></p>
+  </section>
+
+  <section id="how-to-contribute-missing-information">
+    <title>How to contribute missing information</title>
+    <p>If you find that an app's page is missing information or has incorrect information, you can contribute in one of the two ways:</p>
+    <list type="numbered">
+      <item>
+	<p>You can report the missing / incorrect metadata to the respective app's bug tracker, so the app developer can fix it.</p>
+      </item>
+      <item>
+	<p>You can fix the the missing / incorrect metadata yourself. See the <em style="strong">How to</em> guide below on how to do that.</p>
+      </item>
+    </list>
+
+    <p>For both, you first need to find the app's project page. The link to the project page should typically be available in the app's page <link xref="#links">as shown here</link>. If not, you will need to find it with a simple search on Google.</p>
+
+    <p>Apps are typically hosted in <link href="https://gitlab.com/explore?sort=stars_desc">Gitlab</link> or <link href="https://github.com/explore">Github</link>. For example, GNOME apps are hosted in <link href="https://gitlab.gnome.org/GNOME?sort=stars_desc">gitlab.gnome.org</link></p>
+  </section>
+
+  <section id="how-to-add-missing-app-screenshots">
+    <title>How to add missing app screenshots</title>
+    <p>The screenshot information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-screenshots"><code>&lt;screenshots&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>Recommended number of screenshots for an app is between 5 to 10. Screenshots should ideally be in the PNG format with 16:9 aspect ratio and minuminum width of 620 pixels.</p>
+    <p>For example, here are the screenshot entries for GNOME Software app:</p>
+    <code type="xml"><![CDATA[
+<screenshots>
+  <screenshot type="default">
+    <image>https://gitlab.gnome.org/GNOME/gnome-software/raw/HEAD/data/metainfo/ss-overview.png</image>
+    <caption>Overview panel</caption>
+  </screenshot>
+  <screenshot>
+    <image>https://gitlab.gnome.org/GNOME/gnome-software/raw/HEAD/data/metainfo/ss-details.png</image>
+    <caption>Details panel</caption>
+  </screenshot>
+</screenshots>]]></code>
+</section>
+
+  <section id="how-to-fix-incorrect-safety-and-permissions-information">
+    <title>How to fix incorrect safety and permissions information</title>
+    <p>The safety and permissions information for an application comes from different sources depending on how the application is packaged. For traditionally packaged applications, for example in RPM or DEB format, there is no safety or permissions information available and nothing can currently be done to add it to an application.</p>
+    <p>For flatpak applications, the information comes from the application’s <link href="https://docs.flatpak.org/en/latest/manifests.html">flatpak manifest</link>, specifying what holes in the sandbox the application requires. Each of these holes typically contributes to lowering the displayed safety level of the application in gnome-software — moving it from ‘safe’ to ‘potentially unsafe’ to ‘unsafe’.</p>
+    <p>In order to improve the safety level of an application, its sandboxing must be made as tight as possible, by removing <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html">sandbox permissions</link> where they’re not needed, and using <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">portals</link> instead of sandbox permissions where possible. Use of portals does not lower the displayed safety level of an application in gnome-software.</p>
+    <p>For example, if the application requests read/write access to the full file system (<code>--filesystem=host</code>), does it actually need that, or does it only need to access files in a few specific locations? If so, the <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">file portal</link> could be used, or more specific <link type="seealso" href="https://docs.flatpak.org/en/latest/sandbox-permissions.html#filesystem-access">file system permissions</link> could be specified.</p>
+    <p>If the application works on Wayland, and only needs to work on X11 as a fallback, without using special X11 features, could it use <code>--socket=fallback-x11</code> rather than <code>--socket=x11</code>?</p>
+    <p>Guidance about specific permissions, or other packaging formats, may be added here in future.</p>
+    <p>Further reading:</p>
+    <list>
+      <item>
+	<p><link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html"/></p>
+      </item>
+      <item>
+	<p><link href="https://docs.flatpak.org/en/latest/manifests.html"/></p>
+      </item>
+      <item>
+	<p><link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals"/></p>
+      </item>
+    </list>
+  </section>
+
+  <section id="how-to-add-missing-hardware-information">
+    <title>How to add missing hardware information</title>
+    <p>The hardware information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations"><code>&lt;requires&gt;</code>, <code>&lt;recommends&gt;</code> and <code>&lt;supports&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>GNOME Software currently understands the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control"><code>&lt;control&gt;</code></link> and <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length"><code>&lt;display_length&gt;</code></link> elements.</p>
+    <p>See <link type="seealso" href="https://tecnocode.co.uk/2021/07/12/add-metadata-to-your-app-to-say-what-inputs-and-display-sizes-it-supports/">this blog post</link> or <link type="seealso" href="https://blogs.gnome.org/tbernard/2021/09/07/ready-for-software-41/#device-support">this blog post</link> for examples of metadata.</p>
+  </section>
+
+  <section id="how-to-add-missing-content-rating-information">
+    <title>How to add missing content rating information</title>
+    <p>The content rating information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-content_rating"><code>&lt;content_rating&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>Applications should use the OARS 1.1 standard to fill in this element. If the <code>&lt;content_rating&gt;</code> element is not specified, the application’s content rating is unknown. If it’s specified but empty, the application has no content which might be unsuitable for any audience.</p>
+    <p>Use <link type="seealso" href="https://hughsie.github.io/oars/">the OARS generator</link> to produce suitable content rating information for an application.</p>
+  </section>
+
+  <section id="how-to-fix-incorrect-licensing-information">
+    <title>How to fix incorrect licensing information</title>
+    <p>The licensing information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-project_license"><code>&lt;project_license&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>The content in this element should be an <link type="seealso" href="https://spdx.org/specifications">SPDX expression</link> which describes the ‘main’ license for the project. This should typically be the license of the code, and not include the license of the documentation or ancillary content.</p>
+    <p>If the SPDX expression is a single license, or an ‘or’ combination of multiple licenses, which are all <link type="seealso" href="https://spdx.org/licenses/">FSF or OSI approved</link>, the application is considered ‘free software’ and the license tile says so. Otherwise, it’s considered ‘proprietary’.</p>
+    <p>If an application is being displayed as ‘proprietary’ when you think it shouldn’t be, it’s likely that the <code>&lt;project_license&gt;</code> element includes the documentation license for the project. Remove it.</p>
+    <p><link type="seealso" href="https://gitlab.gnome.org/GNOME/meld/-/issues/579">For example</link>, change the license metadata from:</p>
+    <code type="xml"><![CDATA[<project_license>GPL-2.0+ and CC-BY-SA-3.0</project_license>]]></code>
+    <p>to</p>
+    <code type="xml"><![CDATA[<project_license>GPL-2.0+</project_license>]]></code>
+    <p>Further reading:</p>
+    <list>
+      <item>
+	<p><link href="https://tecnocode.co.uk/2021/07/05/dont-generally-put-cc-by-sa-in-appdata/">Don’t (generally) put documentation license in appdata</link></p>
+      </item>
+      <item>
+	<p><link href="https://github.com/ximion/appstream/issues/312"/></p>
+      </item>
+    </list>
+  </section>
+
+  <section id="how-to-add-missing-links">
+    <title>How to add missing links</title>
+    <p>The links for an application are stored as <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>Add as many of the link types documented in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url">appstream specification</link> as are available for the application. If no suitable page exists for a given link type, it doesn’t have to be included.</p>
+    <p>For example, here are the resource links for GNOME Software app:</p>
+    <code type="xml"><![CDATA[
+<url type="bugtracker">https://gitlab.gnome.org/GNOME/gnome-software/-/issues</url>
+<url type="contact">https://discourse.gnome.org/tag/gnome-software</url>
+<url type="contribute">https://welcome.gnome.org/app/Software/</url>
+<url type="donation">https://www.gnome.org/donate/</url>
+<url type="homepage">https://apps.gnome.org/Software</url>
+<url type="translate">https://l10n.gnome.org/module/gnome-software/</url>
+<url type="vcs-browser">https://gitlab.gnome.org/GNOME/gnome-software/</url>]]></code>
+  </section>
+
+  <section id="how-to-set-the-carousel-tile-background-colour">
+    <title>How to set the carousel tile background colour</title>
+    <p>The carousel tile background colour is normally extracted automatically from the application’s icon. If that colour is unsatisfactory, however, it can be overridden by using the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream's <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is currently ignored, gnome-software chooses the better color for the theme on its own.</p>
+    <p>There is left, for backward compatibility, possible to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
+    <code type="xml"><![CDATA[
+<custom>
+  <value key="GnomeSoftware::key-colors">[(124, 53, 77), (99, 16, 0)]</value>
+</custom>]]></code>
+    <p>but the <code>&lt;branding/&gt;</code> element has a precedence.</p>
+    <p>The value of <code>GnomeSoftware::key-colors</code> is a text-format GVariant with type <code>a(yyy)</code>, and represents an unordered set of key colours for the application. Each element of the set is a colour in RGB form ranging from <code>(0, 0, 0)</code> to <code>(255, 255, 255)</code>.</p>
+    <p>Colours should be chosen so that they:</p>
+    <list>
+      <item>
+	<p>Are identifiable to the application, matching the application’s branding in some way, if possible.</p>
+      </item>
+      <item>
+	<p>Contrast with the edge of the application’s icon, so that when they are used as a background behind it, the icon can be distinguished.</p>
+      </item>
+      <item>
+	<p>Contrast with the foreground text colour in the Adwaita theme (<code>#2e3436</code>) and in its dark variant (<code>#eeeeec</code>). This generally means choosing a colour with a medium level of brightness.</p>
+      </item>
+      <item>
+	<p>Contrast can be checked using the <link type="seealso" href="https://flathub.org/apps/org.gnome.design.Contrast/">Contrast app</link>.</p>
+      </item>
+    </list>
+    <p>At least one colour should be specified. More can be specified if one colour can’t satisfy all the requirements above, and GNOME Software will choose the most appropriate to use in the carousel tile. If exactly one colour is specified, its brightness and saturation may be modified to improve contrast with the foreground colour. If more than one colour is specified, the one with the best contrast with the foreground colour will be chosen, and its brightness and saturation will not be modified.</p>
+  </section>
+
+  <section id="how-to-test-carousel-tile-background-colour-changes">
+    <title>How to test carousel tile background colour changes</title>
+    <p>Modify the metainfo file for your application, and then run Software with:</p>
+    <code><![CDATA[gnome-software --show-metainfo=/path/to/app.metainfo.xml,icon=/path/to/app/icon.png]]></code>
+    <p>The details page for your application will be shown. If you navigate back to the overview page of Software, your application will be the only one in the ‘featured’ carousel.</p>
+  </section>
+
+
+</page>
