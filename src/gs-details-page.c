@@ -2014,7 +2014,8 @@ gs_details_page_load_stage1_cb (GObject *source,
 	    gs_app_get_state (self->app) == GS_APP_STATE_UNKNOWN) {
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
-		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
+		str = g_strdup_printf (_("Software failed to retrieve information for “%s” and is unable to show the details for this app."),
+				       id == NULL ? gs_app_get_source_default (self->app) : id);
 		adw_status_page_set_title (ADW_STATUS_PAGE (self->page_failed), str);
 		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 		return;
@@ -2030,7 +2031,8 @@ gs_details_page_load_stage1_cb (GObject *source,
 	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PARENTAL_FILTER)) {
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
-		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
+		str = g_strdup_printf (_("Software failed to retrieve information for “%s” and is unable to show the details for this app."),
+				       id == NULL ? gs_app_get_source_default (self->app) : id);
 		adw_status_page_set_title (ADW_STATUS_PAGE (self->page_failed), str);
 		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 		return;
