@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-06-10 09:52+0000\n"
-"PO-Revision-Date: 2024-06-11 17:19+0200\n"
+"POT-Creation-Date: 2024-06-13 14:30+0000\n"
+"PO-Revision-Date: 2024-06-14 22:10+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -2478,12 +2478,16 @@ msgstr ""
 "Program nima določenih povezav do spletne strani, skladišča kode ali "
 "sledilnika napak."
 
-#: src/gs-details-page.c:2017 src/gs-details-page.c:2033
+#: src/gs-details-page.c:2017 src/gs-details-page.c:2034
 #, c-format
-msgid "Unable to find “%s”"
-msgstr "Ni mogoče najti »%s«"
+msgid ""
+"Software failed to retrieve information for “%s” and is unable to show the "
+"details for this app."
+msgstr ""
+"Programska oprema ni pridobila podatkov za »%s« in ne more prikazati "
+"podrobnosti za ta program."
 
-#: src/gs-details-page.c:2377
+#: src/gs-details-page.c:2379
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Pošiljanje ocene za »%s« je spodletelo: %s"
@@ -2610,6 +2614,10 @@ msgstr "_Napišite oceno"
 #: src/gs-details-page.ui:1142
 msgid "All Reviews"
 msgstr "Mnenja in ocene"
+
+#: src/gs-details-page.ui:1214
+msgid "Unable to Show App Details"
+msgstr "Podrobnosti o programu ni mogoče prikazati"
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:272
