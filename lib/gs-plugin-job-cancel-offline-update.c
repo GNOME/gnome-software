@@ -13,6 +13,10 @@
  * #GsPluginJobCancelOfflineUpdate is a #GsPluginJob to cancel a pending offline
  * update.
  *
+ * See https://github.com/PackageKit/PackageKit/blob/main/docs/offline-updates.txt
+ * and https://www.freedesktop.org/software/systemd/man/latest/systemd.offline-updates.html
+ * for details of how offline updates work.
+ *
  * This class is a wrapper around #GsPluginClass.cancel_offline_update_async
  * calling it for all loaded plugins.
  *
