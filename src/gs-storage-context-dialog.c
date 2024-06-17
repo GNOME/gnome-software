@@ -254,7 +254,17 @@ manage_storage_activate_link_cb (GtkLabel    *label,
 static void
 gs_storage_context_dialog_init (GsStorageContextDialog *self)
 {
+  	g_autofree gchar *link = NULL;
+	g_autofree gchar *label = NULL;
+
 	gtk_widget_init_template (GTK_WIDGET (self));
+
+  	/* Translators: %s is a link pointing to the app settings page in
+	  * GNOME Settings with the label "app settings" */
+	link = g_strdup_printf ("<a href='#'>%s</a>", _("_app settings"));
+  	label = g_strdup_printf (_("Cached data can be cleared from the %s"), link);
+
+	gtk_label_set_label (self->manage_storage_label, label);
 }
 
 static void
