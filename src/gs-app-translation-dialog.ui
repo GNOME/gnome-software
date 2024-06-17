@@ -69,8 +69,6 @@
                     <property name="halign">center</property>
                     <property name="margin-top">14</property>
                     <property name="margin-bottom">14</property>
-                    <property name="margin-start">14</property>
-                    <property name="margin-end">14</property>
                     <signal name="clicked" handler="button_clicked_cb"/>
                     <style>
                       <class name="suggested-action"/>
@@ -81,14 +79,13 @@
                         <property name="orientation">horizontal</property>
                         <property name="spacing">6</property>
                         <property name="halign">center</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">12</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="xalign">0</property>
                             <property name="yalign">0.5</property>
                             <property name="label" translatable="yes">_Translation Website</property>
                             <property name="use-underline">True</property>
+                            <property name="wrap">True</property>
                           </object>
                         </child>
                         <child>
