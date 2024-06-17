@@ -40,7 +40,14 @@
  * Also supports converting repo filenames to package-ids.
  *
  * Also supports marking previously downloaded packages as zero size, and allows
- * scheduling the offline update.
+ * scheduling an offline update. An offline update is when packages are
+ * downloaded in advance, but are then deployed on reboot, when the system is in
+ * a minimally started-up state. This reduces the risk of things crashing as
+ * files are updated.
+ *
+ * See https://github.com/PackageKit/PackageKit/blob/main/docs/offline-updates.txt
+ * and https://www.freedesktop.org/software/systemd/man/latest/systemd.offline-updates.html
+ * for details of how offline updates work.
  *
  * Requires:    | [source-id], [repos::repo-filename]
  * Refines:     | [source-id], [source], [update-details], [management-plugin]
