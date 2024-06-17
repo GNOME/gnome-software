@@ -59,6 +59,7 @@
           <object class="AdwPreferencesGroup">
             <child>
               <object class="GtkLabel" id="manage_storage_label">
+                <property name="wrap">True</property>
                 <property name="use-markup">True</property>
                 <property name="use-underline">True</property>
                 <signal name="activate-link" handler="manage_storage_activate_link_cb"/>
