@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-06-13 14:30+0000\n"
-"PO-Revision-Date: 2024-06-14 22:10+0200\n"
+"POT-Creation-Date: 2024-06-17 22:17+0000\n"
+"PO-Revision-Date: 2024-06-19 08:57+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -1581,7 +1581,7 @@ msgstr ""
 msgid "Translations"
 msgstr "Prevodi"
 
-#: src/gs-app-translation-dialog.ui:90
+#: src/gs-app-translation-dialog.ui:86
 msgid "_Translation Website"
 msgstr "_Spletišče za prevajanje"
 
@@ -5080,18 +5080,21 @@ msgctxt "Download size"
 msgid "Unknown"
 msgstr "Neznano"
 
+#. Translators: %s is a link pointing to the app settings page in
+#. * GNOME Settings with the label "app settings"
+#: src/gs-storage-context-dialog.c:264
+msgid "_app settings"
+msgstr "Nastavitve pro_grama"
+
+#: src/gs-storage-context-dialog.c:265
+#, c-format
+msgid "Cached data can be cleared from the %s"
+msgstr "Predpomnjene podatke je mogoče počistiti pod %s"
+
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:5
 msgid "Storage"
 msgstr "Mesta za shranjevanje"
-
-#. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:63
-msgid ""
-"Cached data can be cleared from the <a href=\"dummy\">_app settings</a>."
-msgstr ""
-"Predpomnjene podatke je mogoče počistiti med <a href=\"dummy\"> nastavitvami "
-"_programa</a>."
 
 #: src/gs-summary-tile.c:139
 #, c-format
@@ -6174,11 +6177,11 @@ msgstr ""
 "kakorkoli prirejena. Posodobitve bodo onemogočene, dokler te posodobitve "
 "niso razrešene ali pa programi odstranjeni."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:1466
+#: plugins/packagekit/gs-plugin-packagekit.c:1473
 msgid "Failed to install updates: "
 msgstr "Namestitev posodobitev je spodletela: "
 
-#: plugins/packagekit/gs-plugin-packagekit.c:1561
+#: plugins/packagekit/gs-plugin-packagekit.c:1568
 msgid "Packages"
 msgstr "Paketi"
 
