@@ -194,16 +194,6 @@ static GParamSpec *obj_props[PROP_ICONS_STATE + 1] = { NULL, };
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
 static gboolean
-_g_set_str (gchar **str_ptr, const gchar *new_str)
-{
-	if (*str_ptr == new_str || g_strcmp0 (*str_ptr, new_str) == 0)
-		return FALSE;
-	g_free (*str_ptr);
-	*str_ptr = g_strdup (new_str);
-	return TRUE;
-}
-
-static gboolean
 _g_set_strv (gchar ***strv_ptr, gchar **new_strv)
 {
 	if (*strv_ptr == new_strv)
@@ -876,7 +866,7 @@ gs_app_set_id (GsApp *app, const gchar *id)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	if (_g_set_str (&priv->id, id))
+	if (g_set_str (&priv->id, id))
 		priv->unique_id_valid = FALSE;
 }
 
@@ -1438,7 +1428,7 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 	if (quality < priv->name_quality)
 		return;
 	priv->name_quality = quality;
-	if (_g_set_str (&priv->name, name))
+	if (g_set_str (&priv->name, name))
 		gs_app_queue_notify (app, obj_props[PROP_NAME]);
 }
 
@@ -1477,7 +1467,7 @@ gs_app_set_renamed_from (GsApp *app, const gchar *renamed_from)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_str (&priv->renamed_from, renamed_from);
+	g_set_str (&priv->renamed_from, renamed_from);
 }
 
 /**
@@ -1514,7 +1504,7 @@ gs_app_set_branch (GsApp *app, const gchar *branch)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	if (_g_set_str (&priv->branch, branch))
+	if (g_set_str (&priv->branch, branch))
 		priv->unique_id_valid = FALSE;
 }
 
@@ -1766,7 +1756,7 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_str (&priv->project_group, project_group);
+	g_set_str (&priv->project_group, project_group);
 }
 
 /**
@@ -1785,7 +1775,7 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_str (&priv->developer_name, developer_name);
+	g_set_str (&priv->developer_name, developer_name);
 }
 
 static GtkIconTheme *
@@ -2138,7 +2128,7 @@ gs_app_set_agreement (GsApp *app, const gchar *agreement)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_str (&priv->agreement, agreement);
+	g_set_str (&priv->agreement, agreement);
 }
 
 /**
@@ -2447,7 +2437,7 @@ gs_app_set_version (GsApp *app, const gchar *version)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	if (_g_set_str (&priv->version, version)) {
+	if (g_set_str (&priv->version, version)) {
 		gs_app_ui_versions_invalidate (app);
 		gs_app_queue_notify (app, obj_props[PROP_VERSION]);
 	}
@@ -2494,7 +2484,7 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 	if (quality < priv->summary_quality)
 		return;
 	priv->summary_quality = quality;
-	if (_g_set_str (&priv->summary, summary))
+	if (g_set_str (&priv->summary, summary))
 		gs_app_queue_notify (app, obj_props[PROP_SUMMARY]);
 }
 
@@ -2539,7 +2529,7 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 	if (quality < priv->description_quality)
 		return;
 	priv->description_quality = quality;
-	_g_set_str (&priv->description, description);
+	g_set_str (&priv->description, description);
 }
 
 /**
@@ -2768,7 +2758,7 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 
 	priv->license_is_free = as_license_is_free_license (license);
 
-	if (_g_set_str (&priv->license, license))
+	if (g_set_str (&priv->license, license))
 		gs_app_queue_notify (app, obj_props[PROP_LICENSE]);
 }
 
@@ -2806,7 +2796,7 @@ gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_str (&priv->summary_missing, summary_missing);
+	g_set_str (&priv->summary_missing, summary_missing);
 }
 
 static gboolean
@@ -3155,7 +3145,7 @@ static void
 gs_app_set_update_version_internal (GsApp *app, const gchar *update_version)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	if (_g_set_str (&priv->update_version, update_version))
+	if (g_set_str (&priv->update_version, update_version))
 		gs_app_ui_versions_invalidate (app);
 }
 
@@ -3217,7 +3207,7 @@ gs_app_set_update_details_markup (GsApp *app,
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
 	priv->update_details_set = TRUE;
-	_g_set_str (&priv->update_details_markup, markup);
+	g_set_str (&priv->update_details_markup, markup);
 }
 
 /**
@@ -3242,7 +3232,7 @@ gs_app_set_update_details_text (GsApp *app,
 	locker = g_mutex_locker_new (&priv->mutex);
 	priv->update_details_set = TRUE;
 	if (text == NULL) {
-		_g_set_str (&priv->update_details_markup, NULL);
+		g_set_str (&priv->update_details_markup, NULL);
 	} else {
 		gchar *markup = g_markup_escape_text (text, -1);
 		g_free (priv->update_details_markup);

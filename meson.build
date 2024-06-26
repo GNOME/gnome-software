@@ -139,7 +139,7 @@ gtk = dependency('gtk4',
       'vulkan=disabled',
     ]
   )
-glib = dependency('glib-2.0', version : '>= 2.70.0')
+glib = dependency('glib-2.0', version : '>= 2.76.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.6.0')
 libm = cc.find_library('m', required: false)
 if get_option('soup2')
