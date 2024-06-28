@@ -66,6 +66,45 @@
    Validate with `appstreamcli validate *.metainfo.xml`
   -->
   <releases>
+    <release date="2024-06-28" version="47~alpha" type="development">
+      <description>
+        <p>This is an unstable release with the following changes:</p>
+        <ul>
+          <li>Fix a crash when updating apps when built with Mogwai</li>
+          <li>Fix a crash when installing flatpak application</li>
+          <li>Correct desktop/mobile hardware support detection</li>
+          <li>Correct state of Fedora upgrade</li>
+          <li>Several fixes in historical updates for rpm-ostree</li>
+          <li>Fix a crash when no appstream data is found</li>
+          <li>Correct app safety calculation</li>
+          <li>Correct Flatpak system and user apps recognition</li>
+          <li>Slightly speed-up rpm-ostree metadata refresh</li>
+          <li>Show "Install All" button only for codecs</li>
+          <li>Prefer vendor name from os release in app origin</li>
+          <li>Make more jobs asynchronous</li>
+          <li>Port to recent Adwaita widgets</li>
+        </ul>
+        <p>This release also updates translations:</p>
+        <ul>
+          <li>Catalan (Jordi Mas i Hernandez)</li>
+          <li>Chinese (China) (Boyuan Yang)</li>
+          <li>Czech (Daniel Rusek)</li>
+          <li>Dutch (Nathan Follens)</li>
+          <li>Friulian (Fabio Tomat)</li>
+          <li>Georgian (Ekaterine Papava)</li>
+          <li>Hebrew (Yosef Or Boczko)</li>
+          <li>Kabyle (Athmane MOKRAOUI)</li>
+          <li>Panjabi (A S Alam)</li>
+          <li>Portuguese (Hugo Carvalho)</li>
+          <li>Russian (Artur S0)</li>
+          <li>Serbian (Милош Поповић)</li>
+          <li>Slovenian (Martin)</li>
+          <li>Spanish (Daniel Mustieles)</li>
+          <li>Turkish (Sabri Ünal)</li>
+          <li>Ukrainian (Yuri Chornoivan)</li>
+        </ul>
+      </description>
+    </release>
     <release date="2024-03-15" version="46.0" type="stable">
       <description>
         <p>This is a stable release with the following changes:</p>
