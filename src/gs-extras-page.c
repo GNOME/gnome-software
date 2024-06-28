@@ -359,6 +359,7 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 {
 	GtkWidget *app_row, *child;
 	guint n_can_install = 0;
+	guint n_codecs = 0;
 
 	/* Don't add same app twice */
 	for (child = gtk_widget_get_first_child (self->list_box_results);
@@ -374,13 +375,18 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 		if (app == existing_app) {
 			g_signal_handlers_disconnect_by_func (existing_app, G_CALLBACK (gs_extras_page_app_notify_state_cb), self);
 			gtk_list_box_remove (GTK_LIST_BOX (self->list_box_results), child);
-		} else if (gs_extras_page_can_install_app (existing_app)) {
-			n_can_install++;
+		} else {
+			if (gs_extras_page_can_install_app (existing_app))
+				n_can_install++;
+			if (gs_app_get_kind (existing_app) == AS_COMPONENT_KIND_CODEC)
+				n_codecs++;
 		}
 	}
 
 	if (gs_extras_page_can_install_app (app))
 		n_can_install++;
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_CODEC)
+		n_codecs++;
 
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_colorful (GS_APP_ROW (app_row), TRUE);
@@ -400,7 +406,8 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 				    self->sizegroup_button_image);
 
 	gtk_widget_set_sensitive (self->button_install_all, TRUE);
-	gtk_widget_set_visible (self->button_install_all, n_can_install > 1);
+	/* let install in bulk only codecs */
+	gtk_widget_set_visible (self->button_install_all, n_can_install > 1 && n_can_install == n_codecs);
 }
 
 static GsApp *
