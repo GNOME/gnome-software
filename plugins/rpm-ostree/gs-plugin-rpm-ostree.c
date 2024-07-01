@@ -2187,10 +2187,46 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(OstreeRepo) ot_repo = NULL;
+	g_autoptr(GsAppList) todo_apps = gs_app_list_new ();
 	g_auto(GStrv) layered_packages_strv = NULL;
 	g_auto(GStrv) layered_local_packages_strv = NULL;
 	g_autofree gchar *checksum = NULL;
 	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+
+	/* first check whether there's any rpm-ostree-related app, to not run the proxy for nothing */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			continue;
+		/* set management plugin for apps where appstream just added the source package name in refine() */
+		if (gs_app_has_management_plugin (app, NULL) &&
+		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
+		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
+		    gs_app_get_source_default (app) != NULL) {
+			gs_app_set_management_plugin (app, plugin);
+			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
+			app_set_rpm_ostree_packaging_format (app);
+		}
+		/* resolve the source package name based on installed appdata/desktop file name */
+		if (gs_app_has_management_plugin (app, NULL) &&
+		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
+		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
+		    gs_app_get_source_default (app) == NULL) {
+			if (!resolve_appstream_source_file_to_package_name (plugin, app, flags, cancellable, error))
+				return FALSE;
+		}
+		if (!gs_app_has_management_plugin (app, plugin))
+			continue;
+		if (gs_app_get_source_default (app) == NULL)
+			continue;
+
+		gs_app_list_add (todo_apps, app);
+	}
+
+	/* nothign to do */
+	if (gs_app_list_length (todo_apps) == 0)
+		return TRUE;
 
 	locker = g_mutex_locker_new (&self->mutex);
 
@@ -2248,32 +2284,8 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 
 	lookup_apps = g_hash_table_new (g_str_hash, g_str_equal);
 
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		/* set management plugin for apps where appstream just added the source package name in refine() */
-		if (gs_app_has_management_plugin (app, NULL) &&
-		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
-		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
-		    gs_app_get_source_default (app) != NULL) {
-			gs_app_set_management_plugin (app, plugin);
-			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
-			app_set_rpm_ostree_packaging_format (app);
-		}
-		/* resolve the source package name based on installed appdata/desktop file name */
-		if (gs_app_has_management_plugin (app, NULL) &&
-		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
-		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
-		    gs_app_get_source_default (app) == NULL) {
-			if (!resolve_appstream_source_file_to_package_name (plugin, app, flags, cancellable, error))
-				return FALSE;
-		}
-		if (!gs_app_has_management_plugin (app, plugin))
-			continue;
-		if (gs_app_get_source_default (app) == NULL)
-			continue;
+	for (guint i = 0; i < gs_app_list_length (todo_apps); i++) {
+		GsApp *app = gs_app_list_index (todo_apps, i);
 
 		/* first try to resolve from installed packages and
 		   if we didn't find anything, try resolving from available packages */
