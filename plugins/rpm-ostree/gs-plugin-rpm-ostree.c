@@ -2115,6 +2115,7 @@ static gboolean
 resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
                                                GsApp *app,
                                                GsPluginRefineFlags flags,
+                                               rpmts *inout_rpmts,
                                                GCancellable *cancellable,
                                                GError **error)
 {
@@ -2122,26 +2123,28 @@ resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
 	const gchar *fn;
 	gint rc;
 	g_auto(rpmdbMatchIterator) mi = NULL;
-	g_auto(rpmts) ts = NULL;
-
-	/* open db readonly */
-	ts = rpmtsCreate();
-	rpmtsSetRootDir (ts, NULL);
-	rc = rpmtsOpenDB (ts, O_RDONLY);
-	if (rc != 0) {
-		g_set_error (error,
-		             GS_PLUGIN_ERROR,
-		             GS_PLUGIN_ERROR_NOT_SUPPORTED,
-		             "Failed to open rpmdb: %i", rc);
-		return FALSE;
-	}
 
 	/* look for a specific file */
 	fn = gs_app_get_metadata_item (app, "appstream::source-file");
 	if (fn == NULL)
 		return TRUE;
 
-	mi = rpmtsInitIterator (ts, RPMDBI_INSTFILENAMES, fn, 0);
+	if (!*inout_rpmts) {
+		/* open db readonly */
+		*inout_rpmts = rpmtsCreate ();
+		rpmtsSetRootDir (*inout_rpmts, NULL);
+		rc = rpmtsOpenDB (*inout_rpmts, O_RDONLY);
+		if (rc != 0) {
+			g_clear_pointer (inout_rpmts, rpmtsFree);
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "Failed to open rpmdb: %i", rc);
+			return FALSE;
+		}
+	}
+
+	mi = rpmtsInitIterator (*inout_rpmts, RPMDBI_INSTFILENAMES, fn, 0);
 	if (mi == NULL) {
 		g_debug ("rpm: no search results for %s", fn);
 		return TRUE;
@@ -2190,6 +2193,7 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	g_autoptr(GsAppList) todo_apps = gs_app_list_new ();
 	g_auto(GStrv) layered_packages_strv = NULL;
 	g_auto(GStrv) layered_local_packages_strv = NULL;
+	g_auto(rpmts) ts = NULL;
 	g_autofree gchar *checksum = NULL;
 	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
@@ -2213,7 +2217,7 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
 		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
 		    gs_app_get_source_default (app) == NULL) {
-			if (!resolve_appstream_source_file_to_package_name (plugin, app, flags, cancellable, error))
+			if (!resolve_appstream_source_file_to_package_name (plugin, app, flags, &ts, cancellable, error))
 				return FALSE;
 		}
 		if (!gs_app_has_management_plugin (app, plugin))
