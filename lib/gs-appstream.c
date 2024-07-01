@@ -118,6 +118,10 @@ gs_appstream_format_description_text (XbNode *node)
 				w_ptr++;
 			}
 		}
+		if (has_space) {
+			*w_ptr = ' ';
+			w_ptr++;
+		}
 		if (w_ptr != r_ptr)
 			*w_ptr = '\0';
 		g_string_append (str, escaped);
