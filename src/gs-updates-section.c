@@ -402,7 +402,7 @@ _download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		g_autoptr(GNotification) notif = NULL;
 
 		notif = g_notification_new (_("Software Updates Downloaded"));
-		g_notification_set_body (notif, _("Software updates have been downloaded and are ready to be installed."));
+		g_notification_set_body (notif, _("Updates are ready to be installed"));
 		g_notification_set_default_action_and_target (notif, "app.set-mode", "s", "updates");
 		/* last the notification for an hour */
 		gs_application_send_notification (GS_APPLICATION (g_application_get_default ()), "updates-downloaded", notif, 60);

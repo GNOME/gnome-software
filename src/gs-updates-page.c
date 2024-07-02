@@ -890,7 +890,7 @@ upgrade_download_finished_cb (GObject *source,
 		g_autoptr(GNotification) notif = NULL;
 
 		notif = g_notification_new (_("Software Upgrades Downloaded"));
-		g_notification_set_body (notif, _("Software upgrades have been downloaded and are ready to be installed."));
+		g_notification_set_body (notif, _("Upgrades are ready to be installed"));
 		g_notification_set_default_action_and_target (notif, "app.set-mode", "s", "updates");
 		/* last the notification for an hour */
 		gs_application_send_notification (GS_APPLICATION (g_application_get_default ()), "upgrades-downloaded", notif, 60);

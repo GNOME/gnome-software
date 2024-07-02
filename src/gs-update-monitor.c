@@ -701,9 +701,9 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		return;
 
 	/* TRANSLATORS: this is when the current operating system version goes end-of-life */
-	n = g_notification_new (_("Operating System Updates Unavailable"));
+	n = g_notification_new (_("System Has Reached End of Life"));
 	/* TRANSLATORS: this is the message dialog for the distro EOL notice */
-	g_notification_set_body (n, _("Upgrade to continue receiving security updates."));
+	g_notification_set_body (n, _("Upgrade to continue receiving updates"));
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
 	gs_application_send_notification (monitor->application, "eol", n, MINUTES_IN_A_DAY);
 }
@@ -1211,7 +1211,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		/* TRANSLATORS: title when we offline updates have failed */
 		notification = g_notification_new (_("Software Updates Failed"));
 		/* TRANSLATORS: message when we offline updates have failed */
-		g_notification_set_body (notification, _("An important operating system update failed to be installed."));
+		g_notification_set_body (notification, _("Prepared updates were not installed"));
 		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
 		g_notification_set_default_action (notification, "app.show-offline-update-error");
 		gs_application_send_notification (monitor->application, "offline-updates", notification, MINUTES_IN_A_DAY);
