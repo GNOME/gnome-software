@@ -374,6 +374,11 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	} else if (number_installed + number_available == sources->len) {
+		/* the appstream plugin can mark the app as installed, even if it is not installed,
+		   when it only has the same app ID with another package (like differently built
+		   drivers for the distribution, where each build has enabled different features) */
+		if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 		/* if all the source packages are installed and all the rest
 		 * of the packages are available then the app is available */
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
