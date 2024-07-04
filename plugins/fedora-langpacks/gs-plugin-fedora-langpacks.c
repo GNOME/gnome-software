@@ -30,7 +30,8 @@ gs_plugin_fedora_langpacks_init (GsPluginFedoraLangpacks *self)
 	GsPlugin *plugin = GS_PLUGIN (self);
 
 	/* this plugin should be fedora specific */
-	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
+	if (!gs_plugin_check_distro_id (plugin, "fedora") &&
+	    !gs_plugin_check_distro_id (plugin, "rhel")) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
