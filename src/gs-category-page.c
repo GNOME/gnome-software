@@ -235,7 +235,7 @@ choose_top_carousel_apps (LoadCategoryData *data,
 		n_top_carousel_apps = 5;
 
 	/* The top carousel should contain @n_top_carousel_apps, taken from the
-	 * set of featured or recently updated apps which have hi-res icons.
+	 * set of featured apps which have hi-res icons.
 	 *
 	 * The apps in the top carousel should be changed on a fixed schedule,
 	 * once a week.
@@ -246,14 +246,13 @@ choose_top_carousel_apps (LoadCategoryData *data,
 
 	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
 		GsApp *app = gs_app_list_index (data->apps, i);
-		gboolean is_featured, is_recently_updated, is_hi_res;
+		gboolean is_featured, is_hi_res;
 
 		is_featured = (data->featured_app_ids != NULL &&
 			       g_hash_table_contains (data->featured_app_ids, gs_app_get_id (app)));
-		is_recently_updated = (gs_app_get_release_date (app) > recently_updated_cutoff_secs);
 		is_hi_res = app_has_hi_res_icon (data->page, app);
 
-		if ((is_featured || is_recently_updated) && is_hi_res)
+		if (is_featured && is_hi_res)
 			g_ptr_array_add (candidates, app);
 	}
 
