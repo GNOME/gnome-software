@@ -1210,7 +1210,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			gboolean needs_update_details = (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) != 0 &&
 							silo != NULL && gs_app_is_updatable (app);
 			/* set the release date */
-			if (gs_app_get_release_date (app) == G_MAXUINT64) {
+			if (gs_app_get_release_date (app) == 0) {
 				g_autoptr(XbNode) release = xb_node_get_child (child);
 				if (release != NULL && g_strcmp0 (xb_node_get_element (release), "release") == 0) {
 					guint64 timestamp;
