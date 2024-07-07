@@ -12,7 +12,7 @@
 
   <info>
     <link type="guide" xref="index"/>
-    <link type="seealso" xref="software-licensing"/>
+    <link xref="software-licensing"/>
 
     <credit type="author">
       <name>Philip Withnall</name>
@@ -147,7 +147,7 @@
     <title>License</title>
     <media type="image" src="figures/scalable/license-community-built.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
     <media type="image" src="figures/scalable/license-proprietary-and-special.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
-    <p>GNOME Software displays a tile indicating whether an application is <link type="seealso" href="https://en.wikipedia.org/wiki/Free_and_open-source_software">free software</link> or whether its license is proprietary, special or unknown. This tile includes more detailed information about the project’s license. This tile also lists some of the benefits of free software. <link type="seealso" xref="software-licensing#introduction">Learn more</link></p>
+    <p>GNOME Software displays a tile indicating whether an application is <link href="https://en.wikipedia.org/wiki/Free_and_open-source_software">free software</link> or whether its license is proprietary, special or unknown. This tile includes more detailed information about the project’s license. This tile also lists some of the benefits of free software. <link xref="software-licensing#introduction">Learn more</link></p>
     <p>Sometimes the license information isn’t correct for an application, and hence an application which is actually free software will be shown as ‘proprietary’. Similarly, sometimes the license information is unknown.</p>
     <p>GNOME Software highlights free and open-source licenses in green, proprietary and special licenses in yellow as shown here. Unknown licenses are highlighted in grey.</p>
     <p>You can add or improve the license information:</p>
@@ -215,7 +215,7 @@
   <section id="where-metadata-comes-from">
     <title>Where metadata comes from</title>
     <p>The metadata used to specify what hardware a piece of software requires, what ages of user it is suitable for, and factors which contribute to how safe it might be to install, all come from the metainfo file for that software.</p>
-    <p>The metainfo file is an XML file. Its file format is specified in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/">AppStream specification</link>.</p>
+    <p>The metainfo file is an XML file. Its file format is specified in the <link href="https://www.freedesktop.org/software/appstream/docs/">AppStream specification</link>.</p>
     <p>Click <link href="https://gitlab.gnome.org/GNOME/nautilus/-/blob/main/data/org.gnome.Nautilus.metainfo.xml.in.in">here</link> to see the metainfo file for GNOME Files app.</p>
     <p>Note: ‘appdata’ is the older term for ‘metainfo’.</p>
   </section>
@@ -245,10 +245,10 @@
 
   <section id="how-to-add-missing-app-screenshots">
     <title>How to add missing app screenshots</title>
-    <p>The screenshot information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-screenshots"><code>&lt;screenshots&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>The screenshot information for an application is stored in the <link href="https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-screenshots"><code>&lt;screenshots&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
     <p>Recommended number of screenshots for an app is between 5 to 10. Screenshots should ideally be in the PNG format with 16:9 aspect ratio and minimum width of 620 pixels.</p>
     <p>For example, here are the screenshot entries for GNOME Software app:</p>
-    <code type="xml"><![CDATA[
+    <code><![CDATA[
 <screenshots>
   <screenshot type="default">
     <image>https://gitlab.gnome.org/GNOME/gnome-software/raw/HEAD/data/metainfo/ss-overview.png</image>
@@ -266,7 +266,7 @@
     <p>The safety and permissions information for an application comes from different sources depending on how the application is packaged. For traditionally packaged applications, for example in RPM or DEB format, there is no safety or permissions information available and nothing can currently be done to add it to an application.</p>
     <p>For flatpak applications, the information comes from the application’s <link href="https://docs.flatpak.org/en/latest/manifests.html">flatpak manifest</link>, specifying what holes in the sandbox the application requires. Each of these holes typically contributes to lowering the displayed safety level of the application in gnome-software — moving it from ‘safe’ to ‘potentially unsafe’ to ‘unsafe’.</p>
     <p>In order to improve the safety level of an application, its sandboxing must be made as tight as possible, by removing <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html">sandbox permissions</link> where they’re not needed, and using <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">portals</link> instead of sandbox permissions where possible. Use of portals does not lower the displayed safety level of an application in gnome-software.</p>
-    <p>For example, if the application requests read/write access to the full file system (<code>--filesystem=host</code>), does it actually need that, or does it only need to access files in a few specific locations? If so, the <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">file portal</link> could be used, or more specific <link type="seealso" href="https://docs.flatpak.org/en/latest/sandbox-permissions.html#filesystem-access">file system permissions</link> could be specified.</p>
+    <p>For example, if the application requests read/write access to the full file system (<code>--filesystem=host</code>), does it actually need that, or does it only need to access files in a few specific locations? If so, the <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">file portal</link> could be used, or more specific <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html#filesystem-access">file system permissions</link> could be specified.</p>
     <p>If the application works on Wayland, and only needs to work on X11 as a fallback, without using special X11 features, could it use <code>--socket=fallback-x11</code> rather than <code>--socket=x11</code>?</p>
     <p>Guidance about specific permissions, or other packaging formats, may be added here in future.</p>
     <p>Further reading:</p>
@@ -285,25 +285,25 @@
 
   <section id="how-to-add-missing-hardware-information">
     <title>How to add missing hardware information</title>
-    <p>The hardware information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations"><code>&lt;requires&gt;</code>, <code>&lt;recommends&gt;</code> and <code>&lt;supports&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
-    <p>GNOME Software currently understands the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control"><code>&lt;control&gt;</code></link> and <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length"><code>&lt;display_length&gt;</code></link> elements.</p>
-    <p>See <link type="seealso" href="https://tecnocode.co.uk/2021/07/12/add-metadata-to-your-app-to-say-what-inputs-and-display-sizes-it-supports/">this blog post</link> or <link type="seealso" href="https://blogs.gnome.org/tbernard/2021/09/07/ready-for-software-41/#device-support">this blog post</link> for examples of metadata.</p>
+    <p>The hardware information for an application is stored in the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations"><code>&lt;requires&gt;</code>, <code>&lt;recommends&gt;</code> and <code>&lt;supports&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>GNOME Software currently understands the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control"><code>&lt;control&gt;</code></link> and <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length"><code>&lt;display_length&gt;</code></link> elements.</p>
+    <p>See <link href="https://tecnocode.co.uk/2021/07/12/add-metadata-to-your-app-to-say-what-inputs-and-display-sizes-it-supports/">this blog post</link> or <link href="https://blogs.gnome.org/tbernard/2021/09/07/ready-for-software-41/#device-support">this blog post</link> for examples of metadata.</p>
   </section>
 
   <section id="how-to-add-missing-content-rating-information">
     <title>How to add missing content rating information</title>
-    <p>The content rating information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-content_rating"><code>&lt;content_rating&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>The content rating information for an application is stored in the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-content_rating"><code>&lt;content_rating&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
     <p>Applications should use the OARS 1.1 standard to fill in this element. If the <code>&lt;content_rating&gt;</code> element is not specified, the application’s content rating is unknown. If it’s specified but empty, the application has no content which might be unsuitable for any audience.</p>
-    <p>Use <link type="seealso" href="https://hughsie.github.io/oars/">the OARS generator</link> to produce suitable content rating information for an application.</p>
+    <p>Use <link href="https://hughsie.github.io/oars/">the OARS generator</link> to produce suitable content rating information for an application.</p>
   </section>
 
   <section id="how-to-fix-incorrect-licensing-information">
     <title>How to fix incorrect licensing information</title>
-    <p>The licensing information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-project_license"><code>&lt;project_license&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
-    <p>The content in this element should be an <link type="seealso" href="https://spdx.org/specifications">SPDX expression</link> which describes the ‘main’ license for the project. This should typically be the license of the code, and not include the license of the documentation or ancillary content.</p>
-    <p>If the SPDX expression is a single license, or an ‘or’ combination of multiple licenses, which are all <link type="seealso" href="https://spdx.org/licenses/">FSF or OSI approved</link>, the application is considered ‘free software’ and the license tile says so. Otherwise, it’s considered ‘proprietary’.</p>
+    <p>The licensing information for an application is stored in the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-project_license"><code>&lt;project_license&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>The content in this element should be an <link href="https://spdx.org/specifications">SPDX expression</link> which describes the ‘main’ license for the project. This should typically be the license of the code, and not include the license of the documentation or ancillary content.</p>
+    <p>If the SPDX expression is a single license, or an ‘or’ combination of multiple licenses, which are all <link href="https://spdx.org/licenses/">FSF or OSI approved</link>, the application is considered ‘free software’ and the license tile says so. Otherwise, it’s considered ‘proprietary’.</p>
     <p>If an application is being displayed as ‘proprietary’ when you think it shouldn’t be, it’s likely that the <code>&lt;project_license&gt;</code> element includes the documentation license for the project. Remove it.</p>
-    <p><link type="seealso" href="https://gitlab.gnome.org/GNOME/meld/-/issues/579">For example</link>, change the license metadata from:</p>
+    <p><link href="https://gitlab.gnome.org/GNOME/meld/-/issues/579">For example</link>, change the license metadata from:</p>
     <code type="xml"><![CDATA[<project_license>GPL-2.0+ and CC-BY-SA-3.0</project_license>]]></code>
     <p>to</p>
     <code type="xml"><![CDATA[<project_license>GPL-2.0+</project_license>]]></code>
@@ -320,8 +320,8 @@
 
   <section id="how-to-add-missing-links">
     <title>How to add missing links</title>
-    <p>The links for an application are stored as <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
-    <p>Add as many of the link types documented in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url">appstream specification</link> as are available for the application. If no suitable page exists for a given link type, it doesn’t have to be included.</p>
+    <p>The links for an application are stored as <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
+    <p>Add as many of the link types documented in the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url">appstream specification</link> as are available for the application. If no suitable page exists for a given link type, it doesn’t have to be included.</p>
     <p>For example, here are the resource links for GNOME Software app:</p>
     <code type="xml"><![CDATA[
 <url type="bugtracker">https://gitlab.gnome.org/GNOME/gnome-software/-/issues</url>
@@ -335,7 +335,7 @@
 
   <section id="how-to-set-the-carousel-tile-background-colour">
     <title>How to set the carousel tile background color</title>
-    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is currently ignored, gnome-software chooses the better color for the theme on its own.</p>
+    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is currently ignored, gnome-software chooses the better color for the theme on its own.</p>
     <p>There is left, for backward compatibility, the possibility to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
     <code type="xml"><![CDATA[
 <custom>
@@ -355,7 +355,7 @@
 	<p>Contrast with the foreground text color in the Adwaita theme (<code>#2e3436</code>) and in its dark variant (<code>#eeeeec</code>). This generally means choosing a color with a medium level of brightness.</p>
       </item>
       <item>
-	<p>Contrast can be checked using the <link type="seealso" href="https://flathub.org/apps/org.gnome.design.Contrast/">Contrast app</link>.</p>
+	<p>Contrast can be checked using the <link href="https://flathub.org/apps/org.gnome.design.Contrast/">Contrast app</link>.</p>
       </item>
     </list>
     <p>At least one color should be specified. More can be specified if one color can’t satisfy all the requirements above, and GNOME Software will choose the most appropriate to use in the carousel tile. If exactly one color is specified, its brightness and saturation may be modified to improve contrast with the foreground color. If more than one color is specified, the one with the best contrast with the foreground color will be chosen, and its brightness and saturation will not be modified.</p>
