@@ -38,10 +38,10 @@
   <section id="screenshots">
     <title>Screenshots</title>
     <media type="image" src="figures/app-screenshot.png" style="floatend floatright" mime="image/png" its:translate="no"/>
-    <p>GNOME Software displays the screenshots on the details page for an application. This typically should include screenshots of various windows / dialogs of the application, so the user would get a quick grasp of the application's features, look and feel etc.</p>
+    <p>GNOME Software displays the screenshots on the details page for an application. This typically should include screenshots of various windows / dialogs of the application, so the user would get a quick grasp of the application’s features, look and feel etc.</p>
     <p>When more than one screenshot is present in the application’s metainfo file, GNOME Software will show the screenshots in a carousel, as shown here where the screenshots from GNOME Software app is shown in a carousel.</p>
-    <p>In cases when the application’s metainfo file doesn't contain any screenshot, then a missing image icon will be displayed as shown in the second image here.</p>
-    <p>Screenshots might become outdated as the application's UI changes. So, even if GNOME Software shows screenshots for an app, it's important to check if these screenshots are up-to-date or outdated.</p>
+    <p>In cases when the application’s metainfo file doesn’t contain any screenshot, then a missing image icon will be displayed as shown in the second image here.</p>
+    <p>Screenshots might become outdated as the application’s UI changes. So, even if GNOME Software shows screenshots for an app, it’s important to check if these screenshots are up-to-date or outdated.</p>
     <p>You can improve app screenshot information:</p>
     <list>
       <item>
@@ -91,7 +91,7 @@
 
   <section id="safety">
     <title>Safety</title>
-    <p>GNOME Software displays a safety tile on the details page for an application. This summarises information about whether the app can be considered safe to install and run, or whether caution may be required before trusting it.</p>
+    <p>GNOME Software displays a safety tile on the details page for an application. This summarizes information about whether the app can be considered safe to install and run, or whether caution may be required before trusting it.</p>
     <p>This tile combines information about the permissions which the app requests when it runs (such as permission to read your files), with information about how the app was developed. Free software applications, where the source code is publicly readable, can be more secure than proprietary ones, as they can be audited.</p>
     <p>The dialog which appears when the tile is clicked lists the different permissions the app requests, plus some information about its license and runtime.</p>
     <p>You can improve the safety information:</p>
@@ -132,7 +132,7 @@
 
   <section id="age-rating">
     <title>Age rating</title>
-    <p>GNOME Software displays an age rating tile on the details page for an application. This shows what age range the application should be suitable for, based on different kinds of content which the application has declared it contains. This information is summarised in a format similar to the game or film rating certificates for your country.</p>
+    <p>GNOME Software displays an age rating tile on the details page for an application. This shows what age range the application should be suitable for, based on different kinds of content which the application has declared it contains. This information is summarized in a format similar to the game or film rating certificates for your country.</p>
     <p>For example, this will highlight whether a game contains violence, or whether an application contains in-app advertising.</p>
     <p>The dialog which appears when the tile is clicked lists the different types of content in the application and how severe that content is.</p>
     <p>You can improve the age rating information:</p>
@@ -189,7 +189,7 @@
       </tr>
     </table>
     <p>Some or all of these links may be present depending on whether they are listed in the application’s metainfo file.</p>
-    <p>In cases when the application’s metainfo file doesn't contain any link, the following tile with a question mark will be displayed.</p>
+    <p>In cases when the application’s metainfo file doesn’t contain any link, the following tile with a question mark will be displayed.</p>
     <media type="image" src="figures/scalable/no-links.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
     <p>You can improve the links:</p>
     <list>
@@ -202,12 +202,12 @@
   <section id="carousel-tile">
     <title>Carousel tile</title>
     <media type="image" src="figures/carousel.png" style="floatend floatright" mime="image/png" its:translate="no"/>
-    <p>Applications which are featured by GNOME Software are displayed in a carousel at the top of the main window. Each carousel tile has a background colour which is automatically extracted from the application’s icon. Sometimes this background colour is not quite right for the application and needs to be specified explicitly by the application developer.</p>
+    <p>Applications which are featured by GNOME Software are displayed in a carousel at the top of the main window. Each carousel tile has a background color which is automatically extracted from the application’s icon. Sometimes this background color is not quite right for the application and needs to be specified explicitly by the application developer.</p>
     <p>The set of applications which are featured is decided by the Linux distribution maintainers.</p>
     <p>You can improve the carousel tile:</p>
     <list>
       <item>
-	<p><link xref="#how-to-set-the-carousel-tile-background-colour">How to set the carousel tile background colour</link></p>
+	<p><link xref="#how-to-set-the-carousel-tile-background-colour">How to set the carousel tile background color</link></p>
       </item>
     </list>
   </section>
@@ -217,7 +217,7 @@
     <p>The metadata used to specify what hardware a piece of software requires, what ages of user it is suitable for, and factors which contribute to how safe it might be to install, all come from the metainfo file for that software.</p>
     <p>The metainfo file is an XML file. Its file format is specified in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/">AppStream specification</link>.</p>
     <p>Click <link href="https://gitlab.gnome.org/GNOME/nautilus/-/blob/main/data/org.gnome.Nautilus.metainfo.xml.in.in">here</link> to see the metainfo file for GNOME Files app.</p>
-    <p>Note: 'appdata' is the older term for 'metainfo'.</p>
+    <p>Note: ‘appdata’ is the older term for ‘metainfo’.</p>
   </section>
 
   <section id="what-happens-if-metadata-is-missing">
@@ -228,17 +228,17 @@
 
   <section id="how-to-contribute-missing-information">
     <title>How to contribute missing information</title>
-    <p>If you find that an app's page is missing information or has incorrect information, you can contribute in one of the two ways:</p>
+    <p>If you find that an app’s page is missing information or has incorrect information, you can contribute in one of the two ways:</p>
     <list type="numbered">
       <item>
-	<p>You can report the missing / incorrect metadata to the respective app's bug tracker, so the app developer can fix it.</p>
+	<p>You can report the missing / incorrect metadata to the respective app’s bug tracker, so the app developer can fix it.</p>
       </item>
       <item>
 	<p>You can fix the the missing / incorrect metadata yourself. See the <em style="strong">How to</em> guide below on how to do that.</p>
       </item>
     </list>
 
-    <p>For both, you first need to find the app's project page. The link to the project page should typically be available in the app's page <link xref="#links">as shown here</link>. If not, you will need to find it with a simple search on Google.</p>
+    <p>For both, you first need to find the app’s project page. The link to the project page should typically be available in the app’s page <link xref="#links">as shown here</link>. If not, you will need to find it with a simple search on Google.</p>
 
     <p>Apps are typically hosted in <link href="https://gitlab.com/explore?sort=stars_desc">Gitlab</link> or <link href="https://github.com/explore">Github</link>. For example, GNOME apps are hosted in <link href="https://gitlab.gnome.org/GNOME?sort=stars_desc">gitlab.gnome.org</link></p>
   </section>
@@ -246,7 +246,7 @@
   <section id="how-to-add-missing-app-screenshots">
     <title>How to add missing app screenshots</title>
     <p>The screenshot information for an application is stored in the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-screenshots"><code>&lt;screenshots&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
-    <p>Recommended number of screenshots for an app is between 5 to 10. Screenshots should ideally be in the PNG format with 16:9 aspect ratio and minuminum width of 620 pixels.</p>
+    <p>Recommended number of screenshots for an app is between 5 to 10. Screenshots should ideally be in the PNG format with 16:9 aspect ratio and minimum width of 620 pixels.</p>
     <p>For example, here are the screenshot entries for GNOME Software app:</p>
     <code type="xml"><![CDATA[
 <screenshots>
@@ -334,16 +334,16 @@
   </section>
 
   <section id="how-to-set-the-carousel-tile-background-colour">
-    <title>How to set the carousel tile background colour</title>
-    <p>The carousel tile background colour is normally extracted automatically from the application’s icon. If that colour is unsatisfactory, however, it can be overridden by using the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream's <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is currently ignored, gnome-software chooses the better color for the theme on its own.</p>
-    <p>There is left, for backward compatibility, possible to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
+    <title>How to set the carousel tile background color</title>
+    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link type="seealso" href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is currently ignored, gnome-software chooses the better color for the theme on its own.</p>
+    <p>There is left, for backward compatibility, the possibility to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
     <code type="xml"><![CDATA[
 <custom>
   <value key="GnomeSoftware::key-colors">[(124, 53, 77), (99, 16, 0)]</value>
 </custom>]]></code>
     <p>but the <code>&lt;branding/&gt;</code> element has a precedence.</p>
-    <p>The value of <code>GnomeSoftware::key-colors</code> is a text-format GVariant with type <code>a(yyy)</code>, and represents an unordered set of key colours for the application. Each element of the set is a colour in RGB form ranging from <code>(0, 0, 0)</code> to <code>(255, 255, 255)</code>.</p>
-    <p>Colours should be chosen so that they:</p>
+    <p>The value of <code>GnomeSoftware::key-colors</code> is a text-format GVariant with type <code>a(yyy)</code>, and represents an unordered set of key colors for the application. Each element of the set is a color in RGB form ranging from <code>(0, 0, 0)</code> to <code>(255, 255, 255)</code>.</p>
+    <p>Colors should be chosen so that they:</p>
     <list>
       <item>
 	<p>Are identifiable to the application, matching the application’s branding in some way, if possible.</p>
@@ -352,17 +352,17 @@
 	<p>Contrast with the edge of the application’s icon, so that when they are used as a background behind it, the icon can be distinguished.</p>
       </item>
       <item>
-	<p>Contrast with the foreground text colour in the Adwaita theme (<code>#2e3436</code>) and in its dark variant (<code>#eeeeec</code>). This generally means choosing a colour with a medium level of brightness.</p>
+	<p>Contrast with the foreground text color in the Adwaita theme (<code>#2e3436</code>) and in its dark variant (<code>#eeeeec</code>). This generally means choosing a color with a medium level of brightness.</p>
       </item>
       <item>
 	<p>Contrast can be checked using the <link type="seealso" href="https://flathub.org/apps/org.gnome.design.Contrast/">Contrast app</link>.</p>
       </item>
     </list>
-    <p>At least one colour should be specified. More can be specified if one colour can’t satisfy all the requirements above, and GNOME Software will choose the most appropriate to use in the carousel tile. If exactly one colour is specified, its brightness and saturation may be modified to improve contrast with the foreground colour. If more than one colour is specified, the one with the best contrast with the foreground colour will be chosen, and its brightness and saturation will not be modified.</p>
+    <p>At least one color should be specified. More can be specified if one color can’t satisfy all the requirements above, and GNOME Software will choose the most appropriate to use in the carousel tile. If exactly one color is specified, its brightness and saturation may be modified to improve contrast with the foreground color. If more than one color is specified, the one with the best contrast with the foreground color will be chosen, and its brightness and saturation will not be modified.</p>
   </section>
 
   <section id="how-to-test-carousel-tile-background-colour-changes">
-    <title>How to test carousel tile background colour changes</title>
+    <title>How to test carousel tile background color changes</title>
     <p>Modify the metainfo file for your application, and then run Software with:</p>
     <code><![CDATA[gnome-software --show-metainfo=/path/to/app.metainfo.xml,icon=/path/to/app/icon.png]]></code>
     <p>The details page for your application will be shown. If you navigate back to the overview page of Software, your application will be the only one in the ‘featured’ carousel.</p>
