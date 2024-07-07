@@ -29,7 +29,7 @@
 
     <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
 
-    <desc>How GNOME Software uses metadata</desc>
+    <desc>How <app>Software</app> uses metadata</desc>
   </info>
 
   <title>Software Metadata</title>
@@ -38,12 +38,12 @@
   <section id="screenshots">
     <title>Screenshots</title>
     <media type="image" src="figures/app-screenshot.png" style="floatend floatright" mime="image/png" its:translate="no"/>
-    <p>GNOME Software displays the screenshots on the details page for an application. This typically should include screenshots of various windows / dialogs of the application, so the user would get a quick grasp of the application’s features, look and feel etc.</p>
-    <p>When more than one screenshot is present in the application’s metainfo file, GNOME Software will show the screenshots in a carousel.</p>
+    <p><app>Software</app> displays the screenshots on the details page for an application. This typically should include screenshots of various windows / dialogs of the application, so the user would get a quick grasp of the application’s features, look and feel etc.</p>
+    <p>When more than one screenshot is present in the application’s metainfo file, <app>Software</app> will show the screenshots in a carousel.</p>
     <p>In cases when the application’s metainfo file doesn’t contain any screenshot, then a missing image icon will be displayed:
         <media type="image" src="figures/scalable/no-screenshots.svg" mime="image/svg" its:translate="no"/>
     </p>
-    <p>Screenshots might become outdated as the application’s UI changes. So, even if GNOME Software shows screenshots for an app, it’s important to check if these screenshots are up-to-date or outdated.</p>
+    <p>Screenshots might become outdated as the application’s UI changes. So, even if <app>Software</app> shows screenshots for an app, it’s important to check if these screenshots are up-to-date or outdated.</p>
     <p>You can improve app screenshot information:</p>
     <list>
       <item>
@@ -54,7 +54,7 @@
 
   <section id="app-context-bar">
     <title>App context bar</title>
-    <p>App context bar in GNOME Software is a collection of tiles on the details page for an application, which display the following details.</p>
+    <p>The app context bar in <app>Software</app> is a collection of tiles on the details page for an application, which display the following details.</p>
     <list>
       <item>
 	<p><link xref="#storage">Storage</link></p>
@@ -70,7 +70,7 @@
       </item>
     </list>
 
-    <p>Below is the app context bar for GNOME Software app.</p>
+    <p>This shows the app context bar for the <app>Software</app> app:</p>
     <p xmlns:its="http://www.w3.org/2005/11/its" its:locNote="Translators: Refer below steps to generate this image:
 							      1. Run 'gnome-software --details=org.gnome.Software.desktop' in console (as normal user).
 							      2. This should launch the gnome-software app and automatically switch to 'GNOME Software' app's details page.
@@ -86,13 +86,13 @@
 
   <section id="storage">
     <title>Storage</title>
-    <p>GNOME Software displays a storage tile on the details page for an application. If the application is not installed, this displays the estimated download size needed to install it. If the application is installed, it displays the storage space used by the application.</p>
-    <p>The sizes are calculated from data provided by the GNOME Software backend (such as flatpak or an RPM), and are not specified in the metadata provided by the application. There is nothing you can do to affect this tile by editing an application’s metainfo file. It’s listed here for completeness.</p>
+    <p><app>Software</app> displays a storage tile on the details page for an application. If the application is not installed, this displays the estimated download size needed to install it. If the application is installed, it displays the storage space used by the application.</p>
+    <p>The sizes are calculated from data provided by the <app>Software</app> backend (such as flatpak or an RPM), and are not specified in the metadata provided by the application. There is nothing you can do to affect this tile by editing an application’s metainfo file. It’s listed here for completeness.</p>
   </section>
 
   <section id="safety">
     <title>Safety</title>
-    <p>GNOME Software displays a safety tile on the details page for an application. This summarizes information about whether the app can be considered safe to install and run, or whether caution may be required before trusting it.</p>
+    <p><app>Software</app> displays a safety tile on the details page for an application. This summarizes information about whether the app can be considered safe to install and run, or whether caution may be required before trusting it.</p>
     <p>This tile combines information about the permissions which the app requests when it runs (such as permission to read your files), with information about how the app was developed. Free software applications, where the source code is publicly readable, can be more secure than proprietary ones, as they can be audited.</p>
     <p>The dialog which appears when the tile is clicked lists the different permissions the app requests, plus some information about its license and runtime.</p>
     <p>You can improve the safety information:</p>
@@ -106,7 +106,7 @@
   <section id="hardware-support">
     <title>Hardware support</title>
     <p>
-      GNOME Software displays a hardware support tile on the details page
+      <app>Software</app> displays a hardware support tile on the details page
       for an application. This combines information about the hardware
       requirements of the application, and the hardware capabilities of
       the computer, with the aim of highlighting incompatibilities or
@@ -133,7 +133,7 @@
 
   <section id="age-rating">
     <title>Age rating</title>
-    <p>GNOME Software displays an age rating tile on the details page for an application. This shows what age range the application should be suitable for, based on different kinds of content which the application has declared it contains. This information is summarized in a format similar to the game or film rating certificates for your country.</p>
+    <p><app>Software</app> displays an age rating tile on the details page for an application. This shows what age range the application should be suitable for, based on different kinds of content which the application has declared it contains. This information is summarized in a format similar to the game or film rating certificates for your country.</p>
     <p>For example, this will highlight whether a game contains violence, or whether an application contains in-app advertising.</p>
     <p>The dialog which appears when the tile is clicked lists the different types of content in the application and how severe that content is.</p>
     <p>You can improve the age rating information:</p>
@@ -148,9 +148,9 @@
     <title>License</title>
     <media type="image" src="figures/scalable/license-community-built.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
     <media type="image" src="figures/scalable/license-proprietary-and-special.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
-    <p>GNOME Software displays a tile indicating whether an application is <link href="https://en.wikipedia.org/wiki/Free_and_open-source_software">free software</link> or whether its license is proprietary, special or unknown. This tile includes more detailed information about the project’s license. This tile also lists some of the benefits of free software. <link xref="software-licensing#introduction">Learn more</link></p>
+    <p><app>Software</app> displays a tile indicating whether an application is <link href="https://en.wikipedia.org/wiki/Free_and_open-source_software">free software</link> or whether its license is proprietary, special or unknown. This tile includes more detailed information about the project’s license. This tile also lists some of the benefits of free software. <link xref="software-licensing#introduction">Learn more</link></p>
     <p>Sometimes the license information isn’t correct for an application, and hence an application which is actually free software will be shown as ‘proprietary’. Similarly, sometimes the license information is unknown.</p>
-    <p>GNOME Software highlights free and open-source licenses in green, proprietary and special licenses in yellow as shown here. Unknown licenses are highlighted in grey.</p>
+    <p><app>Software</app> highlights free and open-source licenses in green, proprietary and special licenses in yellow as shown here. Unknown licenses are highlighted in grey.</p>
     <p>You can add or improve the license information:</p>
     <list>
       <item>
@@ -162,7 +162,7 @@
   <section id="links">
     <title>Links</title>
     <media type="image" src="figures/scalable/links.svg" style="floatend floatright" mime="image/svg" its:translate="no"/>
-    <p>GNOME Software displays a list of application resource links in the link tile. They are as follows:</p>
+    <p><app>Software</app> displays a list of application resource links in the link tile. They are as follows:</p>
     <table>
       <tr>
 	<td><p><media type="image" src="figures/scalable/symbolic/webpage-symbolic.svg" mime="image/svg" its:translate="no"/></p></td>
@@ -203,7 +203,7 @@
   <section id="carousel-tile">
     <title>Carousel tile</title>
     <media type="image" src="figures/carousel.png" style="floatend floatright" mime="image/png" its:translate="no"/>
-    <p>Applications which are featured by GNOME Software are displayed in a carousel at the top of the main window. Each carousel tile has a background color which is automatically extracted from the application’s icon. Sometimes this background color is not quite right for the application and needs to be specified explicitly by the application developer.</p>
+    <p>Applications which are featured by <app>Software</app> are displayed in a carousel at the top of the main window. Each carousel tile has a background color which is automatically extracted from the application’s icon. Sometimes this background color is not quite right for the application and needs to be specified explicitly by the application developer.</p>
     <p>The set of applications which are featured is decided by the Linux distribution maintainers.</p>
     <p>You can improve the carousel tile:</p>
     <list>
@@ -223,7 +223,7 @@
 
   <section id="what-happens-if-metadata-is-missing">
     <title>What happens if metadata is missing</title>
-    <p>If some metadata is missing for an application, GNOME Software can only guess what it might be, and hence can’t present much information in its interfaces. The guesses GNOME Software makes are based on the fact that most software is designed for desktop computers.</p>
+    <p>If some metadata is missing for an application, <app>Software</app> can only guess what it might be, and hence can’t present much information in its interfaces. The guesses <app>Software</app> makes are based on the fact that most software is designed for desktop computers.</p>
     <p><em style="strong">You can help improve the metadata for an application!</em></p>
   </section>
 
@@ -248,7 +248,7 @@
     <title>How to add missing app screenshots</title>
     <p>The screenshot information for an application is stored in the <link href="https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-screenshots"><code>&lt;screenshots&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
     <p>Recommended number of screenshots for an app is between 5 to 10. Screenshots should ideally be in the PNG format with 16:9 aspect ratio and minimum width of 620 pixels.</p>
-    <p>For example, here are the screenshot entries for GNOME Software app:</p>
+    <p>For example, here are the screenshot entries for the <app>Software</app> app:</p>
     <code><![CDATA[
 <screenshots>
   <screenshot type="default">
@@ -287,7 +287,7 @@
   <section id="how-to-add-missing-hardware-information">
     <title>How to add missing hardware information</title>
     <p>The hardware information for an application is stored in the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations"><code>&lt;requires&gt;</code>, <code>&lt;recommends&gt;</code> and <code>&lt;supports&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
-    <p>GNOME Software currently understands the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control"><code>&lt;control&gt;</code></link> and <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length"><code>&lt;display_length&gt;</code></link> elements.</p>
+    <p><app>Software</app> currently understands the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control"><code>&lt;control&gt;</code></link> and <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length"><code>&lt;display_length&gt;</code></link> elements.</p>
     <p>See <link href="https://tecnocode.co.uk/2021/07/12/add-metadata-to-your-app-to-say-what-inputs-and-display-sizes-it-supports/">this blog post</link> or <link href="https://blogs.gnome.org/tbernard/2021/09/07/ready-for-software-41/#device-support">this blog post</link> for examples of metadata.</p>
   </section>
 
@@ -323,7 +323,7 @@
     <title>How to add missing links</title>
     <p>The links for an application are stored as <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
     <p>Add as many of the link types documented in the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url">appstream specification</link> as are available for the application. If no suitable page exists for a given link type, it doesn’t have to be included.</p>
-    <p>For example, here are the resource links for GNOME Software app:</p>
+    <p>For example, here are the resource links for the <app>Software</app> app:</p>
     <code type="xml"><![CDATA[
 <url type="bugtracker">https://gitlab.gnome.org/GNOME/gnome-software/-/issues</url>
 <url type="contact">https://discourse.gnome.org/tag/gnome-software</url>
@@ -336,7 +336,7 @@
 
   <section id="how-to-set-the-carousel-tile-background-colour">
     <title>How to set the carousel tile background color</title>
-    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is currently ignored, gnome-software chooses the better color for the theme on its own.</p>
+    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is currently ignored, <app>Software</app> chooses the better color for the theme on its own.</p>
     <p>There is left, for backward compatibility, the possibility to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
     <code type="xml"><![CDATA[
 <custom>
@@ -359,14 +359,14 @@
 	<p>Contrast can be checked using the <link href="https://flathub.org/apps/org.gnome.design.Contrast/">Contrast app</link>.</p>
       </item>
     </list>
-    <p>At least one color should be specified. More can be specified if one color can’t satisfy all the requirements above, and GNOME Software will choose the most appropriate to use in the carousel tile. If exactly one color is specified, its brightness and saturation may be modified to improve contrast with the foreground color. If more than one color is specified, the one with the best contrast with the foreground color will be chosen, and its brightness and saturation will not be modified.</p>
+    <p>At least one color should be specified. More can be specified if one color can’t satisfy all the requirements above, and <app>Software</app> will choose the most appropriate to use in the carousel tile. If exactly one color is specified, its brightness and saturation may be modified to improve contrast with the foreground color. If more than one color is specified, the one with the best contrast with the foreground color will be chosen, and its brightness and saturation will not be modified.</p>
   </section>
 
   <section id="how-to-test-carousel-tile-background-colour-changes">
     <title>How to test carousel tile background color changes</title>
-    <p>Modify the metainfo file for your application, and then run Software with:</p>
+    <p>Modify the metainfo file for your application, and then run <app>Software</app> with:</p>
     <code><![CDATA[gnome-software --show-metainfo=/path/to/app.metainfo.xml,icon=/path/to/app/icon.png]]></code>
-    <p>The details page for your application will be shown. If you navigate back to the overview page of Software, your application will be the only one in the ‘featured’ carousel.</p>
+    <p>The details page for your application will be shown. If you navigate back to the overview page of <app>Software</app>, your application will be the only one in the ‘featured’ carousel.</p>
   </section>
 
 
