@@ -114,7 +114,7 @@
       work correctly with no incompatibilities.
     </p>
 
-    <p>Currently, the code looks at the following hardware. More may be supported in future.</p>
+    <p>The code looks at the following hardware. More may be supported in future.</p>
     <list>
       <item><p>Whether a touchpad, mouse or keyboard is present/needed</p></item>
       <item><p>Whether a gamepad is needed</p></item>
@@ -264,7 +264,7 @@
 
   <section id="how-to-fix-incorrect-safety-and-permissions-information">
     <title>How to fix incorrect safety and permissions information</title>
-    <p>The safety and permissions information for an application comes from different sources depending on how the application is packaged. For traditionally packaged applications, for example in RPM or DEB format, there is no safety or permissions information available and nothing can currently be done to add it to an application.</p>
+    <p>The safety and permissions information for an application comes from different sources depending on how the application is packaged. For traditionally packaged applications, for example in RPM or DEB format, there is no safety or permissions information available and nothing can be done to add it to an application.</p>
     <p>For flatpak applications, the information comes from the application’s <link href="https://docs.flatpak.org/en/latest/manifests.html">flatpak manifest</link>, specifying what holes in the sandbox the application requires. Each of these holes typically contributes to lowering the displayed safety level of the application in gnome-software — moving it from ‘safe’ to ‘potentially unsafe’ to ‘unsafe’.</p>
     <p>In order to improve the safety level of an application, its sandboxing must be made as tight as possible, by removing <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html">sandbox permissions</link> where they’re not needed, and using <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">portals</link> instead of sandbox permissions where possible. Use of portals does not lower the displayed safety level of an application in gnome-software.</p>
     <p>For example, if the application requests read/write access to the full file system (<code>--filesystem=host</code>), does it actually need that, or does it only need to access files in a few specific locations? If so, the <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">file portal</link> could be used, or more specific <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html#filesystem-access">file system permissions</link> could be specified.</p>
@@ -287,7 +287,7 @@
   <section id="how-to-add-missing-hardware-information">
     <title>How to add missing hardware information</title>
     <p>The hardware information for an application is stored in the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations"><code>&lt;requires&gt;</code>, <code>&lt;recommends&gt;</code> and <code>&lt;supports&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
-    <p><app>Software</app> currently understands the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control"><code>&lt;control&gt;</code></link> and <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length"><code>&lt;display_length&gt;</code></link> elements.</p>
+    <p><app>Software</app> understands the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control"><code>&lt;control&gt;</code></link> and <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length"><code>&lt;display_length&gt;</code></link> elements.</p>
     <p>See <link href="https://tecnocode.co.uk/2021/07/12/add-metadata-to-your-app-to-say-what-inputs-and-display-sizes-it-supports/">this blog post</link> or <link href="https://blogs.gnome.org/tbernard/2021/09/07/ready-for-software-41/#device-support">this blog post</link> for examples of metadata.</p>
   </section>
 
@@ -336,7 +336,7 @@
 
   <section id="how-to-set-the-carousel-tile-background-colour">
     <title>How to set the carousel tile background color</title>
-    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is currently ignored, <app>Software</app> chooses the better color for the theme on its own.</p>
+    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is ignored, <app>Software</app> chooses the better color for the theme on its own.</p>
     <p>There is left, for backward compatibility, the possibility to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
     <code type="xml"><![CDATA[
 <custom>
