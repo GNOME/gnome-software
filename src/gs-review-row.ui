@@ -80,35 +80,32 @@
                 <property name="visible">False</property>
                 <property name="spacing">9</property>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes" comments="Translators: Users can express their opinions about other users&apos; opinions about the apps.">Was this review useful to you?</property>
-                    <property name="wrap">True</property>
-                    <property name="xalign">0</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkBox" id="box_vote_buttons">
-                    <property name="spacing">0</property>
                     <style>
                       <class name="vote-buttons"/>
                     </style>
                     <child>
                       <object class="GtkButton" id="button_yes">
-                        <property name="label" translatable="yes">Yes</property>
+                        <property name="tooltip-text" translatable="yes">Dislike Review</property>
+                        <property name="icon-name">review-rate-positive-symbolic</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="has-frame">False</property>
+                        <property name="halign">end</property>
+                        <style>
+                          <class name="flat"/>
+                        </style>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton" id="button_no">
-                        <property name="label" translatable="yes">No</property>
+                        <property name="tooltip-text" translatable="yes">Like Review</property>
+                        <property name="icon-name">review-rate-negative-symbolic</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="has-frame">False</property>
+                        <property name="halign">end</property>
+                        <style>
+                          <class name="flat"/>
+                        </style>
                       </object>
                     </child>
                   </object>
@@ -117,20 +114,29 @@
             </child>
             <child>
               <object class="GtkButton" id="button_report">
-                <property name="label" translatable="yes">Report…</property>
+                <property name="tooltip-text" translatable="yes">Report…</property>
+                <property name="icon-name">review-report-symbolic</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="halign">end</property>
-                <property name="has-frame">False</property>
+                <property name="hexpand">True</property>
+                <style>
+                  <class name="flat"/>
+                </style>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="button_remove">
-                <property name="label" translatable="yes">Remove…</property>
+                <property name="tooltip-text" translatable="yes">Remove</property>
+                <property name="icon-name">user-trash-symbolic</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="halign">end</property>
-                <property name="has-frame">False</property>
+                <property name="hexpand">True</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="destructive-action"/>
+                </style>
               </object>
             </child>
           </object>
