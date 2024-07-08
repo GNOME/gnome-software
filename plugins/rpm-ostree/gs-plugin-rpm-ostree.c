@@ -204,6 +204,33 @@ gs_rpmostree_error_convert (GError **perror)
 }
 
 static void
+gs_rpm_ostree_task_return_error_with_gui (GsPluginRpmOstree *self,
+					  GTask *task,
+					  GError *in_error,
+					  const gchar *error_prefix,
+					  gboolean interactive)
+{
+	g_autoptr(GError) local_error = in_error;
+
+	g_prefix_error (&local_error, "%s", error_prefix);
+
+	if (local_error != NULL && local_error->domain != G_DBUS_ERROR &&
+	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		g_autoptr(GsPluginEvent) event = NULL;
+
+		event = gs_plugin_event_new ("error", local_error,
+					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (GS_PLUGIN (self), event);
+	}
+
+	g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static void
 gs_rpmostree_unregister_client_done_cb (GObject *source_object,
 					GAsyncResult *result,
 					gpointer user_data)
@@ -1380,7 +1407,7 @@ update_apps_thread_cb (GTask        *task,
 		gboolean done;
 
 		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
+			gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
 			return;
 		}
 
@@ -1403,14 +1430,14 @@ update_apps_thread_cb (GTask        *task,
 				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 					g_clear_error (&local_error);
 					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-						g_task_return_error (task, g_steal_pointer (&local_error));
+						gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
 						return;
 					}
 					done = FALSE;
 					continue;
 				}
 				gs_rpmostree_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
+				gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
 				return;
 			}
 		}
@@ -1423,7 +1450,7 @@ update_apps_thread_cb (GTask        *task,
 		                                                 &local_error)) {
 			gs_app_list_override_progress (data->apps, GS_APP_PROGRESS_UNKNOWN);
 			gs_rpmostree_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
+			gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
 			return;
 		}
 
@@ -1462,7 +1489,7 @@ update_apps_thread_cb (GTask        *task,
 		/* we don't currently put all updates in the OsUpdate proxy app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
 			if (!trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
-				g_task_return_error (task, g_steal_pointer (&local_error));
+				gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
 				return;
 			}
 		}
@@ -1472,7 +1499,7 @@ update_apps_thread_cb (GTask        *task,
 			GsApp *app_tmp = gs_app_list_index (related, j);
 
 			if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
-				g_task_return_error (task, g_steal_pointer (&local_error));
+				gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
 				return;
 			}
 		}
