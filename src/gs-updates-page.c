@@ -70,7 +70,6 @@ struct _GsUpdatesPage
 	GtkLabel		*uptodate_description;
 	GtkLabel		*label_last_checked;
 	GtkWidget		*scrolledwindow_updates;
-	GtkWidget		*spinner_updates;
 	GtkWidget		*stack_updates;
 	GtkWidget		*upgrade_banner;
 	GtkWidget		*banner_end_of_life;
@@ -295,11 +294,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	switch (self->state) {
 	case GS_UPDATES_PAGE_STATE_STARTUP:
 	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
-	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
-		gtk_spinner_start (GTK_SPINNER (self->spinner_updates));
-		break;
 	default:
-		gtk_spinner_stop (GTK_SPINNER (self->spinner_updates));
 		gtk_spinner_stop (GTK_SPINNER (self->header_spinner_start));
 		gtk_widget_set_visible (self->header_spinner_start, FALSE);
 		break;
@@ -1367,7 +1362,6 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, uptodate_description);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_last_checked);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, scrolledwindow_updates);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, stack_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, banner_end_of_life);
