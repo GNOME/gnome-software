@@ -208,6 +208,11 @@ gs_review_row_confirm_cb (AdwAlertDialog *dialog, const gchar *response, GsRevie
 		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
 			       GS_REVIEW_ACTION_REPORT);
 	}
+
+	if (g_strcmp0 (response, "remove") == 0) {
+		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
+			       GS_REVIEW_ACTION_REMOVE);
+	}
 }
 
 static void
@@ -246,8 +251,25 @@ gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 static void
 gs_review_row_button_clicked_remove_cb (GtkButton *button, GsReviewRow *row)
 {
-	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_REVIEW_ACTION_REMOVE);
+	AdwDialog *dialog;
+
+	/* TRANSLATORS: window title when the user attempts to remove their
+	 * review */
+	dialog = adw_alert_dialog_new (_("Remove Review?"), NULL);
+
+	/* TRANSLATORS: we ask the user if they really want to do this */
+	adw_alert_dialog_set_body (ADW_ALERT_DIALOG (dialog), _("Removing a review cannot be undone."));
+	adw_alert_dialog_add_responses (ADW_ALERT_DIALOG (dialog),
+					"cancel",  _("_Cancel"),
+					/* TRANSLATORS: button text when
+					 * removing a review */
+					"remove",  _("_Remove"),
+					NULL);
+	adw_alert_dialog_set_response_appearance (ADW_ALERT_DIALOG (dialog),
+						  "remove", ADW_RESPONSE_DESTRUCTIVE);
+	g_signal_connect (dialog, "response",
+			  G_CALLBACK (gs_review_row_confirm_cb), row);
+	adw_dialog_present (dialog, GTK_WIDGET (row));
 }
 
 AsReview *
