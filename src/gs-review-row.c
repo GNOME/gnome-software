@@ -24,8 +24,8 @@ typedef struct
 	GtkWidget	*author_label;
 	GtkWidget	*date_label;
 	GtkWidget	*text_label;
-	GtkWidget	*button_yes;
-	GtkWidget	*button_no;
+	GtkWidget	*button_like;
+	GtkWidget	*button_dislike;
 	GtkWidget	*button_report;
 	GtkWidget	*button_remove;
 	GtkWidget	*box_voting;
@@ -84,9 +84,9 @@ gs_review_row_refresh (GsReviewRow *row)
 		gtk_widget_set_visible (priv->box_voting, FALSE);
 	} else {
 		gtk_widget_set_visible (priv->box_voting, TRUE);
-		gtk_widget_set_visible (priv->button_yes,
+		gtk_widget_set_visible (priv->button_like,
 					priv->actions & 1 << GS_REVIEW_ACTION_UPVOTE);
-		gtk_widget_set_visible (priv->button_no,
+		gtk_widget_set_visible (priv->button_dislike,
 					priv->actions & 1 << GS_REVIEW_ACTION_DOWNVOTE);
 	}
 	gtk_widget_set_visible (priv->button_remove,
@@ -96,13 +96,13 @@ gs_review_row_refresh (GsReviewRow *row)
 
 	/* mark insensitive if no network */
 	if (priv->network_available) {
-		gtk_widget_set_sensitive (priv->button_yes, TRUE);
-		gtk_widget_set_sensitive (priv->button_no, TRUE);
+		gtk_widget_set_sensitive (priv->button_like, TRUE);
+		gtk_widget_set_sensitive (priv->button_dislike, TRUE);
 		gtk_widget_set_sensitive (priv->button_remove, TRUE);
 		gtk_widget_set_sensitive (priv->button_report, TRUE);
 	} else {
-		gtk_widget_set_sensitive (priv->button_yes, FALSE);
-		gtk_widget_set_sensitive (priv->button_no, FALSE);
+		gtk_widget_set_sensitive (priv->button_like, FALSE);
+		gtk_widget_set_sensitive (priv->button_dislike, FALSE);
 		gtk_widget_set_sensitive (priv->button_remove, FALSE);
 		gtk_widget_set_sensitive (priv->button_report, FALSE);
 	}
@@ -180,8 +180,8 @@ gs_review_row_class_init (GsReviewRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, author_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, date_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, text_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_yes);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_no);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_like);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_dislike);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_report);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_remove);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, box_voting);
@@ -207,6 +207,11 @@ gs_review_row_confirm_cb (AdwAlertDialog *dialog, const gchar *response, GsRevie
 	if (g_strcmp0 (response, "report") == 0) {
 		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
 			       GS_REVIEW_ACTION_REPORT);
+	}
+
+	if (g_strcmp0 (response, "remove") == 0) {
+		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
+			       GS_REVIEW_ACTION_REMOVE);
 	}
 }
 
@@ -246,8 +251,25 @@ gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 static void
 gs_review_row_button_clicked_remove_cb (GtkButton *button, GsReviewRow *row)
 {
-	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_REVIEW_ACTION_REMOVE);
+	AdwDialog *dialog;
+
+	/* TRANSLATORS: window title when the user attempts to remove their
+	 * review */
+	dialog = adw_alert_dialog_new (_("Remove Review?"), NULL);
+
+	/* TRANSLATORS: we ask the user if they really want to do this */
+	adw_alert_dialog_set_body (ADW_ALERT_DIALOG (dialog), _("Removing a review cannot be undone."));
+	adw_alert_dialog_add_responses (ADW_ALERT_DIALOG (dialog),
+					"cancel",  _("_Cancel"),
+					/* TRANSLATORS: button text when
+					 * removing a review */
+					"remove",  _("_Remove"),
+					NULL);
+	adw_alert_dialog_set_response_appearance (ADW_ALERT_DIALOG (dialog),
+						  "remove", ADW_RESPONSE_DESTRUCTIVE);
+	g_signal_connect (dialog, "response",
+			  G_CALLBACK (gs_review_row_confirm_cb), row);
+	adw_dialog_present (dialog, GTK_WIDGET (row));
 }
 
 AsReview *
@@ -287,10 +309,10 @@ gs_review_row_new (AsReview *review)
 	g_signal_connect_object (priv->review, "notify::state",
 				 G_CALLBACK (gs_review_row_notify_props_changed_cb),
 				 row, 0);
-	g_signal_connect_object (priv->button_yes, "clicked",
+	g_signal_connect_object (priv->button_like, "clicked",
 				 G_CALLBACK (gs_review_row_button_clicked_upvote_cb),
 				 row, 0);
-	g_signal_connect_object (priv->button_no, "clicked",
+	g_signal_connect_object (priv->button_dislike, "clicked",
 				 G_CALLBACK (gs_review_row_button_clicked_downvote_cb),
 				 row, 0);
 	g_signal_connect_object (priv->button_report, "clicked",
