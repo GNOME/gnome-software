@@ -158,6 +158,7 @@ struct _GsDetailsPage
 	GtkWidget		*histogram_row;
 	GtkWidget		*write_review_button_row;
 	GtkWidget		*scrolledwindow_details;
+	GtkWidget		*spinner_details;
 	GtkWidget		*stack_details;
 	GtkWidget		*box_with_source;
 	GtkWidget		*origin_popover;
@@ -222,6 +223,19 @@ gs_details_page_set_state (GsDetailsPage *self,
 {
 	if (state == gs_details_page_get_state (self))
 		return;
+
+	/* spinner */
+	switch (state) {
+	case GS_DETAILS_PAGE_STATE_LOADING:
+		gtk_spinner_start (GTK_SPINNER (self->spinner_details));
+		break;
+	case GS_DETAILS_PAGE_STATE_READY:
+	case GS_DETAILS_PAGE_STATE_FAILED:
+		gtk_spinner_stop (GTK_SPINNER (self->spinner_details));
+		break;
+	default:
+		g_assert_not_reached ();
+	}
 
 	/* stack */
 	switch (state) {
@@ -2707,6 +2721,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, write_review_button_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_with_source);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
