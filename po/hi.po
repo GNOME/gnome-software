@@ -11,16 +11,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-03-27 10:08+0000\n"
-"PO-Revision-Date: 2024-04-20 17:18+0530\n"
+"POT-Creation-Date: 2024-07-01 12:59+0000\n"
+"PO-Revision-Date: 2024-07-10 00:34+0530\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
-"Language-Team: Hindi\n"
+"Language-Team: Hindi <indlinux-hindi@lists.sourceforge.net>\n"
 "Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Gtranslator 46.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 46.1\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:27
 #: src/org.gnome.Software.desktop.in:3
@@ -74,7 +74,7 @@ msgid "The update details"
 msgstr "अद्यतन विवरण"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2506
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2560
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "GNOME परियोजना"
@@ -795,7 +795,7 @@ msgstr "आयु रेटिंग"
 msgid "How to contribute missing information"
 msgstr "छूटी हुई जानकारी का योगदान कैसे करें"
 
-#: lib/gs-app.c:6336
+#: lib/gs-app.c:6339
 msgid "Local file"
 msgstr "स्थानीय फाइल"
 
@@ -804,13 +804,13 @@ msgstr "स्थानीय फाइल"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6355 src/gs-safety-context-dialog.c:539
+#: lib/gs-app.c:6358 src/gs-safety-context-dialog.c:539
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6432 src/gs-safety-context-dialog.c:776
+#: lib/gs-app.c:6435 src/gs-safety-context-dialog.c:776
 #: src/gs-safety-context-dialog.ui:180
 msgid "Package"
 msgstr "पैकेज"
@@ -850,13 +850,13 @@ msgstr "डाउनलोड किया जा रहा है"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1044
-#: src/gs-details-page.c:1071 src/gs-details-page.ui:243 src/gs-page.c:437
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:303 src/gs-details-page.c:1055
+#: src/gs-details-page.c:1082 src/gs-details-page.ui:243 src/gs-page.c:437
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "स्थापित करें (_I)"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1153
+#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1164
 msgid "_Uninstall…"
 msgstr "स्थापना रद्द करें (_U)…"
 
@@ -1023,8 +1023,7 @@ msgstr "%e %B %Y"
 #. TRANSLATORS: this is a command line option
 #: src/gs-application.c:124
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
-msgstr ""
-"स्टार्ट अप मोड: या तो 'अद्यतन', 'अद्यतन किया गया', 'स्थापित किया गया' या 'अवलोकन'"
+msgstr "स्टार्ट अप मोड: या तो 'अद्यतन', 'अद्यतित', 'स्थापित' या 'अवलोकन'"
 
 #: src/gs-application.c:124
 msgid "MODE"
@@ -1381,7 +1380,7 @@ msgid "Unsafe"
 msgstr "असुरक्षित"
 
 #: src/gs-app-context-bar.c:648 src/gs-app-context-bar.c:680
-#: src/gs-hardware-support-context-dialog.c:608
+#: src/gs-hardware-support-context-dialog.c:615
 msgid "Mobile Only"
 msgstr "केवल मोबाइल"
 
@@ -1391,7 +1390,7 @@ msgstr "केवल छोटी स्क्रीन पर काम कर�
 
 #: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:687
 #: src/gs-app-context-bar.c:694 src/gs-app-context-bar.c:744
-#: src/gs-app-context-bar.c:749 src/gs-hardware-support-context-dialog.c:588
+#: src/gs-app-context-bar.c:749 src/gs-hardware-support-context-dialog.c:595
 msgid "Desktop Only"
 msgstr "केवल डेस्कटॉप"
 
@@ -1399,21 +1398,21 @@ msgstr "केवल डेस्कटॉप"
 msgid "Only works on a large screen"
 msgstr "केवल बड़ी स्क्रीन पर काम करता है"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:626
+#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:633
 msgid "Screen Size Mismatch"
 msgstr "स्क्रीन साइज बेमेल"
 
-#: src/gs-app-context-bar.c:660 src/gs-hardware-support-context-dialog.c:627
+#: src/gs-app-context-bar.c:660 src/gs-hardware-support-context-dialog.c:634
 msgid "Doesn’t support your current screen size"
 msgstr "आपके वर्तमान स्क्रीन आकार का समर्थन नहीं करता"
 
-#: src/gs-app-context-bar.c:681 src/gs-hardware-support-context-dialog.c:679
-#: src/gs-hardware-support-context-dialog.c:685
+#: src/gs-app-context-bar.c:681 src/gs-hardware-support-context-dialog.c:686
+#: src/gs-hardware-support-context-dialog.c:692
 msgid "Requires a touchscreen"
 msgstr "टचस्क्रीन की आवश्यकता है"
 
-#: src/gs-app-context-bar.c:688 src/gs-hardware-support-context-dialog.c:639
-#: src/gs-hardware-support-context-dialog.c:645
+#: src/gs-app-context-bar.c:688 src/gs-hardware-support-context-dialog.c:646
+#: src/gs-hardware-support-context-dialog.c:652
 msgid "Requires a keyboard"
 msgstr "कीबोर्ड की आवश्यकता है"
 
@@ -1542,7 +1541,7 @@ msgstr "गंभीर अद्यतन"
 #: src/gs-app-row.ui:227 src/gs-feature-tile.c:574
 msgctxt "Single app"
 msgid "Installed"
-msgstr "स्थापित किया गया"
+msgstr "स्थापित"
 
 #. Translators: The placeholder is an app name
 #: src/gs-app-translation-dialog.c:68
@@ -1588,7 +1587,7 @@ msgstr "लॉगिन आवश्यक"
 #: src/gs-basic-auth-dialog.ui:14 src/gs-common.c:296 src/gs-common.c:748
 #: src/gs-details-page.ui:331 src/gs-page.c:435 src/gs-page.c:658
 #: src/gs-removal-dialog.ui:26 src/gs-repos-dialog.c:175
-#: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:27 src/gs-review-row.c:243
+#: src/gs-repos-dialog.c:253 src/gs-review-dialog.ui:38 src/gs-review-row.c:243
 #: src/gs-updates-page.c:854 src/gs-updates-page.c:871
 #: src/gs-upgrade-banner.ui:201
 msgid "_Cancel"
@@ -1600,7 +1599,7 @@ msgstr "लॉगिन (_L)"
 
 #. Translators: Placeholder text for a login entry.
 #. Translators: It's an origin scope, 'User' or 'System' installation
-#: src/gs-basic-auth-dialog.ui:62 src/gs-origin-popover-row.ui:138
+#: src/gs-basic-auth-dialog.ui:62 src/gs-origin-popover-row.ui:130
 msgid "User"
 msgstr "उपयोक्ता"
 
@@ -2037,7 +2036,7 @@ msgstr "स्थानीयकरण"
 #: src/gs-common.c:69 src/gs-common.c:92
 #, c-format
 msgid "%s is now installed"
-msgstr "%s अब स्थापित कर दिया गया है"
+msgstr "%s अब स्थापित है"
 
 #. TRANSLATORS: an app has been installed, but
 #. * needs a reboot to complete the installation
@@ -2055,7 +2054,7 @@ msgstr "ऐप उपयोग के लिए तैयार है।"
 #. * have been successfully installed
 #: src/gs-common.c:85
 msgid "System updates are now installed"
-msgstr "सिस्टम अद्यतन अब स्थापित हो गए हैं"
+msgstr "सिस्टम अद्यतन अब स्थापित हैं"
 
 #. TRANSLATORS: this is the body of a notification that OS updates
 #. * have been successfully installed
@@ -2362,7 +2361,7 @@ msgstr "स्थापना रद्द की जा रही है…"
 msgid "%s is not installed, but it still has data present."
 msgstr "%s स्थापित नहीं है, लेकिन इसमें अभी भी डेटा मौजूद है।"
 
-#: src/gs-details-page.c:1061
+#: src/gs-details-page.c:1072
 msgid "_Restart"
 msgstr "पुनर्प्रारंभ (_R)"
 
@@ -2370,74 +2369,74 @@ msgstr "पुनर्प्रारंभ (_R)"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1085
+#: src/gs-details-page.c:1096
 msgid "_Install…"
 msgstr "स्थापित करें (_I)…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1298
+#: src/gs-details-page.c:1309
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s अमेरिकी अंग्रेजी में दिखाई देगा"
 
-#: src/gs-details-page.c:1306
+#: src/gs-details-page.c:1317
 msgid "This app will appear in US English"
 msgstr "यह ऐप अमेरिकी अंग्रेजी में दिखाई देगा"
 
-#: src/gs-details-page.c:1308
+#: src/gs-details-page.c:1319
 msgid "This software will appear in US English"
 msgstr "यह सॉफ्टवेयर अमेरिकी अंग्रेज़ी में दिखाई देगा"
 
-#: src/gs-details-page.c:1343 src/gs-details-page.ui:76
+#: src/gs-details-page.c:1354 src/gs-details-page.ui:76
 msgid "Help _Translate"
 msgstr "अनुवाद में सहायता करें (_T)"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1408
+#: src/gs-details-page.c:1419
 #, c-format
 msgid "Other Apps by %s"
 msgstr "%s द्वारा अन्य ऐप्स"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1444
+#: src/gs-details-page.c:1455
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "विकासकर्ता %s ने %s का स्वामित्व सिद्ध कर दिया है"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1447
+#: src/gs-details-page.c:1458
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "विकासकर्ता ने %s का स्वामित्व सिद्ध कर दिया है"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1815
+#: src/gs-details-page.c:1826
 msgid "You need internet access to write a review"
 msgstr "समीक्षा लिखने के लिए आपको इंटरनेट पहुँच की आवश्यकता है"
 
-#: src/gs-details-page.c:1916
+#: src/gs-details-page.c:1927
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr "इस ऐप को अब सुरक्षा सुधारों सहित अद्यतन नहीं मिल रहे हैं"
 
-#: src/gs-details-page.c:1917
+#: src/gs-details-page.c:1928
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "यह ऐप आपके वितरण द्वारा पहले से ही उपलब्ध कराया गया है और इसे प्रतिस्थापित नहीं किया "
 "जाना चाहिए।"
 
-#: src/gs-details-page.c:1918
+#: src/gs-details-page.c:1929
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
 msgstr ""
 "यह ऐप किसी वेबसाइट, कोड रिपॉजिटरी या मुद्दा ट्रैकर के लिए कोई लिंक प्रदान नहीं करता है।"
 
-#: src/gs-details-page.c:1920
+#: src/gs-details-page.c:1931
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr "इस सॉफ्टवेयर को अब सुरक्षा सुधारों सहित अद्यतन प्राप्त नहीं हो रहे हैं"
 
-#: src/gs-details-page.c:1921
+#: src/gs-details-page.c:1932
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2445,7 +2444,7 @@ msgstr ""
 "यह सॉफ्टवेयर आपके वितरण द्वारा पहले से ही प्रदान किया गया है और इसे प्रतिस्थापित नहीं "
 "किया जाना चाहिए।"
 
-#: src/gs-details-page.c:1922
+#: src/gs-details-page.c:1933
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2453,12 +2452,12 @@ msgstr ""
 "यह सॉफ्टवेयर किसी वेबसाइट, कोड रिपॉजिटरी या मुद्दा ट्रैकर के लिए कोई लिंक प्रदान नहीं "
 "करता है।"
 
-#: src/gs-details-page.c:2012 src/gs-details-page.c:2028
+#: src/gs-details-page.c:2023 src/gs-details-page.c:2039
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "“%s” को ढूँढ़ने में असमर्थ"
 
-#: src/gs-details-page.c:2376
+#: src/gs-details-page.c:2387
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "“%s” के लिए समीक्षा प्रस्तुत करने में विफल: %s"
@@ -2628,26 +2627,26 @@ msgid "Failed to find requested software"
 msgstr "अनुरोधित सॉफ्टवेयर ढूंढने में विफल"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:418
+#: src/gs-extras-page.c:425
 #, c-format
 msgid "%s not found"
 msgstr "%s नहीं मिला"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:422
+#: src/gs-extras-page.c:429
 msgid "on the website"
 msgstr "वेबसाइट पर"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:429
+#: src/gs-extras-page.c:436
 #, c-format
 msgid "No apps are available that provide the file %s."
 msgstr "कोई भी ऐप उपलब्ध नहीं है जो फाइल %s प्रदान करता हो।"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:433 src/gs-extras-page.c:444 src/gs-extras-page.c:455
+#: src/gs-extras-page.c:440 src/gs-extras-page.c:451 src/gs-extras-page.c:462
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing apps might "
@@ -2658,21 +2657,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:440 src/gs-extras-page.c:462
+#: src/gs-extras-page.c:447 src/gs-extras-page.c:469
 #, c-format
 msgid "No apps are available for %s support."
 msgstr "%s समर्थन के लिए कोई ऐप उपलब्ध नहीं है।"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:451
+#: src/gs-extras-page.c:458
 #, c-format
 msgid "%s is not available."
 msgstr "%s उपलब्ध नहीं है।"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:466
+#: src/gs-extras-page.c:473
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an app that can "
@@ -2683,14 +2682,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:473
+#: src/gs-extras-page.c:480
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "%s स्क्रिप्ट समर्थन के लिए कोई फ़ॉन्ट उपलब्ध नहीं है।"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:477
+#: src/gs-extras-page.c:484
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -2700,14 +2699,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:484
+#: src/gs-extras-page.c:491
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s प्रारूप के लिए कोई ऐडऑन कोडेक्स उपलब्ध नहीं है।"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:488
+#: src/gs-extras-page.c:495
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2718,14 +2717,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:495
+#: src/gs-extras-page.c:502
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "%s समर्थन के लिए कोई प्लाज़्मा संसाधन उपलब्ध नहीं है।"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:499
+#: src/gs-extras-page.c:506
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2736,14 +2735,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:506
+#: src/gs-extras-page.c:513
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "%s के लिए कोई प्रिंटर ड्राइवर उपलब्ध नहीं हैं।"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:510
+#: src/gs-extras-page.c:517
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2753,13 +2752,13 @@ msgstr ""
 "इसके विकल्प %s में मिल सकते हैं।"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:556
+#: src/gs-extras-page.c:563
 msgid "the documentation"
 msgstr "दस्तावेज़ीकरण"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the app name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:562
+#: src/gs-extras-page.c:569
 #, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
@@ -2769,7 +2768,7 @@ msgstr[0] "%s द्वारा अनुरोधित %s को खोजन
 msgstr[1] "%s द्वारा अनुरोधित %s को खोजने में असमर्थ. अधिक जानकारी के लिए कृपया %s देखें।"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:571
+#: src/gs-extras-page.c:578
 #, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
@@ -2782,21 +2781,21 @@ msgstr[0] ""
 msgstr[1] ""
 "आप जिस %s को खोज रहे थे उसे ढूंढने में असमर्थ। अधिक जानकारी के लिए कृपया %s देखें।"
 
-#: src/gs-extras-page.c:649 src/gs-extras-page.c:706 src/gs-extras-page.c:746
+#: src/gs-extras-page.c:656 src/gs-extras-page.c:713 src/gs-extras-page.c:753
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "कोई भी खोज परिणाम ढूंढने में विफल: %s"
 
-#: src/gs-extras-page.c:965
+#: src/gs-extras-page.c:972
 #, c-format
 msgid "%s file format"
 msgstr "%s फाइल प्रारूप"
 
-#: src/gs-extras-page.c:1326
+#: src/gs-extras-page.c:1333
 msgid "Install _All"
 msgstr "सभी को स्थापित करें (_A)"
 
-#: src/gs-extras-page.c:1356
+#: src/gs-extras-page.c:1363
 msgid "Unable to Find Requested Software"
 msgstr "अनुरोधित सॉफ्टवेयर ढूंढने में असमर्थ"
 
@@ -2816,207 +2815,207 @@ msgstr "अगला"
 msgid "Featured Apps List"
 msgstr "विशिष्ट ऐप्स सूची"
 
-#: src/gs-hardware-support-context-dialog.c:582
-#: src/gs-hardware-support-context-dialog.c:591
+#: src/gs-hardware-support-context-dialog.c:589
+#: src/gs-hardware-support-context-dialog.c:598
 msgid "Desktop Support"
 msgstr "डेस्कटॉप समर्थन"
 
-#: src/gs-hardware-support-context-dialog.c:583
-#: src/gs-hardware-support-context-dialog.c:592
+#: src/gs-hardware-support-context-dialog.c:590
+#: src/gs-hardware-support-context-dialog.c:599
 msgid "Supports being used on a large screen"
 msgstr "बड़ी स्क्रीन पर उपयोग किए जाने का समर्थन करता है"
 
-#: src/gs-hardware-support-context-dialog.c:585
+#: src/gs-hardware-support-context-dialog.c:592
 msgid "Desktop Support Unknown"
 msgstr "डेस्कटॉप समर्थन अज्ञात"
 
-#: src/gs-hardware-support-context-dialog.c:586
+#: src/gs-hardware-support-context-dialog.c:593
 msgid "Not enough information to know if large screens are supported"
 msgstr "यह जानने के लिए पर्याप्त जानकारी नहीं है कि बड़ी स्क्रीन समर्थित हैं या नहीं"
 
-#: src/gs-hardware-support-context-dialog.c:589
+#: src/gs-hardware-support-context-dialog.c:596
 msgid "Requires a large screen"
 msgstr "बड़ी स्क्रीन की आवश्यकता है"
 
-#: src/gs-hardware-support-context-dialog.c:594
+#: src/gs-hardware-support-context-dialog.c:601
 msgid "Desktop Not Supported"
 msgstr "डेस्कटॉप समर्थित नहीं है"
 
-#: src/gs-hardware-support-context-dialog.c:595
+#: src/gs-hardware-support-context-dialog.c:602
 msgid "Cannot be used on a large screen"
 msgstr "बड़ी स्क्रीन पर उपयोग नहीं किया जा सकता"
 
-#: src/gs-hardware-support-context-dialog.c:602
-#: src/gs-hardware-support-context-dialog.c:611
+#: src/gs-hardware-support-context-dialog.c:609
+#: src/gs-hardware-support-context-dialog.c:618
 msgid "Mobile Support"
 msgstr "मोबाइल समर्थन"
 
-#: src/gs-hardware-support-context-dialog.c:603
-#: src/gs-hardware-support-context-dialog.c:612
+#: src/gs-hardware-support-context-dialog.c:610
+#: src/gs-hardware-support-context-dialog.c:619
 msgid "Supports being used on a small screen"
 msgstr "छोटे स्क्रीन पर उपयोग किये जाने का समर्थन"
 
-#: src/gs-hardware-support-context-dialog.c:605
+#: src/gs-hardware-support-context-dialog.c:612
 msgid "Mobile Support Unknown"
 msgstr "मोबाइल समर्थन अज्ञात"
 
-#: src/gs-hardware-support-context-dialog.c:606
+#: src/gs-hardware-support-context-dialog.c:613
 msgid "Not enough information to know if small screens are supported"
 msgstr "यह जानने के लिए पर्याप्त जानकारी नहीं है कि क्या छोटी स्क्रीन समर्थित हैं"
 
-#: src/gs-hardware-support-context-dialog.c:609
+#: src/gs-hardware-support-context-dialog.c:616
 msgid "Requires a small screen"
 msgstr "छोटी स्क्रीन की आवश्यकता है"
 
-#: src/gs-hardware-support-context-dialog.c:614
+#: src/gs-hardware-support-context-dialog.c:621
 msgid "Mobile Not Supported"
 msgstr "मोबाइल समर्थित नहीं"
 
-#: src/gs-hardware-support-context-dialog.c:615
+#: src/gs-hardware-support-context-dialog.c:622
 msgid "Cannot be used on a small screen"
 msgstr "छोटे स्क्रीन पर उपयोग नहीं किया जा सकता"
 
-#: src/gs-hardware-support-context-dialog.c:638
-#: src/gs-hardware-support-context-dialog.c:647
+#: src/gs-hardware-support-context-dialog.c:645
+#: src/gs-hardware-support-context-dialog.c:654
 msgid "Keyboard Support"
 msgstr "कीबोर्ड समर्थन"
 
-#: src/gs-hardware-support-context-dialog.c:641
+#: src/gs-hardware-support-context-dialog.c:648
 msgid "Keyboard Support Unknown"
 msgstr "कीबोर्ड समर्थन अज्ञात"
 
-#: src/gs-hardware-support-context-dialog.c:642
+#: src/gs-hardware-support-context-dialog.c:649
 msgid "Not enough information to know if keyboards are supported"
 msgstr "यह जानने के लिए पर्याप्त जानकारी नहीं है कि क्या कीबोर्ड समर्थित हैं"
 
-#: src/gs-hardware-support-context-dialog.c:644
+#: src/gs-hardware-support-context-dialog.c:651
 msgid "Keyboard Required"
 msgstr "कीबोर्ड आवश्यक"
 
-#: src/gs-hardware-support-context-dialog.c:648
+#: src/gs-hardware-support-context-dialog.c:655
 msgid "Supports keyboards"
 msgstr "कीबोर्ड का समर्थन करता है"
 
-#: src/gs-hardware-support-context-dialog.c:650
+#: src/gs-hardware-support-context-dialog.c:657
 msgid "Keyboard Not Supported"
 msgstr "कीबोर्ड समर्थित नहीं"
 
-#: src/gs-hardware-support-context-dialog.c:651
+#: src/gs-hardware-support-context-dialog.c:658
 msgid "Cannot be used with a keyboard"
 msgstr "कीबोर्ड के साथ उपयोग नहीं किया जा सकता"
 
-#: src/gs-hardware-support-context-dialog.c:658
-#: src/gs-hardware-support-context-dialog.c:667
+#: src/gs-hardware-support-context-dialog.c:665
+#: src/gs-hardware-support-context-dialog.c:674
 msgid "Mouse Support"
 msgstr "माउस का समर्थन"
 
-#: src/gs-hardware-support-context-dialog.c:659
-#: src/gs-hardware-support-context-dialog.c:665
+#: src/gs-hardware-support-context-dialog.c:666
+#: src/gs-hardware-support-context-dialog.c:672
 msgid "Requires a mouse or pointing device"
 msgstr "एक माउस या सूचक उपकरण की आवश्यकता है"
 
-#: src/gs-hardware-support-context-dialog.c:661
+#: src/gs-hardware-support-context-dialog.c:668
 msgid "Mouse Support Unknown"
 msgstr "माउस समर्थन अज्ञात"
 
-#: src/gs-hardware-support-context-dialog.c:662
+#: src/gs-hardware-support-context-dialog.c:669
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
 "यह जानने के लिए पर्याप्त जानकारी नहीं है कि माउस या सूचक उपकरण समर्थित हैं या नहीं"
 
-#: src/gs-hardware-support-context-dialog.c:664
+#: src/gs-hardware-support-context-dialog.c:671
 msgid "Mouse Required"
 msgstr "माउस आवश्यक"
 
-#: src/gs-hardware-support-context-dialog.c:668
+#: src/gs-hardware-support-context-dialog.c:675
 msgid "Supports mice and pointing devices"
 msgstr "माउस और सूचक उपकरणों का समर्थन करता है"
 
-#: src/gs-hardware-support-context-dialog.c:670
+#: src/gs-hardware-support-context-dialog.c:677
 msgid "Mouse Not Supported"
 msgstr "माउस समर्थित नहीं"
 
-#: src/gs-hardware-support-context-dialog.c:671
+#: src/gs-hardware-support-context-dialog.c:678
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "माउस या सूचक उपकरण के साथ उपयोग नहीं किया जा सकता"
 
-#: src/gs-hardware-support-context-dialog.c:678
-#: src/gs-hardware-support-context-dialog.c:687
+#: src/gs-hardware-support-context-dialog.c:685
+#: src/gs-hardware-support-context-dialog.c:694
 msgid "Touchscreen Support"
 msgstr "टचस्क्रीन समर्थन"
 
-#: src/gs-hardware-support-context-dialog.c:681
+#: src/gs-hardware-support-context-dialog.c:688
 msgid "Touchscreen Support Unknown"
 msgstr "टचस्क्रीन समर्थन अज्ञात"
 
-#: src/gs-hardware-support-context-dialog.c:682
+#: src/gs-hardware-support-context-dialog.c:689
 msgid "Not enough information to know if touchscreens are supported"
 msgstr "यह जानने के लिए पर्याप्त जानकारी नहीं है कि क्या टचस्क्रीन समर्थित है"
 
-#: src/gs-hardware-support-context-dialog.c:684
+#: src/gs-hardware-support-context-dialog.c:691
 msgid "Touchscreen Required"
 msgstr "टचस्क्रीन आवश्यक"
 
-#: src/gs-hardware-support-context-dialog.c:688
+#: src/gs-hardware-support-context-dialog.c:695
 msgid "Supports touchscreens"
 msgstr "टचस्क्रीन का समर्थन करता है"
 
-#: src/gs-hardware-support-context-dialog.c:690
+#: src/gs-hardware-support-context-dialog.c:697
 msgid "Touchscreen Not Supported"
 msgstr "टचस्क्रीन समर्थित नहीं"
 
-#: src/gs-hardware-support-context-dialog.c:691
+#: src/gs-hardware-support-context-dialog.c:698
 msgid "Cannot be used with a touchscreen"
 msgstr "टचस्क्रीन के साथ उपयोग नहीं किया जा सकता"
 
-#: src/gs-hardware-support-context-dialog.c:704
+#: src/gs-hardware-support-context-dialog.c:711
 msgid "Gamepad Required"
 msgstr "गेमपैड आवश्यक"
 
-#: src/gs-hardware-support-context-dialog.c:705
+#: src/gs-hardware-support-context-dialog.c:712
 msgid "Requires a gamepad"
 msgstr "गेमपैड की आवश्यकता है"
 
-#: src/gs-hardware-support-context-dialog.c:707
+#: src/gs-hardware-support-context-dialog.c:714
 msgid "Gamepad Support"
 msgstr "गेमपैड समर्थन"
 
-#: src/gs-hardware-support-context-dialog.c:708
+#: src/gs-hardware-support-context-dialog.c:715
 msgid "Supports gamepads"
 msgstr "गेमपैड का समर्थन करता है"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:717
+#: src/gs-hardware-support-context-dialog.c:724
 #, c-format
 msgid "%s probably works on this device"
 msgstr "%s संभवतः इस उपकरण पर काम करता है"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:724
+#: src/gs-hardware-support-context-dialog.c:731
 #, c-format
 msgid "%s works on this device"
 msgstr "%s इस उपकरण पर काम करता है"
 
 #. Translators: The app will possbily work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:731
+#: src/gs-hardware-support-context-dialog.c:738
 #, c-format
 msgid "%s possibly works on this device"
 msgstr "%s संभवतः इस उपकरण पर काम करता है"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:738
+#: src/gs-hardware-support-context-dialog.c:745
 #, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s इस उपकरण पर ठीक से काम नहीं करेगा"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:745
+#: src/gs-hardware-support-context-dialog.c:752
 #, c-format
 msgid "%s will not work on this device"
 msgstr "%s इस उपकरण पर काम नहीं करेगा"
@@ -3070,7 +3069,7 @@ msgstr "कीबोर्ड शॉर्टकट खोलें"
 #: src/gs-installed-page.c:818
 msgctxt "List of installed apps"
 msgid "Installed"
-msgstr "स्थापित किया गया"
+msgstr "स्थापित"
 
 #: src/gs-installed-page.ui:6
 msgid "Installed page"
@@ -3308,7 +3307,7 @@ msgid "Unknown source"
 msgstr "अज्ञात स्रोत"
 
 #. Translators: It's like a beta version of the software, a test version
-#: src/gs-origin-popover-row.ui:108
+#: src/gs-origin-popover-row.ui:104
 msgid "Beta"
 msgstr "बीटा"
 
@@ -3389,7 +3388,7 @@ msgstr "%s के लिए उपलब्ध है"
 #. Translators: This is the title of the main page of the UI.
 #: src/gs-overview-page.c:1255
 msgid "Explore"
-msgstr "अन्वेषण करें"
+msgstr "अन्वेषण"
 
 #: src/gs-overview-page.ui:7
 msgid "Overview page"
@@ -3656,8 +3655,8 @@ msgstr "कोई रिपॉजिटरी नहीं"
 #, c-format
 msgid "%u app installed"
 msgid_plural "%u apps installed"
-msgstr[0] "%u ऐप स्थापित किया गया"
-msgstr[1] "%u ऐप्स स्थापित किए गए"
+msgstr[0] "%u ऐप स्थापित"
+msgstr[1] "%u ऐप्स स्थापित"
 
 #. TRANSLATORS: This string states how many add-ons have been
 #. * installed from a particular repo, and is displayed on a row
@@ -3667,7 +3666,7 @@ msgstr[1] "%u ऐप्स स्थापित किए गए"
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
 msgstr[0] "%u ऐड-ऑन स्थापित किया गया"
-msgstr[1] "%u ऐड-ऑन्स स्थापित किए गए"
+msgstr[1] "%u ऐड-ऑन्स स्थापित"
 
 #. TRANSLATORS: This string is used to construct the 'X apps
 #. and Y add-ons installed' sentence, stating how many things have been
@@ -3803,11 +3802,11 @@ msgid "Write a Review"
 msgstr "समीक्षा लिखें"
 
 #. Translators: A button to publish the user's opinion about the app.
-#: src/gs-review-dialog.ui:35
+#: src/gs-review-dialog.ui:46
 msgid "_Send"
 msgstr "भेजें (_S)"
 
-#: src/gs-review-dialog.ui:54
+#: src/gs-review-dialog.ui:65
 msgid ""
 "Please provide a rating, summary and review text. Reviews should not be used "
 "to report problems: instead, contact the developer or your support provider."
@@ -3816,17 +3815,17 @@ msgstr ""
 "समीक्षाओं का उपयोग नहीं किया जाना चाहिए: इसके बजाय, विकासकर्ता या अपने सहायता "
 "प्रदाता से संपर्क करें।"
 
-#: src/gs-review-dialog.ui:100
+#: src/gs-review-dialog.ui:111
 msgid "Review Summary"
 msgstr "सारांश की समीक्षा करें"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:132
+#: src/gs-review-dialog.ui:143
 msgctxt "app review"
 msgid "Write a short review"
 msgstr "एक संक्षिप्त समीक्षा लिखें"
 
-#: src/gs-review-dialog.ui:176
+#: src/gs-review-dialog.ui:187
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
 "privacy\">privacy policy</a>. The full name attached to your account will be "
@@ -4602,13 +4601,13 @@ msgstr "ऐप्स खोजें"
 #. Translators: A label for a button to show all available software.
 #: src/gs-shell.ui:202
 msgid "_Explore"
-msgstr "अन्वेषण करें (_E)"
+msgstr "अन्वेषण (_E)"
 
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-shell.ui:216
 msgctxt "List of installed apps"
 msgid "_Installed"
-msgstr "स्थापित किया गया (_I)"
+msgstr "स्थापित (_I)"
 
 #. Translators: A label for a button to show only updates which are available to install.
 #: src/gs-shell.ui:238
@@ -4683,7 +4682,7 @@ msgstr "कैश्ड डेटा को <a href='dummy'>_app सेटिं
 #: src/gs-summary-tile.c:139
 #, c-format
 msgid "%s (Installed)"
-msgstr "%s (स्थापित किया गया)"
+msgstr "%s (स्थापित)"
 
 #: src/gs-summary-tile.c:144
 #, c-format
@@ -4728,7 +4727,7 @@ msgstr "%s पर स्थापित"
 #. TRANSLATORS: this is the title of the installed updates dialog window
 #: src/gs-update-dialog.c:130
 msgid "Installed Updates"
-msgstr "स्थापित किए गए अद्यतन"
+msgstr "स्थापित अद्यतन"
 
 #: src/gs-update-dialog.ui:71
 msgid "No Updates Installed"
@@ -4779,22 +4778,22 @@ msgstr "सॉफ्टवेयर अद्यतन डाउनलोड क
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
-msgstr[0] "%u ऐप अद्यतन किया गया - पुनरारंभ आवश्यक"
-msgstr[1] "%u ऐप्स अद्यतन किए गए - पुनरारंभ आवश्यक"
+msgstr[0] "%u ऐप अद्यतित - पुनरारंभ आवश्यक"
+msgstr[1] "%u ऐप्स अद्यतित - पुनरारंभ आवश्यक"
 
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:364
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
-msgstr[0] "%u ऐप अद्यतन किया गया"
-msgstr[1] "%u ऐप्स अद्यतन किए गए"
+msgstr[0] "%u ऐप अद्यतित"
+msgstr[1] "%u ऐप्स अद्यतित"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
 #: src/gs-update-monitor.c:375
 #, c-format
 msgid "%s has been updated."
-msgstr "%s अद्यतन किया गया है।"
+msgstr "%s अद्यतित।"
 
 #. TRANSLATORS: the app needs restarting
 #: src/gs-update-monitor.c:378
@@ -4805,7 +4804,7 @@ msgstr "कृपया ऐप पुनः प्रारंभ करें�
 #: src/gs-update-monitor.c:386
 #, c-format
 msgid "%s and %s have been updated."
-msgstr "%s और %s को अद्यतन कर दिया गया है।"
+msgstr "%s और %s अद्यतित।"
 
 #. TRANSLATORS: at least one app needs restarting
 #: src/gs-update-monitor.c:392 src/gs-update-monitor.c:411
@@ -4948,7 +4947,7 @@ msgstr ""
 #: src/gs-updates-page.c:255
 #, c-format
 msgid "Last checked: %s"
-msgstr "अंतिम बार जाँचा गया: %s"
+msgstr "अंतिम जाँचा: %s"
 
 #: src/gs-updates-page.c:304
 msgid "Stop"
@@ -5027,7 +5026,7 @@ msgstr "अद्यतन पृष्ठ"
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:58
 msgid "Loading Updates"
-msgstr "अद्यतन लोड हो रहा है"
+msgstr "अद्यतन लोड हो रहें हैं"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:71
@@ -5255,14 +5254,14 @@ msgstr ""
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
 #: plugins/core/gs-plugin-generic-updates.c:71
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3302
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3247
 msgid "System Updates"
 msgstr "सिस्टम अद्यतन"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
 #: plugins/core/gs-plugin-generic-updates.c:76
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3307
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3252
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
@@ -5297,7 +5296,7 @@ msgid "Downloading upgrade information…"
 msgstr "उन्नयन जानकारी डाउनलोड कर रहा है…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:413
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:405
 #: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:95
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
@@ -5457,17 +5456,17 @@ msgstr "सिस्टम स्थापना"
 msgid "App ID"
 msgstr "ऐप ID"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1338
+#: plugins/flatpak/gs-plugin-flatpak.c:1343
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "स्थापित करने के लिए ऐडऑन '%s' जोड़ने में विफल: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1352
+#: plugins/flatpak/gs-plugin-flatpak.c:1357
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "अस्थापित करने के लिए ऐडऑन '%s' जोड़ने में विफल: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1619
+#: plugins/flatpak/gs-plugin-flatpak.c:1624
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5762,11 +5761,11 @@ msgstr ""
 msgid "Packages"
 msgstr "पैकेज"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:3238
+#: plugins/packagekit/gs-plugin-packagekit.c:3252
 msgid "Failed to install updates: "
 msgstr "अद्यतन स्थापित करने में विफल: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3016
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2961
 msgid "Operating System (OSTree)"
 msgstr "ऑपरेटिंग सिस्टम (OStree)"
 
