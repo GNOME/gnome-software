@@ -1046,6 +1046,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	};
 	GtkWidget *highlighted_button = NULL;
 	gboolean remove_is_destructive = TRUE;
+	gboolean is_mok_key_related = FALSE;
 
 	state = gs_app_get_state (self->app);
 
@@ -1075,10 +1076,11 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 			gtk_widget_set_visible (self->button_install, TRUE);
 			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Restart"));
 			#ifdef ENABLE_DKMS
-			if ((g_strcmp0 (gs_app_get_metadata_item (self->app, "GnomeSoftware::requires-akmods-key"), "True") == 0 ||
-			    g_strcmp0 (gs_app_get_metadata_item (self->app, "GnomeSoftware::requires-dkms-key"), "True") == 0) &&
-			    !gs_app_get_mok_key_pending (self->app)) {
-				gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Enable…"));
+			if (g_strcmp0 (gs_app_get_metadata_item (self->app, "GnomeSoftware::requires-akmods-key"), "True") == 0 ||
+			    g_strcmp0 (gs_app_get_metadata_item (self->app, "GnomeSoftware::requires-dkms-key"), "True") == 0) {
+				is_mok_key_related = TRUE;
+				if (!gs_app_get_mok_key_pending (self->app))
+					gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Enable…"));
 			}
 			#endif
 		} else {
@@ -1142,6 +1144,10 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 			gtk_widget_set_visible (self->button_remove, TRUE);
 			gtk_widget_set_sensitive (self->button_remove, TRUE);
 			break;
+		case GS_APP_STATE_PENDING_INSTALL:
+			gtk_widget_set_visible (self->button_remove, is_mok_key_related);
+			gtk_widget_set_sensitive (self->button_remove, is_mok_key_related);
+			break;
 		case GS_APP_STATE_AVAILABLE_LOCAL:
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
@@ -1150,7 +1156,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		case GS_APP_STATE_UNAVAILABLE:
 		case GS_APP_STATE_UNKNOWN:
 		case GS_APP_STATE_QUEUED_FOR_INSTALL:
-		case GS_APP_STATE_PENDING_INSTALL:
 		case GS_APP_STATE_PENDING_REMOVE:
 			gtk_widget_set_visible (self->button_remove, FALSE);
 			break;
