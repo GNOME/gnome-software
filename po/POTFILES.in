@@ -1,4 +1,5 @@
 data/metainfo/org.gnome.Software.metainfo.xml.in
+data/org.gnome.software.dkms-helper.policy.in.in
 data/org.gnome.software.external-appstream.policy.in.in
 data/org.gnome.software.gschema.xml
 gs-install-appstream/gs-install-appstream.c
@@ -31,12 +32,14 @@ lib/gs-category.c
 src/gs-category-page.c
 src/gs-category-page.ui
 lib/gs-cmd.c
-lib/gs-desktop-data.c
 src/gs-common.c
+lib/gs-desktop-data.c
 src/gs-dbus-helper.c
 src/gs-description-box.c
 src/gs-details-page.c
 src/gs-details-page.ui
+src/gs-dkms-dialog.c
+src/gs-dkms-dialog.ui
 lib/gs-external-appstream-utils.c
 src/gs-extras-page.c
 src/gs-extras-page.ui
@@ -104,6 +107,7 @@ src/gs-upgrade-banner.c
 src/gs-upgrade-banner.ui
 lib/gs-utils.c
 src/org.gnome.Software.desktop.in
+plugins/dkms/gs-plugin-dkms.c
 plugins/core/gs-plugin-generic-updates.c
 plugins/eos-updater/gs-plugin-eos-updater.c
 plugins/epiphany/gs-plugin-epiphany.c

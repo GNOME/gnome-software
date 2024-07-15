@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SPDX-License-Identifier: GPL-2.0-or-later
+  SPDX-FileCopyrightText: 2024 Red Hat
+-->
+<interface>
+  <requires lib="gtk+" version="4.10"/>
+  <requires lib="adwaita" version="1.0"/>
+  <template class="GsDkmsDialog" parent="AdwDialog">
+    <property name="title" translatable="no"></property>
+    <property name="content_width">550</property>
+    <property name="focus-widget">i_have_made_a_note_check</property>
+    <child>
+      <object class="AdwNavigationView" id="navigation_view">
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">MOK Enrollment Required</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar">
+                    <property name="hexpand">True</property>
+                    <property name="show-back-button">False</property>
+                    <property name="show-end-title-buttons">False</property>
+                    <property name="show-start-title-buttons">False</property>
+                    <child type="start">
+                      <object class="GtkButton">
+                        <property name="label" translatable="yes">_Cancel</property>
+                        <property name="can-focus">True</property>
+                        <property name="use-underline">True</property>
+                        <signal name="clicked" handler="gs_dkms_dialog_cancel_button_clicked_cb"/>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkButton" id="next_button">
+                        <property name="label" translatable="yes">_Next</property>
+                        <property name="can-focus">True</property>
+                        <property name="use-underline">True</property>
+                        <property name="sensitive" bind-source="i_have_made_a_note_check" bind-property="active" bind-flags="sync-create"/>
+                        <signal name="clicked" handler="gs_dkms_dialog_next_button_clicked_cb"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <property name="content">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">20</property>
+                    <property name="margin-start">48</property>
+                    <property name="margin-end">48</property>
+                    <property name="margin-top">24</property>
+                    <property name="margin-bottom">48</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">This device has Secure Boot enabled. To allow new drivers to be enabled, a new machine owner key (MOK) must be enrolled. The process requires a password to be entered later in the process. Please note down the following password associated with the key:</property>
+                        <property name="hexpand">False</property>
+                        <property name="halign">start</property>
+                        <property name="use-markup">True</property>
+                        <property name="use-underline">False</property>
+                        <property name="width-chars">53</property>
+                        <property name="max-width-chars">60</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0.0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="password_label">
+                        <property name="hexpand">False</property>
+                        <property name="halign">center</property>
+                        <property name="use-markup">False</property>
+                        <property name="use-underline">False</property>
+                        <property name="justify">center</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                          <attribute name="scale" value="3.0"/>
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBox">
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title" translatable="yes">I have made a note of the MOK _password</property>
+                            <property name="activatable-widget">i_have_made_a_note_check</property>
+                            <property name="use-underline">True</property>
+                            <property name="use-markup">False</property>
+                            <style>
+                              <class name="card"/>
+                            </style>
+                            <child type="prefix">
+                              <object class="GtkCheckButton" id="i_have_made_a_note_check">
+                                <property name="valign">center</property>
+                                <property name="active">False</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">MOK Enrollment Required</property>
+            <property name="tag">final-page</property>
+            <property name="child">
+              <object class="AdwToolbarView">
+                <child type="top">
+                  <object class="AdwHeaderBar">
+                    <property name="hexpand">True</property>
+                    <property name="show-back-button">False</property>
+                    <property name="show-end-title-buttons">False</property>
+                    <property name="show-start-title-buttons">False</property>
+                    <child type="start">
+                      <object class="GtkButton">
+                        <property name="label" translatable="yes">_Cancel</property>
+                        <property name="can-focus">True</property>
+                        <property name="use-underline">True</property>
+                        <signal name="clicked" handler="gs_dkms_dialog_cancel_button_clicked_cb"/>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkButton" id="apply_button">
+                        <property name="label" translatable="yes">_Restart &amp; Enroll…</property>
+                        <property name="can-focus">True</property>
+                        <property name="use-underline">True</property>
+                        <style>
+                          <class name="destructive-action"/>
+                        </style>
+                        <signal name="clicked" handler="gs_dkms_dialog_apply_button_clicked_cb"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <property name="content">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">20</property>
+                    <property name="margin-start">48</property>
+                    <property name="margin-end">48</property>
+                    <property name="margin-top">24</property>
+                    <property name="margin-bottom">48</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Setup Instructions: Please Read Carefully</property>
+                        <property name="hexpand">False</property>
+                        <property name="halign">center</property>
+                        <property name="use-markup">False</property>
+                        <property name="use-underline">False</property>
+                        <property name="justify">center</property>
+                        <property name="width-chars">53</property>
+                        <property name="max-width-chars">60</property>
+                        <property name="wrap">True</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                          <attribute name="scale" value="1.2"/>
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">After restart, a device setup screen will be shown. To enable new drivers, proceed through the setup steps:</property>
+                        <property name="hexpand">False</property>
+                        <property name="halign">start</property>
+                        <property name="use-markup">False</property>
+                        <property name="use-underline">False</property>
+                        <property name="width-chars">53</property>
+                        <property name="max-width-chars">60</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0.0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">• Select “Enroll MOK”
+• Select “Yes” to enroll keys
+• Enter the MOK password when prompted
+• Then select “Reboot”</property>
+                        <property name="hexpand">False</property>
+                        <property name="halign">start</property>
+                        <property name="use-markup">False</property>
+                        <property name="use-underline">False</property>
+                        <property name="width-chars">53</property>
+                        <property name="max-width-chars">60</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0.0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">0</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="halign">center</property>
+                            <property name="valign">center</property>
+                            <property name="pixel-size">64</property>
+                            <property name="icon-name">warning-outline-symbolic</property>
+                            <property name="margin-bottom">6</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Security Implications</property>
+                            <property name="hexpand">False</property>
+                            <property name="halign">center</property>
+                            <property name="use-markup">False</property>
+                            <property name="use-underline">False</property>
+                            <property name="justify">center</property>
+                            <property name="width-chars">53</property>
+                            <property name="max-width-chars">60</property>
+                            <property name="wrap">True</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                              <attribute name="scale" value="1.2"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">After successful key enrollment, be aware that any future updates to the module or any other module will be implicitly trusted. All future updates will happen transparently with no interaction and or authorization.</property>
+                        <property name="hexpand">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="use-markup">False</property>
+                        <property name="use-underline">False</property>
+                        <property name="width-chars">53</property>
+                        <property name="max-width-chars">60</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0.0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Further guidance can be found on the &lt;a href=&quot;https://docs.fedoraproject.org/en-US/quick-docs/mok-enrollment/&quot;&gt;docs page&lt;/a&gt;.</property>
+                        <property name="hexpand">False</property>
+                        <property name="halign">start</property>
+                        <property name="use-markup">True</property>
+                        <property name="use-underline">False</property>
+                        <property name="width-chars">53</property>
+                        <property name="max-width-chars">60</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0.0</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

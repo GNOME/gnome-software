@@ -77,6 +77,11 @@ if get_option('polkit')
   librarydeps += polkit
 endif
 
+dkms_private_files = []
+if get_option('dkms')
+   dkms_private_files = [ 'gs-dkms-private.h', 'gs-dkms-private.c' ]
+endif
+
 gs_build_ident_h = vcs_tag(
      fallback: meson.project_version(),
         input: 'gs-build-ident.h.in',
@@ -144,7 +149,7 @@ libgnomesoftware = library(
     'gs-test.c',
     'gs-utils.c',
     'gs-worker-thread.c',
-  ] + libgnomesoftware_enums + [gs_build_ident_h],
+  ] + libgnomesoftware_enums + [gs_build_ident_h] + dkms_private_files,
   soversion: gs_plugin_api_version,
   include_directories : libgnomesoftware_include_directories,
   dependencies : librarydeps,

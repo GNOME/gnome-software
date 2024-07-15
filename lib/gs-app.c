@@ -146,6 +146,7 @@ typedef struct
 	GdkRGBA			 key_color_for_light;
 	gboolean		 key_color_for_dark_set;
 	GdkRGBA			 key_color_for_dark;
+	gboolean		 mok_key_pending;
 } GsAppPrivate;
 
 typedef enum {
@@ -187,9 +188,10 @@ typedef enum {
 	PROP_ORIGIN_UI,
 	PROP_HAS_TRANSLATIONS,
 	PROP_ICONS_STATE,
+	PROP_MOK_KEY_PENDING,
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_ICONS_STATE + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_MOK_KEY_PENDING + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -5495,6 +5497,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_ICONS_STATE:
 		g_value_set_enum (value, priv->icons_state);
 		break;
+	case PROP_MOK_KEY_PENDING:
+		g_value_set_boolean (value, gs_app_get_mok_key_pending (app));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -5628,6 +5633,9 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 	case PROP_ICONS_STATE:
 		/* Read-only */
 		g_assert_not_reached ();
+		break;
+	case PROP_MOK_KEY_PENDING:
+		gs_app_set_mok_key_pending (app, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -6168,6 +6176,20 @@ gs_app_class_init (GsAppClass *klass)
 					GS_TYPE_APP_ICONS_STATE,
 					GS_APP_ICONS_STATE_UNKNOWN,
 					G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:mok-key-pending
+	 *
+	 * Set to %TRUE, when the app requires restart to enroll a Machine
+	 * Owner Key (MOK). The property is always %FALSE when the project is
+	 * not built with enabled DKMS support.
+	 *
+	 * Since: 47
+	 */
+	obj_props[PROP_MOK_KEY_PENDING] =
+		g_param_spec_boolean ("mok-key-pending", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
@@ -6943,4 +6965,68 @@ gs_app_is_application (GsApp *app)
 	return priv->kind == AS_COMPONENT_KIND_DESKTOP_APP ||
 	       priv->kind == AS_COMPONENT_KIND_CONSOLE_APP ||
 	       priv->kind == AS_COMPONENT_KIND_WEB_APP;
+}
+
+/**
+ * gs_app_get_mok_key_pending:
+ * @app: a #GsApp
+ *
+ * Get the value of #GsApp:mok-key-pending.
+ *
+ * Note: It returns always %FALSE, when the project is not built with
+ * enabled DKMS support.
+ *
+ * Returns: %TRUE, if the app requires restart to enroll a Machine
+ *    Owner Key (MOK).
+ *
+ * Since: 47
+ */
+gboolean
+gs_app_get_mok_key_pending (GsApp *app)
+{
+	#ifdef ENABLE_DKMS
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	return priv->mok_key_pending;
+	#else
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return FALSE;
+	#endif
+}
+
+/**
+ * gs_app_set_mok_key_pending:
+ * @app: a #GsApp
+ * @mok_key_pending: value to set
+ *
+ * Set the value of #GsApp:mok-key-pending. Set to %TRUE, when the @app requires
+ * restart to enroll a Machine Owner Key (MOK).
+ *
+ * Note: The value is ignored, when the project is not built with
+ * enabled DKMS support.
+ *
+ * Since: 47
+ */
+void
+gs_app_set_mok_key_pending (GsApp    *app,
+                            gboolean  mok_key_pending)
+{
+	#ifdef ENABLE_DKMS
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_if_fail (GS_IS_APP (app));
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->mok_key_pending == mok_key_pending)
+		return;
+
+	priv->mok_key_pending = mok_key_pending;
+	gs_app_queue_notify (app, obj_props[PROP_MOK_KEY_PENDING]);
+	#else
+	g_return_if_fail (GS_IS_APP (app));
+	#endif
 }
