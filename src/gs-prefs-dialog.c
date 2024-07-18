@@ -26,6 +26,7 @@ struct _GsPrefsDialog
 	GtkWidget		*automatic_updates_radio;
 	GtkWidget		*manual_updates_radio;
 	GtkPopover		*updates_info_popover;
+	GtkLabel                *updates_info_label;
 	AdwActionRow		*automatic_updates_row;
 	AdwActionRow		*manual_updates_row;
 	AdwActionRow		*automatic_update_notifications_row;
@@ -39,6 +40,16 @@ static void
 gs_prefs_dialog_filters_changed_cb (GsPrefsDialog *self)
 {
 	g_signal_emit_by_name (self->plugin_loader, "reload", 0);
+}
+
+static void
+popover_show_cb (GsPrefsDialog *self)
+{
+    const char *label = gtk_label_get_label (self->updates_info_label);
+
+    gtk_accessible_announce (GTK_ACCESSIBLE (self),
+                             label,
+                             GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM);
 }
 
 static gboolean
@@ -112,11 +123,14 @@ gs_prefs_dialog_class_init (GsPrefsDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_updates_radio);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, manual_updates_radio);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, updates_info_popover);
+	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, updates_info_label);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_updates_row);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, manual_updates_row);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_update_notifications_row);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, show_only_free_apps_row);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, show_only_verified_apps_row);
+
+    	gtk_widget_class_bind_template_callback (widget_class, popover_show_cb);
 }
 
 GtkWidget *
