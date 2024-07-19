@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-07-16 21:10+0000\n"
-"PO-Revision-Date: 2024-07-18 13:17+0200\n"
+"POT-Creation-Date: 2024-07-18 11:20+0000\n"
+"PO-Revision-Date: 2024-07-19 22:53+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -2671,13 +2671,11 @@ msgstr "Ključa ni mogoče najti"
 
 #: src/gs-dkms-dialog.c:102
 msgid "The key is not enrolled"
-msgstr ""
+msgstr "Ključ ni vpisan"
 
 #: src/gs-dkms-dialog.ui:17 src/gs-dkms-dialog.ui:108
-#, fuzzy
-#| msgid "Mouse Required"
 msgid "MOK Enrollment Required"
-msgstr "Zahtevana je uporaba miške"
+msgstr "Zahtevan je vpis MOK"
 
 #: src/gs-dkms-dialog.ui:36
 msgid "_Next"
@@ -2690,13 +2688,15 @@ msgid ""
 "password to be entered later in the process. Please note down the following "
 "password associated with the key:"
 msgstr ""
+"V tej napravi je omogočen varen zagon. Če želite omogočiti nove gonilnike, "
+"morate vpisati nov ključ lastnika računalnika (MOK). Postopek zahteva "
+"kasnejši vnos gesla. Zabeležite si naslednje geslo, povezano s ključem:"
 
 #: src/gs-dkms-dialog.ui:83
 msgid "I have made a note of the MOK _password"
 msgstr "Zabeležil sem si _geslo MOK"
 
 #: src/gs-dkms-dialog.ui:128
-#, fuzzy
 msgid "_Restart & Enroll…"
 msgstr "_Ponovno zaženi in se vpiši ..."
 
@@ -2709,6 +2709,8 @@ msgid ""
 "After restart, a device setup screen will be shown. To enable new drivers, "
 "proceed through the setup steps:"
 msgstr ""
+"Po vnovičnem zagonu se prikaže zaslon za nastavitev naprave. Če želite "
+"omogočiti nove gonilnike, nadaljujte s koraki nastavitve:"
 
 #: src/gs-dkms-dialog.ui:179
 msgid ""
@@ -2728,12 +2730,18 @@ msgid ""
 "module or any other module will be implicitly trusted. All future updates "
 "will happen transparently with no interaction and or authorization."
 msgstr ""
+"Po uspešnem vpisu ključa se zavedajte, da bodo vse prihodnje posodobitve "
+"modula ali katerega koli drugega modula implicitno zaupanja vredne. Vse "
+"prihodnje posodobitve bodo potekale pregledno brez interakcije in/ali "
+"dovoljenja."
 
 #: src/gs-dkms-dialog.ui:244
 msgid ""
 "Further guidance can be found on the <a href=\"https://docs.fedoraproject."
 "org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
 msgstr ""
+"Nadaljnja navodila najdete na <a href=\"https://docs.fedoraproject.org/si/"
+"quick-docs/mok-enrollment/\">straneh dokumentacije</a>."
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:272
@@ -5800,6 +5808,7 @@ msgstr "%s je pripravljen/a"
 #, c-format
 msgid "The %s is ready to be enabled and staged for the next boot."
 msgstr ""
+"%s je pripravljena za omogočanje in uveljavljanje ob naslednjem zagonu."
 
 #: plugins/dkms/gs-plugin-dkms.c:189
 msgid "Enable"
