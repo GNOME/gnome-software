@@ -21,7 +21,7 @@ G_BEGIN_DECLS
  * @GS_UTILS_CACHE_FLAG_NONE:		No flags set
  * @GS_UTILS_CACHE_FLAG_WRITEABLE:	A writable directory is required
  * @GS_UTILS_CACHE_FLAG_USE_HASH:	Prefix a hash to the filename
- * @GS_UTILS_CACHE_FLAG_ENSURE_EMPTY:	Clear existing cached items
+ * @GS_UTILS_CACHE_FLAG_ENSURE_EMPTY:	Clear all existing cached items in the cache kind (not just the specified resource)
  * @GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY:	Create the cache directory (Since: 40)
  *
  * The cache flags.
