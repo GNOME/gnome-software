@@ -12,7 +12,24 @@
               <object class="GtkMenuButton" id="updates_info_button">
                 <property name="tooltip-text" translatable="yes">More Information</property>
                 <property name="icon-name">info-symbolic</property>
-                <property name="popover">updates_info_popover</property>
+                <property name="popover">
+                  <object class="GtkPopover">
+                    <property name="child">
+                      <object class="GtkLabel" id="updates_info_label">
+                        <property name="halign">center</property>
+                        <property name="margin-start">6</property>
+                        <property name="margin-end">6</property>
+                        <property name="margin-top">6</property>
+                        <property name="margin-bottom">6</property>
+                        <property name="label" translatable="yes">Checking for and downloading updates uses data and power. Automatic update features are therefore paused when on metered network connections and when power saver is on.</property>
+                        <property name="wrap">True</property>
+                        <property name="max-width-chars">50</property>
+                        <property name="valign">center</property>
+                      </object>
+                    </property>
+                    <signal name="show" handler="popover_show_cb" object="GsPrefsDialog" swapped="yes"/>
+                  </object>
+                </property>
                 <style>
                   <class name="flat"/>
                 </style>
@@ -86,22 +103,4 @@
       </object>
     </child>
   </template>
-  <object class="GtkPopover" id="updates_info_popover">
-    <property name="position">bottom</property>
-    <property name="visible">False</property>
-    <property name="child">
-      <object class="GtkLabel" id="updates_info_label">
-        <property name="halign">center</property>
-        <property name="margin-start">6</property>
-        <property name="margin-end">6</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-        <property name="label" translatable="yes">Checking for and downloading updates uses data and power. Automatic update features are therefore paused when on metered network connections and when power saver is on.</property>
-        <property name="wrap">True</property>
-        <property name="max-width-chars">50</property>
-        <property name="valign">center</property>
-      </object>
-    </property>
-    <signal name="show" handler="popover_show_cb" object="GsPrefsDialog" swapped="yes"/>
-  </object>
 </interface>
