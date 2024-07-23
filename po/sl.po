@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-07-18 11:20+0000\n"
-"PO-Revision-Date: 2024-07-19 22:53+0200\n"
+"POT-Creation-Date: 2024-07-22 09:15+0000\n"
+"PO-Revision-Date: 2024-07-23 12:16+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -81,35 +81,39 @@ msgstr "Projekt GNOME"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:11
 msgid "Test akmods key in Shim UEFI"
-msgstr ""
+msgstr "Preizkusi ključ akmods v vmesniku Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:12
 msgid "Authentication is required to test akmods key in Shim UEFI"
 msgstr ""
+"Preverjanje pristnosti je potrebno za preizkušanje ključa akmods v vmesniku "
+"Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:22
 msgid "Enroll akmods key to Shim UEFI"
-msgstr ""
+msgstr "Vpiši ključ akmods v Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:23
 msgid "Authentication is required to enroll akmods key to Shim UEFI"
-msgstr ""
+msgstr "Preverjanje pristnosti je potrebno za vpis ključa akmods v Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:33
 msgid "Test DKMS key in Shim UEFI"
-msgstr ""
+msgstr "Preizkusi ključ DKMS v vmesniku UEFI Shim"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:34
 msgid "Authentication is required to test DKMS key in Shim UEFI"
 msgstr ""
+"Preverjanje pristnosti je potrebno za preizkušanje ključa DKMS v vmesniku "
+"Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:44
 msgid "Enroll DKMS key to Shim UEFI"
-msgstr ""
+msgstr "Vpiši ključ DKMS v Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:45
 msgid "Authentication is required to enroll DKMS key to Shim UEFI"
-msgstr ""
+msgstr "Preverjanje pristnosti je potrebno za vpis ključa DKMS v Shim UEFI"
 
 #: data/org.gnome.software.external-appstream.policy.in.in:11
 msgid "Install an appstream file into a system location"
@@ -2719,6 +2723,10 @@ msgid ""
 "• Enter the MOK password when prompted\n"
 "• Then select “Reboot”"
 msgstr ""
+"• Izberite »Vpiši MOK«\n"
+"• Izberite »Da« za vpis ključev\n"
+"• Ko ste pozvani, vnesite geslo MOK\n"
+"• Nato izberite »Ponovno zaženi«"
 
 #: src/gs-dkms-dialog.ui:211
 msgid "Security Implications"
@@ -3980,7 +3988,7 @@ msgctxt "repo-row"
 msgid "%s • %s"
 msgstr "%s • %s"
 
-#: src/gs-repo-row.c:400 src/gs-review-row.ui:130
+#: src/gs-repo-row.c:400
 msgid "Remove"
 msgstr "Odstrani"
 
@@ -4158,6 +4166,10 @@ msgstr "Všečkaj oceno"
 #: src/gs-review-row.ui:117
 msgid "Report…"
 msgstr "Poročilo …"
+
+#: src/gs-review-row.ui:130
+msgid "Remove…"
+msgstr "Odstrani …"
 
 #: src/gs-safety-context-dialog.c:154
 msgid ""
