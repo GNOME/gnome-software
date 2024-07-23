@@ -90,7 +90,7 @@
     <property name="position">bottom</property>
     <property name="visible">False</property>
     <property name="child">
-      <object class="GtkLabel">
+      <object class="GtkLabel" id="updates_info_label">
         <property name="halign">center</property>
         <property name="margin-start">6</property>
         <property name="margin-end">6</property>
@@ -100,9 +100,8 @@
         <property name="wrap">True</property>
         <property name="max-width-chars">50</property>
         <property name="valign">center</property>
-        <!--This is a hack so the popover contents can be read by the screen reader. See https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/1891-->
-        <property name="selectable" bind-source="updates_info_popover" bind-property="visible" bind-flags="invert-boolean">True</property>
       </object>
     </property>
+    <signal name="show" handler="popover_show_cb" object="GsPrefsDialog" swapped="yes"/>
   </object>
 </interface>
