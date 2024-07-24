@@ -25,7 +25,6 @@ struct _GsPrefsDialog
 	GsPluginLoader		*plugin_loader;
 	GtkWidget		*automatic_updates_radio;
 	GtkWidget		*manual_updates_radio;
-	GtkPopover		*updates_info_popover;
 	GtkLabel                *updates_info_label;
 	AdwActionRow		*automatic_updates_row;
 	AdwActionRow		*manual_updates_row;
@@ -122,7 +121,6 @@ gs_prefs_dialog_class_init (GsPrefsDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-prefs-dialog.ui");
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_updates_radio);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, manual_updates_radio);
-	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, updates_info_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, updates_info_label);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_updates_row);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, manual_updates_row);
