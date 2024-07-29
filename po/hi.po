@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-07-09 16:11+0000\n"
-"PO-Revision-Date: 2024-07-10 01:10+0530\n"
+"POT-Creation-Date: 2024-07-15 07:29+0000\n"
+"PO-Revision-Date: 2024-07-15 18:37+0530\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <indlinux-hindi@lists.sourceforge.net>\n"
 "Language: hi\n"
@@ -76,6 +76,38 @@ msgstr "अद्यतन विवरण"
 #: src/gs-application.c:263
 msgid "The GNOME Project"
 msgstr "गनोम परियोजना"
+
+#: data/org.gnome.software.dkms-helper.policy.in.in:11
+msgid "Test akmods key in Shim UEFI"
+msgstr "शिम UEFI में akmods कुंजी का परीक्षण करें"
+
+#: data/org.gnome.software.dkms-helper.policy.in.in:12
+msgid "Authentication is required to test akmods key in Shim UEFI"
+msgstr "शिम UEFI में akmods कुंजी परीक्षण हेतु प्रमाणीकरण आवश्यक"
+
+#: data/org.gnome.software.dkms-helper.policy.in.in:22
+msgid "Enroll akmods key to Shim UEFI"
+msgstr "akmods कुंजी को शिम UEFI में नामांकित करें"
+
+#: data/org.gnome.software.dkms-helper.policy.in.in:23
+msgid "Authentication is required to enroll akmods key to Shim UEFI"
+msgstr "शिम UEFI में akmods कुंजी नामांकन हेतु प्रमाणीकरण आवश्यक"
+
+#: data/org.gnome.software.dkms-helper.policy.in.in:33
+msgid "Test DKMS key in Shim UEFI"
+msgstr "शिम UEFI में DKMS कुंजी का परीक्षण करें"
+
+#: data/org.gnome.software.dkms-helper.policy.in.in:34
+msgid "Authentication is required to test DKMS key in Shim UEFI"
+msgstr "शिम UEFI में DKMS कुंजी परीक्षण हेतु प्रमाणीकरण आवश्यक"
+
+#: data/org.gnome.software.dkms-helper.policy.in.in:44
+msgid "Enroll DKMS key to Shim UEFI"
+msgstr "DKMS कुंजी को शिम UEFI में नामांकित करें"
+
+#: data/org.gnome.software.dkms-helper.policy.in.in:45
+msgid "Authentication is required to enroll DKMS key to Shim UEFI"
+msgstr "शिम UEFI में DKMS कुंजी नामांकन हेतु प्रमाणीकरण आवश्यक"
 
 #: data/org.gnome.software.external-appstream.policy.in.in:11
 msgid "Install an appstream file into a system location"
@@ -795,7 +827,7 @@ msgstr "आयु रेटिंग"
 msgid "_How to contribute missing information"
 msgstr "छूटी हुई जानकारी का योगदान कैसे करें (_H)"
 
-#: lib/gs-app.c:6343
+#: lib/gs-app.c:6365
 msgid "Local file"
 msgstr "स्थानीय फाइल"
 
@@ -804,13 +836,13 @@ msgstr "स्थानीय फाइल"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6362 src/gs-safety-context-dialog.c:536
+#: lib/gs-app.c:6384 src/gs-safety-context-dialog.c:536
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6439 src/gs-safety-context-dialog.c:773
+#: lib/gs-app.c:6461 src/gs-safety-context-dialog.c:773
 #: src/gs-safety-context-dialog.ui:89
 msgid "Package"
 msgstr "पैकेज"
@@ -819,17 +851,17 @@ msgstr "पैकेज"
 msgid "Pending"
 msgstr "लंबित"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:532 src/gs-details-page.c:402
+#: src/gs-app-addon-row.c:99 src/gs-app-row.c:532 src/gs-details-page.c:407
 msgid "Pending install"
 msgstr "स्थापना लंबित है"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:536 src/gs-details-page.c:409
+#: src/gs-app-addon-row.c:103 src/gs-app-row.c:536 src/gs-details-page.c:414
 msgid "Pending remove"
 msgstr "हटाना लंबित है"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:215 src/gs-details-page.c:390
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:215 src/gs-details-page.c:395
 msgid "Installing"
 msgstr "स्थापित किया जा रहा है"
 
@@ -839,7 +871,7 @@ msgstr "हटाया जा रहा है"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being downloaded
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:229 src/gs-details-page.c:395
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:229 src/gs-details-page.c:400
 #: src/gs-details-page.ui:356
 msgid "Downloading"
 msgstr "डाउनलोड किया जा रहा है"
@@ -850,13 +882,13 @@ msgstr "डाउनलोड किया जा रहा है"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:311 src/gs-details-page.c:1054
-#: src/gs-details-page.c:1081 src/gs-details-page.ui:243 src/gs-page.c:425
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:311 src/gs-details-page.c:1059
+#: src/gs-details-page.c:1093 src/gs-details-page.ui:243 src/gs-page.c:425
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "स्थापित करें (_I)"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1163
+#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1175
 msgid "_Uninstall…"
 msgstr "अस्थापित करें (_U)…"
 
@@ -1574,7 +1606,8 @@ msgstr "लॉगिन आवश्यक"
 
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:14 src/gs-common.c:304 src/gs-common.c:756
-#: src/gs-details-page.ui:331 src/gs-page.c:423 src/gs-page.c:708
+#: src/gs-details-page.ui:331 src/gs-dkms-dialog.ui:28
+#: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-page.c:708
 #: src/gs-removal-dialog.ui:22 src/gs-repos-dialog.c:175
 #: src/gs-repos-dialog.c:251 src/gs-review-dialog.ui:23 src/gs-review-row.c:239
 #: src/gs-review-row.c:263 src/gs-updates-page.c:852
@@ -1636,6 +1669,223 @@ msgstr "वेब से चुने हुए"
 #: src/gs-category-page.ui:126
 msgid "Other Software"
 msgstr "अन्य सॉफ्टवेयर"
+
+#. TRANSLATORS: this is the summary of a notification that an app
+#. * has been successfully installed
+#. TRANSLATORS: this is the summary of a notification that a component
+#. * has been successfully installed
+#: src/gs-common.c:69 src/gs-common.c:92
+#, c-format
+msgid "%s Installed"
+msgstr "%s स्थापित"
+
+#. TRANSLATORS: an app has been installed, but
+#. * needs a reboot to complete the installation
+#: src/gs-common.c:73 src/gs-common.c:96
+msgid "A restart is required for the changes to take effect"
+msgstr "परिवर्तनों को प्रभावी बनाने के लिए पुनरारंभ आवश्यक है"
+
+#. TRANSLATORS: this is the body of a notification that an app
+#. * has been successfully installed
+#: src/gs-common.c:77
+msgid "The app is ready to be used"
+msgstr "ऐप उपयोग के लिए तैयार है"
+
+#. TRANSLATORS: this is the summary of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:85
+msgid "System Updates Installed"
+msgstr "सिस्टम अद्यतन स्थापित"
+
+#. TRANSLATORS: this is the body of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:88
+msgid "Recently installed updates are available to review"
+msgstr "हालिया स्थापित अद्यतन अब समीक्षा के लिए उपलब्ध हैं"
+
+#. TRANSLATORS: button text
+#: src/gs-common.c:107 src/gs-common.c:919
+msgid "Restart"
+msgstr "पुनरारंभ"
+
+#: src/gs-common.c:113
+msgid "Launch"
+msgstr "शुरू करें"
+
+#. TRANSLATORS: window title
+#: src/gs-common.c:238
+msgid "Install Software?"
+msgstr "सॉफ्टवेयर स्थापित करें?"
+
+#. TRANSLATORS: window title
+#: src/gs-common.c:240
+msgid "Install Third-Party Software?"
+msgstr "तृतीय-पक्ष सॉफ्टवेयर स्थापित करें?"
+
+#. TRANSLATORS: window title
+#: src/gs-common.c:244
+msgid "Enable Software Repository?"
+msgstr "सॉफ्टवेयर रिपॉजिटरी सक्षम करें?"
+
+#. TRANSLATORS: window title
+#. ask for confirmation
+#. TRANSLATORS: "Enable Third-Party Software Repository?" is
+#. * the confirmation dialog title
+#: src/gs-common.c:246 src/gs-repos-dialog.c:172
+msgid "Enable Third-Party Software Repository?"
+msgstr "तृतीय-पक्ष सॉफ्टवेयर रिपोजिटरी सक्षम करें?"
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. App name, e.g. "Firefox"
+#. * 2. Software repository name, e.g. fedora-optional
+#.
+#: src/gs-common.c:258
+#, c-format
+msgid ""
+"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">free and open source software</a>, and is provided by “%s”."
+msgstr ""
+"%s <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">मुफ़्त और खुला स्रोत सॉफ्टवेयर</a> नहीं है, और “%s” द्वारा प्रदान "
+"किया जाता है।"
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. App name, e.g. "Firefox"
+#. * 2. Software repository name, e.g. fedora-optional
+#: src/gs-common.c:268
+#, c-format
+msgid "%s is provided by “%s”."
+msgstr "%s “%s” द्वारा प्रदान किया जाता है।"
+
+#: src/gs-common.c:277
+msgid "This software repository must be enabled to continue installation."
+msgstr "स्थापना जारी रखने के लिए इस सॉफ्टवेयर रिपॉजिटरी को सक्षम किया जाना चाहिए।"
+
+#. TRANSLATORS: Laws are geographical, urgh...
+#: src/gs-common.c:287
+#, c-format
+msgid "It may be illegal to install or use %s in some countries."
+msgstr "कुछ देशों में %s को स्थापित करना या उपयोग करना अवैध हो सकता है।"
+
+#. TRANSLATORS: Laws are geographical, urgh...
+#: src/gs-common.c:293
+msgid "It may be illegal to install or use this codec in some countries."
+msgstr "कुछ देशों में इस कोडेक को स्थापित करना या उपयोग करना अवैध हो सकता है।"
+
+#. TRANSLATORS: this is button text to not ask about non-free content again
+#: src/gs-common.c:307
+msgid "Don’t _Warn Again"
+msgstr "दोबारा चेतावनी न दें (_W)"
+
+#. TRANSLATORS: button text
+#: src/gs-common.c:316
+msgid "Enable and _Install"
+msgstr "सक्षम और स्थापित करें (_I)"
+
+#. TRANSLATORS: these are show_detailed_error messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: src/gs-common.c:523
+msgid "Detailed errors from the package manager follow:"
+msgstr "पैकेज मैनेजर की विस्तृत त्रुटियां इस प्रकार हैं:"
+
+#: src/gs-common.c:530 src/gs-common.c:667 src/gs-safety-context-dialog.ui:66
+#: src/gs-updates-paused-banner.c:77
+msgid "Details"
+msgstr "विवरण"
+
+#. TRANSLATORS: button text
+#: src/gs-common.c:579 src/gs-updates-paused-banner.c:64
+msgid "_Close"
+msgstr "बंद करें (_C)"
+
+#. Translators: an accept button label, in a Cancel/Accept dialog
+#: src/gs-common.c:748
+msgid "_Accept"
+msgstr "स्वीकारें (_A)"
+
+#. TRANSLATORS: we've just live-updated some apps
+#: src/gs-common.c:894
+msgid "An update has been installed"
+msgid_plural "Updates have been installed"
+msgstr[0] "एक अद्यतन स्थापित"
+msgstr[1] "अद्यतन स्थापित"
+
+#. TRANSLATORS: we've just uninstalled some apps
+#: src/gs-common.c:904
+msgid "An app has been uninstalled"
+msgid_plural "Apps have been uninstalled"
+msgstr[0] "एक ऐप अस्थापित"
+msgstr[1] "ऐप्स अस्थापित"
+
+#. TRANSLATORS: the new apps will not be run until we restart
+#: src/gs-common.c:910
+msgid "A restart is required for it to take effect"
+msgid_plural "A restart is required for them to take effect"
+msgstr[0] "इसे प्रभावी बनाने के लिए पुनरारंभ आवश्यक है"
+msgstr[1] "उन्हें प्रभावी बनाने के लिए पुनरारंभ आवश्यक है"
+
+#. TRANSLATORS: button text
+#: src/gs-common.c:917
+msgid "Not Now"
+msgstr "अभी नहीं"
+
+#. TRANSLATORS: something happened less than 5 minutes ago
+#: src/gs-common.c:1013
+msgid "Just now"
+msgstr "बस अभी"
+
+#: src/gs-common.c:1015
+#, c-format
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d मिनट पहले"
+msgstr[1] "%d मिनट पहले"
+
+#: src/gs-common.c:1019
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d घंटा पहले"
+msgstr[1] "%d घंटे पहले"
+
+#: src/gs-common.c:1023
+#, c-format
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "%d दिन पहले"
+msgstr[1] "%d दिनों पहले"
+
+#: src/gs-common.c:1027
+#, c-format
+msgid "%d week ago"
+msgid_plural "%d weeks ago"
+msgstr[0] "%d हफ्ता पहले"
+msgstr[1] "%d हफ्तों पहले"
+
+#: src/gs-common.c:1031
+#, c-format
+msgid "%d month ago"
+msgid_plural "%d months ago"
+msgstr[0] "%d महीना पहले"
+msgstr[1] "%d महीने पहले"
+
+#: src/gs-common.c:1035
+#, c-format
+msgid "%d year ago"
+msgid_plural "%d years ago"
+msgstr[0] "%d वर्ष पहले"
+msgstr[1] "%d वर्षों पहले"
+
+#. Translators: This is to construct a disk size string consisting of the value and its unit, while
+#. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
+#. * Make sure you'll preserve the no break space between the values.
+#. * Example result: "13.0 MB"
+#: src/gs-common.c:1398
+#, c-format
+msgctxt "format-size"
+msgid "%s %s"
+msgstr "%s %s"
 
 #: lib/gs-desktop-data.c:16
 msgctxt "Menu of Graphics & Photography"
@@ -2007,223 +2257,6 @@ msgstr "भाषा पैक"
 msgid "Localization"
 msgstr "स्थानीयकरण"
 
-#. TRANSLATORS: this is the summary of a notification that an app
-#. * has been successfully installed
-#. TRANSLATORS: this is the summary of a notification that a component
-#. * has been successfully installed
-#: src/gs-common.c:69 src/gs-common.c:92
-#, c-format
-msgid "%s Installed"
-msgstr "%s स्थापित"
-
-#. TRANSLATORS: an app has been installed, but
-#. * needs a reboot to complete the installation
-#: src/gs-common.c:73 src/gs-common.c:96
-msgid "A restart is required for the changes to take effect"
-msgstr "परिवर्तनों को प्रभावी बनाने के लिए पुनरारंभ आवश्यक है"
-
-#. TRANSLATORS: this is the body of a notification that an app
-#. * has been successfully installed
-#: src/gs-common.c:77
-msgid "The app is ready to be used"
-msgstr "ऐप उपयोग के लिए तैयार है"
-
-#. TRANSLATORS: this is the summary of a notification that OS updates
-#. * have been successfully installed
-#: src/gs-common.c:85
-msgid "System Updates Installed"
-msgstr "सिस्टम अद्यतन स्थापित"
-
-#. TRANSLATORS: this is the body of a notification that OS updates
-#. * have been successfully installed
-#: src/gs-common.c:88
-msgid "Recently installed updates are available to review"
-msgstr "हालिया स्थापित अद्यतन अब समीक्षा के लिए उपलब्ध हैं"
-
-#. TRANSLATORS: button text
-#: src/gs-common.c:107 src/gs-common.c:919
-msgid "Restart"
-msgstr "पुनरारंभ"
-
-#: src/gs-common.c:113
-msgid "Launch"
-msgstr "शुरू करें"
-
-#. TRANSLATORS: window title
-#: src/gs-common.c:238
-msgid "Install Software?"
-msgstr "सॉफ्टवेयर स्थापित करें?"
-
-#. TRANSLATORS: window title
-#: src/gs-common.c:240
-msgid "Install Third-Party Software?"
-msgstr "तृतीय-पक्ष सॉफ्टवेयर स्थापित करें?"
-
-#. TRANSLATORS: window title
-#: src/gs-common.c:244
-msgid "Enable Software Repository?"
-msgstr "सॉफ्टवेयर रिपॉजिटरी सक्षम करें?"
-
-#. TRANSLATORS: window title
-#. ask for confirmation
-#. TRANSLATORS: "Enable Third-Party Software Repository?" is
-#. * the confirmation dialog title
-#: src/gs-common.c:246 src/gs-repos-dialog.c:172
-msgid "Enable Third-Party Software Repository?"
-msgstr "तृतीय-पक्ष सॉफ्टवेयर रिपोजिटरी सक्षम करें?"
-
-#. TRANSLATORS: the replacements are as follows:
-#. * 1. App name, e.g. "Firefox"
-#. * 2. Software repository name, e.g. fedora-optional
-#.
-#: src/gs-common.c:258
-#, c-format
-msgid ""
-"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
-"source_software\">free and open source software</a>, and is provided by “%s”."
-msgstr ""
-"%s <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
-"source_software\">मुफ़्त और खुला स्रोत सॉफ्टवेयर</a> नहीं है, और “%s” द्वारा प्रदान "
-"किया जाता है।"
-
-#. TRANSLATORS: the replacements are as follows:
-#. * 1. App name, e.g. "Firefox"
-#. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:268
-#, c-format
-msgid "%s is provided by “%s”."
-msgstr "%s “%s” द्वारा प्रदान किया जाता है।"
-
-#: src/gs-common.c:277
-msgid "This software repository must be enabled to continue installation."
-msgstr "स्थापना जारी रखने के लिए इस सॉफ्टवेयर रिपॉजिटरी को सक्षम किया जाना चाहिए।"
-
-#. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:287
-#, c-format
-msgid "It may be illegal to install or use %s in some countries."
-msgstr "कुछ देशों में %s को स्थापित करना या उपयोग करना अवैध हो सकता है।"
-
-#. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:293
-msgid "It may be illegal to install or use this codec in some countries."
-msgstr "कुछ देशों में इस कोडेक को स्थापित करना या उपयोग करना अवैध हो सकता है।"
-
-#. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:307
-msgid "Don’t _Warn Again"
-msgstr "दोबारा चेतावनी न दें (_W)"
-
-#. TRANSLATORS: button text
-#: src/gs-common.c:316
-msgid "Enable and _Install"
-msgstr "सक्षम और स्थापित करें (_I)"
-
-#. TRANSLATORS: these are show_detailed_error messages from the
-#. * package manager no mortal is supposed to understand,
-#. * but google might know what they mean
-#: src/gs-common.c:523
-msgid "Detailed errors from the package manager follow:"
-msgstr "पैकेज मैनेजर की विस्तृत त्रुटियाँ इस प्रकार हैं:"
-
-#: src/gs-common.c:530 src/gs-common.c:667 src/gs-safety-context-dialog.ui:66
-#: src/gs-updates-paused-banner.c:77
-msgid "Details"
-msgstr "विवरण"
-
-#. TRANSLATORS: button text
-#: src/gs-common.c:579 src/gs-updates-paused-banner.c:64
-msgid "_Close"
-msgstr "बंद करें (_C)"
-
-#. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:748
-msgid "_Accept"
-msgstr "स्वीकारें (_A)"
-
-#. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:894
-msgid "An update has been installed"
-msgid_plural "Updates have been installed"
-msgstr[0] "एक अद्यतन स्थापित"
-msgstr[1] "अद्यतन स्थापित"
-
-#. TRANSLATORS: we've just uninstalled some apps
-#: src/gs-common.c:904
-msgid "An app has been uninstalled"
-msgid_plural "Apps have been uninstalled"
-msgstr[0] "एक ऐप अस्थापित"
-msgstr[1] "ऐप्स अस्थापित"
-
-#. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:910
-msgid "A restart is required for it to take effect"
-msgid_plural "A restart is required for them to take effect"
-msgstr[0] "इसे प्रभावी बनाने के लिए पुनरारंभ आवश्यक है"
-msgstr[1] "उन्हें प्रभावी बनाने के लिए पुनरारंभ आवश्यक है"
-
-#. TRANSLATORS: button text
-#: src/gs-common.c:917
-msgid "Not Now"
-msgstr "अभी नहीं"
-
-#. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:1013
-msgid "Just now"
-msgstr "बस अभी"
-
-#: src/gs-common.c:1015
-#, c-format
-msgid "%d minute ago"
-msgid_plural "%d minutes ago"
-msgstr[0] "%d मिनट पहले"
-msgstr[1] "%d मिनट पहले"
-
-#: src/gs-common.c:1019
-#, c-format
-msgid "%d hour ago"
-msgid_plural "%d hours ago"
-msgstr[0] "%d घंटा पहले"
-msgstr[1] "%d घंटे पहले"
-
-#: src/gs-common.c:1023
-#, c-format
-msgid "%d day ago"
-msgid_plural "%d days ago"
-msgstr[0] "%d दिन पहले"
-msgstr[1] "%d दिनों पहले"
-
-#: src/gs-common.c:1027
-#, c-format
-msgid "%d week ago"
-msgid_plural "%d weeks ago"
-msgstr[0] "%d हफ्ता पहले"
-msgstr[1] "%d हफ्तों पहले"
-
-#: src/gs-common.c:1031
-#, c-format
-msgid "%d month ago"
-msgid_plural "%d months ago"
-msgstr[0] "%d महीना पहले"
-msgstr[1] "%d महीने पहले"
-
-#: src/gs-common.c:1035
-#, c-format
-msgid "%d year ago"
-msgid_plural "%d years ago"
-msgstr[0] "%d वर्ष पहले"
-msgstr[1] "%d वर्षों पहले"
-
-#. Translators: This is to construct a disk size string consisting of the value and its unit, while
-#. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
-#. * Make sure you'll preserve the no break space between the values.
-#. * Example result: "13.0 MB"
-#: src/gs-common.c:1398
-#, c-format
-msgctxt "format-size"
-msgid "%s %s"
-msgstr "%s %s"
-
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:291
 msgid "An app"
@@ -2297,127 +2330,131 @@ msgstr "और दिखाएं (_S)"
 msgid "_Show Less"
 msgstr "कम दिखाएं (_S)"
 
-#: src/gs-details-page.c:385
+#: src/gs-details-page.c:390
 msgid "Removing…"
 msgstr "हटाया जा रहा है…"
 
-#: src/gs-details-page.c:400
+#: src/gs-details-page.c:405
 msgid "Requires restart to finish install"
 msgstr "स्थापना समाप्त करने के लिए पुनरारंभ आवश्यक है"
 
-#: src/gs-details-page.c:407
+#: src/gs-details-page.c:412
 msgid "Requires restart to finish remove"
 msgstr "हटाने को पूरा करने के लिए पुनरारंभ आवश्यक है"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:423
+#: src/gs-details-page.c:428
 msgid "Pending installation…"
 msgstr "लंबित स्थापना…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:429
+#: src/gs-details-page.c:434
 msgid "Pending update…"
 msgstr "लंबित अद्यतन…"
 
 #. Translators: This string is shown when downloading an app before install.
-#: src/gs-details-page.c:444 src/gs-upgrade-banner.c:180
+#: src/gs-details-page.c:449 src/gs-upgrade-banner.c:180
 msgid "Downloading…"
 msgstr "डाउनलोड किया जा रहा है…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:447
+#: src/gs-details-page.c:452
 msgid "Preparing…"
 msgstr "तैयार कर रहे हैं…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:450
+#: src/gs-details-page.c:455
 msgid "Uninstalling…"
 msgstr "अस्थापित किया जा रहा है…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:577
+#: src/gs-details-page.c:582
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "%s स्थापित नहीं है, लेकिन इसका डेटा अभी भी मौजूद है।"
 
-#: src/gs-details-page.c:1071 src/gs-toast.c:65
+#: src/gs-details-page.c:1076 src/gs-toast.c:65
 msgid "_Restart"
 msgstr "पुनरारंभ (_R)"
+
+#: src/gs-details-page.c:1081
+msgid "_Enable…"
+msgstr "सक्षम (_E)…"
 
 #. TRANSLATORS: this is a button that allows the apps to
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1095
+#: src/gs-details-page.c:1107
 msgid "_Install…"
 msgstr "स्थापित करें (_I)…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1308
+#: src/gs-details-page.c:1320
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s अमेरिकी अंग्रेजी में दिखाई देगा"
 
-#: src/gs-details-page.c:1316
+#: src/gs-details-page.c:1328
 msgid "This app will appear in US English"
 msgstr "यह ऐप अमेरिकी अंग्रेजी में दिखाई देगा"
 
-#: src/gs-details-page.c:1318
+#: src/gs-details-page.c:1330
 msgid "This software will appear in US English"
 msgstr "यह सॉफ्टवेयर अमेरिकी अंग्रेज़ी में दिखाई देगा"
 
-#: src/gs-details-page.c:1353 src/gs-details-page.ui:76
+#: src/gs-details-page.c:1365 src/gs-details-page.ui:76
 msgid "Help _Translate"
 msgstr "अनुवाद में सहायता करें (_T)"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1418
+#: src/gs-details-page.c:1430
 #, c-format
 msgid "Other Apps by %s"
 msgstr "%s द्वारा अन्य ऐप्स"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1454
+#: src/gs-details-page.c:1466
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "विकासकर्ता %s ने %s का स्वामित्व सिद्ध कर दिया है"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1457
+#: src/gs-details-page.c:1469
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "विकासकर्ता ने %s का स्वामित्व सिद्ध कर दिया है"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1820
+#: src/gs-details-page.c:1832
 msgid "You need internet access to write a review"
 msgstr "समीक्षा लिखने के लिए आपको इंटरनेट पहुँच की आवश्यकता है"
 
-#: src/gs-details-page.c:1921
+#: src/gs-details-page.c:1933
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr "इस ऐप को अब सुरक्षा सुधारों सहित अद्यतन नहीं मिल रहे हैं"
 
-#: src/gs-details-page.c:1922
+#: src/gs-details-page.c:1934
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "यह ऐप आपके वितरण द्वारा पहले से ही उपलब्ध कराया गया है और इसे प्रतिस्थापित नहीं किया "
 "जाना चाहिए।"
 
-#: src/gs-details-page.c:1923
+#: src/gs-details-page.c:1935
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
 msgstr ""
 "यह ऐप किसी वेबसाइट, कोड रिपॉजिटरी या मुद्दा ट्रैकर के लिए कोई लिंक प्रदान नहीं करता है।"
 
-#: src/gs-details-page.c:1925
+#: src/gs-details-page.c:1937
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr "इस सॉफ्टवेयर को अब सुरक्षा सुधारों सहित अद्यतन प्राप्त नहीं हो रहे हैं"
 
-#: src/gs-details-page.c:1926
+#: src/gs-details-page.c:1938
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2425,7 +2462,7 @@ msgstr ""
 "यह सॉफ्टवेयर आपके वितरण द्वारा पहले से ही प्रदान किया गया है और इसे प्रतिस्थापित नहीं "
 "किया जाना चाहिए।"
 
-#: src/gs-details-page.c:1927
+#: src/gs-details-page.c:1939
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2433,7 +2470,7 @@ msgstr ""
 "यह सॉफ्टवेयर किसी वेबसाइट, कोड रिपॉजिटरी या मुद्दा ट्रैकर के लिए कोई लिंक प्रदान नहीं "
 "करता है।"
 
-#: src/gs-details-page.c:2017 src/gs-details-page.c:2034
+#: src/gs-details-page.c:2029 src/gs-details-page.c:2046
 #, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
@@ -2442,7 +2479,7 @@ msgstr ""
 "सॉफ़्टवेयर “%s” के लिए जानकारी प्राप्त करने में विफल रहा और इस ऐप के लिए विवरण दिखाने में "
 "असमर्थ है।"
 
-#: src/gs-details-page.c:2379
+#: src/gs-details-page.c:2401
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "“%s” के लिए समीक्षा प्रस्तुत करने में विफल: %s"
@@ -2573,6 +2610,95 @@ msgstr "सभी समीक्षाएं"
 #: src/gs-details-page.ui:1214
 msgid "Unable to Show App Details"
 msgstr "ऐप विवरण दिखाने में असमर्थ"
+
+#: src/gs-dkms-dialog.c:67
+msgid "Failed to prepare reboot"
+msgstr "रीबूट तैयार करने में विफल"
+
+#: src/gs-dkms-dialog.c:93
+msgid "Unknown error"
+msgstr "अज्ञात त्रुटि"
+
+#: src/gs-dkms-dialog.c:99
+msgid "The key was not found"
+msgstr "कुंजी नहीं मिली"
+
+#: src/gs-dkms-dialog.c:102
+msgid "The key is not enrolled"
+msgstr "कुंजी नामांकित नहीं है"
+
+#: src/gs-dkms-dialog.ui:17 src/gs-dkms-dialog.ui:108
+msgid "MOK Enrollment Required"
+msgstr "MOK नामांकन आवश्यक"
+
+#: src/gs-dkms-dialog.ui:36
+msgid "_Next"
+msgstr "अगला (_N)"
+
+#: src/gs-dkms-dialog.ui:55
+msgid ""
+"This device has Secure Boot enabled. To allow new drivers to be enabled, a "
+"new machine owner key (MOK) must be enrolled. The process requires a "
+"password to be entered later in the process. Please note down the following "
+"password associated with the key:"
+msgstr ""
+"इस उपकरण में सिक्योर बूट सक्षम है। नये ड्राइवरों को सक्षम करने के लिए, एक नई मशीन ओनर की "
+"(MOK) नामांकित की जानी चाहिए। इस प्रक्रिया में बाद में पासवर्ड दर्ज करना आवश्यक होता "
+"है। कृपया कुंजी से संबद्ध निम्नलिखित पासवर्ड नोट कर लें:"
+
+#: src/gs-dkms-dialog.ui:83
+msgid "I have made a note of the MOK _password"
+msgstr "मैंने MOK पासवर्ड नोट कर लिया है (_p)"
+
+#: src/gs-dkms-dialog.ui:128
+msgid "_Restart & Enroll…"
+msgstr "पुनरारंभ और नामांकन (_R)…"
+
+#: src/gs-dkms-dialog.ui:149
+msgid "Setup Instructions: Please Read Carefully"
+msgstr "सेटअप निर्देश: कृपया ध्यानपूर्वक पढ़ें"
+
+#: src/gs-dkms-dialog.ui:166
+msgid ""
+"After restart, a device setup screen will be shown. To enable new drivers, "
+"proceed through the setup steps:"
+msgstr ""
+"पुनरारंभ के बाद, उपकरण सेटअप स्क्रीन दिखाई देगी। नए ड्राइवर सक्षम करने के लिए, सेटअप "
+"चरणों की पलना करें:"
+
+#: src/gs-dkms-dialog.ui:179
+msgid ""
+"• Select “Enroll MOK”\n"
+"• Select “Yes” to enroll keys\n"
+"• Enter the MOK password when prompted\n"
+"• Then select “Reboot”"
+msgstr ""
+"• “Enroll MOK” चुनें\n"
+"• कुंजियां नामांकन हेतु “Yes”  चुनें\n"
+"• संकेत मिलने पर MOK पासवर्ड दर्ज करें\n"
+"• फिर “Reboot” चुनें"
+
+#: src/gs-dkms-dialog.ui:211
+msgid "Security Implications"
+msgstr "सुरक्षा निहितार्थ"
+
+#: src/gs-dkms-dialog.ui:230
+msgid ""
+"After successful key enrollment, be aware that any future updates to the "
+"module or any other module will be implicitly trusted. All future updates "
+"will happen transparently with no interaction and or authorization."
+msgstr ""
+"सफल कुंजी नामांकन के बाद, ध्यान रखें कि मॉड्यूल या किसी अन्य मॉड्यूल के किसी भी भविष्य के "
+"अद्यतन पर पूरी तरह से भरोसा किया जाएगा। भविष्य में सभी अद्यतन बिना किसी संकेत या "
+"प्राधिकरण के होंगें।"
+
+#: src/gs-dkms-dialog.ui:244
+msgid ""
+"Further guidance can be found on the <a href=\"https://docs.fedoraproject."
+"org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
+msgstr ""
+"आगे का मार्गदर्शन <a href=\"https://docs.fedoraproject.org/en-US/quick-docs/mok-"
+"enrollment/\">दस्तावेज़ पृष्ठ</a> पर पाया जा सकता है।"
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:272
@@ -3927,7 +4053,7 @@ msgstr "रिपोर्ट (_R)"
 #. * review
 #: src/gs-review-row.c:258
 msgid "Remove Review?"
-msgstr "समीक्षा हटाएँ?"
+msgstr "समीक्षा हटाएं?"
 
 #. TRANSLATORS: we ask the user if they really want to do this
 #: src/gs-review-row.c:261
@@ -5549,6 +5675,29 @@ msgid ""
 msgstr ""
 "अद्यतन;नवीनीकरण;स्रोत;भंडार;प्राथमिकताएं;स्थापित करें;अस्थापित करें;प्रोग्राम;सॉफ्टवेयर;ऐप;"
 "स्टोर;"
+
+#. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
+#. This is the first part of a system notification.
+#: plugins/dkms/gs-plugin-dkms.c:176
+#, c-format
+msgid "%s Ready"
+msgstr "%s तैयार"
+
+#. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
+#. This is the second part of a system notification, which looks like:
+#.
+#. NVIDIA Linux Graphics Driver Ready
+#.
+#. The NVIDIA Linux Graphics Driver is ready to be enabled and staged for the next boot.
+#.
+#: plugins/dkms/gs-plugin-dkms.c:184
+#, c-format
+msgid "The %s is ready to be enabled and staged for the next boot."
+msgstr "%s सक्षम हेतु तैयार और अगले बूट के लिए मंचित।"
+
+#: plugins/dkms/gs-plugin-dkms.c:189
+msgid "Enable"
+msgstr "सक्षम करें"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
