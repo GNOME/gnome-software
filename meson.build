@@ -140,6 +140,7 @@ gtk = dependency('gtk4',
     ]
   )
 glib = dependency('glib-2.0', version : '>= 2.76.0')
+gsettings_desktop_schemas = dependency('gsettings-desktop-schemas', version : '>= 3.18.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.6.0')
 libm = cc.find_library('m', required: false)
 if get_option('soup2')
@@ -184,11 +185,6 @@ conf.set('HAVE_SYSPROF', libsysprof_capture_dep.found())
 if get_option('mogwai')
   mogwai_schedule_client = dependency('mogwai-schedule-client-0', version : '>= 0.2.0')
   conf.set('HAVE_MOGWAI', 1)
-endif
-
-gsettings_desktop_schemas = dependency('gsettings-desktop-schemas', version : '>= 3.18.0', required: get_option('gsettings_desktop_schemas'))
-if gsettings_desktop_schemas.found()
-  conf.set('HAVE_GSETTINGS_DESKTOP_SCHEMAS', 1)
 endif
 
 if get_option('polkit')
