@@ -13,8 +13,8 @@
 #include <config.h>
 
 #include <glib/gi18n-lib.h>
+#include <gdesktop-enums.h>
 #include <gnome-software.h>
-#include <gsettings-desktop-schemas/gdesktop-enums.h>
 #include <packagekit-glib2/packagekit.h>
 #include <string.h>
 
