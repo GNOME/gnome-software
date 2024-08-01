@@ -12,7 +12,6 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
-#include <gsettings-desktop-schemas/gdesktop-enums.h>
 #include <locale.h>
 
 #include "gs-update-monitor.h"

@@ -19,10 +19,6 @@
 
 #include "gs-common.h"
 
-#ifdef HAVE_GSETTINGS_DESKTOP_SCHEMAS
-#include <gdesktop-enums.h>
-#endif
-
 #include <langinfo.h>
 
 void
