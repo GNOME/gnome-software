@@ -234,7 +234,7 @@
 	<p>You can report the missing / incorrect metadata to the respective app’s bug tracker, so the app developer can fix it.</p>
       </item>
       <item>
-	<p>You can fix the the missing / incorrect metadata yourself. See the <em style="strong">How to</em> guide below on how to do that.</p>
+	<p>You can fix the missing / incorrect metadata yourself. See the <em style="strong">How to</em> guide below on how to do that.</p>
       </item>
     </list>
 
@@ -264,8 +264,8 @@
   <section id="how-to-fix-incorrect-safety-and-permissions-information">
     <title>How to fix incorrect safety and permissions information</title>
     <p>The safety and permissions information for an application comes from different sources depending on how the application is packaged. For traditionally packaged applications, for example in RPM or DEB format, there is no safety or permissions information available and nothing can be done to add it to an application.</p>
-    <p>For flatpak applications, the information comes from the application’s <link href="https://docs.flatpak.org/en/latest/manifests.html">flatpak manifest</link>, specifying what holes in the sandbox the application requires. Each of these holes typically contributes to lowering the displayed safety level of the application in gnome-software — moving it from ‘safe’ to ‘potentially unsafe’ to ‘unsafe’.</p>
-    <p>In order to improve the safety level of an application, its sandboxing must be made as tight as possible, by removing <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html">sandbox permissions</link> where they’re not needed, and using <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">portals</link> instead of sandbox permissions where possible. Use of portals does not lower the displayed safety level of an application in gnome-software.</p>
+    <p>For flatpak applications, the information comes from the application’s <link href="https://docs.flatpak.org/en/latest/manifests.html">flatpak manifest</link>, specifying what holes in the sandbox the application requires. Each of these holes typically contributes to lowering the displayed safety level of the application in <app>Software</app> — moving it from ‘safe’ to ‘potentially unsafe’ to ‘unsafe’.</p>
+    <p>In order to improve the safety level of an application, its sandboxing must be made as tight as possible, by removing <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html">sandbox permissions</link> where they’re not needed, and using <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">portals</link> instead of sandbox permissions where possible. Use of portals does not lower the displayed safety level of an application in <app>Software</app>.</p>
     <p>For example, if the application requests read/write access to the full file system (<code>--filesystem=host</code>), does it actually need that, or does it only need to access files in a few specific locations? If so, the <link href="https://docs.flatpak.org/en/latest/desktop-integration.html#portals">file portal</link> could be used, or more specific <link href="https://docs.flatpak.org/en/latest/sandbox-permissions.html#filesystem-access">file system permissions</link> could be specified.</p>
     <p>If the application works on Wayland, and only needs to work on X11 as a fallback, without using special X11 features, could it use <code>--socket=fallback-x11</code> rather than <code>--socket=x11</code>?</p>
     <p>Guidance about specific permissions, or other packaging formats, may be added here in future.</p>
