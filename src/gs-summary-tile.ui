@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.10 -->
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adwaita" version="1.0"/>
   <template class="GsSummaryTile" parent="GsAppTile">
     <property name="hexpand">True</property>
     <!-- This is the minimum (sic!) width of a tile when the GtkFlowBox parent container switches to 3 columns -->

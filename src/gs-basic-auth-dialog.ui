@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adwaita" version="1.0"/>
   <template class="GsBasicAuthDialog" parent="AdwWindow">
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
@@ -8,7 +10,8 @@
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar">
-            <property name="show_title_buttons">False</property>
+            <property name="show_start_title_buttons">False</property>
+            <property name="show_end_title_buttons">False</property>
             <child>
               <object class="GtkButton" id="cancel_button">
                 <property name="label" translatable="yes">_Cancel</property>
