@@ -133,10 +133,6 @@ if get_option('packagekit')
   gnome_software_dependencies += [packagekit]
 endif
 
-if gsettings_desktop_schemas.found()
-  gnome_software_dependencies += [gsettings_desktop_schemas]
-endif
-
 if get_option('mogwai')
   gnome_software_dependencies += [mogwai_schedule_client]
 endif
@@ -309,7 +305,6 @@ if get_option('tests')
       gio_unix,
       glib,
       gmodule,
-      gsettings_desktop_schemas,
       gtk,
       json_glib,
       libadwaita,

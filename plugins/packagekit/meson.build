@@ -3,6 +3,7 @@ cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
 deps = [
   plugin_libs,
   packagekit,
+  gsettings_desktop_schemas,
 ]
 
 if get_option('mogwai')
