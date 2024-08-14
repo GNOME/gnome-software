@@ -27,7 +27,7 @@
 
   <refnamediv>
     <refname>gnome-software</refname>
-    <refpurpose>Install apps</refpurpose>
+    <refpurpose>Install and update apps</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
@@ -40,9 +40,6 @@
   <refsect1>
     <title>Description</title>
     <para>
-      This manual page documents briefly the <command>gnome-software</command> command.
-    </para>
-    <para>
       <command>gnome-software</command> allows you to add and remove
       apps and update your system.
     </para>
@@ -52,18 +49,78 @@
     <title>Options</title>
     <variablelist>
       <varlistentry>
-        <term><option>-?</option>, <option>--help</option></term>
-        <listitem><para>Prints a short help text and exits.</para></listitem>
+        <term><option>--mode</option>=<replaceable>MODE</replaceable></term>
+        <listitem><para>Start gnome-software in the given mode. <replaceable>MODE</replaceable> can be <literal>updates</literal>, <literal>updated</literal>, <literal>installed</literal> or <literal>overview</literal>. The default mode is <literal>overview</literal>.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--search</option>=<replaceable>SEARCH</replaceable></term>
+        <listitem><para>Search for apps.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--details</option>=<replaceable>ID</replaceable></term>
+        <listitem><para>Show app details (using app ID).</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--details-pkg</option>=<replaceable>PKGNAME</replaceable></term>
+        <listitem><para>Show app details (using package name).</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--install</option>=<replaceable>ID</replaceable></term>
+        <listitem><para>Install the app (using app ID).</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--uninstall</option>=<replaceable>ID</replaceable></term>
+        <listitem><para>Uninstall the app (using app ID).</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--local-filename</option>=<replaceable>FILENAME</replaceable></term>
+        <listitem><para>Open a local package file.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--interaction</option>=<replaceable>INTERACTION</replaceable></term>
+        <listitem><para>The kind of interaction expected for this action: either <literal>none</literal>, <literal>notify</literal>, or <literal>full</literal>.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--show-metainfo</option>=<replaceable>FILENAME</replaceable></term>
+        <listitem><para>Show a local metainfo or appdata file.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--verbose</option></term>
+        <listitem><para>Enable verbose debugging output (from the running instance, if already running).</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--autoupdate</option></term>
+        <listitem><para>Install any pending updates in the background.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--prefs</option></term>
+        <listitem><para>Show preferences.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--quit</option></term>
+        <listitem><para>Quit the running instance.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--prefer-local</option></term>
+        <listitem><para>Prefer local file sources to AppStream.</para></listitem>
       </varlistentry>
       <varlistentry>
         <term><option>--version</option></term>
-        <listitem><para>Prints the program version and exits.</para></listitem>
+        <listitem><para>Print version and exit.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--mode</option> <replaceable>MODE</replaceable></term>
-        <listitem><para>Starts gnome-software in the given mode. <replaceable>MODE</replaceable> can be 'updates', 'updated', 'installed' or 'overview'. The default mode is 'overview'.</para></listitem>
+        <term><option>-?</option>, <option>--help</option></term>
+        <listitem><para>Display help and exit.</para></listitem>
       </varlistentry>
     </variablelist>
+    <para>Other standard GNOME options not listed here are also supported.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Bugs</title>
+    <para>The bug tracker can be reached by visiting the website
+    <ulink url="https://gitlab.gnome.org/GNOME/gnome-software/issues"/>.
+    </para>
   </refsect1>
 
   <refsect1>
