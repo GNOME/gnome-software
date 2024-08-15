@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-06-22 13:39+0000\n"
-"PO-Revision-Date: 2023-06-22 17:16+0200\n"
+"POT-Creation-Date: 2024-01-20 16:43+0000\n"
+"PO-Revision-Date: 2024-08-15 13:22+0200\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Poedit 3.3.1\n"
+"X-Generator: Poedit 3.4.4\n"
 "X-Project-Style: gnome\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21
@@ -74,7 +74,7 @@ msgstr "Panel s aktualizacemi"
 msgid "The update details"
 msgstr "Podrobnosti o aktualizaci"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2266
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2332
 #: src/gs-application.c:264
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
@@ -942,13 +942,13 @@ msgstr "Může opustit izolované prostředí a obejít další omezení"
 
 #. FIXME support app == NULL
 #. set window title
-#: src/gs-app-details-page.c:167
+#: src/gs-app-details-page.c:168
 msgid "Update Details"
 msgstr "Podrobnosti o aktualizaci"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:175
+#: src/gs-app-details-page.c:176
 msgid "No update description available."
 msgstr "Není k dispozici žádný popis aktualizace."
 
@@ -978,23 +978,23 @@ msgstr "Bez recenzí"
 msgid "Version History"
 msgstr "Historie verzí"
 
-#: src/gs-app-version-history-row.c:133
+#: src/gs-app-version-history-row.c:135
 #, c-format
 msgid "New in Version %s"
 msgstr "Novinky ve verzi %s"
 
-#: src/gs-app-version-history-row.c:140
+#: src/gs-app-version-history-row.c:142
 #, c-format
 msgid "Version %s"
 msgstr "Verze %s"
 
-#: src/gs-app-version-history-row.c:142
+#: src/gs-app-version-history-row.c:144
 msgid "No details for this release"
 msgstr "K tomuto vydání nejsou k dispozici žádné podrobnosti."
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:156 src/gs-review-row.c:67
+#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:67
 msgid "%e %B %Y"
 msgstr "%e. %B %Y"
 
@@ -1054,8 +1054,8 @@ msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
-"Pro tuto činnost je očekáván druh interakce: buď „none“ (nic), "
-"„notify“ (upozornit) nebo „full“ (úplná)"
+"Pro tuto činnost je očekáván druh interakce: buď „none“ (nic), „notify“ "
+"(upozornit) nebo „full“ (úplná)"
 
 #: src/gs-application.c:141
 msgid "Show a local metainfo or appdata file"
@@ -1468,13 +1468,13 @@ msgid "Installed"
 msgstr "Nainstalováno"
 
 #. Translators: The placeholder is an app name
-#: src/gs-app-translation-dialog.c:67
+#: src/gs-app-translation-dialog.c:68
 #, c-format
 msgid "Help Translate %s"
 msgstr "Pomozte přeložit %s"
 
 #. Translators: The placeholder is an app name
-#: src/gs-app-translation-dialog.c:70
+#: src/gs-app-translation-dialog.c:71
 #, c-format
 msgid ""
 "%s is designed, developed, and translated by an international community of "
@@ -1511,8 +1511,8 @@ msgstr "Vyžadováno přihlášení"
 #: src/gs-basic-auth-dialog.ui:12 src/gs-common.c:296 src/gs-common.c:697
 #: src/gs-details-page.ui:297 src/gs-page.c:416 src/gs-page.c:557
 #: src/gs-removal-dialog.ui:28 src/gs-repos-dialog.c:171
-#: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:18 src/gs-review-row.c:237
-#: src/gs-updates-page.c:847 src/gs-updates-page.c:864
+#: src/gs-repos-dialog.c:249 src/gs-review-dialog.ui:18 src/gs-review-row.c:241
+#: src/gs-updates-page.c:849 src/gs-updates-page.c:866
 msgid "_Cancel"
 msgstr "_Zrušit"
 
@@ -1551,13 +1551,13 @@ msgstr "Významné"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:41 src/gs-overview-page.ui:69
+#: src/gs-category-page.ui:41 src/gs-overview-page.ui:67
 msgid "Editor’s Choice"
 msgstr "Výběr od distribuce"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:69 src/gs-overview-page.ui:92
+#: src/gs-category-page.ui:69 src/gs-overview-page.ui:90
 msgid "New & Updated"
 msgstr "Nové a aktualizované"
 
@@ -2321,11 +2321,11 @@ msgid "Other Apps by %s"
 msgstr "Co dalšího nabízí %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1671
+#: src/gs-details-page.c:1674
 msgid "You need internet access to write a review"
 msgstr "Abyste mohli napsat recenzi, musíte být připojeni k Internetu"
 
-#: src/gs-details-page.c:1856 src/gs-details-page.c:1872
+#: src/gs-details-page.c:1859 src/gs-details-page.c:1875
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nelze najít „%s“"
@@ -2932,16 +2932,16 @@ msgstr "Webové aplikace"
 msgid "System Apps"
 msgstr "Systémové aplikace"
 
-#: src/gs-license-tile.c:97
+#: src/gs-license-tile.c:99
 msgid "Community Built"
 msgstr "Vybudováno komunitou"
 
-#: src/gs-license-tile.c:108 src/gs-license-tile.ui:98
+#: src/gs-license-tile.c:110 src/gs-license-tile.ui:98
 msgid "_Get Involved"
 msgstr "_Zapojit se"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
-#: src/gs-license-tile.c:115
+#: src/gs-license-tile.c:117
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
@@ -2955,7 +2955,7 @@ msgstr ""
 "Můžete přispět a pomoci jej ještě vylepšit."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-license-tile.c:122
+#: src/gs-license-tile.c:124
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
@@ -2968,15 +2968,15 @@ msgstr ""
 "\n"
 "Můžete přispět a pomoci jej ještě vylepšit."
 
-#: src/gs-license-tile.c:128
+#: src/gs-license-tile.c:130
 msgid "Proprietary"
 msgstr "Uzavřený software"
 
-#: src/gs-license-tile.c:134
+#: src/gs-license-tile.c:136
 msgid "_Learn More"
 msgstr "Zjistit _více"
 
-#: src/gs-license-tile.c:136
+#: src/gs-license-tile.c:138
 msgid ""
 "This software is not developed in the open, so only its developers know how "
 "it works. It may be insecure in ways that are hard to detect, and it may "
@@ -3078,14 +3078,14 @@ msgstr "Ponižování"
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:493
+#: src/gs-overview-page.c:492
 msgid "selected external sources"
 msgstr "vybraných externích zdrojů"
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:497
+#: src/gs-overview-page.c:496
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3099,23 +3099,23 @@ msgstr ""
 "Tyto repozitáře můžete později povolit v předvolbách Softwarových repozitářů."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:503
+#: src/gs-overview-page.c:502
 msgid "Enable Third Party Software Repositories?"
 msgstr "Povolit repozitáře softwaru třetích stran?"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:508
+#: src/gs-overview-page.c:507
 msgid "_Ignore"
 msgstr "_Ignorovat"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:510 src/gs-repos-dialog.c:173
+#: src/gs-overview-page.c:509 src/gs-repos-dialog.c:173
 msgid "_Enable"
 msgstr "_Povolit"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:1003
+#: src/gs-overview-page.c:1004
 msgid "Explore"
 msgstr "Procházet"
 
@@ -3124,11 +3124,11 @@ msgid "Overview page"
 msgstr "Stránka s přehledem"
 
 #. Translators: This is a heading for a list of categories.
-#: src/gs-overview-page.ui:143
+#: src/gs-overview-page.ui:141
 msgid "Other Categories"
 msgstr "Ostatní kategorie"
 
-#: src/gs-overview-page.ui:184
+#: src/gs-overview-page.ui:182
 msgid "No App Data Found"
 msgstr "O aplikaci nebyly nalezeny žádné informace"
 
@@ -3526,13 +3526,13 @@ msgid "Unknown"
 msgstr "anonym"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:222
+#: src/gs-review-row.c:226
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Můžete nahlásit recenze, které jsou urážlivé, sprosté nebo diskriminační."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:231
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3541,13 +3541,13 @@ msgstr "Po nahlášení bude recenze skryta, dokud ji nezkontroluje správce."
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:235
+#: src/gs-review-row.c:239
 msgid "Report Review?"
 msgstr "Nahlásit recenzi?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:240
+#: src/gs-review-row.c:244
 msgid "_Report"
 msgstr "_Nahlásit"
 
@@ -3858,36 +3858,36 @@ msgstr "Žádné snímky obrazovky"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:359 src/gs-screenshot-image.c:416
-#: src/gs-screenshot-image.c:620
+#: src/gs-screenshot-image.c:360 src/gs-screenshot-image.c:417
+#: src/gs-screenshot-image.c:623
 msgid "Screenshot not found"
 msgstr "Snímek nebyl nalezen"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:435
+#: src/gs-screenshot-image.c:438
 msgid "Failed to load image"
 msgstr "Selhalo načtení obrázku"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:648
+#: src/gs-screenshot-image.c:651
 msgid "Screenshot size not found"
 msgstr "Velikost snímku nebyla nalezena"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:730
+#: src/gs-screenshot-image.c:733
 msgid "Could not create cache"
 msgstr "Nelze vytvoři mezipaměť"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:744
+#: src/gs-screenshot-image.c:747
 msgid "Screenshot not valid"
 msgstr "Snímek není platný"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:794
+#: src/gs-screenshot-image.c:797
 msgid "Screenshot not available"
 msgstr "Snímek není k dispozici"
 
@@ -4792,24 +4792,24 @@ msgstr "Zkontrolovat aktualizace"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:568
+#: src/gs-updates-page.c:569
 #, c-format
 msgid "%s %s has stopped receiving critical software updates"
 msgstr "Distribuce %s %s přestala dostávat kritické aktualizace softwaru"
 
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
-#: src/gs-updates-page.c:574
+#: src/gs-updates-page.c:575
 msgid "Your operating system has stopped receiving critical software updates"
 msgstr "Váš operační systém přestal dostávat kritické aktualizace softwaru"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:843
+#: src/gs-updates-page.c:845
 msgid "Charges May Apply"
 msgstr "Možné zpoplatnění"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:845
+#: src/gs-updates-page.c:847
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -4818,30 +4818,30 @@ msgstr ""
 "operátorem."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:849
+#: src/gs-updates-page.c:851
 msgid "Check _Anyway"
 msgstr "_Přesto zkontrolovat"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:860
+#: src/gs-updates-page.c:862
 msgid "No Network"
 msgstr "Žádné připojení k síti"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:862
+#: src/gs-updates-page.c:864
 msgid "Internet access is required to check for updates."
 msgstr "Přístup k internetu je nezbytný pro kontrolu aktualizací."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:866
+#: src/gs-updates-page.c:868
 msgid "Network _Settings"
 msgstr "Nastavení _sítě"
 
-#: src/gs-updates-page.c:1235
+#: src/gs-updates-page.c:1237
 msgid "Check for updates"
 msgstr "Zkontrolovat aktualizace"
 
-#: src/gs-updates-page.c:1271
+#: src/gs-updates-page.c:1273
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Aktualizace"
@@ -5201,7 +5201,7 @@ msgstr "Přístup k souborovému systému v %s"
 msgid "Getting flatpak metadata for %s…"
 msgstr "Získávají se metadata Flatpak pro %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3611
+#: plugins/flatpak/gs-flatpak.c:3613
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Selhalo vylepšení doplňku „%s“: %s"
@@ -5270,7 +5270,7 @@ msgstr "Zařízení čeká na aplikování aktualizace"
 #. TRANSLATORS: as in, wired mains power for a laptop
 #: plugins/fwupd/gs-fwupd-app.c:95
 msgid "Device requires AC power to be connected"
-msgstr "Zařízení vyžaduje připojené napájení za sítě"
+msgstr "Zařízení vyžaduje připojené napájení ze sítě"
 
 #. TRANSLATORS: lid means "laptop top cover"
 #: plugins/fwupd/gs-fwupd-app.c:99
