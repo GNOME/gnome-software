@@ -187,66 +187,71 @@
                                         </child>
                                       </object>
                                     </child>
-                                    <child type="top">
-                                      <object class="GsUpdatesPausedBanner" id="updates_paused_banner"/>
-                                    </child>
                                     <property name="content">
-                                      <object class="AdwViewStack" id="stack_main">
-                                        <property name="hexpand">True</property>
-                                        <property name="vexpand">True</property>
-                                        <property name="hhomogeneous">False</property>
-                                        <property name="vhomogeneous">False</property>
-                                        <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                                      <object class="GtkBox">
+                                        <property name="orientation">vertical</property>
                                         <child>
-                                          <object class="AdwViewStackPage">
-                                            <property name="name">overview</property>
-                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show all available software.">_Explore</property>
-                                            <property name="use-underline">True</property>
-                                            <property name="icon-name">software-explore-symbolic</property>
-                                            <property name="child">
-                                              <object class="GsOverviewPage" id="overview_page">
-                                              </object>
-                                            </property>
-                                          </object>
+                                          <object class="GsUpdatesPausedBanner" id="updates_paused_banner"/>
                                         </child>
                                         <child>
-                                          <object class="AdwViewStackPage">
-                                            <property name="name">installed</property>
-                                            <!-- FIXME: Add mnemonics support when it’s supported in GTK (same for the other pages).
-                                                 See https://gitlab.gnome.org/GNOME/gtk/-/issues/3134 -->
-                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show only software which is already installed." context="List of installed apps">_Installed</property>
-                                            <property name="use-underline">True</property>
-                                            <property name="icon-name">software-installed-symbolic</property>
-                                            <property name="child">
-                                              <object class="GsInstalledPage" id="installed_page">
-                                                <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
+                                          <object class="AdwViewStack" id="stack_main">
+                                            <property name="hexpand">True</property>
+                                            <property name="vexpand">True</property>
+                                            <property name="hhomogeneous">False</property>
+                                            <property name="vhomogeneous">False</property>
+                                            <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                                            <child>
+                                              <object class="AdwViewStackPage">
+                                                <property name="name">overview</property>
+                                                <property name="title" translatable="yes" comments="Translators: A label for a button to show all available software.">_Explore</property>
+                                                <property name="use-underline">True</property>
+                                                <property name="icon-name">software-explore-symbolic</property>
+                                                <property name="child">
+                                                  <object class="GsOverviewPage" id="overview_page">
+                                                  </object>
+                                                </property>
                                               </object>
-                                            </property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="AdwViewStackPage">
-                                            <property name="name">search</property>
-                                            <property name="child">
-                                              <object class="GsSearchPage" id="search_page">
+                                            </child>
+                                            <child>
+                                              <object class="AdwViewStackPage">
+                                                <property name="name">installed</property>
+                                                <!-- FIXME: Add mnemonics support when it’s supported in GTK (same for the other pages).
+                                                     See https://gitlab.gnome.org/GNOME/gtk/-/issues/3134 -->
+                                                <property name="title" translatable="yes" comments="Translators: A label for a button to show only software which is already installed." context="List of installed apps">_Installed</property>
+                                                <property name="use-underline">True</property>
+                                                <property name="icon-name">software-installed-symbolic</property>
+                                                <property name="child">
+                                                  <object class="GsInstalledPage" id="installed_page">
+                                                    <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
+                                                  </object>
+                                                </property>
                                               </object>
-                                            </property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="AdwViewStackPage">
-                                            <property name="name">updates</property>
-                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install." context="Header bar button for list of apps to be updated">_Updates</property>
-                                            <property name="use-underline">True</property>
-                                            <property name="icon-name">software-updates-symbolic</property>
-                                            <property name="badge-number" bind-source="updates_page" bind-property="counter" bind-flags="sync-create"/>
-                                            <property name="visible" bind-source="updates_page" bind-property="visible" bind-flags="sync-create"/>
-                                            <property name="child">
-                                              <object class="GsUpdatesPage" id="updates_page">
-                                                <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
-                                                <signal name="notify::counter" handler="updates_page_notify_counter_cb"/>
+                                            </child>
+                                            <child>
+                                              <object class="AdwViewStackPage">
+                                                <property name="name">search</property>
+                                                <property name="child">
+                                                  <object class="GsSearchPage" id="search_page">
+                                                  </object>
+                                                </property>
                                               </object>
-                                            </property>
+                                            </child>
+                                            <child>
+                                              <object class="AdwViewStackPage">
+                                                <property name="name">updates</property>
+                                                <property name="title" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install." context="Header bar button for list of apps to be updated">_Updates</property>
+                                                <property name="use-underline">True</property>
+                                                <property name="icon-name">software-updates-symbolic</property>
+                                                <property name="badge-number" bind-source="updates_page" bind-property="counter" bind-flags="sync-create"/>
+                                                <property name="visible" bind-source="updates_page" bind-property="visible" bind-flags="sync-create"/>
+                                                <property name="child">
+                                                  <object class="GsUpdatesPage" id="updates_page">
+                                                    <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
+                                                    <signal name="notify::counter" handler="updates_page_notify_counter_cb"/>
+                                                  </object>
+                                                </property>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>
