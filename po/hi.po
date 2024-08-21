@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-07-15 07:29+0000\n"
+"POT-Creation-Date: 2024-08-13 19:13+0000\n"
 "PO-Revision-Date: 2024-07-15 18:37+0530\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <indlinux-hindi@lists.sourceforge.net>\n"
@@ -72,7 +72,7 @@ msgid "The update details"
 msgstr "अद्यतन विवरण"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2546
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2564
 #: src/gs-application.c:263
 msgid "The GNOME Project"
 msgstr "गनोम परियोजना"
@@ -882,13 +882,13 @@ msgstr "डाउनलोड किया जा रहा है"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:311 src/gs-details-page.c:1059
-#: src/gs-details-page.c:1093 src/gs-details-page.ui:243 src/gs-page.c:425
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:311 src/gs-details-page.c:1060
+#: src/gs-details-page.c:1095 src/gs-details-page.ui:243 src/gs-page.c:425
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "स्थापित करें (_I)"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1175
+#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1180
 msgid "_Uninstall…"
 msgstr "अस्थापित करें (_U)…"
 
@@ -2375,11 +2375,11 @@ msgstr "अस्थापित किया जा रहा है…"
 msgid "%s is not installed, but it still has data present."
 msgstr "%s स्थापित नहीं है, लेकिन इसका डेटा अभी भी मौजूद है।"
 
-#: src/gs-details-page.c:1076 src/gs-toast.c:65
+#: src/gs-details-page.c:1077 src/gs-toast.c:65
 msgid "_Restart"
 msgstr "पुनरारंभ (_R)"
 
-#: src/gs-details-page.c:1081
+#: src/gs-details-page.c:1083
 msgid "_Enable…"
 msgstr "सक्षम (_E)…"
 
@@ -2387,74 +2387,74 @@ msgstr "सक्षम (_E)…"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1107
+#: src/gs-details-page.c:1109
 msgid "_Install…"
 msgstr "स्थापित करें (_I)…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1320
+#: src/gs-details-page.c:1325
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s अमेरिकी अंग्रेजी में दिखाई देगा"
 
-#: src/gs-details-page.c:1328
+#: src/gs-details-page.c:1333
 msgid "This app will appear in US English"
 msgstr "यह ऐप अमेरिकी अंग्रेजी में दिखाई देगा"
 
-#: src/gs-details-page.c:1330
+#: src/gs-details-page.c:1335
 msgid "This software will appear in US English"
 msgstr "यह सॉफ्टवेयर अमेरिकी अंग्रेज़ी में दिखाई देगा"
 
-#: src/gs-details-page.c:1365 src/gs-details-page.ui:76
+#: src/gs-details-page.c:1370 src/gs-details-page.ui:76
 msgid "Help _Translate"
 msgstr "अनुवाद में सहायता करें (_T)"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1430
+#: src/gs-details-page.c:1435
 #, c-format
 msgid "Other Apps by %s"
 msgstr "%s द्वारा अन्य ऐप्स"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1466
+#: src/gs-details-page.c:1471
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "विकासकर्ता %s ने %s का स्वामित्व सिद्ध कर दिया है"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1469
+#: src/gs-details-page.c:1474
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "विकासकर्ता ने %s का स्वामित्व सिद्ध कर दिया है"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1832
+#: src/gs-details-page.c:1837
 msgid "You need internet access to write a review"
 msgstr "समीक्षा लिखने के लिए आपको इंटरनेट पहुँच की आवश्यकता है"
 
-#: src/gs-details-page.c:1933
+#: src/gs-details-page.c:1938
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr "इस ऐप को अब सुरक्षा सुधारों सहित अद्यतन नहीं मिल रहे हैं"
 
-#: src/gs-details-page.c:1934
+#: src/gs-details-page.c:1939
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "यह ऐप आपके वितरण द्वारा पहले से ही उपलब्ध कराया गया है और इसे प्रतिस्थापित नहीं किया "
 "जाना चाहिए।"
 
-#: src/gs-details-page.c:1935
+#: src/gs-details-page.c:1940
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
 msgstr ""
 "यह ऐप किसी वेबसाइट, कोड रिपॉजिटरी या मुद्दा ट्रैकर के लिए कोई लिंक प्रदान नहीं करता है।"
 
-#: src/gs-details-page.c:1937
+#: src/gs-details-page.c:1942
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr "इस सॉफ्टवेयर को अब सुरक्षा सुधारों सहित अद्यतन प्राप्त नहीं हो रहे हैं"
 
-#: src/gs-details-page.c:1938
+#: src/gs-details-page.c:1943
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2462,7 +2462,7 @@ msgstr ""
 "यह सॉफ्टवेयर आपके वितरण द्वारा पहले से ही प्रदान किया गया है और इसे प्रतिस्थापित नहीं "
 "किया जाना चाहिए।"
 
-#: src/gs-details-page.c:1939
+#: src/gs-details-page.c:1944
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2470,7 +2470,7 @@ msgstr ""
 "यह सॉफ्टवेयर किसी वेबसाइट, कोड रिपॉजिटरी या मुद्दा ट्रैकर के लिए कोई लिंक प्रदान नहीं "
 "करता है।"
 
-#: src/gs-details-page.c:2029 src/gs-details-page.c:2046
+#: src/gs-details-page.c:2034 src/gs-details-page.c:2051
 #, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
@@ -2479,7 +2479,7 @@ msgstr ""
 "सॉफ़्टवेयर “%s” के लिए जानकारी प्राप्त करने में विफल रहा और इस ऐप के लिए विवरण दिखाने में "
 "असमर्थ है।"
 
-#: src/gs-details-page.c:2401
+#: src/gs-details-page.c:2406
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "“%s” के लिए समीक्षा प्रस्तुत करने में विफल: %s"
@@ -3672,51 +3672,7 @@ msgstr "सॉफ्टवेयर अद्यतन"
 msgid "More Information"
 msgstr "अधिक जानकारी"
 
-#: src/gs-prefs-dialog.ui:23
-msgid "_Automatic"
-msgstr "स्वचालित (_A)"
-
 #: src/gs-prefs-dialog.ui:24
-msgid "Automatically check for and download updates"
-msgstr "स्वचालित रूप से अद्यतनों की जांच करें और डाउनलोड करें"
-
-#: src/gs-prefs-dialog.ui:38
-msgid "_Manual"
-msgstr "हस्तचालित (_M)"
-
-#: src/gs-prefs-dialog.ui:39
-msgid "Checking for and downloading updates must be done manually"
-msgstr "अद्यतनों की जांच करना और उन्हें डाउनलोड करना हस्तचालित रूप से किया जाना चाहिए"
-
-#: src/gs-prefs-dialog.ui:57
-msgid "Automatic Update _Notifications"
-msgstr "स्वचालित अद्यतन अधिसूचना (_N)"
-
-#: src/gs-prefs-dialog.ui:58
-msgid "Notify when updates have been automatically installed"
-msgstr "अद्यतन स्वचालित रूप से स्थापित होने पर सूचित करें"
-
-#: src/gs-prefs-dialog.ui:67
-msgid "Content Filters"
-msgstr "सामग्री फिल्टर"
-
-#: src/gs-prefs-dialog.ui:70
-msgid "Only Show _Free Software"
-msgstr "केवल मुफ़्त सॉफ्टवेयर दिखाएं (_F)"
-
-#: src/gs-prefs-dialog.ui:71
-msgid "Hide proprietary software when browsing and searching"
-msgstr "देखते और खोजते समय मालिकाना सॉफ्टवेयर छिपाएं"
-
-#: src/gs-prefs-dialog.ui:78
-msgid "Only Show _Verified Developers"
-msgstr "केवल सत्यापित विकासकर्ता दिखाएं (_V)"
-
-#: src/gs-prefs-dialog.ui:79
-msgid "Show only apps from developers whose identity has been verified"
-msgstr "केवल उन विकासकर्ता के ऐप्स दिखाएं जिनकी पहचान सत्यापित हो चुकी है"
-
-#: src/gs-prefs-dialog.ui:99
 msgid ""
 "Checking for and downloading updates uses data and power. Automatic update "
 "features are therefore paused when on metered network connections and when "
@@ -3725,6 +3681,50 @@ msgstr ""
 "अद्यतनों की जांच करना और डाउनलोड करना डेटा और पावर का उपयोग करता है। इसलिए "
 "मीटरीकृत नेटवर्क कनेक्शन पर और पावर सेवर चालू होने पर स्वचालित अद्यतन सुविधाएं रोक दी "
 "जाती हैं।"
+
+#: src/gs-prefs-dialog.ui:40
+msgid "_Automatic"
+msgstr "स्वचालित (_A)"
+
+#: src/gs-prefs-dialog.ui:41
+msgid "Automatically check for and download updates"
+msgstr "स्वचालित रूप से अद्यतनों की जांच करें और डाउनलोड करें"
+
+#: src/gs-prefs-dialog.ui:55
+msgid "_Manual"
+msgstr "हस्तचालित (_M)"
+
+#: src/gs-prefs-dialog.ui:56
+msgid "Checking for and downloading updates must be done manually"
+msgstr "अद्यतनों की जांच करना और उन्हें डाउनलोड करना हस्तचालित रूप से किया जाना चाहिए"
+
+#: src/gs-prefs-dialog.ui:74
+msgid "Automatic Update _Notifications"
+msgstr "स्वचालित अद्यतन अधिसूचना (_N)"
+
+#: src/gs-prefs-dialog.ui:75
+msgid "Notify when updates have been automatically installed"
+msgstr "अद्यतन स्वचालित रूप से स्थापित होने पर सूचित करें"
+
+#: src/gs-prefs-dialog.ui:84
+msgid "Content Filters"
+msgstr "सामग्री फिल्टर"
+
+#: src/gs-prefs-dialog.ui:87
+msgid "Only Show _Free Software"
+msgstr "केवल मुफ़्त सॉफ्टवेयर दिखाएं (_F)"
+
+#: src/gs-prefs-dialog.ui:88
+msgid "Hide proprietary software when browsing and searching"
+msgstr "देखते और खोजते समय मालिकाना सॉफ्टवेयर छिपाएं"
+
+#: src/gs-prefs-dialog.ui:95
+msgid "Only Show _Verified Developers"
+msgstr "केवल सत्यापित विकासकर्ता दिखाएं (_V)"
+
+#: src/gs-prefs-dialog.ui:96
+msgid "Show only apps from developers whose identity has been verified"
+msgstr "केवल उन विकासकर्ता के ऐप्स दिखाएं जिनकी पहचान सत्यापित हो चुकी है"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -3897,7 +3897,7 @@ msgctxt "repo-row"
 msgid "%s • %s"
 msgstr "%s • %s"
 
-#: src/gs-repo-row.c:400 src/gs-review-row.ui:130
+#: src/gs-repo-row.c:400
 msgid "Remove"
 msgstr "हटाएं"
 
@@ -4071,6 +4071,10 @@ msgstr "समीक्षा पसंद करें"
 #: src/gs-review-row.ui:117
 msgid "Report…"
 msgstr "रिपोर्ट…"
+
+#: src/gs-review-row.ui:130
+msgid "Remove…"
+msgstr "हटाएं…"
 
 #: src/gs-safety-context-dialog.c:154
 msgid ""
@@ -6248,9 +6252,6 @@ msgstr "स्नैप एक सार्वभौमिक लिनक्स
 
 #~ msgid "No"
 #~ msgstr "नहीं"
-
-#~ msgid "Remove…"
-#~ msgstr "हटाएं…"
 
 #~ msgid "_app settings"
 #~ msgstr "ऐप सेटिंग्स (_a)"
