@@ -3931,7 +3931,7 @@ file_to_app_resolve_cb (GObject      *source_object,
 			gs_app_add_source_id (data->app, pk_package_get_id (pkg));
 			gs_plugin_packagekit_set_package_name (data->app, pkg);
 			if (!is_higher_version &&
-			    as_vercmp_simple (pk_package_get_version (pkg), app_version) < 0)
+			    gs_utils_compare_versions (pk_package_get_version (pkg), app_version) < 0)
 				is_higher_version = TRUE;
 		}
 

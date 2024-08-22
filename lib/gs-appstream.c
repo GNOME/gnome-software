@@ -613,7 +613,7 @@ gs_appstream_refine_app_relation (GsApp           *app,
 			    g_strcmp0 (xb_node_get_attr (child, "type"), "id") == 0 &&
 			    g_strcmp0 (xb_node_get_text (child), "org.gnome.Software.desktop") == 0) {
 				/* is compatible */
-				gint rc = as_vercmp_simple (xb_node_get_attr (child, "version"), PACKAGE_VERSION);
+				gint rc = gs_utils_compare_versions (xb_node_get_attr (child, "version"), PACKAGE_VERSION);
 				if (rc > 0) {
 					g_set_error (error,
 						     GS_PLUGIN_ERROR,
@@ -1380,7 +1380,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 							g_autoptr(XbNode) issues_node = NULL;
 
 							/* use the first release description, then skip the currently installed version and all below it */
-							if (i != 0 && version != NULL && as_vercmp_simple (version, release_version) >= 0)
+							if (i != 0 && version != NULL && gs_utils_compare_versions (version, release_version) >= 0)
 								continue;
 
 							gs_appstream_find_description_and_issues_nodes (release, &description_node, &issues_node);

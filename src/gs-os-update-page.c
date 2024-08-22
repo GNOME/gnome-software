@@ -167,7 +167,7 @@ is_downgrade (const gchar *evr1,
 	if (evr1 == NULL || evr2 == NULL)
 		return FALSE;
 
-	rc = as_vercmp (evr1, evr2, AS_VERCMP_FLAG_IGNORE_EPOCH);
+	rc = gs_utils_compare_versions (evr1, evr2);
 	if (rc != 0)
 		return rc > 0;
 

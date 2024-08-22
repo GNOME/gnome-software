@@ -148,8 +148,8 @@ app_sort_version_cb (GsApp    *app1,
                      GsApp    *app2,
                      gpointer  user_data)
 {
-	return as_vercmp_simple (gs_app_get_version (app1),
-				 gs_app_get_version (app2));
+	return gs_utils_compare_versions (gs_app_get_version (app1),
+					  gs_app_get_version (app2));
 }
 
 static void plugin_list_distro_upgrades_cb (GObject      *source_object,
