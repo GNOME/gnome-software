@@ -930,16 +930,14 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				/* we only really expect/support OARS 1.0 and 1.1 */
 				if (g_strcmp0 (content_rating_kind, "oars-1.0") == 0 ||
 				    g_strcmp0 (content_rating_kind, "oars-1.1") == 0) {
-					g_autoptr(AsContentRating) cr = NULL;
+					g_autoptr(AsContentRating) cr = as_content_rating_new ();
 					g_autoptr(XbNode) cr_child = NULL;
 					g_autoptr(XbNode) cr_next = NULL;
+
+					as_content_rating_set_kind (cr, content_rating_kind);
 					for (cr_child = xb_node_get_child (child); cr_child != NULL; g_object_unref (cr_child), cr_child = g_steal_pointer (&cr_next)) {
 						cr_next = xb_node_get_next (cr_child);
 						if (g_strcmp0 (xb_node_get_element (cr_child), "content_attribute") == 0) {
-							if (cr == NULL) {
-								cr = as_content_rating_new ();
-								as_content_rating_set_kind (cr, content_rating_kind);
-							}
 							as_content_rating_add_attribute (cr,
 											 xb_node_get_attr (cr_child, "id"),
 											 as_content_rating_value_from_string (xb_node_get_text (cr_child)));
