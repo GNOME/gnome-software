@@ -39,8 +39,11 @@
     <media type="image" src="figures/app-screenshot.png" style="floatend floatright" mime="image/png" its:translate="no"/>
     <p><app>Software</app> displays the screenshots on the details page for an application. This typically should include screenshots of various windows / dialogs of the application, so the user would get a quick grasp of the application’s features, look and feel etc.</p>
     <p>When more than one screenshot is present in the application’s metainfo file, <app>Software</app> will show the screenshots in a carousel.</p>
-    <p>In cases when the application’s metainfo file doesn’t contain any screenshot, then a missing image icon will be displayed:</p>
+    <p>In cases when the application’s metainfo file doesn’t contain any screenshot, then a placeholder icon as below with <code>No Screenshots</code> will be displayed:</p>
     <media type="image" src="figures/scalable/symbolic/image-missing-symbolic.svg" width="96" mime="image/svg" its:translate="no"/>
+    <note>
+      <p>Placeholder icon might look different if you're using a custom icon theme.</p>
+    </note>
     <p>Screenshots might become outdated as the application’s UI changes. So, even if <app>Software</app> shows screenshots for an app, it’s important to check if these screenshots are up-to-date or outdated.</p>
     <p>You can improve app screenshot information:</p>
     <list>
