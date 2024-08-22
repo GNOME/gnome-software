@@ -69,14 +69,12 @@
       </item>
     </list>
 
-    <p>This shows the app context bar for the <app>Software</app> app:</p>
-    <p xmlns:its="http://www.w3.org/2005/11/its" its:locNote="Translators: Refer below steps to generate this image:
+    <p xmlns:its="http://www.w3.org/2005/11/its" its:locNote="Translators: Refer below steps to localize 'figures/app-context-bar.png' image:
 							      1. Run 'gnome-software --details=org.gnome.Software.desktop' in console (as normal user).
-							      2. This should launch the gnome-software app and automatically switch to 'GNOME Software' app's details page.
+							      2. This should launch the Software app and automatically switch to Software app's details page.
 							      3. It may take some time if some background tasks are running. Wait for the app's details page to load.
-							      4. Scroll down to take the screenshot of the app context bar.">
-      <media type="image" src="figures/app-context-bar.png" mime="image/png"/>
-    </p>
+							      4. Scroll down to take the screenshot of the app context bar.">This shows the app context bar for the <app>Software</app> app:</p>
+    <p><media type="image" src="figures/app-context-bar.png" mime="image/png" its:translate="yes"/></p>
 
 
     <p xmlns:its="http://www.w3.org/2005/11/its" its:locNote="Translators: This text needs to be adjusted for RTL languages as the tiles will be reversed in the UI.">The tiles are displayed in the order listed above (starting with <code>Storage</code> tile on the left).</p>
@@ -248,7 +246,7 @@
     <p>The screenshot information for an application is stored in the <link href="https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-screenshots"><code>&lt;screenshots&gt;</code></link> element within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
     <p>Recommended number of screenshots for an app is between 5 to 10. Screenshots should ideally be in the PNG format with 16:9 aspect ratio and minimum width of 620 pixels.</p>
     <p>For example, here are the screenshot entries for the <app>Software</app> app:</p>
-    <code><![CDATA[
+    <code mime="application/xml"><![CDATA[
 <screenshots>
   <screenshot type="default">
     <image>https://gitlab.gnome.org/GNOME/gnome-software/raw/HEAD/data/metainfo/ss-overview.png</image>
@@ -304,9 +302,9 @@
     <p>If the SPDX expression is a single license, or an ‘or’ combination of multiple licenses, which are all <link href="https://spdx.org/licenses/">FSF or OSI approved</link>, the application is considered ‘free software’ and the license tile says so. Otherwise, it’s considered ‘proprietary’.</p>
     <p>If an application is being displayed as ‘proprietary’ when you think it shouldn’t be, it’s likely that the <code>&lt;project_license&gt;</code> element includes the documentation license for the project. Remove it.</p>
     <p><link href="https://gitlab.gnome.org/GNOME/meld/-/issues/579">For example</link>, change the license metadata from:</p>
-    <code><![CDATA[<project_license>GPL-2.0+ and CC-BY-SA-3.0</project_license>]]></code>
+    <code mime="application/xml"><![CDATA[<project_license>GPL-2.0+ and CC-BY-SA-3.0</project_license>]]></code>
     <p>to</p>
-    <code><![CDATA[<project_license>GPL-2.0+</project_license>]]></code>
+    <code mime="application/xml"><![CDATA[<project_license>GPL-2.0+</project_license>]]></code>
     <p>Further reading:</p>
     <list>
       <item>
@@ -323,7 +321,7 @@
     <p>The links for an application are stored as <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url"><code>&lt;url&gt;</code></link> elements within the application’s <code>&lt;component&gt;</code> in its metainfo file.</p>
     <p>Add as many of the link types documented in the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-url">appstream specification</link> as are available for the application. If no suitable page exists for a given link type, it doesn’t have to be included.</p>
     <p>For example, here are the resource links for the <app>Software</app> app:</p>
-    <code><![CDATA[
+    <code mime="application/xml"><![CDATA[
 <url type="bugtracker">https://gitlab.gnome.org/GNOME/gnome-software/-/issues</url>
 <url type="contact">https://discourse.gnome.org/tag/gnome-software</url>
 <url type="contribute">https://welcome.gnome.org/app/Software/</url>
@@ -337,7 +335,7 @@
     <title>How to set the carousel tile background color</title>
     <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is ignored, <app>Software</app> chooses the better color for the theme on its own.</p>
     <p>There is left, for backward compatibility, the possibility to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
-    <code><![CDATA[
+    <code mime="application/xml"><![CDATA[
 <custom>
   <value key="GnomeSoftware::key-colors">[(124, 53, 77), (99, 16, 0)]</value>
 </custom>]]></code>
