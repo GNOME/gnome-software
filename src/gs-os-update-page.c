@@ -216,6 +216,31 @@ is_downgrade (const gchar *evr1,
 
 	/* compare with epoch */
 	rc = as_vercmp (evr1, evr2, AS_VERCMP_FLAG_NONE);
+	if (rc > 0) {
+		/* the version can sometimes end with a non-version string, common
+		   in both strings, which can confuse the comparison, thus try without
+		   the suffix, if such exists and is not a number. For example:
+		   "2:2.1-61.fc40" and "2:2.1-61.1.fc40" is reported as a downgrade,
+		   but without the common suffix ".fc40" it's correctly reported
+		   as an update. */
+		guint lenv1, lenv2;
+
+		lenv1 = strlen (evr1);
+		lenv2 = strlen (evr2);
+
+		for (guint i = 0; i < lenv1 && i < lenv2; i++) {
+			if (evr1[lenv1 - i - 1] != evr2[lenv2 - i - 1] ||
+			    evr1[lenv1 - i - 1] == '.' ||
+			    evr1[lenv1 - i - 1] == '-') {
+				if (i > 0 && !g_ascii_isdigit (evr1[lenv1 - i])) {
+					g_autofree gchar *cut_v1 = g_strndup (evr1, lenv1 - i - 1);
+					g_autofree gchar *cut_v2 = g_strndup (evr2, lenv2 - i - 1);
+					rc = as_vercmp (cut_v1, cut_v2, AS_VERCMP_FLAG_NONE);
+				}
+				break;
+			}
+		}
+	}
 	if (rc != 0)
 		return rc > 0;
 
