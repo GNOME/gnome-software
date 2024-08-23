@@ -338,6 +338,12 @@
   <section id="how-to-set-the-carousel-tile-background-colour">
     <title>How to set the carousel tile background color</title>
     <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is ignored, <app>Software</app> chooses the better color for the theme on its own.</p>
+    <p>For example, here are some branding entries:</p>
+    <code mime="application/xml"><![CDATA[
+<branding>
+  <color type="primary" scheme_preference="light">#ff00ff</color>
+  <color type="primary" scheme_preference="dark">#993d3d</color>
+</branding>]]></code>
     <p>There is left, for backward compatibility, the possibility to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
     <code mime="application/xml"><![CDATA[
 <custom>
