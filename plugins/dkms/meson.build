@@ -4,10 +4,6 @@
 shared_module(
   'gs_plugin_dkms',
   sources : 'gs-plugin-dkms.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : ['-DG_LOG_DOMAIN="GsPluginDkms"'],

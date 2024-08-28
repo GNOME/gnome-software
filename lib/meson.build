@@ -96,6 +96,7 @@ libgnomesoftware_enums = gnome.mkenums_simple('gs-enums',
 
 libgnomesoftware_include_directories = [
   include_directories('..'),
+  include_directories('.'),
 ]
 
 libgnomesoftware = library(

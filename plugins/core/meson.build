@@ -3,10 +3,6 @@ cargs = ['-DG_LOG_DOMAIN="GsPlugin"']
 shared_module(
   'gs_plugin_generic-updates',
   sources : 'gs-plugin-generic-updates.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -16,10 +12,6 @@ shared_module(
 shared_module(
   'gs_plugin_provenance',
   sources : 'gs-plugin-provenance.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -29,10 +21,6 @@ shared_module(
 shared_module(
   'gs_plugin_provenance-license',
   sources : 'gs-plugin-provenance-license.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -43,10 +31,6 @@ shared_module(
 shared_module(
   'gs_plugin_icons',
   sources : 'gs-plugin-icons.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -57,10 +41,6 @@ shared_module(
   'gs_plugin_appstream',
   sources : [
     'gs-plugin-appstream.c'
-  ],
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
   ],
   install : true,
   install_dir: plugin_dir,
@@ -74,10 +54,6 @@ shared_module(
 shared_module(
   'gs_plugin_hardcoded-blocklist',
   sources : 'gs-plugin-hardcoded-blocklist.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -87,10 +63,6 @@ shared_module(
 shared_module(
   'gs_plugin_os-release',
   sources : 'gs-plugin-os-release.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -105,10 +77,6 @@ if get_option('tests')
     compiled_schemas,
     sources : [
       'gs-self-test.c',
-    ],
-    include_directories : [
-      include_directories('../..'),
-      include_directories('../../lib'),
     ],
     dependencies : [
       plugin_libs,

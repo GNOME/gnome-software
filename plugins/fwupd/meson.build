@@ -15,10 +15,6 @@ shared_module(
     'gs-fwupd-app.c',
     'gs-plugin-fwupd.c',
   ],
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -42,10 +38,6 @@ if get_option('tests')
     compiled_schemas,
     sources : [
       'gs-self-test.c'
-    ],
-    include_directories : [
-      include_directories('../..'),
-      include_directories('../../lib'),
     ],
     dependencies : deps,
     c_args : cargs,

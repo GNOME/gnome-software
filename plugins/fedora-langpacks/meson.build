@@ -3,10 +3,6 @@ cargs = ['-DG_LOG_DOMAIN="GsPluginFedoraLangpacks"']
 shared_module(
   'gs_plugin_fedora-langpacks',
   sources : 'gs-plugin-fedora-langpacks.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -20,10 +16,6 @@ if get_option('tests')
     compiled_schemas,
     sources : [
       'gs-self-test.c',
-    ],
-    include_directories : [
-      include_directories('../..'),
-      include_directories('../../lib'),
     ],
     dependencies : [
       plugin_libs,
