@@ -102,10 +102,12 @@ foreach arg: test_link_args
     global_link_args += arg
   endif
 endforeach
-add_global_link_arguments(
-  global_link_args,
-  language: 'c'
-)
+if not meson.is_subproject()
+  add_global_link_arguments(
+    global_link_args,
+    language: 'c'
+  )
+endif
 
 # Needed for PATH_MAX and symlink()
 add_project_arguments('-D_XOPEN_SOURCE=700', language : 'c')
