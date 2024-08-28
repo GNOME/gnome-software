@@ -6,7 +6,7 @@
 # Bernd Homuth <dev@hmt.im>, 2015.
 # Paul Seyfert <pseyfert@mathphys.fsk.uni-heidelberg.de>, 2015, 2017.
 # Wolfgang Stöggl <c72578@yahoo.de>, 2016-2017, 2020.
-# Tim Sabsch <tim@sabsch.com>, 2017-2023.
+# Tim Sabsch <tim@sabsch.com>, 2017-2024.
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2013, 2016-2018, 2020-2021.
 # Philipp Kiemle <philipp.kiemle@gmail.com>, 2020-2024.
 # Jürgen Benvenuti <gastornis@posteo.org>, 2022-2024.
@@ -16,9 +16,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-08-18 22:36+0000\n"
-"PO-Revision-Date: 2024-08-22 23:32+0200\n"
-"Last-Translator: Jürgen Benvenuti <gastornis@posteo.org>\n"
+"POT-Creation-Date: 2024-08-27 19:25+0000\n"
+"PO-Revision-Date: 2024-08-28 21:47+0200\n"
+"Last-Translator: Tim Sabsch <tim@sabsch.com>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -86,37 +86,47 @@ msgstr "Details zur Aktualisierung"
 msgid "The GNOME Project"
 msgstr "Das GNOME-Projekt"
 
+# https://rpmfusion.org/Howto/NVIDIA#Akmods
+# https://github.com/rhboot/shim
 #: data/org.gnome.software.dkms-helper.policy.in.in:11
 msgid "Test akmods key in Shim UEFI"
-msgstr ""
+msgstr "akmods-Schlüssel in Shim-UEFI testen"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:12
 msgid "Authentication is required to test akmods key in Shim UEFI"
 msgstr ""
+"Zum Testen eines akmods-Schlüssels in Shim-UEFI ist eine Authentifizierung "
+"erforderlich"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:22
 msgid "Enroll akmods key to Shim UEFI"
-msgstr ""
+msgstr "akmods-Schlüssel für Shim-UEFI einrichten"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:23
 msgid "Authentication is required to enroll akmods key to Shim UEFI"
 msgstr ""
+"Zur Einrichtung eines akmods-Schlüssels in Shim-UEFI ist eine "
+"Authentifizierung erforderlich"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:33
 msgid "Test DKMS key in Shim UEFI"
-msgstr ""
+msgstr "DKMS-Schlüssel in Shim-UEFI testen"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:34
 msgid "Authentication is required to test DKMS key in Shim UEFI"
 msgstr ""
+"Zum Testen eines DKMS-Schlüssels in Shim-UEFI ist eine Authentifizierung "
+"erforderlich"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:44
 msgid "Enroll DKMS key to Shim UEFI"
-msgstr ""
+msgstr "DKMS-Schlüssel für Shim-UEFI einrichten"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:45
 msgid "Authentication is required to enroll DKMS key to Shim UEFI"
 msgstr ""
+"Zur Einrichtung eines DKMS-Schlüssels in Shim-UEFI ist eine "
+"Authentifizierung erforderlich"
 
 #: data/org.gnome.software.external-appstream.policy.in.in:11
 msgid "Install an appstream file into a system location"
@@ -1748,10 +1758,8 @@ msgstr "%s installiert"
 #. TRANSLATORS: an app has been installed, but
 #. * needs a reboot to complete the installation
 #: src/gs-common.c:69 src/gs-common.c:92
-#, fuzzy
-#| msgid "A restart is required for the changes to take effect."
 msgid "A restart is required for the changes to take effect"
-msgstr "Ein Neustart ist erforderlich, damit die Änderungen wirksam werden."
+msgstr "Ein Neustart ist erforderlich, damit die Änderungen wirksam werden"
 
 #. TRANSLATORS: this is the body of a notification that an app
 #. * has been successfully installed
@@ -1897,13 +1905,10 @@ msgstr[1] "Anwendungen wurden deinstalliert"
 
 #. TRANSLATORS: the new apps will not be run until we restart
 #: src/gs-common.c:906
-#, fuzzy
-#| msgid "A restart is required for it to take effect."
-#| msgid_plural "A restart is required for them to take effect."
 msgid "A restart is required for it to take effect"
 msgid_plural "A restart is required for them to take effect"
-msgstr[0] "Ein Neustart ist erforderlich, damit die Änderung wirksam wird."
-msgstr[1] "Ein Neustart ist erforderlich, damit die Änderungen wirksam werden."
+msgstr[0] "Ein Neustart ist erforderlich, damit die Änderung wirksam wird"
+msgstr[1] "Ein Neustart ist erforderlich, damit die Änderungen wirksam werden"
 
 #. TRANSLATORS: button text
 #: src/gs-common.c:913
@@ -2566,6 +2571,8 @@ msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
 "details for this app."
 msgstr ""
+"Software konnte keine Informationen für »%s« abrufen und kann keine Details "
+"für diese Anwendung anzeigen."
 
 #: src/gs-details-page.c:2406
 #, c-format
@@ -2701,10 +2708,8 @@ msgid "Unable to Show App Details"
 msgstr "Anwendungsdetails können nicht angezeigt werden"
 
 #: src/gs-dkms-dialog.c:67
-#, fuzzy
-#| msgid "Failed to save file"
 msgid "Failed to prepare reboot"
-msgstr "Datei konnte nicht gespeichert werden"
+msgstr "Neustart konnte nicht vorbereitet werden"
 
 #: src/gs-dkms-dialog.c:93
 msgid "Unknown error"
@@ -2716,20 +2721,17 @@ msgstr "Der Schlüssel wurde nicht gefunden"
 
 #: src/gs-dkms-dialog.c:102
 msgid "The key is not enrolled"
-msgstr ""
+msgstr "Der Schlüssel ist nicht eingerichtet"
 
 #: src/gs-dkms-dialog.ui:17 src/gs-dkms-dialog.ui:108
-#, fuzzy
-#| msgid "Mouse Required"
 msgid "MOK Enrollment Required"
-msgstr "Maus erforderlich"
+msgstr "MOK-Einrichtung erforderlich"
 
 #: src/gs-dkms-dialog.ui:36
-#, fuzzy
-#| msgid "Next"
 msgid "_Next"
-msgstr "Nächste"
+msgstr "_Weiter"
 
+# Secure Boot übersetzen? - ts
 #: src/gs-dkms-dialog.ui:55
 msgid ""
 "This device has Secure Boot enabled. To allow new drivers to be enabled, a "
@@ -2737,28 +2739,31 @@ msgid ""
 "password to be entered later in the process. Please note down the following "
 "password associated with the key:"
 msgstr ""
+"Bei diesem Gerät ist Secure Boot aktiviert. Damit neue Treiber aktiviert "
+"werden können, muss ein neuer Maschinenbesitzerschlüssel (»Machine Owner "
+"Key«, MOK) registriert werden. Für diesen Vorgang ist ein Passwort "
+"erforderlich, das später eingegeben werden muss. Bitte notieren Sie sich das "
+"folgende Passwort, das mit dem Schlüssel verbunden ist:"
 
 #: src/gs-dkms-dialog.ui:83
-#, fuzzy
-#| msgid "I have forgotten my password"
 msgid "I have made a note of the MOK _password"
-msgstr "Ich habe mein Passwort vergessen"
+msgstr "Ich habe mir mein MOK-_Passwort notiert"
 
 #: src/gs-dkms-dialog.ui:128
-#, fuzzy
-#| msgid "_Restart Now…"
 msgid "_Restart & Enroll…"
-msgstr "Jetzt _neu starten …"
+msgstr "_Neu starten und einrichten …"
 
 #: src/gs-dkms-dialog.ui:149
 msgid "Setup Instructions: Please Read Carefully"
-msgstr ""
+msgstr "Anweisungen zur Einrichtung: Bitte sorgfältig lesen"
 
 #: src/gs-dkms-dialog.ui:166
 msgid ""
 "After restart, a device setup screen will be shown. To enable new drivers, "
 "proceed through the setup steps:"
 msgstr ""
+"Nach dem Neustart wird ein Bildschirm zur Geräteeinrichtung angezeigt. Um "
+"neue Treiber zu aktivieren, führen Sie die Einrichtungsschritte durch:"
 
 #: src/gs-dkms-dialog.ui:179
 msgid ""
@@ -2767,12 +2772,14 @@ msgid ""
 "• Enter the MOK password when prompted\n"
 "• Then select “Reboot”"
 msgstr ""
+"• Wählen Sie »MOK einrichten«.\n"
+"• Wählen Sie »Ja«, um Schlüssel einzurichten\n"
+"• Geben Sie das MOK-Passwort ein, wenn Sie dazu aufgefordert werden\n"
+"• Wählen Sie dann »Neustart«"
 
 #: src/gs-dkms-dialog.ui:211
-#, fuzzy
-#| msgid "Search for applications"
 msgid "Security Implications"
-msgstr "Nach Anwendungen suchen"
+msgstr "Sicherheitsimplikationen"
 
 #: src/gs-dkms-dialog.ui:230
 msgid ""
@@ -2780,12 +2787,18 @@ msgid ""
 "module or any other module will be implicitly trusted. All future updates "
 "will happen transparently with no interaction and or authorization."
 msgstr ""
+"Bedenken Sie, dass nach erfolgreicher Schlüsseleinrichtung allen zukünftigen "
+"Aktualisierungen des Moduls oder eines anderen Moduls automatisch vertraut "
+"wird. Alle künftigen Aktualisierungen erfolgen transparent und ohne "
+"Interaktion oder Legitimierung."
 
 #: src/gs-dkms-dialog.ui:244
 msgid ""
 "Further guidance can be found on the <a href=\"https://docs.fedoraproject."
 "org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
 msgstr ""
+"Weitere Informationen finden Sie in der <a href=\"https://docs.fedoraproject."
+"org/de/quick-docs/mok-enrollment/\">Dokumentation</a>."
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:272
@@ -3514,7 +3527,7 @@ msgstr ""
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
 msgid "Refreshing Data"
-msgstr ""
+msgstr "Daten aktualisieren"
 
 #: src/gs-loading-page.ui:7
 msgid "Loading page"
@@ -3708,31 +3721,23 @@ msgstr ""
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
 #: src/gs-page.c:601
-#, fuzzy, c-format
-#| msgid ""
-#| "It will not be possible to use %s after removal. App data and settings "
-#| "will be kept on disk, to allow restoring the app in the future."
+#, c-format
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use "
 "it will appear in a different font."
 msgstr ""
-"Es wird nach dem Entfernen nicht möglich sein, %s zu verwenden. "
-"Anwendungsdaten und -einstellungen verbleiben auf dem Datenträger, um eine "
-"zukünftige Wiederherstellung der Anwendung zu ermöglichen."
+"Es wird nach dem Entfernen nicht möglich sein, %s zu verwenden. Dokumente, "
+"die es verwenden, werden in einer anderen Schriftart erscheinen."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
 #: src/gs-page.c:612
-#, fuzzy, c-format
-#| msgid ""
-#| "It will not be possible to use %s after removal. App data and settings "
-#| "will be kept on disk, to allow restoring the app in the future."
+#, c-format
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media "
 "files will no longer be playable."
 msgstr ""
-"Es wird nach dem Entfernen nicht möglich sein, %s zu verwenden. "
-"Anwendungsdaten und -einstellungen verbleiben auf dem Datenträger, um eine "
-"zukünftige Wiederherstellung der Anwendung zu ermöglichen."
+"Es wird nach dem Entfernen nicht möglich sein, %s zu verwenden. Dadurch "
+"können einige Mediendateien möglicherweise nicht mehr abgespielt werden."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
 #: src/gs-page.c:623
@@ -3740,6 +3745,8 @@ msgstr ""
 msgid ""
 "Hardware which depends on %s may no longer function correctly after removal."
 msgstr ""
+"Hardware, die von %s abhängt, funktioniert nach der Entfernung "
+"möglicherweise nicht mehr richtig."
 
 #: src/gs-page.c:641
 msgid "App Settings & Data"
@@ -3904,10 +3911,8 @@ msgid "Enable New Repositories"
 msgstr "Neue Softwarequellen aktivieren"
 
 #: src/gs-repos-dialog.c:612
-#, fuzzy
-#| msgid "Turn on new repositories when they are added."
 msgid "Turn on new repositories when they are added"
-msgstr "Neue Softwarequellen werden aktiviert, sobald sie hinzugefügt werden."
+msgstr "Neue Softwarequellen werden aktiviert, sobald sie hinzugefügt werden"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
@@ -4546,6 +4551,8 @@ msgid ""
 "This app uses an outdated version of the software platform (SDK) and might "
 "contain bugs or security vulnerabilities which will not be fixed."
 msgstr ""
+"Diese Anwendung verwendet eine veraltete Version der Softwareplattform (SDK) "
+"und kann Fehler oder Sicherheitslücken enthalten, die nicht behoben werden."
 
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:46
@@ -4649,10 +4656,9 @@ msgstr "Herunterladen von Firmware-Aktualisierungen nicht möglich"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
 #: src/gs-shell.c:1269
-#, fuzzy, c-format
-#| msgid "Unable to download firmware updates"
+#, c-format
 msgid "Unable to download firmware updates from %s"
-msgstr "Herunterladen von Firmware-Aktualisierungen nicht möglich"
+msgstr "Herunterladen von Firmware-Aktualisierungen von %s nicht möglich"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
@@ -5077,10 +5083,9 @@ msgstr "Deinstallation nicht möglich: Stromanschluss notwendig"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1750
-#, fuzzy, c-format
-#| msgid "Unable to uninstall: device must be plugged in"
+#, c-format
 msgid "Unable to uninstall %s: device must be plugged in"
-msgstr "Deinstallation nicht möglich: Stromanschluss notwendig"
+msgstr "Deinstallation von %s nicht möglich: Stromanschluss notwendig"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1754
@@ -5270,13 +5275,10 @@ msgstr "Unbekannt"
 
 #. TRANSLATORS: "<a href='#'>" and "</a>" should not be touched.
 #: src/gs-storage-context-dialog.c:262
-#, fuzzy
-#| msgid ""
-#| "Cached data can be cleared from the <a href=\"dummy\">_app settings</a>."
 msgid "Cached data can be cleared from the <a href='#'>_app settings</a>"
 msgstr ""
 "Zwischengespeicherte Daten können über die <a "
-"href=\"dummy\">_Anwendungseinstellungen</a> gelöscht werden."
+"href=\"#\">_Anwendungseinstellungen</a> gelöscht werden"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:6
@@ -5421,16 +5423,13 @@ msgstr "Beinhaltet %s, %s und %s."
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
 #: src/gs-update-monitor.c:703
 msgid "System Has Reached End of Life"
-msgstr ""
+msgstr "Das System wird nicht länger unterstützt (»End of Life«, EOL)"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
 #: src/gs-update-monitor.c:705
-#, fuzzy
-#| msgid "Upgrade to continue receiving security updates."
 msgid "Upgrade to continue receiving updates"
 msgstr ""
-"Aktualisieren Sie Ihr System, um weiterhin Sicherheitsaktualisierungen zu "
-"erhalten."
+"Aktualisieren Sie Ihr System, um weiterhin Aktualisierungen zu erhalten"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
@@ -5451,10 +5450,8 @@ msgstr "Software-Aktualisierungen fehlgeschlagen"
 
 #. TRANSLATORS: message when we offline updates have failed
 #: src/gs-update-monitor.c:1213
-#, fuzzy
-#| msgid "System updates are now installed"
 msgid "Prepared updates were not installed"
-msgstr "Systemaktualisierungen sind jetzt installiert"
+msgstr "Vorbereitete Aktualisierungen wurden nicht installiert"
 
 #: src/gs-update-monitor.c:1214
 msgid "Show Details"
@@ -5721,18 +5718,13 @@ msgid "Software updates paused"
 msgstr "Software-Aktualisierungen pausiert"
 
 #: src/gs-updates-paused-banner.c:84
-#, fuzzy
-#| msgid "Network connection is metered - software updates paused"
 msgid "Network connection is metered — software updates paused"
-msgstr "Netzwerkverbindung ist getaktet - Software-Aktualisierungen pausiert"
+msgstr "Netzwerkverbindung ist getaktet — Software-Aktualisierungen pausiert"
 
 #: src/gs-updates-paused-banner.c:86
-#, fuzzy
-#| msgid ""
-#| "Network connection prohibits large downloads - software updates paused"
 msgid "Network connection prohibits large downloads — software updates paused"
 msgstr ""
-"Netzwerkverbindung verhindert große Downloads - Software-Aktualisierungen "
+"Netzwerkverbindung verhindert große Downloads — Software-Aktualisierungen "
 "pausiert"
 
 #: src/gs-updates-paused-banner.c:88
@@ -5869,7 +5861,7 @@ msgstr ""
 #: plugins/dkms/gs-plugin-dkms.c:176
 #, c-format
 msgid "%s Ready"
-msgstr ""
+msgstr "%s bereit"
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the second part of a system notification, which looks like:
@@ -5881,7 +5873,7 @@ msgstr ""
 #: plugins/dkms/gs-plugin-dkms.c:184
 #, c-format
 msgid "The %s is ready to be enabled and staged for the next boot."
-msgstr ""
+msgstr "%s ist bereit und wird beim nächsten Neustart aktiviert."
 
 #: plugins/dkms/gs-plugin-dkms.c:189
 msgid "Enable"
@@ -6421,6 +6413,8 @@ msgstr "Pakete"
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1433
 msgid "Failed to wait on transaction end before download: "
 msgstr ""
+"Es konnte vor dem Herunterladen nicht auf das Transaktionsende gewartet "
+"werden: "
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1440
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1453
