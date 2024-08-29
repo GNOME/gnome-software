@@ -19,11 +19,11 @@ help_media = [
   'figures/scalable/license-unknown.svg',
   'figures/scalable/links.svg',
   'figures/scalable/no-links.svg',
-  'figures/scalable/no-screenshots.svg',
   'figures/scalable/symbolic/computer-fail-symbolic.svg',
   'figures/scalable/symbolic/contact-symbolic.svg',
   'figures/scalable/symbolic/donate-symbolic.svg',
   'figures/scalable/symbolic/help-link-symbolic.svg',
+  'figures/scalable/symbolic/image-missing-symbolic.svg',
   'figures/scalable/symbolic/translations-symbolic.svg',
   'figures/scalable/symbolic/webpage-symbolic.svg',
 ]

@@ -39,9 +39,11 @@
     <media type="image" src="figures/app-screenshot.png" style="floatend floatright" mime="image/png" its:translate="no"/>
     <p><app>Software</app> displays the screenshots on the details page for an application. This typically should include screenshots of various windows / dialogs of the application, so the user would get a quick grasp of the application’s features, look and feel etc.</p>
     <p>When more than one screenshot is present in the application’s metainfo file, <app>Software</app> will show the screenshots in a carousel.</p>
-    <p>In cases when the application’s metainfo file doesn’t contain any screenshot, then a missing image icon will be displayed:
-        <media type="image" src="figures/scalable/no-screenshots.svg" mime="image/svg" its:translate="no"/>
-    </p>
+    <p>In cases when the application’s metainfo file doesn’t contain any screenshot, then a placeholder icon as below with <code>No Screenshots</code> will be displayed:</p>
+    <media type="image" src="figures/scalable/symbolic/image-missing-symbolic.svg" width="96" mime="image/svg" its:translate="no"/>
+    <note>
+      <p>Placeholder icon might look different if you're using a custom icon theme.</p>
+    </note>
     <p>Screenshots might become outdated as the application’s UI changes. So, even if <app>Software</app> shows screenshots for an app, it’s important to check if these screenshots are up-to-date or outdated.</p>
     <p>You can improve app screenshot information:</p>
     <list>
@@ -200,7 +202,7 @@
   <section id="carousel-tile">
     <title>Carousel tile</title>
     <media type="image" src="figures/carousel.png" style="floatend floatright" mime="image/png" its:translate="no"/>
-    <p>Applications which are featured by <app>Software</app> are displayed in a carousel at the top of the main window. Each carousel tile has a background color which is automatically extracted from the application’s icon. Sometimes this background color is not quite right for the application and needs to be specified explicitly by the application developer.</p>
+    <p>Applications which are featured by <app>Software</app> are displayed in a carousel at the top of the main window as shown here. Each carousel tile has a background color which is automatically extracted from the application’s icon. Sometimes this background color is not quite right for the application and needs to be specified explicitly by the application developer.</p>
     <p>The set of applications which are featured is decided by the Linux distribution maintainers.</p>
     <p>You can improve the carousel tile:</p>
     <list>
@@ -215,7 +217,9 @@
     <p>The metadata used to specify what hardware a piece of software requires, what ages of user it is suitable for, and factors which contribute to how safe it might be to install, all come from the metainfo file for that software.</p>
     <p>The metainfo file is an XML file. Its file format is specified in the <link href="https://www.freedesktop.org/software/appstream/docs/">AppStream specification</link>.</p>
     <p>See the <link href="https://gitlab.gnome.org/GNOME/nautilus/-/blob/main/data/org.gnome.Nautilus.metainfo.xml.in.in">metainfo file for GNOME Files app</link>.</p>
-    <p>Note: ‘appdata’ is the older term for ‘metainfo’.</p>
+    <note style="tip">
+      <p><em>appdata</em> is the older term for <em>metainfo</em>.</p>
+    </note>
   </section>
 
   <section id="what-happens-if-metadata-is-missing">
@@ -333,7 +337,16 @@
 
   <section id="how-to-set-the-carousel-tile-background-colour">
     <title>How to set the carousel tile background color</title>
-    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors. Note the <code>scheme_preference</code> attribute is ignored, <app>Software</app> chooses the better color for the theme on its own.</p>
+    <p>The carousel tile background color is normally extracted automatically from the application’s icon. If that color is unsatisfactory, however, it can be overridden by using the <link href="https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-branding">appstream’s <code>&lt;branding/&gt;</code> element</link> with declared colors (since 47.x series). The advantage is that more clients can use the colors.</p>
+    <p>For example, here are some branding entries:</p>
+    <code mime="application/xml"><![CDATA[
+<branding>
+  <color type="primary" scheme_preference="light">#ff00ff</color>
+  <color type="primary" scheme_preference="dark">#993d3d</color>
+</branding>]]></code>
+    <note>
+      <p>Note the <code>scheme_preference</code> attribute is ignored, <app>Software</app> chooses the better color for the theme on its own.</p>
+    </note>
     <p>There is left, for backward compatibility, the possibility to add the following XML to the application’s metainfo <code>&lt;component&gt;</code> element:</p>
     <code mime="application/xml"><![CDATA[
 <custom>
@@ -362,7 +375,7 @@
   <section id="how-to-test-carousel-tile-background-colour-changes">
     <title>How to test carousel tile background color changes</title>
     <p>Modify the metainfo file for your application, and then run <app>Software</app> with:</p>
-    <code><![CDATA[gnome-software --show-metainfo=/path/to/app.metainfo.xml,icon=/path/to/app/icon.png]]></code>
+    <p><cmd>gnome-software --show-metainfo=<var>/path/to/app.metainfo.xml</var>,icon=<var>/path/to/app/icon.png</var></cmd></p>
     <p>The details page for your application will be shown. If you navigate back to the overview page of <app>Software</app>, your application will be the only one in the ‘featured’ carousel.</p>
   </section>
 
