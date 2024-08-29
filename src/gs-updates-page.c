@@ -1321,6 +1321,19 @@ gs_updates_page_dispose (GObject *object)
 }
 
 static void
+gs_updates_page_unmap (GtkWidget *widget)
+{
+	GsUpdatesPage *self = GS_UPDATES_PAGE (widget);
+
+	/* Don’t need to update the ‘last checked’ label while the UI isn’t
+	 * visible. The timer will be reinstated by update_ui_state() when the
+	 * UI is next shown. */
+	gs_updates_page_remove_last_checked_timeout (self);
+
+	GTK_WIDGET_CLASS (gs_updates_page_parent_class)->unmap (widget);
+}
+
+static void
 gs_updates_page_class_init (GsUpdatesPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -1330,6 +1343,8 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	object_class->get_property = gs_updates_page_get_property;
 	object_class->set_property = gs_updates_page_set_property;
 	object_class->dispose = gs_updates_page_dispose;
+
+	widget_class->unmap = gs_updates_page_unmap;
 
 	page_class->switch_to = gs_updates_page_switch_to;
 	page_class->switch_from = gs_updates_page_switch_from;
