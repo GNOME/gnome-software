@@ -223,15 +223,21 @@ app_refresh_idle (gpointer user_data)
 }
 
 static void
-app_state_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
+schedule_app_refresh (GsUpgradeBanner *self)
 {
 	g_idle_add (app_refresh_idle, g_object_ref (self));
 }
 
 static void
+app_state_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
+{
+	schedule_app_refresh (self);
+}
+
+static void
 app_progress_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
 {
-	g_idle_add (app_refresh_idle, g_object_ref (self));
+	schedule_app_refresh (self);
 }
 
 static void
