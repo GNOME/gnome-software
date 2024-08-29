@@ -5,11 +5,7 @@ cargs += ['-DLOCALPLUGINDIR_DUMMY="' + meson.current_build_dir() + '/../dummy"']
 
 shared_module(
   'gs_plugin_modalias',
-sources : 'gs-plugin-modalias.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
+  sources : 'gs-plugin-modalias.c',
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -22,10 +18,6 @@ if get_option('tests')
     compiled_schemas,
     sources : [
       'gs-self-test.c'
-    ],
-    include_directories : [
-      include_directories('../..'),
-      include_directories('../../lib'),
     ],
     dependencies : [
       plugin_libs,

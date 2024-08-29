@@ -12,10 +12,6 @@ shared_module(
   'gs_plugin_rpm-ostree',
   rpmostree_generated,
   sources : 'gs-plugin-rpm-ostree.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   install_rpath: join_paths(rpm_ostree.get_variable('libdir'), 'rpm-ostree'),

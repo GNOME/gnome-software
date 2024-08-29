@@ -14,10 +14,6 @@ shared_module(
   'gs_plugin_epiphany',
   epiphany_generated,
   sources : 'gs-plugin-epiphany.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -70,10 +66,6 @@ if get_option('tests')
       dynamic_launcher_portal_iface_c,
       dynamic_launcher_portal_iface_h,
       epiphany_generated,
-    ],
-    include_directories : [
-      include_directories('../..'),
-      include_directories('../../lib'),
     ],
     dependencies : [
       plugin_libs,
