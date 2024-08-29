@@ -43,6 +43,17 @@ _pulse_cb (gpointer user_data)
 }
 
 static void
+stop_progress_pulse (GsLoadingPage *self)
+{
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
+
+	if (priv->progress_pulse_id != 0) {
+		g_source_remove (priv->progress_pulse_id);
+		priv->progress_pulse_id = 0;
+	}
+}
+
+static void
 gs_loading_page_job_progress_cb (GsPluginJobRefreshMetadata *plugin_job,
                                  guint                       progress_percent,
                                  gpointer                    user_data)
@@ -56,10 +67,7 @@ gs_loading_page_job_progress_cb (GsPluginJobRefreshMetadata *plugin_job,
 				   _("Refreshing Data"));
 
 	/* update progressbar */
-	if (priv->progress_pulse_id != 0) {
-		g_source_remove (priv->progress_pulse_id);
-		priv->progress_pulse_id = 0;
-	}
+	stop_progress_pulse (self);
 
 	if (progress_percent == G_MAXUINT) {
 		priv->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
@@ -74,7 +82,6 @@ gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer 
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GsLoadingPage *self = GS_LOADING_PAGE (user_data);
-	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 	g_autoptr(GError) error = NULL;
 
 	/* no longer care */
@@ -86,10 +93,7 @@ gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer 
 	}
 
 	/* no more pulsing */
-	if (priv->progress_pulse_id != 0) {
-		g_source_remove (priv->progress_pulse_id);
-		priv->progress_pulse_id = 0;
-	}
+	stop_progress_pulse (self);
 
 	/* UI is good to go */
 	g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
@@ -165,10 +169,7 @@ gs_loading_page_dispose (GObject *object)
 	GsLoadingPage *self = GS_LOADING_PAGE (object);
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 
-	if (priv->progress_pulse_id != 0) {
-		g_source_remove (priv->progress_pulse_id);
-		priv->progress_pulse_id = 0;
-	}
+	stop_progress_pulse (self);
 
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->cancellable);
