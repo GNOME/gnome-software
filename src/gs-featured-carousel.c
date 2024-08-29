@@ -128,6 +128,13 @@ start_rotation_timer (GsFeaturedCarousel *self)
 }
 
 static void
+maybe_start_rotation_timer (GsFeaturedCarousel *self)
+{
+	if (self->apps != NULL && gs_app_list_length (self->apps) > 0)
+		start_rotation_timer (self);
+}
+
+static void
 stop_rotation_timer (GsFeaturedCarousel *self)
 {
 	if (self->rotation_timer_id != 0) {
@@ -399,8 +406,7 @@ gs_featured_carousel_set_apps (GsFeaturedCarousel *self,
 	gtk_widget_set_visible (GTK_WIDGET (self->next_button), self->apps != NULL && gs_app_list_length (self->apps) > 1);
 	gtk_widget_set_visible (GTK_WIDGET (self->previous_button), self->apps != NULL && gs_app_list_length (self->apps) > 1);
 
-	if (self->apps != NULL && gs_app_list_length (self->apps) > 0)
-		start_rotation_timer (self);
+	maybe_start_rotation_timer (self);
 
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_APPS]);
 }
