@@ -21,6 +21,7 @@ typedef struct {
 
 	GtkWidget		*progressbar;
 	GtkWidget		*status_page;
+	gboolean		 progress_is_pulsing;
 	guint			 progress_pulse_id;
 } GsLoadingPagePrivate;
 
@@ -43,6 +44,29 @@ _pulse_cb (gpointer user_data)
 }
 
 static void
+stop_progress_pulse (GsLoadingPage *self)
+{
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
+
+	if (priv->progress_pulse_id != 0) {
+		g_source_remove (priv->progress_pulse_id);
+		priv->progress_pulse_id = 0;
+	}
+}
+
+static void
+maybe_schedule_progress_pulse (GsLoadingPage *self)
+{
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
+
+	if (!priv->progress_is_pulsing || !gtk_widget_get_mapped (GTK_WIDGET (self)))
+		return;
+
+	g_assert (priv->progress_pulse_id == 0);
+	priv->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
+}
+
+static void
 gs_loading_page_job_progress_cb (GsPluginJobRefreshMetadata *plugin_job,
                                  guint                       progress_percent,
                                  gpointer                    user_data)
@@ -56,14 +80,13 @@ gs_loading_page_job_progress_cb (GsPluginJobRefreshMetadata *plugin_job,
 				   _("Refreshing Data"));
 
 	/* update progressbar */
-	if (priv->progress_pulse_id != 0) {
-		g_source_remove (priv->progress_pulse_id);
-		priv->progress_pulse_id = 0;
-	}
+	stop_progress_pulse (self);
 
 	if (progress_percent == G_MAXUINT) {
-		priv->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
+		priv->progress_is_pulsing = TRUE;
+		maybe_schedule_progress_pulse (self);
 	} else {
+		priv->progress_is_pulsing = FALSE;
 		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progressbar),
 					       (gdouble) progress_percent / 100.0f);
 	}
@@ -86,10 +109,8 @@ gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer 
 	}
 
 	/* no more pulsing */
-	if (priv->progress_pulse_id != 0) {
-		g_source_remove (priv->progress_pulse_id);
-		priv->progress_pulse_id = 0;
-	}
+	priv->progress_is_pulsing = FALSE;
+	stop_progress_pulse (self);
 
 	/* UI is good to go */
 	g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
@@ -165,15 +186,32 @@ gs_loading_page_dispose (GObject *object)
 	GsLoadingPage *self = GS_LOADING_PAGE (object);
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 
-	if (priv->progress_pulse_id != 0) {
-		g_source_remove (priv->progress_pulse_id);
-		priv->progress_pulse_id = 0;
-	}
+	stop_progress_pulse (self);
 
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->cancellable);
 
 	G_OBJECT_CLASS (gs_loading_page_parent_class)->dispose (object);
+}
+
+static void
+gs_loading_page_map (GtkWidget *widget)
+{
+	GsLoadingPage *self = GS_LOADING_PAGE (widget);
+
+	GTK_WIDGET_CLASS (gs_loading_page_parent_class)->map (widget);
+
+	maybe_schedule_progress_pulse (self);
+}
+
+static void
+gs_loading_page_unmap (GtkWidget *widget)
+{
+	GsLoadingPage *self = GS_LOADING_PAGE (widget);
+
+	stop_progress_pulse (self);
+
+	GTK_WIDGET_CLASS (gs_loading_page_parent_class)->unmap (widget);
 }
 
 static void
@@ -184,6 +222,10 @@ gs_loading_page_class_init (GsLoadingPageClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_loading_page_dispose;
+
+	widget_class->map = gs_loading_page_map;
+	widget_class->unmap = gs_loading_page_unmap;
+
 	page_class->switch_to = gs_loading_page_switch_to;
 	page_class->setup = gs_loading_page_setup;
 

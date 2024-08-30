@@ -128,6 +128,14 @@ start_rotation_timer (GsFeaturedCarousel *self)
 }
 
 static void
+maybe_start_rotation_timer (GsFeaturedCarousel *self)
+{
+	if (self->apps != NULL && gs_app_list_length (self->apps) > 0 &&
+	    gtk_widget_get_mapped (GTK_WIDGET (self)))
+		start_rotation_timer (self);
+}
+
+static void
 stop_rotation_timer (GsFeaturedCarousel *self)
 {
 	if (self->rotation_timer_id != 0) {
@@ -230,6 +238,26 @@ gs_featured_carousel_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_featured_carousel_parent_class)->dispose (object);
 }
 
+static void
+gs_featured_carousel_map (GtkWidget *widget)
+{
+	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (widget);
+
+	GTK_WIDGET_CLASS (gs_featured_carousel_parent_class)->map (widget);
+
+	maybe_start_rotation_timer (self);
+}
+
+static void
+gs_featured_carousel_unmap (GtkWidget *widget)
+{
+	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (widget);
+
+	stop_rotation_timer (self);
+
+	GTK_WIDGET_CLASS (gs_featured_carousel_parent_class)->unmap (widget);
+}
+
 static gboolean
 key_pressed_cb (GtkEventControllerKey *controller,
                 guint                  keyval,
@@ -265,6 +293,9 @@ gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 	object_class->get_property = gs_featured_carousel_get_property;
 	object_class->set_property = gs_featured_carousel_set_property;
 	object_class->dispose = gs_featured_carousel_dispose;
+
+	widget_class->map = gs_featured_carousel_map;
+	widget_class->unmap = gs_featured_carousel_unmap;
 
 	/**
 	 * GsFeaturedCarousel:apps: (nullable)
@@ -399,8 +430,7 @@ gs_featured_carousel_set_apps (GsFeaturedCarousel *self,
 	gtk_widget_set_visible (GTK_WIDGET (self->next_button), self->apps != NULL && gs_app_list_length (self->apps) > 1);
 	gtk_widget_set_visible (GTK_WIDGET (self->previous_button), self->apps != NULL && gs_app_list_length (self->apps) > 1);
 
-	if (self->apps != NULL && gs_app_list_length (self->apps) > 0)
-		start_rotation_timer (self);
+	maybe_start_rotation_timer (self);
 
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_APPS]);
 }
