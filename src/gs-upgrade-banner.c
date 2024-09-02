@@ -223,15 +223,21 @@ app_refresh_idle (gpointer user_data)
 }
 
 static void
-app_state_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
+schedule_app_refresh (GsUpgradeBanner *self)
 {
 	g_idle_add (app_refresh_idle, g_object_ref (self));
 }
 
 static void
+app_state_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
+{
+	schedule_app_refresh (self);
+}
+
+static void
 app_progress_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
 {
-	g_idle_add (app_refresh_idle, g_object_ref (self));
+	schedule_app_refresh (self);
 }
 
 static void
@@ -314,6 +320,26 @@ gs_upgrade_banner_dispose (GObject *object)
 }
 
 static void
+gs_upgrade_banner_map (GtkWidget *widget)
+{
+	GsUpgradeBanner *self = GS_UPGRADE_BANNER (widget);
+
+	GTK_WIDGET_CLASS (gs_upgrade_banner_parent_class)->map (widget);
+
+	schedule_app_refresh (self);
+}
+
+static void
+gs_upgrade_banner_unmap (GtkWidget *widget)
+{
+	GsUpgradeBanner *self = GS_UPGRADE_BANNER (widget);
+
+	stop_progress_pulsing (self);
+
+	GTK_WIDGET_CLASS (gs_upgrade_banner_parent_class)->unmap (widget);
+}
+
+static void
 gs_upgrade_banner_init (GsUpgradeBanner *self)
 {
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
@@ -341,6 +367,9 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_upgrade_banner_dispose;
+
+	widget_class->map = gs_upgrade_banner_map;
+	widget_class->unmap = gs_upgrade_banner_unmap;
 
 	signals [SIGNAL_DOWNLOAD_CLICKED] =
 		g_signal_new ("download-clicked",
