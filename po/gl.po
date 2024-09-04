@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-09-02 17:54+0000\n"
-"PO-Revision-Date: 2024-09-03 00:07+0200\n"
+"POT-Creation-Date: 2024-09-02 22:08+0000\n"
+"PO-Revision-Date: 2024-09-04 08:26+0200\n"
 "Last-Translator: Fran Dieguez <fran.dieguez@gnome.org>\n"
 "Language-Team: Galician <proxecto@trasno.gal>\n"
 "Language: gl\n"
@@ -96,10 +96,9 @@ msgid "Enroll akmods key to Shim UEFI"
 msgstr "Inscribir a chave de Akmods para Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:23
-#, fuzzy
 msgid "Authentication is required to enroll akmods key to Shim UEFI"
 msgstr ""
-"A autenticación é necesaria para inscribir a clave de Akmods para Shim Uefi"
+"Requíresxe autenticación para inscribir a chave de akmods para Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:33
 msgid "Test DKMS key in Shim UEFI"
@@ -114,10 +113,8 @@ msgid "Enroll DKMS key to Shim UEFI"
 msgstr "Inscribir a chave de DKMS para Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:45
-#, fuzzy
 msgid "Authentication is required to enroll DKMS key to Shim UEFI"
-msgstr ""
-"A autenticación é necesaria para inscribir a clave de DKMS para Shim Uefi"
+msgstr "Requírese autenticación para inscribir a chave de DKMS para Shim UEFI"
 
 #: data/org.gnome.software.external-appstream.policy.in.in:11
 msgid "Install an appstream file into a system location"
@@ -1867,7 +1864,7 @@ msgstr[1] "Desinstaláronse unha aplicación"
 msgid "A restart is required for it to take effect"
 msgid_plural "A restart is required for them to take effect"
 msgstr[0] "Debe reiniciar para aplicar os cambios"
-msgstr[1] "Debe reiniciar para aplicar os cambios."
+msgstr[1] "Debe reiniciar para aplicar os cambios"
 
 #. TRANSLATORS: button text
 #: src/gs-common.c:913
@@ -2520,13 +2517,13 @@ msgstr ""
 "código ou xestor de problemas."
 
 #: src/gs-details-page.c:2034 src/gs-details-page.c:2051
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
 "details for this app."
 msgstr ""
-"O software non conseguiu recuperar información para \"%s\" e non pode amosar "
-"os detalles desta aplicación."
+"Software non conseguiu recuperar información para «%s» e non pode amosar os "
+"detalles desta aplicación."
 
 #: src/gs-details-page.c:2406
 #, c-format
@@ -2686,17 +2683,16 @@ msgid "_Next"
 msgstr "_Seguinte"
 
 #: src/gs-dkms-dialog.ui:55
-#, fuzzy
 msgid ""
 "This device has Secure Boot enabled. To allow new drivers to be enabled, a "
 "new machine owner key (MOK) must be enrolled. The process requires a "
 "password to be entered later in the process. Please note down the following "
 "password associated with the key:"
 msgstr ""
-"Este dispositivo ten activado o arranque seguro.Para permitir que os novos "
-"controladores estean habilitados, debe inscribirse unha nova clave de "
-"propietario da máquina (MOK).O proceso require un contrasinal para "
-"introducirse máis tarde no proceso.Teña en conta o seguinte contrasinal "
+"Este dispositivo ten activado o Secure Boot. Para permitir que os novos "
+"controladores estean habilitados, debe inscribirse unha nova chave de "
+"propietario da máquina (MOK). O proceso require un contrasinal para "
+"introducirse máis tarde no proceso. Teña en conta o seguinte contrasinal "
 "asociado á clave:"
 
 #: src/gs-dkms-dialog.ui:83
@@ -2712,13 +2708,12 @@ msgid "Setup Instructions: Please Read Carefully"
 msgstr "Instrucións de configuración: lea atentamente"
 
 #: src/gs-dkms-dialog.ui:166
-#, fuzzy
 msgid ""
 "After restart, a device setup screen will be shown. To enable new drivers, "
 "proceed through the setup steps:"
 msgstr ""
 "Despois de reiniciar, mostrarase unha pantalla de configuración do "
-"dispositivo.Para habilitar os novos controladores, continúe polos pasos de "
+"dispositivo. Para habilitar os novos controladores, continúe polos pasos de "
 "configuración:"
 
 #: src/gs-dkms-dialog.ui:179
@@ -3660,47 +3655,40 @@ msgstr "Non será posible usar %s despois da eliminación."
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
 #: src/gs-page.c:591
-#, fuzzy, c-format
-#| msgid "It will not be possible to use %s after removal."
+#, c-format
 msgid ""
 "It will not be possible to use any apps which depend on %s after removal."
-msgstr "Non será posible usar %s despois da eliminación."
+msgstr ""
+"Non será posible usar calquera aplicación que dependa de %s despois da "
+"eliminación."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
 #: src/gs-page.c:601
-#, fuzzy, c-format
-#| msgid ""
-#| "It will not be possible to use %s after removal. App data and settings "
-#| "will be kept on disk, to allow restoring the app in the future."
+#, c-format
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use "
 "it will appear in a different font."
 msgstr ""
-"Non será posible usar %s despois da eliminación.Os datos e configuracións da "
-"aplicación manteranse no disco, para permitir a restauración da aplicación "
-"no futuro."
+"Non será posible usar %s despois da eliminación, calquera outro documento "
+"que o use aparecerá nun tipo de letra diferente."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
 #: src/gs-page.c:612
-#, fuzzy, c-format
-#| msgid ""
-#| "It will not be possible to use %s after removal. App data and settings "
-#| "will be kept on disk, to allow restoring the app in the future."
+#, c-format
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media "
 "files will no longer be playable."
 msgstr ""
-"Non será posible usar %s despois da eliminación.Os datos e configuracións da "
-"aplicación manteranse no disco, para permitir a restauración da aplicación "
-"no futuro."
+"Non será posible usar %s despois da eliminación. Isto pode significar que "
+"algúns ficheiros multimedia non serán reproducíbeis."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
 #: src/gs-page.c:623
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Hardware which depends on %s may no longer function correctly after removal."
 msgstr ""
-"O hardware que depende do %s xa non pode funcionar correctamente despois da "
+"O hardware que depende do %s podería non funcionar correctamente despois da "
 "eliminación."
 
 #: src/gs-page.c:641
@@ -3865,7 +3853,7 @@ msgstr "Activar novos repositorios"
 
 #: src/gs-repos-dialog.c:612
 msgid "Turn on new repositories when they are added"
-msgstr "Activar os novos repositorios ao engadilos."
+msgstr "Activar os novos repositorios ao engadilos"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
@@ -4498,7 +4486,6 @@ msgid "SDK"
 msgstr "SDK"
 
 #: src/gs-safety-context-dialog.ui:148
-#, fuzzy
 msgid ""
 "This app uses an outdated version of the software platform (SDK) and might "
 "contain bugs or security vulnerabilities which will not be fixed."
@@ -5224,13 +5211,10 @@ msgstr "Descoñecido"
 
 #. TRANSLATORS: "<a href='#'>" and "</a>" should not be touched.
 #: src/gs-storage-context-dialog.c:262
-#, fuzzy
-#| msgid ""
-#| "Cached data can be cleared from the <a href=\"dummy\">_app settings</a>."
 msgid "Cached data can be cleared from the <a href='#'>_app settings</a>"
 msgstr ""
-"Os datos da caché poden limparse desde as <a href=\"dummy\">preferencias de "
-"_aplicacion</a>."
+"Os datos da caché poden limparse desde as <a href=‘#’>preferencias de "
+"_aplicacion</a>"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:6
@@ -5665,20 +5649,15 @@ msgid "Network connection is metered — software updates paused"
 msgstr "A conexión á rede é medida — detivéronse as actualizacións de software"
 
 #: src/gs-updates-paused-banner.c:86
-#, fuzzy
-#| msgid ""
-#| "Network connection prohibits large downloads - software updates paused"
 msgid "Network connection prohibits large downloads — software updates paused"
 msgstr ""
-"A conexión de rede prohibe as descargas grandes - actualizacións de software "
+"A conexión de rede prohibe as descargas grandes — actualizacións de software "
 "pausadas"
 
 #: src/gs-updates-paused-banner.c:88
-#, fuzzy
-#| msgid "Power saver mode is active - software updates paused"
 msgid "Power saver mode is active — software updates paused"
 msgstr ""
-"O modo de aforro de enerxía está activo - detivéronse as actualizacións de "
+"O modo de aforro de enerxía está activo — detivéronse as actualizacións de "
 "software"
 
 #: src/gs-updates-paused-banner.c:90
