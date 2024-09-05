@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-09-01 11:23+0000\n"
-"PO-Revision-Date: 2024-09-02 10:00+0200\n"
+"POT-Creation-Date: 2024-09-02 17:54+0000\n"
+"PO-Revision-Date: 2024-09-05 13:02+0200\n"
 "Last-Translator: Daniel Mustieles García <daniel.mustieles@gmail.com>\n"
 "Language-Team: Spanish - Spain <gnome-es-list@gnome.org>\n"
 "Language: es_ES\n"
@@ -80,35 +80,35 @@ msgstr "El proyecto GNOME"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:11
 msgid "Test akmods key in Shim UEFI"
-msgstr ""
+msgstr "Probar clave akmods en Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:12
 msgid "Authentication is required to test akmods key in Shim UEFI"
-msgstr ""
+msgstr "Se necesita autenticación para probar la clave akmods en Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:22
 msgid "Enroll akmods key to Shim UEFI"
-msgstr ""
+msgstr "Incluir clave akmods en Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:23
 msgid "Authentication is required to enroll akmods key to Shim UEFI"
-msgstr ""
+msgstr "Se necesita autenticación para incluir la clave akmods en Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:33
 msgid "Test DKMS key in Shim UEFI"
-msgstr ""
+msgstr "Probar clave DKMS en Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:34
 msgid "Authentication is required to test DKMS key in Shim UEFI"
-msgstr ""
+msgstr "Se necesita autenticación para probar la clave DKMS en Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:44
 msgid "Enroll DKMS key to Shim UEFI"
-msgstr ""
+msgstr "Incluir clave DKMS en Shim UEFI"
 
 #: data/org.gnome.software.dkms-helper.policy.in.in:45
 msgid "Authentication is required to enroll DKMS key to Shim UEFI"
-msgstr ""
+msgstr "Se necesita autenticación para incluir la clave DKMS en Shim UEFI"
 
 #: data/org.gnome.software.external-appstream.policy.in.in:11
 msgid "Install an appstream file into a system location"
@@ -2665,7 +2665,7 @@ msgstr "No se encontró la clave"
 
 #: src/gs-dkms-dialog.c:102
 msgid "The key is not enrolled"
-msgstr ""
+msgstr "La clave no está incluida"
 
 #: src/gs-dkms-dialog.ui:17 src/gs-dkms-dialog.ui:108
 msgid "MOK Enrollment Required"
@@ -2957,7 +2957,7 @@ msgstr "No se encontraron resultados"
 
 #: src/gs-extras-page.ui:100
 msgid "Unable To Perform Search"
-msgstr ""
+msgstr "No se pudo hacer la búsqueda"
 
 #: src/gs-featured-carousel.ui:43
 msgid "Previous"
@@ -3449,7 +3449,7 @@ msgstr ""
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:80
 msgid "Refreshing Data"
-msgstr ""
+msgstr "Actualizando los datos"
 
 #: src/gs-loading-page.ui:7
 msgid "Loading page"
@@ -3634,39 +3634,32 @@ msgstr "No será posible usar %s después de eliminarla."
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
 #: src/gs-page.c:591
-#, fuzzy, c-format
-#| msgid "It will not be possible to use %s after removal."
+#, c-format
 msgid ""
 "It will not be possible to use any apps which depend on %s after removal."
-msgstr "No será posible usar %s después de eliminarla."
+msgstr ""
+"No será posible usar ninguna aplicación que dependa de %s después de "
+"eliminarla."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
 #: src/gs-page.c:601
-#, fuzzy, c-format
-#| msgid ""
-#| "It will not be possible to use %s after removal. App data and settings "
-#| "will be kept on disk, to allow restoring the app in the future."
+#, c-format
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use "
 "it will appear in a different font."
 msgstr ""
-"No será posible usar %s después de eliminarla. Los datos de la aplicación y "
-"su configuración se conservarán en el disco, para permitir restaurar la "
-"aplicación en el futuro."
+"No será posible usar %s después de eliminarla y cualquier documento que la "
+"use aparecerá con una tipografía diferente."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
 #: src/gs-page.c:612
-#, fuzzy, c-format
-#| msgid ""
-#| "It will not be possible to use %s after removal. App data and settings "
-#| "will be kept on disk, to allow restoring the app in the future."
+#, c-format
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media "
 "files will no longer be playable."
 msgstr ""
-"No será posible usar %s después de eliminarla. Los datos de la aplicación y "
-"su configuración se conservarán en el disco, para permitir restaurar la "
-"aplicación en el futuro."
+"No será posible usar %s después de eliminarla. Esto significa que algunos "
+"archivos de medios no se podrán reproducir."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
 #: src/gs-page.c:623
@@ -3834,10 +3827,8 @@ msgid "Enable New Repositories"
 msgstr "Activar repositorios nuevos"
 
 #: src/gs-repos-dialog.c:612
-#, fuzzy
-#| msgid "Turn on new repositories when they are added."
 msgid "Turn on new repositories when they are added"
-msgstr "Activar los repositorios nuevos al añadirlos."
+msgstr "Activar los repositorios nuevos al añadirlos"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
@@ -4121,7 +4112,7 @@ msgstr "¿Eliminar opinión?"
 #. TRANSLATORS: we ask the user if they really want to do this
 #: src/gs-review-row.c:261
 msgid "Removing a review cannot be undone."
-msgstr ""
+msgstr "Eliminar una revisión no se puede deshacer."
 
 #: src/gs-review-row.ui:89
 msgid "Like Review"
@@ -4957,10 +4948,9 @@ msgstr "No se puede actualizar a %s: batería baja"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1689
-#, fuzzy, c-format
-#| msgid "Unable to upgrade to %s from %s"
+#, c-format
 msgid "Unable to upgrade to %s"
-msgstr "No se puede actualizar a %s desde %s"
+msgstr "No se puede actualizar a %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1723
@@ -4970,25 +4960,21 @@ msgstr "No se puede desinstalar: autenticación requerida"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1726
-#, fuzzy, c-format
-#| msgid "Unable to uninstall: authentication required"
+#, c-format
 msgid "Unable to uninstall %s: authentication required"
-msgstr "No se puede desinstalar: autenticación requerida"
+msgstr "No se puede desinstalar %s: autenticación requerida"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1731
-#, fuzzy
-#| msgid "Unable to install: invalid authentication"
 msgid "Unable to uninstall: invalid authentication"
-msgstr "No se puede instalar: autenticación no válida"
+msgstr "No se puede desinstalar: autenticación no válida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1734
-#, fuzzy, c-format
-#| msgid "Unable to install: invalid authentication"
+#, c-format
 msgid "Unable to uninstall %s: invalid authentication"
-msgstr "No se puede instalar: autenticación no válida"
+msgstr "No se puede desinstalar %s: autenticación no válida"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1739
@@ -4998,10 +4984,9 @@ msgstr "No se puede desinstalar: permiso requerido"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1742
-#, fuzzy, c-format
-#| msgid "Unable to uninstall: permission required"
+#, c-format
 msgid "Unable to uninstall %s: permission required"
-msgstr "No se puede desinstalar: permiso requerido"
+msgstr "No se puede desinstalar %s: permiso requerido"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1747
@@ -5011,10 +4996,9 @@ msgstr "No se puede desinstalar: el dispositivo debe estar enchufado"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1750
-#, fuzzy, c-format
-#| msgid "Unable to uninstall: device must be plugged in"
+#, c-format
 msgid "Unable to uninstall %s: device must be plugged in"
-msgstr "No se puede desinstalar: el dispositivo debe estar enchufado"
+msgstr "No se puede desinstalar %s: el dispositivo debe estar enchufado"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1754
@@ -5024,10 +5008,9 @@ msgstr "No se pueden desinstalar: bateía baja"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1757
-#, fuzzy, c-format
-#| msgid "Unable to uninstall: low battery"
+#, c-format
 msgid "Unable to uninstall %s: low battery"
-msgstr "No se pueden desinstalar: bateía baja"
+msgstr "No se pueden desinstalar %s: bateía baja"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
@@ -5204,13 +5187,10 @@ msgstr "Desconocido"
 
 #. TRANSLATORS: "<a href='#'>" and "</a>" should not be touched.
 #: src/gs-storage-context-dialog.c:262
-#, fuzzy
-#| msgid ""
-#| "Cached data can be cleared from the <a href=\"dummy\">_app settings</a>."
 msgid "Cached data can be cleared from the <a href='#'>_app settings</a>"
 msgstr ""
-"Los datos de la caché se pueden limpiar desde la <a "
-"href=\"dummy\">configuración de la _aplicación</a>."
+"Los datos de la caché se pueden limpiar desde la <a href=\"#\">configuración "
+"de la _aplicación</a>"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:6
@@ -5242,10 +5222,8 @@ msgid "_Details"
 msgstr "_Detalles"
 
 #: src/gs-toast.c:62
-#, fuzzy
-#| msgid "Examine Disk"
 msgid "_Examine"
-msgstr "Examinar disco"
+msgstr "_Examinar"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window.
 #. %s will be replaced by the date when the updates were installed.
@@ -5356,14 +5334,12 @@ msgstr "Incluye %s, %s y %s."
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
 #: src/gs-update-monitor.c:703
 msgid "System Has Reached End of Life"
-msgstr ""
+msgstr "El sistema ha llegado al fin del ciclo de vida"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
 #: src/gs-update-monitor.c:705
-#, fuzzy
-#| msgid "Upgrade to continue receiving security updates."
 msgid "Upgrade to continue receiving updates"
-msgstr "Suba de versión para seguir recibiendo actualizaciones de seguridad"
+msgstr "Suba de versión para seguir recibiendo actualizaciones"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
@@ -5384,10 +5360,8 @@ msgstr "Falló la actualización de software"
 
 #. TRANSLATORS: message when we offline updates have failed
 #: src/gs-update-monitor.c:1213
-#, fuzzy
-#| msgid "System updates are now installed"
 msgid "Prepared updates were not installed"
-msgstr "Se han instalado las actualizaciones del sistema"
+msgstr "Las actualizaciones preparadas no se han instalado"
 
 #: src/gs-update-monitor.c:1214
 msgid "Show Details"
@@ -5533,10 +5507,8 @@ msgid "Software Upgrades Downloaded"
 msgstr "Actualizaciones de software descargadas"
 
 #: src/gs-updates-page.c:893
-#, fuzzy
-#| msgid "%s %s Ready to be Installed"
 msgid "Upgrades are ready to be installed"
-msgstr "%s %s listo para instalar"
+msgstr "Las actualizaciones están listas para instalarse"
 
 #: src/gs-updates-page.c:1220
 msgid "Check for updates"
@@ -5649,32 +5621,24 @@ msgid "Software updates paused"
 msgstr "Actualización de software pausada"
 
 #: src/gs-updates-paused-banner.c:84
-#, fuzzy
-#| msgid "Network connection is metered - software updates paused"
 msgid "Network connection is metered — software updates paused"
-msgstr "La conexión de red es medida - actualización de software pausada"
+msgstr "La conexión de red está medida - actualizaciones de software pausadas"
 
 #: src/gs-updates-paused-banner.c:86
-#, fuzzy
-#| msgid ""
-#| "Network connection prohibits large downloads - software updates paused"
 msgid "Network connection prohibits large downloads — software updates paused"
 msgstr ""
-"La conexión de red prohíbe descargas grandes- actualización de software "
-"pausada"
+"La conexión de red prohíbe descargas grandes- actualizaciones de software "
+"pausadas"
 
 #: src/gs-updates-paused-banner.c:88
-#, fuzzy
-#| msgid "Power saver mode is active - software updates paused"
 msgid "Power saver mode is active — software updates paused"
 msgstr ""
-"El modo de ahorro de energía está activado- actualización de software pausada"
+"El modo de ahorro de energía está activado- actualizaciones de software "
+"pausadas"
 
 #: src/gs-updates-paused-banner.c:90
-#, fuzzy
-#| msgid "Game mode is active - software updates paused"
 msgid "Game mode is active — software updates paused"
-msgstr "El modo juego está activado- actualización de software pausada"
+msgstr "El modo juego está activado- actualizaciones de software pausadas"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
@@ -5693,8 +5657,6 @@ msgid "Software Updates Downloaded"
 msgstr "Actualizaciones de software descargadas"
 
 #: src/gs-updates-section.c:405
-#, fuzzy
-#| msgid "Updates Ready to Install"
 msgid "Updates are ready to be installed"
 msgstr "Actualizaciones listas para instalar"
 
@@ -5802,7 +5764,7 @@ msgstr ""
 #: plugins/dkms/gs-plugin-dkms.c:176
 #, c-format
 msgid "%s Ready"
-msgstr ""
+msgstr "%s preparada"
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the second part of a system notification, which looks like:
@@ -6343,21 +6305,17 @@ msgstr "Paquetes"
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1410
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1433
 msgid "Failed to wait on transaction end before download: "
-msgstr ""
+msgstr "Falló al esperar el fin de la transacción antes de descargar:"
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1440
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1453
-#, fuzzy
-#| msgid "Unable to download updates"
 msgid "Failed to download updates: "
-msgstr "No se pueden descargar las actualizaciones"
+msgstr "Falló al descargar las actualizaciones: "
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1492
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1502
-#, fuzzy
-#| msgid "Failed to install updates: "
 msgid "Failed to trigger update: "
-msgstr "Fallo al instalar las actualizaciones: "
+msgstr "Fallo al lanzar la actualización: "
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3267
 msgid "Operating System (OSTree)"
