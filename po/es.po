@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-09-02 17:54+0000\n"
-"PO-Revision-Date: 2024-09-05 13:02+0200\n"
+"POT-Creation-Date: 2024-09-05 12:03+0000\n"
+"PO-Revision-Date: 2024-09-09 11:07+0200\n"
 "Last-Translator: Daniel Mustieles García <daniel.mustieles@gmail.com>\n"
 "Language-Team: Spanish - Spain <gnome-es-list@gnome.org>\n"
 "Language: es_ES\n"
@@ -2517,6 +2517,8 @@ msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
 "details for this app."
 msgstr ""
+"Software falló al obtener información para «%s» y no puede mostrar los "
+"detalles para esta aplicación."
 
 #: src/gs-details-page.c:2406
 #, c-format
@@ -2682,6 +2684,10 @@ msgid ""
 "password to be entered later in the process. Please note down the following "
 "password associated with the key:"
 msgstr ""
+"Este dispositivo tiene Secure Boot activado. Para poder activar "
+"controladores nuevos se debe añadir una nueva clave de propietario de "
+"máquina (MOK). El proceso requiere que se introduzca una contraseña. Anote "
+"la siguiente contraseña asociada a la clave:"
 
 #: src/gs-dkms-dialog.ui:83
 msgid "I have made a note of the MOK _password"
@@ -2700,6 +2706,8 @@ msgid ""
 "After restart, a device setup screen will be shown. To enable new drivers, "
 "proceed through the setup steps:"
 msgstr ""
+"Después de reiniciar se mostrará una pantalla de configuración del "
+"dispositivo. Para activar controladores nuevos, siga estos pasos:"
 
 #: src/gs-dkms-dialog.ui:179
 msgid ""
@@ -2708,6 +2716,10 @@ msgid ""
 "• Enter the MOK password when prompted\n"
 "• Then select “Reboot”"
 msgstr ""
+"• Seleccione «Enroll MOK»”\n"
+"• Seleccione «Yes» para añadir las claves\n"
+"• Introduzca la contraseña de la MOK cuando se le pida\n"
+"• Seleccione «Reboot»"
 
 #: src/gs-dkms-dialog.ui:211
 msgid "Security Implications"
@@ -2719,12 +2731,18 @@ msgid ""
 "module or any other module will be implicitly trusted. All future updates "
 "will happen transparently with no interaction and or authorization."
 msgstr ""
+"Después de añadir la clave correctamente, tenga en cuenta que se confiará "
+"directamente en las futuras actualizaciones de este módulo o de cualquier "
+"otro. Todas las actualizaciones futuras se harán de manera transparente sin "
+"interacción ni autorización."
 
 #: src/gs-dkms-dialog.ui:244
 msgid ""
 "Further guidance can be found on the <a href=\"https://docs.fedoraproject."
 "org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
 msgstr ""
+"Puede encontrar más ayuda en las <a href=\"https://docs.fedoraproject.org/en-"
+"US/quick-docs/mok-enrollment/\">páginas de la documentación</a>."
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:272
@@ -3667,6 +3685,8 @@ msgstr ""
 msgid ""
 "Hardware which depends on %s may no longer function correctly after removal."
 msgstr ""
+"El hardware que dependa de %s puede no funcionar correctamente después de la "
+"eliminación."
 
 #: src/gs-page.c:641
 msgid "App Settings & Data"
@@ -4468,6 +4488,8 @@ msgid ""
 "This app uses an outdated version of the software platform (SDK) and might "
 "contain bugs or security vulnerabilities which will not be fixed."
 msgstr ""
+"Esta aplicación usa una versión obsoleta de la plataforma de software (SDK) "
+"y puede tener errores o vulnerabilidades de seguridad que no se corregirán."
 
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:46
@@ -5776,7 +5798,7 @@ msgstr "%s preparada"
 #: plugins/dkms/gs-plugin-dkms.c:184
 #, c-format
 msgid "The %s is ready to be enabled and staged for the next boot."
-msgstr ""
+msgstr "%s está lista para activarse y funcionar en el siguiente reinicio."
 
 #: plugins/dkms/gs-plugin-dkms.c:189
 msgid "Enable"
