@@ -39,7 +39,6 @@ struct _GsSearchPage
 
 	GtkWidget		*list_box_search;
 	GtkWidget		*scrolledwindow_search;
-	GtkWidget		*spinner_search;
 	GtkWidget		*stack_search;
 };
 
@@ -131,7 +130,6 @@ gs_search_page_get_search_cb (GObject *source_object,
 			return;
 		}
 		g_warning ("failed to get search apps: %s", error->message);
-		gtk_spinner_stop (GTK_SPINNER (self->spinner_search));
 		if (self->value && self->value[0])
 			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
 		else
@@ -152,7 +150,6 @@ gs_search_page_get_search_cb (GObject *source_object,
 	/* remove old entries */
 	gs_widget_remove_all (self->list_box_search, (GsRemoveFunc) gtk_list_box_remove);
 
-	gtk_spinner_stop (GTK_SPINNER (self->spinner_search));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "results");
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
@@ -216,7 +213,6 @@ gs_search_page_waiting_show_cb (gpointer user_data)
 
 	/* show spinner */
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "spinner");
-	gtk_spinner_start (GTK_SPINNER (self->spinner_search));
 	gs_search_page_waiting_cancel (self);
 	return FALSE;
 }
@@ -541,7 +537,6 @@ gs_search_page_class_init (GsSearchPageClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsSearchPage, list_box_search);
 	gtk_widget_class_bind_template_child (widget_class, GsSearchPage, scrolledwindow_search);
-	gtk_widget_class_bind_template_child (widget_class, GsSearchPage, spinner_search);
 	gtk_widget_class_bind_template_child (widget_class, GsSearchPage, stack_search);
 }
 
