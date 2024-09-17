@@ -193,7 +193,6 @@ set_update_description (GsAppDetailsPage *self,
 		   It will resize when the details are multiple lines of text. */
 		gtk_label_set_text (GTK_LABEL (self->label_details), "");
 		gtk_widget_set_visible (self->spinner_details, TRUE);
-		gtk_spinner_start (GTK_SPINNER (self->spinner_details));
 
 		g_assert (self->refine_cancellable == NULL);
 		self->refine_cancellable = g_cancellable_new ();
@@ -207,7 +206,6 @@ set_update_description (GsAppDetailsPage *self,
 		return;
 	}
 
-	gtk_spinner_stop (GTK_SPINNER (self->spinner_details));
 	gtk_widget_set_visible (self->spinner_details, FALSE);
 
 	if (update_details == NULL || *update_details == '\0') {
