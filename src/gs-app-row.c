@@ -543,7 +543,6 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	/* spinner */
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_REMOVING:
-		gtk_spinner_start (GTK_SPINNER (priv->spinner));
 		gtk_widget_set_visible (priv->spinner, TRUE);
 		break;
 	default:
