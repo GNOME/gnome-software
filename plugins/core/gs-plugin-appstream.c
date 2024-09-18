@@ -1195,7 +1195,7 @@ refine_thread_cb (GTask        *task,
 		const gchar *comp_id = xb_node_get_text (node);
 		const gchar *origin;
 
-		/* include only web-apps and those with pkgname */
+		/* discard web-apps */
 		if (g_strcmp0 (xb_node_get_attr (component_node, "type"), "web-application") != 0) {
 			g_autoptr(XbNode) child = NULL;
 			g_autoptr(XbNode) next = NULL;
