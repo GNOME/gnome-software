@@ -49,7 +49,7 @@ struct _GsPluginDkms
 G_DEFINE_TYPE (GsPluginDkms, gs_plugin_dkms, GS_TYPE_PLUGIN)
 
 static void
-gs_dkms_got_secureboot_state_cb (GObject *sourec_object,
+gs_dkms_got_secureboot_state_cb (GObject *source_object,
 				 GAsyncResult *result,
 				 gpointer user_data)
 {
