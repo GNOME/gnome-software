@@ -83,7 +83,7 @@ gs_plugin_dkms_reload (GsPlugin *plugin)
 
 		/* mokutil was not installed probably; the reload can be called when some
 		   app/package had been installed, thus re-try to check Secure Boot state */
-		gs_dkms_get_secureboot_state_async (NULL, gs_dkms_got_secureboot_state_cb, g_object_ref (plugin));
+		gs_dkms_get_secureboot_state_async (NULL, gs_dkms_got_secureboot_state_cb, g_steal_pointer (&task));
 	}
 }
 
