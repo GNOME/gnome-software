@@ -81,9 +81,6 @@ gs_plugin_appstream_init (GsPluginAppstream *self)
 	 * one when something changes */
 	g_rw_lock_init (&self->silo_lock);
 
-	/* need package name */
-	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
-
 	/* require settings */
 	self->settings = g_settings_new ("org.gnome.software");
 
