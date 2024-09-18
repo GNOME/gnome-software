@@ -74,13 +74,11 @@ static void
 gs_screenshot_image_start_spinner (GsScreenshotImage *ssimg)
 {
 	gtk_widget_set_visible (ssimg->spinner, TRUE);
-	gtk_spinner_start (GTK_SPINNER (ssimg->spinner));
 }
 
 static void
 gs_screenshot_image_stop_spinner (GsScreenshotImage *ssimg)
 {
-	gtk_spinner_stop (GTK_SPINNER (ssimg->spinner));
 	gtk_widget_set_visible (ssimg->spinner, FALSE);
 }
 
