@@ -47,7 +47,6 @@ struct _GsInstalledPage
 	GtkWidget		*list_box_install_addons;
 	GtkWidget		*list_box_install_web_apps;
 	GtkWidget		*scrolledwindow_install;
-	GtkWidget		*spinner_install;
 	GtkWidget		*stack_install;
 };
 
@@ -403,7 +402,6 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 	g_autoptr(GsAppList) pending = gs_plugin_loader_get_pending (plugin_loader);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	gtk_spinner_stop (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "view");
 
 	self->waiting = FALSE;
@@ -524,7 +522,6 @@ gs_installed_page_load (GsInstalledPage *self)
 					    self->cancellable,
 					    gs_installed_page_get_installed_cb,
 					    self);
-	gtk_spinner_start (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
 }
 
@@ -917,7 +914,6 @@ gs_installed_page_class_init (GsInstalledPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, list_box_install_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, list_box_install_web_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, scrolledwindow_install);
-	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, spinner_install);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, stack_install);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_installed_page_app_row_activated_cb);
