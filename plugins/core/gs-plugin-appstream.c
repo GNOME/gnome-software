@@ -1050,14 +1050,16 @@ gs_plugin_refine_from_id (GsPluginAppstream    *self,
 	} else {
 		components = g_hash_table_lookup (apps_by_id, id);
 	}
-	if (components != NULL) {
-		for (guint i = 0; i < components->len; i++) {
-			XbNode *component = g_ptr_array_index (components, i);
-			if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo, component, flags, self->silo_installed_by_desktopid,
-						      self->silo_filename ? self->silo_filename : "", self->default_scope, error))
-				return FALSE;
-			gs_plugin_appstream_set_compulsory_quirk (app, component);
-		}
+
+	if (components == NULL)
+		return TRUE;
+
+	for (guint i = 0; i < components->len; i++) {
+		XbNode *component = g_ptr_array_index (components, i);
+		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo, component, flags, self->silo_installed_by_desktopid,
+					      self->silo_filename ? self->silo_filename : "", self->default_scope, error))
+			return FALSE;
+		gs_plugin_appstream_set_compulsory_quirk (app, component);
 	}
 
 	/* if an installed desktop or appdata file exists set to installed */
