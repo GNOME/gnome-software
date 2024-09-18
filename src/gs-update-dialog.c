@@ -76,8 +76,6 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
-	gtk_spinner_stop (GTK_SPINNER (dialog->spinner));
-
 	/* error */
 	if (list == NULL) {
 		g_warning ("failed to get installed updates: %s", error->message);
@@ -130,7 +128,6 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
 	adw_navigation_page_set_title (dialog->default_page, _("Installed Updates"));
 
-	gtk_spinner_start (GTK_SPINNER (dialog->spinner));
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
 
 	query = gs_app_query_new ("is-historical-update", GS_APP_QUERY_TRISTATE_TRUE,
