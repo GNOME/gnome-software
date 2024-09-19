@@ -1167,7 +1167,6 @@ refine_thread_cb (GTask        *task,
 	GsPluginRefineData *data = task_data;
 	GsAppList *list = data->list;
 	GsPluginRefineFlags flags = data->flags;
-	gboolean found = FALSE;
 	g_autoptr(GsAppList) app_list = NULL;
 	g_autoptr(GHashTable) apps_by_id = NULL;
 	g_autoptr(GHashTable) apps_by_origin_and_id = NULL;
@@ -1251,6 +1250,7 @@ refine_thread_cb (GTask        *task,
 	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		gboolean found = FALSE;
 		GsApp *app = gs_app_list_index (list, i);
 
 		/* not us */
