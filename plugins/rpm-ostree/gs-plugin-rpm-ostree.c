@@ -163,6 +163,9 @@ gs_plugin_rpm_ostree_init (GsPluginRpmOstree *self)
 
 	/* need pkgname */
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+
+	/* generic updates happen after rpm-ostree updates */
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_BEFORE, "generic-updates");
 }
 
 static void

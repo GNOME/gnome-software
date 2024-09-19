@@ -81,9 +81,6 @@ gs_plugin_appstream_init (GsPluginAppstream *self)
 	 * one when something changes */
 	g_rw_lock_init (&self->silo_lock);
 
-	/* need package name */
-	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
-
 	/* require settings */
 	self->settings = g_settings_new ("org.gnome.software");
 
@@ -1053,14 +1050,16 @@ gs_plugin_refine_from_id (GsPluginAppstream    *self,
 	} else {
 		components = g_hash_table_lookup (apps_by_id, id);
 	}
-	if (components != NULL) {
-		for (guint i = 0; i < components->len; i++) {
-			XbNode *component = g_ptr_array_index (components, i);
-			if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo, component, flags, self->silo_installed_by_desktopid,
-						      self->silo_filename ? self->silo_filename : "", self->default_scope, error))
-				return FALSE;
-			gs_plugin_appstream_set_compulsory_quirk (app, component);
-		}
+
+	if (components == NULL)
+		return TRUE;
+
+	for (guint i = 0; i < components->len; i++) {
+		XbNode *component = g_ptr_array_index (components, i);
+		if (!gs_appstream_refine_app (GS_PLUGIN (self), app, self->silo, component, flags, self->silo_installed_by_desktopid,
+					      self->silo_filename ? self->silo_filename : "", self->default_scope, error))
+			return FALSE;
+		gs_plugin_appstream_set_compulsory_quirk (app, component);
 	}
 
 	/* if an installed desktop or appdata file exists set to installed */
@@ -1168,7 +1167,6 @@ refine_thread_cb (GTask        *task,
 	GsPluginRefineData *data = task_data;
 	GsAppList *list = data->list;
 	GsPluginRefineFlags flags = data->flags;
-	gboolean found = FALSE;
 	g_autoptr(GsAppList) app_list = NULL;
 	g_autoptr(GHashTable) apps_by_id = NULL;
 	g_autoptr(GHashTable) apps_by_origin_and_id = NULL;
@@ -1198,7 +1196,7 @@ refine_thread_cb (GTask        *task,
 		const gchar *comp_id = xb_node_get_text (node);
 		const gchar *origin;
 
-		/* include only web-apps and those with pkgname */
+		/* discard web-apps */
 		if (g_strcmp0 (xb_node_get_attr (component_node, "type"), "web-application") != 0) {
 			g_autoptr(XbNode) child = NULL;
 			g_autoptr(XbNode) next = NULL;
@@ -1252,6 +1250,7 @@ refine_thread_cb (GTask        *task,
 	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		gboolean found = FALSE;
 		GsApp *app = gs_app_list_index (list, i);
 
 		/* not us */

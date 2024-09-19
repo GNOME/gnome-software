@@ -31,7 +31,11 @@ gs_plugin_dpkg_init (GsPluginDpkg *self)
 	if (!g_file_test (DPKG_DEB_BINARY, G_FILE_TEST_EXISTS)) {
 		g_debug ("disabling itself as no %s available", DPKG_DEB_BINARY);
 		gs_plugin_set_enabled (plugin, FALSE);
+		return;
 	}
+
+	/* need package name */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "appstream");
 }
 
 static void get_content_type_cb (GObject      *source_object,
