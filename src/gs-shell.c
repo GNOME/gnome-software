@@ -413,7 +413,7 @@ gs_shell_ask_untrusted_cb (GsPluginLoader *plugin_loader,
 			   const gchar *accept_label,
 			   GsShell *shell)
 {
-	return gs_utils_ask_user_accepts (GTK_WINDOW (shell), title, msg, details, accept_label);
+	return gs_utils_ask_user_accepts (GTK_WIDGET (shell), title, msg, details, accept_label);
 }
 
 static void

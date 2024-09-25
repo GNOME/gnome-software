@@ -1373,7 +1373,7 @@ gs_update_monitor_show_error (GsUpdateMonitor *monitor, GtkWindow *window)
 		show_detailed_error = TRUE;
 	}
 
-	gs_utils_show_error_dialog (window,
+	gs_utils_show_error_dialog (GTK_WIDGET (window),
 	                            title,
 	                            msg,
 	                            show_detailed_error ? monitor->last_offline_error->message : NULL);

@@ -62,8 +62,7 @@ gs_dkms_dialog_prepare_reboot_cb (GObject *source_object,
 		g_debug ("dkms-dialog: Failed to prepare reboot: %s", local_error->message);
 		/* The code 126 is returned when the admin/root password prompt is dismissed */
 		if (!g_error_matches (local_error, G_SPAWN_EXIT_ERROR, 126)) {
-			GtkWidget *window = gtk_widget_get_ancestor (GTK_WIDGET (source_object), GTK_TYPE_WINDOW);
-			gs_utils_show_error_dialog (window != NULL ? GTK_WINDOW (window) : NULL,
+			gs_utils_show_error_dialog (GTK_WIDGET (source_object),
 						    _("Failed to prepare reboot"),
 						    "",
 						    local_error->message);

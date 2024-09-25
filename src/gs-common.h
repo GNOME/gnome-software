@@ -26,7 +26,7 @@ void	 gs_grab_focus_when_mapped	(GtkWidget	*widget);
 void	 gs_app_notify_installed	(GsApp		*app);
 GtkResponseType
 	gs_app_notify_unavailable	(GsApp		*app,
-					 GtkWindow	*parent);
+					 GtkWidget	*parent);
 
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
 gchar		*gs_utils_set_key_colors_in_css	(const gchar	*css,
@@ -35,15 +35,15 @@ void		 gs_utils_widget_set_css	(GtkWidget	*widget,
 						 GtkCssProvider	**provider,
 						 const gchar	*css);
 const gchar	*gs_utils_get_error_value	(const GError	*error);
-void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
+void		 gs_utils_show_error_dialog	(GtkWidget	*parent,
 						 const gchar	*title,
 						 const gchar	*msg,
 						 const gchar	*details);
 void		 gs_utils_show_error_dialog_simple
-						(GtkWidget  *parent,
+						(GtkWidget   *parent,
 						 const gchar *title,
 						 const gchar *text);
-gboolean	 gs_utils_ask_user_accepts	(GtkWindow	*parent,
+gboolean	 gs_utils_ask_user_accepts	(GtkWidget	*parent,
 						 const gchar	*title,
 						 const gchar	*msg,
 						 const gchar	*details,
