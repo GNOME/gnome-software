@@ -579,8 +579,10 @@ gs_utils_show_error_dialog (GtkWindow *parent,
 #ifndef TESTDATADIR
 static void
 copy_error_text_clicked_cb (GtkButton *button,
-			    GtkTextView *text_view)
+			    GtkBuilder *builder)
 {
+	AdwToastOverlay *toast_overlay = ADW_TOAST_OVERLAY (gtk_builder_get_object (builder, "toast_overlay"));
+	GtkTextView *text_view = GTK_TEXT_VIEW (gtk_builder_get_object (builder, "text_view"));
 	GdkClipboard *clipboard = gtk_widget_get_clipboard (GTK_WIDGET (text_view));
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer (text_view);
 	GtkTextIter start, end;
@@ -589,6 +591,8 @@ copy_error_text_clicked_cb (GtkButton *button,
 	gtk_text_buffer_get_bounds (buffer, &start, &end);
 	text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
 	gdk_clipboard_set_text (clipboard, text);
+
+  	adw_toast_overlay_add_toast (toast_overlay, adw_toast_new (_("Details copied to clipboard")));
 }
 #endif
 
@@ -604,110 +608,30 @@ copy_error_text_clicked_cb (GtkButton *button,
  * Since: 44
  */
 void
-gs_utils_show_error_dialog_simple (GtkWindow *parent,
+gs_utils_show_error_dialog_simple (GtkWidget *parent,
 				   const gchar *title,
 				   const gchar *text)
 {
 #ifndef TESTDATADIR
-	GtkWidget *window, *button, *container, *text_view, *vbox, *hbox, *label;
-	g_autoptr(PangoAttrList) bold = NULL;
+	GtkBuilder *builder;
+	AdwDialog *dialog;
+	GtkButton *button;
+	GtkLabel *label;
+	GtkTextView *text_view;
 
-	g_return_if_fail (text != NULL);
+	builder = gtk_builder_new_from_resource ("/org/gnome/Software/gs-utils-error-dialog-simple.ui");
+	dialog = ADW_DIALOG (gtk_builder_get_object (builder, "dialog"));
+	button = GTK_BUTTON (gtk_builder_get_object (builder, "button"));
+	label = GTK_LABEL (gtk_builder_get_object (builder, "label"));
+	text_view = GTK_TEXT_VIEW (gtk_builder_get_object (builder, "text_view"));
 
-	bold = pango_attr_list_new ();
-	pango_attr_list_insert (bold, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
-
-	window = adw_window_new ();
-	g_object_set (window,
-		      "modal", TRUE,
-		      "title", " ",
-		      "destroy-with-parent", TRUE,
-		      "default-width", 500,
-		      "default-height", 350,
-		      "resizable", TRUE,
-		      "transient-for", parent,
-		      NULL);
-	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	adw_window_set_content (ADW_WINDOW (window), vbox);
-
-	container = adw_header_bar_new ();
-	gtk_widget_add_css_class (container, "flat");
-	gtk_box_append (GTK_BOX (vbox), container);
-
-	label = gtk_label_new (title);
-	g_object_set (label,
-		      "halign", GTK_ALIGN_CENTER,
-		      "margin-start", 12,
-		      "margin-end", 12,
-		      "margin-top", 0,
-		      "margin-bottom", 12,
-		      "justify", GTK_JUSTIFY_CENTER,
-		      "wrap-mode", PANGO_WRAP_WORD_CHAR,
-		      "wrap", TRUE,
-		      "width-chars", 40,
-		      "max-width-chars", 40,
-		      NULL);
-	gtk_widget_add_css_class (label, "title-4");
-	gtk_box_append (GTK_BOX (vbox), label);
-
-	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-	g_object_set (hbox,
-		      "halign", GTK_ALIGN_FILL,
-		      "hexpand", TRUE,
-		      "margin-start", 12,
-		      "margin-end", 12,
-		      "margin-bottom", 6,
-		      NULL);
-	gtk_box_append (GTK_BOX (vbox), hbox);
-
-	label = gtk_label_new (_("Details"));
-	g_object_set (label,
-		      "halign", GTK_ALIGN_START,
-		      "hexpand", TRUE,
-		      "attributes", bold,
-		      NULL);
-	gtk_box_append (GTK_BOX (hbox), label);
-
-	button = gtk_button_new_from_icon_name ("edit-copy-symbolic");
-	g_object_set (button,
-		      "focus-on-click", FALSE,
-		      NULL);
-	gtk_widget_set_halign (button, GTK_ALIGN_END);
-	gtk_widget_add_css_class (button, "flat");
-	gtk_box_append (GTK_BOX (hbox), button);
-
-	container = gtk_scrolled_window_new ();
-	g_object_set (container,
-		      "hscrollbar-policy", GTK_POLICY_AUTOMATIC,
-		      "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
-		      "margin-start", 12,
-		      "margin-end", 12,
-		      "margin-bottom", 12,
-		      "has-frame", TRUE,
-		      NULL);
-	gtk_widget_add_css_class (container, "gs-rounded");
-	gtk_box_append (GTK_BOX (vbox), container);
-
-	text_view = gtk_text_view_new ();
-	g_object_set (text_view,
-		      "can-focus", FALSE,
-		      "editable", FALSE,
-		      "hexpand", TRUE,
-		      "vexpand", TRUE,
-		      "wrap-mode", GTK_WRAP_WORD_CHAR,
-		      "right-margin", 12,
-		      "left-margin", 12,
-		      "top-margin", 12,
-		      "bottom-margin", 12,
-		      NULL);
-	gtk_widget_add_css_class (text_view, "gs-rounded");
+	gtk_label_set_label (GTK_LABEL (label), title);
 	gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view)), text, -1);
-	gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (container), text_view);
 
 	g_signal_connect (button, "clicked",
-			  G_CALLBACK (copy_error_text_clicked_cb), text_view);
+			  G_CALLBACK (copy_error_text_clicked_cb), builder);
 
-	gtk_widget_set_visible (window, TRUE);
+	adw_dialog_present (dialog, parent);
 #endif /* TESTDATADIR */
 }
 
