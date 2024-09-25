@@ -715,7 +715,7 @@ gs_shell_plugin_events_details_text_cb (GsShell *shell,
 	if (details_message == NULL || *details_message == '\0')
 		details_message = adw_toast_get_title (toast);
 
-	gs_utils_show_error_dialog_simple (GTK_WINDOW (shell),
+	gs_utils_show_error_dialog_simple (GTK_WIDGET (shell),
 					   details_message,
 					   details_text);
 }

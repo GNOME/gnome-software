@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="AdwDialog" id="dialog">
+    <property name="title" translatable="yes">Error Details</property>
+    <property name="content-width">500</property>
+    <property name="content-height">350</property>
+    <property name="child">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar"/>
+        </child>
+        <property name="content">
+          <object class="AdwToastOverlay" id="toast_overlay">
+            <property name="child">
+              <object class="AdwPreferencesPage">
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <child>
+                      <object class="GtkLabel" id="label">
+                        <property name="wrap">True</property>
+                        <property name="justify">center</property>
+                        <style>
+                          <class name="title-1"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Details</property>
+                    <property name="header-suffix">
+                      <object class="GtkButton" id="button">
+                        <property name="tooltip-text" translatable="yes">Copy Details</property>
+                        <property name="icon-name">edit-copy-symbolic</property>
+                        <property name="valign">center</property>
+                        <style>
+                          <class name="flat"/>
+                        </style>
+                      </object>
+                    </property>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="vexpand">True</property>
+                        <property name="overflow">hidden</property>
+                        <style>
+                          <class name="card"/>
+                        </style>
+                        <child>
+                          <object class="GtkTextView" id="text_view">
+                            <property name="editable">False</property>
+                            <property name="wrap-mode">word-char</property>
+                            <property name="top-margin">12</property>
+                            <property name="bottom-margin">12</property>
+                            <property name="left-margin">12</property>
+                            <property name="right-margin">12</property>
+                            <property name="monospace">True</property>
+                            <style>
+                              <class name="monospace"/>
+                              <class name="inline"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </property>
+      </object>
+    </property>
+  </object>
+</interface>
