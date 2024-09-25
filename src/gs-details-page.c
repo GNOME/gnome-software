@@ -652,10 +652,7 @@ gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_t
 static void
 gs_details_page_translation_banner_clicked_cb (GsDetailsPage *self)
 {
-	AdwDialog *dialog;
-
-	dialog = ADW_DIALOG (gs_app_translation_dialog_new (self->app));
-	adw_dialog_present (dialog, GTK_WIDGET (self));
+	gs_utils_show_error_dialog (GTK_WIDGET (self), "Lorem ipsum", "Lorem ipsum 2", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
 }
 
 static void
@@ -1373,8 +1370,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 
 	adw_banner_set_revealed (self->translation_banner,
-				 gs_app_get_has_translations (self->app) &&
-				 !gs_app_has_kudo (self->app, GS_APP_KUDO_MY_LANGUAGE));
+				 TRUE);
 
 	/* set the description */
 	tmp = gs_app_get_description (self->app);

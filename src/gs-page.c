@@ -266,7 +266,7 @@ gs_page_install_app (GsPage *page,
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		GtkResponseType response;
 
-		response = gs_app_notify_unavailable (app, GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (page), GTK_TYPE_WINDOW)));
+		response = gs_app_notify_unavailable (app, GTK_WIDGET (page));
 		if (response != GTK_RESPONSE_OK) {
 			g_autoptr(GError) error_local = NULL;
 			g_set_error_literal (&error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED, _("User declined installation"));
