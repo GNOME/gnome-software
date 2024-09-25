@@ -2,17 +2,19 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <requires lib="adwaita" version="1.0"/>
-  <template class="GsBasicAuthDialog" parent="AdwWindow">
-    <property name="modal">True</property>
-    <property name="destroy_with_parent">True</property>
+  <template class="GsBasicAuthDialog" parent="AdwDialog">
     <property name="title" translatable="yes">Login Required</property>
-    <property name="content">
+    <property name="content-width">360</property>
+    <signal name="closed" handler="close_cb" object="GsBasicAuthDialog" swapped="yes"/>
+    <property name="child">
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar">
             <property name="show_start_title_buttons">False</property>
             <property name="show_end_title_buttons">False</property>
-            <child>
+            <property name="show-start-title-buttons">False</property>
+            <property name="show-end-title-buttons">False</property>
+            <child type="start">
               <object class="GtkButton" id="cancel_button">
                 <property name="label" translatable="yes">_Cancel</property>
                 <property name="receives_default">True</property>

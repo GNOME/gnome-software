@@ -401,8 +401,8 @@ gs_shell_basic_auth_start_cb (GsPluginLoader *plugin_loader,
 {
 	GtkWidget *dialog;
 
-	dialog = gs_basic_auth_dialog_new (GTK_WINDOW (shell), remote, realm, callback, callback_data);
-	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
+	dialog = gs_basic_auth_dialog_new (remote, realm, callback, callback_data);
+	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (shell));
 }
 
 static gboolean

@@ -16,7 +16,7 @@
 
 struct _GsBasicAuthDialog
 {
-	AdwWindow		 parent_instance;
+	AdwDialog		 parent_instance;
 
 	GsBasicAuthCallback	 callback;
 	gpointer		 callback_data;
@@ -28,7 +28,7 @@ struct _GsBasicAuthDialog
 	GtkEntry		*password_entry;
 };
 
-G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, ADW_TYPE_WINDOW)
+G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, ADW_TYPE_DIALOG)
 
 static void
 cancel_button_clicked_cb (GsBasicAuthDialog *dialog)
@@ -36,7 +36,7 @@ cancel_button_clicked_cb (GsBasicAuthDialog *dialog)
 	/* abort the basic auth request */
 	dialog->callback (NULL, NULL, dialog->callback_data);
 
-	gtk_window_close (GTK_WINDOW (dialog));
+	adw_dialog_close (ADW_DIALOG (dialog));
 }
 
 static void
@@ -51,7 +51,7 @@ login_button_clicked_cb (GsBasicAuthDialog *dialog)
 	/* submit the user/password to basic auth */
 	dialog->callback (user, password, dialog->callback_data);
 
-	gtk_window_close (GTK_WINDOW (dialog));
+	adw_dialog_close (ADW_DIALOG (dialog));
 }
 
 static void
@@ -115,13 +115,11 @@ gs_basic_auth_dialog_class_init (GsBasicAuthDialogClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, dialog_validate);
 	gtk_widget_class_bind_template_callback (widget_class, cancel_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, login_button_clicked_cb);
-
-	gtk_widget_class_add_binding (widget_class, GDK_KEY_Escape, 0, close_cb, NULL);
+	gtk_widget_class_bind_template_callback (widget_class, close_cb);
 }
 
 GtkWidget *
-gs_basic_auth_dialog_new (GtkWindow *parent,
-                          const gchar *remote,
+gs_basic_auth_dialog_new (const gchar *remote,
                           const gchar *realm,
                           GsBasicAuthCallback callback,
                           gpointer callback_data)
@@ -129,7 +127,6 @@ gs_basic_auth_dialog_new (GtkWindow *parent,
 	GsBasicAuthDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_BASIC_AUTH_DIALOG,
-	                       "transient-for", parent,
 	                       NULL);
 	dialog->callback = callback;
 	dialog->callback_data = callback_data;
