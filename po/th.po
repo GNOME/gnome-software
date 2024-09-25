@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-09-09 13:13+0000\n"
-"PO-Revision-Date: 2024-09-10 14:04+0700\n"
+"POT-Creation-Date: 2024-09-12 11:37+0000\n"
+"PO-Revision-Date: 2024-09-26 00:45+0700\n"
 "Last-Translator: Atirut Wattanamongkol <atirut.wattanamongkol@gmail.com>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "Language: th\n"
@@ -66,9 +66,9 @@ msgid "The update details"
 msgstr "รายละเอียดของการอัปเดต"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2573 src/gs-application.c:264
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2590 src/gs-application.c:264
 msgid "The GNOME Project"
-msgstr "The GNOME Project"
+msgstr "โครงการ GNOME"
 
 #: data/org.gnome.software.external-appstream.policy.in.in:11
 msgid "Install an appstream file into a system location"
@@ -197,15 +197,15 @@ msgstr "บทวิจารณ์ที่มีกิจกรรมต่ำ
 
 #: data/org.gnome.software.gschema.xml:86
 msgid "A list of official repositories that should not be considered 3rd party"
-msgstr "รายชื่อคลังแพกเกจที่เป็นทางการที่จะไม่ถือเป็นบุคคลที่สาม"
+msgstr "รายชื่อคลังซอฟต์แวร์ที่เป็นทางการที่จะไม่ถือเป็นบุคคลที่สาม"
 
 #: data/org.gnome.software.gschema.xml:90
 msgid "A list of required repositories that cannot be disabled or removed"
-msgstr "รายชื่อคลังแพกเกจที่จำเป็นซึ่งไม่สามารถปิดใช้หรือลบออกได้"
+msgstr "รายชื่อคลังซอฟต์แวร์ที่จำเป็นซึ่งไม่สามารถปิดใช้หรือลบออกได้"
 
 #: data/org.gnome.software.gschema.xml:94
 msgid "A list of official repositories that should be considered free software"
-msgstr "รายชื่อคลังแพกเกจที่เป็นทางการที่จะถือเป็นซอฟต์แวร์เสรี"
+msgstr "รายชื่อคลังซอฟต์แวร์ที่เป็นทางการที่จะถือเป็นซอฟต์แวร์เสรี"
 
 #: data/org.gnome.software.gschema.xml:98
 msgid "The licence URL to use when an application should be considered free software"
@@ -941,17 +941,17 @@ msgstr "ไม่มีบทวิจารณ์"
 
 #: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:563
 msgid "Version History"
-msgstr "ประวัติเวอร์ชัน"
+msgstr "ประวัติรุ่น"
 
 #: src/gs-app-version-history-row.c:135
 #, c-format
 msgid "New in Version %s"
-msgstr "สิ่งใหม่ในเวอร์ชัน %s"
+msgstr "สิ่งใหม่ในรุ่น %s"
 
 #: src/gs-app-version-history-row.c:142
 #, c-format
 msgid "Version %s"
-msgstr "เวอร์ชัน %s"
+msgstr "รุ่น %s"
 
 #: src/gs-app-version-history-row.c:144
 msgid "No details for this release"
@@ -2412,33 +2412,33 @@ msgstr "แอปนี้สามารถใช้งานได้เฉพ
 
 #: src/gs-details-page.ui:689
 msgid "Software Repository Included"
-msgstr "มีแหล่งซอฟต์แวร์"
+msgstr "มีคลังซอฟต์แวร์"
 
 #: src/gs-details-page.ui:699
 msgid ""
 "This app includes a software repository which provides updates, as well as access to other software."
-msgstr "แอปนี้รวมแหล่งซอฟต์แวร์ซึ่งให้การอัปเดต รวมถึงการเข้าถึงซอฟต์แวร์อื่นๆ"
+msgstr "แอปนี้รวมคลังซอฟต์แวร์ซึ่งให้การอัปเดต รวมถึงการเข้าถึงซอฟต์แวร์อื่นๆ"
 
 #: src/gs-details-page.ui:727
 msgid "No Software Repository Included"
-msgstr "ไม่มีแหล่งซอฟต์แวร์"
+msgstr "ไม่มีคลังซอฟต์แวร์"
 
 #: src/gs-details-page.ui:737
 msgid "This app does not include a software repository. It will not be updated with new versions."
-msgstr "แอพนี้ไม่มีแหล่งซอฟต์แวร์ ดังนั้นจะไม่ได้รับการอัปเดตเป็นเวอร์ชันใหม่"
+msgstr "แอพนี้ไม่มีคลังซอฟต์แวร์ ดังนั้นจะไม่ได้รับการอัปเดตเป็นรุ่นใหม่"
 
 #. Translators: a repository file used for installing software has been discovered.
 #: src/gs-details-page.ui:796
 msgid "Software Repository Identified"
-msgstr "ตรวจพบแหล่งซอฟต์แวร์"
+msgstr "ตรวจพบคลังซอฟต์แวร์"
 
 #: src/gs-details-page.ui:806
 msgid "Adding this software repository will give you access to additional software and upgrades."
-msgstr "การเพิ่มแหล่งซอฟต์แวร์นี้จะทำให้คุณสามารถเข้าถึงซอฟต์แวร์และการอัปเกรดเพิ่มเติมได้"
+msgstr "การเพิ่มคลังซอฟต์แวร์นี้จะทำให้คุณสามารถเข้าถึงซอฟต์แวร์และการอัปเกรดเพิ่มเติมได้"
 
 #: src/gs-details-page.ui:813
 msgid "Only use software repositories that you trust."
-msgstr "ใช้เฉพาะแหล่งซอฟต์แวร์ที่คุณเชื่อถือเท่านั้น"
+msgstr "ใช้เฉพาะคลังซอฟต์แวร์ที่คุณเชื่อถือเท่านั้น"
 
 #: src/gs-details-page.ui:854
 msgid "Clear app data"
@@ -3293,7 +3293,7 @@ msgstr "คุณแน่ใจหรือไม่ว่าต้องกา
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the repository to use them "
 "again."
-msgstr "ทุกแอปจาก %s จะถูกถอนการติดตั้ง และคุณจะต้องติดตั้งคลังแพกเกจดังกล่าวใหม่หากต้องการใช้งานอีกครั้ง"
+msgstr "ทุกแอปจาก %s จะถูกถอนการติดตั้ง และคุณจะต้องติดตั้งคลังซอฟต์แวร์ดังกล่าวใหม่หากต้องการใช้งานอีกครั้ง"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
@@ -3429,11 +3429,11 @@ msgstr ""
 
 #: src/gs-repos-dialog.c:250
 msgid "Disable Repository?"
-msgstr "ต้องการปิดใช้คลังแพกเกจหรือไม่?"
+msgstr "ต้องการปิดใช้คลังซอฟต์แวร์หรือไม่?"
 
 #: src/gs-repos-dialog.c:250
 msgid "Remove Repository?"
-msgstr "ต้องการถอดถอนคลังแพกเกจหรือไม่?"
+msgstr "ต้องการถอดถอนคลังซอฟต์แวร์หรือไม่?"
 
 #. TRANSLATORS: this is button text to disable a repo
 #: src/gs-repos-dialog.c:257
@@ -3447,18 +3447,17 @@ msgstr "_ถอดถอน"
 
 #: src/gs-repos-dialog.c:618
 msgid "Enable New Repositories"
-msgstr ""
+msgstr "เปิดใช้งานคลังซอฟต์แวร์ใหม่"
 
 #: src/gs-repos-dialog.c:619
 msgid "Turn on new repositories when they are added."
-msgstr ""
+msgstr "เปิดใช้งานคลังซอฟต์แวร์ใหม่เมื่อมีการเพิ่ม"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
 #: src/gs-repos-dialog.c:628
-#, fuzzy
 msgid "more information"
-msgstr "แสดงข้อมูลดีบั๊กโดยละเอียด"
+msgstr "ข้อมูลเพิ่มเติม"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
@@ -3466,11 +3465,11 @@ msgstr "แสดงข้อมูลดีบั๊กโดยละเอี
 #: src/gs-repos-dialog.c:633
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
-msgstr ""
+msgstr "คลังซอฟต์แวร์เพิ่มเติมจากบุคคลที่สามที่เลือก — %s"
 
 #: src/gs-repos-dialog.c:638
 msgid "Fedora Third Party Repositories"
-msgstr ""
+msgstr "คลังซอฟต์แวร์บุคคลที่สามจาก Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
@@ -3483,7 +3482,7 @@ msgstr "ระบบปฏิบัติการ"
 #: src/gs-repos-dialog.c:846
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
-msgstr ""
+msgstr "คลังซอฟต์แวร์เหล่านี้เสริมของซอฟต์แวร์เริ่มต้นที่จัดทำโดย %s"
 
 #: src/gs-repos-dialog.ui:8 src/gs-toast.c:62
 msgid "Software Repositories"
@@ -3500,7 +3499,7 @@ msgstr "ไม่มีคลังซอฟต์แวร์"
 #, c-format
 msgid "%u app installed"
 msgid_plural "%u apps installed"
-msgstr[0] "มีแอปติดตั้งไว้ %u รายการ"
+msgstr[0] "ติดตั้งไว้แล้ว %u แอป"
 
 #. TRANSLATORS: This string states how many add-ons have been
 #. * installed from a particular repo, and is displayed on a row
@@ -3509,7 +3508,7 @@ msgstr[0] "มีแอปติดตั้งไว้ %u รายการ"
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
-msgstr[0] "มีส่วนเสริมติดตั้งไว้ %u รายการ"
+msgstr[0] "ติดตั้งไว้แล้ว %u ส่วนเสริม"
 
 #. TRANSLATORS: This string is used to construct the 'X apps
 #. and Y add-ons installed' sentence, stating how many things have been
@@ -3521,7 +3520,7 @@ msgstr[0] "มีส่วนเสริมติดตั้งไว้ %u �
 #, c-format
 msgid "%u app"
 msgid_plural "%u apps"
-msgstr[0] "แอป %u รายการ"
+msgstr[0] "%u แอป"
 
 #. TRANSLATORS: This string is used to construct the 'X apps
 #. and Y add-ons installed' sentence, stating how many things have been
@@ -3533,7 +3532,7 @@ msgstr[0] "แอป %u รายการ"
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
-msgstr[0] "ส่วนเสริม %u รายการ"
+msgstr[0] "%u ส่วนเสริม"
 
 #. TRANSLATORS: This string is used to construct the 'X apps
 #. and Y add-ons installed' sentence, stating how many things have been
@@ -3552,7 +3551,7 @@ msgstr[0] "ส่วนเสริม %u รายการ"
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
-msgstr[0] "ติดตั้ง %s และ %s เสร็จแล้ว"
+msgstr[0] "ติดตั้งไว้แล้ว %sและ %s"
 
 #: src/gs-repo-row.c:242
 msgid "Checking installed software…"
@@ -3651,6 +3650,7 @@ msgid ""
 "Please provide a rating, summary and review text. Reviews should not be used to report problems: "
 "instead, contact the developer or your support provider."
 msgstr ""
+"โปรดให้คะแนน สรุป และข้อความวิจารณ์ ไม่ควรใช้บทวิจารณ์เพื่อรายงานปัญหา แต่ให้ติดต่อผู้พัฒนาหรือผู้ให้บริการสนับสนุนของคุณแทน"
 
 #: src/gs-review-dialog.ui:111
 msgid "Review Summary"
@@ -3667,6 +3667,8 @@ msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy\">privacy policy</a>. The "
 "full name attached to your account will be shown publicly."
 msgstr ""
+"ดูว่าข้อมูลที่อะไรที่จะส่งใน<a href=\"https://odrs.gnome.org/privacy\">นโยบายความเป็นส่วนตัวของเรา</a> "
+"ชื่อนามสกุลที่แนบกับบัญชีของคุณจะปรากฏต่อสาธารณะ"
 
 #: src/gs-review-histogram.c:72
 #, c-format
@@ -4972,9 +4974,8 @@ msgstr "ต้องรีสตาร์ท"
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
 #: src/gs-updates-section.c:560
-#, fuzzy
 msgid "App Updates"
-msgstr "มีรุ่นใหม่"
+msgstr "อัปเดตแอป"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
@@ -5004,7 +5005,7 @@ msgstr "%s มีให้ติดตั้งแล้ว"
 
 #: src/gs-upgrade-banner.c:155
 msgid "Learn about the new version"
-msgstr "เรียนรู้เกี่ยวกับเวอร์ชันใหม่"
+msgstr "เรียนรู้เกี่ยวกับรุ่นใหม่"
 
 #. Translators: the first '%s' is replaced with the downloaded size, the second '%s'
 #. with the total download size, forming text like "135 MB of 2 GB downloaded"
@@ -5026,7 +5027,7 @@ msgstr "การอัปเกรดใหญ่ พร้อมความ�
 
 #: src/gs-upgrade-banner.ui:187
 msgid "_Restart & Upgrade…"
-msgstr "_รีสตาร์ทม่และอัปเกรด…"
+msgstr "_รีสตาร์ทและอัปเกรด…"
 
 #: src/gs-upgrade-banner.ui:215
 msgid "Remember to back up data and files before upgrading."
@@ -5049,7 +5050,7 @@ msgstr "เพิ่ม ลบ หรืออัปเดตซอฟต์แ�
 #. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:12
 msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
-msgstr "อัปเดต;อัปเกรด;แหล่งซอฟต์แวร์;คลังแพกเกจ;ปรับแต่ง;ติดตั้ง;ถอดถอน;โปรแกรม;ซอฟต์แวร์;แอป;ร้าน;"
+msgstr "อัปเดต;อัปเกรด;แหล่งซอฟต์แวร์;คลังซอฟต์แวร์;ปรับแต่ง;ติดตั้ง;ถอดถอน;โปรแกรม;ซอฟต์แวร์;แอป;ร้าน;"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
@@ -5065,9 +5066,9 @@ msgstr "การอัปเดตระบบทั่วไป เช่น �
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
 #: plugins/eos-updater/gs-plugin-eos-updater.c:689
-#, fuzzy, c-format
+#, c-format
 msgid "%s update with new features and fixes."
-msgstr "อัปเดตของ %s พร้อมความสามารถใหม่และการปรับปรุงเพิ่มเติม"
+msgstr "อัปเดตของ %s พร้อมความสามารถและการปรับปรุงใหม่"
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:1306
 msgid "EOS update service could not fetch and apply the update."
@@ -5093,9 +5094,8 @@ msgstr "กำลังดาวน์โหลดข้อมูลการอ
 #. TRANSLATORS: this is a title for Fedora distro upgrades
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:405
 #: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:95
-#, fuzzy
 msgid "Upgrade for the latest features, performance and stability improvements."
-msgstr "มีการปรับปรุงประสิทธิภาพ เสถียรภาพ และการรักษาความปลอดภัย"
+msgstr "อัปเกรดเพื่อรับความสามารถ ประสิทธิภาพการทำงาน และการปรับปรุงเสถียรภาพล่าสุด"
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
 msgid "Flatpak Support"
