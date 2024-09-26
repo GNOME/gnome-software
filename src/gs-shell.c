@@ -72,7 +72,6 @@ struct _GsShell
 	GtkWidget		*header_end_widget;
 	GtkWidget		*sub_header_end_widget;
 	GQueue			*back_entry_stack;
-	GPtrArray		*modal_dialogs;
 	AdwLeaflet		*main_leaflet;
 	AdwLeaflet		*details_leaflet;
 	AdwViewStack		*stack_loading;
@@ -124,40 +123,6 @@ enum {
 static GParamSpec *obj_props[PROP_ALLOCATION_WIDTH + 1] = { NULL, };
 
 static guint signals [SIGNAL_LAST] = { 0 };
-
-static void
-modal_dialog_unmapped_cb (GtkWidget *dialog,
-                          GsShell *shell)
-{
-	g_debug ("modal dialog %p unmapped", dialog);
-	g_ptr_array_remove (shell->modal_dialogs, dialog);
-}
-
-void
-gs_shell_modal_dialog_present (GsShell *shell, GtkWindow *window)
-{
-	GtkWindow *parent;
-
-	/* show new modal on top of old modal */
-	if (shell->modal_dialogs->len > 0) {
-		parent = g_ptr_array_index (shell->modal_dialogs,
-					    shell->modal_dialogs->len - 1);
-		g_debug ("using old modal %p as parent", parent);
-	} else {
-		parent = GTK_WINDOW (shell);
-		g_debug ("using main window");
-	}
-	gtk_window_set_transient_for (window, parent);
-
-	/* add to stack, transfer ownership to here */
-	g_ptr_array_add (shell->modal_dialogs, window);
-	g_signal_connect (GTK_WIDGET (window), "unmap",
-	                  G_CALLBACK (modal_dialog_unmapped_cb), shell);
-
-	/* present the new one */
-	gtk_window_set_modal (window, TRUE);
-	gtk_window_present (window);
-}
 
 void
 gs_shell_activate (GsShell *shell)
@@ -486,7 +451,6 @@ stack_notify_visible_child_cb (GObject    *object,
 	GsPage *page;
 	GtkWidget *widget;
 	GsShellMode mode = gs_shell_get_mode (shell);
-	gsize i;
 
 	update_header_widgets (shell);
 
@@ -562,22 +526,6 @@ stack_notify_visible_child_cb (GObject    *object,
 	if (TRUE)
 #endif
 		gs_shell_refresh_auto_updates_ui (shell);
-
-	/* destroy any existing modals */
-	if (shell->modal_dialogs != NULL) {
-		/* block signal emission of 'unmapped' since that will
-		 * call g_ptr_array_remove_index. The unmapped signal may
-		 * be emitted whilst running unref handlers for
-		 * g_ptr_array_set_size */
-		for (i = 0; i < shell->modal_dialogs->len; ++i) {
-			GtkWidget *dialog = g_ptr_array_index (shell->modal_dialogs, i);
-			g_signal_handlers_disconnect_by_func (dialog,
-							      modal_dialog_unmapped_cb,
-							      shell);
-			gtk_window_destroy (GTK_WINDOW (dialog));
-		}
-		g_ptr_array_set_size (shell->modal_dialogs, 0);
-	}
 }
 
 void
@@ -2511,7 +2459,6 @@ gs_shell_dispose (GObject *object)
 	g_clear_object (&shell->header_end_widget);
 	g_clear_object (&shell->sub_header_end_widget);
 	g_clear_object (&shell->page);
-	g_clear_pointer (&shell->modal_dialogs, g_ptr_array_unref);
 	g_clear_object (&shell->settings);
 
 #ifdef HAVE_MOGWAI
@@ -2701,7 +2648,6 @@ gs_shell_init (GsShell *shell)
 	gtk_search_bar_connect_entry (GTK_SEARCH_BAR (shell->search_bar), GTK_EDITABLE (shell->entry_search));
 
 	shell->back_entry_stack = g_queue_new ();
-	shell->modal_dialogs = g_ptr_array_new ();
 }
 
 GsShell *
