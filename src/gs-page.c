@@ -307,7 +307,7 @@ gs_page_install_app (GsPage *page,
 }
 
 static void
-gs_page_update_app_response_cb (AdwMessageDialog *dialog,
+gs_page_update_app_response_cb (AdwAlertDialog *dialog,
 				const gchar *response,
 				gpointer user_data)
 {
@@ -459,7 +459,7 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
 }
 
 static void
-gs_page_remove_app_response_cb (AdwMessageDialog *dialog,
+gs_page_remove_app_response_cb (AdwAlertDialog *dialog,
 				const gchar *response,
 				gpointer user_data)
 {
