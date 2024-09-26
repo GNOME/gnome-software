@@ -20,9 +20,6 @@
                 <property name="use_underline">True</property>
                 <property name="valign">center</property>
                 <signal name="clicked" handler="cancel_button_clicked_cb" object="GsBasicAuthDialog" swapped="yes"/>
-                <style>
-                  <class name="text-button"/>
-                </style>
               </object>
             </child>
             <child type="end">
@@ -33,7 +30,6 @@
                 <property name="valign">center</property>
                 <signal name="clicked" handler="login_button_clicked_cb" object="GsBasicAuthDialog" swapped="yes"/>
                 <style>
-                  <class name="text-button"/>
                   <class name="suggested-action"/>
                 </style>
               </object>
