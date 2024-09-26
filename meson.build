@@ -131,13 +131,14 @@ libxmlb = dependency('xmlb', version : '>= 0.3.4', fallback : ['libxmlb', 'libxm
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
 gmodule = dependency('gmodule-2.0')
 gtk = dependency('gtk4',
-  version : '>= 4.13.4',
+  version : '>= 4.16.0',
   fallback: ['gtk', 'gtk_dep'],
   default_options: [
+      'build-demos=false',
       'build-examples=false',
       'build-tests=false',
+      'build-testsuite=false',
       'introspection=disabled',
-      'demos=false',
       'vulkan=disabled',
     ]
   )
@@ -154,7 +155,7 @@ else
   libsoupapiversion = '3.0'
 endif
 libadwaita = dependency('libadwaita-1',
-  version: '>=1.6.alpha',
+  version: '>=1.6.0',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'examples=false',
