@@ -42,7 +42,8 @@
               <object class="AdwPreferencesGroup">
                 <child>
                   <object class="AdwEntryRow" id="user_entry">
-                    <property name="title" translatable="yes" comments="Translators: Title for a login entry.">User</property>
+                    <property name="title" translatable="yes" comments="Translators: Title for a login entry.">_User</property>
+                    <property name="use-underline">True</property>
                     <property name="activates_default">True</property>
                     <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
                     <signal name="entry-activated" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
@@ -50,7 +51,8 @@
                 </child>
                 <child>
                   <object class="AdwPasswordEntryRow" id="password_entry">
-                    <property name="title" translatable="yes" comments="Translators: Title for a login entry.">Password</property>
+                    <property name="title" translatable="yes" comments="Translators: Title for a login entry.">_Password</property>
+                    <property name="use-underline">True</property>
                     <property name="activates_default">True</property>
                     <property name="input_purpose">password</property>
                     <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
