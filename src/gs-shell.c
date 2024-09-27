@@ -2094,16 +2094,6 @@ gs_shell_setup_pages (GsShell *shell)
 }
 
 static void
-gs_shell_add_about_menu_item (GsShell *shell)
-{
-	g_autoptr(GMenuItem) menu_item = NULL;
-
-	/* TRANSLATORS: this is the menu item that opens the about window */
-	menu_item = g_menu_item_new (_("About Software"), "app.about");
-	g_menu_append_item (G_MENU (shell->primary_menu), menu_item);
-}
-
-static void
 updates_page_notify_counter_cb (GObject    *obj,
                                 GParamSpec *pspec,
                                 gpointer    user_data)
@@ -2185,9 +2175,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* coldplug */
 	gs_shell_rescan_events (shell);
-
-	/* primary menu */
-	gs_shell_add_about_menu_item (shell);
 
 	if (g_settings_get_boolean (shell->settings, "download-updates")) {
 		/* show loading page, which triggers the initial refresh */
