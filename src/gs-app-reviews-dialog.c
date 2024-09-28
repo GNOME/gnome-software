@@ -18,6 +18,7 @@
 struct _GsAppReviewsDialog
 {
 	AdwDialog	 parent_instance;
+	GtkWidget       *toast_overlay;
 	GtkWidget	*listbox;
 	GtkWidget	*stack;
 
@@ -54,6 +55,20 @@ enum {
 static guint signals[SIGNAL_LAST] = { 0 };
 
 static void refresh_reviews (GsAppReviewsDialog *self);
+
+static void
+display_error_toast (GsAppReviewsDialog *dialog,
+                     const gchar *error_text)
+{
+	AdwToast *toast;
+
+	g_return_if_fail (GS_IS_APP_REVIEWS_DIALOG (dialog));
+	g_return_if_fail (error_text != NULL);
+
+	toast = adw_toast_new (error_text);
+
+	adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (dialog->toast_overlay), toast);
+}
 
 static gint
 sort_reviews (AsReview **a, AsReview **b)
@@ -101,6 +116,7 @@ review_action_completed_cb (GObject      *source_object,
 			   gs_review_row_action_to_string (data->action),
 			   gs_app_get_id (data->dialog->app),
 			   (local_error ? local_error->message : "Unknown error"));
+		display_error_toast (data->dialog, (local_error ? local_error->message : _("Unknown error")));
 		return;
 	}
 
@@ -480,6 +496,7 @@ gs_app_reviews_dialog_class_init (GsAppReviewsDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-reviews-dialog.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsAppReviewsDialog, toast_overlay);
 	gtk_widget_class_bind_template_child (widget_class, GsAppReviewsDialog, listbox);
 	gtk_widget_class_bind_template_child (widget_class, GsAppReviewsDialog, stack);
 }
