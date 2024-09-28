@@ -2360,6 +2360,52 @@ gs_details_page_app_launch_button_cb (GtkWidget *widget, GsDetailsPage *self)
 	gs_page_launch_app (GS_PAGE (self), self->app, self->cancellable);
 }
 
+typedef struct {
+	GsDetailsPage *details_page;  /* (not nullable) (unowned) */
+	GsReviewDialog *dialog; /* (not nullable) (unowned) */
+	GsApp *app;  /* (not nullable) (owned) */
+} ReviewSubmitData;
+
+static void
+submit_review_data_free (ReviewSubmitData *data)
+{
+	g_clear_object (&data->app);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (ReviewSubmitData, submit_review_data_free);
+
+static void
+review_submitted_cb (GObject *source_object,
+		     GAsyncResult *result,
+		     gpointer user_data)
+{
+	GsOdrsProvider *odrs_provider = GS_ODRS_PROVIDER (source_object);
+	g_autoptr(ReviewSubmitData) data = g_steal_pointer (&user_data);
+	GsDetailsPage *self = data->details_page;
+	GsReviewDialog *review_dialog = data->dialog;
+	g_autoptr(GError) local_error = NULL;
+	gboolean dialog_open;
+
+	/* if the dialog which triggered this callback is open. */
+	dialog_open = (self->review_dialog && GS_REVIEW_DIALOG (self->review_dialog) == review_dialog);
+
+	if (!gs_odrs_provider_submit_review_finish (odrs_provider, result, &local_error)) {
+		g_autofree gchar *tmp = NULL;
+		tmp = g_strdup_printf (_("Failed to submit review for “%s”: %s"), gs_app_get_name (data->app), local_error->message);
+		if (dialog_open)
+			gs_review_dialog_set_error_text (review_dialog, tmp);
+
+		return;
+	}
+
+	gs_details_page_refresh_reviews (self);
+
+	/* unmap the dialog */
+	if (dialog_open)
+		adw_dialog_force_close (ADW_DIALOG (self->review_dialog));
+}
+
 static void
 gs_details_page_review_send_cb (GsReviewDialog *dialog,
 				GsDetailsPage  *self)
@@ -2367,8 +2413,8 @@ gs_details_page_review_send_cb (GsReviewDialog *dialog,
 	g_autofree gchar *text = NULL;
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(AsReview) review = NULL;
+	g_autoptr(ReviewSubmitData) user_data = NULL;
 	GsReviewDialog *rdialog = GS_REVIEW_DIALOG (dialog);
-	g_autoptr(GError) local_error = NULL;
 
 	review = as_review_new ();
 	as_review_set_summary (review, gs_review_dialog_get_summary (rdialog));
@@ -2380,25 +2426,15 @@ gs_details_page_review_send_cb (GsReviewDialog *dialog,
 	as_review_set_date (review, now);
 
 	/* call into the plugins to set the new value */
-	/* FIXME: Make this async */
 	g_assert (self->odrs_provider != NULL);
 
-	gs_odrs_provider_submit_review (self->odrs_provider, self->app, review,
-					self->cancellable, &local_error);
+	user_data = g_new0 (ReviewSubmitData, 1);
+	user_data->details_page = self;
+	user_data->dialog = rdialog;
+	user_data->app = g_object_ref (self->app);
 
-	if (local_error != NULL) {
-		g_autofree gchar *tmp = NULL;
-		g_debug ("failed to submit review on '%s': %s",
-			   gs_app_get_id (self->app), local_error->message);
-		tmp = g_strdup_printf (_("Failed to submit review for “%s”: %s"), gs_app_get_name (self->app), local_error->message);
-		gs_review_dialog_set_error_text (rdialog, tmp);
-		return;
-	}
-
-	gs_details_page_refresh_reviews (self);
-
-	/* unmap the dialog */
-	adw_dialog_force_close (ADW_DIALOG (dialog));
+	gs_odrs_provider_submit_review_async (self->odrs_provider, self->app, review,
+					      self->cancellable, review_submitted_cb, g_steal_pointer (&user_data));
 }
 
 static void

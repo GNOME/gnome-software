@@ -86,10 +86,14 @@ gboolean	 gs_odrs_provider_refine_finish		(GsOdrsProvider		 *self,
 							 GAsyncResult		 *result,
 							 GError			**error);
 
-gboolean	 gs_odrs_provider_submit_review		(GsOdrsProvider		 *self,
+void		 gs_odrs_provider_submit_review_async	(GsOdrsProvider		 *self,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
+							 GAsyncReadyCallback	  callback,
+							 gpointer		  user_data);
+gboolean	 gs_odrs_provider_submit_review_finish	(GsOdrsProvider		 *self,
+							 GAsyncResult		 *result,
 							 GError			**error);
 void		 gs_odrs_provider_upvote_review_async	(GsOdrsProvider		 *self,
 							 GsApp			 *app,
