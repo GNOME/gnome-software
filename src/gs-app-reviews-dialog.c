@@ -84,6 +84,14 @@ review_action_completed_cb (GObject      *source_object,
 	case GS_REVIEW_ACTION_REPORT:
 		success = gs_odrs_provider_report_review_finish (odrs_provider, result, &local_error);
 		break;
+	case GS_REVIEW_ACTION_REMOVE:
+		success = gs_odrs_provider_remove_review_finish (odrs_provider, result, &local_error);
+		/* update the local app */
+		if (success) {
+			gs_app_remove_review (data->dialog->app, gs_review_row_get_review (data->row));
+			refresh_reviews (data->dialog);
+		}
+		break;
 	default:
 		g_assert_not_reached ();
 	}
@@ -137,23 +145,15 @@ review_button_clicked_cb (GsReviewRow        *row,
 
 		return;
 	case GS_REVIEW_ACTION_REMOVE:
-		if (gs_odrs_provider_remove_review (self->odrs_provider, self->app,
-						    review, self->cancellable,
-						    &local_error)) {
-			refresh_reviews (self);
-		}
-		break;
+		gs_odrs_provider_remove_review_async (self->odrs_provider, self->app,
+						      review, self->cancellable,
+						      review_action_completed_cb,
+						      g_steal_pointer (&data));
+
+		return;
 	default:
 		g_assert_not_reached ();
 	}
-
-	if (local_error != NULL) {
-		g_warning ("failed to set review on %s: %s",
-			   gs_app_get_id (self->app), local_error->message);
-		return;
-	}
-
-	gs_review_row_refresh (row);
 }
 
 static GSList * /* (transfer container) */

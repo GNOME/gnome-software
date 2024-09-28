@@ -1085,65 +1085,6 @@ gs_odrs_provider_invalidate_cache (AsReview *review, GError **error)
 	return g_file_delete (cachefn_file, NULL, error);
 }
 
-static gboolean
-gs_odrs_provider_vote (GsOdrsProvider  *self,
-                       AsReview        *review,
-                       const gchar     *uri,
-		       GCancellable    *cancellable,
-                       GError         **error)
-{
-	const gchar *tmp;
-	g_autofree gchar *data = NULL;
-	g_autoptr(JsonBuilder) builder = NULL;
-	g_autoptr(JsonGenerator) json_generator = NULL;
-	g_autoptr(JsonNode) json_root = NULL;
-
-	/* create object with vote data */
-	builder = json_builder_new ();
-	json_builder_begin_object (builder);
-
-	json_builder_set_member_name (builder, "user_hash");
-	json_builder_add_string_value (builder, self->user_hash);
-	json_builder_set_member_name (builder, "user_skey");
-	json_builder_add_string_value (builder,
-				       as_review_get_metadata_item (review, "user_skey"));
-	json_builder_set_member_name (builder, "app_id");
-	json_builder_add_string_value (builder,
-				       as_review_get_metadata_item (review, "app_id"));
-	tmp = as_review_get_id (review);
-	if (tmp != NULL) {
-		gint64 review_id;
-		if (!g_ascii_string_to_signed (tmp, 10, 1, G_MAXINT64, &review_id, error))
-			return FALSE;
-		json_builder_set_member_name (builder, "review_id");
-		json_builder_add_int_value (builder, review_id);
-	}
-	json_builder_end_object (builder);
-
-	/* export as a string */
-	json_root = json_builder_get_root (builder);
-	json_generator = json_generator_new ();
-	json_generator_set_pretty (json_generator, TRUE);
-	json_generator_set_root (json_generator, json_root);
-	data = json_generator_to_data (json_generator, NULL);
-	if (data == NULL)
-		return FALSE;
-
-	/* clear cache */
-	if (!gs_odrs_provider_invalidate_cache (review, error))
-		return FALSE;
-
-	/* send to server */
-	if (!gs_odrs_provider_json_post (self->session, uri, data, cancellable, error))
-		return FALSE;
-
-	/* mark as voted */
-	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
-
-	/* success */
-	return TRUE;
-}
-
 static void
 gs_odrs_provider_vote_async (GsOdrsProvider      *self,
                              AsReview            *review,
@@ -2072,32 +2013,48 @@ gs_odrs_provider_report_review_finish (GsOdrsProvider  *self,
 }
 
 /**
- * gs_odrs_provider_remove_review:
+ * gs_odrs_provider_remove_review_async:
  * @self: a #GsOdrsProvider
  * @app: the app whose review is being removed
  * @review: the review to remove
  * @cancellable: (nullable): a #GCancellable, or %NULL
- * @error: return location for a #GError
+ * @callback: function to call when the asynchronous operation is complete
+ * @user_data: data to pass to @callback
  *
- * Remove a @review written by the user, from @app.
+ * Remove a @review written by the user, from @app asynchronously.
  *
- * Returns: %TRUE on success, %FALSE otherwise
- * Since: 41
+ * Since: 48
  */
-gboolean
-gs_odrs_provider_remove_review (GsOdrsProvider  *self,
-                                GsApp           *app,
-                                AsReview        *review,
-                                GCancellable    *cancellable,
-                                GError         **error)
+void
+gs_odrs_provider_remove_review_async (GsOdrsProvider      *self,
+                                      GsApp               *app,
+                                      AsReview            *review,
+                                      GCancellable        *cancellable,
+                                      GAsyncReadyCallback  callback,
+                                      gpointer             user_data)
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/remove", self->review_server);
-	if (!gs_odrs_provider_vote (self, review, uri, cancellable, error))
-		return FALSE;
+	gs_odrs_provider_vote_async (self, review, uri, cancellable, callback, user_data);
+}
 
-	/* update the local app */
-	gs_app_remove_review (app, review);
-
-	return TRUE;
+/**
+ * gs_odrs_provider_remove_review_finish:
+ * @self: a #GsOdrsProvider
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish an asynchronous remove operation started with
+ * gs_odrs_provider_remove_review_async().
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ *
+ * Since: 48
+ */
+gboolean
+gs_odrs_provider_remove_review_finish (GsOdrsProvider  *self,
+                                       GAsyncResult    *result,
+                                       GError         **error)
+{
+	return gs_odrs_provider_vote_finish (self, result, error);
 }

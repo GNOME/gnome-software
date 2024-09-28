@@ -118,9 +118,13 @@ void		 gs_odrs_provider_report_review_async	(GsOdrsProvider		 *self,
 gboolean	 gs_odrs_provider_report_review_finish	(GsOdrsProvider		 *self,
 							 GAsyncResult		 *result,
 							 GError			**error);
-gboolean	 gs_odrs_provider_remove_review		(GsOdrsProvider		 *self,
+void		 gs_odrs_provider_remove_review_async	(GsOdrsProvider		 *self,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
+							 GAsyncReadyCallback	  callback,
+							 gpointer		  user_data);
+gboolean	 gs_odrs_provider_remove_review_finish	(GsOdrsProvider		 *self,
+							 GAsyncResult		 *result,
 							 GError			**error);
 G_END_DECLS
