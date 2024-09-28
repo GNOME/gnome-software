@@ -50,6 +50,16 @@ typedef struct {
 	guint32 n_star_ratings[6];
 } GsOdrsRating;
 
+static void
+json_post_cb (GObject *source_object,
+              GAsyncResult *result,
+              gpointer user_data);
+
+static void
+soup_send_and_read_cb (GObject *source_object,
+                       GAsyncResult *result,
+                       gpointer user_data);
+
 static int
 rating_compare (const GsOdrsRating *a, const GsOdrsRating *b)
 {
@@ -465,6 +475,95 @@ g_odrs_provider_set_message_request_body (SoupMessage *message,
 	soup_message_set_request_body (message, content_type, input_stream, length);
 
 	g_object_unref (input_stream);
+}
+
+static void
+gs_odrs_provider_json_post_async (SoupSession         *session,
+                                  const gchar         *uri,
+                                  const gchar         *data,
+                                  GCancellable        *cancellable,
+                                  GAsyncReadyCallback  callback,
+                                  gpointer             user_data)
+{
+	g_autoptr(SoupMessage) msg = NULL;
+	g_autoptr(GInputStream) input_stream = NULL;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	/* create the GET data */
+	g_debug ("Sending ODRS request to %s: %s", uri, data);
+	msg = soup_message_new (SOUP_METHOD_POST, uri);
+
+	task = g_task_new (session, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_odrs_provider_json_post_async);
+	g_task_set_task_data (task, g_object_ref (msg), g_object_unref);
+
+	g_odrs_provider_set_message_request_body (msg, "application/json; charset=utf-8",
+						  data, strlen (data));
+	soup_session_send_and_read_async (session, msg, G_PRIORITY_DEFAULT,
+					  cancellable, soup_send_and_read_cb, g_object_ref (task));
+}
+
+static gboolean
+gs_odrs_provider_json_post_finish (SoupSession    *session,
+                                   GAsyncResult   *result,
+                                   GError        **error)
+{
+	g_return_val_if_fail (SOUP_IS_SESSION (session), FALSE);
+	g_return_val_if_fail (g_task_is_valid (result, session), FALSE);
+	g_return_val_if_fail (g_task_get_source_tag (G_TASK (result)) == gs_odrs_provider_json_post_async, FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+soup_send_and_read_cb (GObject *source_object,
+                       GAsyncResult *result,
+                       gpointer user_data)
+{
+	guint status_code;
+	gconstpointer downloaded_data;
+	gsize downloaded_data_length;
+	SoupMessage *msg;
+	SoupSession *session = SOUP_SESSION (source_object);
+
+	g_autoptr(GInputStream) input_stream = NULL;
+	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+
+	msg = g_task_get_task_data (task);
+	bytes = soup_session_send_and_read_finish (session, result, &local_error);
+
+	if (bytes == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
+	status_code = soup_message_get_status (msg);
+
+	g_debug ("ODRS server returned status %u: %.*s", status_code, (gint) downloaded_data_length, (const gchar *) downloaded_data);
+	if (status_code != SOUP_STATUS_OK) {
+		g_set_error (&local_error,
+                             GS_ODRS_PROVIDER_ERROR,
+                             GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
+                             "Failed to submit review to ODRS: %s", soup_status_get_phrase (status_code));
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* process returned JSON */
+	input_stream = g_memory_input_stream_new_from_data (downloaded_data, downloaded_data_length, NULL);
+
+	if (!gs_odrs_provider_parse_success (input_stream, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* success */
+	g_task_return_boolean (task, TRUE);
 }
 
 static gboolean
@@ -1043,6 +1142,113 @@ gs_odrs_provider_vote (GsOdrsProvider  *self,
 
 	/* success */
 	return TRUE;
+}
+
+static void
+gs_odrs_provider_vote_async (GsOdrsProvider      *self,
+                             AsReview            *review,
+                             const gchar         *uri,
+                             GCancellable        *cancellable,
+                             GAsyncReadyCallback  callback,
+                             gpointer             user_data)
+{
+	const gchar *tmp;
+	g_autofree gchar *data = NULL;
+	g_autoptr(JsonBuilder) builder = NULL;
+	g_autoptr(JsonGenerator) json_generator = NULL;
+	g_autoptr(JsonNode) json_root = NULL;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_odrs_provider_vote_async);
+	g_task_set_task_data (task, g_object_ref (review), g_object_unref);
+
+	/* create object with vote data */
+	builder = json_builder_new ();
+	json_builder_begin_object (builder);
+
+	json_builder_set_member_name (builder, "user_hash");
+	json_builder_add_string_value (builder, self->user_hash);
+	json_builder_set_member_name (builder, "user_skey");
+	json_builder_add_string_value (builder,
+				       as_review_get_metadata_item (review, "user_skey"));
+	json_builder_set_member_name (builder, "app_id");
+	json_builder_add_string_value (builder,
+				       as_review_get_metadata_item (review, "app_id"));
+	tmp = as_review_get_id (review);
+	if (tmp != NULL) {
+		gint64 review_id;
+		if (!g_ascii_string_to_signed (tmp, 10, 1, G_MAXINT64, &review_id, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+		json_builder_set_member_name (builder, "review_id");
+		json_builder_add_int_value (builder, review_id);
+	}
+	json_builder_end_object (builder);
+
+	/* export as a string */
+	json_root = json_builder_get_root (builder);
+	json_generator = json_generator_new ();
+	json_generator_set_pretty (json_generator, TRUE);
+	json_generator_set_root (json_generator, json_root);
+	data = json_generator_to_data (json_generator, NULL);
+
+	if (data == NULL) {
+#if GLIB_CHECK_VERSION(2, 80, 0)
+		g_task_return_new_error_literal (task, G_IO_ERROR, G_IO_ERROR_FAILED,
+						 "No data to send to ODRS server");
+#else
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
+					 "%s", "No data to send to ODRS server");
+#endif
+		return;
+	}
+
+	/* clear cache */
+	if (!gs_odrs_provider_invalidate_cache (review, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* send to server */
+	gs_odrs_provider_json_post_async (self->session, uri, data, cancellable, json_post_cb, g_steal_pointer (&task));
+}
+
+static gboolean
+gs_odrs_provider_vote_finish (GsOdrsProvider *self,
+                              GAsyncResult   *result,
+                              GError        **error)
+{
+	g_return_val_if_fail (GS_IS_ODRS_PROVIDER (self), FALSE);
+	g_return_val_if_fail (g_task_is_valid (result, self), FALSE);
+	g_return_val_if_fail (g_task_get_source_tag (G_TASK (result)) == gs_odrs_provider_vote_async, FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+json_post_cb (GObject *source_object,
+              GAsyncResult *result,
+              gpointer user_data)
+{
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	AsReview *review = g_task_get_task_data (task);
+	SoupSession *session = SOUP_SESSION (source_object);
+
+	if (!gs_odrs_provider_json_post_finish (session, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* mark as voted */
+	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
+
+	/* success */
+	g_task_return_boolean (task, TRUE);
 }
 
 static void
