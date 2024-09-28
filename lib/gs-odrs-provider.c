@@ -1956,28 +1956,50 @@ gs_odrs_provider_report_review (GsOdrsProvider  *self,
 }
 
 /**
- * gs_odrs_provider_upvote_review:
+ * gs_odrs_provider_upvote_review_async:
  * @self: a #GsOdrsProvider
  * @app: the app whose review is being upvoted
  * @review: the review to upvote
  * @cancellable: (nullable): a #GCancellable, or %NULL
- * @error: return location for a #GError
+ * @callback: function to call when the asynchronous operation is complete
+ * @user_data: data to pass to @callback
  *
- * Add one vote to @review on @app.
+ * Add one vote to @review on @app asynchronously.
  *
- * Returns: %TRUE on success, %FALSE otherwise
- * Since: 41
+ * Since: 48
  */
-gboolean
-gs_odrs_provider_upvote_review (GsOdrsProvider  *self,
-                                GsApp           *app,
-                                AsReview        *review,
-                                GCancellable    *cancellable,
-                                GError         **error)
+void
+gs_odrs_provider_upvote_review_async (GsOdrsProvider      *self,
+                                      GsApp               *app,
+                                      AsReview            *review,
+                                      GCancellable        *cancellable,
+                                      GAsyncReadyCallback  callback,
+                                      gpointer             user_data)
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/upvote", self->review_server);
-	return gs_odrs_provider_vote (self, review, uri, cancellable, error);
+	gs_odrs_provider_vote_async (self, review, uri, cancellable, callback, user_data);
+}
+
+/**
+ * gs_odrs_provider_upvote_review_finish:
+ * @self: a #GsOdrsProvider
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish an asynchronous upvote operation started with
+ * gs_odrs_provider_upvote_review_async().
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ *
+ * Since: 48
+ */
+gboolean
+gs_odrs_provider_upvote_review_finish (GsOdrsProvider  *self,
+                                       GAsyncResult    *result,
+                                       GError         **error)
+{
+	return gs_odrs_provider_vote_finish (self, result, error);
 }
 
 /**

@@ -36,6 +36,14 @@ typedef enum {
 	PROP_PLUGIN_LOADER,
 } GsAppReviewsDialogProperty;
 
+typedef struct {
+	GsReviewRow        *row; /* (not nullable) (unowned) */
+	GsAppReviewsDialog *dialog; /* (not nullable) (unowned) */
+	GsReviewAction      action;
+} AsyncReviewData;
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (AsyncReviewData, g_free)
+
 static GParamSpec *obj_props[PROP_PLUGIN_LOADER + 1] = { NULL, };
 
 enum {
@@ -54,22 +62,60 @@ sort_reviews (AsReview **a, AsReview **b)
 }
 
 static void
+review_action_completed_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            gpointer      user_data)
+{
+	GsOdrsProvider *odrs_provider = GS_ODRS_PROVIDER (source_object);
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(AsyncReviewData) data = g_steal_pointer (&user_data);
+	gboolean success;
+
+	if (g_cancellable_is_cancelled (g_task_get_cancellable (G_TASK (result))))
+		return;
+
+	switch (data->action) {
+	case GS_REVIEW_ACTION_UPVOTE:
+		success = gs_odrs_provider_upvote_review_finish (odrs_provider, result, &local_error);
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+
+	if (!success) {
+		g_warning ("failed to %s review on %s: %s",
+			   gs_review_row_action_to_string (data->action),
+			   gs_app_get_id (data->dialog->app),
+			   (local_error ? local_error->message : "Unknown error"));
+		return;
+	}
+
+	gs_review_row_refresh (data->row);
+}
+
+static void
 review_button_clicked_cb (GsReviewRow        *row,
                           GsReviewAction      action,
                           GsAppReviewsDialog *self)
 {
 	AsReview *review = gs_review_row_get_review (row);
 	g_autoptr(GError) local_error = NULL;
+	g_autoptr(AsyncReviewData) data = g_new0 (AsyncReviewData, 1);
 
 	g_assert (self->odrs_provider != NULL);
 
-	/* FIXME: Make this async */
+	data->row = row;
+	data->dialog = self;
+	data->action = action;
+
 	switch (action) {
 	case GS_REVIEW_ACTION_UPVOTE:
-		gs_odrs_provider_upvote_review (self->odrs_provider, self->app,
-						review, self->cancellable,
-						&local_error);
-		break;
+		gs_odrs_provider_upvote_review_async (self->odrs_provider, self->app,
+						      review, self->cancellable,
+						      review_action_completed_cb,
+						      g_steal_pointer (&data));
+
+		return;
 	case GS_REVIEW_ACTION_DOWNVOTE:
 		gs_odrs_provider_downvote_review (self->odrs_provider, self->app,
 						  review, self->cancellable,
