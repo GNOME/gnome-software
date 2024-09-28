@@ -287,6 +287,21 @@ gs_review_row_set_actions (GsReviewRow *review_row, guint64 actions)
 	gs_review_row_refresh (review_row);
 }
 
+const gchar *
+gs_review_row_action_to_string (GsReviewAction action)
+{
+	if (action == GS_REVIEW_ACTION_UPVOTE)
+		return "upvote";
+	if (action == GS_REVIEW_ACTION_DOWNVOTE)
+		return "downvote";
+	if (action == GS_REVIEW_ACTION_REPORT)
+		return "report";
+	if (action == GS_REVIEW_ACTION_REMOVE)
+		return "remove";
+
+	g_assert_not_reached ();
+}
+
 /**
  * gs_review_row_new:
  * @review: The review to show
