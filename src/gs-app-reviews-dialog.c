@@ -81,6 +81,9 @@ review_action_completed_cb (GObject      *source_object,
 	case GS_REVIEW_ACTION_DOWNVOTE:
 		success = gs_odrs_provider_downvote_review_finish (odrs_provider, result, &local_error);
 		break;
+	case GS_REVIEW_ACTION_REPORT:
+		success = gs_odrs_provider_report_review_finish (odrs_provider, result, &local_error);
+		break;
 	default:
 		g_assert_not_reached ();
 	}
@@ -127,10 +130,12 @@ review_button_clicked_cb (GsReviewRow        *row,
 
 		return;
 	case GS_REVIEW_ACTION_REPORT:
-		gs_odrs_provider_report_review (self->odrs_provider, self->app,
-						review, self->cancellable,
-						&local_error);
-		break;
+		gs_odrs_provider_report_review_async (self->odrs_provider, self->app,
+						      review, self->cancellable,
+						      review_action_completed_cb,
+						      g_steal_pointer (&data));
+
+		return;
 	case GS_REVIEW_ACTION_REMOVE:
 		if (gs_odrs_provider_remove_review (self->odrs_provider, self->app,
 						    review, self->cancellable,
