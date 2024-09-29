@@ -1039,8 +1039,9 @@ gs_odrs_provider_vote (GsOdrsProvider  *self,
 	tmp = as_review_get_id (review);
 	if (tmp != NULL) {
 		gint64 review_id;
+		if (!g_ascii_string_to_signed (tmp, 10, 1, G_MAXINT64, &review_id, error))
+			return FALSE;
 		json_builder_set_member_name (builder, "review_id");
-		review_id = g_ascii_strtoll (tmp, NULL, 10);
 		json_builder_add_int_value (builder, review_id);
 	}
 	json_builder_end_object (builder);
