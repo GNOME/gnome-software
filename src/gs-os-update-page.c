@@ -66,7 +66,7 @@ row_activated_cb (GtkListBox *list_box,
 {
 	GsApp *app;
 
-	app = GS_APP (g_object_get_data (G_OBJECT (gtk_list_box_row_get_child (row)), "app"));
+	app = GS_APP (g_object_get_data (G_OBJECT (row), "app"));
 	g_assert (app != NULL);
 
 	g_signal_emit (page, signals[SIGNAL_APP_ACTIVATED], 0, app);
@@ -122,87 +122,39 @@ format_version_update (GsApp *app, GtkTextDirection direction)
 static GtkWidget *
 create_app_row (GsApp *app)
 {
-	GtkWidget *row, *row_container, *label;
-	const char *critical_update_message;
-	g_autofree char *a11y_row_label = NULL;
+	GtkWidget *row;
 
-	row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+	row = adw_action_row_new ();
+
 	g_object_set_data_full (G_OBJECT (row),
 	                        "app",
 	                        g_object_ref (app),
 	                        g_object_unref);
-	label = gtk_label_new (gs_app_get_source_default (app));
-	g_object_set (label,
-	              "margin-start", 20,
-	              "margin-end", 0,
-	              "margin-top", 6,
-	              "margin-bottom", 6,
-	              "xalign", 0.0,
-	              "ellipsize", PANGO_ELLIPSIZE_END,
-	              NULL);
-	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-	gtk_box_append (GTK_BOX (row), label);
+
+	adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), gs_app_get_source_default (app));
+	gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 
 	if (gs_app_get_update_urgency (app) >= AS_URGENCY_KIND_CRITICAL) {
 		GtkWidget *image;
 
 		image = gtk_image_new_from_icon_name ("emblem-important-symbolic");
 		gtk_image_set_pixel_size (GTK_IMAGE (image), 16);
-		gtk_widget_set_halign (image, GTK_ALIGN_START);
 		gtk_widget_set_tooltip_text (image, _("Critical update"));
-		gtk_widget_set_hexpand (image, TRUE);
+		gtk_widget_set_margin_end (image, 6);
 		gtk_widget_add_css_class (image, "warning");
 		gtk_accessible_update_property (GTK_ACCESSIBLE (image), GTK_ACCESSIBLE_PROPERTY_LABEL, _("Critical update"), -1);
-		gtk_box_append (GTK_BOX (row), image);
-	} else {
-		gtk_widget_set_hexpand (label, TRUE);
+		adw_action_row_add_suffix (ADW_ACTION_ROW (row), image);
 	}
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
 	    gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE) {
 		g_autofree gchar *verstr = format_version_update (app, gtk_widget_get_direction (row));
-		label = gtk_label_new (verstr);
+		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), verstr);
 	} else {
-		label = gtk_label_new (gs_app_get_version (app));
-	}
-	g_object_set (label,
-	              "margin-start", 0,
-	              "margin-end", 20,
-	              "margin-top", 6,
-	              "margin-bottom", 6,
-	              "xalign", 1.0,
-	              "ellipsize", PANGO_ELLIPSIZE_END,
-	              NULL);
-	gtk_widget_set_halign (label, GTK_ALIGN_END);
-	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-	gtk_box_append (GTK_BOX (row), label);
-
-	row_container = g_object_new (GTK_TYPE_LIST_BOX_ROW, "child", row, NULL);
-
-	critical_update_message = (gs_app_get_update_urgency (app) >= AS_URGENCY_KIND_CRITICAL) ? _("Critical update") : "";
-
-	/* This is the accessibility label for the row. Since it’s a textual
-	 * representation of the row for the screen reader, the order its
-	 * components appear in needs to vary with the text direction, just like
-	 * the widgets do. */
-	if (gtk_widget_get_direction (GTK_WIDGET (row_container)) == GTK_TEXT_DIR_RTL) {
-		a11y_row_label = g_strjoin (" ",
-					    gtk_label_get_text (GTK_LABEL (label)),
-					    critical_update_message,
-					    gs_app_get_source_default (app),
-					    NULL);
-	} else {
-		a11y_row_label = g_strjoin (" ",
-					    gs_app_get_source_default (app),
-					    critical_update_message,
-					    gtk_label_get_text (GTK_LABEL (label)),
-					    NULL);
+		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), gs_app_get_version (app));
 	}
 
-	gtk_accessible_update_property (GTK_ACCESSIBLE (row_container), GTK_ACCESSIBLE_PROPERTY_LABEL, a11y_row_label, -1);
-
-	return row_container;
+	return row;
 }
 
 static gboolean
@@ -263,8 +215,8 @@ os_updates_sort_func (GtkListBoxRow *a,
 		      GtkListBoxRow *b,
 		      gpointer user_data)
 {
-	GObject *o1 = G_OBJECT (gtk_list_box_row_get_child (a));
-	GObject *o2 = G_OBJECT (gtk_list_box_row_get_child (b));
+	GObject *o1 = G_OBJECT (a);
+	GObject *o2 = G_OBJECT (b);
 	GsApp *a1 = g_object_get_data (o1, "app");
 	GsApp *a2 = g_object_get_data (o2, "app");
 	const gchar *key1 = gs_app_get_source_default (a1);
