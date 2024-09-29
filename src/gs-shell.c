@@ -81,14 +81,14 @@ struct _GsShell
 	GtkWidget		*header_end_widget;
 	GtkWidget		*sub_header_end_widget;
 	GQueue			*back_entry_stack;
-	AdwLeaflet		*main_leaflet;
-	AdwLeaflet		*details_leaflet;
+	AdwNavigationView	*details_navigation_view;
 	AdwViewStack		*stack_loading;
 	AdwViewStack		*stack_main;
 	AdwViewStack		*stack_sub;
 	GsPage			*page;
 
 	GBinding		*sub_page_header_title_binding;
+	GBinding		*details_page_header_title_binding;
 
 #ifdef HAVE_MOGWAI
 	MwscScheduler		*scheduler;
@@ -102,17 +102,17 @@ struct _GsShell
 	GtkWidget		*search_button;
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
-	GtkWidget		*button_back;
-	GtkWidget		*button_back2;
 	GtkWidget		*toast_overlay;
 	GtkWidget		*primary_menu;
 	GtkWidget		*sub_header;
 	GtkWidget		*sub_page_header_title;
+	GtkWidget		*details_page_header_title;
 
 	gboolean		 activate_after_setup;
 	gboolean		 is_narrow;
 	gint			 allocation_width;
 	guint			 allocation_changed_cb_id;
+	gchar			*last_stack_page;
 
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 	gulong			 overview_page_refreshed_id;
@@ -452,6 +452,21 @@ update_header_widgets (GsShell *shell)
 	g_signal_handlers_unblock_by_func (shell->search_bar, search_bar_search_mode_enabled_changed_cb, shell);
 }
 
+static gboolean
+transform_binding_to (GBinding *binding,
+		      const GValue *from_value,
+		      GValue *to_value,
+		      GsShell *shell)
+{
+	if (!!g_value_get_string (from_value))
+		g_value_set_string (to_value, g_value_get_string (from_value));
+	else
+		/* This is needed to work around critical warning:
+		 * "AdwNavigationPage is missing a title." */
+		g_value_set_string (to_value, " ");
+	return TRUE;
+}
+
 static void
 stack_notify_visible_child_cb (GObject    *object,
                                GParamSpec *pspec,
@@ -523,9 +538,24 @@ stack_notify_visible_child_cb (GObject    *object,
 	}
 
 	g_clear_object (&shell->sub_page_header_title_binding);
-	shell->sub_page_header_title_binding = g_object_bind_property (adw_view_stack_get_visible_child (shell->stack_sub), "title",
-								       shell->sub_page_header_title, "label",
-								       G_BINDING_SYNC_CREATE);
+	shell->sub_page_header_title_binding =
+		g_object_bind_property_full (adw_view_stack_get_visible_child (shell->stack_sub),
+					     "title",
+					     shell->sub_page_header_title,
+					     "label",
+					     G_BINDING_SYNC_CREATE,
+					     (GBindingTransformFunc) transform_binding_to,
+					     NULL, shell, NULL);
+
+	g_clear_object (&shell->details_page_header_title_binding);
+	shell->details_page_header_title_binding =
+		g_object_bind_property_full (G_OBJECT (shell->pages[GS_SHELL_MODE_DETAILS]),
+					     "title",
+					     shell->details_page_header_title,
+					     "label",
+					     G_BINDING_SYNC_CREATE,
+					     (GBindingTransformFunc) transform_binding_to,
+					     NULL, shell, NULL);
 
 	/* refresh the updates bar when moving out of the loading mode, but only
 	 * if the Mogwai scheduler state is already known, to avoid spuriously
@@ -555,38 +585,37 @@ gs_shell_change_mode (GsShell *shell,
 	}
 
 	/* switch page */
-	if (mode == GS_SHELL_MODE_LOADING) {
+	switch (mode) {
+	case GS_SHELL_MODE_LOADING:
 		adw_view_stack_set_visible_child_name (shell->stack_loading, "loading");
 		return;
-	}
+	case GS_SHELL_MODE_DETAILS:
+		adw_navigation_view_push_by_tag (shell->details_navigation_view, "details");
+		break;
+	default:
+		adw_navigation_view_pop (shell->details_navigation_view);
 
-	adw_view_stack_set_visible_child_name (shell->stack_loading, "main");
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	if (mode == GS_SHELL_MODE_DETAILS) {
-		adw_leaflet_set_visible_child_name (shell->details_leaflet, "details");
-	} else {
-		adw_leaflet_set_visible_child_name (shell->details_leaflet, "main");
-		/* We only change the main leaflet when not reaching the details
-		 * page to preserve the navigation history in the UI's state.
-		 * First change the page, then the leaflet, to avoid load of
-		 * the previously shown page, which will be changed shortly after. */
 		adw_view_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
-		adw_leaflet_set_visible_child_name (shell->main_leaflet, mode_is_main ? "main" : "sub");
+
+		if (!mode_is_main) {
+			adw_navigation_view_push_by_tag (shell->details_navigation_view, "sub");
+		} else {
+			adw_view_stack_set_visible_child_name (shell->stack_loading, "main");
+			adw_navigation_view_pop_to_tag (shell->details_navigation_view, "main");
+		}
+		break;
 	}
-G_GNUC_END_IGNORE_DEPRECATIONS
 
 	/* do any mode-specific actions */
 	page = shell->pages[mode];
 
-	if (mode == GS_SHELL_MODE_SEARCH) {
-		/* Use scroll_up as a hint that the mode change is not meant to preserve context */
-		if (scroll_up)
-			gs_search_page_clear (GS_SEARCH_PAGE (page));
-
+	switch (mode) {
+	case GS_SHELL_MODE_SEARCH:
 		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
 		gtk_editable_set_text (GTK_EDITABLE (shell->entry_search), data);
 		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);
-	} else if (mode == GS_SHELL_MODE_DETAILS) {
+		break;
+	case GS_SHELL_MODE_DETAILS:
 		app = GS_APP (data);
 		if (gs_app_get_metadata_item (app, "GnomeSoftware::show-metainfo") != NULL) {
 			gs_details_page_set_metainfo (GS_DETAILS_PAGE (page),
@@ -600,9 +629,13 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 		} else {
 			gs_details_page_set_app (GS_DETAILS_PAGE (page), data);
 		}
-	} else if (mode == GS_SHELL_MODE_CATEGORY) {
+		break;
+	case GS_SHELL_MODE_CATEGORY:
 		gs_category_page_set_category (GS_CATEGORY_PAGE (page),
 		                               GS_CATEGORY (data));
+		break;
+	default:
+		break;
 	}
 
 	if (scroll_up)
@@ -736,73 +769,6 @@ gs_shell_plugin_event_dismissed_cb (GsShell *shell)
 }
 
 static void
-gs_shell_go_back (GsShell *shell)
-{
-	BackEntry *entry;
-
-	/* nothing to do */
-	if (g_queue_is_empty (shell->back_entry_stack)) {
-		g_debug ("no back stack, showing overview");
-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
-		return;
-	}
-
-	entry = g_queue_pop_head (shell->back_entry_stack);
-
-	switch (entry->mode) {
-	case GS_SHELL_MODE_UNKNOWN:
-	case GS_SHELL_MODE_LOADING:
-		/* happens when using --search, --details, --install, etc. options */
-		g_debug ("popping back entry for %s", page_name[entry->mode]);
-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
-		break;
-	case GS_SHELL_MODE_CATEGORY:
-		g_debug ("popping back entry for %s with %s",
-			 page_name[entry->mode],
-			 gs_category_get_id (entry->category));
-		gs_shell_change_mode (shell, entry->mode, entry->category, FALSE);
-		break;
-	case GS_SHELL_MODE_SEARCH:
-		g_debug ("popping back entry for %s with %s",
-			 page_name[entry->mode], entry->search);
-
-		/* set the mode directly */
-		gs_shell_change_mode (shell, entry->mode,
-				      (gpointer) entry->search, FALSE);
-		break;
-	case GS_SHELL_MODE_DETAILS:
-		g_debug ("popping back entry for %s with app %s and vscroll position %f",
-			 page_name[entry->mode],
-			 gs_app_get_unique_id (entry->app),
-			 entry->vscroll_position);
-		gs_shell_change_mode (shell, entry->mode, entry->app, FALSE);
-		gs_details_page_set_vscroll_position (GS_DETAILS_PAGE (shell->pages[GS_SHELL_MODE_DETAILS]), entry->vscroll_position);
-		break;
-	default:
-		g_debug ("popping back entry for %s", page_name[entry->mode]);
-		gs_shell_change_mode (shell, entry->mode, NULL, FALSE);
-		break;
-	}
-
-	if (entry->focus != NULL)
-		gtk_widget_grab_focus (entry->focus);
-
-	free_back_entry (entry);
-}
-
-static void
-gs_shell_details_back_button_cb (GtkWidget *widget, GsShell *shell)
-{
-	gs_shell_go_back (shell);
-}
-
-static void
-gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
-{
-	gs_shell_go_back (shell);
-}
-
-static void
 gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 {
 	for (gsize i = 0; i < G_N_ELEMENTS (shell->pages); i++) {
@@ -901,20 +867,15 @@ window_keypress_handler (GtkEventControllerKey *key_controller,
 	/* handle ctrl+f shortcut */
 	if ((modifiers == GDK_CONTROL_MASK && keyval == GDK_KEY_f) ||
 	    (modifiers == (GDK_CONTROL_MASK | GDK_LOCK_MASK) && keyval == GDK_KEY_F)) {
-		if (!gtk_search_bar_get_search_mode (GTK_SEARCH_BAR (shell->search_bar))) {
+		if (g_strcmp0 (adw_navigation_view_get_visible_page_tag (shell->details_navigation_view), "main") == 0) {
 			GsShellMode mode = gs_shell_get_mode (shell);
 
-			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), TRUE);
-			gtk_widget_grab_focus (shell->entry_search);
-
-			/* If the mode doesn't have a search button,
-			 * switch to the search page right away,
-			 * otherwise we would show the search bar
-			 * without a button to toggle it. */
+			shell->last_stack_page = g_strdup (adw_view_stack_get_visible_child_name (shell->stack_main));
 			switch (mode) {
 			case GS_SHELL_MODE_OVERVIEW:
 			case GS_SHELL_MODE_INSTALLED:
 			case GS_SHELL_MODE_SEARCH:
+				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), TRUE);
 				break;
 			default:
 				gs_shell_show_search (shell, "");
@@ -923,7 +884,6 @@ window_keypress_handler (GtkEventControllerKey *key_controller,
 		} else {
 			gtk_widget_grab_focus (shell->entry_search);
 		}
-		return GDK_EVENT_STOP;
 	}
 
 	return GDK_EVENT_PROPAGATE;
@@ -954,53 +914,12 @@ search_bar_search_mode_enabled_changed_cb (GtkSearchBar *search_bar,
 {
 	/* go back when exiting the search view */
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH &&
-	    !gtk_search_bar_get_search_mode (search_bar))
-		gs_shell_go_back (shell);
-}
-
-static void
-go_back (GsShell *shell)
-{
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	if (adw_leaflet_get_adjacent_child (shell->details_leaflet,
-					    ADW_NAVIGATION_DIRECTION_BACK)) {
-		gtk_widget_activate (shell->button_back2);
-	} else {
-		gtk_widget_activate (shell->button_back);
-	}
-G_GNUC_END_IGNORE_DEPRECATIONS
-}
-
-static gboolean
-window_key_pressed_cb (GtkEventControllerKey *key_controller,
-                       guint                  keyval,
-                       guint                  keycode,
-                       GdkModifierType        state,
-                       GsShell               *shell)
-{
-	gboolean is_rtl = gtk_widget_get_direction (shell->button_back) == GTK_TEXT_DIR_RTL;
-	gboolean is_alt = (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK)) == GDK_ALT_MASK;
-
-	if ((!is_rtl && is_alt && keyval == GDK_KEY_Left) ||
-	    (is_rtl && is_alt && keyval == GDK_KEY_Right) ||
-	    keyval == GDK_KEY_Back) {
-		go_back (shell);
-		return GDK_EVENT_STOP;
-	}
-
-	return GDK_EVENT_PROPAGATE;
-}
-
-static void
-window_button_pressed_cb (GtkGestureClick *click_gesture,
-                          gint             n_press,
-                          gdouble          x,
-                          gdouble          y,
-                          GsShell         *shell)
-{
-	go_back (shell);
-
-	gtk_gesture_set_state (GTK_GESTURE (click_gesture), GTK_EVENT_SEQUENCE_CLAIMED);
+	    !gtk_search_bar_get_search_mode (search_bar)) {
+		if (shell->last_stack_page) {
+			adw_view_stack_set_visible_child_name (shell->stack_main, shell->last_stack_page);
+			g_free (shell->last_stack_page);
+		}
+	    }
 }
 
 static gboolean
@@ -2262,15 +2181,13 @@ gs_shell_get_mode (GsShell *shell)
 	if (g_strcmp0 (adw_view_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
 		return GS_SHELL_MODE_LOADING;
 
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->details_leaflet), "details") == 0)
+	if (g_strcmp0 (adw_navigation_view_get_visible_page_tag (shell->details_navigation_view), "details") == 0)
 		return GS_SHELL_MODE_DETAILS;
 
-	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->main_leaflet), "main") == 0)
+	if (g_strcmp0 (adw_navigation_view_get_visible_page_tag (shell->details_navigation_view), "main") == 0)
 		name = adw_view_stack_get_visible_child_name (shell->stack_main);
 	else
 		name = adw_view_stack_get_visible_child_name (shell->stack_sub);
-G_GNUC_END_IGNORE_DEPRECATIONS
 
 	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++)
 		if (g_strcmp0 (page_name[i], name) == 0)
@@ -2481,6 +2398,7 @@ gs_shell_dispose (GObject *object)
 	g_clear_signal_handler (&shell->overview_page_refreshed_id, shell->pages[GS_SHELL_MODE_OVERVIEW]);
 
 	g_clear_object (&shell->sub_page_header_title_binding);
+	g_clear_object (&shell->details_page_header_title_binding);
 
 	if (shell->back_entry_stack != NULL) {
 		g_queue_free_full (shell->back_entry_stack, (GDestroyNotify) free_back_entry);
@@ -2502,6 +2420,8 @@ gs_shell_dispose (GObject *object)
 
 	g_clear_signal_handler (&shell->settings_changed_download_updates_id, shell->settings);
 	g_clear_object (&shell->settings);
+
+	g_free (&shell->last_stack_page);
 
 #ifdef HAVE_MOGWAI
 	if (shell->scheduler != NULL) {
@@ -2625,9 +2545,8 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, details_header);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, details_leaflet);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, details_navigation_view);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_sub);
@@ -2635,12 +2554,11 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back2);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, toast_overlay);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_page_header_title);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, details_page_header_title);
 
 	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));
 	gtk_widget_class_bind_template_child_full (widget_class, "updates_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_UPDATES]));
@@ -2654,11 +2572,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_mapped_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_realized_cb);
 	gtk_widget_class_bind_template_callback (widget_class, main_window_closed_cb);
-	gtk_widget_class_bind_template_callback (widget_class, window_key_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, window_keypress_handler);
-	gtk_widget_class_bind_template_callback (widget_class, window_button_pressed_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_details_back_button_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_overview_page_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, updates_page_notify_counter_cb);
 	gtk_widget_class_bind_template_callback (widget_class, category_page_app_clicked_cb);

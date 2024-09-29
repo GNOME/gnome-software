@@ -106,7 +106,7 @@ struct _GsDetailsPage
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
 								packaging format when the alternatives are found */
 	gboolean		 is_narrow;
-	gboolean		 title_visible;
+	gboolean		 show_title;
 
 	guint			 job_manager_watch_id;
 
@@ -189,6 +189,7 @@ enum {
 
 typedef enum {
 	PROP_ODRS_PROVIDER = 1,
+	PROP_SHOW_TITLE,
 	PROP_IS_NARROW,
 	/* Override properties: */
 	PROP_TITLE,
@@ -2619,11 +2620,7 @@ gs_details_page_get_property (GObject    *object,
 			g_value_set_string (value, NULL);
 			break;
 		case GS_DETAILS_PAGE_STATE_READY:
-			self->title_visible = gs_details_page_should_show_title (self);
-			if (self->title_visible)
-				g_value_set_string (value, gs_app_get_name (self->app));
-			else
-				g_value_set_string (value, NULL);
+			g_value_set_string (value, gs_app_get_name (self->app));
 			break;
 		case GS_DETAILS_PAGE_STATE_FAILED:
 			g_value_set_string (value, NULL);
@@ -2634,6 +2631,9 @@ gs_details_page_get_property (GObject    *object,
 		break;
 	case PROP_ODRS_PROVIDER:
 		g_value_set_object (value, gs_details_page_get_odrs_provider (self));
+		break;
+	case PROP_SHOW_TITLE:
+		g_value_set_boolean (value, gs_details_page_should_show_title (self));
 		break;
 	case PROP_IS_NARROW:
 		g_value_set_boolean (value, gs_details_page_get_is_narrow (self));
@@ -2659,6 +2659,10 @@ gs_details_page_set_property (GObject      *object,
 		break;
 	case PROP_ODRS_PROVIDER:
 		gs_details_page_set_odrs_provider (self, g_value_get_object (value));
+		break;
+	case PROP_SHOW_TITLE:
+		/* Read only */
+		g_assert_not_reached ();
 		break;
 	case PROP_IS_NARROW:
 		gs_details_page_set_is_narrow (self, g_value_get_boolean (value));
@@ -2739,6 +2743,18 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 		g_param_spec_boolean ("is-narrow", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsDetailsPage:show-title:
+	 *
+	 * Whether the page should show the title.
+	 *
+	 * Since: 48
+	 */
+	obj_props[PROP_SHOW_TITLE] =
+		g_param_spec_boolean ("show-title", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
@@ -2894,9 +2910,11 @@ static void
 scrolledwindow_details_value_changed_cb (GtkAdjustment *adjustment,
 					 GsDetailsPage *self)
 {
-	gboolean title_visible = gs_details_page_should_show_title (self);
-	if ((!title_visible) != (!self->title_visible))
-		g_object_notify (G_OBJECT (self), "title");
+	gboolean show_title = gs_details_page_should_show_title (self);
+	if ((!show_title) != (!self->show_title)) {
+		self->show_title = show_title;
+		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_SHOW_TITLE]);
+	}
 }
 
 static void
