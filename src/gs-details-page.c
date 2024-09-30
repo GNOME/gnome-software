@@ -201,10 +201,8 @@ static void
 gs_details_page_cancel_cb (GCancellable *cancellable,
 			   GsDetailsPage *self)
 {
-	if (self->app_reviews_dialog) {
-		gtk_window_destroy (GTK_WINDOW (self->app_reviews_dialog));
-		g_clear_object (&self->app_reviews_dialog);
-	}
+	if (self->app_reviews_dialog)
+		adw_dialog_force_close (ADW_DIALOG (self->app_reviews_dialog));
 }
 
 static GsDetailsPageState
