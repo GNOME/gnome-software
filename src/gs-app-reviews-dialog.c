@@ -441,13 +441,12 @@ gs_app_reviews_dialog_init (GsAppReviewsDialog *self)
 
 /**
  * gs_app_reviews_dialog_new:
- * @parent: (nullable): a #GtkWindow, or %NULL
  * @app: (nullable): a #GsApp, or %NULL
  * @odrs_provider: (nullable): a #GsOdrsProvider, or %NULL
  * @plugin_loader: (nullable): a #GsPluginLoader, or %NULL
  *
- * Create a new #GsAppReviewsDialog transient for @parent, and set its initial
- * app, ODRS provider and plugin loader to @app, @odrs_provider and
+ * Create a new #GsAppReviewsDialog and set its initial app, ODRS
+ * provider and plugin loader to @app, @odrs_provider and
  * @plugin_loader respectively.
  *
  * Returns: (transfer full): a new #GsAppReviewsDialog
