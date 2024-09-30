@@ -81,9 +81,11 @@ review_button_clicked_cb (GsReviewRow        *row,
 						&local_error);
 		break;
 	case GS_REVIEW_ACTION_REMOVE:
-		gs_odrs_provider_remove_review (self->odrs_provider, self->app,
-						review, self->cancellable,
-						&local_error);
+		if (gs_odrs_provider_remove_review (self->odrs_provider, self->app,
+						    review, self->cancellable,
+						    &local_error)) {
+			refresh_reviews (self);
+		}
 		break;
 	default:
 		g_assert_not_reached ();
