@@ -1039,8 +1039,9 @@ gs_odrs_provider_vote (GsOdrsProvider  *self,
 	tmp = as_review_get_id (review);
 	if (tmp != NULL) {
 		gint64 review_id;
+		if (!g_ascii_string_to_signed (tmp, 10, 1, G_MAXINT64, &review_id, error))
+			return FALSE;
 		json_builder_set_member_name (builder, "review_id");
-		review_id = g_ascii_strtoll (tmp, NULL, 10);
 		json_builder_add_int_value (builder, review_id);
 	}
 	json_builder_end_object (builder);
@@ -1681,22 +1682,30 @@ gs_odrs_provider_submit_review (GsOdrsProvider  *self,
 	g_autoptr(JsonBuilder) builder = NULL;
 	g_autoptr(JsonGenerator) json_generator = NULL;
 	g_autoptr(JsonNode) json_root = NULL;
+	const gchar *user_skey = gs_app_get_metadata_item (app, "ODRS::user_skey");
 
 	/* save as we don't re-request the review from the server */
 	as_review_add_flags (review, AS_REVIEW_FLAG_SELF);
 	as_review_set_reviewer_name (review, g_get_real_name ());
 	as_review_add_metadata (review, "app_id", gs_app_get_id (app));
-	as_review_add_metadata (review, "user_skey",
-				gs_app_get_metadata_item (app, "ODRS::user_skey"));
+	if (user_skey)
+		as_review_add_metadata (review, "user_skey", user_skey);
 
 	/* create object with review data */
 	builder = json_builder_new ();
 	json_builder_begin_object (builder);
 	json_builder_set_member_name (builder, "user_hash");
 	json_builder_add_string_value (builder, self->user_hash);
-	json_builder_set_member_name (builder, "user_skey");
-	json_builder_add_string_value (builder,
-				       as_review_get_metadata_item (review, "user_skey"));
+
+	/* When 'fetch' request for an app fails due to some io /
+	 * server issues, we might not have the 'user_skey'
+	 * available. So, we just ignore sending 'user_skey' to the
+	 * server than crashing, as it's not a mandatory field for a
+	 * 'submit' request. */
+	if (user_skey) {
+		json_builder_set_member_name (builder, "user_skey");
+		json_builder_add_string_value (builder, user_skey);
+	}
 	json_builder_set_member_name (builder, "app_id");
 	json_builder_add_string_value (builder,
 				       as_review_get_metadata_item (review, "app_id"));

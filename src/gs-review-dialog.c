@@ -220,7 +220,7 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 }
 
 static void
-gs_review_row_dispose (GObject *object)
+gs_review_dialog_dispose (GObject *object)
 {
 	GsReviewDialog *dialog = GS_REVIEW_DIALOG (object);
 	if (dialog->timer_id > 0) {
@@ -236,7 +236,7 @@ gs_review_dialog_class_init (GsReviewDialogClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_review_row_dispose;
+	object_class->dispose = gs_review_dialog_dispose;
 
 	/**
 	 * GsReviewDialog::send:
