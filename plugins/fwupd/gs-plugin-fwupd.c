@@ -1430,10 +1430,6 @@ gs_plugin_fwupd_install_async (GsPluginFwupd                      *self,
 	 * https://github.com/fwupd/fwupd/issues/5522. */
 	g_set_object (&self->app_current, app);
 
-	/* only offline supported */
-	if (gs_app_get_metadata_item (app, "fwupd::OnlyOffline") != NULL)
-		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
-
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
 	fwupd_client_install_async (self->client, data->device_id,
