@@ -23,9 +23,9 @@ struct _GsBasicAuthDialog
 
 	/* template widgets */
 	GtkButton		*login_button;
-	GtkLabel		*description_label;
-	GtkEntry		*user_entry;
-	GtkEntry		*password_entry;
+	AdwPreferencesPage      *page;
+	AdwEntryRow		*user_entry;
+	AdwEntryRow		*password_entry;
 };
 
 G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, ADW_TYPE_DIALOG)
@@ -87,7 +87,7 @@ update_description (GsBasicAuthDialog *dialog, const gchar *remote, const gchar 
 	/* TRANSLATORS: This is a description for entering user/password */
 	description = g_strdup_printf (_("Login required remote %s (realm %s)"),
 				       remote, realm);
-	gtk_label_set_text (dialog->description_label, description);
+	adw_preferences_page_set_description (dialog->page, description);
 }
 
 static gboolean
@@ -123,7 +123,7 @@ gs_basic_auth_dialog_class_init (GsBasicAuthDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-basic-auth-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsBasicAuthDialog, login_button);
-	gtk_widget_class_bind_template_child (widget_class, GsBasicAuthDialog, description_label);
+	gtk_widget_class_bind_template_child (widget_class, GsBasicAuthDialog, page);
 	gtk_widget_class_bind_template_child (widget_class, GsBasicAuthDialog, user_entry);
 	gtk_widget_class_bind_template_child (widget_class, GsBasicAuthDialog, password_entry);
 
