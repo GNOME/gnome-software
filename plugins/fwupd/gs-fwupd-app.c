@@ -117,11 +117,6 @@ gs_fwupd_app_set_from_device (GsApp *app,
 	    )
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 
-	/* only can be applied in systemd-offline */
-	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_ONLY_OFFLINE))
-		gs_app_set_metadata (app, "fwupd::OnlyOffline", "");
-
-
 	/* reboot required to apply update */
 	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_NEEDS_REBOOT))
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
