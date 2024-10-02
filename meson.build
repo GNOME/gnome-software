@@ -216,8 +216,26 @@ if get_option('fwupd')
 endif
 
 if get_option('flatpak')
-  flatpak = dependency('flatpak', version : '>= 1.9.1')
+  flatpak = dependency('flatpak', version : '>= 1.14.1')
   ostree = dependency('ostree-1')
+
+  flatpak_httpbackend = flatpak.get_variable('httpbackend')
+  if flatpak_httpbackend == 'soup'
+    flatpak_soupapiversion = flatpak.get_variable('soupapiversion', default_value: '2')
+    if flatpak_soupapiversion.version_compare('< 3')
+      error('''Flatpak library has been built with 'libsoup2' http backend, which conflicts with 'libsoup3' used by gnome-software.
+
+You can either:
+
+1. Build gnome-software without flatpak support (with -Dflatpak=false) or
+2. Rebuild flatpak library with http backend other than 'libsoup2'.''')
+    else
+      flatpak_summary = '@0@ (@1@)'.format(flatpak_httpbackend, flatpak_soupapiversion)
+    endif
+  else
+    flatpak_summary = flatpak_httpbackend
+  endif
+  summary('Flatpak http backend', '@0@'.format(flatpak_summary), section : 'Misc')
 endif
 
 if get_option('malcontent')
