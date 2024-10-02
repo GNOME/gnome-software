@@ -263,11 +263,7 @@ gs_icon_download (SoupSession   *session,
 	/* Send request synchronously and start reading the response. */
 	stream = soup_session_send (session, msg, cancellable, error);
 
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	status_code = soup_message_get_status (msg);
-#else
-	status_code = msg->status_code;
-#endif
 	if (stream == NULL) {
 		return NULL;
 	} else if (status_code != SOUP_STATUS_OK) {

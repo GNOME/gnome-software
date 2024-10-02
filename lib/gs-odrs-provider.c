@@ -398,7 +398,6 @@ gs_odrs_provider_parse_success (GInputStream  *input_stream,
 	return TRUE;
 }
 
-#if SOUP_CHECK_VERSION(3, 0, 0)
 typedef struct {
 	GInputStream *input_stream;
 	gssize length;
@@ -467,7 +466,6 @@ g_odrs_provider_set_message_request_body (SoupMessage *message,
 
 	g_object_unref (input_stream);
 }
-#endif
 
 static gboolean
 gs_odrs_provider_json_post (SoupSession  *session,
@@ -481,13 +479,11 @@ gs_odrs_provider_json_post (SoupSession  *session,
 	gconstpointer downloaded_data;
 	gsize downloaded_data_length;
 	g_autoptr(GInputStream) input_stream = NULL;
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	g_autoptr(GBytes) bytes = NULL;
-#endif
+
 	/* create the GET data */
 	g_debug ("Sending ODRS request to %s: %s", uri, data);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	g_odrs_provider_set_message_request_body (msg, "application/json; charset=utf-8",
 						  data, strlen (data));
 	bytes = soup_session_send_and_read (session, msg, cancellable, error);
@@ -496,15 +492,6 @@ gs_odrs_provider_json_post (SoupSession  *session,
 
 	downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
 	status_code = soup_message_get_status (msg);
-#else
-	soup_message_set_request (msg, "application/json; charset=utf-8",
-				  SOUP_MEMORY_COPY, data, strlen (data));
-
-	/* set sync request */
-	status_code = soup_session_send_message (session, msg);
-	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
-	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
-#endif
 	g_debug ("ODRS server returned status %u: %.*s", status_code, (gint) downloaded_data_length, (const gchar *) downloaded_data);
 	if (status_code != SOUP_STATUS_OK) {
 		g_warning ("Failed to set rating on ODRS: %s",
@@ -814,17 +801,10 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
 	data->message = g_object_ref (msg);
 
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	g_odrs_provider_set_message_request_body (msg, "application/json; charset=utf-8",
 						  request_body, strlen (request_body));
 	soup_session_send_async (self->session, msg, G_PRIORITY_DEFAULT,
 				 cancellable, open_input_stream_cb, g_steal_pointer (&task));
-#else
-	soup_message_set_request (msg, "application/json; charset=utf-8",
-				  SOUP_MEMORY_COPY, request_body, strlen (request_body));
-	soup_session_send_async (self->session, msg, cancellable,
-				 open_input_stream_cb, g_steal_pointer (&task));
-#endif
 }
 
 static void
@@ -841,13 +821,8 @@ open_input_stream_cb (GObject      *source_object,
 	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	input_stream = soup_session_send_finish (soup_session, result, &local_error);
 	status_code = soup_message_get_status (data->message);
-#else
-	input_stream = soup_session_send_finish (soup_session, result, &local_error);
-	status_code = data->message->status_code;
-#endif
 
 	if (input_stream == NULL) {
 		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))

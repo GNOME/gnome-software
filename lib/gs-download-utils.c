@@ -56,49 +56,13 @@ gs_build_soup_session (void)
 static gchar *
 date_time_to_rfc7231 (GDateTime *date_time)
 {
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	return soup_date_time_to_string (date_time, SOUP_DATE_HTTP);
-#else
-	const gchar *day_names[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-	const gchar *month_names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-
-	/* We can’t just use g_date_time_format() here because its output
-	 * (particularly day and month names) is locale-dependent.
-	 * #SoupDate is also a pain to use because there’s no easy way to
-	 * convert from a #GDateTime with libsoup-2.4, while preserving the timezone. */
-	g_autofree gchar *time_str = g_date_time_format (date_time, "%H:%M:%S %Z");
-
-	return g_strdup_printf ("%s, %02d %s %d %s",
-				day_names[g_date_time_get_day_of_week (date_time) - 1],
-				g_date_time_get_day_of_month (date_time),
-				month_names[g_date_time_get_month (date_time) - 1],
-				g_date_time_get_year (date_time),
-				time_str);
-#endif
 }
 
 static GDateTime *
 date_time_from_rfc7231 (const gchar *rfc7231_str)
 {
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	return soup_date_time_new_from_http_string (rfc7231_str);
-#else
-	g_autoptr(SoupDate) soup_date = NULL;
-	g_autoptr(GTimeZone) tz = NULL;
-
-	soup_date = soup_date_new_from_string (rfc7231_str);
-	if (soup_date == NULL)
-		return NULL;
-
-	if (soup_date->utc)
-		tz = g_time_zone_new_utc ();
-	else
-		tz = g_time_zone_new_offset (soup_date->offset * 60);
-
-	return g_date_time_new (tz, soup_date->year, soup_date->month,
-				soup_date->day, soup_date->hour,
-				soup_date->minute, soup_date->second);
-#endif
 }
 
 typedef struct {
@@ -269,25 +233,13 @@ gs_download_stream_async (SoupSession                *soup_session,
 		data->last_modified_date = g_date_time_ref (last_modified_date);
 
 	if (last_etag != NULL) {
-#if SOUP_CHECK_VERSION(3, 0, 0)
 		soup_message_headers_append (soup_message_get_request_headers (msg), "If-None-Match", last_etag);
-#else
-		soup_message_headers_append (msg->request_headers, "If-None-Match", last_etag);
-#endif
 	} else if (last_modified_date != NULL) {
 		g_autofree gchar *last_modified_date_str = date_time_to_rfc7231 (last_modified_date);
-#if SOUP_CHECK_VERSION(3, 0, 0)
 		soup_message_headers_append (soup_message_get_request_headers (msg), "If-Modified-Since", last_modified_date_str);
-#else
-		soup_message_headers_append (msg->request_headers, "If-Modified-Since", last_modified_date_str);
-#endif
 	}
 
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	soup_session_send_async (soup_session, msg, data->io_priority, cancellable, open_input_stream_cb, g_steal_pointer (&task));
-#else
-	soup_session_send_async (soup_session, msg, cancellable, open_input_stream_cb, g_steal_pointer (&task));
-#endif
 }
 
 static void
@@ -325,13 +277,8 @@ open_input_stream_cb (GObject      *source_object,
 		const gchar *new_etag, *new_last_modified_str;
 
 		/* HTTP request. */
-#if SOUP_CHECK_VERSION(3, 0, 0)
 		input_stream = soup_session_send_finish (soup_session, result, &local_error);
 		status_code = soup_message_get_status (data->message);
-#else
-		input_stream = soup_session_send_finish (soup_session, result, &local_error);
-		status_code = data->message->status_code;
-#endif
 
 		if (input_stream != NULL) {
 			g_assert (data->input_stream == NULL);
@@ -379,28 +326,16 @@ open_input_stream_cb (GObject      *source_object,
 		g_assert (input_stream != NULL);
 
 		/* Get the expected download size. */
-#if SOUP_CHECK_VERSION(3, 0, 0)
 		data->expected_stream_size_bytes = soup_message_headers_get_content_length (soup_message_get_response_headers (data->message));
-#else
-		data->expected_stream_size_bytes = soup_message_headers_get_content_length (data->message->response_headers);
-#endif
 
 		/* Store the new ETag for later use. */
-#if SOUP_CHECK_VERSION(3, 0, 0)
 		new_etag = soup_message_headers_get_one (soup_message_get_response_headers (data->message), "ETag");
-#else
-		new_etag = soup_message_headers_get_one (data->message->response_headers, "ETag");
-#endif
 		if (new_etag != NULL && *new_etag == '\0')
 			new_etag = NULL;
 		data->new_etag = g_strdup (new_etag);
 
 		/* Store the Last-Modified date for later use. */
-#if SOUP_CHECK_VERSION(3, 0, 0)
 		new_last_modified_str = soup_message_headers_get_one (soup_message_get_response_headers (data->message), "Last-Modified");
-#else
-		new_last_modified_str = soup_message_headers_get_one (data->message->response_headers, "Last-Modified");
-#endif
 		if (new_last_modified_str != NULL && *new_last_modified_str == '\0')
 			new_last_modified_str = NULL;
 		if (new_last_modified_str != NULL)

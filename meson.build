@@ -146,14 +146,7 @@ glib = dependency('glib-2.0', version : '>= 2.76.0')
 gsettings_desktop_schemas = dependency('gsettings-desktop-schemas', version : '>= 3.18.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.6.0')
 libm = cc.find_library('m', required: false)
-if get_option('soup2')
-  libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
-  libsoupapiversion = '2.4'
-  conf.set('SOUP_HTTP_URI_FLAGS', '(G_URI_FLAGS_HAS_PASSWORD | G_URI_FLAGS_ENCODED_PATH | G_URI_FLAGS_ENCODED_QUERY | G_URI_FLAGS_ENCODED_FRAGMENT | G_URI_FLAGS_SCHEME_NORMALIZE)')
-else
-  libsoup = dependency('libsoup-3.0', version : '>= 3.0')
-  libsoupapiversion = '3.0'
-endif
+libsoup = dependency('libsoup-3.0', version : '>= 3.0')
 libadwaita = dependency('libadwaita-1',
   version: '>=1.6.0',
   fallback: ['libadwaita', 'libadwaita_dep'],
@@ -253,11 +246,7 @@ if get_option('gudev')
 endif
 
 if get_option('snap')
-  if get_option('soup2')
-    snap = dependency('snapd-glib', version : '>= 1.50')
-  else
     snap = dependency('snapd-glib-2', version : '>= 1.62')
-  endif
 endif
 
 if get_option('hardcoded_foss_webapps') or get_option('hardcoded_proprietary_webapps')
