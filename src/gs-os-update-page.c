@@ -142,7 +142,6 @@ create_app_row (GsApp *app)
 		gtk_widget_set_tooltip_text (image, _("Critical Update"));
 		gtk_widget_set_margin_end (image, 6);
 		gtk_widget_add_css_class (image, "warning");
-		gtk_accessible_update_property (GTK_ACCESSIBLE (image), GTK_ACCESSIBLE_PROPERTY_LABEL, _("Critical update"), -1);
 		adw_action_row_add_suffix (ADW_ACTION_ROW (row), image);
 	}
 
