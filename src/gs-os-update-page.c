@@ -139,7 +139,7 @@ create_app_row (GsApp *app)
 
 		image = gtk_image_new_from_icon_name ("emblem-important-symbolic");
 		gtk_image_set_pixel_size (GTK_IMAGE (image), 16);
-		gtk_widget_set_tooltip_text (image, _("Critical update"));
+		gtk_widget_set_tooltip_text (image, _("Critical Update"));
 		gtk_widget_set_margin_end (image, 6);
 		gtk_widget_add_css_class (image, "warning");
 		gtk_accessible_update_property (GTK_ACCESSIBLE (image), GTK_ACCESSIBLE_PROPERTY_LABEL, _("Critical update"), -1);
