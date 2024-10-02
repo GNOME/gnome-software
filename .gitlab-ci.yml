@@ -11,7 +11,7 @@ cache:
 variables:
   MESON_TEST_TIMEOUT_MULTIPLIER: 4
   G_MESSAGES_DEBUG: all
-  MESON_COMMON_OPTIONS: "--werror --buildtype debug --wrap-mode=nodownload --prefix /usr -Dsoup2=true -Dwebapps=true -Dhardcoded_foss_webapps=false -Dhardcoded_proprietary_webapps=false"
+  MESON_COMMON_OPTIONS: "--werror --buildtype debug --wrap-mode=nodownload --prefix /usr -Dwebapps=true -Dhardcoded_foss_webapps=false -Dhardcoded_proprietary_webapps=false"
   BUNDLE: "gnome-software-dev.flatpak"
   # -O2 is needed for -Wnull-dereference to work:
   CFLAGS: "-O2"
@@ -52,7 +52,7 @@ fedora-x86_64:
 
 debian-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/debian:v17
+  image: registry.gitlab.gnome.org/gnome/gnome-software/debian:v18
   stage: build
   except:
     - tags

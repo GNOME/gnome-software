@@ -38,7 +38,7 @@ RUN dnf -y install \
     libjpeg-turbo-devel \
     liboauth-devel \
     libsecret-devel \
-    libsoup-devel \
+    libsoup3-devel \
     libstemmer-devel \
     libXcursor-devel \
     libXdamage-devel \
