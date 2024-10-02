@@ -153,6 +153,8 @@ create_app_row (GsApp *app)
 		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), gs_app_get_version (app));
 	}
 
+	adw_action_row_add_suffix (ADW_ACTION_ROW (row), gtk_image_new_from_icon_name ("go-next-symbolic"));
+
 	return row;
 }
 
