@@ -141,10 +141,27 @@ There are several ways to modify the metainfo for apps so that they are
 highlighted as required, all of which involve providing an additional appstream
 file which sets the additional metainfo for those apps.
 
-The main approach is to ship an additional distro-specific appstream file in
-`${DATADIR}/swcatalog/xml`, providing and updating it via normal distribution
-channels. For example, by packaging it in its own package which is updated
-regularly.
+There are 3 main approaches to providing these additional appstream files:
+
+### 1. AppStream files via `gnome-app-list` package:
+
+In this approach, a distro-specific appstream file is installed in
+`${DATADIR}/swcatalog/xml` via `gnome-app-list` package, providing and
+updating it via normal distribution channels.
+
+If distributions wants to promote a different set of apps (than the
+one provided by `gnome-app-list`), the recommended way is to provide
+the additional AppStream file in a separate distribution package
+(for example, `debian-app-list`). If the distribution already ships
+the `gnome-app-list` package, the distribution package should mark
+`gnome-app-list` as ‘conflicting’ with the distribution-specific package,
+so the two cannot be installed at the same time.
+
+Distributions should not patch the app list provided by `gnome-app-list`,
+as that app list has been curated and endorsed by GNOME. Alternative
+lists of promoted apps should be labelled with their curator, not GNOME.
+
+### 2. AppStream files downloadable via remote URL:
 
 For distributions which can’t do regular updates of individual files – such as
 image-based distributions – GNOME Software can download distro-specific
@@ -160,6 +177,8 @@ functions correctly on your server, or GNOME Software’s caching will be
 ineffective.
 
 The `external-appstream-urls` mechanism may change in future.
+
+### 3. AppStream files shipped with GNOME Software: (for testing purposes only)
 
 GNOME Software ships a default list of featured apps, chosen to match
 the [GNOME Circle](https://circle.gnome.org/). See
