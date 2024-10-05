@@ -188,9 +188,19 @@ of the metainfo XML needed to feature or highlight apps. See
 curated high quality apps, which is displayed in the “Editor’s Choice”
 section of the overview page.
 
-Pass `-Ddefault_featured_apps=false` when configuring GNOME Software to disable
-the default list of featured apps. Pass `-Dhardcoded_curated=false` to
-disable the default list of “Editor’s Choice” apps.
+Since GNOME 47, `gnome-app-list` is the recommended way to ship the
+additional appstream files. AppStream files shipped with GNOME
+Software should be used as an interim solution until `gnome-app-list`
+or your distribution provided app list package (<a
+href="#1-appstream-files-via-gnome-app-list-package">as explained
+above</a>) is available in your distribution.
+
+Pass `-Ddefault_featured_apps=true` when configuring GNOME Software to
+enable the default list of featured apps. Pass
+`-Dhardcoded_curated=true` to enable the default list of “Editor’s
+Choice” apps. These options are enabled by default until GNOME 46, and
+disabled by default from GNOME 47 onwards to actively discourage their
+usage.
 
 Deployment Featured Apps
 ------------------------
