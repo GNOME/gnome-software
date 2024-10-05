@@ -22,7 +22,7 @@ If there is a supported customisation method which is not in this document,
 please [submit a merge request](https://gitlab.gnome.org/GNOME/gnome-software/-/merge_requests/)
 to document it.
 
-Likewise, if your distribution would like to customise gnome-software in a way
+Likewise, if your distribution would like to customise GNOME Software in a way
 which isn’t currently supported, please
 [open a new issue](https://gitlab.gnome.org/GNOME/gnome-software/-/issues/)
 to discuss it. We don’t guarantee to implement anything, and customisations are
@@ -210,6 +210,6 @@ it will be used. The relevant file names are `/etc/xdg/gnome-software/deployment
 `/usr/share/gnome-software/deployment-featured.ini`.
 
 Any changes to these files, including adding or removing them, will only be noticed
-when gnome-software is restarted.
+when GNOME Software is restarted.
 
 Example files can be found in the `contrib/` directory.
