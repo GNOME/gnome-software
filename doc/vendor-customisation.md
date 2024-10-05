@@ -32,23 +32,13 @@ Principles
 ----------
 
 The principles which guide vendor customisation features in GNOME Software are:
- * Avoid requiring vendor specific code.
-   - Otherwise vendors have to maintain and test GNOME Software plugins, which
-     is a lot of work.
- * Don’t use GSettings unless customisations really should be per-user.
-   - While GSettings overrides are convenient, they are designed for user
-     preferences, not packaging customisation.
- * Don’t require downstream patching of GNOME Software, although configure-time
-   arguments are OK.
-   - Many distributions are derived from other ones and would not like to have
-     to maintain a packaging fork in order to make small customisations.
- * Be mindful of release cadences.
-   - If customisations related to a new OS version were tied to the release
-     cycle of GNOME Software, a new GNOME Software packaging release would have
-     to be done by a distribution in advance of making their new OS release,
-     which is a burden.
-   - It’s easier to allow distributions to put customisations specific to a new
-     OS version into a separate package.
+
+| Principle | Rationale |
+| ---- | ---- |
+| Avoid requiring vendor specific code | Otherwise vendors have to maintain and test GNOME Software plugins, which is a lot of work. |
+| Don’t use GSettings unless customisations really should be per-user. | While GSettings overrides are convenient, they are designed for user preferences, not packaging customisation. |
+| Don’t require downstream patching of GNOME Software, although configure-time arguments are OK. | Many distributions are derived from other ones and would not like to have to maintain a packaging fork in order to make small customisations. |
+| Be mindful of release cadences. | If customisations related to a new OS version were tied to the release cycle of GNOME Software, a new GNOME Software packaging release would have to be done by a distribution in advance of making their new OS release, which is a burden. It’s easier to allow distributions to put customisations specific to a new OS version into a separate package. |
 
 Upgrade background image
 ------------------------
