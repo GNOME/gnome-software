@@ -122,12 +122,6 @@ Example:
     <!-- Make the app a candidate for inclusion in the carousel or
          “Editor’s Choice” section on category pages (if it has a hi-res icon). -->
     <categories>
-      <!-- Note that, due to a bug (https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1649),
-           currently all the other categories for the app must also be listed
-           here, as well as the additional ‘Featured’ category. -->
-      <category>AudioVideo</category>
-      <category>Player</category>
-      <!-- This category has been added: -->
       <category>Featured</category>
     </categories>
   </component>
