@@ -63,40 +63,40 @@ version string being upgraded to.
 Featured apps and Editor’s Choice
 ---------------------------------
 
-There are several ways to promote and highlight specific applications in GNOME
-Software. On the overview page, there’s a carousel of featured applications
+There are several ways to promote and highlight specific apps in GNOME
+Software. On the overview page, there’s a carousel of featured apps
 (`featured_carousel`), and an “Editor’s Choice” section (`box_curated`). Both of
-them highlight curated sets of applications. The same is true on each category
+them highlight curated sets of apps. The same is true on each category
 page: a carousel (`top_carousel`) and an “Editor’s Choice” section
 (`featured_flow_box`) are present.
 
 Both pages also have a “New & Updated” section (`box_recent` or
-`recently_updated_flow_box`) presented below “Editor’s Choice”. The applications
+`recently_updated_flow_box`) presented below “Editor’s Choice”. The apps
 listed in the new and updated section are not curated: they are chosen as the
-applications which have had a recent release, according to the
+apps which have had a recent release, according to the
 `component/releases/release[@timestamp]` attribute in their metainfo.
 Technically these are the results of a `GsPlugin.list_apps_async()` query with
 `GsAppQuery:released-since` set.
 
-Applications are included in any of the curated sets through having special
+Apps are included in any of the curated sets through having special
 metadata in their metainfo. The required metadata is different for the different
 sections:
- * Carousel on the overview page: Applications are included if they have
+ * Carousel on the overview page: Apps are included if they have
    `component/custom/value[@key='GnomeSoftware::FeatureTile]` or
    `component/custom/value[@key='GnomeSoftware::FeatureTile-css]` set in their
    metainfo. They are also required to have a high-resolution icon, and the set
-   of applications shown in the carousel is randomised and limited to (for
+   of apps shown in the carousel is randomised and limited to (for
    example) 5. Technically these are the results of a
    `GsPlugin.list_apps_async()` query with `GsAppQuery:is-featured` set.
- * “Editor’s Choice” on the overview page: Applications are included if they
+ * “Editor’s Choice” on the overview page: Apps are included if they
    have `component/kudos/kudo[text()='GnomeSoftware::popular']` set in their
    metainfo. Technically these are the results of a `GsPlugin.list_apps_async()`
    query with `GsAppQuery:is-curated` set.
- * Carousel on the category page: Applications are included if they are in the
+ * Carousel on the category page: Apps are included if they are in the
    `Featured` subcategory of the displayed category. They are also required to
-   have a high-resolution icon, and the set of applications shown in the carousel
+   have a high-resolution icon, and the set of apps shown in the carousel
    is randomised and limited to (for example) 5.
- * “Editor’s Choice” on the category page: Applications are included if they
+ * “Editor’s Choice” on the category page: Apps are included if they
    meet the requirements for being in the carousel, but weren’t chosen as part
    of the randomisation process.
 
@@ -135,9 +135,9 @@ Example:
 </components>
 ```
 
-There are several ways to modify the metainfo for applications so that they are
+There are several ways to modify the metainfo for apps so that they are
 highlighted as required, all of which involve providing an additional appstream
-file which sets the additional metainfo for those applications.
+file which sets the additional metainfo for those apps.
 
 The main approach is to ship an additional distro-specific appstream file in
 `${DATADIR}/swcatalog/xml`, providing and updating it via normal distribution
@@ -159,22 +159,22 @@ ineffective.
 
 The `external-appstream-urls` mechanism may change in future.
 
-GNOME Software ships a default list of featured applications, chosen to match
+GNOME Software ships a default list of featured apps, chosen to match
 the [GNOME Circle](https://circle.gnome.org/). See
 `data/assets/org.gnome.Software.Featured.xml` for this list, and for an example
-of the metainfo XML needed to feature or highlight applications. See
+of the metainfo XML needed to feature or highlight apps. See
 `data/assets/org.gnome.Software.Curated.xml` for a default hard-coded list of
-curated high quality applications, which is displayed in the “Editor’s Choice”
+curated high quality apps, which is displayed in the “Editor’s Choice”
 section of the overview page.
 
 Pass `-Ddefault_featured_apps=false` when configuring GNOME Software to disable
-the default list of featured applications. Pass `-Dhardcoded_curated=false` to
-disable the default list of “Editor’s Choice” applications.
+the default list of featured apps. Pass `-Dhardcoded_curated=false` to
+disable the default list of “Editor’s Choice” apps.
 
 Deployment Featured Apps
 ------------------------
 
-Deployments can feature their own applications, which will be shown in the Explore
+Deployments can feature their own apps, which will be shown in the Explore
 page in its own section. To have the section shown, two files need to be provided.
 The number of deployment-featured apps is limited in the UI, and if not enough
 deployment-featured apps are found, then the section will not be shown at all.
