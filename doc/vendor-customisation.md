@@ -107,25 +107,33 @@ Example:
   <component merge="append">
     <!-- The ID must always be present to allow merging -->
     <id>org.gnome.Podcasts</id>
-
     <!-- Make the app a candidate for inclusion in the carousel on the
          overview page (if it has a hi-res icon). -->
     <custom>
       <value key="GnomeSoftware::FeatureTile">True</value>
     </custom>
+  </component>
 
+  <component merge="append">
+    <!-- The ID must always be present to allow merging -->
+    <id>org.gnome.Boxes</id>
     <!-- Include the app in the “Editor’s Choice” section on the overview page. -->
     <kudos>
       <kudo>GnomeSoftware::popular</kudo>
     </kudos>
+  </component>
 
+  <component merge="append">
+    <!-- The ID must always be present to allow merging -->
+    <id>org.gnome.Builder</id>
     <!-- Make the app a candidate for inclusion in the carousel or
          “Editor’s Choice” section on category pages (if it has a hi-res icon). -->
     <categories>
       <category>Featured</category>
     </categories>
   </component>
-  <!-- more components -->
+
+<!-- more components -->
 </components>
 ```
 
