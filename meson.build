@@ -246,7 +246,7 @@ if get_option('gudev')
 endif
 
 if get_option('snap')
-    snap = dependency('snapd-glib-2', version : '>= 1.62')
+    snap = dependency('snapd-glib-2', version : '>= 1.64')
 endif
 
 if get_option('hardcoded_foss_webapps') or get_option('hardcoded_proprietary_webapps')
