@@ -360,14 +360,14 @@ static GPtrArray *
 find_snaps (GsPluginSnap    *self,
             SnapdClient     *client,
             SnapdFindFlags   flags,
-            const gchar     *section,
+            const gchar     *category,
             const gchar     *query,
             GCancellable    *cancellable,
             GError         **error)
 {
 	g_autoptr(GPtrArray) snaps = NULL;
 
-	snaps = snapd_client_find_section_sync (client, flags, section, query, NULL, cancellable, error);
+	snaps = snapd_client_find_category_sync (client, flags, category, query, NULL, cancellable, error);
 	if (snaps == NULL) {
 		snapd_error_convert (error);
 		return NULL;
@@ -457,9 +457,9 @@ url_to_app_data_free (UrlToAppData *data)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (UrlToAppData, url_to_app_data_free)
 
-static void url_to_app_find_section_cb (GObject      *source_object,
-                                        GAsyncResult *result,
-                                        gpointer      user_data);
+static void url_to_app_find_category_cb (GObject      *source_object,
+                                         GAsyncResult *result,
+                                         gpointer      user_data);
 
 static void
 gs_plugin_snap_url_to_app_async (GsPlugin *plugin,
@@ -504,16 +504,16 @@ gs_plugin_snap_url_to_app_async (GsPlugin *plugin,
 
 	/* create app */
 	path = gs_utils_get_url_path (url);
-	snapd_client_find_section_async (client,
+	snapd_client_find_category_async (client,
 					 SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_NAME,
 					 NULL, path, cancellable,
-					 url_to_app_find_section_cb, g_steal_pointer (&task));
+					 url_to_app_find_category_cb, g_steal_pointer (&task));
 }
 
 static void
-url_to_app_find_section_cb (GObject      *source_object,
-                            GAsyncResult *result,
-                            gpointer      user_data)
+url_to_app_find_category_cb (GObject      *source_object,
+                             GAsyncResult *result,
+                             gpointer      user_data)
 {
 	SnapdClient *client = SNAPD_CLIENT (source_object);
 	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
@@ -525,7 +525,7 @@ url_to_app_find_section_cb (GObject      *source_object,
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	snaps = snapd_client_find_section_finish (client, result, NULL, &local_error);
+	snaps = snapd_client_find_category_finish (client, result, NULL, &local_error);
 
 	if ((snaps == NULL || snaps->len < 1) &&
 	    !data->tried_match_common_id) {
@@ -535,10 +535,10 @@ url_to_app_find_section_cb (GObject      *source_object,
 		data->tried_match_common_id = TRUE;
 
 		path = gs_utils_get_url_path (data->url);
-		snapd_client_find_section_async (client,
+		snapd_client_find_category_async (client,
 						 SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_COMMON_ID,
 						 NULL, path, cancellable,
-						 url_to_app_find_section_cb, g_steal_pointer (&task));
+						 url_to_app_find_category_cb, g_steal_pointer (&task));
 		return;
 	}
 
@@ -758,7 +758,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 		/* The id can be NULL for example for local package files */
 		} else if (gs_app_get_id (alternate_of) != NULL) {
 			data->n_pending_ops++;
-			snapd_client_find_section_async (client,
+			snapd_client_find_category_async (client,
 							 SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_COMMON_ID,
 							 NULL, gs_app_get_id (alternate_of),
 							 cancellable,
@@ -779,7 +779,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 
 		query_str = g_strjoinv (" ", (gchar **) keywords);
 		data->n_pending_ops++;
-		snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, NULL, query_str,
+		snapd_client_find_category_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, NULL, query_str,
 						 cancellable, list_apps_cb, g_steal_pointer (&task));
 		return;
 	}
@@ -829,7 +829,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 
 	for (gsize i = 0; sections != NULL && sections[i] != NULL; i++) {
 		data->n_pending_ops++;
-		snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, sections[i], NULL,
+		snapd_client_find_category_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, sections[i], NULL,
 						 cancellable, list_apps_cb, g_object_ref (task));
 	}
 
@@ -897,7 +897,7 @@ list_alternate_apps_nonsnap_cb (GObject      *source_object,
 	g_autoptr(GPtrArray) snaps = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	snaps = snapd_client_find_section_finish (client, result, NULL, &local_error);
+	snaps = snapd_client_find_category_finish (client, result, NULL, &local_error);
 
 	if (snaps == NULL) {
 		snapd_error_convert (&local_error);
@@ -949,7 +949,7 @@ list_apps_cb (GObject      *source_object,
 	g_autoptr(GPtrArray) snaps = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	snaps = snapd_client_find_section_finish (client, result, NULL, &local_error);
+	snaps = snapd_client_find_category_finish (client, result, NULL, &local_error);
 
 	if (snaps != NULL) {
 		store_snap_cache_update (self, snaps, FALSE);
@@ -1092,7 +1092,7 @@ get_store_snap_async (GsPluginSnap        *self,
 		return;
 	}
 
-	snapd_client_find_section_async (client,
+	snapd_client_find_category_async (client,
 					 SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_NAME,
 					 NULL, name,
 					 cancellable,
@@ -1110,7 +1110,7 @@ get_store_snap_cb (GObject      *source_object,
 	g_autoptr(GPtrArray) snaps = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	snaps = snapd_client_find_section_finish (client, result, NULL, &local_error);
+	snaps = snapd_client_find_category_finish (client, result, NULL, &local_error);
 
 	if (snaps == NULL || snaps->len < 1) {
 		snapd_error_convert (&local_error);
