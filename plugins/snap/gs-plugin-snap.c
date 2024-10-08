@@ -2222,10 +2222,17 @@ gs_plugin_snap_launch_finish (GsPlugin      *plugin,
 	GdkDisplay *display;
 	g_autoptr(GAppLaunchContext) context = NULL;
 	g_autoptr(GAppInfo) appinfo = NULL;
+	GError *local_error = NULL;
 
-	appinfo = g_task_propagate_pointer (G_TASK (result), error);
-	if (appinfo == NULL)
+	appinfo = g_task_propagate_pointer (G_TASK (result), &local_error);
+
+	if (local_error != NULL) {
+		g_propagate_error (error, g_steal_pointer (&local_error));
 		return FALSE;
+	} else if (appinfo == NULL) {
+		/* app is not supported by this plugin */
+		return TRUE;
+	}
 
 	display = gdk_display_get_default ();
 	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
