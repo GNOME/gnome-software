@@ -477,6 +477,23 @@ g_odrs_provider_set_message_request_body (SoupMessage *message,
 	g_object_unref (input_stream);
 }
 
+typedef struct {
+	GsApp *app;  /* (nullable) (owned) */
+	AsReview *review;  /* (not nullable) (owned) */
+	gboolean is_review_action; // is one of the actions in 'GsReviewAction'
+} JsonPostReviewData;
+
+static void
+json_post_review_data_free (JsonPostReviewData *data)
+{
+	g_clear_object (&data->app);
+	g_clear_object (&data->review);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (JsonPostReviewData, json_post_review_data_free);
+
 static void
 gs_odrs_provider_json_post_async (SoupSession         *session,
                                   const gchar         *uri,
@@ -1100,10 +1117,16 @@ gs_odrs_provider_vote_async (GsOdrsProvider      *self,
 	g_autoptr(JsonNode) json_root = NULL;
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(JsonPostReviewData) task_data = NULL;
 
 	task = g_task_new (self, cancellable, callback, user_data);
+
+	task_data = g_new0 (JsonPostReviewData, 1);
+	task_data->review = g_object_ref (review);
+	task_data->is_review_action = TRUE;
+
 	g_task_set_source_tag (task, gs_odrs_provider_vote_async);
-	g_task_set_task_data (task, g_object_ref (review), g_object_unref);
+	g_task_set_task_data (task, g_steal_pointer (&task_data), (GDestroyNotify) json_post_review_data_free);
 
 	/* create object with vote data */
 	builder = json_builder_new ();
@@ -1177,7 +1200,7 @@ json_post_cb (GObject *source_object,
 {
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	AsReview *review = g_task_get_task_data (task);
+	JsonPostReviewData *data = g_task_get_task_data (task);
 	SoupSession *session = SOUP_SESSION (source_object);
 
 	if (!gs_odrs_provider_json_post_finish (session, result, &local_error)) {
@@ -1185,8 +1208,10 @@ json_post_cb (GObject *source_object,
 		return;
 	}
 
-	/* mark as voted */
-	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
+	if (data->is_review_action) {
+		/* mark as voted */
+		as_review_add_flags (data->review, AS_REVIEW_FLAG_VOTED);
+	}
 
 	/* success */
 	g_task_return_boolean (task, TRUE);
