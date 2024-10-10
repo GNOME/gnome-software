@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-10-01 10:37+0000\n"
-"PO-Revision-Date: 2024-10-05 06:24+0100\n"
+"POT-Creation-Date: 2024-10-08 09:02+0000\n"
+"PO-Revision-Date: 2024-10-10 10:26+0100\n"
 "Last-Translator: ButterflyOfFire <butterflyoffire@protonmail.com>\n"
 "Language-Team: Kabyle\n"
 "Language: kab\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n>1;\n"
-"X-Generator: Gtranslator 46.1\n"
+"X-Generator: Gtranslator 47.0\n"
 "X-DL-Team: kab\n"
 "X-DL-Module: gnome-software\n"
 "X-DL-Branch: main\n"
@@ -55,7 +55,7 @@ msgstr ""
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:29
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:33
 msgid "Details panel"
-msgstr ""
+msgstr "Afeggag n talqayt"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:37
 msgid "Installed panel"
@@ -64,7 +64,7 @@ msgstr ""
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:41
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:45
 msgid "Updates panel"
-msgstr "Afeggag n ielqman"
+msgstr "Afeggag n ileqman"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:49
 msgid "The update details"
@@ -828,7 +828,7 @@ msgstr "Tukksa tegguni"
 #. * shows the status of an app being installed
 #: src/gs-app-addon-row.c:107 src/gs-app-row.c:215 src/gs-details-page.c:382
 msgid "Installing"
-msgstr "Asebded"
+msgstr "Yesbedday"
 
 #: src/gs-app-addon-row.c:111
 msgid "Removing"
@@ -855,7 +855,7 @@ msgstr "Sebded (_I)"
 
 #: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1167
 msgid "_Uninstall…"
-msgstr ""
+msgstr "Kkes-it (_U)…"
 
 #: src/gs-app-details-page.c:60
 msgid "Network"
@@ -933,7 +933,7 @@ msgstr ""
 
 #: src/gs-app-details-page.c:70 src/gs-app-details-page.c:71
 msgid "File system"
-msgstr ""
+msgstr "Anagraw n yifuyla"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
 #: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
@@ -991,7 +991,7 @@ msgstr ""
 
 #: src/gs-app-reviews-dialog.ui:23
 msgid "No Reviews"
-msgstr ""
+msgstr "Ur yesɛa ara iceggiren"
 
 #: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:512
 msgid "Version History"
@@ -1092,7 +1092,7 @@ msgstr ""
 
 #: src/gs-application.c:147
 msgid "Show preferences"
-msgstr ""
+msgstr "Sken ismenyifen"
 
 #: src/gs-application.c:149
 msgid "Quit the running instance"
@@ -1113,6 +1113,8 @@ msgstr ""
 #: src/gs-application.c:272
 msgid "translator-credits"
 msgstr ""
+"  tasutlelli17 https://launchpad.net/~tafziri13\n"
+"  ButterflyOfFire"
 
 #. TRANSLATORS: we tried to show an app that did not exist
 #: src/gs-application.c:508
@@ -1454,7 +1456,7 @@ msgstr "Rzu ɣer usmel web"
 #. * The ellipsis indicates that further steps are required
 #: src/gs-app-row.c:162
 msgid "Install…"
-msgstr "Sebded…"
+msgstr "Sebdd…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the app
@@ -1466,7 +1468,7 @@ msgstr "Sefsex"
 #. * allows the app to be easily installed
 #: src/gs-app-row.c:178
 msgid "Install"
-msgstr "Sebded"
+msgstr "Sebdd"
 
 #. TRANSLATORS: this is a button in the updates panel
 #: src/gs-app-row.c:187
@@ -1483,13 +1485,13 @@ msgstr "Leqqem"
 #. * allows the app to be easily removed
 #: src/gs-app-row.c:198 src/gs-app-row.c:208
 msgid "Uninstall…"
-msgstr ""
+msgstr "Kkes-it…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being erased
 #: src/gs-app-row.c:222
 msgid "Uninstalling"
-msgstr ""
+msgstr "Tukksa"
 
 #: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:153
 #: src/gs-os-update-page.c:156 src/gs-os-update-page.c:183
@@ -1580,17 +1582,13 @@ msgstr "Qqen (_L)"
 
 #. Translators: Title for a login entry.
 #: src/gs-basic-auth-dialog.ui:45
-#, fuzzy
-#| msgid "User"
 msgid "_User"
-msgstr "Aseqdac"
+msgstr "Aseqdac (_U)"
 
 #. Translators: Title for a login entry.
 #: src/gs-basic-auth-dialog.ui:54
-#, fuzzy
-#| msgid "Password"
 msgid "_Password"
-msgstr "Awal n uɛeddi"
+msgstr "Awal n uɛeddi (_P)"
 
 #. TRANSLATORS: this is where all apps that don't
 #. * fit in other groups are put
@@ -1637,8 +1635,7 @@ msgstr "Iseɣẓanen-nniḍen"
 #. TRANSLATORS: this is the summary of a notification that a component
 #. * has been successfully installed
 #: src/gs-common.c:65 src/gs-common.c:88
-#, fuzzy, c-format
-#| msgid "%s (Installed)"
+#, c-format
 msgid "%s Installed"
 msgstr "%s (yettwasbedd)"
 
@@ -1651,18 +1648,14 @@ msgstr ""
 #. TRANSLATORS: this is the body of a notification that an app
 #. * has been successfully installed
 #: src/gs-common.c:73
-#, fuzzy
-#| msgid "App is ready to be used."
 msgid "The app is ready to be used"
 msgstr "Asnas-nni yewjed i useqdec."
 
 #. TRANSLATORS: this is the summary of a notification that OS updates
 #. * have been successfully installed
 #: src/gs-common.c:81
-#, fuzzy
-#| msgid "System Updates"
 msgid "System Updates Installed"
-msgstr "Ileqqman n unagraw"
+msgstr "Ileqqman n unagraw ttwasbedden"
 
 #. TRANSLATORS: this is the body of a notification that OS updates
 #. * have been successfully installed
@@ -1673,11 +1666,11 @@ msgstr ""
 #. TRANSLATORS: button text
 #: src/gs-common.c:103 src/gs-common.c:840
 msgid "Restart"
-msgstr "Ales tanekra"
+msgstr "Ales asenker"
 
 #: src/gs-common.c:109
 msgid "Launch"
-msgstr "Sker"
+msgstr "Sekker"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:234
@@ -1933,7 +1926,7 @@ msgstr ""
 #: lib/gs-desktop-data.c:77
 msgctxt "Menu of Utilities"
 msgid "Text Editors"
-msgstr ""
+msgstr "Imaẓragen n uḍris"
 
 #: lib/gs-desktop-data.c:80
 msgctxt "Menu of Communication & News"
@@ -1948,7 +1941,7 @@ msgstr "Akk"
 #: lib/gs-desktop-data.c:90
 msgctxt "Menu of Audio & Video"
 msgid "Featured"
-msgstr "Ifaz"
+msgstr "Ifazen"
 
 #: lib/gs-desktop-data.c:93
 msgctxt "Menu of Games"
@@ -2178,7 +2171,7 @@ msgstr ""
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:289
 msgid "Play"
-msgstr ""
+msgstr "Urar"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:291
@@ -2288,7 +2281,7 @@ msgstr ""
 #. TRANSLATORS: this is a button that launches gnome-software
 #: src/gs-dbus-helper.c:338
 msgid "Find in Software"
-msgstr ""
+msgstr "Af-d deg Useɣẓan"
 
 #: src/gs-description-box.c:93 src/gs-description-box.c:342
 msgid "_Show More"
@@ -2522,7 +2515,7 @@ msgstr "Kk_es isefka"
 
 #: src/gs-details-page.ui:887
 msgid "No Metadata"
-msgstr ""
+msgstr "Ulac iɣefisefka"
 
 #: src/gs-details-page.ui:924
 msgid "Project _Website"
@@ -2571,7 +2564,6 @@ msgid "Failed to prepare reboot"
 msgstr ""
 
 #: src/gs-dkms-dialog.c:92
-msgctxt "Distribution name"
 msgid "Unknown error"
 msgstr "Tuccḍa tarussint"
 
@@ -2841,7 +2833,7 @@ msgstr ""
 
 #: src/gs-extras-page.c:1328
 msgid "Install _All"
-msgstr "Sebded-iten _akk"
+msgstr "Sebdd-iten _akk"
 
 #: src/gs-extras-page.c:1358
 msgid "Unable to Find Requested Software"
@@ -3102,7 +3094,7 @@ msgstr ""
 
 #: src/gs-help-overlay.ui:44
 msgid "Windows"
-msgstr ""
+msgstr "Isfuyla"
 
 #: src/gs-help-overlay.ui:49
 msgid "Open Preferences"
@@ -3291,11 +3283,11 @@ msgstr ""
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:80
 msgid "Refreshing Data"
-msgstr ""
+msgstr "Asmiren n yisefka"
 
 #: src/gs-loading-page.ui:7
 msgid "Loading page"
-msgstr ""
+msgstr "Aɛebbi n usebter"
 
 #: src/gs-loading-page.ui:12
 msgid "Starting Up"
@@ -3303,7 +3295,7 @@ msgstr ""
 
 #: src/gs-origin-popover-row.c:105
 msgid "Unknown source"
-msgstr ""
+msgstr "Aɣbalu arussin"
 
 #. Translators: It's like a beta version of the software, a test version
 #: src/gs-origin-popover-row.ui:105
@@ -3367,7 +3359,7 @@ msgstr ""
 #. TRANSLATORS: button to keep the third party software repositories off
 #: src/gs-overview-page.c:746
 msgid "_Ignore"
-msgstr ""
+msgstr "Anef-as (_I)"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
@@ -3536,7 +3528,7 @@ msgstr ""
 #. TRANSLATORS: this is button text to remove the app
 #: src/gs-page.c:710
 msgid "_Uninstall"
-msgstr ""
+msgstr "Kkes-it (_U)"
 
 #: src/gs-prefs-dialog.ui:6
 msgid "Preferences"
@@ -3616,7 +3608,7 @@ msgstr ""
 
 #: src/gs-removal-dialog.ui:33
 msgid "_Upgrade"
-msgstr ""
+msgstr "Leqqem (_U)"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
 #: src/gs-repos-dialog.c:244
@@ -3676,7 +3668,7 @@ msgstr "Ikufan n wis tlata n Fedora"
 #. figure out the name of the operating system
 #: src/gs-repos-dialog.c:783
 msgid "the operating system"
-msgstr ""
+msgstr "anagraw n wammud"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
@@ -3791,7 +3783,7 @@ msgstr ""
 #. *		A fairly-good app
 #: src/gs-review-dialog.c:96
 msgid "It’s OK"
-msgstr ""
+msgstr "Yelha"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good app
@@ -4283,40 +4275,40 @@ msgstr "Tuṭṭfa n ugdil tuḍfirt"
 #. Translators: Shortened form of “no screenshots available” when showing an app’s details.
 #: src/gs-screenshot-carousel.ui:130
 msgid "No Screenshots"
-msgstr ""
+msgstr "Ur yesɛa ara tuṭṭfiwin n wegdil"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:369 src/gs-screenshot-image.c:426
-#: src/gs-screenshot-image.c:646
+#: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:404
+#: src/gs-screenshot-image.c:608
 msgid "Screenshot not found"
 msgstr ""
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:447
+#: src/gs-screenshot-image.c:414
 msgid "Failed to load image"
 msgstr ""
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:674
+#: src/gs-screenshot-image.c:636
 msgid "Screenshot size not found"
 msgstr ""
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:763
+#: src/gs-screenshot-image.c:725
 msgid "Could not create cache"
 msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:777
+#: src/gs-screenshot-image.c:739
 msgid "Screenshot not valid"
 msgstr ""
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:827
+#: src/gs-screenshot-image.c:777
 msgid "Screenshot not available"
 msgstr ""
 
@@ -4880,7 +4872,7 @@ msgstr ""
 #. TRANSLATORS: not enough juice to do this safely
 #: src/gs-shell.c:1927
 msgid "Battery level is too low"
-msgstr "Aswir n tbaṭrit yenzef."
+msgstr "Aswir n weẓru yenzef"
 
 #: src/gs-shell.ui:8
 msgid "_Software Repositories"
@@ -5244,7 +5236,7 @@ msgstr ""
 #: src/gs-updates-page.c:255
 #, c-format
 msgid "Last checked: %s"
-msgstr "Issefqed aneggaru: %s"
+msgstr "Isefqed aneggaru: %s"
 
 #: src/gs-updates-page.c:308
 msgid "Stop"
@@ -5466,7 +5458,7 @@ msgstr "Si_der"
 #: src/gs-upgrade-banner.c:91
 #, c-format
 msgid "%s %s Available"
-msgstr ""
+msgstr "Yella %s %s"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. The %s is the distro name,
@@ -5474,7 +5466,7 @@ msgstr ""
 #: src/gs-upgrade-banner.c:96
 #, c-format
 msgid "%s Available"
-msgstr ""
+msgstr "Yella %s"
 
 #: src/gs-upgrade-banner.c:155
 msgid "Learn about the new version"
@@ -5820,42 +5812,42 @@ msgstr ""
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:213
+#: plugins/fwupd/gs-fwupd-app.c:208
 #, c-format
 msgid "%s Device Update"
 msgstr ""
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:218
+#: plugins/fwupd/gs-fwupd-app.c:213
 #, c-format
 msgid "%s System Update"
 msgstr ""
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:218
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr ""
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:223
 #, c-format
 msgid "%s ME Update"
 msgstr ""
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:228
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr ""
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:238
+#: plugins/fwupd/gs-fwupd-app.c:233
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr ""
@@ -5863,7 +5855,7 @@ msgstr ""
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:244
+#: plugins/fwupd/gs-fwupd-app.c:239
 #, c-format
 msgid "%s Controller Update"
 msgstr ""
@@ -5871,132 +5863,132 @@ msgstr ""
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:250
+#: plugins/fwupd/gs-fwupd-app.c:245
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr ""
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:255
+#: plugins/fwupd/gs-fwupd-app.c:250
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr ""
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:260
+#: plugins/fwupd/gs-fwupd-app.c:255
 #, c-format
 msgid "%s Configuration Update"
 msgstr ""
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:264
+#: plugins/fwupd/gs-fwupd-app.c:259
 #, c-format
 msgid "%s Battery Update"
 msgstr ""
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:269
+#: plugins/fwupd/gs-fwupd-app.c:264
 #, c-format
 msgid "%s Camera Update"
 msgstr ""
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:273
+#: plugins/fwupd/gs-fwupd-app.c:268
 #, c-format
 msgid "%s TPM Update"
 msgstr ""
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:277
+#: plugins/fwupd/gs-fwupd-app.c:272
 #, c-format
 msgid "%s Touchpad Update"
 msgstr ""
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:281
+#: plugins/fwupd/gs-fwupd-app.c:276
 #, c-format
 msgid "%s Mouse Update"
 msgstr ""
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:285
+#: plugins/fwupd/gs-fwupd-app.c:280
 #, c-format
 msgid "%s Keyboard Update"
 msgstr ""
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:289
+#: plugins/fwupd/gs-fwupd-app.c:284
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr ""
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:294
+#: plugins/fwupd/gs-fwupd-app.c:289
 #, c-format
 msgid "%s Network Interface Update"
 msgstr ""
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:294
 #, c-format
 msgid "%s Display Update"
 msgstr ""
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:299
 #, c-format
 msgid "%s BMC Update"
 msgstr ""
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:309
+#: plugins/fwupd/gs-fwupd-app.c:304
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr ""
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:313
+#: plugins/fwupd/gs-fwupd-app.c:308
 #, c-format
 msgid "%s Drive Update"
 msgstr ""
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:317
+#: plugins/fwupd/gs-fwupd-app.c:312
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr ""
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:322
+#: plugins/fwupd/gs-fwupd-app.c:317
 #, c-format
 msgid "%s SSD Update"
 msgstr ""
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:322
 #, c-format
 msgid "%s GPU Update"
 msgstr ""
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:327
 #, c-format
 msgid "%s Dock Update"
 msgstr ""
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:337
+#: plugins/fwupd/gs-fwupd-app.c:332
 #, c-format
 msgid "%s USB Dock Update"
 msgstr ""
@@ -6005,7 +5997,7 @@ msgstr ""
 msgid "Firmware"
 msgstr "Afreɣẓan"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1922
+#: plugins/fwupd/gs-plugin-fwupd.c:1918
 msgid "Firmware update could not be applied: "
 msgstr ""
 
