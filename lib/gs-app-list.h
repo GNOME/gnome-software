@@ -15,7 +15,7 @@
 G_BEGIN_DECLS
 
 /**
- * GsAppListFilterFlags:
+ * GsAppListFilterFlags: (type guint64)
  * @GS_APP_LIST_FILTER_FLAG_NONE:		No flags set
  * @GS_APP_LIST_FILTER_FLAG_KEY_ID:		Filter by ID
  * @GS_APP_LIST_FILTER_FLAG_KEY_SOURCE:		Filter by default source
