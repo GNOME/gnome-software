@@ -36,8 +36,8 @@ struct _GsAppPermissions
 
 	gboolean is_sealed;
 	GsAppPermissionsFlags flags;
-	GPtrArray *filesystem_read; /* (owner) (nullable) (element-type utf-8) */
-	GPtrArray *filesystem_full; /* (owner) (nullable) (element-type utf-8) */
+	GPtrArray *filesystem_read; /* (owner) (nullable) (element-type utf8) */
+	GPtrArray *filesystem_full; /* (owner) (nullable) (element-type utf8) */
 };
 
 G_DEFINE_TYPE (GsAppPermissions, gs_app_permissions, G_TYPE_OBJECT)
@@ -292,7 +292,7 @@ gs_app_permissions_add_filesystem_read (GsAppPermissions *self,
  * The array is owned by the @self and should not be modified by any way.
  * It can be %NULL, when no file access was set.
  *
- * Returns: (nullable) (transfer none) (element-type utf-8): an array of
+ * Returns: (nullable) (transfer none) (element-type utf8): an array of
  *    file names requesting read access or %NULL, when none was set.
  *
  * Since: 43
@@ -388,7 +388,7 @@ gs_app_permissions_add_filesystem_full (GsAppPermissions *self,
  * The array is owned by the @self and should not be modified by any way.
  * It can be %NULL, when no file access was set.
  *
- * Returns: (nullable) (transfer none) (element-type utf-8): an array of
+ * Returns: (nullable) (transfer none) (element-type utf8): an array of
  *    file names requesting read and write access or %NULL, when none was set.
  *
  * Since: 43
