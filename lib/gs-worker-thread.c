@@ -284,7 +284,7 @@ gs_worker_thread_cmp (gconstpointer a,
  * @self: a #GsWorkerThread
  * @priority: (default G_PRIORITY_DEFAULT): priority to queue the task at,
  *   typically #G_PRIORITY_DEFAULT
- * @work_func: (not nullable): function to run the task
+ * @work_func: (not nullable) (scope async): function to run the task
  * @task: (transfer full) (not nullable): the #GTask containing context data to
  *   pass to @work_func
  *
