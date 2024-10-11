@@ -41,7 +41,7 @@ typedef void (*GsDownloadProgressCallback) (gsize    bytes_downloaded,
                                             gpointer user_data);
 
 /**
- * GsExternalAppstreamError:
+ * GsDownloadError:
  * @GS_DOWNLOAD_ERROR_NOT_MODIFIED: The ETag matches that of the server file.
  *
  * Error codes for download operations.
