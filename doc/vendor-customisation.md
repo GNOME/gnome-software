@@ -40,12 +40,15 @@ The principles which guide vendor customisation features in GNOME Software are:
 | Don’t require downstream patching of GNOME Software, although configure-time arguments are OK. | Many distributions are derived from other ones and would not like to have to maintain a packaging fork in order to make small customisations. |
 | Be mindful of release cadences. | If customisations related to a new OS version were tied to the release cycle of GNOME Software, a new GNOME Software packaging release would have to be done by a distribution in advance of making their new OS release, which is a burden. It’s easier to allow distributions to put customisations specific to a new OS version into a separate package. |
 
-Upgrade background image
-------------------------
+Upgrade banner background image
+-------------------------------
 
 The background image which is shown when a new OS upgrade is available is
 customisable in several ways. It’s displayed by the `GsUpgradeBanner` widget,
-and shown on the updates page.
+and shown on the Updates page. An example upgrade banner with
+background image is shown below:
+
+<img src="media/gnome-os-upgrade-banner.png">
 
 If your distribution has a specific GNOME Software plugin providing its upgrade
 information, that plugin can provide CSS for rendering the background. See the
