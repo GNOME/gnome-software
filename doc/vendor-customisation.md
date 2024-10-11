@@ -68,7 +68,11 @@ Software. On the overview page, there’s a carousel of featured apps
 (`featured_carousel`), and an “Editor’s Choice” section (`box_curated`). Both of
 them highlight curated sets of apps. The same is true on each category
 page: a carousel (`top_carousel`) and an “Editor’s Choice” section
-(`featured_flow_box`) are present.
+(`featured_flow_box`) are present. Category page is the page shown
+when one of the app categories (`Create` / `Develop` etc) in the
+Explore page is clicked. This is explained in the following image:
+
+<img src="media/featured-curated.png">
 
 Both pages also have a “New & Updated” section (`box_recent` or
 `recently_updated_flow_box`) presented below “Editor’s Choice”. The apps
