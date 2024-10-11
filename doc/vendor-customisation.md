@@ -64,7 +64,7 @@ Featured apps and Editor’s Choice
 ---------------------------------
 
 There are several ways to promote and highlight specific apps in GNOME
-Software. On the overview page, there’s a carousel of featured apps
+Software. On the Explore page, there’s a carousel of featured apps
 (`featured_carousel`), and an “Editor’s Choice” section (`box_curated`). Both of
 them highlight curated sets of apps. The same is true on each category
 page: a carousel (`top_carousel`) and an “Editor’s Choice” section
@@ -85,14 +85,14 @@ Technically these are the results of a `GsPlugin.list_apps_async()` query with
 Apps are included in any of the curated sets through having special
 metadata in their metainfo. The required metadata is different for the different
 sections:
- * Carousel on the overview page: Apps are included if they have
+ * Carousel on the Explore page: Apps are included if they have
    `component/custom/value[@key='GnomeSoftware::FeatureTile]` or
    `component/custom/value[@key='GnomeSoftware::FeatureTile-css]` set in their
    metainfo. They are also required to have a high-resolution icon, and the set
    of apps shown in the carousel is randomised and limited to (for
    example) 5. Technically these are the results of a
    `GsPlugin.list_apps_async()` query with `GsAppQuery:is-featured` set.
- * “Editor’s Choice” on the overview page: Apps are included if they
+ * “Editor’s Choice” on the Explore page: Apps are included if they
    have `component/kudos/kudo[text()='GnomeSoftware::popular']` set in their
    metainfo. Technically these are the results of a `GsPlugin.list_apps_async()`
    query with `GsAppQuery:is-curated` set.
@@ -112,7 +112,7 @@ Example:
     <!-- The ID must always be present to allow merging -->
     <id>org.gnome.Podcasts</id>
     <!-- Make the app a candidate for inclusion in the carousel on the
-         overview page (if it has a hi-res icon). -->
+         Explore page (if it has a hi-res icon). -->
     <custom>
       <value key="GnomeSoftware::FeatureTile">True</value>
     </custom>
@@ -121,7 +121,7 @@ Example:
   <component merge="append">
     <!-- The ID must always be present to allow merging -->
     <id>org.gnome.Boxes</id>
-    <!-- Include the app in the “Editor’s Choice” section on the overview page. -->
+    <!-- Include the app in the “Editor’s Choice” section on the Explore page. -->
     <kudos>
       <kudo>GnomeSoftware::popular</kudo>
     </kudos>
@@ -190,7 +190,7 @@ the [GNOME Circle](https://circle.gnome.org/). See
 of the metainfo XML needed to feature or highlight apps. See
 `data/assets/org.gnome.Software.Curated.xml` for a default hard-coded list of
 curated high quality apps, which is displayed in the “Editor’s Choice”
-section of the overview page.
+section of the Explore page.
 
 Since GNOME 47, `gnome-app-list` is the recommended way to ship the
 additional appstream files. AppStream files shipped with GNOME
