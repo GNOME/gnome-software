@@ -2645,6 +2645,11 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			/* NULL-terminate the array */
 			g_ptr_array_add (package_ids, NULL);
 
+			#if PK_CHECK_VERSION (1, 2, 8)
+			if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) != 0)
+				pk_client_set_details_with_deps_size (data_unowned->client_refine, TRUE);
+			#endif
+
 			/* get any details */
 			pk_client_get_details_async (data_unowned->client_refine,
 						     (gchar **) package_ids->pdata,
