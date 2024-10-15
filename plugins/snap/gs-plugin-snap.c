@@ -2366,7 +2366,8 @@ gs_plugin_snap_uninstall_apps_async (GsPlugin                           *plugin,
 					    app_data,
 					    cancellable,
 					    uninstall_app_cb,
-					    g_steal_pointer (&app_data));
+					    app_data  /* steal ownership */);
+		app_data = NULL;
 	}
 
 	finish_uninstall_apps_op (task, NULL);
