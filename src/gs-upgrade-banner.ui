@@ -150,6 +150,8 @@
 
                 <child>
                   <object class="GtkButton" id="button_upgrades_cancel">
+                    <property name="tooltip-text" translatable="yes">Cancel Upgrade</property>
+                    <property name="icon-name">window-close-symbolic</property>
                     <property name="can_focus">True</property>
                     <property name="use_underline">True</property>
                     <property name="halign">end</property>
@@ -160,12 +162,6 @@
                     <style>
                       <class name="circular"/>
                     </style>
-                    <child>
-                      <object class="GtkImage" id="button_upgrades_cancel_image">
-                        <property name="icon-name">window-close-symbolic</property>
-                        <property name="icon-size">normal</property>
-                      </object>
-                    </child>
                   </object>
                 </child>
               </object>
