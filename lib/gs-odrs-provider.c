@@ -41,6 +41,8 @@
 #include <math.h>
 #include <string.h>
 
+#define ODRS_SOUP_DEBUG 0
+
 G_DEFINE_QUARK (gs-odrs-provider-error-quark, gs_odrs_provider_error)
 
 /* Element in self->ratings, all allocated in one big block and sorted
@@ -1269,6 +1271,9 @@ gs_odrs_provider_set_property (GObject      *object,
 		/* Construct-only */
 		g_assert (self->session == NULL);
 		self->session = g_value_dup_object (value);
+#if ODRS_SOUP_DEBUG == 1
+		soup_session_add_feature (self->session, (SoupSessionFeature *) soup_logger_new (SOUP_LOGGER_LOG_BODY));
+#endif
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
