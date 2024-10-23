@@ -561,6 +561,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 	g_clear_pointer (&self->silo_filename, g_free);
 	g_clear_pointer (&self->silo_installed_by_desktopid, g_hash_table_unref);
 	g_clear_pointer (&self->silo_installed_by_id, g_hash_table_unref);
+	g_clear_pointer (&blobfn, g_free);
 	self->default_scope = AS_COMPONENT_SCOPE_UNKNOWN;
 	g_ptr_array_set_size (self->file_monitors, 0);
 	g_atomic_int_set (&self->file_monitor_stamp_current, g_atomic_int_get (&self->file_monitor_stamp));
