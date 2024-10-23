@@ -99,7 +99,6 @@
               <object class="AdwToastOverlay" id="toast_overlay">
                 <property name="child">
                   <object class="AdwNavigationView" id="details_navigation_view">
-                    <signal name="notify::visible-page" handler="stack_notify_visible_child_cb"/>
 
                     <child>
                       <object class="AdwNavigationPage">
@@ -166,12 +165,14 @@
                                         <property name="activates_default">True</property>
                                         <property name="search-delay">500</property>
                                         <signal name="search-changed" handler="search_changed_handler"/>
+                                        <signal name="stop-search" handler="stop_search_handler"/>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
+
                             <property name="content">
                               <object class="GtkBox">
                                 <property name="orientation">vertical</property>
@@ -183,7 +184,7 @@
                                     <property name="vexpand">True</property>
                                     <property name="hhomogeneous">False</property>
                                     <property name="vhomogeneous">False</property>
-                                    <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                                    <signal name="notify::visible-child" handler="stack_main_notify_visible_child_cb"/>
                                     <child>
                                       <object class="AdwViewStackPage">
                                         <property name="name">overview</property>
@@ -275,13 +276,12 @@
                                 <property name="vexpand">True</property>
                                 <property name="hhomogeneous">False</property>
                                 <property name="vhomogeneous">False</property>
-                                <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
                                 <child>
                                   <object class="AdwViewStackPage">
                                     <property name="name">category</property>
                                     <property name="child">
                                       <object class="GsCategoryPage" id="category_page">
-                                        <signal name="app-clicked" handler="category_page_app_clicked_cb"/>
+                                        <signal name="app-clicked" handler="page_app_clicked_cb"/>
                                       </object>
                                     </property>
                                   </object>
@@ -328,7 +328,7 @@
                               <object class="GsDetailsPage" id="details_page">
                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                                 <signal name="metainfo-loaded" handler="gs_shell_details_page_metainfo_loaded_cb"/>
-                                <signal name="app-clicked" handler="details_page_app_clicked_cb"/>
+                                <signal name="app-clicked" handler="page_app_clicked_cb"/>
                               </object>
                             </property>
                           </object>
