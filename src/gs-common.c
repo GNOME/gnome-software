@@ -910,16 +910,67 @@ gs_utils_split_time_difference (gint64 unix_time_seconds,
 }
 
 /**
- * gs_utils_time_to_string:
+ * gs_utils_time_to_datestring:
  * @unix_time_seconds: Time since the epoch in seconds
  *
- * Converts a time to a string such as "5 minutes ago" or "2 weeks ago"
+ * Converts a time to a relative date string such as "5 days ago" or "2 weeks ago"
  *
- * Returns: (transfer full): the time string, or %NULL if @unix_time_seconds is
- *   not valid
+ * This function returns up to a day level accurate string.
+ * This should be used in places like app release date etc.
+ * For accuracy to the minute gs_utils_time_to_timestring () should be used.
+ * 
+ * Returns: (transfer full): the relative date string, or %NULL if 
+ *   @unix_time_seconds is not valid
  */
 gchar *
-gs_utils_time_to_string (gint64 unix_time_seconds)
+gs_utils_time_to_datestring (gint64 unix_time_seconds)
+{
+	gint minutes_ago, hours_ago, days_ago;
+	gint weeks_ago, months_ago, years_ago;
+
+	if (!gs_utils_split_time_difference (unix_time_seconds,
+		&minutes_ago, &hours_ago, &days_ago,
+		&weeks_ago, &months_ago, &years_ago))
+		return NULL;
+
+	if (days_ago < 1) {
+		/* TRANSLATORS: something happened less than a day ago */
+		return g_strdup (_("Today"));
+	} else if (days_ago < 2)
+		/* TRANSLATROS: something happened more than a day ago but less than 2 days ago */
+		return g_strdup_printf (_("Yesterday"));
+	else if (days_ago < 15)
+		return g_strdup_printf (ngettext ("%d day ago",
+						  "%d days ago", days_ago),
+					days_ago);
+	else if (weeks_ago < 8)
+		return g_strdup_printf (ngettext ("%d week ago",
+						  "%d weeks ago", weeks_ago),
+					weeks_ago);
+	else if (years_ago < 1)
+		return g_strdup_printf (ngettext ("%d month ago",
+						  "%d months ago", months_ago),
+					months_ago);
+	else
+		return g_strdup_printf (ngettext ("%d year ago",
+						  "%d years ago", years_ago),
+					years_ago);
+}
+
+/**
+ * gs_utils_time_to_timestring:
+ * @unix_time_seconds: Time since the epoch in seconds
+ *
+ * Converts a time to a relative string such as "5 minutes ago" or "2 hours ago"
+ *
+ * This function returns up to a minute level accurate string.
+ * For accuracy to the date gs_utils_time_to_datestring () should be used.
+ *
+ * Returns: (transfer full): the relative time string, or %NULL if 
+ *   @unix_time_seconds is not valid
+ */
+gchar *
+gs_utils_time_to_timestring (gint64 unix_time_seconds)
 {
 	gint minutes_ago, hours_ago, days_ago;
 	gint weeks_ago, months_ago, years_ago;
