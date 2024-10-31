@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+  SPDX-License-Identifier: GPL-2.0-or-later
+  SPDX-FileCopyrightText: 2024 GNOME
+-->
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adwaita" version="1.0"/>
+  <object class="AdwAlertDialog" id="dialog">
+    <property name="body-use-markup">True</property>
+    <property name="default-response">cancel</property>
+    <property name="close-response">cancel</property>
+    <responses>
+      <response id="cancel" translatable="yes">_Cancel</response>
+      <response id="uninstall" translatable="yes" appearance="destructive">_Uninstall</response>
+    </responses>
+    <child type="extra-child">
+      <object class="AdwPreferencesGroup" id="preferences_group">
+        <property name="title" translatable="yes">App Settings &amp;amp; Data</property>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes" comments="Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'">_Keep</property>
+            <property name="subtitle" translatable="yes">Allows restoring app settings and content</property>
+            <property name="use-underline">True</property>
+            <property name="use-markup">False</property>
+            <property name="activatable-widget">check_keep</property>
+            <child type="prefix">
+              <object class="GtkCheckButton" id="check_keep">
+                <property name="valign">center</property>
+                <property name="active">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes" comments="Translators: this is part of section about deleting app's data">_Delete</property>
+            <property name="subtitle" translatable="yes">Permanently deletes data to save disk space</property>
+            <property name="use-underline">True</property>
+            <property name="use-markup">False</property>
+            <property name="activatable-widget">check_delete</property>
+            <child type="prefix">
+              <object class="GtkCheckButton" id="check_delete">
+                <property name="valign">center</property>
+                <property name="group">check_keep</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

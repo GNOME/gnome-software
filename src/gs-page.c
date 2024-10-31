@@ -507,14 +507,17 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
+	g_autoptr(GtkBuilder) builder = NULL;
 	AdwDialog *dialog;
-	GtkWidget *extra_child = NULL;
+	AdwPreferencesGroup *preferences_group;
 	g_autofree gchar *message = NULL;
 	g_autofree gchar *title = NULL;
 	g_autofree gchar *app_data_dir = NULL;
 
 	g_return_if_fail (GS_IS_PAGE (page));
 	g_return_if_fail (GS_IS_APP (app));
+
+	builder = gtk_builder_new_from_resource ("/org/gnome/Software/gs-remove-app-dialog.ui");
 
 	/* Is the app actually removable? */
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY))
@@ -632,57 +635,15 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 		title = g_strdup_printf (_("Uninstall %s?"),
 					 gs_app_get_name (app));
 		if (app_data_dir != NULL) {
-			g_autofree gchar *group_title = NULL;
-			AdwPreferencesGroup *group;
-			GtkWidget *row;
-			GtkWidget *check_keep;
-			GtkWidget *check_delete;
-
-			group_title = g_markup_escape_text (_("App Settings & Data"), -1);
+			GtkCheckButton *check_delete;
+			check_delete = GTK_CHECK_BUTTON (gtk_builder_get_object (builder, "check_delete"));
 
 			/* Translators: the '%s' is replaced with the app name */
 			message = g_strdup_printf (_("It will not be possible to use %s after removal."),
 						   gs_app_get_name (app));
 
-			extra_child = adw_preferences_group_new ();
-			g_object_set (extra_child,
-				"title", group_title,
-				NULL);
-			group = ADW_PREFERENCES_GROUP (extra_child);
-
-			check_keep = gtk_check_button_new ();
-			check_delete = gtk_check_button_new ();
-			gtk_check_button_set_group (GTK_CHECK_BUTTON (check_delete), GTK_CHECK_BUTTON (check_keep));
-			gtk_check_button_set_active (GTK_CHECK_BUTTON (check_keep), TRUE);
-
 			g_signal_connect (check_delete, "toggled",
 					  G_CALLBACK (check_delete_toggled_cb), &(helper->remove_app_data_dir));
-
-			row = adw_action_row_new ();
-			g_object_set (row,
-				/* Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data' */
-				"title", _("_Keep"),
-				"title-selectable", FALSE,
-				"use-markup", FALSE,
-				"use-underline", TRUE,
-				"activatable-widget", check_keep,
-				"subtitle", _("Allows restoring app settings and content"),
-				NULL);
-			adw_action_row_add_prefix (ADW_ACTION_ROW (row), check_keep);
-			adw_preferences_group_add (group, row);
-
-			row = adw_action_row_new ();
-			g_object_set (row,
-				/* Translators: this is part of section about deleting app's data */
-				"title", _("_Delete"),
-				"title-selectable", FALSE,
-				"use-markup", FALSE,
-				"use-underline", TRUE,
-				"activatable-widget", check_delete,
-				"subtitle", _("Permanently deletes data to save disk space"),
-				NULL);
-			adw_action_row_add_prefix (ADW_ACTION_ROW (row), check_delete);
-			adw_preferences_group_add (group, row);
 		} else {
 			/* TRANSLATORS: Longer dialog text. The placeholder is
 			 * the name of an app. */
@@ -691,21 +652,18 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 						     "restoring the app in the future."),
 						   gs_app_get_name (app));
 		}
+
+		preferences_group = ADW_PREFERENCES_GROUP (gtk_builder_get_object (builder, "preferences_group"));
+		gtk_widget_set_visible (GTK_WIDGET (preferences_group), app_data_dir != NULL);
+
 		break;
 	}
 
 	/* ask for confirmation */
-	dialog = adw_alert_dialog_new (title, message);
-	adw_alert_dialog_set_body_use_markup (ADW_ALERT_DIALOG (dialog), TRUE);
-	adw_alert_dialog_add_responses (ADW_ALERT_DIALOG (dialog),
-					"cancel",  _("_Cancel"),
-					/* TRANSLATORS: this is button text to remove the app */
-					"uninstall",  _("_Uninstall"),
-					NULL);
-	adw_alert_dialog_set_response_appearance (ADW_ALERT_DIALOG (dialog),
-						    "uninstall", ADW_RESPONSE_DESTRUCTIVE);
-	if (extra_child != NULL)
-		adw_alert_dialog_set_extra_child (ADW_ALERT_DIALOG (dialog), extra_child);
+	dialog = ADW_DIALOG (gtk_builder_get_object (builder, "dialog"));
+
+	adw_alert_dialog_set_heading (ADW_ALERT_DIALOG (dialog), title);
+	adw_alert_dialog_set_body (ADW_ALERT_DIALOG (dialog), message);
 
 	/* handle this async */
 	g_signal_connect (dialog, "response",
