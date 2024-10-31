@@ -151,7 +151,7 @@ gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 		const gchar *format_string;
 
 		/* this is the date in the form of "x weeks ago" or "y months ago" */
-		version_date_string = gs_utils_time_to_string ((gint64) version_date);
+		version_date_string = gs_utils_time_to_datestring ((gint64) version_date);
 
 		/* TRANSLATORS: This is the date string with: day number, month name, year.
 		   i.e. "25 May 2012" */

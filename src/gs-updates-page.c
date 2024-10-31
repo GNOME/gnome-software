@@ -196,7 +196,7 @@ gs_updates_page_last_checked_time_string (GsUpdatesPage *self,
 	gchar *res;
 
 	g_settings_get (self->settings, "check-timestamp", "x", &last_checked);
-	res = gs_utils_time_to_string (last_checked);
+	res = gs_utils_time_to_timestring (last_checked);
 	if (res) {
 		g_assert (gs_utils_split_time_difference (last_checked, NULL, out_hours_ago, out_days_ago, NULL, NULL, NULL));
 	}
