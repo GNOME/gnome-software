@@ -646,9 +646,6 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 			extra_child = adw_preferences_group_new ();
 			g_object_set (extra_child,
-				"halign", GTK_ALIGN_FILL,
-				"hexpand", TRUE,
-				"width-request", 360,
 				"title", group_title,
 				NULL);
 			group = ADW_PREFERENCES_GROUP (extra_child);
@@ -665,13 +662,11 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 			g_object_set (row,
 				/* Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data' */
 				"title", _("_Keep"),
-				"title-lines", 1,
 				"title-selectable", FALSE,
 				"use-markup", FALSE,
 				"use-underline", TRUE,
 				"activatable-widget", check_keep,
 				"subtitle", _("Allows restoring app settings and content"),
-				"subtitle-lines", 1,
 				NULL);
 			adw_action_row_add_prefix (ADW_ACTION_ROW (row), check_keep);
 			adw_preferences_group_add (group, row);
@@ -680,13 +675,11 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 			g_object_set (row,
 				/* Translators: this is part of section about deleting app's data */
 				"title", _("_Delete"),
-				"title-lines", 1,
 				"title-selectable", FALSE,
 				"use-markup", FALSE,
 				"use-underline", TRUE,
 				"activatable-widget", check_delete,
 				"subtitle", _("Permanently deletes data to save disk space"),
-				"subtitle-lines", 1,
 				NULL);
 			adw_action_row_add_prefix (ADW_ACTION_ROW (row), check_delete);
 			adw_preferences_group_add (group, row);
