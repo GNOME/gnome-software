@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-10-21 09:45+0000\n"
-"PO-Revision-Date: 2024-10-28 21:14+0200\n"
+"POT-Creation-Date: 2024-10-31 05:35+0000\n"
+"PO-Revision-Date: 2024-10-31 21:57+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -1653,7 +1653,6 @@ msgstr "_Користувач"
 
 #. Translators: Title for a login entry.
 #: src/gs-basic-auth-dialog.ui:54
-#| msgid "Password"
 msgid "_Password"
 msgstr "_Пароль"
 
@@ -1872,30 +1871,19 @@ msgstr[3] "Для набуття ним чинності слід перезав
 msgid "Not Now"
 msgstr "Не зараз"
 
-#. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:934
-msgid "Just now"
-msgstr "Просто зараз"
+#. TRANSLATORS: something happened less than a day ago
+#: src/gs-common.c:938
+msgid "Today"
+msgstr "Сьогодні"
 
-#: src/gs-common.c:936
+#. TRANSLATROS: something happened more than a day ago but less than 2 days ago
+#: src/gs-common.c:941
 #, c-format
-msgid "%d minute ago"
-msgid_plural "%d minutes ago"
-msgstr[0] "%d хвилину тому"
-msgstr[1] "%d хвилини тому"
-msgstr[2] "%d хвилин тому"
-msgstr[3] "%d хвилину тому"
+#| msgid "Yesterday, %R"
+msgid "Yesterday"
+msgstr "Вчора"
 
-#: src/gs-common.c:940
-#, c-format
-msgid "%d hour ago"
-msgid_plural "%d hours ago"
-msgstr[0] "%d годину тому"
-msgstr[1] "%d години тому"
-msgstr[2] "%d годин тому"
-msgstr[3] "%d годину тому"
-
-#: src/gs-common.c:944
+#: src/gs-common.c:943 src/gs-common.c:995
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
@@ -1904,7 +1892,7 @@ msgstr[1] "%d дні тому"
 msgstr[2] "%d днів тому"
 msgstr[3] "%d день тому"
 
-#: src/gs-common.c:948
+#: src/gs-common.c:947 src/gs-common.c:999
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
@@ -1913,7 +1901,7 @@ msgstr[1] "%d тижні тому"
 msgstr[2] "%d тижнів тому"
 msgstr[3] "%d тиждень тому"
 
-#: src/gs-common.c:952
+#: src/gs-common.c:951 src/gs-common.c:1003
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
@@ -1922,7 +1910,7 @@ msgstr[1] "%d місяці тому"
 msgstr[2] "%d місяців тому"
 msgstr[3] "%d місяць тому"
 
-#: src/gs-common.c:956
+#: src/gs-common.c:955 src/gs-common.c:1007
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1931,11 +1919,34 @@ msgstr[1] "%d роки тому"
 msgstr[2] "%d років тому"
 msgstr[3] "%d рік тому"
 
+#. TRANSLATORS: something happened less than 5 minutes ago
+#: src/gs-common.c:985
+msgid "Just now"
+msgstr "Просто зараз"
+
+#: src/gs-common.c:987
+#, c-format
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d хвилину тому"
+msgstr[1] "%d хвилини тому"
+msgstr[2] "%d хвилин тому"
+msgstr[3] "%d хвилину тому"
+
+#: src/gs-common.c:991
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d годину тому"
+msgstr[1] "%d години тому"
+msgstr[2] "%d годин тому"
+msgstr[3] "%d годину тому"
+
 #. Translators: This is to construct a disk size string consisting of the value and its unit, while
 #. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1319
+#: src/gs-common.c:1370
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
@@ -5174,7 +5185,6 @@ msgid "_Keyboard Shortcuts"
 msgstr "_Клавіатурні скорочення"
 
 #: src/gs-shell.ui:23
-#| msgid "About Software"
 msgid "_About Software"
 msgstr "_Про «Програми»"
 
@@ -5815,7 +5825,6 @@ msgid "A major upgrade, with new features and added polish."
 msgstr "Велике оновлення, з новими можливостями і виправленнями."
 
 #: src/gs-upgrade-banner.ui:153
-#| msgid "_Upgrade"
 msgid "Cancel Upgrade"
 msgstr "Скасувати оновлення"
 
@@ -5829,12 +5838,10 @@ msgstr ""
 "Не забудьте створити резервні копії ваших даних і файлів до оновлення."
 
 #: src/gs-utils-error-dialog-simple.ui:4
-#| msgid "Show Details"
 msgid "Error Details"
 msgstr "Подробиці щодо помилки"
 
 #: src/gs-utils-error-dialog-simple.ui:34
-#| msgid "Show Details"
 msgid "Copy Details"
 msgstr "Копіювати подробиці"
 
@@ -7497,9 +7504,6 @@ msgstr "Snap — універсальний пакунок Linux"
 
 #~ msgid "%l:%M %p"
 #~ msgstr "%l:%M %p"
-
-#~ msgid "Yesterday, %R"
-#~ msgstr "Учора, %R"
 
 #~ msgid "Yesterday, %l:%M %p"
 #~ msgstr "Вчора, %l:%M %p"
