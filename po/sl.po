@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-10-21 09:45+0000\n"
-"PO-Revision-Date: 2024-10-21 18:12+0200\n"
+"POT-Creation-Date: 2024-11-02 08:49+0000\n"
+"PO-Revision-Date: 2024-11-03 10:53+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -1866,30 +1866,18 @@ msgstr[3] "Spremembe ne bodo uveljavljene do ponovnega zagona"
 msgid "Not Now"
 msgstr "Ne zdaj"
 
-#. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:934
-msgid "Just now"
-msgstr "Ravnokar"
+#. TRANSLATORS: something happened less than a day ago
+#: src/gs-common.c:938
+msgid "Today"
+msgstr "Danes"
 
-#: src/gs-common.c:936
+#. TRANSLATROS: something happened more than a day ago but less than 2 days ago
+#: src/gs-common.c:941
 #, c-format
-msgid "%d minute ago"
-msgid_plural "%d minutes ago"
-msgstr[0] "Pred %d minutami"
-msgstr[1] "Pred %d minuto"
-msgstr[2] "Pred %d minutama"
-msgstr[3] "Pred %d minutami"
+msgid "Yesterday"
+msgstr "Včeraj"
 
-#: src/gs-common.c:940
-#, c-format
-msgid "%d hour ago"
-msgid_plural "%d hours ago"
-msgstr[0] "Pred %d urami"
-msgstr[1] "Pred %d uro"
-msgstr[2] "Pred %d urama"
-msgstr[3] "Pred %d urami"
-
-#: src/gs-common.c:944
+#: src/gs-common.c:943 src/gs-common.c:995
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
@@ -1898,7 +1886,7 @@ msgstr[1] "Pred %d dnem"
 msgstr[2] "Pred %d dnevoma"
 msgstr[3] "Pred %d dnevi"
 
-#: src/gs-common.c:948
+#: src/gs-common.c:947 src/gs-common.c:999
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
@@ -1907,7 +1895,7 @@ msgstr[1] "Pred %d tednom"
 msgstr[2] "Pred %d tednoma"
 msgstr[3] "Pred %d tedni"
 
-#: src/gs-common.c:952
+#: src/gs-common.c:951 src/gs-common.c:1003
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
@@ -1916,7 +1904,7 @@ msgstr[1] "Pred %d mesecem"
 msgstr[2] "Pred %d mesecema"
 msgstr[3] "Pred %d meseci"
 
-#: src/gs-common.c:956
+#: src/gs-common.c:955 src/gs-common.c:1007
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1925,11 +1913,34 @@ msgstr[1] "Pred %d letom"
 msgstr[2] "Pred %d letoma"
 msgstr[3] "Pred %d leti"
 
+#. TRANSLATORS: something happened less than 5 minutes ago
+#: src/gs-common.c:985
+msgid "Just now"
+msgstr "Ravnokar"
+
+#: src/gs-common.c:987
+#, c-format
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "Pred %d minutami"
+msgstr[1] "Pred %d minuto"
+msgstr[2] "Pred %d minutama"
+msgstr[3] "Pred %d minutami"
+
+#: src/gs-common.c:991
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "Pred %d urami"
+msgstr[1] "Pred %d uro"
+msgstr[2] "Pred %d urama"
+msgstr[3] "Pred %d urami"
+
 #. Translators: This is to construct a disk size string consisting of the value and its unit, while
 #. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1319
+#: src/gs-common.c:1370
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
