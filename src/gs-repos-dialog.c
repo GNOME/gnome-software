@@ -33,7 +33,6 @@ struct _GsReposDialog
 	GsPluginLoader	*plugin_loader;
 	GtkWidget	*status_empty;
 	GtkWidget	*content_page;
-	GtkWidget	*spinner;
 	GtkWidget	*stack;
 };
 
@@ -564,9 +563,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		g_hash_table_iter_remove (&iter);
 	}
 
-	/* stop the spinner */
-	gtk_spinner_stop (GTK_SPINNER (dialog->spinner));
-
 	/* no results */
 	if (gs_app_list_length (list) == 0) {
 		g_debug ("no sources to show");
@@ -853,7 +849,6 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, status_empty);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_page);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
 }
 
@@ -867,7 +862,6 @@ gs_repos_dialog_new (GsPluginLoader *plugin_loader)
 	dialog->third_party = gs_fedora_third_party_new (plugin_loader);
 	set_plugin_loader (dialog, plugin_loader);
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");
-	gtk_spinner_start (GTK_SPINNER (dialog->spinner));
 	reload_third_party_repos (dialog);
 
 	return GTK_WIDGET (dialog);

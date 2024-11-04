@@ -345,9 +345,6 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "failed");
 		break;
 	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
-		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates),
-						  "spinner");
-		break;
 	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "spinner");
 		break;

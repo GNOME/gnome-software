@@ -61,7 +61,6 @@ struct _GsExtrasPage
 	AdwStatusPage		 *no_results_page;
 	GtkWidget		 *list_box_results;
 	GtkWidget		 *scrolledwindow;
-	GtkWidget		 *spinner;
 	GtkWidget		 *stack;
 	GtkWidget		 *button_install_all;
 };
@@ -190,21 +189,6 @@ gs_extras_page_update_ui_state (GsExtrasPage *self)
 {
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS)
 		return;
-
-	/* main spinner */
-	switch (self->state) {
-	case GS_EXTRAS_PAGE_STATE_LOADING:
-		gtk_spinner_start (GTK_SPINNER (self->spinner));
-		break;
-	case GS_EXTRAS_PAGE_STATE_READY:
-	case GS_EXTRAS_PAGE_STATE_NO_RESULTS:
-	case GS_EXTRAS_PAGE_STATE_FAILED:
-		gtk_spinner_stop (GTK_SPINNER (self->spinner));
-		break;
-	default:
-		g_assert_not_reached ();
-		break;
-	}
 
 	/* stack */
 	switch (self->state) {
@@ -1452,7 +1436,6 @@ gs_extras_page_class_init (GsExtrasPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, no_results_page);
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, list_box_results);
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, scrolledwindow);
-	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, stack);
 }
 
