@@ -615,7 +615,7 @@ gs_utils_show_error_dialog_simple (GtkWidget *parent,
 				   const gchar *text)
 {
 #ifndef TESTDATADIR
-	GtkBuilder *builder;
+	g_autoptr(GtkBuilder) builder = NULL;
 	AdwDialog *dialog;
 	GtkButton *button;
 	GtkLabel *label;
