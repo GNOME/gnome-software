@@ -909,36 +909,31 @@ gs_utils_split_time_difference (gint64 unix_time_seconds,
 	return TRUE;
 }
 
-/**
- * gs_utils_time_to_datestring:
- * @unix_time_seconds: Time since the epoch in seconds
+/*
+ * gs_utils_split_time_to_datestring:
+ * @days_ago: number of days since the event we want to fetch the relative date as
+ * @weeks_ago: number of weeks since the event we want to fetch the relative date as
+ * @months_ago: number of months since the event we want to fetch the relative date as
+ * @years_ago: number of years since the event we want to fetch the relative date as
  *
- * Converts a time to a relative date string such as "5 days ago" or "2 weeks ago"
+ * Converts a time split in days/weeks/months/years difference 
+ * to a relative date string such as "5 days ago" or "2 weeks ago"
  *
  * This function returns up to a day level accurate string.
- * This should be used in places like app release date etc.
- * For accuracy to the minute gs_utils_time_to_timestring () should be used.
+ * This should not be used outside of gs_utils_time_to_datestring()
+ * or gs_utils_time_to_timestring().
  * 
- * Returns: (transfer full): the relative date string, or %NULL if 
- *   @unix_time_seconds is not valid
+ * Returns: (transfer full): the relative date string
  */
-gchar *
-gs_utils_time_to_datestring (gint64 unix_time_seconds)
+static gchar *
+gs_utils_split_time_to_datestring (gint days_ago, gint weeks_ago, gint months_ago, gint years_ago)
 {
-	gint minutes_ago, hours_ago, days_ago;
-	gint weeks_ago, months_ago, years_ago;
-
-	if (!gs_utils_split_time_difference (unix_time_seconds,
-		&minutes_ago, &hours_ago, &days_ago,
-		&weeks_ago, &months_ago, &years_ago))
-		return NULL;
-
 	if (days_ago < 1) {
 		/* TRANSLATORS: something happened less than a day ago */
 		return g_strdup (_("Today"));
 	} else if (days_ago < 2)
-		/* TRANSLATROS: something happened more than a day ago but less than 2 days ago */
-		return g_strdup_printf (_("Yesterday"));
+		/* TRANSLATORS: something happened more than a day ago but less than 2 days ago */
+		return g_strdup (_("Yesterday"));
 	else if (days_ago < 15)
 		return g_strdup_printf (ngettext ("%d day ago",
 						  "%d days ago", days_ago),
@@ -958,13 +953,40 @@ gs_utils_time_to_datestring (gint64 unix_time_seconds)
 }
 
 /**
+ * gs_utils_time_to_datestring:
+ * @unix_time_seconds: Time since the epoch in seconds
+ *
+ * Converts a time to a relative date string such as "5 days ago" or "2 weeks ago"
+ *
+ * This function returns up to a day level accurate string.
+ * This should be used in places like app release date etc.
+ * For accuracy to the minute gs_utils_time_to_timestring() should be used.
+ * 
+ * Returns: (transfer full): the relative date string, or %NULL if 
+ *   @unix_time_seconds is not valid
+ */
+gchar *
+gs_utils_time_to_datestring (gint64 unix_time_seconds)
+{
+	gint minutes_ago, hours_ago, days_ago;
+	gint weeks_ago, months_ago, years_ago;
+
+	if (!gs_utils_split_time_difference (unix_time_seconds,
+		&minutes_ago, &hours_ago, &days_ago,
+		&weeks_ago, &months_ago, &years_ago))
+		return NULL;
+
+	return gs_utils_split_time_to_datestring (days_ago, weeks_ago, months_ago, years_ago);
+}
+
+/**
  * gs_utils_time_to_timestring:
  * @unix_time_seconds: Time since the epoch in seconds
  *
  * Converts a time to a relative string such as "5 minutes ago" or "2 hours ago"
  *
  * This function returns up to a minute level accurate string.
- * For accuracy to the date gs_utils_time_to_datestring () should be used.
+ * For accuracy to the date gs_utils_time_to_datestring() should be used.
  *
  * Returns: (transfer full): the relative time string, or %NULL if 
  *   @unix_time_seconds is not valid
@@ -987,26 +1009,8 @@ gs_utils_time_to_timestring (gint64 unix_time_seconds)
 		return g_strdup_printf (ngettext ("%d minute ago",
 						  "%d minutes ago", minutes_ago),
 					minutes_ago);
-	else if (days_ago < 1)
-		return g_strdup_printf (ngettext ("%d hour ago",
-						  "%d hours ago", hours_ago),
-					hours_ago);
-	else if (days_ago < 15)
-		return g_strdup_printf (ngettext ("%d day ago",
-						  "%d days ago", days_ago),
-					days_ago);
-	else if (weeks_ago < 8)
-		return g_strdup_printf (ngettext ("%d week ago",
-						  "%d weeks ago", weeks_ago),
-					weeks_ago);
-	else if (years_ago < 1)
-		return g_strdup_printf (ngettext ("%d month ago",
-						  "%d months ago", months_ago),
-					months_ago);
 	else
-		return g_strdup_printf (ngettext ("%d year ago",
-						  "%d years ago", years_ago),
-					years_ago);
+		return gs_utils_split_time_to_datestring (days_ago, weeks_ago, months_ago, years_ago);
 }
 
 static void
