@@ -4481,7 +4481,7 @@ gs_packagekit_upgrade_system_cb (GObject *source_object,
 	g_autoptr(GError) local_error = NULL;
 	GsPluginDownloadUpgradeData *data = g_task_get_task_data (task);
 
-	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+	results = pk_task_generic_finish (PK_TASK (source_object), result, &local_error);
 
 	if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (task), &local_error)) {
 		gs_app_set_state_recover (data->app);
