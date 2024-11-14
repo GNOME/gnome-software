@@ -24,7 +24,7 @@ only logged if verbose output is enabled.
 
 To view the messages from the currently running gnome-software process, run:
 ```
-journalctl --user --boot --identifier=gnome-software
+journalctl --user --boot "$(which gnome-software)"
 ```
 
 Start-time debugging
