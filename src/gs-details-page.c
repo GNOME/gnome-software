@@ -2967,6 +2967,7 @@ gs_details_page_metainfo_thread (GTask *task,
 				 gpointer task_data,
 				 GCancellable *cancellable)
 {
+	GsDetailsPage *self = GS_DETAILS_PAGE (g_task_get_source_object (task));
 	g_autofree gchar *path = NULL;
 	g_autofree gchar *icon_path = NULL;
 	g_autoptr(XbBuilder) builder = NULL;
@@ -3053,11 +3054,9 @@ gs_details_page_metainfo_thread (GTask *task,
 		guint maximum_icon_size, scale;
 
 		/* Currently a 160px icon is needed for #GsFeatureTile, at most.
-		 * The '2' is to pretend the hiDPI/GDK's scale factor is 2, to
-		 * allow larger icons. The 'icons' plugin uses proper scale factor.
 		 */
 		maximum_icon_size = 160;
-		scale = 2;
+		scale = gtk_widget_get_scale_factor (GTK_WIDGET (self));
 
 		soup_session = gs_build_soup_session ();
 		gs_app_ensure_icons_downloaded (app, soup_session, maximum_icon_size, scale, cancellable);
