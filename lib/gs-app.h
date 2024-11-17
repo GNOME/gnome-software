@@ -549,6 +549,7 @@ void		 gs_app_set_version_history	(GsApp		*app,
 void		gs_app_ensure_icons_downloaded	(GsApp		*app,
 						 SoupSession	*soup_session,
 						 guint		 maximum_icon_size,
+						 guint		 scale,
 						 GCancellable	*cancellable);
 
 GPtrArray	*gs_app_get_relations		(GsApp		*app);

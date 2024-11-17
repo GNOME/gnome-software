@@ -282,7 +282,8 @@ download_remote_icons_of_the_app_cb (GTask        *task,
 
 		gs_remote_icon_ensure_cached (GS_REMOTE_ICON (icon),
 					      self->soup_session,
-					      self->maximum_size_px * self->scale,
+					      self->maximum_size_px,
+					      self->scale,
 					      cancellable,
 					      &local_error);
 
