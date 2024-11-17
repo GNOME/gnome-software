@@ -51,5 +51,6 @@ void		 gs_review_row_set_actions	(GsReviewRow	*review_row,
 void		 gs_review_row_set_network_available	(GsReviewRow	*review_row,
 							 gboolean	 network_available);
 void		 gs_review_row_refresh		(GsReviewRow	*row);
+const gchar	*gs_review_row_action_to_string	(GsReviewAction action);
 
 G_END_DECLS
