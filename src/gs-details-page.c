@@ -2362,7 +2362,7 @@ gs_details_page_app_launch_button_cb (GtkWidget *widget, GsDetailsPage *self)
 
 typedef struct {
 	GsDetailsPage *details_page;  /* (not nullable) (unowned) */
-	GsReviewDialog *dialog; /* (not nullable) (unowned) */
+	GWeakRef dialog_weak; /* (element-type GsReviewDialog) (owned) */
 	GsApp *app;  /* (not nullable) (owned) */
 } ReviewSubmitData;
 
@@ -2370,6 +2370,7 @@ static void
 submit_review_data_free (ReviewSubmitData *data)
 {
 	g_clear_object (&data->app);
+	g_weak_ref_clear (&data->dialog_weak);
 	g_free (data);
 }
 
@@ -2383,17 +2384,14 @@ review_submitted_cb (GObject *source_object,
 	GsOdrsProvider *odrs_provider = GS_ODRS_PROVIDER (source_object);
 	g_autoptr(ReviewSubmitData) data = g_steal_pointer (&user_data);
 	GsDetailsPage *self = data->details_page;
-	GsReviewDialog *review_dialog = data->dialog;
+	g_autoptr(GsReviewDialog) review_dialog = g_weak_ref_get (&data->dialog_weak);
 	g_autoptr(GError) local_error = NULL;
-	gboolean dialog_open;
 
 	/* if the dialog which triggered this callback is open. */
-	dialog_open = (self->review_dialog && GS_REVIEW_DIALOG (self->review_dialog) == review_dialog);
-
 	if (!gs_odrs_provider_submit_review_finish (odrs_provider, result, &local_error)) {
 		g_autofree gchar *tmp = NULL;
 		tmp = g_strdup_printf (_("Failed to submit review for “%s”: %s"), gs_app_get_name (data->app), local_error->message);
-		if (dialog_open)
+		if (review_dialog != NULL)
 			gs_review_dialog_set_error_text (review_dialog, tmp);
 
 		return;
@@ -2401,9 +2399,9 @@ review_submitted_cb (GObject *source_object,
 
 	gs_details_page_refresh_reviews (self);
 
-	/* unmap the dialog */
-	if (dialog_open)
-		adw_dialog_force_close (ADW_DIALOG (self->review_dialog));
+	/* ensure the dialog is now closed */
+	if (review_dialog != NULL)
+		adw_dialog_force_close (ADW_DIALOG (review_dialog));
 }
 
 static void
@@ -2430,7 +2428,7 @@ gs_details_page_review_send_cb (GsReviewDialog *dialog,
 
 	user_data = g_new0 (ReviewSubmitData, 1);
 	user_data->details_page = self;
-	user_data->dialog = rdialog;
+	g_weak_ref_init (&user_data->dialog_weak, rdialog);
 	user_data->app = g_object_ref (self->app);
 
 	gs_odrs_provider_submit_review_async (self->odrs_provider, self->app, review,
