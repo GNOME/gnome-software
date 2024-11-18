@@ -1006,9 +1006,9 @@ gs_utils_time_to_timestring (gint64 unix_time_seconds)
 		/* TRANSLATORS: something happened less than 5 minutes ago */
 		return g_strdup (_("Just now"));
 	} else if (hours_ago < 1)
-		return g_strdup_printf (ngettext ("%d minute ago",
-						  "%d minutes ago", minutes_ago),
-					minutes_ago);
+		return g_strdup_printf (ngettext ("%d minute ago", "%d minutes ago", minutes_ago), minutes_ago);
+	else if (days_ago < 1)
+		return g_strdup_printf (ngettext ("%d hour ago", "%d hours ago", hours_ago), hours_ago);
 	else
 		return gs_utils_split_time_to_datestring (days_ago, weeks_ago, months_ago, years_ago);
 }
