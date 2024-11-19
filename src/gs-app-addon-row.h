@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 #include "gnome-software-private.h"
 
@@ -17,7 +17,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_APP_ADDON_ROW (gs_app_addon_row_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsAppAddonRow, gs_app_addon_row, GS, APP_ADDON_ROW, GtkListBoxRow)
+G_DECLARE_FINAL_TYPE (GsAppAddonRow, gs_app_addon_row, GS, APP_ADDON_ROW, AdwActionRow)
 
 GtkWidget	*gs_app_addon_row_new			(GsApp		*app);
 void		 gs_app_addon_row_refresh		(GsAppAddonRow	*row);

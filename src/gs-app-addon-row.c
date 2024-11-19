@@ -16,18 +16,16 @@
 
 struct _GsAppAddonRow
 {
-	GtkListBoxRow	 parent_instance;
+	AdwActionRow	 parent_instance;
 
 	GsApp		*app;
-	GtkWidget	*name_label;
-	GtkWidget	*description_label;
 	GtkWidget	*label;
 	GtkWidget	*buttons_stack;
 	GtkWidget	*button_install;
 	GtkWidget	*button_remove;
 };
 
-G_DEFINE_TYPE (GsAppAddonRow, gs_app_addon_row, GTK_TYPE_LIST_BOX_ROW)
+G_DEFINE_TYPE (GsAppAddonRow, gs_app_addon_row, ADW_TYPE_ACTION_ROW)
 
 enum {
 	SIGNAL_INSTALL_BUTTON_CLICKED,
@@ -84,9 +82,9 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 	/* join the lines */
 	str = gs_app_addon_row_get_summary (row);
 	gs_utils_gstring_replace (str, "\n", " ");
-	gtk_label_set_markup (GTK_LABEL (row->description_label), str->str);
-	gtk_label_set_label (GTK_LABEL (row->name_label),
-			     gs_app_get_name (row->app));
+	adw_action_row_set_subtitle (ADW_ACTION_ROW (row), str->str);
+	adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row),
+				       gs_app_get_name (row->app));
 
 	/* update the state label */
 	switch (gs_app_get_state (row->app)) {
@@ -236,8 +234,6 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-addon-row.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, name_label);
-	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, description_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, buttons_stack);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, button_install);
