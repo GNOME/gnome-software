@@ -120,8 +120,14 @@ gs_description_box_update_content (GsDescriptionBox *box)
 		for (start_index = 0; box->text[start_index] && line_index > 0; start_index++) {
 			if (box->text[start_index] == '<') {
 				if (box->text[start_index + 1] == '/') {
-					g_autofree gchar *value = opened_markup->data;
-					opened_markup = g_slist_remove (opened_markup, value);
+					if (opened_markup == NULL) {
+						/* do nothing when the markup text is broken and starts with a closing element;
+						   it might not happen when it's taken from a well-formatted Appstream data XML,
+						   but better to stay on a safe side */
+					} else {
+						g_autofree gchar *value = opened_markup->data;
+						opened_markup = g_slist_remove (opened_markup, value);
+					}
 				} else {
 					const gchar *end = strchr (box->text + start_index, '>');
 					opened_markup = g_slist_prepend (opened_markup, g_strndup (box->text + start_index + 1, end - (box->text + start_index) - 1));
