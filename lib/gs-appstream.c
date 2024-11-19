@@ -2408,11 +2408,6 @@ gs_add_appstream_catalog_location (GPtrArray *locations,
 		}
 	}
 
-	g_ptr_array_add (locations,
-			 g_build_filename (catalog_path, "xml", NULL));
-	g_ptr_array_add (locations,
-			 g_build_filename (catalog_path, "yaml", NULL));
-
 	if (!ignore_legacy_path) {
 		g_ptr_array_add (locations,
 				 g_build_filename (catalog_legacy_path, "xml", NULL));
@@ -2421,6 +2416,13 @@ gs_add_appstream_catalog_location (GPtrArray *locations,
 		g_ptr_array_add (locations,
 				 g_build_filename (catalog_legacy_path, "yaml", NULL));
 	}
+
+	/* Add the current paths _after_ the legacy, that way the data stored in the current
+	   paths has precedence over the (possibly stale) data in the legacy paths. */
+	g_ptr_array_add (locations,
+			 g_build_filename (catalog_path, "xml", NULL));
+	g_ptr_array_add (locations,
+			 g_build_filename (catalog_path, "yaml", NULL));
 }
 
 GPtrArray *
