@@ -1867,7 +1867,7 @@ gs_app_get_icon_for_size (GsApp       *app,
 		guint icon_width = gs_icon_get_width (icon);
 		guint icon_scale = gs_icon_get_scale (icon);
 
-		g_debug ("\tConsidering icon of type %s (%s), width %u×%u",
+		g_debug ("\tConsidering icon of type %s (%s), width %u@%u",
 			 G_OBJECT_TYPE_NAME (icon), icon_str, icon_width, icon_scale);
 
 		/* To avoid excessive I/O, the loading of AppStream data does
