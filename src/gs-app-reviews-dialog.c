@@ -119,8 +119,6 @@ review_action_completed_cb (GObject      *source_object,
 		display_error_toast (data->dialog, (local_error ? local_error->message : _("Unknown error")));
 		return;
 	}
-
-	gs_review_row_refresh (data->row);
 }
 
 static void
