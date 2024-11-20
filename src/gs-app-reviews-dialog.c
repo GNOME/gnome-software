@@ -96,8 +96,6 @@ review_button_clicked_cb (GsReviewRow        *row,
 			   gs_app_get_id (self->app), local_error->message);
 		return;
 	}
-
-	gs_review_row_refresh (row);
 }
 
 static GSList * /* (transfer container) */
