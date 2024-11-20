@@ -275,7 +275,7 @@ populate_reviews (GsAppReviewsDialog *self)
 		else
 			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
-		gs_review_row_set_network_available (GS_REVIEW_ROW (row),
+		gs_review_row_actions_set_sensitive (GS_REVIEW_ROW (row),
 						     GS_IS_PLUGIN_LOADER (self->plugin_loader) && gs_plugin_loader_get_network_available (self->plugin_loader));
 	}
 

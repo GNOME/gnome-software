@@ -1802,7 +1802,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		gtk_list_box_prepend (GTK_LIST_BOX (self->list_box_featured_review), row);
 
-		gs_review_row_set_network_available (GS_REVIEW_ROW (row),
+		gs_review_row_actions_set_sensitive (GS_REVIEW_ROW (row),
 						     gs_plugin_loader_get_network_available (self->plugin_loader));
 	}
 
