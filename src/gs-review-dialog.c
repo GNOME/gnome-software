@@ -283,3 +283,10 @@ gs_review_dialog_set_error_text (GsReviewDialog *dialog,
 
 	adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (dialog->toast_overlay), toast);
 }
+
+void
+gs_review_dialog_submit_set_sensitive (GsReviewDialog *dialog,
+                                       gboolean sensitive)
+{
+	gtk_widget_set_sensitive (dialog->post_button, sensitive);
+}

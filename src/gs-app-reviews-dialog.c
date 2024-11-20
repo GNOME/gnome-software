@@ -86,6 +86,9 @@ review_action_completed_cb (GObject      *source_object,
 	g_autoptr(AsyncReviewData) data = g_steal_pointer (&user_data);
 	gboolean success;
 
+	/* enable review actions after action completion */
+	gs_review_row_actions_set_sensitive (data->row, TRUE);
+
 	if (g_cancellable_is_cancelled (g_task_get_cancellable (G_TASK (result))))
 		return;
 
@@ -135,6 +138,9 @@ review_button_clicked_cb (GsReviewRow        *row,
 	data->row = row;
 	data->dialog = self;
 	data->action = action;
+
+	/* avoid submitting duplicate requests */
+	gs_review_row_actions_set_sensitive (row, FALSE);
 
 	switch (action) {
 	case GS_REVIEW_ACTION_UPVOTE:

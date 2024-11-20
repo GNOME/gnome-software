@@ -25,5 +25,7 @@ const gchar	*gs_review_dialog_get_summary	(GsReviewDialog	*dialog);
 gchar		*gs_review_dialog_get_text	(GsReviewDialog	*dialog);
 void		 gs_review_dialog_set_error_text(GsReviewDialog	*dialog,
 						 const gchar	*error_text);
+void		 gs_review_dialog_submit_set_sensitive (GsReviewDialog	*dialog,
+							gboolean        sensitive);
 
 G_END_DECLS
