@@ -198,7 +198,7 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	/* require the user to spend at least 30 seconds on writing a review */
+	/* require the user to spend at least 5 seconds on writing a review */
 	dialog->timer_id = g_timeout_add_seconds (WRITING_TIME_MIN,
 						  gs_review_dialog_timeout_cb,
 						  dialog);
