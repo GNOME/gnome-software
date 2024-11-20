@@ -321,7 +321,7 @@ gs_review_row_new (AsReview *review)
 	row = g_object_new (GS_TYPE_REVIEW_ROW, NULL);
 	priv = gs_review_row_get_instance_private (row);
 	priv->review = g_object_ref (review);
-	g_signal_connect_object (priv->review, "notify::state",
+	g_signal_connect_object (priv->review, "notify::flags",
 				 G_CALLBACK (gs_review_row_notify_props_changed_cb),
 				 row, 0);
 	g_signal_connect_object (priv->button_like, "clicked",
