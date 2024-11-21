@@ -39,11 +39,8 @@ enum {
 static guint signals [SIGNAL_LAST] = { 0 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsReviewRow, gs_review_row, GTK_TYPE_LIST_BOX_ROW)
-/* FIXME: This is currently public to allow #GsAppReviewsDialog to refresh rows.
- * That should no longer be needed once #AsReview emits #GObject::notify correctly,
- * as then property bindings can be used internally.
- * See https://github.com/ximion/appstream/pull/448 */
-void
+
+static void
 gs_review_row_refresh (GsReviewRow *row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
@@ -306,7 +303,7 @@ gs_review_row_new (AsReview *review)
 	row = g_object_new (GS_TYPE_REVIEW_ROW, NULL);
 	priv = gs_review_row_get_instance_private (row);
 	priv->review = g_object_ref (review);
-	g_signal_connect_object (priv->review, "notify::state",
+	g_signal_connect_object (priv->review, "notify::flags",
 				 G_CALLBACK (gs_review_row_notify_props_changed_cb),
 				 row, 0);
 	g_signal_connect_object (priv->button_like, "clicked",
