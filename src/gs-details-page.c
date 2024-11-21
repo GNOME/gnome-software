@@ -1802,7 +1802,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		gtk_list_box_prepend (GTK_LIST_BOX (self->list_box_featured_review), row);
 
-		gs_review_row_set_network_available (GS_REVIEW_ROW (row),
+		gs_review_row_actions_set_sensitive (GS_REVIEW_ROW (row),
 						     gs_plugin_loader_get_network_available (self->plugin_loader));
 	}
 
@@ -2387,6 +2387,9 @@ review_submitted_cb (GObject *source_object,
 	g_autoptr(GsReviewDialog) review_dialog = g_weak_ref_get (&data->dialog_weak);
 	g_autoptr(GError) local_error = NULL;
 
+	/* enable submit action after action completion */
+	gs_review_dialog_submit_set_sensitive (review_dialog, TRUE);
+
 	/* if the dialog which triggered this callback is open. */
 	if (!gs_odrs_provider_submit_review_finish (odrs_provider, result, &local_error)) {
 		g_autofree gchar *tmp = NULL;
@@ -2431,6 +2434,8 @@ gs_details_page_review_send_cb (GsReviewDialog *dialog,
 	g_weak_ref_init (&user_data->dialog_weak, rdialog);
 	user_data->app = g_object_ref (self->app);
 
+	/* avoid submitting duplicate requests */
+	gs_review_dialog_submit_set_sensitive (rdialog, FALSE);
 	gs_odrs_provider_submit_review_async (self->odrs_provider, self->app, review,
 					      self->cancellable, review_submitted_cb, g_steal_pointer (&user_data));
 }

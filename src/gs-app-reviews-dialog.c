@@ -86,6 +86,9 @@ review_action_completed_cb (GObject      *source_object,
 	g_autoptr(AsyncReviewData) data = g_steal_pointer (&user_data);
 	gboolean success;
 
+	/* enable review actions after action completion */
+	gs_review_row_actions_set_sensitive (data->row, TRUE);
+
 	if (g_cancellable_is_cancelled (g_task_get_cancellable (G_TASK (result))))
 		return;
 
@@ -119,8 +122,6 @@ review_action_completed_cb (GObject      *source_object,
 		display_error_toast (data->dialog, (local_error ? local_error->message : _("Unknown error")));
 		return;
 	}
-
-	gs_review_row_refresh (data->row);
 }
 
 static void
@@ -137,6 +138,9 @@ review_button_clicked_cb (GsReviewRow        *row,
 	data->row = row;
 	data->dialog = self;
 	data->action = action;
+
+	/* avoid submitting duplicate requests */
+	gs_review_row_actions_set_sensitive (row, FALSE);
 
 	switch (action) {
 	case GS_REVIEW_ACTION_UPVOTE:
@@ -277,7 +281,7 @@ populate_reviews (GsAppReviewsDialog *self)
 		else
 			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
-		gs_review_row_set_network_available (GS_REVIEW_ROW (row),
+		gs_review_row_actions_set_sensitive (GS_REVIEW_ROW (row),
 						     GS_IS_PLUGIN_LOADER (self->plugin_loader) && gs_plugin_loader_get_network_available (self->plugin_loader));
 	}
 

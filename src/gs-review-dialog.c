@@ -198,7 +198,7 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	/* require the user to spend at least 30 seconds on writing a review */
+	/* require the user to spend at least 5 seconds on writing a review */
 	dialog->timer_id = g_timeout_add_seconds (WRITING_TIME_MIN,
 						  gs_review_dialog_timeout_cb,
 						  dialog);
@@ -282,4 +282,11 @@ gs_review_dialog_set_error_text (GsReviewDialog *dialog,
 	toast = adw_toast_new (error_text);
 
 	adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (dialog->toast_overlay), toast);
+}
+
+void
+gs_review_dialog_submit_set_sensitive (GsReviewDialog *dialog,
+                                       gboolean sensitive)
+{
+	gtk_widget_set_sensitive (dialog->post_button, sensitive);
 }

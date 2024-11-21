@@ -17,7 +17,7 @@
 typedef struct
 {
 	AsReview	*review;
-	gboolean	 network_available;
+	gboolean	 enable_actions;
 	guint64		 actions;
 	GtkWidget	*stars;
 	GtkWidget	*summary_label;
@@ -39,11 +39,8 @@ enum {
 static guint signals [SIGNAL_LAST] = { 0 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsReviewRow, gs_review_row, GTK_TYPE_LIST_BOX_ROW)
-/* FIXME: This is currently public to allow #GsAppReviewsDialog to refresh rows.
- * That should no longer be needed once #AsReview emits #GObject::notify correctly,
- * as then property bindings can be used internally.
- * See https://github.com/ximion/appstream/pull/448 */
-void
+
+static void
 gs_review_row_refresh (GsReviewRow *row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
@@ -94,8 +91,7 @@ gs_review_row_refresh (GsReviewRow *row)
 	gtk_widget_set_visible (priv->button_report,
 				priv->actions & 1 << GS_REVIEW_ACTION_REPORT);
 
-	/* mark insensitive if no network */
-	if (priv->network_available) {
+	if (priv->enable_actions) {
 		gtk_widget_set_sensitive (priv->button_like, TRUE);
 		gtk_widget_set_sensitive (priv->button_dislike, TRUE);
 		gtk_widget_set_sensitive (priv->button_remove, TRUE);
@@ -109,10 +105,10 @@ gs_review_row_refresh (GsReviewRow *row)
 }
 
 void
-gs_review_row_set_network_available (GsReviewRow *review_row, gboolean network_available)
+gs_review_row_actions_set_sensitive (GsReviewRow *review_row, gboolean sensitive)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (review_row);
-	priv->network_available = network_available;
+	priv->enable_actions = sensitive;
 	gs_review_row_refresh (review_row);
 }
 
@@ -140,7 +136,7 @@ gs_review_row_init (GsReviewRow *row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
 
-	priv->network_available = TRUE;
+	priv->enable_actions = TRUE;
 
 	g_type_ensure (GS_TYPE_STAR_WIDGET);
 
@@ -321,7 +317,7 @@ gs_review_row_new (AsReview *review)
 	row = g_object_new (GS_TYPE_REVIEW_ROW, NULL);
 	priv = gs_review_row_get_instance_private (row);
 	priv->review = g_object_ref (review);
-	g_signal_connect_object (priv->review, "notify::state",
+	g_signal_connect_object (priv->review, "notify::flags",
 				 G_CALLBACK (gs_review_row_notify_props_changed_cb),
 				 row, 0);
 	g_signal_connect_object (priv->button_like, "clicked",
