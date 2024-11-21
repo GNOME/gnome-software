@@ -476,6 +476,12 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 	g_autoptr(GFileMonitor) file_monitor = NULL;
 	g_autoptr(GError) local_error = NULL;
 
+	/* in case the path appears later, to refresh the data even when non-existent at the moment */
+	file_monitor = g_file_monitor (parent, G_FILE_MONITOR_NONE, cancellable, &local_error);
+	if (local_error)
+		g_debug ("appstream: Failed to create file monitor for '%s': %s", path, local_error->message);
+	gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
+
 	/* parent path does not exist */
 	if (!g_file_query_exists (parent, cancellable)) {
 		g_debug ("appstream: Skipping appstream path '%s' as %s", path, g_cancellable_is_cancelled (cancellable) ? "cancelled" : "does not exist");
@@ -485,11 +491,6 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
 		return FALSE;
-
-	file_monitor = g_file_monitor (parent, G_FILE_MONITOR_NONE, cancellable, &local_error);
-	if (local_error)
-		g_debug ("appstream: Failed to create file monitor for '%s': %s", path, local_error->message);
-	gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
 
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 #ifdef ENABLE_EXTERNAL_APPSTREAM
