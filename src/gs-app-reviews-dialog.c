@@ -115,11 +115,13 @@ review_action_completed_cb (GObject      *source_object,
 	}
 
 	if (!success) {
+		g_assert (local_error != NULL);
+
 		g_warning ("failed to %s review on %s: %s",
 			   gs_review_row_action_to_string (data->action),
 			   gs_app_get_id (data->dialog->app),
-			   (local_error ? local_error->message : "Unknown error"));
-		display_error_toast (data->dialog, (local_error ? local_error->message : _("Unknown error")));
+			   local_error->message);
+		display_error_toast (data->dialog, local_error->message);
 		return;
 	}
 }
