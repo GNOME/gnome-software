@@ -1857,10 +1857,12 @@ gs_details_page_app_refine_cb (GObject *source,
 static void
 _set_app (GsDetailsPage *self, GsApp *app)
 {
-	GsJobManager *job_manager = gs_plugin_loader_get_job_manager (self->plugin_loader);
+	GsJobManager *job_manager;
 
 	if (self->app == app)
 		return;
+
+	job_manager = gs_plugin_loader_get_job_manager (self->plugin_loader);
 
 	/* do not show all the reviews by default */
 	self->show_all_reviews = FALSE;
