@@ -4,7 +4,7 @@
   <requires lib="adwaita" version="1.0"/>
   <template class="GsContextDialogRow" parent="AdwActionRow">
     <property name="activatable">False</property>
-    <property name="focusable">False</property>
+    <property name="focusable">True</property><!-- to allow Orca to read row contents -->
 
     <child type="prefix">
       <object class="GsLozenge" id="lozenge">
