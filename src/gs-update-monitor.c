@@ -1556,6 +1556,7 @@ gs_update_monitor_dispose (GObject *object)
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
 
 	g_clear_signal_handler (&monitor->network_changed_handler, monitor->network_monitor);
+	g_clear_object (&monitor->network_monitor);
 
 #if GLIB_CHECK_VERSION(2, 69, 1)
 	g_clear_signal_handler (&monitor->power_profile_changed_handler, monitor->power_profile_monitor);
