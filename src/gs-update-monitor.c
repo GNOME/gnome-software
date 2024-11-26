@@ -47,7 +47,10 @@ struct _GsUpdateMonitor {
 	gulong		 settings_changed_handler;
 
 	GsPluginLoader	*plugin_loader;
+
 	GDBusProxy	*proxy_upower;
+	gulong		 upower_changed_handler;
+
 	GError		*last_offline_error;
 
 	GNetworkMonitor *network_monitor;
@@ -1521,9 +1524,9 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 					NULL,
 					&error);
 	if (monitor->proxy_upower != NULL) {
-		g_signal_connect (monitor->proxy_upower, "notify",
-				  G_CALLBACK (check_updates_upower_changed_cb),
-				  monitor);
+		monitor->upower_changed_handler = g_signal_connect (monitor->proxy_upower, "notify",
+								    G_CALLBACK (check_updates_upower_changed_cb),
+								    monitor);
 	} else {
 		g_warning ("failed to connect to upower: %s", error->message);
 	}
@@ -1590,6 +1593,8 @@ gs_update_monitor_dispose (GObject *object)
 
 	g_clear_signal_handler (&monitor->settings_changed_handler, monitor->settings);
 	g_clear_object (&monitor->settings);
+
+	g_clear_signal_handler (&monitor->upower_changed_handler, monitor->proxy_upower);
 	g_clear_object (&monitor->proxy_upower);
 
 	G_OBJECT_CLASS (gs_update_monitor_parent_class)->dispose (object);
