@@ -54,7 +54,7 @@ struct _GsUpdateMonitor {
 	GError		*last_offline_error;
 
 	GNetworkMonitor *network_monitor;
-	guint		 network_changed_handler;
+	gulong		 network_changed_handler;
 
 #if GLIB_CHECK_VERSION(2, 69, 1)
 	GPowerProfileMonitor	*power_profile_monitor;  /* (owned) (nullable) */
@@ -1555,11 +1555,7 @@ gs_update_monitor_dispose (GObject *object)
 {
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
 
-	if (monitor->network_changed_handler != 0) {
-		g_signal_handler_disconnect (monitor->network_monitor,
-					     monitor->network_changed_handler);
-		monitor->network_changed_handler = 0;
-	}
+	g_clear_signal_handler (&monitor->network_changed_handler, monitor->network_monitor);
 
 #if GLIB_CHECK_VERSION(2, 69, 1)
 	g_clear_signal_handler (&monitor->power_profile_changed_handler, monitor->power_profile_monitor);
