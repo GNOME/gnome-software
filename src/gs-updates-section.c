@@ -214,7 +214,6 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
 	g_autoptr(GsUpdatesSection) self = GS_UPDATES_SECTION (g_steal_pointer (&user_data));
 	g_autoptr(GError) error = NULL;
-	GsApp *app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get result */
@@ -231,7 +230,7 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	if (self->list != NULL && gs_app_list_length (self->list) > 0) {
 		plugin_job = gs_plugin_job_cancel_offline_update_new (GS_PLUGIN_CANCEL_OFFLINE_UPDATE_FLAGS_INTERACTIVE);
 		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-						    gs_app_get_cancellable (app),
+						    NULL,
 						    _cancel_trigger_failed_cb,
 						    g_object_ref (self));
 	} else {
