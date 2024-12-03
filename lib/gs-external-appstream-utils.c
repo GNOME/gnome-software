@@ -170,15 +170,16 @@ refresh_url_progress_cb (gsize    bytes_downloaded,
 }
 
 static void
-refresh_url_async (GSettings           *settings,
-                   const gchar         *cache_kind,
-                   const gchar         *url,
-                   SoupSession         *soup_session,
-                   guint64              cache_age_secs,
-                   ProgressTuple       *progress_tuple,
-                   GCancellable        *cancellable,
-                   GAsyncReadyCallback  callback,
-                   gpointer             user_data)
+refresh_url_async (GSettings            *settings,
+                   const gchar          *cache_kind,
+                   const gchar          *url,
+                   SoupSession          *soup_session,
+                   guint64               cache_age_secs,
+                   ProgressTuple        *progress_tuple,
+                   gchar               **out_appstream_path,
+                   GCancellable         *cancellable,
+                   GAsyncReadyCallback   callback,
+                   gpointer              user_data)
 {
 	g_autoptr(GTask) task = NULL;
 	g_autofree gchar *basename = NULL;
@@ -254,8 +255,15 @@ refresh_url_async (GSettings           *settings,
 		g_debug ("skipping updating external appstream file %s: "
 			 "cache age is older than file",
 			 target_file_path);
+		if (out_appstream_path != NULL) {
+			*out_appstream_path = g_steal_pointer (&target_file_path);
+		}
 		g_task_return_boolean (task, TRUE);
 		return;
+	}
+
+	if (out_appstream_path != NULL) {
+		*out_appstream_path = g_steal_pointer (&target_file_path);
 	}
 
 	/* If downloading system wide, write the download contents into a
@@ -438,6 +446,12 @@ typedef struct {
 	gsize n_appstream_urls;
 	ProgressTuple *progress_tuples;  /* (array length=n_appstream_urls) (owned) */
 	GSource *progress_source;  /* (owned) */
+	/* This is a fixed-sized array that contains (n_appstream_urls + 1)
+	 * items, the last one being guaranteed to be NULL. It is used like a
+	 * fixed-sized array internally, but it turned into a NULL-terminated
+	 * array into gs_external_appstream_refresh_finish() to avoid
+	 * reallocation. */
+	gchar **appstream_paths;  /* (array length=n_appstream_urls) (owned) */
 } RefreshData;
 
 static void
@@ -454,6 +468,16 @@ refresh_data_free (RefreshData *data)
 	g_source_unref (data->progress_source);
 
 	g_free (data->progress_tuples);
+
+	/* This doesn’t use g_strfreev() because it is a fixed-sized array, any
+	 * element of data->appstream_paths may be NULL. It itself can be NULL
+	 * if it has been stolen in gs_external_appstream_refresh_finish(). */
+	if (data->appstream_paths != NULL) {
+		for (gsize i = 0; i < data->n_appstream_urls; i++) {
+			g_clear_pointer (&data->appstream_paths[i], g_free);
+		}
+		g_clear_pointer (&data->appstream_paths, g_free);
+	}
 
 	g_free (data);
 }
@@ -520,6 +544,10 @@ gs_external_appstream_refresh_async (const gchar                *cache_kind,
 	data->n_appstream_urls = n_appstream_urls;
 	data->progress_tuples = g_new0 (ProgressTuple, n_appstream_urls);
 	data->progress_source = g_timeout_source_new (progress_update_period_ms);
+	/* We want to use it as a fixed-size array internally but to return it
+	 * as a NULL-terminated array, so we have to add an extra terminating
+	 * item at the end. */
+	data->appstream_paths = g_new0 (gchar *, n_appstream_urls + 1);
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) refresh_data_free);
 
 	/* Set up the progress timeout. This periodically sums up the progress
@@ -547,6 +575,7 @@ gs_external_appstream_refresh_async (const gchar                *cache_kind,
 				   soup_session,
 				   cache_age_secs,
 				   &data->progress_tuples[i],
+				   &data->appstream_paths[i],
 				   cancellable,
 				   refresh_cb,
 				   g_object_ref (task));
@@ -631,20 +660,56 @@ finish_refresh_op (GTask  *task,
 /**
  * gs_external_appstream_refresh_finish:
  * @result: a #GAsyncResult
+ * @out_appstream_paths: (out) (transfer full) (optional) (nullable): return
+ *   location for the %NULL-terminated array of downloaded appstream file paths,
+ *   or %NULL to ignore
  * @error: return location for a #GError, or %NULL
  *
  * Finish an asynchronous refresh operation started with
  * gs_external_appstream_refresh_async().
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 42
+ * Since: 48
  */
 gboolean
-gs_external_appstream_refresh_finish (GAsyncResult  *result,
-                                      GError       **error)
+gs_external_appstream_refresh_finish (GAsyncResult   *result,
+                                      gchar        ***out_appstream_paths,
+                                      GError        **error)
 {
+	GTask *task;
+	RefreshData *data;
+	g_auto(GStrv) appstream_paths_tmp = NULL;
+	gboolean success;
+
 	g_return_val_if_fail (g_task_is_valid (result, NULL), FALSE);
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-	return g_task_propagate_boolean (G_TASK (result), error);
+	task = G_TASK (result);
+	data = g_task_get_task_data (task);
+
+	if (out_appstream_paths != NULL) {
+		/* Turn the paths array from a fixed-size array into a
+		 * NULL-terminated one, so we can return it without copying it.
+		 */
+		for (gsize i = 0, j = 0; i < data->n_appstream_urls; i++) {
+			if (data->appstream_paths[i] == NULL) {
+				continue;
+			}
+
+			if (i != j) {
+				data->appstream_paths[j] = g_steal_pointer (&data->appstream_paths[i]);
+			}
+
+			j++;
+		}
+		appstream_paths_tmp = g_steal_pointer (&data->appstream_paths);
+	}
+
+	success = g_task_propagate_boolean (G_TASK (result), error);
+
+	if (success && out_appstream_paths != NULL) {
+		*out_appstream_paths = g_steal_pointer (&appstream_paths_tmp);
+	}
+
+	return success;
 }

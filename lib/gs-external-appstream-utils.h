@@ -48,5 +48,6 @@ void		 gs_external_appstream_refresh_async (const gchar                *cache_ki
 						      GCancellable               *cancellable,
 						      GAsyncReadyCallback         callback,
 						      gpointer                    user_data);
-gboolean	 gs_external_appstream_refresh_finish (GAsyncResult  *result,
-						       GError       **error);
+gboolean	 gs_external_appstream_refresh_finish (GAsyncResult   *result,
+						       gchar        ***out_appstream_paths,
+						       GError        **error);

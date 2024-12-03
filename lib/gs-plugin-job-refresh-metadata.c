@@ -375,7 +375,7 @@ external_appstream_refresh_cb (GObject      *source_object,
 	g_autoptr(GTask) task = G_TASK (user_data);
 	g_autoptr(GError) local_error = NULL;
 
-	if (!gs_external_appstream_refresh_finish (result, &local_error))
+	if (!gs_external_appstream_refresh_finish (result, NULL, &local_error))
 		g_debug ("Failed to refresh external appstream: %s", local_error->message);
 	/* Intentionally ignore errors, to not block other plugins */
 	finish_op (task, NULL);
