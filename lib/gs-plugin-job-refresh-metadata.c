@@ -227,8 +227,16 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 	/* Start downloading updated external appstream before anything else */
 #ifdef ENABLE_EXTERNAL_APPSTREAM
 	if (!g_cancellable_is_cancelled (cancellable)) {
+		g_autoptr(GSettings) settings = NULL;
+		g_auto(GStrv) appstream_urls = NULL;
+
 		self->n_pending_ops++;
-		gs_external_appstream_refresh_async (self->cache_age_secs,
+		settings = g_settings_new ("org.gnome.software");
+		appstream_urls = g_settings_get_strv (settings,
+						      "external-appstream-urls");
+		gs_external_appstream_refresh_async (NULL,
+						     appstream_urls,
+						     self->cache_age_secs,
 						     refresh_progress_tuple_cb,
 						     &self->external_appstream_progress,
 						     cancellable,

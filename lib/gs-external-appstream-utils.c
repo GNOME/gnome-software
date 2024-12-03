@@ -171,6 +171,7 @@ refresh_url_progress_cb (gsize    bytes_downloaded,
 
 static void
 refresh_url_async (GSettings           *settings,
+                   const gchar         *cache_kind,
                    const gchar         *url,
                    SoupSession         *soup_session,
                    guint64              cache_age_secs,
@@ -207,11 +208,21 @@ refresh_url_async (GSettings           *settings,
 	}
 	basename = g_strdup_printf ("%s-%s", hash, basename_url);
 
-	/* Are we downloading for the user, or the system? */
-	system_wide = g_settings_get_boolean (settings, "external-appstream-system-wide");
+	/* Are we downloading for a given cache kind, the user, or the system? */
+	system_wide = cache_kind == NULL && g_settings_get_boolean (settings, "external-appstream-system-wide");
 
 	/* Check cache file age. */
-	if (system_wide) {
+	if (cache_kind != NULL) {
+		target_file_path = gs_utils_get_cache_filename (cache_kind,
+								basename,
+								GS_UTILS_CACHE_FLAG_WRITEABLE |
+								GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
+								&local_error);
+		if (target_file_path == NULL) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+	} else if (system_wide) {
 		target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
 	} else {
 		g_autofree gchar *legacy_file_path = NULL;
@@ -451,6 +462,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefreshData, refresh_data_free)
 
 /**
  * gs_external_appstream_refresh_async:
+ * @cache_kind: (nullable): a cache kind, e.g. "fwupd" or "screenshots/123x456", or %NULL
+ * @appstream_urls: a %NULL-terminated array of URLs
  * @cache_age_secs: cache age, in seconds, as passed to #GsPluginClass.refresh_metadata_async()
  * @progress_callback: (nullable): callback to call with progress information
  * @progress_user_data: (nullable) (closure progress_callback): data to pass
@@ -459,12 +472,24 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefreshData, refresh_data_free)
  * @callback: function call when the asynchronous operation is complete
  * @user_data: data to pass to @callback
  *
- * Refresh any configured external appstream files, if the cache is too old.
+ * Refresh any external appstream files, if the cache is too old.
  *
- * Since: 42
+ * If @cache_kind is set, the files will be cached into a per-user cache
+ * directory, and into a global cache othwerwise. The global directory will be
+ * system-wide or user-specific according to the
+ * `external-appstream-system-wide` setting.
+ *
+ * If a plugin requests a file to be saved in the cache it is the plugins
+ * responsibility to remove the file when it is no longer valid or is too old
+ * -- gnome-software will not ever clean the cache for the plugin.
+ * For this reason it is a good idea to use the plugin name as @cache_kind.
+ *
+ * Since: 48
  */
 void
-gs_external_appstream_refresh_async (guint64                     cache_age_secs,
+gs_external_appstream_refresh_async (const gchar                *cache_kind,
+                                     GStrv                       appstream_urls,
+                                     guint64                     cache_age_secs,
                                      GsDownloadProgressCallback  progress_callback,
                                      gpointer                    progress_user_data,
                                      GCancellable               *cancellable,
@@ -472,7 +497,6 @@ gs_external_appstream_refresh_async (guint64                     cache_age_secs,
                                      gpointer                    user_data)
 {
 	g_autoptr(GSettings) settings = NULL;
-	g_auto(GStrv) appstream_urls = NULL;
 	gsize n_appstream_urls;
 	g_autoptr(SoupSession) soup_session = NULL;
 	g_autoptr(GTask) task = NULL;
@@ -488,8 +512,6 @@ gs_external_appstream_refresh_async (guint64                     cache_age_secs,
 
 	settings = g_settings_new ("org.gnome.software");
 	soup_session = gs_build_soup_session ();
-	appstream_urls = g_settings_get_strv (settings,
-					      "external-appstream-urls");
 	n_appstream_urls = g_strv_length (appstream_urls);
 
 	data = data_owned = g_new0 (RefreshData, 1);
@@ -520,6 +542,7 @@ gs_external_appstream_refresh_async (guint64                     cache_age_secs,
 
 		data->n_pending_ops++;
 		refresh_url_async (settings,
+				   cache_kind,
 				   appstream_urls[i],
 				   soup_session,
 				   cache_age_secs,
