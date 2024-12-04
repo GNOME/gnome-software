@@ -561,7 +561,13 @@ gs_external_appstream_refresh_async (const gchar                *cache_kind,
 	data->n_pending_ops = 1;
 
 	for (gsize i = 0; i < n_appstream_urls; i++) {
-		if (!g_str_has_prefix (appstream_urls[i], "https")) {
+		/* localhost is safe to communicate with in an unencrypted way.
+		 * It is unlikely to be used in real life scenarios, but it's
+		 * used in some tests. We could use TLS in the tests, but it
+		 * would needlessly complexify them. */
+		if (!g_str_has_prefix (appstream_urls[i], "https:") &&
+		    !g_str_has_prefix (appstream_urls[i], "http://localhost/") &&
+		    !g_str_has_prefix (appstream_urls[i], "http://localhost:")) {
 			g_warning ("Not considering %s as an external "
 				   "appstream source: please use an https URL",
 				   appstream_urls[i]);
