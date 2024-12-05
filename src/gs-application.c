@@ -1291,6 +1291,13 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 						NULL);
 	}
 	if (g_variant_dict_contains (options, "quit")) {
+		GsApplication *self = GS_APPLICATION (app);
+		if (!g_application_get_is_remote (app) && (self->shell == NULL || !gs_shell_is_running (self->shell))) {
+			g_application_quit (app);
+			g_debug ("Early exit due to --quit option");
+			/* early exit, to not continue with setup, plugin initialization and so on */
+			return 0;
+		}
 		/* The 'quit' command-line option shuts down everything,
 		 * including the backend service */
 		g_action_group_activate_action (G_ACTION_GROUP (app),
