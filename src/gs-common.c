@@ -134,40 +134,16 @@ typedef enum {
 	GS_APP_LICENSE_PATENT_CONCERN	= 2
 } GsAppLicenseHint;
 
-typedef struct
-{
-	gint response_id;
-	GMainLoop *loop;
-} RunInfo;
-
 static void
-shutdown_loop (RunInfo *run_info)
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
 {
-	if (g_main_loop_is_running (run_info->loop))
-		g_main_loop_quit (run_info->loop);
-}
+	GAsyncResult **result_out = user_data;
 
-static void
-unmap_cb (GtkDialog *dialog,
-          RunInfo   *run_info)
-{
-	shutdown_loop (run_info);
-}
-
-static void
-response_cb (AdwAlertDialog   *self,
-             const gchar      *response,
-             RunInfo          *run_info)
-{
-	if (g_strcmp0 (response, "accept") == 0)
-		run_info->response_id = GTK_RESPONSE_OK;
-	else if (g_strcmp0 (response, "install") == 0)
-		run_info->response_id = GTK_RESPONSE_OK;
-	else if (g_strcmp0 (response, "dont-warn-again") == 0)
-		run_info->response_id = GTK_RESPONSE_YES;
-	else
-		run_info->response_id = GTK_RESPONSE_CANCEL;
-	shutdown_loop (run_info);
+	g_assert (*result_out == NULL);
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (g_main_context_get_thread_default ());
 }
 
 static gboolean
@@ -205,11 +181,9 @@ gs_app_notify_unavailable (GsApp *app, GtkWidget *parent)
 	g_autoptr(GSettings) settings = NULL;
 	g_autoptr(GString) body = NULL;
 	const gchar *title;
-
-	RunInfo run_info = {
-		GTK_RESPONSE_NONE,
-		NULL,
-	};
+	g_autoptr(GAsyncResult) result = NULL;
+	const char *response;
+	int response_id = GTK_RESPONSE_NONE;
 
 	/* this is very crude */
 	license = gs_app_get_license (app);
@@ -310,21 +284,28 @@ gs_app_notify_unavailable (GsApp *app, GtkWidget *parent)
 					       "install", _("Enable and _Install"));
 	}
 
-	/* Run */
-	adw_dialog_present (dialog, parent);
+	adw_alert_dialog_set_close_response (ADW_ALERT_DIALOG (dialog), "cancel");
 
-	g_signal_connect (dialog, "response", G_CALLBACK (response_cb), &run_info);
-	g_signal_connect (dialog, "unmap", G_CALLBACK (unmap_cb), &run_info);
+	/* Run.
+	 * FIXME: Make this properly async, see https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2741 */
+	adw_alert_dialog_choose (ADW_ALERT_DIALOG (dialog), parent, NULL, async_result_cb, &result);
 
-	run_info.loop = g_main_loop_new (NULL, FALSE);
-	g_main_loop_run (run_info.loop);
-	g_clear_pointer (&run_info.loop, g_main_loop_unref);
+	while (result == NULL)
+		g_main_context_iteration (NULL, TRUE);
 
-	if (run_info.response_id == GTK_RESPONSE_YES) {
-		run_info.response_id = GTK_RESPONSE_OK;
+	response = adw_alert_dialog_choose_finish (ADW_ALERT_DIALOG (dialog), result);
+
+	/* Map responses. */
+	if (g_strcmp0 (response, "install") == 0) {
+		response_id = GTK_RESPONSE_OK;
+	} else if (g_strcmp0 (response, "dont-warn-again") == 0) {
+		response_id = GTK_RESPONSE_OK;
 		g_settings_set_boolean (settings, "prompt-for-nonfree", FALSE);
+	} else {
+		response_id = GTK_RESPONSE_CANCEL;
 	}
-	return run_info.response_id;
+
+	return response_id;
 }
 
 gboolean
@@ -659,7 +640,9 @@ gs_utils_ask_user_accepts (GtkWidget *parent,
 			   const gchar *accept_label)
 {
 	AdwDialog *dialog;
-	RunInfo run_info;
+	g_autoptr(GAsyncResult) result = NULL;
+	const char *response;
+	int response_id = GTK_RESPONSE_NONE;
 
 	g_return_val_if_fail (title != NULL, FALSE);
 	g_return_val_if_fail (msg != NULL, FALSE);
@@ -679,19 +662,24 @@ gs_utils_ask_user_accepts (GtkWidget *parent,
 					"accept", accept_label,
 					NULL);
 
-	run_info.response_id = GTK_RESPONSE_NONE;
-	run_info.loop = g_main_loop_new (NULL, FALSE);
+	adw_alert_dialog_set_close_response (ADW_ALERT_DIALOG (dialog), "cancel");
 
-	/* Run */
-	adw_dialog_present (dialog, parent);
+	/* Run.
+	 * FIXME: Make this properly async, see https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2741 */
+	adw_alert_dialog_choose (ADW_ALERT_DIALOG (dialog), parent, NULL, async_result_cb, &result);
 
-	g_signal_connect (dialog, "response", G_CALLBACK (response_cb), &run_info);
-	g_signal_connect (dialog, "unmap", G_CALLBACK (unmap_cb), &run_info);
+	while (result == NULL)
+		g_main_context_iteration (NULL, TRUE);
 
-	g_main_loop_run (run_info.loop);
-	g_clear_pointer (&run_info.loop, g_main_loop_unref);
+	response = adw_alert_dialog_choose_finish (ADW_ALERT_DIALOG (dialog), result);
 
-	return run_info.response_id == GTK_RESPONSE_OK;
+	/* Map responses. */
+	if (g_strcmp0 (response, "accept") == 0)
+		response_id = GTK_RESPONSE_OK;
+	else
+		response_id = GTK_RESPONSE_CANCEL;
+
+	return response_id == GTK_RESPONSE_OK;
 }
 
 /**
