@@ -2393,7 +2393,27 @@ review_submitted_cb (GObject *source_object,
 	/* if the dialog which triggered this callback is open. */
 	if (!gs_odrs_provider_submit_review_finish (odrs_provider, result, &local_error)) {
 		g_autofree gchar *tmp = NULL;
-		tmp = g_strdup_printf (_("Failed to submit review for “%s”: %s"), gs_app_get_name (data->app), local_error->message);
+		const char *translatable_message;
+
+		/* Print a warning with the full error message, before we simplify
+		 * it for display in the UI. */
+		g_warning ("Failed to submit review for “%s”: %s",
+			   gs_app_get_name (data->app),
+			   local_error->message);
+
+		if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA)) {
+			translatable_message = _("Invalid review response received from server");
+		} else if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR,
+					    GS_ODRS_PROVIDER_ERROR_SERVER_ERROR)) {
+			translatable_message = _("Could not communicate with ratings server");
+		} else {
+			/* likely a programming error in gnome-software, so don’t
+			 * waste a translatable string on it */
+			translatable_message = local_error->message;
+		}
+
+		tmp = g_strdup_printf (_("Failed to submit review for “%s”: %s"), gs_app_get_name (data->app), translatable_message);
 		if (review_dialog != NULL)
 			gs_review_dialog_set_error_text (review_dialog, tmp);
 
