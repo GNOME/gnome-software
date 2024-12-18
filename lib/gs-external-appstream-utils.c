@@ -433,9 +433,9 @@ typedef struct {
 	/* In-progress data. */
 	guint n_pending_ops;
 	GError *error;  /* (nullable) (owned) */
-	gsize n_appstream_urls;
 	GsDownloadProgressCallback progress_callback;  /* (nullable) */
 	gpointer progress_user_data;  /* (closure progress_callback) */
+	gsize n_appstream_urls;
 	ProgressTuple *progress_tuples;  /* (array length=n_appstream_urls) (owned) */
 	GSource *progress_source;  /* (owned) */
 } RefreshData;
