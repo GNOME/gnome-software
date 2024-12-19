@@ -227,8 +227,16 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 	/* Start downloading updated external appstream before anything else */
 #ifdef ENABLE_EXTERNAL_APPSTREAM
 	if (!g_cancellable_is_cancelled (cancellable)) {
+		g_autoptr(GSettings) settings = NULL;
+		g_auto(GStrv) appstream_urls = NULL;
+
 		self->n_pending_ops++;
-		gs_external_appstream_refresh_async (self->cache_age_secs,
+		settings = g_settings_new ("org.gnome.software");
+		appstream_urls = g_settings_get_strv (settings,
+						      "external-appstream-urls");
+		gs_external_appstream_refresh_async (NULL,
+						     appstream_urls,
+						     self->cache_age_secs,
 						     refresh_progress_tuple_cb,
 						     &self->external_appstream_progress,
 						     cancellable,
@@ -367,7 +375,7 @@ external_appstream_refresh_cb (GObject      *source_object,
 	g_autoptr(GTask) task = G_TASK (user_data);
 	g_autoptr(GError) local_error = NULL;
 
-	if (!gs_external_appstream_refresh_finish (result, &local_error))
+	if (!gs_external_appstream_refresh_finish (result, NULL, &local_error))
 		g_debug ("Failed to refresh external appstream: %s", local_error->message);
 	/* Intentionally ignore errors, to not block other plugins */
 	finish_op (task, NULL);

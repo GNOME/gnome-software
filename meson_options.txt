@@ -23,3 +23,6 @@ option('sysprof', type : 'feature', value : 'auto', description : 'enable syspro
 option('profile', type : 'string', value : '', description : 'Build with specified application ID')
 option('opensuse-distro-upgrade', type : 'boolean', value : false, description : 'enable opensuse-distro-upgrade support')
 option('dkms', type : 'boolean', value : false, description : 'enable DKMS plugin to help installing DKMS (and akmods) Secure Boot certificates to UEFI MOK')
+# FIXME Switch the systemd-sysupdate option to true by default once
+# systemd-sysupdate and Software's matching plugin are deemed mature enough.
+option('systemd-sysupdate', type : 'boolean', value : false, description : 'enable systemd-sysupdate support')

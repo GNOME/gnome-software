@@ -170,14 +170,16 @@ refresh_url_progress_cb (gsize    bytes_downloaded,
 }
 
 static void
-refresh_url_async (GSettings           *settings,
-                   const gchar         *url,
-                   SoupSession         *soup_session,
-                   guint64              cache_age_secs,
-                   ProgressTuple       *progress_tuple,
-                   GCancellable        *cancellable,
-                   GAsyncReadyCallback  callback,
-                   gpointer             user_data)
+refresh_url_async (GSettings            *settings,
+                   const gchar          *cache_kind,
+                   const gchar          *url,
+                   SoupSession          *soup_session,
+                   guint64               cache_age_secs,
+                   ProgressTuple        *progress_tuple,
+                   gchar               **out_appstream_path,
+                   GCancellable         *cancellable,
+                   GAsyncReadyCallback   callback,
+                   gpointer              user_data)
 {
 	g_autoptr(GTask) task = NULL;
 	g_autofree gchar *basename = NULL;
@@ -207,11 +209,21 @@ refresh_url_async (GSettings           *settings,
 	}
 	basename = g_strdup_printf ("%s-%s", hash, basename_url);
 
-	/* Are we downloading for the user, or the system? */
-	system_wide = g_settings_get_boolean (settings, "external-appstream-system-wide");
+	/* Are we downloading for a given cache kind, the user, or the system? */
+	system_wide = cache_kind == NULL && g_settings_get_boolean (settings, "external-appstream-system-wide");
 
 	/* Check cache file age. */
-	if (system_wide) {
+	if (cache_kind != NULL) {
+		target_file_path = gs_utils_get_cache_filename (cache_kind,
+								basename,
+								GS_UTILS_CACHE_FLAG_WRITEABLE |
+								GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
+								&local_error);
+		if (target_file_path == NULL) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+	} else if (system_wide) {
 		target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
 	} else {
 		g_autofree gchar *legacy_file_path = NULL;
@@ -243,8 +255,15 @@ refresh_url_async (GSettings           *settings,
 		g_debug ("skipping updating external appstream file %s: "
 			 "cache age is older than file",
 			 target_file_path);
+		if (out_appstream_path != NULL) {
+			*out_appstream_path = g_steal_pointer (&target_file_path);
+		}
 		g_task_return_boolean (task, TRUE);
 		return;
+	}
+
+	if (out_appstream_path != NULL) {
+		*out_appstream_path = g_steal_pointer (&target_file_path);
 	}
 
 	/* If downloading system wide, write the download contents into a
@@ -422,11 +441,17 @@ typedef struct {
 	/* In-progress data. */
 	guint n_pending_ops;
 	GError *error;  /* (nullable) (owned) */
-	gsize n_appstream_urls;
 	GsDownloadProgressCallback progress_callback;  /* (nullable) */
 	gpointer progress_user_data;  /* (closure progress_callback) */
+	gsize n_appstream_urls;
 	ProgressTuple *progress_tuples;  /* (array length=n_appstream_urls) (owned) */
 	GSource *progress_source;  /* (owned) */
+	/* This is a fixed-sized array that contains (n_appstream_urls + 1)
+	 * items, the last one being guaranteed to be NULL. It is used like a
+	 * fixed-sized array internally, but it turned into a NULL-terminated
+	 * array into gs_external_appstream_refresh_finish() to avoid
+	 * reallocation. */
+	gchar **appstream_paths;  /* (array length=n_appstream_urls) (owned) */
 } RefreshData;
 
 static void
@@ -444,6 +469,16 @@ refresh_data_free (RefreshData *data)
 
 	g_free (data->progress_tuples);
 
+	/* This doesn’t use g_strfreev() because it is a fixed-sized array, any
+	 * element of data->appstream_paths may be NULL. It itself can be NULL
+	 * if it has been stolen in gs_external_appstream_refresh_finish(). */
+	if (data->appstream_paths != NULL) {
+		for (gsize i = 0; i < data->n_appstream_urls; i++) {
+			g_clear_pointer (&data->appstream_paths[i], g_free);
+		}
+		g_clear_pointer (&data->appstream_paths, g_free);
+	}
+
 	g_free (data);
 }
 
@@ -451,6 +486,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefreshData, refresh_data_free)
 
 /**
  * gs_external_appstream_refresh_async:
+ * @cache_kind: (nullable): a cache kind, e.g. "fwupd" or "screenshots/123x456", or %NULL
+ * @appstream_urls: a %NULL-terminated array of URLs
  * @cache_age_secs: cache age, in seconds, as passed to #GsPluginClass.refresh_metadata_async()
  * @progress_callback: (nullable): callback to call with progress information
  * @progress_user_data: (nullable) (closure progress_callback): data to pass
@@ -459,12 +496,24 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefreshData, refresh_data_free)
  * @callback: function call when the asynchronous operation is complete
  * @user_data: data to pass to @callback
  *
- * Refresh any configured external appstream files, if the cache is too old.
+ * Refresh any external appstream files, if the cache is too old.
  *
- * Since: 42
+ * If @cache_kind is set, the files will be cached into a per-user cache
+ * directory, and into a global cache othwerwise. The global directory will be
+ * system-wide or user-specific according to the
+ * `external-appstream-system-wide` setting.
+ *
+ * If a plugin requests a file to be saved in the cache it is the plugins
+ * responsibility to remove the file when it is no longer valid or is too old
+ * -- gnome-software will not ever clean the cache for the plugin.
+ * For this reason it is a good idea to use the plugin name as @cache_kind.
+ *
+ * Since: 48
  */
 void
-gs_external_appstream_refresh_async (guint64                     cache_age_secs,
+gs_external_appstream_refresh_async (const gchar                *cache_kind,
+                                     GStrv                       appstream_urls,
+                                     guint64                     cache_age_secs,
                                      GsDownloadProgressCallback  progress_callback,
                                      gpointer                    progress_user_data,
                                      GCancellable               *cancellable,
@@ -472,7 +521,6 @@ gs_external_appstream_refresh_async (guint64                     cache_age_secs,
                                      gpointer                    user_data)
 {
 	g_autoptr(GSettings) settings = NULL;
-	g_auto(GStrv) appstream_urls = NULL;
 	gsize n_appstream_urls;
 	g_autoptr(SoupSession) soup_session = NULL;
 	g_autoptr(GTask) task = NULL;
@@ -488,8 +536,6 @@ gs_external_appstream_refresh_async (guint64                     cache_age_secs,
 
 	settings = g_settings_new ("org.gnome.software");
 	soup_session = gs_build_soup_session ();
-	appstream_urls = g_settings_get_strv (settings,
-					      "external-appstream-urls");
 	n_appstream_urls = g_strv_length (appstream_urls);
 
 	data = data_owned = g_new0 (RefreshData, 1);
@@ -498,6 +544,10 @@ gs_external_appstream_refresh_async (guint64                     cache_age_secs,
 	data->n_appstream_urls = n_appstream_urls;
 	data->progress_tuples = g_new0 (ProgressTuple, n_appstream_urls);
 	data->progress_source = g_timeout_source_new (progress_update_period_ms);
+	/* We want to use it as a fixed-size array internally but to return it
+	 * as a NULL-terminated array, so we have to add an extra terminating
+	 * item at the end. */
+	data->appstream_paths = g_new0 (gchar *, n_appstream_urls + 1);
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) refresh_data_free);
 
 	/* Set up the progress timeout. This periodically sums up the progress
@@ -511,7 +561,13 @@ gs_external_appstream_refresh_async (guint64                     cache_age_secs,
 	data->n_pending_ops = 1;
 
 	for (gsize i = 0; i < n_appstream_urls; i++) {
-		if (!g_str_has_prefix (appstream_urls[i], "https")) {
+		/* localhost is safe to communicate with in an unencrypted way.
+		 * It is unlikely to be used in real life scenarios, but it's
+		 * used in some tests. We could use TLS in the tests, but it
+		 * would needlessly complexify them. */
+		if (!g_str_has_prefix (appstream_urls[i], "https:") &&
+		    !g_str_has_prefix (appstream_urls[i], "http://localhost/") &&
+		    !g_str_has_prefix (appstream_urls[i], "http://localhost:")) {
 			g_warning ("Not considering %s as an external "
 				   "appstream source: please use an https URL",
 				   appstream_urls[i]);
@@ -520,10 +576,12 @@ gs_external_appstream_refresh_async (guint64                     cache_age_secs,
 
 		data->n_pending_ops++;
 		refresh_url_async (settings,
+				   cache_kind,
 				   appstream_urls[i],
 				   soup_session,
 				   cache_age_secs,
 				   &data->progress_tuples[i],
+				   &data->appstream_paths[i],
 				   cancellable,
 				   refresh_cb,
 				   g_object_ref (task));
@@ -608,20 +666,56 @@ finish_refresh_op (GTask  *task,
 /**
  * gs_external_appstream_refresh_finish:
  * @result: a #GAsyncResult
+ * @out_appstream_paths: (out) (transfer full) (optional) (nullable): return
+ *   location for the %NULL-terminated array of downloaded appstream file paths,
+ *   or %NULL to ignore
  * @error: return location for a #GError, or %NULL
  *
  * Finish an asynchronous refresh operation started with
  * gs_external_appstream_refresh_async().
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 42
+ * Since: 48
  */
 gboolean
-gs_external_appstream_refresh_finish (GAsyncResult  *result,
-                                      GError       **error)
+gs_external_appstream_refresh_finish (GAsyncResult   *result,
+                                      gchar        ***out_appstream_paths,
+                                      GError        **error)
 {
+	GTask *task;
+	RefreshData *data;
+	g_auto(GStrv) appstream_paths_tmp = NULL;
+	gboolean success;
+
 	g_return_val_if_fail (g_task_is_valid (result, NULL), FALSE);
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-	return g_task_propagate_boolean (G_TASK (result), error);
+	task = G_TASK (result);
+	data = g_task_get_task_data (task);
+
+	if (out_appstream_paths != NULL) {
+		/* Turn the paths array from a fixed-size array into a
+		 * NULL-terminated one, so we can return it without copying it.
+		 */
+		for (gsize i = 0, j = 0; i < data->n_appstream_urls; i++) {
+			if (data->appstream_paths[i] == NULL) {
+				continue;
+			}
+
+			if (i != j) {
+				data->appstream_paths[j] = g_steal_pointer (&data->appstream_paths[i]);
+			}
+
+			j++;
+		}
+		appstream_paths_tmp = g_steal_pointer (&data->appstream_paths);
+	}
+
+	success = g_task_propagate_boolean (G_TASK (result), error);
+
+	if (success && out_appstream_paths != NULL) {
+		*out_appstream_paths = g_steal_pointer (&appstream_paths_tmp);
+	}
+
+	return success;
 }
