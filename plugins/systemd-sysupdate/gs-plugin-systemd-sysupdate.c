@@ -863,6 +863,8 @@ get_or_create_app_for_target (GsPluginSystemdSysupdate  *self,
 	return create_app_for_target (self, target, error);
 }
 
+/* This plugin explicitly only allows updating already installed targets. It is
+ * expected for targets to be installed through other means. */
 static void
 update_app_for_target (GsPluginSystemdSysupdate *self,
                        GsApp                    *app,
@@ -871,58 +873,16 @@ update_app_for_target (GsPluginSystemdSysupdate *self,
 	const gchar *app_version = NULL;
 	GsAppState app_state = GS_APP_STATE_UNKNOWN;
 
-	/* Update an existing app based on the given target item
-	 */
-	if (g_strcmp0 (target->class, "host") == 0) {
-		/* check `gs-upgrade-banner.c` for available os-upgrade state:
-		 *  - GS_APP_STATE_AVAILABLE
-		 *  - GS_APP_STATE_QUEUED_FOR_INSTALL
-		 *  - GS_APP_STATE_INSTALLING
-		 *  - GS_APP_STATE_DOWNLOADING
-		 *  - GS_APP_STATE_UPDATABLE
-		 *  - GS_APP_STATE_PENDING_INSTALL
-		 */
-		if (target_item_is_available (target)) {
-			app_version = target->latest_version;
-			app_state = GS_APP_STATE_AVAILABLE;
-		} else {
+	if (target_item_is_updatable (target)) {
+		app_version = target->latest_version;
+		app_state = GS_APP_STATE_UPDATABLE;
+	} else if (target_item_is_installed (target)) {
+		if (g_strcmp0 (target->class, "host") == 0) {
 			app_version = self->os_version;
-			app_state = GS_APP_STATE_UNKNOWN;
-		}
-	} else if (g_strcmp0 (target->class, "component") == 0) {
-		/* if there is no latest version, it could be either the latest
-		 * version has been installed already or no resource found in
-		 * the server */
-		if (target_item_is_available (target)) {
-			if (target_item_is_installed (target)) {
-				app_version = target->latest_version;
-				app_state = GS_APP_STATE_UPDATABLE;
-			} else {
-				/* This plugin explicitly only allows updating
-				 * already installed targets. It is expected
-				 * that they will be installed in a different
-				 * way.
-				 *
-				 * Cf. https://gitlab.gnome.org/GNOME/gnome-software/-/merge_requests/2004#note_2247587
-				 * Because of this, we don't do the following:
-				 * app_version = target->latest_version;
-				 * app_state = GS_APP_STATE_AVAILABLE;
-				 */
-				app_version = NULL;
-				app_state = GS_APP_STATE_UNKNOWN;
-			}
 		} else {
-			if (target_item_is_installed (target)) {
-				app_version = target->current_version;
-				app_state = GS_APP_STATE_INSTALLED;
-			} else {
-				app_version = NULL;
-				app_state = GS_APP_STATE_UNKNOWN;
-			}
+			app_version = target->current_version;
 		}
-	} else {
-		g_debug ("not-supported target class: `%s`", target->class);
-		return;
+		app_state = GS_APP_STATE_INSTALLED;
 	}
 
 	gs_app_set_version (app, app_version);
