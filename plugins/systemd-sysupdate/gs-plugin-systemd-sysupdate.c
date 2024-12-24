@@ -991,7 +991,8 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
 		gs_app_set_progress (data->app, GS_APP_PROGRESS_UNKNOWN);
 		/* The `host` target should have its state left as `updatable`. */
 		if (target_is_host) {
-			gs_app_set_state (data->app, GS_APP_STATE_PENDING_INSTALL);
+			gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+			gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
 		} else {
 			gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
 		}
