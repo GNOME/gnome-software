@@ -15,8 +15,8 @@ cache:
     - _ccache/
 
 variables:
-  FEDORA_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/fedora:v19"
-  DEBIAN_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/debian:v19"
+  FEDORA_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/fedora:v20"
+  DEBIAN_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/debian:v20"
   MESON_TEST_TIMEOUT_MULTIPLIER: 4
   G_MESSAGES_DEBUG: all
   MESON_COMMON_OPTIONS: "--werror --buildtype debug --wrap-mode=nodownload --prefix /usr -Dwebapps=true -Dhardcoded_foss_webapps=false -Dhardcoded_proprietary_webapps=false"
