@@ -1,4 +1,10 @@
-include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/HEAD/flatpak/flatpak_ci_initiative.yml'
+include:
+  - project: 'GNOME/citemplates'
+    file: '/flatpak/flatpak_ci_initiative.yml'
+  - component: gitlab.gnome.org/GNOME/citemplates/release-service@master
+    inputs:
+      dist-job-name: "dist"
+      tarball-artifact-path: "${TARBALL_ARTIFACT_PATH}"
 
 stages:
   - build
@@ -17,6 +23,8 @@ variables:
   BUNDLE: "gnome-software-dev.flatpak"
   # -O2 is needed for -Wnull-dereference to work:
   CFLAGS: "-O2"
+  # expected naming scheme for the release-service job
+  TARBALL_ARTIFACT_PATH: "_build/meson-dist/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.xz"
 
 .build:
   before_script:
@@ -111,3 +119,27 @@ nightly:
     - 'flatpak bundle'
   needs: ['flatpak bundle']
   when: manual
+
+dist:
+  extends: .build
+  image: "${FEDORA_IMAGE}"
+  stage: build
+  needs: []
+  only:
+    - schedules
+    - tags
+  script:
+    - meson setup ${MESON_COMMON_OPTIONS}
+            --buildtype release
+            -Dgtk_doc=true
+            _build
+    # We can’t run tests because it would run the `gtk` suite, which doesn’t work on CI
+    # There’s currently no way to selectively disable some suites at dist time.
+    - meson dist -C _build --no-tests
+    # Compile again to build the docs
+    - meson compile -C _build
+    - ninja -C _build gnome-software-doc
+    - tar -c -J -f "_build/gnome-software-docs-${CI_COMMIT_TAG}.tar.xz" -C _build/doc/api html
+  artifacts:
+    paths:
+      - "${CI_PROJECT_DIR}/_build/gnome-software-docs-${CI_COMMIT_TAG}.tar.xz"
