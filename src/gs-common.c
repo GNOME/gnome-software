@@ -134,6 +134,9 @@ typedef enum {
 	GS_APP_LICENSE_PATENT_CONCERN	= 2
 } GsAppLicenseHint;
 
+/* We need to ignore the use of AdwMessageDialog in gnome-47 */
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+
 typedef struct
 {
 	gint response_id;
@@ -768,6 +771,8 @@ gs_utils_ask_user_accepts (GtkWindow *parent,
 
 	return run_info.response_id == GTK_RESPONSE_OK;
 }
+
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 /**
  * gs_utils_get_error_value:
