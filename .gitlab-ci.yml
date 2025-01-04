@@ -9,6 +9,8 @@ cache:
     - _ccache/
 
 variables:
+  FEDORA_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/fedora:v18"
+  DEBIAN_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/debian:v18"
   MESON_TEST_TIMEOUT_MULTIPLIER: 4
   G_MESSAGES_DEBUG: all
   MESON_COMMON_OPTIONS: "--werror --buildtype debug --wrap-mode=nodownload --prefix /usr -Dwebapps=true -Dhardcoded_foss_webapps=false -Dhardcoded_proprietary_webapps=false"
@@ -22,7 +24,7 @@ variables:
 
 fedora-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v18
+  image: "${FEDORA_IMAGE}"
   stage: build
   except:
     - tags
@@ -52,7 +54,7 @@ fedora-x86_64:
 
 debian-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/debian:v18
+  image: "${DEBIAN_IMAGE}"
   stage: build
   except:
     - tags
