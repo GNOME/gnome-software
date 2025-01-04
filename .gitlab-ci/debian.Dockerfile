@@ -25,6 +25,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     libcairo-gobject2 \
     libcurl4-gnutls-dev \
     libepoxy-dev \
+    libgtk-4-1 \
     libflatpak-dev \
     libfontconfig-dev \
     libfwupd-dev \
@@ -61,7 +62,6 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     ninja-build \
     packagekit \
     pkg-config \
-    policykit-1 \
     python3 \
     python3-pip \
     python3-setuptools \
@@ -78,7 +78,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     xz-utils \
  && rm -rf /usr/share/doc/* /usr/share/man/*
 
-RUN pip3 install --break-system-packages meson==0.63.0
+RUN pip3 install --break-system-packages meson==1.0.1
 
 # Enable passwordless sudo for sudo users
 RUN sed -i -e '/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers
