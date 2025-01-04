@@ -29,6 +29,8 @@ variables:
 .build:
   before_script:
     - cp -r $HOME/subprojects/* subprojects/
+    # FIXME: Work around https://gitlab.com/gitlab-org/gitlab/-/issues/391756
+    - git config --global --add safe.directory "${PWD}"
 
 fedora-x86_64:
   extends: .build
