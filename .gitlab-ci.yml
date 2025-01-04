@@ -29,13 +29,13 @@ fedora-x86_64:
   except:
     - tags
   script:
-    - meson ${MESON_COMMON_OPTIONS}
+    - meson setup ${MESON_COMMON_OPTIONS}
             -Ddkms=true
             -Drpm_ostree=true
             -Dmalcontent=true
             -Dsysprof=enabled
             _build
-    - ninja -C _build
+    - meson compile -C _build
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
@@ -59,13 +59,13 @@ debian-x86_64:
   except:
     - tags
   script:
-    - meson ${MESON_COMMON_OPTIONS}
+    - meson setup ${MESON_COMMON_OPTIONS}
             -Ddkms=true
             -Drpm_ostree=false
             -Dmalcontent=false
             -Dsysprof=disabled
             _build
-    - ninja -C _build
+    - meson compile -C _build
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
