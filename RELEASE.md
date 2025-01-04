@@ -57,15 +57,6 @@ git add -p
 git commit -S -m "Release version ${new_version}"
 ```
 
-Build the release tarball:
-```
-# Only execute git clean if you don't have anything not tracked by git that you
-# want to keep
-git clean -dfx
-meson setup --prefix $PWD/install -Dbuildtype=release build/
-ninja -C build/ dist
-```
-
 Tag, sign and push the release (see below for information about `git evtag`):
 ```
 git evtag sign -u ${key_id} ${new_version}
@@ -75,6 +66,10 @@ To use a specific key add an option `-u ${keyid|email}` after the `sign` argumen
 
 Use `Tag ${new_version} release` as the tag message.
 
+The release archive will now be built in CI and automatically uploaded to
+download.gnome.org using the
+[release service](https://gitlab.gnome.org/Infrastructure/openshift-images/gnome-release-service).
+
 Post release version bump in `meson.build`:
 ```
 # edit meson.build, then
@@ -82,24 +77,18 @@ git commit -a -m "trivial: Post release version bump"
 git push
 ```
 
-Upload the release tarball:
-```
-scp build/meson-dist/gnome-software-${new_version}.tar.xz master.gnome.org:
-ssh master.gnome.org ftpadmin install gnome-software-${new_version}.tar.xz
-```
-
 Add the release notes to GitLab and close the milestone:
- - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/releases/new?tag_name=${new_version}
-   - set `Release title` to `${new_version}`
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/releases/${new_version}/edit
    - set the Milestone of the release, if such exists
-   - copy the Release notes for the new release from the `NEWS` file
+   - copy the Release notes for the new release from the `NEWS` file, overwriting
+     the description from the git tag
      (replace `~~~~~~~~~~~~` with `===` (only three `=`))
    - in the Links section add:
      | URL | Link title | Type |
      | ------ | ------ | ------ |
      | `https://download.gnome.org/sources/gnome-software/${new_major_version}/gnome-software-${new_version}.tar.xz` | Release tarball | Other |
      | `https://download.gnome.org/sources/gnome-software/${new_major_version}/gnome-software-${new_version}.sha256sum` | Release tarball sha256sum | Other |
-   - save the changes with `Create release` button
+   - save the changes with `Save changes` button
    - verify the added links for the release artifacts work
  - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/milestones/
    choose the milestone and close it
