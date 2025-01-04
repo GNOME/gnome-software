@@ -78,7 +78,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     xz-utils \
  && rm -rf /usr/share/doc/* /usr/share/man/*
 
-RUN pip3 install --break-system-packages meson==0.63.0
+RUN pip3 install --break-system-packages meson==1.0.1
 
 # Enable passwordless sudo for sudo users
 RUN sed -i -e '/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers

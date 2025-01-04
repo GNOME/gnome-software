@@ -1,4 +1,10 @@
-include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/HEAD/flatpak/flatpak_ci_initiative.yml'
+include:
+  - project: 'GNOME/citemplates'
+    file: '/flatpak/flatpak_ci_initiative.yml'
+  - component: gitlab.gnome.org/GNOME/citemplates/release-service@master
+    inputs:
+      dist-job-name: "dist"
+      tarball-artifact-path: "${TARBALL_ARTIFACT_PATH}"
 
 stages:
   - build
@@ -9,31 +15,37 @@ cache:
     - _ccache/
 
 variables:
+  FEDORA_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/fedora:v19"
+  DEBIAN_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/debian:v19"
   MESON_TEST_TIMEOUT_MULTIPLIER: 4
   G_MESSAGES_DEBUG: all
   MESON_COMMON_OPTIONS: "--werror --buildtype debug --wrap-mode=nodownload --prefix /usr -Dwebapps=true -Dhardcoded_foss_webapps=false -Dhardcoded_proprietary_webapps=false"
   BUNDLE: "gnome-software-dev.flatpak"
   # -O2 is needed for -Wnull-dereference to work:
   CFLAGS: "-O2"
+  # expected naming scheme for the release-service job
+  TARBALL_ARTIFACT_PATH: "_build/meson-dist/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.xz"
 
 .build:
   before_script:
     - cp -r $HOME/subprojects/* subprojects/
+    # FIXME: Work around https://gitlab.com/gitlab-org/gitlab/-/issues/391756
+    - git config --global --add safe.directory "${PWD}"
 
 fedora-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v18
+  image: "${FEDORA_IMAGE}"
   stage: build
   except:
     - tags
   script:
-    - meson ${MESON_COMMON_OPTIONS}
+    - meson setup ${MESON_COMMON_OPTIONS}
             -Ddkms=true
             -Drpm_ostree=true
             -Dmalcontent=true
             -Dsysprof=enabled
             _build
-    - ninja -C _build
+    - meson compile -C _build
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
@@ -52,18 +64,18 @@ fedora-x86_64:
 
 debian-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/debian:v18
+  image: "${DEBIAN_IMAGE}"
   stage: build
   except:
     - tags
   script:
-    - meson ${MESON_COMMON_OPTIONS}
+    - meson setup ${MESON_COMMON_OPTIONS}
             -Ddkms=true
             -Drpm_ostree=false
             -Dmalcontent=false
             -Dsysprof=disabled
             _build
-    - ninja -C _build
+    - meson compile -C _build
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
@@ -95,10 +107,10 @@ flatpak bundle:
   script:
     # Modified from https://gitlab.gnome.org/GNOME/citemplates/-/blob/HEAD/flatpak/flatpak_ci_initiative.yml
     # to drop the unit tests, since we don’t need them
-    - rewrite-flatpak-manifest ${MANIFEST_PATH} ${FLATPAK_MODULE} ${CONFIG_OPTS}
-    - flatpak-builder --user --disable-rofiles-fuse flatpak_app --repo=repo ${BRANCH:+--default-branch=$BRANCH} ${MANIFEST_PATH}
+    - rewrite-flatpak-manifest "${MANIFEST_PATH}" "${FLATPAK_MODULE}" ${CONFIG_OPTS}
+    - flatpak-builder --user --disable-rofiles-fuse flatpak_app --repo=repo ${BRANCH:+--default-branch="${BRANCH}"} "${MANIFEST_PATH}"
     # Generate a Flatpak bundle
-    - flatpak build-bundle repo ${BUNDLE} --runtime-repo=${RUNTIME_REPO} ${APP_ID} ${BRANCH}
+    - flatpak build-bundle repo "${BUNDLE}" --runtime-repo="${RUNTIME_REPO}" "${APP_ID}" "${BRANCH}"
     - tar cf repo.tar repo/
 
 # Due to the `only` clause in .publish_nightly, this will only publish on-demand
@@ -109,3 +121,27 @@ nightly:
     - 'flatpak bundle'
   needs: ['flatpak bundle']
   when: manual
+
+dist:
+  extends: .build
+  image: "${FEDORA_IMAGE}"
+  stage: build
+  needs: []
+  only:
+    - schedules
+    - tags
+  script:
+    - meson setup ${MESON_COMMON_OPTIONS}
+            --buildtype release
+            -Dgtk_doc=true
+            _build
+    # We can’t run tests because it would run the `gtk` suite, which doesn’t work on CI
+    # There’s currently no way to selectively disable some suites at dist time.
+    - meson dist -C _build --no-tests
+    # Compile again to build the docs
+    - meson compile -C _build
+    - ninja -C _build gnome-software-doc
+    - tar -c -J -f "_build/gnome-software-docs-${CI_COMMIT_TAG}.tar.xz" -C _build/doc/api html
+  artifacts:
+    paths:
+      - "${CI_PROJECT_DIR}/_build/gnome-software-docs-${CI_COMMIT_TAG}.tar.xz"
