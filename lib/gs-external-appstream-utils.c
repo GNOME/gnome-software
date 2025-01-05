@@ -48,6 +48,8 @@
  * Since: 42
  */
 
+#include "config.h"
+
 #include <errno.h>
 #include <glib.h>
 #include <glib/gi18n.h>

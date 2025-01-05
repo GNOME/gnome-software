@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "config.h"
-
 #include <glib.h>
 #include <gnome-software.h>
 
