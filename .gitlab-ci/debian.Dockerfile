@@ -10,6 +10,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     gcc \
     g++ \
     gettext \
+    gi-docgen \
     git \
     gnome-pkg-tools \
     gobject-introspection \
