@@ -137,7 +137,7 @@ dist:
             _build
     # We can’t run tests because it would run the `gtk` suite, which doesn’t work on CI
     # There’s currently no way to selectively disable some suites at dist time.
-    - meson dist -C _build --no-tests
+    - meson dist -C _build --no-tests --include-subprojects
     # Compile again to build the docs
     - meson compile -C _build
     - ninja -C _build gnome-software-doc
