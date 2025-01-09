@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-10-21 09:45+0000\n"
-"PO-Revision-Date: 2024-10-23 23:29+0300\n"
+"POT-Creation-Date: 2024-11-27 16:46+0000\n"
+"PO-Revision-Date: 2025-01-09 12:38+0300\n"
 "Last-Translator: Yuras Shumovich <shumovichy@gmail.com>\n"
 "Language-Team: Belarusian <i18n-bel-gnome@googlegroups.com>\n"
 "Language: be\n"
@@ -843,7 +843,7 @@ msgstr "Узроставы рэйтынг"
 
 #: src/gs-age-rating-context-dialog.ui:61
 #: src/gs-hardware-support-context-dialog.ui:63
-#: src/gs-safety-context-dialog.ui:126
+#: src/gs-safety-context-dialog.ui:130
 msgid "_How to contribute missing information"
 msgstr "_Як дадаць адсутныя звесткі"
 
@@ -863,35 +863,35 @@ msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
 #: lib/gs-app.c:6461 src/gs-safety-context-dialog.c:773
-#: src/gs-safety-context-dialog.ui:90
+#: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "Пакет"
 
-#: src/gs-app-addon-row.c:95 src/gs-app-row.c:528
+#: src/gs-app-addon-row.c:93 src/gs-app-row.c:528
 msgid "Pending"
 msgstr "У чаканні"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:532 src/gs-details-page.c:394
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:532 src/gs-details-page.c:394
 msgid "Pending install"
 msgstr "Чакае ўсталявання"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:536 src/gs-details-page.c:401
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:536 src/gs-details-page.c:401
 msgid "Pending remove"
 msgstr "Чакае выдалення"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:215 src/gs-details-page.c:382
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:215 src/gs-details-page.c:382
 msgid "Installing"
 msgstr "Усталяванне"
 
-#: src/gs-app-addon-row.c:111
+#: src/gs-app-addon-row.c:109
 msgid "Removing"
 msgstr "Выдаленне"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being downloaded
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:229 src/gs-details-page.c:387
+#: src/gs-app-addon-row.c:113 src/gs-app-row.c:229 src/gs-details-page.c:387
 #: src/gs-details-page.ui:316
 msgid "Downloading"
 msgstr "Спампоўванне"
@@ -902,13 +902,13 @@ msgstr "Спампоўванне"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:305 src/gs-details-page.c:1047
+#: src/gs-app-addon-row.ui:21 src/gs-common.c:305 src/gs-details-page.c:1047
 #: src/gs-details-page.c:1082 src/gs-details-page.ui:203 src/gs-page.c:425
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Усталяваць"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1167
+#: src/gs-app-addon-row.ui:29 src/gs-details-page.c:1167
 msgid "_Uninstall…"
 msgstr "_Выдаліць…"
 
@@ -1021,17 +1021,17 @@ msgstr "Можа пакінуць пясочніцу і абысці іншыя 
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:216
+#: src/gs-app-details-page.c:214
 msgid "No update description available."
 msgstr "Апісанне абнаўлення адсутнічае."
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:239
+#: src/gs-app-details-page.c:237
 msgid "Update Details"
 msgstr "Падрабязнасці абнаўлення"
 
-#: src/gs-app-details-page.ui:27 src/gs-app-row.c:592
+#: src/gs-app-details-page.ui:27 src/gs-app-row.c:591
 msgid "Requires additional permissions"
 msgstr "Патрабуюцца дадатковыя дазволы"
 
@@ -1040,11 +1040,11 @@ msgstr "Патрабуюцца дадатковыя дазволы"
 msgid "Reviews"
 msgstr "Водгукі"
 
-#: src/gs-app-reviews-dialog.ui:21
+#: src/gs-app-reviews-dialog.ui:23
 msgid "No reviews were found for this app."
 msgstr "Не знойдзена водгукаў для гэтай праграмы."
 
-#: src/gs-app-reviews-dialog.ui:23
+#: src/gs-app-reviews-dialog.ui:25
 msgid "No Reviews"
 msgstr "Няма водгукаў"
 
@@ -1068,7 +1068,7 @@ msgstr "Пра гэта выданне няма звестак"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:66
+#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -1552,8 +1552,7 @@ msgstr "Выдаліць…"
 msgid "Uninstalling"
 msgstr "Выдаленне"
 
-#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:153
-#: src/gs-os-update-page.c:156 src/gs-os-update-page.c:183
+#: src/gs-app-row.c:323 src/gs-app-row.ui:60
 msgid "Critical update"
 msgstr "Крытычнае абнаўленне"
 
@@ -1570,17 +1569,17 @@ msgid "Source: %s"
 msgstr "Крыніца: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:599
+#: src/gs-app-row.c:598
 #, c-format
 msgid "Renamed from %s"
 msgstr "Перайменавана з %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:636 src/gs-details-page.ui:535
+#: src/gs-app-row.c:635 src/gs-details-page.ui:535
 msgid "Stopped Receiving Updates"
 msgstr "Спынена атрыманне абнаўленняў"
 
-#: src/gs-app-row.ui:58
+#: src/gs-app-row.ui:58 src/gs-os-update-page.c:142
 msgid "Critical Update"
 msgstr "Крытычнае абнаўленне"
 
@@ -1632,10 +1631,10 @@ msgstr "Патрабуецца ўваход"
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:298 src/gs-common.c:677
 #: src/gs-details-page.ui:291 src/gs-dkms-dialog.ui:28
-#: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-page.c:708
-#: src/gs-removal-dialog.ui:24 src/gs-repos-dialog.c:175
-#: src/gs-repos-dialog.c:251 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
-#: src/gs-review-row.c:263 src/gs-updates-page.c:847
+#: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-removal-dialog.ui:24
+#: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:174
+#: src/gs-repos-dialog.c:250 src/gs-review-dialog.ui:24 src/gs-review-row.c:235
+#: src/gs-review-row.c:259 src/gs-updates-page.c:852
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
 msgstr "_Скасаваць"
@@ -1755,7 +1754,7 @@ msgstr "Уключыць сховішча праграмнага забеспя�
 #. ask for confirmation
 #. TRANSLATORS: "Enable Third-Party Software Repository?" is
 #. * the confirmation dialog title
-#: src/gs-common.c:242 src/gs-repos-dialog.c:172
+#: src/gs-common.c:242 src/gs-repos-dialog.c:171
 msgid "Enable Third-Party Software Repository?"
 msgstr "Уключыць сховішча старонняга праграмнага забеспячэння?"
 
@@ -1866,28 +1865,17 @@ msgstr[2] "Каб змены ўступілі ў сілу, перазапусц�
 msgid "Not Now"
 msgstr "Не зараз"
 
-#. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:934
-msgid "Just now"
-msgstr "толькі што"
+#. TRANSLATORS: something happened less than a day ago
+#: src/gs-common.c:933
+msgid "Today"
+msgstr "сёння"
 
+#. TRANSLATORS: something happened more than a day ago but less than 2 days ago
 #: src/gs-common.c:936
-#, c-format
-msgid "%d minute ago"
-msgid_plural "%d minutes ago"
-msgstr[0] "%d хвіліну таму"
-msgstr[1] "%d хвіліны таму"
-msgstr[2] "%d хвілін таму"
+msgid "Yesterday"
+msgstr "учора"
 
-#: src/gs-common.c:940
-#, c-format
-msgid "%d hour ago"
-msgid_plural "%d hours ago"
-msgstr[0] "%d гадзіну таму"
-msgstr[1] "%d гадзіны таму"
-msgstr[2] "%d гадзін таму"
-
-#: src/gs-common.c:944
+#: src/gs-common.c:938
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
@@ -1895,7 +1883,7 @@ msgstr[0] "%d дзень таму"
 msgstr[1] "%d дні таму"
 msgstr[2] "%d дзён таму"
 
-#: src/gs-common.c:948
+#: src/gs-common.c:942
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
@@ -1903,7 +1891,7 @@ msgstr[0] "%d тыдзень таму"
 msgstr[1] "%d тыдні таму"
 msgstr[2] "%d тыдняў таму"
 
-#: src/gs-common.c:952
+#: src/gs-common.c:946
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
@@ -1911,7 +1899,7 @@ msgstr[0] "%d месяц таму"
 msgstr[1] "%d месяцы таму"
 msgstr[2] "%d месяцаў таму"
 
-#: src/gs-common.c:956
+#: src/gs-common.c:950
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1919,11 +1907,32 @@ msgstr[0] "%d год таму"
 msgstr[1] "%d гады таму"
 msgstr[2] "%d гадоў таму"
 
+#. TRANSLATORS: something happened less than 5 minutes ago
+#: src/gs-common.c:1007
+msgid "Just now"
+msgstr "толькі што"
+
+#: src/gs-common.c:1009
+#, c-format
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d хвіліну таму"
+msgstr[1] "%d хвіліны таму"
+msgstr[2] "%d хвілін таму"
+
+#: src/gs-common.c:1011
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d гадзіну таму"
+msgstr[1] "%d гадзіны таму"
+msgstr[2] "%d гадзін таму"
+
 #. Translators: This is to construct a disk size string consisting of the value and its unit, while
 #. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1319
+#: src/gs-common.c:1374
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
@@ -2364,7 +2373,7 @@ msgstr "Патрабуюцца дадатковыя пакеты"
 msgid "Find in Software"
 msgstr "Пошук у Software"
 
-#: src/gs-description-box.c:93 src/gs-description-box.c:342
+#: src/gs-description-box.c:93 src/gs-description-box.c:348
 msgid "_Show More"
 msgstr "Паказаць _больш"
 
@@ -2524,7 +2533,7 @@ msgstr ""
 "Software не ўдалося атрымаць інфармацыю для «%s», немагчыма паказаць "
 "падрабязнасці для гэтай праграмы."
 
-#: src/gs-details-page.c:2393
+#: src/gs-details-page.c:2396
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Не ўдалося пакінуць водгук да «%s»: %s"
@@ -2555,7 +2564,7 @@ msgstr "А_бнавіць"
 msgid "Uninstall"
 msgstr "Выдаліць"
 
-#: src/gs-details-page.ui:453 src/gs-installed-page.ui:136
+#: src/gs-details-page.ui:453 src/gs-installed-page.ui:126
 msgid "Add-ons"
 msgstr "Дадатковыя кампаненты"
 
@@ -2758,18 +2767,18 @@ msgid "Downloading extra metadata files…"
 msgstr "Спампоўванне дадатковых файлаў з метаданымі…"
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:143
+#: src/gs-extras-page.c:142
 msgid " and "
 msgstr " і "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:146
+#: src/gs-extras-page.c:145
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: App window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:172
+#: src/gs-extras-page.c:171
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -2779,7 +2788,7 @@ msgstr[2] "Даступны шрыфты для сістэм пісьма %s"
 
 #. TRANSLATORS: App window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:180
+#: src/gs-extras-page.c:179
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
@@ -2787,35 +2796,35 @@ msgstr[0] "Даступнае праграмнае забеспячэнне дл
 msgstr[1] "Даступнае праграмнае забеспячэнне для %s"
 msgstr[2] "Даступнае праграмнае забеспячэнне для %s"
 
-#: src/gs-extras-page.c:241
+#: src/gs-extras-page.c:225
 msgid "Requested software not found"
 msgstr "Запатрабаванае праграмнае забеспячэнне не знойдзена"
 
-#: src/gs-extras-page.c:243
+#: src/gs-extras-page.c:227
 msgid "Failed to find requested software"
 msgstr "Не ўдалося знайсці запатрабаванае праграмнае забеспячэнне"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:425
+#: src/gs-extras-page.c:409
 #, c-format
 msgid "%s not found"
 msgstr "%s не знойдзена"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:429
+#: src/gs-extras-page.c:413
 msgid "on the website"
 msgstr "на вэб-сайце"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:436
+#: src/gs-extras-page.c:420
 #, c-format
 msgid "No apps are available that provide the file %s."
 msgstr "Няма даступных праграм, якія б пастаўлялі файл %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:440 src/gs-extras-page.c:451 src/gs-extras-page.c:462
+#: src/gs-extras-page.c:424 src/gs-extras-page.c:435 src/gs-extras-page.c:446
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing apps might "
@@ -2826,21 +2835,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:447 src/gs-extras-page.c:469
+#: src/gs-extras-page.c:431 src/gs-extras-page.c:453
 #, c-format
 msgid "No apps are available for %s support."
 msgstr "Няма праграм, якія падтрымліваюць %s."
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:458
+#: src/gs-extras-page.c:442
 #, c-format
 msgid "%s is not available."
 msgstr "%s — недаступна."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:473
+#: src/gs-extras-page.c:457
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an app that can "
@@ -2851,14 +2860,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:480
+#: src/gs-extras-page.c:464
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Няма даступных шрыфтоў з падтрымкай сістэмы пісьма %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:484
+#: src/gs-extras-page.c:468
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -2869,14 +2878,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:491
+#: src/gs-extras-page.c:475
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Няма даступных кодэкаў для фармату %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:495
+#: src/gs-extras-page.c:479
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2887,14 +2896,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:502
+#: src/gs-extras-page.c:486
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Няма даступных рэсурсаў Plasma, якія падтрымліваюць %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:506
+#: src/gs-extras-page.c:490
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2905,14 +2914,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:513
+#: src/gs-extras-page.c:497
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Няма даступных драйвераў прынтара для %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:517
+#: src/gs-extras-page.c:501
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2922,13 +2931,13 @@ msgstr ""
 "прынтар, можна знайсці %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:563
+#: src/gs-extras-page.c:547
 msgid "the documentation"
 msgstr "дакументацыяй"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the app name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:569
+#: src/gs-extras-page.c:553
 #, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
@@ -2945,7 +2954,7 @@ msgstr[2] ""
 "звесткі, азнаёмцеся з %s."
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:578
+#: src/gs-extras-page.c:562
 #, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
@@ -2960,21 +2969,21 @@ msgstr[1] ""
 msgstr[2] ""
 "Не ўдалося знайсці %s. Каб атрымаць дадатковы звесткі, азнаёмцеся з %s."
 
-#: src/gs-extras-page.c:656 src/gs-extras-page.c:713 src/gs-extras-page.c:753
+#: src/gs-extras-page.c:640 src/gs-extras-page.c:697 src/gs-extras-page.c:737
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "Не ўдалося знайсці: %s"
 
-#: src/gs-extras-page.c:970
+#: src/gs-extras-page.c:954
 #, c-format
 msgid "%s file format"
 msgstr "Фармат файла %s"
 
-#: src/gs-extras-page.c:1328
+#: src/gs-extras-page.c:1312
 msgid "Install _All"
 msgstr "Усталяваць _усе"
 
-#: src/gs-extras-page.c:1358
+#: src/gs-extras-page.c:1342
 msgid "Unable to Find Requested Software"
 msgstr "Немагчыма знайсці запатрабаванае праграмнае забеспячэнне"
 
@@ -2982,11 +2991,11 @@ msgstr "Немагчыма знайсці запатрабаванае праг�
 msgid "Codecs page"
 msgstr "Старонка з кодэкамі"
 
-#: src/gs-extras-page.ui:88
+#: src/gs-extras-page.ui:81
 msgid "No Results Found"
 msgstr "Нічога не знойдзена"
 
-#: src/gs-extras-page.ui:100
+#: src/gs-extras-page.ui:93
 msgid "Unable To Perform Search"
 msgstr "Немагчыма выканаць пошук"
 
@@ -3252,7 +3261,7 @@ msgid "Open Keyboard Shortcuts"
 msgstr "Спалучэнні клавіш"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
-#: src/gs-installed-page.c:823
+#: src/gs-installed-page.c:820
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "Усталяваныя"
@@ -3261,21 +3270,21 @@ msgstr "Усталяваныя"
 msgid "Installed page"
 msgstr "Старонка ўсталяванага"
 
-#: src/gs-installed-page.ui:56
+#: src/gs-installed-page.ui:46
 msgid "In Progress"
 msgstr "Выконваецца"
 
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
-#: src/gs-installed-page.ui:76 plugins/flatpak/gs-flatpak-utils.c:107
+#: src/gs-installed-page.ui:66 plugins/flatpak/gs-flatpak-utils.c:107
 msgid "Apps"
 msgstr "Праграмы"
 
-#: src/gs-installed-page.ui:96
+#: src/gs-installed-page.ui:86
 msgid "Web Apps"
 msgstr "Вэб-праграмы"
 
-#: src/gs-installed-page.ui:116
+#: src/gs-installed-page.ui:106
 msgid "System Apps"
 msgstr "Сістэмныя праграмы"
 
@@ -3509,26 +3518,26 @@ msgstr "Карыстальнік"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:284
+#: src/gs-os-update-page.c:237
 msgid "Additions"
 msgstr "Дадаванні"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:288
+#: src/gs-os-update-page.c:241
 msgid "Removals"
 msgstr "Выдаленні"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:292
+#: src/gs-os-update-page.c:245
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Абнаўленні"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:296
+#: src/gs-os-update-page.c:249
 msgid "Downgrades"
 msgstr "Паніжэнні версіі"
 
@@ -3567,7 +3576,7 @@ msgstr "І_гнараваць"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:748 src/gs-repos-dialog.c:177
+#: src/gs-overview-page.c:748 src/gs-repos-dialog.c:176
 msgid "_Enable"
 msgstr "_Уключыць"
 
@@ -3628,13 +3637,13 @@ msgstr "Падрыхтоўка %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:563
+#: src/gs-page.c:566
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Сапраўды выдаліць сховішча %s?"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is a repository name.
-#: src/gs-page.c:567
+#: src/gs-page.c:570
 #, c-format
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
@@ -3655,8 +3664,8 @@ msgstr ""
 #. * name of a firmware
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:576 src/gs-page.c:587 src/gs-page.c:598 src/gs-page.c:609
-#: src/gs-page.c:620 src/gs-page.c:632
+#: src/gs-page.c:579 src/gs-page.c:590 src/gs-page.c:601 src/gs-page.c:612
+#: src/gs-page.c:623 src/gs-page.c:635
 #, c-format
 msgid "Uninstall %s?"
 msgstr "Выдаліць %s?"
@@ -3664,14 +3673,14 @@ msgstr "Выдаліць %s?"
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of an addon or an input method.
 #. Translators: the '%s' is replaced with the app name
-#: src/gs-page.c:580 src/gs-page.c:644
+#: src/gs-page.c:583 src/gs-page.c:642
 #, c-format
 msgid "It will not be possible to use %s after removal."
 msgstr "Пасля выдалення праграмы %s, карыстацца ёй будзе немагчыма."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
-#: src/gs-page.c:591
+#: src/gs-page.c:594
 #, c-format
 msgid ""
 "It will not be possible to use any apps which depend on %s after removal."
@@ -3680,7 +3689,7 @@ msgstr ""
 "ад яго залежаць."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
-#: src/gs-page.c:601
+#: src/gs-page.c:604
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use "
@@ -3690,7 +3699,7 @@ msgstr ""
 "дакументы, будуць паказвацца з іншым шрыфтам."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
-#: src/gs-page.c:612
+#: src/gs-page.c:615
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media "
@@ -3700,7 +3709,7 @@ msgstr ""
 "некаторыя мультымедыйныя файлы больш не будуць прайгравацца."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
-#: src/gs-page.c:623
+#: src/gs-page.c:626
 #, c-format
 msgid ""
 "Hardware which depends on %s may no longer function correctly after removal."
@@ -3708,31 +3717,9 @@ msgstr ""
 "Абсталяванне, праца якога залежыць ад %s, пасля яго выдалення можа працаваць "
 "няправільна."
 
-#: src/gs-page.c:641
-msgid "App Settings & Data"
-msgstr "Налады і даныя праграмы"
-
-#. Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'
-#: src/gs-page.c:667
-msgid "_Keep"
-msgstr "За_хаваць"
-
-#: src/gs-page.c:673
-msgid "Allows restoring app settings and content"
-msgstr "Дазваляе аднавіць налады і змесціва праграмы"
-
-#. Translators: this is part of section about deleting app's data
-#: src/gs-page.c:682
-msgid "_Delete"
-msgstr "_Выдаліць"
-
-#: src/gs-page.c:688
-msgid "Permanently deletes data to save disk space"
-msgstr "Незваротна выдаляе даныя, каб зберагчы месца на дыску"
-
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
-#: src/gs-page.c:696
+#: src/gs-page.c:650
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. App data and settings will "
@@ -3740,11 +3727,6 @@ msgid ""
 msgstr ""
 "Пасля выдалення праграмы %s, карыстацца ёй будзе немагчыма. Даныя і налады "
 "захоўваюцца на дыску, каб мець магчымасць аднавіць праграму ў будучыні."
-
-#. TRANSLATORS: this is button text to remove the app
-#: src/gs-page.c:710
-msgid "_Uninstall"
-msgstr "_Выдаліць"
 
 #: src/gs-prefs-dialog.ui:6
 msgid "Preferences"
@@ -3754,7 +3736,7 @@ msgstr "Налады"
 msgid "Software Updates"
 msgstr "Абнаўленні праграмнага забеспячэння"
 
-#: src/gs-prefs-dialog.ui:15 src/gs-safety-context-dialog.ui:104
+#: src/gs-prefs-dialog.ui:15 src/gs-safety-context-dialog.ui:108
 msgid "More Information"
 msgstr "Дадатковыя звесткі"
 
@@ -3833,8 +3815,34 @@ msgstr "Несумяшчальныя праграмы"
 msgid "_Upgrade"
 msgstr "_Абнавіць"
 
+#: src/gs-remove-app-dialog.ui:15
+msgid "_Uninstall"
+msgstr "_Выдаліць"
+
+#: src/gs-remove-app-dialog.ui:19
+msgid "App Settings &amp; Data"
+msgstr "Налады і даныя праграмы"
+
+#. Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'
+#: src/gs-remove-app-dialog.ui:22
+msgid "_Keep"
+msgstr "За_хаваць"
+
+#: src/gs-remove-app-dialog.ui:23
+msgid "Allows restoring app settings and content"
+msgstr "Дазваляе аднавіць налады і змесціва праграмы"
+
+#. Translators: this is part of section about deleting app's data
+#: src/gs-remove-app-dialog.ui:37
+msgid "_Delete"
+msgstr "_Выдаліць"
+
+#: src/gs-remove-app-dialog.ui:38
+msgid "Permanently deletes data to save disk space"
+msgstr "Незваротна выдаляе даныя, каб зберагчы месца на дыску"
+
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:244
+#: src/gs-repos-dialog.c:243
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
@@ -3843,61 +3851,61 @@ msgstr ""
 "абнаўленні."
 
 #. ask for confirmation
-#: src/gs-repos-dialog.c:248
+#: src/gs-repos-dialog.c:247
 msgid "Disable Repository?"
 msgstr "Адключыць сховішча?"
 
-#: src/gs-repos-dialog.c:248
+#: src/gs-repos-dialog.c:247
 msgid "Remove Repository?"
 msgstr "Выдаліць сховішча?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:255
+#: src/gs-repos-dialog.c:254
 msgid "_Disable"
 msgstr "_Адключыць"
 
 #. TRANSLATORS: this is button text to remove a repo
 #. TRANSLATORS: button text when
 #. * removing a review
-#: src/gs-repos-dialog.c:259 src/gs-review-row.c:266
+#: src/gs-repos-dialog.c:258 src/gs-review-row.c:262
 msgid "_Remove"
 msgstr "_Выдаліць"
 
-#: src/gs-repos-dialog.c:611
+#: src/gs-repos-dialog.c:607
 msgid "Enable New Repositories"
 msgstr "Уключаць новыя сховішчы"
 
-#: src/gs-repos-dialog.c:612
+#: src/gs-repos-dialog.c:608
 msgid "Turn on new repositories when they are added"
 msgstr "Уключыць новыя сховішчы пасля дадавання"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:619
+#: src/gs-repos-dialog.c:615
 msgid "more information"
 msgstr "дадатковыя звесткі"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:624
+#: src/gs-repos-dialog.c:620
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Сховішчы з выбраных старонніх крыніц — %s."
 
-#: src/gs-repos-dialog.c:629
+#: src/gs-repos-dialog.c:625
 msgid "Fedora Third Party Repositories"
 msgstr "Староннія сховішчы Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:783
+#: src/gs-repos-dialog.c:779
 msgid "the operating system"
 msgstr "аперацыйнай сістэмай"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:839
+#: src/gs-repos-dialog.c:835
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -3908,7 +3916,7 @@ msgstr ""
 msgid "Software Repositories"
 msgstr "Сховішчы праграмнага забеспячэння"
 
-#: src/gs-repos-dialog.ui:46
+#: src/gs-repos-dialog.ui:39
 msgid "No Repositories"
 msgstr "Няма сховішчаў"
 
@@ -4117,19 +4125,19 @@ msgid "out of 5 stars"
 msgstr "з 5 зорак"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:59
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Невядома"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Вы можаце паскардзіцца на абразлівыя, грубыя або дыскрымінацыйныя водгукі."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:232
+#: src/gs-review-row.c:228
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -4139,24 +4147,24 @@ msgstr ""
 
 #. TRANSLATORS: window title when reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:237
+#: src/gs-review-row.c:233
 msgid "Report Review?"
 msgstr "Паскардзіцца на водгук?"
 
 #. TRANSLATORS: button text when
 #. * * sending a review for moderation
-#: src/gs-review-row.c:242
+#: src/gs-review-row.c:238
 msgid "_Report"
 msgstr "_Паскардзіцца"
 
 #. TRANSLATORS: window title when the user attempts to remove their
 #. * review
-#: src/gs-review-row.c:258
+#: src/gs-review-row.c:254
 msgid "Remove Review?"
 msgstr "Выдаліць водгук?"
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:261
+#: src/gs-review-row.c:257
 msgid "Removing a review cannot be undone."
 msgstr "Выдаленне водгуку немагчыма скасаваць."
 
@@ -4502,15 +4510,15 @@ msgid "License"
 msgstr "Ліцэнзія"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:80
+#: src/gs-safety-context-dialog.ui:81
 msgid "Source"
 msgstr "Крыніца"
 
-#: src/gs-safety-context-dialog.ui:100
+#: src/gs-safety-context-dialog.ui:103
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:148
+#: src/gs-safety-context-dialog.ui:152
 msgid ""
 "This app uses an outdated version of the software platform (SDK) and might "
 "contain bugs or security vulnerabilities which will not be fixed."
@@ -4536,36 +4544,36 @@ msgstr "Няма здымкаў"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:404
-#: src/gs-screenshot-image.c:608
+#: src/gs-screenshot-image.c:360 src/gs-screenshot-image.c:402
+#: src/gs-screenshot-image.c:606
 msgid "Screenshot not found"
 msgstr "Здымак не знойдзены"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:414
+#: src/gs-screenshot-image.c:412
 msgid "Failed to load image"
 msgstr "Не ўдалося загрузіць відарыс"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:636
+#: src/gs-screenshot-image.c:634
 msgid "Screenshot size not found"
 msgstr "Памер здымка не вызначаны"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:725
+#: src/gs-screenshot-image.c:723
 msgid "Could not create cache"
 msgstr "Не ўдалося стварыць кэш"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:739
+#: src/gs-screenshot-image.c:737
 msgid "Screenshot not valid"
 msgstr "Здымак несапраўдны"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:777
+#: src/gs-screenshot-image.c:775
 msgid "Screenshot not available"
 msgstr "Здымак недаступны"
 
@@ -4575,7 +4583,7 @@ msgstr "Здымак"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:179
+#: src/gs-search-page.c:176
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -4591,7 +4599,7 @@ msgstr "Старонка пошуку"
 msgid "Search for Apps"
 msgstr "Пошук праграм"
 
-#: src/gs-search-page.ui:47
+#: src/gs-search-page.ui:39
 msgid "No App Found"
 msgstr "Праграма не знойдзена"
 
@@ -5276,17 +5284,17 @@ msgstr "_Даследаваць"
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:109
+#: src/gs-update-dialog.c:107
 #, c-format
 msgid "Installed on %s"
 msgstr "Усталявана %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:131
+#: src/gs-update-dialog.c:129
 msgid "Installed Updates"
 msgstr "Усталяваныя абнаўленні"
 
-#: src/gs-update-dialog.ui:66
+#: src/gs-update-dialog.ui:59
 msgid "No Updates Installed"
 msgstr "Абнаўленні не ўсталяваны"
 
@@ -5507,40 +5515,40 @@ msgstr ""
 "праграмнага забеспячэння."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:255
+#: src/gs-updates-page.c:261
 #, c-format
 msgid "Last checked: %s"
 msgstr "Апошняя праверка адбывалася %s"
 
-#: src/gs-updates-page.c:308
+#: src/gs-updates-page.c:314
 msgid "Stop"
 msgstr "Спыніць"
 
-#: src/gs-updates-page.c:317 src/gs-updates-page.c:329
+#: src/gs-updates-page.c:323 src/gs-updates-page.c:335
 msgid "Check for Updates"
 msgstr "Праверыць абнаўленні"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:581
+#: src/gs-updates-page.c:586
 #, c-format
 msgid "%s %s has stopped receiving critical software updates"
 msgstr "%s %s больш не будзе атрымліваць крытычныя абнаўленні ПЗ"
 
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
-#: src/gs-updates-page.c:587
+#: src/gs-updates-page.c:592
 msgid "Your operating system has stopped receiving critical software updates"
 msgstr ""
 "Ваша аперацыйная сістэма больш не будзе атрымліваць крытычныя абнаўленні ПЗ"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:843
+#: src/gs-updates-page.c:848
 msgid "Charges May Apply"
 msgstr "Можа спаганяцца плата"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:845
+#: src/gs-updates-page.c:850
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -5549,23 +5557,23 @@ msgstr ""
 "непрадбачаных выдаткаў."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:849
+#: src/gs-updates-page.c:854
 msgid "Check _Anyway"
 msgstr "Усё адно _праверыць"
 
-#: src/gs-updates-page.c:887
+#: src/gs-updates-page.c:892
 msgid "Software Upgrades Downloaded"
 msgstr "Абнаўленні ПЗ спампаваныя"
 
-#: src/gs-updates-page.c:888
+#: src/gs-updates-page.c:893
 msgid "Upgrades are ready to be installed"
 msgstr "Абнаўленні гатовы да ўсталявання"
 
-#: src/gs-updates-page.c:1215
+#: src/gs-updates-page.c:1228
 msgid "Check for updates"
 msgstr "Праверыць абнаўленні"
 
-#: src/gs-updates-page.c:1251
+#: src/gs-updates-page.c:1264
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Абнаўленні"
