@@ -1703,6 +1703,26 @@ install_or_update_single_app_data_free (InstallOrUpdateSingleAppData *data)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (InstallOrUpdateSingleAppData, install_or_update_single_app_data_free)
 
+static gboolean
+is_install_or_update_install_flag_set (GsPluginInstallAppsFlags install_flags,
+				       GsPluginInstallAppsFlags check_flag)
+{
+	if (((int) install_flags) == -1)
+		return FALSE;
+
+	return (install_flags & check_flag) != 0;
+}
+
+static gboolean
+is_install_or_update_update_flag_set (GsPluginUpdateAppsFlags update_flags,
+				      GsPluginUpdateAppsFlags check_flag)
+{
+	if (((int) update_flags) == -1)
+		return FALSE;
+
+	return (update_flags & check_flag) != 0;
+}
+
 static void install_or_update_app_download_cb (GObject      *source_object,
                                                GAsyncResult *result,
                                                gpointer      user_data);
@@ -1729,8 +1749,8 @@ install_or_update_apps_impl (GsPluginFwupd                      *self,
                              gpointer                            user_data)
 {
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = ((install_flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE) ||
-	                        (update_flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE));
+	gboolean interactive = is_install_or_update_install_flag_set (install_flags, GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE) ||
+	                       is_install_or_update_update_flag_set (update_flags, GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	InstallOrUpdateAppsData *data;
 	g_autoptr(InstallOrUpdateAppsData) data_owned = NULL;
 	g_autoptr(GError) local_error = NULL;
@@ -1778,8 +1798,8 @@ install_or_update_apps_impl (GsPluginFwupd                      *self,
 		app_data->app = g_object_ref (app);
 
 		data->n_pending_ops++;
-		if (!(install_flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_DOWNLOAD) &&
-		    !(update_flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
+		if (!is_install_or_update_install_flag_set (install_flags, GS_PLUGIN_INSTALL_APPS_FLAGS_NO_DOWNLOAD) &&
+		    !is_install_or_update_update_flag_set (update_flags, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
 			gs_plugin_fwupd_download_async (self, app, interactive, cancellable, install_or_update_app_download_cb, g_steal_pointer (&app_data));
 		} else {
 			install_or_update_app_download_cb (G_OBJECT (self), NULL, g_steal_pointer (&app_data));
@@ -1807,8 +1827,8 @@ install_or_update_app_download_cb (GObject      *source_object,
 		return;
 	}
 
-	if (!(data->install_flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY) &&
-	    !(data->update_flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+	if (!is_install_or_update_install_flag_set (data->install_flags, GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY) &&
+	    !is_install_or_update_update_flag_set (data->update_flags, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
 		/* locked devices need unlocking, rather than installing */
 		if (gs_fwupd_app_get_is_locked (app_data->app)) {
 			const gchar *device_id = gs_fwupd_app_get_device_id (app_data->app);
@@ -1842,8 +1862,8 @@ install_or_update_app_unlock_cb (GObject      *source_object,
 	g_autoptr(InstallOrUpdateSingleAppData) app_data = g_steal_pointer (&user_data);
 	GTask *task = app_data->task;
 	InstallOrUpdateAppsData *data = g_task_get_task_data (task);
-	gboolean interactive = ((data->install_flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE) ||
-	                        (data->update_flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE));
+	gboolean interactive = is_install_or_update_install_flag_set (data->install_flags, GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE) ||
+	                       is_install_or_update_update_flag_set (data->update_flags, GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	GsPluginFwupd *self = g_task_get_source_object (task);
 	GsApp *app = app_data->app;
@@ -1902,8 +1922,8 @@ finish_install_or_update_apps_op (GTask  *task,
 {
 	GsPluginFwupd *self = g_task_get_source_object (task);
 	InstallOrUpdateAppsData *data = g_task_get_task_data (task);
-	gboolean interactive = ((data->install_flags & GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE) ||
-	                        (data->update_flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE));
+	gboolean interactive = is_install_or_update_install_flag_set (data->install_flags, GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE) ||
+	                       is_install_or_update_update_flag_set (data->update_flags, GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GError) error_owned = g_steal_pointer (&error);
 
 	/* Report certain errors to the user directly. Any errors which we
