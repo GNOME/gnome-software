@@ -31,6 +31,11 @@ variables:
     - cp -r $HOME/subprojects/* subprojects/
     # FIXME: Work around https://gitlab.com/gitlab-org/gitlab/-/issues/391756
     - git config --global --add safe.directory "${PWD}"
+    - git submodule update --init --depth 1
+    - git config --global --add safe.directory "${PWD}/subprojects/*"
+  variables:
+    GIT_SUBMODULE_STRATEGY: "none"
+    GIT_SUBMODULE_DEPTH: 1
 
 fedora-x86_64:
   extends: .build
