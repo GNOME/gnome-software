@@ -107,6 +107,7 @@ if [ $build == 1 ]; then
                 meson.build \
                 meson_options.txt \
                 subprojects/appstream.wrap \
+                subprojects/gnome-pwa-list.wrap \
                 subprojects/gtk.wrap \
                 subprojects/libadwaita.wrap \
                 subprojects/libglib-testing.wrap \
