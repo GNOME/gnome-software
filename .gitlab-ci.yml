@@ -26,16 +26,21 @@ variables:
   # expected naming scheme for the release-service job
   TARBALL_ARTIFACT_PATH: "_build/meson-dist/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.xz"
 
-.build:
+# FIXME: Work around https://gitlab.com/gitlab-org/gitlab/-/issues/391756
+.submodule_workaround:
   before_script:
-    - cp -r $HOME/subprojects/* subprojects/
-    # FIXME: Work around https://gitlab.com/gitlab-org/gitlab/-/issues/391756
     - git config --global --add safe.directory "${PWD}"
     - git submodule update --init --depth 1
     - git config --global --add safe.directory "${PWD}/subprojects/*"
   variables:
     GIT_SUBMODULE_STRATEGY: "none"
     GIT_SUBMODULE_DEPTH: 1
+
+.build:
+  variables: !reference [".submodule_workaround", variables]
+  before_script:
+    - cp -r $HOME/subprojects/* subprojects/
+    - !reference [".submodule_workaround", "before_script"]
 
 fedora-x86_64:
   extends: .build
@@ -99,7 +104,9 @@ debian-x86_64:
 
 # Allow building a flatpak on demand to test out the gnome-software UI
 flatpak bundle:
-  extends: '.flatpak'
+  extends:
+    - ".flatpak"
+    - ".submodule_workaround"
   stage: 'build'
   variables:
     MANIFEST_PATH: "build-aux/org.gnome.Software.Devel.json"
