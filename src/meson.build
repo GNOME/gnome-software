@@ -182,6 +182,11 @@ if (get_option('snap'))
 else
   cdata.set('snaphandler', '')
 endif
+if (get_option('flatpak'))
+  cdata.set('flatpakhandler', 'x-scheme-handler/flatpak+https;')
+else
+  cdata.set('flatpakhandler', '')
+endif
 cdata.set('application_id', application_id)
 
 # replace @bindir@
