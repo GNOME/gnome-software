@@ -384,6 +384,8 @@ decrement_gather_apps (GatherAppsData *data)
 	if (!g_atomic_int_dec_and_test (&data->n_pending))
 		return;
 
+	g_debug ("%s: gathered %u apps", G_STRFUNC, gs_app_list_length (data->list));
+
 	gtk_widget_set_visible (data->self->heading_all_apps, gs_app_list_length (data->list) > 0);
 	gtk_widget_set_visible (data->self->box_all_apps, gs_app_list_length (data->list) > 0);
 
@@ -1211,6 +1213,8 @@ gs_overview_page_setup (GsPage *page,
 static void
 refreshed_cb (GsOverviewPage *self, gpointer user_data)
 {
+	g_debug ("Overview refresh finished: setting UI to %s", self->empty ? "empty" : "show results");
+
 	if (self->empty) {
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_overview), "no-results");
 	} else {
