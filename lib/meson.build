@@ -160,7 +160,7 @@ libgnomesoftware = library(
 )
 
 libgnomesoftware_dep = declare_dependency(link_with : libgnomesoftware,
-  sources : libgnomesoftware_enums,
+  sources : libgnomesoftware_enums + [gs_build_ident_h],
   include_directories : libgnomesoftware_include_directories,
   dependencies: librarydeps,
 )
