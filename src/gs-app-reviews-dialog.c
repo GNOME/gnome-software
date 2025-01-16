@@ -115,11 +115,28 @@ review_action_completed_cb (GObject      *source_object,
 	}
 
 	if (!success) {
+		const char *translatable_message;
+
+		g_assert (local_error != NULL);
+
 		g_warning ("failed to %s review on %s: %s",
 			   gs_review_row_action_to_string (data->action),
 			   gs_app_get_id (data->dialog->app),
-			   (local_error ? local_error->message : "Unknown error"));
-		display_error_toast (data->dialog, (local_error ? local_error->message : _("Unknown error")));
+			   local_error->message);
+
+		if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA)) {
+			translatable_message = _("Invalid ratings data received from server");
+		} else if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR,
+					    GS_ODRS_PROVIDER_ERROR_SERVER_ERROR)) {
+			translatable_message = _("Could not communicate with ratings server");
+		} else {
+			/* likely a programming error in gnome-software, so don’t
+			 * waste a translatable string on it */
+			translatable_message = local_error->message;
+		}
+
+		display_error_toast (data->dialog, translatable_message);
 		return;
 	}
 }

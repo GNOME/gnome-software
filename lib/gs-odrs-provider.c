@@ -564,11 +564,20 @@ soup_send_and_read_cb (GObject *source_object,
 	status_code = soup_message_get_status (msg);
 
 	g_debug ("ODRS server returned status %u: %.*s", status_code, (gint) downloaded_data_length, (const gchar *) downloaded_data);
-	if (status_code != SOUP_STATUS_OK) {
+	if (SOUP_STATUS_IS_SUCCESSFUL (status_code)) {
+		/* fall through */
+	} else if (SOUP_STATUS_IS_CLIENT_ERROR (status_code)) {
 		g_set_error (&local_error,
-                             GS_ODRS_PROVIDER_ERROR,
-                             GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
-                             "Failed to submit review to ODRS: %s", soup_status_get_phrase (status_code));
+		             GS_ODRS_PROVIDER_ERROR,
+		             GS_ODRS_PROVIDER_ERROR_CLIENT_ERROR,
+		             "Failed to submit review to ODRS: %s", soup_status_get_phrase (status_code));
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	} else {
+		g_set_error (&local_error,
+		             GS_ODRS_PROVIDER_ERROR,
+		             GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
+		             "Failed to submit review to ODRS: %s", soup_status_get_phrase (status_code));
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
