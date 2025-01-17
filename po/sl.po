@@ -2,15 +2,15 @@
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 #
-# Martin Srebotnjak <miles@filmsi.net>, 2023.
+# Martin Srebotnjak <miles@filmsi.net>, 2023,2024,2025.
 # Matej Urbančič <mateju@src.gnome.org>, 2013–2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-01-11 12:49+0000\n"
-"PO-Revision-Date: 2025-01-12 16:47+0100\n"
+"POT-Creation-Date: 2025-01-16 10:13+0000\n"
+"PO-Revision-Date: 2025-01-17 11:37+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -74,7 +74,7 @@ msgid "The update details"
 msgstr "Podrobnosti posodobitve"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2670
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2685
 #: src/gs-application.c:263
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
@@ -1037,9 +1037,13 @@ msgstr "Posodobi podrobnosti"
 msgid "Requires additional permissions"
 msgstr "Zahteva dodatna dovoljenja"
 
-#: src/gs-app-reviews-dialog.c:122 src/gs-dkms-dialog.c:92
-msgid "Unknown error"
-msgstr "Neznana napaka"
+#: src/gs-app-reviews-dialog.c:129
+msgid "Invalid ratings data received from server"
+msgstr "Neveljavni podatki o ocenah, prejeti s strežnika"
+
+#: src/gs-app-reviews-dialog.c:132 src/gs-details-page.c:2411
+msgid "Could not communicate with ratings server"
+msgstr "Ni bilo mogoče komunicirati s strežnikom za ocenjevanje"
 
 #. Translators: Header of the section with other users' opinions about the app.
 #: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1045
@@ -2545,7 +2549,11 @@ msgstr ""
 "Programska oprema ni pridobila podatkov za »%s« in ne more prikazati "
 "podrobnosti za ta program."
 
-#: src/gs-details-page.c:2398
+#: src/gs-details-page.c:2408
+msgid "Invalid review response received from server"
+msgstr "S strežnika prejet neveljaven odgovor na oceno"
+
+#: src/gs-details-page.c:2418
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Pošiljanje ocene za »%s« je spodletelo: %s"
@@ -2680,6 +2688,10 @@ msgstr "Podrobnosti o programu ni mogoče prikazati"
 #: src/gs-dkms-dialog.c:66
 msgid "Failed to prepare reboot"
 msgstr "Priprava ponovnega zagona ni uspela"
+
+#: src/gs-dkms-dialog.c:92
+msgid "Unknown error"
+msgstr "Neznana napaka"
 
 #: src/gs-dkms-dialog.c:98
 msgid "The key was not found"
@@ -6057,17 +6069,17 @@ msgstr "Sistemska namestitev"
 msgid "App ID"
 msgstr "ID programa"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1353
+#: plugins/flatpak/gs-plugin-flatpak.c:1368
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Dodajanje vstavka »%s« za namestitev je spodletelo: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1367
+#: plugins/flatpak/gs-plugin-flatpak.c:1382
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Dodajanje vstavka »%s« za odstranitev je spodletelo: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1956
+#: plugins/flatpak/gs-plugin-flatpak.c:1971
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -6309,7 +6321,7 @@ msgstr "Posodobitev pogona USB %s"
 msgid "Firmware"
 msgstr "Strojna programska oprema"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1918
+#: plugins/fwupd/gs-plugin-fwupd.c:1938
 msgid "Firmware update could not be applied: "
 msgstr "Posodobitve strojne programske opreme ni mogoče začeti: "
 
