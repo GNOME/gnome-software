@@ -1199,6 +1199,7 @@ update_action_row_from_link (AdwActionRow *row,
 	const gchar *url = gs_app_get_url (app, url_kind);
 
 	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (row), FALSE);
+	adw_action_row_set_subtitle_selectable (row, TRUE);
 
 	if (url != NULL)
 		adw_action_row_set_subtitle (row, url);
