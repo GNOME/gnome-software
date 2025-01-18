@@ -5,6 +5,7 @@
   <template class="GsContextDialogRow" parent="AdwActionRow">
     <property name="activatable">False</property>
     <property name="focusable">True</property><!-- to allow Orca to read row contents -->
+    <property name="use-markup">False</property>
 
     <child type="prefix">
       <object class="GsLozenge" id="lozenge">
