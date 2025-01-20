@@ -601,9 +601,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		adw_switch_row_set_active (ADW_SWITCH_ROW (row), dialog->third_party_enabled);
 		g_signal_connect_object (row, "notify::active",
 					 G_CALLBACK (fedora_third_party_repos_switch_notify_cb), dialog, 0);
-#if ADW_CHECK_VERSION(1,2,0)
 		adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (row), FALSE);
-#endif
 		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _("Enable New Repositories"));
 		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added"));
 		gtk_widget_set_visible (row, TRUE);

@@ -78,10 +78,6 @@ gs_context_dialog_row_init (GsContextDialogRow *self)
 	g_type_ensure (GS_TYPE_LOZENGE);
 
 	gtk_widget_init_template (GTK_WIDGET (self));
-
-#if ADW_CHECK_VERSION(1,2,0)
-	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (self), FALSE);
-#endif
 }
 
 static void
