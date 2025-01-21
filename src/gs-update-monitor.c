@@ -812,6 +812,16 @@ gs_update_monitor_autoupdate (GsUpdateMonitor *monitor)
 	get_updates (monitor, 0);
 }
 
+typedef enum {
+	UP_DEVICE_LEVEL_UNKNOWN,
+	UP_DEVICE_LEVEL_NONE,
+	UP_DEVICE_LEVEL_DISCHARGING,
+	UP_DEVICE_LEVEL_LOW,
+	UP_DEVICE_LEVEL_CRITICAL,
+	UP_DEVICE_LEVEL_ACTION,
+	UP_DEVICE_LEVEL_LAST
+} UpDeviceLevel;
+
 static void
 get_upgrades (GsUpdateMonitor *monitor)
 {
@@ -820,6 +830,33 @@ get_upgrades (GsUpdateMonitor *monitor)
 	/* disabled in gsettings or from a plugin */
 	if (!gs_plugin_loader_get_allow_updates (monitor->plugin_loader)) {
 		g_debug ("not getting upgrades as not enabled");
+		return;
+	}
+
+	/* never refresh when the battery is low */
+	if (monitor->proxy_upower != NULL) {
+		g_autoptr(GVariant) val = NULL;
+		val = g_dbus_proxy_get_cached_property (monitor->proxy_upower,
+							"WarningLevel");
+		if (val != NULL) {
+			guint32 level = g_variant_get_uint32 (val);
+			if (level >= UP_DEVICE_LEVEL_LOW) {
+				g_debug ("not getting upgrades on low power");
+				return;
+			}
+		}
+	} else {
+		g_debug ("no UPower support, so not doing power level checks");
+	}
+
+	/* do not run when in power saver mode */
+	if (gs_plugin_loader_get_power_saver (monitor->plugin_loader)) {
+		g_debug ("Not checking for upgrades with power saver enabled");
+		return;
+	}
+
+	if (gs_plugin_loader_get_game_mode (monitor->plugin_loader)) {
+		g_debug ("Not getting upgrades with enabled GameMode");
 		return;
 	}
 
@@ -864,16 +901,6 @@ refresh_cache_finished_cb (GObject *object,
 	now = g_date_time_new_now_local ();
 	get_updates (monitor, g_date_time_to_unix (now));
 }
-
-typedef enum {
-	UP_DEVICE_LEVEL_UNKNOWN,
-	UP_DEVICE_LEVEL_NONE,
-	UP_DEVICE_LEVEL_DISCHARGING,
-	UP_DEVICE_LEVEL_LOW,
-	UP_DEVICE_LEVEL_CRITICAL,
-	UP_DEVICE_LEVEL_ACTION,
-	UP_DEVICE_LEVEL_LAST
-} UpDeviceLevel;
 
 static void
 install_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
