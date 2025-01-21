@@ -38,8 +38,8 @@ struct _GsAppDetailsPage
 {
 	GtkBox		 parent_instance;
 
+	GtkStack	*stack_details;
 	GtkWidget	*label_details;
-	GtkWidget	*spinner_details;
 	GtkWidget	*permissions_section;
 	GtkWidget	*permissions_section_list;
 	GtkWidget	*status_page;
@@ -190,7 +190,7 @@ set_update_description (GsAppDetailsPage *self,
 		   thus the row does not resize when the details are on-line text only.
 		   It will resize when the details are multiple lines of text. */
 		gtk_label_set_text (GTK_LABEL (self->label_details), "");
-		gtk_widget_set_visible (self->spinner_details, TRUE);
+		gtk_stack_set_visible_child_name (self->stack_details, "spinner");
 
 		g_assert (self->refine_cancellable == NULL);
 		self->refine_cancellable = g_cancellable_new ();
@@ -204,8 +204,6 @@ set_update_description (GsAppDetailsPage *self,
 		return;
 	}
 
-	gtk_widget_set_visible (self->spinner_details, FALSE);
-
 	if (update_details == NULL || *update_details == '\0') {
 		/* TRANSLATORS: this is where the packager did not write
 		 * a description for the update */
@@ -213,6 +211,7 @@ set_update_description (GsAppDetailsPage *self,
 	}
 
 	gtk_label_set_markup (GTK_LABEL (self->label_details), update_details);
+	gtk_stack_set_visible_child_name (self->stack_details, "label");
 }
 
 static void
@@ -438,8 +437,8 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-details-page.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, stack_details);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, label_details);
-	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_list);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, status_page);
