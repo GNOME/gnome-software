@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-01-14 15:43+0000\n"
-"PO-Revision-Date: 2025-01-15 12:45+0300\n"
+"POT-Creation-Date: 2025-01-16 10:13+0000\n"
+"PO-Revision-Date: 2025-01-22 16:09+0300\n"
 "Last-Translator: Artur So <arturios2005@mail.ru>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -1037,9 +1037,13 @@ msgstr "Подробности обновления"
 msgid "Requires additional permissions"
 msgstr "Требуются дополнительные разрешения"
 
-#: src/gs-app-reviews-dialog.c:122 src/gs-dkms-dialog.c:92
-msgid "Unknown error"
-msgstr "Неизвестная ошибка"
+#: src/gs-app-reviews-dialog.c:129
+msgid "Invalid ratings data received from server"
+msgstr "Недопустимые данные о рейтингах, полученные от сервера"
+
+#: src/gs-app-reviews-dialog.c:132 src/gs-details-page.c:2411
+msgid "Could not communicate with ratings server"
+msgstr "Не удалось установить связь с сервером рейтингов"
 
 #. Translators: Header of the section with other users' opinions about the app.
 #: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1045
@@ -2545,7 +2549,11 @@ msgstr ""
 "ПО не удалось получить информацию для «%s», и оно не может показать "
 "подробные сведения об этом приложении."
 
-#: src/gs-details-page.c:2398
+#: src/gs-details-page.c:2408
+msgid "Invalid review response received from server"
+msgstr "Недопустимый ответ на отзыв, полученный от сервера"
+
+#: src/gs-details-page.c:2418
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Не удалось отправить отзыв для \"%s\": %s"
@@ -2682,6 +2690,10 @@ msgstr "Невозможно показать сведения о приложе
 #: src/gs-dkms-dialog.c:66
 msgid "Failed to prepare reboot"
 msgstr "Не удалось подготовить перезагрузку"
+
+#: src/gs-dkms-dialog.c:92
+msgid "Unknown error"
+msgstr "Неизвестная ошибка"
 
 #: src/gs-dkms-dialog.c:98
 msgid "The key was not found"
@@ -6048,17 +6060,17 @@ msgstr "Системная установка"
 msgid "App ID"
 msgstr "ID приложения"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1353
+#: plugins/flatpak/gs-plugin-flatpak.c:1368
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Не удалось добавить установку для дополнения '%s': %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1367
+#: plugins/flatpak/gs-plugin-flatpak.c:1382
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Не удалось добавить удаление для дополнения '%s': %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1956
+#: plugins/flatpak/gs-plugin-flatpak.c:1971
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
