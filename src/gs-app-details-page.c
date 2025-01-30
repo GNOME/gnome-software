@@ -62,7 +62,7 @@ static const struct {
   { GS_APP_PERMISSIONS_FLAGS_SESSION_BUS, N_("Session Services"), N_("Can access D-Bus services on the session bus") },
   { GS_APP_PERMISSIONS_FLAGS_DEVICES, N_("Devices"), N_("Can access arbitrary devices such as webcams") },
   { GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES, N_("Devices"), N_("Can access input devices") },
-  { GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES, N_("Devices"), N_("Can access microphones") },
+  { GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES, N_("Devices"), N_("Can access microphones and play audio") },
   { GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES, N_("Devices"), N_("Can access system device files") },
   { GS_APP_PERMISSIONS_FLAGS_SCREEN, N_("Screen contents"), N_("Can access screen contents") },
   { GS_APP_PERMISSIONS_FLAGS_HOME_FULL, N_("Home folder"), N_("Can view, edit and create files") },

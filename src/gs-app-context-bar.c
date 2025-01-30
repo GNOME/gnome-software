@@ -343,7 +343,7 @@ update_safety_tile (GsAppContextBar *self)
 					      SAFETY_PROBABLY_SAFE,
 					      /* Translators: This indicates an app can access audio devices.
 					       * It’s used in a context tile, so should be short. */
-					      _("Can access microphones"));
+					      _("Can access microphones and play audio"));
 			break;
 		case GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES:
 			add_to_safety_rating (&chosen_rating, descriptions,
