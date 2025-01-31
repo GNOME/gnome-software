@@ -752,8 +752,17 @@ sort_by_packaging_format_preference (GsApp *app1,
 	index2 = gs_details_page_get_app_packaging_format_preference_index (self, app2);
 
 	if (index1 == index2) {
-		g_autofree gchar *a1_origin = gs_app_dup_origin_ui (app1, TRUE);
-		g_autofree gchar *a2_origin = gs_app_dup_origin_ui (app2, TRUE);
+		gboolean app1_verified = gs_app_has_quirk (app1, GS_APP_QUIRK_DEVELOPER_VERIFIED);
+		gboolean app2_verified = gs_app_has_quirk (app2, GS_APP_QUIRK_DEVELOPER_VERIFIED);
+		g_autofree gchar *a1_origin = NULL;
+		g_autofree gchar *a2_origin = NULL;
+
+		/* Prefer verified before unverified formats */
+		if (app1_verified != app2_verified)
+			return app1_verified ? -1 : 1;
+
+		a1_origin = gs_app_dup_origin_ui (app1, TRUE);
+		a2_origin = gs_app_dup_origin_ui (app2, TRUE);
 
 		return gs_utils_sort_strcmp (a1_origin, a2_origin);
 	}
