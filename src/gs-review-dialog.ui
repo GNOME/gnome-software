@@ -82,15 +82,17 @@
                         <property name="focusable">False</property>
                         <style>
                           <class name="review-row"/>
+                          <class name="entry"/>
                         </style>
                         <child>
                           <object class="GtkBox">
                             <property name="orientation">vertical</property>
+                            <property name="hexpand">True</property>
                             <property name="vexpand">True</property>
                             <child>
-                              <object class="GtkBox">
-                                <property name="valign">center</property>
-                                <property name="hexpand">False</property>
+                              <object class="GtkBox" id="text_box">
+                                <property name="hexpand">True</property>
+                                <property name="valign">start</property>
                                 <style>
                                   <class name="header"/>
                                 </style>
@@ -103,7 +105,7 @@
                                       <class name="title"/>
                                     </style>
                                     <child>
-                                      <object class="GtkLabel">
+                                      <object class="GtkLabel" id="text_box_label">
                                         <property name="ellipsize">none</property>
                                         <property name="label" translatable="yes" context="app review" comments="Translators: This is where the users enter their opinions about the apps.">Write a short review</property>
                                         <property name="lines">0</property>

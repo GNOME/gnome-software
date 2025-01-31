@@ -31,6 +31,10 @@ struct _GsReviewDialog
 	GtkWidget	*summary_entry;
 	GtkWidget	*cancel_button;
 	GtkWidget	*post_button;
+	GtkWidget	*review_row;
+	GtkWidget	*text_box;
+	GtkWidget	*text_box_label;
+	GtkWidget	*edit_icon;
 	GtkWidget	*text_view;
 	guint		 timer_id;
 };
@@ -190,8 +194,55 @@ gs_review_dialog_post_button_clicked_cb (GsReviewDialog *self)
 }
 
 static void
+gs_review_dialog_text_box_clicked_cb (GtkGestureClick *gesture,
+				      gint n_press,
+				      gdouble x,
+				      gdouble y,
+				      gpointer user_data)
+{
+	GsReviewDialog *self = user_data;
+	if (n_press == 1)
+		gtk_widget_grab_focus (self->text_view);
+}
+
+static void
+gs_review_dialog_text_box_notify_is_focus_cb (GtkEventControllerFocus *controller,
+					      GParamSpec *param,
+					      gpointer user_data)
+{
+	GsReviewDialog *self = user_data;
+	gboolean value = gtk_event_controller_focus_is_focus (controller);
+
+	gtk_widget_set_visible (self->edit_icon, !value);
+
+	if (value)
+		gtk_widget_add_css_class (self->review_row, "focused");
+	else
+		gtk_widget_remove_css_class (self->review_row, "focused");
+
+	if (!value) {
+		GtkTextBuffer *buffer;
+		GtkTextIter start, end;
+		gboolean is_empty;
+
+		buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (self->text_view));
+		gtk_text_buffer_get_start_iter (buffer, &start);
+		gtk_text_buffer_get_end_iter (buffer, &end);
+		is_empty = gtk_text_iter_compare (&start, &end) == 0;
+
+		value = !is_empty;
+	}
+
+	gtk_widget_remove_css_class (self->text_box_label, value ? "title" : "subtitle");
+	gtk_widget_add_css_class (self->text_box_label, value ? "subtitle" : "title");
+}
+
+static void
 gs_review_dialog_init (GsReviewDialog *dialog)
 {
+	g_autoptr(GdkCursor) cursor = NULL;
+	GtkGesture *gesture;
+	GtkEventController *controller;
 	GtkTextBuffer *buffer;
 
 	g_type_ensure (GS_TYPE_STAR_WIDGET);
@@ -217,6 +268,19 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 				  G_CALLBACK (gs_review_dialog_post_button_clicked_cb), dialog);
 
 	gs_review_dialog_changed_cb (dialog);
+
+	cursor = gdk_cursor_new_from_name ("text", NULL);
+	gtk_widget_set_cursor (dialog->text_box, cursor);
+
+	gesture = gtk_gesture_click_new ();
+	g_signal_connect_object (gesture, "released",
+		G_CALLBACK (gs_review_dialog_text_box_clicked_cb), dialog, 0);
+	gtk_widget_add_controller (dialog->text_box, GTK_EVENT_CONTROLLER (gesture));
+
+	controller = gtk_event_controller_focus_new ();
+	g_signal_connect_object (controller, "notify::is-focus",
+		G_CALLBACK (gs_review_dialog_text_box_notify_is_focus_cb), dialog, 0);
+	gtk_widget_add_controller (dialog->text_view, controller);
 }
 
 static void
@@ -258,6 +322,10 @@ gs_review_dialog_class_init (GsReviewDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, star);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, label_rating_desc);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, summary_entry);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, review_row);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, text_box);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, text_box_label);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, edit_icon);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, text_view);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, cancel_button);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, post_button);
