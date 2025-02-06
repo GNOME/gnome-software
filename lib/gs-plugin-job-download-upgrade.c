@@ -36,7 +36,6 @@ struct _GsPluginJobDownloadUpgrade
 	GsPluginJob parent;
 
 	/* Input arguments. */
-	GsApp *app;  /* (owned) (not nullable) */
 	GsPluginDownloadUpgradeFlags flags;
 
 	/* In-progress data. */
@@ -48,10 +47,9 @@ G_DEFINE_TYPE (GsPluginJobDownloadUpgrade, gs_plugin_job_download_upgrade, GS_TY
 
 typedef enum {
 	PROP_FLAGS = 1,
-	PROP_APP,
 } GsPluginJobDownloadUpgradeProperty;
 
-static GParamSpec *props[PROP_APP + 1] = { NULL, };
+static GParamSpec *props[PROP_FLAGS + 1] = { NULL, };
 
 static void
 gs_plugin_job_download_upgrade_dispose (GObject *object)
@@ -60,8 +58,6 @@ gs_plugin_job_download_upgrade_dispose (GObject *object)
 
 	g_assert (self->saved_error == NULL);
 	g_assert (self->n_pending_ops == 0);
-
-	g_clear_object (&self->app);
 
 	G_OBJECT_CLASS (gs_plugin_job_download_upgrade_parent_class)->dispose (object);
 }
@@ -77,9 +73,6 @@ gs_plugin_job_download_upgrade_get_property (GObject *object,
 	switch ((GsPluginJobDownloadUpgradeProperty) prop_id) {
 	case PROP_FLAGS:
 		g_value_set_flags (value, self->flags);
-		break;
-	case PROP_APP:
-		g_value_set_object (value, self->app);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -100,13 +93,6 @@ gs_plugin_job_download_upgrade_set_property (GObject *object,
 		/* Construct only. */
 		g_assert (self->flags == 0);
 		self->flags = g_value_get_flags (value);
-		g_object_notify_by_pspec (object, props[prop_id]);
-		break;
-	case PROP_APP:
-		/* Construct only. */
-		g_assert (self->app == NULL);
-		self->app = g_value_dup_object (value);
-		g_assert (self->app != NULL);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	default:
@@ -132,6 +118,7 @@ gs_plugin_job_download_upgrade_run_async (GsPluginJob         *job,
 	g_autoptr(GTask) task = NULL;
 	GPtrArray *plugins;  /* (element-type GsPlugin) */
 	gboolean anything_ran = FALSE;
+	GsApp *app = gs_plugin_job_get_app (job);
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (job, cancellable, callback, user_data);
@@ -161,7 +148,7 @@ gs_plugin_job_download_upgrade_run_async (GsPluginJob         *job,
 
 		/* run the plugin */
 		self->n_pending_ops++;
-		plugin_class->download_upgrade_async (plugin, self->app, self->flags, cancellable, plugin_app_func_cb, g_object_ref (task));
+		plugin_class->download_upgrade_async (plugin, app, self->flags, cancellable, plugin_app_func_cb, g_object_ref (task));
 	}
 
 	if (!anything_ran)
@@ -240,20 +227,6 @@ gs_plugin_job_download_upgrade_class_init (GsPluginJobDownloadUpgradeClass *klas
 
 	job_class->run_async = gs_plugin_job_download_upgrade_run_async;
 	job_class->run_finish = gs_plugin_job_download_upgrade_run_finish;
-
-	/**
-	 * GsPluginJobDownloadUpgrade:app: (not nullable)
-	 *
-	 * A #GsApp describing the app to run the operation on.
-	 *
-	 * Since: 47
-	 */
-	props[PROP_APP] =
-		g_param_spec_object ("app", "App",
-				     "A #GsApp describing the app to run the operation on.",
-				     GS_TYPE_APP,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPluginJobDownloadUpgrade:flags:
