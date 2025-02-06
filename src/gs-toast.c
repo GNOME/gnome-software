@@ -106,6 +106,7 @@ gs_toast_new (const gchar *title,
 	GsToastData *data;
 
 	toast = adw_toast_new (title);
+	adw_toast_set_timeout (toast, 0);
 
 	data = g_new0 (GsToastData, 1);
 	data->button = button;
