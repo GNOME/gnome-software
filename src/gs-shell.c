@@ -1910,6 +1910,10 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 							  str_origin);
 			toast_text = tmp_toast_text;
 			suggested_details_text = error->message;
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			toast_text = _("Download failed");
+			suggested_details_text = error->message;
 		}
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
