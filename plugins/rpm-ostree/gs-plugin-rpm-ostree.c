@@ -1393,7 +1393,7 @@ update_apps_thread_cb (GTask        *task,
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
-	gboolean interactive = data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE;
+	gboolean interactive = (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE) != 0;
 
 	assert_in_worker (self);
 
@@ -1417,7 +1417,10 @@ update_apps_thread_cb (GTask        *task,
 		tp->download_progress_list = g_object_ref (data->apps);
 		tp->plugin = g_object_ref (plugin);
 
-		options = make_rpmostree_options_variant (RPMOSTREE_OPTION_DOWNLOAD_ONLY);
+		/* respect the NO_APPLY flag for user-initiated updates, and prepare the update
+		   for the background updates, thus they are ready to be used on reboot;
+		   PackageKit plugin does it similarly */
+		options = make_rpmostree_options_variant (interactive ? RPMOSTREE_OPTION_DOWNLOAD_ONLY : RPMOSTREE_OPTION_NONE);
 		done = FALSE;
 		while (!done) {
 			done = TRUE;
