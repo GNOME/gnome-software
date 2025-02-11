@@ -346,14 +346,17 @@ gs_screenshot_image_complete_cb (GObject *source_object,
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GInputStream) stream = NULL;
 	guint status_code;
-
 	g_autoptr(GBytes) bytes = NULL;
+	g_autofree gchar *uri = NULL;
 	SoupMessage *msg;
+
+	msg = soup_session_get_async_result_message (SOUP_SESSION (source_object), result);
+	uri = g_uri_to_string (soup_message_get_uri (msg));
 
 	bytes = soup_session_send_and_read_finish (SOUP_SESSION (source_object), result, &error);
 	if (bytes == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-			g_warning ("Failed to download screenshot: %s", error->message);
+			g_warning ("Failed to download screenshot '%s': %s", uri, error->message);
 			/* Reset the width request, thus the image shrinks when the window width is small */
 			gtk_widget_set_size_request (ssimg->stack, -1, (gint) ssimg->height);
 			gs_screenshot_image_stop_spinner (ssimg);
@@ -362,7 +365,6 @@ gs_screenshot_image_complete_cb (GObject *source_object,
 		return;
 	}
 
-	msg = soup_session_get_async_result_message (SOUP_SESSION (source_object), result);
 	status_code = soup_message_get_status (msg);
 	if (ssimg->load_timeout_id) {
 		g_source_remove (ssimg->load_timeout_id);
@@ -388,8 +390,8 @@ gs_screenshot_image_complete_cb (GObject *source_object,
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NETWORK_UNREACHABLE)) {
 			const gchar *reason_phrase;
 			reason_phrase = soup_message_get_reason_phrase (msg);
-			g_warning ("Result of screenshot downloading attempt with "
-				   "status code '%u': %s", status_code,
+			g_warning ("Screenshot download '%s' failed with "
+				   "status code '%u': %s", uri, status_code,
 				   reason_phrase);
 		}
 		gs_screenshot_image_stop_spinner (ssimg);
