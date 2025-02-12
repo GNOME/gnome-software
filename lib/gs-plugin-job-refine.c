@@ -705,15 +705,6 @@ run_refine_internal_finish (GsPluginJobRefine  *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-app_thaw_notify_idle (gpointer data)
-{
-	GsApp *app = GS_APP (data);
-	g_object_thaw_notify (G_OBJECT (app));
-	g_object_unref (app);
-	return G_SOURCE_REMOVE;
-}
-
 static void run_cb (GObject      *source_object,
                     GAsyncResult *result,
                     gpointer      user_data);
@@ -746,12 +737,6 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 		g_debug ("no refine flags set for transaction or app list is empty");
 		finish_run (task, result_list);
 		return;
-	}
-
-	/* freeze all apps */
-	for (guint i = 0; i < gs_app_list_length (self->app_list); i++) {
-		GsApp *app = gs_app_list_index (self->app_list, i);
-		g_object_freeze_notify (G_OBJECT (app));
 	}
 
 #ifdef HAVE_SYSPROF
@@ -803,12 +788,6 @@ run_cb (GObject      *source_object,
 				gs_app_remove_addon (app, addon);
 			}
 		}
-	}
-
-	/* now emit all the changed signals */
-	for (guint i = 0; i < gs_app_list_length (self->app_list); i++) {
-		GsApp *app = gs_app_list_index (self->app_list, i);
-		g_idle_add (app_thaw_notify_idle, g_object_ref (app));
 	}
 
 	/* Delayed error handling. */
