@@ -1275,6 +1275,8 @@ refine_icons (GsApp        *app,
 		if (g_strcmp0 (snapd_media_get_media_type (m), "icon") != 0)
 			continue;
 
+		/* Unfortunately the snapd client API doesn’t expose information
+		 * about icon scales, so leave that unset for now. */
 		icon = gs_remote_icon_new (snapd_media_get_url (m));
 		gs_icon_set_width (icon, snapd_media_get_width (m));
 		gs_icon_set_height (icon, snapd_media_get_height (m));

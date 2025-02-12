@@ -76,6 +76,7 @@ G_DEFINE_QUARK (gs-plugin-error-quark, gs_plugin_error)
 
 typedef enum {
 	PROP_FLAGS = 1,
+	PROP_SCALE,
 	PROP_SESSION_BUS_CONNECTION,
 	PROP_SYSTEM_BUS_CONNECTION,
 } GsPluginProperty;
@@ -435,7 +436,10 @@ void
 gs_plugin_set_scale (GsPlugin *plugin, guint scale)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	priv->scale = scale;
+	if (priv->scale != scale) {
+		priv->scale = scale;
+		g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_SCALE]);
+	}
 }
 
 /**
@@ -1718,6 +1722,9 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 		priv->flags = g_value_get_flags (value);
 		g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_FLAGS]);
 		break;
+	case PROP_SCALE:
+		gs_plugin_set_scale (plugin, g_value_get_uint (value));
+		break;
 	case PROP_SESSION_BUS_CONNECTION:
 		/* Construct only */
 		g_assert (priv->session_bus_connection == NULL);
@@ -1743,6 +1750,9 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 	switch ((GsPluginProperty) prop_id) {
 	case PROP_FLAGS:
 		g_value_set_flags (value, priv->flags);
+		break;
+	case PROP_SCALE:
+		g_value_set_uint (value, gs_plugin_get_scale (plugin));
 		break;
 	case PROP_SESSION_BUS_CONNECTION:
 		g_value_set_object (value, priv->session_bus_connection);
@@ -1778,6 +1788,20 @@ gs_plugin_class_init (GsPluginClass *klass)
 		g_param_spec_flags ("flags", NULL, NULL,
 				    GS_TYPE_PLUGIN_FLAGS, GS_PLUGIN_FLAGS_NONE,
 				    G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPlugin:scale:
+	 *
+	 * The window scale factor.
+	 *
+	 * These may change during the plugin’s lifetime.
+	 *
+	 * Since: 48
+	 */
+	obj_props[PROP_SCALE] =
+		g_param_spec_uint ("scale", NULL, NULL,
+				   1, G_MAXUINT, 1,
+				   G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPlugin:session-bus-connection: (not nullable)

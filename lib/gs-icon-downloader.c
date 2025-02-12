@@ -34,6 +34,7 @@ struct _GsIconDownloader
 {
 	GObject 	 parent_instance;
 
+	guint		 scale;
 	guint		 maximum_size_px;
 	SoupSession	*soup_session; /* (owned) */
 
@@ -45,6 +46,7 @@ G_DEFINE_FINAL_TYPE (GsIconDownloader, gs_icon_downloader, G_TYPE_OBJECT)
 
 typedef enum {
 	PROP_MAXIMUM_SIZE = 1,
+	PROP_SCALE,
 	PROP_SOUP_SESSION,
 } GsIconDownloaderProperty;
 
@@ -75,6 +77,9 @@ gs_icon_downloader_get_property (GObject    *object,
 	case PROP_MAXIMUM_SIZE:
 		g_value_set_uint (value, self->maximum_size_px);
 		break;
+	case PROP_SCALE:
+		g_value_set_uint (value, self->scale);
+		break;
 	case PROP_SOUP_SESSION:
 		g_value_set_object (value, self->soup_session);
 		break;
@@ -96,6 +101,9 @@ gs_icon_downloader_set_property (GObject      *object,
 		g_assert (self->maximum_size_px == 0);
 		self->maximum_size_px = g_value_get_uint (value);
 		g_assert (self->maximum_size_px != 0);
+		break;
+	case PROP_SCALE:
+		self->scale = g_value_get_uint (value);
 		break;
 	case PROP_SOUP_SESSION:
 		g_assert (self->soup_session == NULL);
@@ -140,12 +148,25 @@ gs_icon_downloader_class_init (GsIconDownloaderClass *klass)
 				     SOUP_TYPE_SESSION,
 				     G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * GsIconDownloader:scale:
+	 *
+	 * The window scale factor. It will be applied on the maximum-size.
+	 *
+	 * Since: 48
+	 */
+	properties[PROP_SCALE] =
+		g_param_spec_uint ("scale", NULL, NULL,
+				   1, G_MAXUINT, 1,
+				   G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (properties), properties);
 }
 
 static void
 gs_icon_downloader_init (GsIconDownloader *self)
 {
+	self->scale = 1;
 	self->worker = gs_worker_thread_new ("gs-icon-downloader");
 }
 
@@ -262,6 +283,7 @@ download_remote_icons_of_the_app_cb (GTask        *task,
 		gs_remote_icon_ensure_cached (GS_REMOTE_ICON (icon),
 					      self->soup_session,
 					      self->maximum_size_px,
+					      self->scale,
 					      cancellable,
 					      &local_error);
 

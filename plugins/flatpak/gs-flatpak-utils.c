@@ -249,6 +249,8 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	if (repo_icon != NULL &&
 	    (g_str_has_prefix (repo_icon, "http:") ||
 	     g_str_has_prefix (repo_icon, "https:"))) {
+		/* Unfortunately the .flatpakrepo file doesn’t specify the icon
+		 * size or scale out of band. */
 		g_autoptr(GIcon) icon = gs_remote_icon_new (repo_icon);
 		gs_app_add_icon (app, icon);
 	}

@@ -39,6 +39,7 @@
 #include <sys/stat.h>
 #include <libsoup/soup.h>
 
+#include "gs-icon.h"
 #include "gs-remote-icon.h"
 #include "gs-utils.h"
 
@@ -301,40 +302,45 @@ gs_icon_download (SoupSession   *session,
  * gs_remote_icon_ensure_cached:
  * @self: a #GsRemoteIcon
  * @soup_session: a #SoupSession to use to download the icon
- * @maximum_icon_size: maximum size (in device pixels) of the icon to save
+ * @maximum_icon_size: maximum size (in logical pixels) of the icon to save
+ * @scale: scale the icon will be used at
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: return location for a #GError, or %NULL
  *
  * Ensure the given icon is present in the local cache, potentially downloading
  * it from its remote server if needed. This will do network and disk I/O.
  *
- * @maximum_icon_size specifies the maximum size (in device pixels) of the icon
+ * @maximum_icon_size specifies the maximum size (in logical pixels) of the icon
  * which should be saved to the cache. This is the maximum size that the icon
  * can ever be used at, as icons can be downscaled but never upscaled. Typically
- * this will be 160px multiplied by the device scale
- * (`gtk_widget_get_scale_factor()`).
+ * this will be 160px. The device scale factor (`gtk_widget_get_scale_factor()`)
+ * is provided separately as @scale.
  *
  * This can be called from any thread, as #GsRemoteIcon is immutable and hence
  * thread-safe.
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 40
+ * Since: 48
  */
 gboolean
 gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
                               SoupSession   *soup_session,
                               guint          maximum_icon_size,
+                              guint          scale,
                               GCancellable  *cancellable,
                               GError       **error)
 {
 	const gchar *uri;
 	g_autofree gchar *cache_filename = NULL;
-	g_autoptr(GdkPixbuf) cached_pixbuf = NULL;
+	GIcon *icon = NULL;
 	GStatBuf stat_buf;
+	int pixbuf_width = 0, pixbuf_height = 0;
+	unsigned int icon_device_width, icon_device_height;
 
 	g_return_val_if_fail (GS_IS_REMOTE_ICON (self), FALSE);
 	g_return_val_if_fail (SOUP_IS_SESSION (soup_session), FALSE);
 	g_return_val_if_fail (maximum_icon_size > 0, FALSE);
+	g_return_val_if_fail (scale > 0, FALSE);
 	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), FALSE);
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
@@ -345,27 +351,51 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	if (cache_filename == NULL)
 		return FALSE;
 
+	icon = G_ICON (self);
+
 	/* Already in cache and not older than 30 days */
 	if (g_stat (cache_filename, &stat_buf) != -1 &&
 	    S_ISREG (stat_buf.st_mode) &&
 	    (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24 * 30)) {
-		gint width = 0, height = 0;
-		/* Ensure the downloaded image dimensions are stored on the icon */
-		if (!g_object_get_data (G_OBJECT (self), "width") &&
-		    gdk_pixbuf_get_file_info (cache_filename, &width, &height)) {
-			g_object_set_data (G_OBJECT (self), "width", GINT_TO_POINTER (width));
-			g_object_set_data (G_OBJECT (self), "height", GINT_TO_POINTER (height));
-		}
-		return TRUE;
+		/* Fallthrough and ensure the downloaded image dimensions are stored on the icon */
+		gdk_pixbuf_get_file_info (cache_filename, &pixbuf_width, &pixbuf_height);
+	} else {
+		g_autoptr(GdkPixbuf) cached_pixbuf = NULL;
+
+		cached_pixbuf = gs_icon_download (soup_session, uri, cache_filename, maximum_icon_size * gs_icon_get_scale (icon), cancellable, error);
+		if (cached_pixbuf == NULL)
+			return FALSE;
+
+		pixbuf_width = gdk_pixbuf_get_width (cached_pixbuf);
+		pixbuf_height = gdk_pixbuf_get_height (cached_pixbuf);
 	}
 
-	cached_pixbuf = gs_icon_download (soup_session, uri, cache_filename, maximum_icon_size, cancellable, error);
-	if (cached_pixbuf == NULL)
-		return FALSE;
+	/* Ensure the dimensions are set correctly on the icon. We know the
+	 * pixbuf’s (device) dimensions, so need to convert those to logical
+	 * dimensions using the icon’s scale. The caller will have set the scale
+	 * on the #GsIcon already, or it will default to 1. */
+	scale = gs_icon_get_scale (icon);
+	g_assert (scale > 0);
 
-	/* Ensure the dimensions are set correctly on the icon. */
-	g_object_set_data (G_OBJECT (self), "width", GUINT_TO_POINTER (gdk_pixbuf_get_width (cached_pixbuf)));
-	g_object_set_data (G_OBJECT (self), "height", GUINT_TO_POINTER (gdk_pixbuf_get_height (cached_pixbuf)));
+	icon_device_width = pixbuf_width / scale;
+	icon_device_height = pixbuf_height / scale;
+
+	if (gs_icon_get_width (icon) != 0 && gs_icon_get_height (icon) != 0 &&
+	    (gs_icon_get_width (icon) != icon_device_width ||
+	     gs_icon_get_height (icon) != icon_device_height)) {
+		g_warning ("Icon downloaded from ‘%s’ has dimensions %ux%u@%u, "
+		           "but was expected to have dimensions %ux%u@%u "
+		           "according to metadata. Overriding with downloaded "
+		           "dimensions.",
+		           uri, icon_device_width, icon_device_height, scale,
+		           gs_icon_get_width (icon), gs_icon_get_height (icon),
+		           gs_icon_get_scale (icon));
+		gs_icon_set_width (icon, icon_device_width);
+		gs_icon_set_height (icon, icon_device_height);
+	} else if (gs_icon_get_width (icon) == 0 || gs_icon_get_height (icon) == 0) {
+		gs_icon_set_width (icon, icon_device_width);
+		gs_icon_set_height (icon, icon_device_height);
+	}
 
 	return TRUE;
 }

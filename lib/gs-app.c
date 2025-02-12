@@ -6689,17 +6689,19 @@ gs_app_set_version_history (GsApp *app, GPtrArray *version_history)
  * gs_app_ensure_icons_downloaded:
  * @app: a #GsApp
  * @soup_session: a #SoupSession
- * @maximum_icon_size: maximum icon size
+ * @maximum_icon_size: maximum icon size (in logical pixels)
+ * @scale: icon scale factor
  * @cancellable: (nullable): optional #GCancellable object
  *
  * Ensure all remote icons in the @app's icons are locally cached.
  *
- * Since: 41
+ * Since: 48
  **/
 void
 gs_app_ensure_icons_downloaded (GsApp *app,
 				SoupSession *soup_session,
 				guint maximum_icon_size,
+				guint scale,
 				GCancellable *cancellable)
 {
 	GsAppPrivate *priv;
@@ -6726,6 +6728,7 @@ gs_app_ensure_icons_downloaded (GsApp *app,
 		if (!gs_remote_icon_ensure_cached (GS_REMOTE_ICON (icon),
 						   soup_session,
 						   maximum_icon_size,
+						   scale,
 						   cancellable,
 						   &error_local)) {
 			/* we failed, but keep going */

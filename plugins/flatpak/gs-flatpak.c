@@ -4237,6 +4237,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	if (ref_icon != NULL &&
 	    (g_str_has_prefix (ref_icon, "http:") ||
 	     g_str_has_prefix (ref_icon, "https:"))) {
+		/* Unfortunately the .flatpakref file doesn’t specify the icon
+		 * size or scale out of band. */
 		g_autoptr(GIcon) icon = gs_remote_icon_new (ref_icon);
 		gs_app_add_icon (app, icon);
 	}

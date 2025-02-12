@@ -66,8 +66,6 @@ gs_plugin_icons_setup_async (GsPlugin            *plugin,
 {
 	GsPluginIcons *self = GS_PLUGIN_ICONS (plugin);
 	g_autoptr(GTask) task = NULL;
-	guint maximum_icon_size_px;
-
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_icons_setup_async);
@@ -75,9 +73,12 @@ gs_plugin_icons_setup_async (GsPlugin            *plugin,
 	g_mutex_init (&self->mutex);
 	self->soup_session = gs_build_soup_session ();
 
-	/* Currently a 160px icon is needed for #GsFeatureTile, at most. */
-	maximum_icon_size_px = 160 * gs_plugin_get_scale (plugin);
-	self->icon_downloader = gs_icon_downloader_new (self->soup_session, maximum_icon_size_px);
+	/* Currently a 160px icon is needed for #GsFeatureTile, at most.
+	   Scaling is applied inside the downloader. */
+	self->icon_downloader = gs_icon_downloader_new (self->soup_session, 160);
+	g_object_bind_property (plugin, "scale",
+				self->icon_downloader, "scale",
+				G_BINDING_SYNC_CREATE);
 
 	g_task_return_boolean (task, TRUE);
 }

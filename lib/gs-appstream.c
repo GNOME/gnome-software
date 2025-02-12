@@ -324,6 +324,7 @@ gs_appstream_new_icon (XbNode *component, XbNode *n, AsIconKind icon_kind, guint
 {
 	AsIcon *icon = as_icon_new ();
 	g_autofree gchar *icon_path = NULL;
+	guint64 scale = 0;
 	as_icon_set_kind (icon, icon_kind);
 	switch (icon_kind) {
 	case AS_ICON_KIND_LOCAL:
@@ -345,6 +346,10 @@ gs_appstream_new_icon (XbNode *component, XbNode *n, AsIconKind icon_kind, guint
 		as_icon_set_width (icon, sz);
 		as_icon_set_height (icon, sz);
 	}
+
+	scale = xb_node_get_attr_as_uint (n, "scale");
+	if (scale > 0 && scale < G_MAXUINT)
+		as_icon_set_scale (icon, (guint) scale);
 
 	if (icon_kind != AS_ICON_KIND_LOCAL && icon_kind != AS_ICON_KIND_REMOTE) {
 		/* add partial filename for now, we will compose the full one later */
