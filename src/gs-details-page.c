@@ -1022,12 +1022,7 @@ gs_details_page_can_launch_app (GsDetailsPage *self)
 		return FALSE;
 
 	desktop_appinfo = gs_utils_get_desktop_app_info (desktop_id);
-	if (!desktop_appinfo)
-		return FALSE;
-
-	appinfo = G_APP_INFO (desktop_appinfo);
-
-	return g_app_info_should_show (appinfo);
+	return desktop_appinfo != NULL;
 }
 
 static void
