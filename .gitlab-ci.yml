@@ -70,6 +70,7 @@ fedora-x86_64:
     when: always
     paths:
       - "_build/config.h"
+      - "_build/help/"
       - "_build/meson-logs"
       - "_build/${CI_JOB_NAME}-report.xml"
 
@@ -159,8 +160,57 @@ pages:
     - fedora-x86_64
   interruptible: false
   script:
-    - mkdir ./public
-    - yelp-build html -i --output public/ help/C/*page
+    - |
+      # yelp-build requires absolute paths
+      builddir="$(realpath ./_build)"
+
+      echo "Generating help for C locale"
+      mkdir -p "./public/help/C/"
+      yelp-build html --output ./public/help/C/ ./help/C/*.page
+
+      grep -v '^#' ./help/LINGUAS | while read -r language; do
+        echo "Generating help for ${language} locale"
+        mkdir "./public/help/${language}"
+        yelp-build html --ignore --output ./public/help/"${language}/" --path help/C/ "${builddir}/help/${language}/"
+      done
+
+      # There’s a lot of nested divs here, but it means we can re-use the yelp CSS
+      echo "Generating index"
+      cat << EOF > ./public/index.html
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <title>Software</title>
+            <link rel="stylesheet" type="text/css" href="help/C/C.css">
+          </head>
+          <body>
+            <main>
+              <div class="page">
+                <article>
+                  <div class="hgroup pagewide">
+                    <h1 class="title"><span class="title"><span class="app">Software</span></span></h1>
+                  </div>
+                  <div class="region">
+                    <div class="contents pagewide">
+                      <div class="links topiclinks">
+                        <div class="inner">
+                          <div class="region">
+                            <div class="links-divs">
+                              <div class="linkdiv"><a class="linkdiv" href="help/C/index.html" title="Software help (English)"><span class="title">Software help (English)</span></a></div>
+                              $(grep -v '^#' ./help/LINGUAS | while read -r language; do echo "<div class=\"linkdiv\"><a class=\"linkdiv\" href=\"help/${language}/index.html\" title=\"Software help (${language})\"><span class=\"title\">Software help (${language})</span></a></div>"; done)
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </main>
+          </body>
+        </html>
+      EOF
   artifacts:
     paths:
     - "public"
