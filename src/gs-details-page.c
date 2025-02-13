@@ -2466,21 +2466,21 @@ gs_details_page_review_send_cb (GsReviewDialog *dialog,
 }
 
 static void
-review_dialog_destroy_cb (GsDetailsPage *self)
+review_dialog_closed_cb (GsDetailsPage *self,
+			 GtkWidget *review_dialog)
 {
-	self->review_dialog = NULL;
+	if (review_dialog == self->review_dialog)
+		self->review_dialog = NULL;
 }
 
 static void
 gs_details_page_write_review (GsDetailsPage *self)
 {
-	g_assert (self->review_dialog == NULL);
-
 	self->review_dialog = gs_review_dialog_new ();
 	g_signal_connect (self->review_dialog, "send",
 			  G_CALLBACK (gs_details_page_review_send_cb), self);
-	g_signal_connect_swapped (self->review_dialog, "destroy",
-				  G_CALLBACK (review_dialog_destroy_cb), self);
+	g_signal_connect_swapped (self->review_dialog, "closed",
+				  G_CALLBACK (review_dialog_closed_cb), self);
 
 	adw_dialog_present (ADW_DIALOG (self->review_dialog), GTK_WIDGET (self));
 }
