@@ -43,6 +43,10 @@ gs_fwupd_app_set_device_id (GsApp *app, const gchar *device_id)
 void
 gs_fwupd_app_set_update_uri (GsApp *app, const gchar *update_uri)
 {
+	/* cannot overwrite the value, thus remove it first; an overwrite
+	   can happen for example when a historical update was found and
+	   there is also a new update for the same device */
+	gs_app_set_metadata (app, "fwupd::UpdateID", NULL);
 	gs_app_set_metadata (app, "fwupd::UpdateID", update_uri);
 }
 
