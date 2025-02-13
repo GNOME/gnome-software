@@ -560,14 +560,26 @@ gs_utils_show_error_dialog (GtkWidget *parent,
 }
 
 #ifndef TESTDATADIR
+typedef struct {
+	AdwToastOverlay *toast_overlay;
+	GtkTextView *text_view;
+} ErrorDialogCopyData;
+
+static void
+error_dialog_copy_data_free (ErrorDialogCopyData *data)
+{
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (ErrorDialogCopyData, error_dialog_copy_data_free)
+
 static void
 copy_error_text_clicked_cb (GtkButton *button,
-			    GtkBuilder *builder)
+                            void      *user_data)
 {
-	AdwToastOverlay *toast_overlay = ADW_TOAST_OVERLAY (gtk_builder_get_object (builder, "toast_overlay"));
-	GtkTextView *text_view = GTK_TEXT_VIEW (gtk_builder_get_object (builder, "text_view"));
-	GdkClipboard *clipboard = gtk_widget_get_clipboard (GTK_WIDGET (text_view));
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer (text_view);
+	ErrorDialogCopyData *data = user_data;
+	GdkClipboard *clipboard = gtk_widget_get_clipboard (GTK_WIDGET (data->text_view));
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer (data->text_view);
 	GtkTextIter start, end;
 	g_autofree gchar *text = NULL;
 
@@ -575,7 +587,7 @@ copy_error_text_clicked_cb (GtkButton *button,
 	text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
 	gdk_clipboard_set_text (clipboard, text);
 
-  	adw_toast_overlay_add_toast (toast_overlay, adw_toast_new (_("Details copied to clipboard")));
+	adw_toast_overlay_add_toast (data->toast_overlay, adw_toast_new (_("Details copied to clipboard")));
 }
 #endif
 
@@ -601,6 +613,7 @@ gs_utils_show_error_dialog_simple (GtkWidget *parent,
 	GtkButton *button;
 	GtkLabel *label;
 	GtkTextView *text_view;
+	g_autoptr(ErrorDialogCopyData) data = NULL;
 
 	builder = gtk_builder_new_from_resource ("/org/gnome/Software/gs-utils-error-dialog-simple.ui");
 	dialog = ADW_DIALOG (gtk_builder_get_object (builder, "dialog"));
@@ -611,8 +624,13 @@ gs_utils_show_error_dialog_simple (GtkWidget *parent,
 	gtk_label_set_label (GTK_LABEL (label), title);
 	gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view)), text, -1);
 
-	g_signal_connect (button, "clicked",
-			  G_CALLBACK (copy_error_text_clicked_cb), builder);
+	data = g_new0 (ErrorDialogCopyData, 1);
+	data->toast_overlay = ADW_TOAST_OVERLAY (gtk_builder_get_object (builder, "toast_overlay"));
+	data->text_view = GTK_TEXT_VIEW (gtk_builder_get_object (builder, "text_view"));
+
+	g_signal_connect_data (button, "clicked",
+			       G_CALLBACK (copy_error_text_clicked_cb), g_steal_pointer (&data),
+			       (GClosureNotify) ((gpointer) error_dialog_copy_data_free), G_CONNECT_DEFAULT);
 
 	adw_dialog_present (dialog, parent);
 #endif /* TESTDATADIR */
