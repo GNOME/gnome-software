@@ -382,7 +382,9 @@ gs_plugin_fwupd_setup_finish (GsPlugin      *plugin,
 }
 
 static GsApp *
-gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
+gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin,
+				     FwupdDevice *dev,
+				     gboolean can_cached)
 {
 	FwupdRelease *rel = fwupd_device_get_release_default (dev);
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
@@ -400,10 +402,14 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 				       NULL, /* origin */
 				       fwupd_release_get_appstream_id (rel),
 				       NULL);
-	app = gs_plugin_cache_lookup (plugin, id);
-	if (app == NULL) {
+	if (can_cached) {
+		app = gs_plugin_cache_lookup (plugin, id);
+		if (app == NULL) {
+			app = gs_app_new (id);
+			gs_plugin_cache_add (plugin, id, app);
+		}
+	} else {
 		app = gs_app_new (id);
-		gs_plugin_cache_add (plugin, id, app);
 	}
 
 	/* default stuff */
@@ -492,7 +498,7 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 	g_autoptr(GsApp) app = NULL;
 
 	/* update unsupported */
-	app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
+	app = gs_plugin_fwupd_new_app_from_device (plugin, dev, TRUE);
 	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -686,8 +692,9 @@ gs_plugin_fwupd_list_historical_updates_got_dev_results_cb (GObject *source_obje
 		}
 		success = FALSE;
 	} else {
-		/* parse */
-		app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
+		/* do not reuse cached GsApp for historical updates,
+		   to not overwrite updateID of a newer version */
+		app = gs_plugin_fwupd_new_app_from_device (plugin, dev, FALSE);
 		if (app == NULL) {
 			g_debug ("updates historical: failed to build result for '%s' (%s)",
 				 fwupd_device_get_name (dev),
@@ -2086,7 +2093,7 @@ gs_plugin_fwupd_file_to_app_got_content_type_cb (GObject *source_object,
 		g_autoptr(GsApp) app = NULL;
 
 		/* create each app */
-		app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
+		app = gs_plugin_fwupd_new_app_from_device (plugin, dev, TRUE);
 
 		/* we *might* have no update view for local files */
 		gs_app_set_version (app, gs_app_get_update_version (app));
