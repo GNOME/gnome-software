@@ -76,6 +76,7 @@ RUN dnf -y install \
     wayland-protocols-devel \
     wget \
     xz \
+    yelp-tools \
     zlib-devel \
  && dnf clean all
 

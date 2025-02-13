@@ -8,6 +8,7 @@ include:
 
 stages:
   - build
+  - pages
   - deploy
 
 cache:
@@ -15,7 +16,7 @@ cache:
     - _ccache/
 
 variables:
-  FEDORA_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/fedora:v21"
+  FEDORA_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/fedora:v22"
   DEBIAN_IMAGE: "registry.gitlab.gnome.org/gnome/gnome-software/debian:v21"
   MESON_TEST_TIMEOUT_MULTIPLIER: 4
   G_MESSAGES_DEBUG: all
@@ -150,3 +151,20 @@ dist:
     paths:
       - "${CI_PROJECT_DIR}/_build/gnome-software-docs-${CI_COMMIT_TAG}.tar.xz"
       - "${CI_PROJECT_DIR}/_build/meson-dist/gnome-software-*.tar.xz"
+
+pages:
+  image: "${FEDORA_IMAGE}"
+  stage: pages
+  dependencies:
+    - fedora-x86_64
+  interruptible: false
+  script:
+    - mkdir ./public
+    - yelp-build html -i --output public/ help/C/*page
+  artifacts:
+    paths:
+    - "public"
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      changes:
+        - "help/**/*"
