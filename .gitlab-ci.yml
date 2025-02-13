@@ -174,43 +174,8 @@ pages:
         yelp-build html --ignore --output ./public/help/"${language}/" --path help/C/ "${builddir}/help/${language}/"
       done
 
-      # There’s a lot of nested divs here, but it means we can re-use the yelp CSS
       echo "Generating index"
-      cat << EOF > ./public/index.html
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-            <title>Software</title>
-            <link rel="stylesheet" type="text/css" href="help/C/C.css">
-          </head>
-          <body>
-            <main>
-              <div class="page">
-                <article>
-                  <div class="hgroup pagewide">
-                    <h1 class="title"><span class="title"><span class="app">Software</span></span></h1>
-                  </div>
-                  <div class="region">
-                    <div class="contents pagewide">
-                      <div class="links topiclinks">
-                        <div class="inner">
-                          <div class="region">
-                            <div class="links-divs">
-                              <div class="linkdiv"><a class="linkdiv" href="help/C/index.html" title="Software help (English)"><span class="title">Software help (English)</span></a></div>
-                              $(grep -v '^#' ./help/LINGUAS | while read -r language; do echo "<div class=\"linkdiv\"><a class=\"linkdiv\" href=\"help/${language}/index.html\" title=\"Software help (${language})\"><span class=\"title\">Software help (${language})</span></a></div>"; done)
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </div>
-            </main>
-          </body>
-        </html>
-      EOF
+      ./.gitlab-ci/generate-help-index.py ./public/index.html ./help/
   artifacts:
     paths:
     - "public"
@@ -218,3 +183,4 @@ pages:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       changes:
         - "help/**/*"
+        - ".gitlab-ci/generate-help-index.py"
