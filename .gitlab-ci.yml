@@ -70,6 +70,7 @@ fedora-x86_64:
     when: always
     paths:
       - "_build/config.h"
+      - "_build/help/"
       - "_build/meson-logs"
       - "_build/${CI_JOB_NAME}-report.xml"
 
@@ -159,8 +160,22 @@ pages:
     - fedora-x86_64
   interruptible: false
   script:
-    - mkdir ./public
-    - yelp-build html -i --output public/ help/C/*page
+    - |
+      # yelp-build requires absolute paths
+      builddir="$(realpath ./_build)"
+
+      echo "Generating help for C locale"
+      mkdir -p "./public/help/C/"
+      yelp-build html --output ./public/help/C/ ./help/C/*.page
+
+      grep -v '^#' ./help/LINGUAS | while read -r language; do
+        echo "Generating help for ${language} locale"
+        mkdir "./public/help/${language}"
+        yelp-build html --ignore --output ./public/help/"${language}/" --path help/C/ "${builddir}/help/${language}/"
+      done
+
+      echo "Generating index"
+      ./.gitlab-ci/generate-help-index.py ./public/index.html ./help/
   artifacts:
     paths:
     - "public"
@@ -168,3 +183,4 @@ pages:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       changes:
         - "help/**/*"
+        - ".gitlab-ci/generate-help-index.py"
