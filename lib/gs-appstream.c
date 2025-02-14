@@ -409,10 +409,22 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) addons = NULL;
 	g_autoptr(GsAppList) addons_list = NULL;
+	AsProvided *provided;
 
 	/* get all components */
 	xpath = g_strdup_printf ("components/component/extends[text()='%s']/..",
 				 gs_app_get_id (app));
+	provided = gs_app_get_provided_for_kind (app, AS_PROVIDED_KIND_ID);
+	if (provided != NULL) {
+		GString *extended_xpath = g_string_new (xpath);
+		GPtrArray *items = as_provided_get_items (provided);
+		for (guint i = 0; i < items->len; i++) {
+			const gchar *id = g_ptr_array_index (items, i);
+			g_string_append_printf (extended_xpath, "|components/component/extends[text()='%s']", id);
+		}
+		g_free (xpath);
+		xpath = g_string_free (extended_xpath, FALSE);
+	}
 	addons = xb_silo_query (silo, xpath, 0, &error_local);
 	if (addons == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
