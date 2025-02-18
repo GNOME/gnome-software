@@ -2066,8 +2066,23 @@ gs_app_add_icon (GsApp *app, GIcon *icon)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	if (priv->icons == NULL)
+	if (priv->icons == NULL) {
 		priv->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	} else {
+		gboolean icon_is_remote = GS_IS_REMOTE_ICON (icon);
+		const gchar *icon_remote_uri = icon_is_remote ? gs_remote_icon_get_uri (GS_REMOTE_ICON (icon)) : NULL;
+
+		/* ignore duplicate icons (with a special treatment of the GsRemoteIcon hack) */
+		for (guint i = 0; i < priv->icons->len; i++) {
+			GIcon *existing = g_ptr_array_index (priv->icons, i);
+			if (g_icon_equal (existing, icon)) {
+				if (GS_IS_REMOTE_ICON (existing) && icon_is_remote &&
+				    g_strcmp0 (gs_remote_icon_get_uri (GS_REMOTE_ICON (existing)), icon_remote_uri) == 0) {
+					return;
+				}
+			}
+		}
+	}
 
 	g_ptr_array_add (priv->icons, g_object_ref (icon));
 
