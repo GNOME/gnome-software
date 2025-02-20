@@ -3056,7 +3056,8 @@ gs_appstream_apply_merges_cb (XbBuilderFixup *self,
 			      GError **error)
 {
 	MergeData *md = user_data;
-	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0 &&
+	if (!xb_builder_node_has_flag (bn, XB_BUILDER_NODE_FLAG_IGNORE) &&
+	    g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0 &&
 	    !gs_appstream_is_merge_node (bn)) {
 		if (md->appstream_index != NULL) {
 			g_autoptr(XbBuilderNode) id_node = xb_builder_node_get_child (bn, "id", NULL);
