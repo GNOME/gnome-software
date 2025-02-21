@@ -3603,6 +3603,14 @@ gs_app_add_provided_item (GsApp *app, AsProvidedKind kind, const gchar *item)
 		prov = as_provided_new ();
 		as_provided_set_kind (prov, kind);
 		g_ptr_array_add (priv->provided, prov);
+	} else {
+		/* avoid duplicity */
+		GPtrArray *items = as_provided_get_items (prov);
+		for (guint i = 0; i < items->len; i++) {
+			const gchar *value = g_ptr_array_index (items, i);
+			if (g_strcmp0 (value, item) == 0)
+				return;
+		}
 	}
 	as_provided_add_item (prov, item);
 }
