@@ -51,7 +51,7 @@ The context tiles which are shown on an application’s details page in GNOME
 Software are derived from the application’s metainfo.
 
 There’s more detailed information about them, and the information they are built
-from, [on the GNOME Software wiki](https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/Software-metadata).
+from, [in the GNOME Software help](https://gnome.pages.gitlab.gnome.org/gnome-software/help/C/software-metadata.html).
 
 Previewing the details page for an application
 ----------------------------------------------
