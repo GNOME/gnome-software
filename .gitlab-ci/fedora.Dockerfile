@@ -19,6 +19,8 @@ RUN dnf -y install \
     gi-docgen \
     git \
     glib2-devel \
+    glibc-locale-source \
+    gnome-desktop4 \
     gobject-introspection \
     gobject-introspection-devel \
     gperf \
@@ -63,6 +65,7 @@ RUN dnf -y install \
     pcre-devel \
     polkit-devel \
     python3 \
+    python3-gobject \
     python3-pip \
     python3-wheel \
     rpm-devel \
@@ -76,6 +79,7 @@ RUN dnf -y install \
     wayland-protocols-devel \
     wget \
     xz \
+    yelp-tools \
     zlib-devel \
  && dnf clean all
 
