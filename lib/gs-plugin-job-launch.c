@@ -296,5 +296,6 @@ gs_plugin_job_launch_new (GsApp *app,
 	return g_object_new (GS_TYPE_PLUGIN_JOB_LAUNCH,
 			     "app", app,
 			     "flags", flags,
+			     "interactive", (flags & GS_PLUGIN_LAUNCH_FLAGS_INTERACTIVE) != 0,
 			     NULL);
 }

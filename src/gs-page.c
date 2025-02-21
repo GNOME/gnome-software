@@ -678,9 +678,10 @@ gs_page_app_launched_cb (GObject *source,
 			 gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	g_autoptr(GsPluginJob) plugin_job = user_data;
 	g_autoptr(GError) error = NULL;
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to launch GsApp: %s", error->message);
+		gs_plugin_loader_claim_job_error (plugin_loader, NULL, plugin_job, error);
 		return;
 	}
 }
@@ -694,7 +695,7 @@ gs_page_launch_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    cancellable,
 					    gs_page_app_launched_cb,
-					    NULL);
+					    g_object_ref (plugin_job));
 }
 
 gboolean
