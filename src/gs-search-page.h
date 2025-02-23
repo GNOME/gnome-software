@@ -23,5 +23,6 @@ void		 gs_search_page_set_appid_to_show	(GsSearchPage		*self,
 const gchar	*gs_search_page_get_text		(GsSearchPage		*self);
 void		 gs_search_page_set_text		(GsSearchPage		*self,
 							 const gchar		*value);
+void		 gs_search_page_clear			(GsSearchPage		*self);
 
 G_END_DECLS

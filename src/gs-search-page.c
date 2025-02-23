@@ -388,6 +388,30 @@ gs_search_page_set_text (GsSearchPage *self, const gchar *value)
 		self->changed = TRUE;
 }
 
+/**
+ * gs_search_page_clear:
+ * @self: a #GsSearchPage
+ *
+ * Clear the search page.
+ *
+ * This changes the view back to the initial one, clearing any existing search
+ * results. It cancels any ongoing searches.
+ *
+ * Since: 48
+ */
+void
+gs_search_page_clear (GsSearchPage *self)
+{
+	g_return_if_fail (GS_IS_SEARCH_PAGE (self));
+
+	g_cancellable_cancel (self->search_cancellable);
+	g_clear_object (&self->search_cancellable);
+
+	/* Reset the UI so we don’t show a glimpse of old search results when
+	 * next switching to the search page. */
+	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-search");
+}
+
 static void
 gs_search_page_switch_to (GsPage *page)
 {
