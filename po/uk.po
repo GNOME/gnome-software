@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Daniel Korostil <ted.korostiled@gmail.com>, 2013, 2014, 2015, 2016, 2017.
-# Yuri Chornoivan <yurchor@ukr.net>, 2020, 2021, 2022, 2023, 2024.
+# Yuri Chornoivan <yurchor@ukr.net>, 2020, 2021, 2022, 2023, 2024, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-11-14 15:47+0000\n"
-"PO-Revision-Date: 2024-11-16 16:36+0200\n"
+"POT-Creation-Date: 2025-02-21 13:46+0000\n"
+"PO-Revision-Date: 2025-02-23 22:39+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -71,7 +71,7 @@ msgid "The update details"
 msgstr "Подробиці оновлення"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2625
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2703
 #: src/gs-application.c:263
 msgid "The GNOME Project"
 msgstr "Проєкт GNOME"
@@ -846,11 +846,11 @@ msgstr "Віковий рейтинг"
 
 #: src/gs-age-rating-context-dialog.ui:61
 #: src/gs-hardware-support-context-dialog.ui:63
-#: src/gs-safety-context-dialog.ui:126
+#: src/gs-safety-context-dialog.ui:130
 msgid "_How to contribute missing information"
 msgstr "_Як надати відомості, яких не вистачає"
 
-#: lib/gs-app.c:6365
+#: lib/gs-app.c:6390
 msgid "Local file"
 msgstr "Локальний файл"
 
@@ -859,42 +859,42 @@ msgstr "Локальний файл"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6384 src/gs-safety-context-dialog.c:536
+#: lib/gs-app.c:6409 src/gs-safety-context-dialog.c:536
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6461 src/gs-safety-context-dialog.c:773
-#: src/gs-safety-context-dialog.ui:90
+#: lib/gs-app.c:6486 src/gs-safety-context-dialog.c:773
+#: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "Пакунок"
 
-#: src/gs-app-addon-row.c:95 src/gs-app-row.c:528
+#: src/gs-app-addon-row.c:93 src/gs-app-row.c:528
 msgid "Pending"
 msgstr "У черзі"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:532 src/gs-details-page.c:394
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:532 src/gs-details-page.c:394
 msgid "Pending install"
 msgstr "Очікуємо на встановлення"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:536 src/gs-details-page.c:401
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:536 src/gs-details-page.c:401
 msgid "Pending remove"
 msgstr "Очікуємо на вилучення"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:215 src/gs-details-page.c:382
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:215 src/gs-details-page.c:382
 msgid "Installing"
 msgstr "Встановлення"
 
-#: src/gs-app-addon-row.c:111
+#: src/gs-app-addon-row.c:109
 msgid "Removing"
 msgstr "Вилучення"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being downloaded
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:229 src/gs-details-page.c:387
+#: src/gs-app-addon-row.c:113 src/gs-app-row.c:229 src/gs-details-page.c:387
 #: src/gs-details-page.ui:316
 msgid "Downloading"
 msgstr "Отримання"
@@ -905,13 +905,13 @@ msgstr "Отримання"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:305 src/gs-details-page.c:1047
-#: src/gs-details-page.c:1082 src/gs-details-page.ui:203 src/gs-page.c:425
+#: src/gs-app-addon-row.ui:21 src/gs-common.c:279 src/gs-details-page.c:1056
+#: src/gs-details-page.c:1091 src/gs-details-page.ui:203 src/gs-page.c:425
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Встановити"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1167
+#: src/gs-app-addon-row.ui:29 src/gs-details-page.c:1176
 msgid "_Uninstall…"
 msgstr "В_илучити…"
 
@@ -955,11 +955,12 @@ msgstr "Може отримувати доступ до довільних пр�
 msgid "Can access input devices"
 msgstr "Може отримувати доступ до пристроїв введення"
 
-#. Translators: This indicates an app can access input devices.
+#. Translators: This indicates an app can access audio devices.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:346
-msgid "Can access microphones"
-msgstr "Може отримувати доступ до мікрофонів"
+#| msgid "Can access microphones"
+msgid "Can access microphones and play audio"
+msgstr "Може отримувати доступ до мікрофонів і відтворювати звукові дані"
 
 #: src/gs-app-details-page.c:66
 msgid "Can access system device files"
@@ -980,12 +981,12 @@ msgid "Home folder"
 msgstr "Домашня тека"
 
 #: src/gs-app-details-page.c:68 src/gs-app-details-page.c:70
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:146
+#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:144
 msgid "Can view, edit and create files"
 msgstr "Може переглядати, редагувати та створювати файли"
 
 #: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:141
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:139
 msgid "Can view files"
 msgstr "Може переглядати файли"
 
@@ -1024,13 +1025,13 @@ msgstr "Може подолати обмеження «пісочниці» і �
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:214
+#: src/gs-app-details-page.c:210
 msgid "No update description available."
 msgstr "Немає доступного опису оновлення."
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:237
+#: src/gs-app-details-page.c:234
 msgid "Update Details"
 msgstr "Подробиці оновлення"
 
@@ -1038,16 +1039,24 @@ msgstr "Подробиці оновлення"
 msgid "Requires additional permissions"
 msgstr "Потребує додаткових прав доступу"
 
+#: src/gs-app-reviews-dialog.c:129
+msgid "Invalid ratings data received from server"
+msgstr "З сервера отримано некоректні дані щодо оцінок"
+
+#: src/gs-app-reviews-dialog.c:132 src/gs-details-page.c:2414
+msgid "Could not communicate with ratings server"
+msgstr "Не вдалося обмінятися даними із сервером оцінок"
+
 #. Translators: Header of the section with other users' opinions about the app.
 #: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1045
 msgid "Reviews"
 msgstr "Огляди"
 
-#: src/gs-app-reviews-dialog.ui:21
+#: src/gs-app-reviews-dialog.ui:23
 msgid "No reviews were found for this app."
 msgstr "Для цієї програми не знайдено оглядів."
 
-#: src/gs-app-reviews-dialog.ui:23
+#: src/gs-app-reviews-dialog.ui:25
 msgid "No Reviews"
 msgstr "Немає оглядів"
 
@@ -1071,7 +1080,7 @@ msgstr "Немає подробиць щодо цього випуску"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:66
+#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -1554,8 +1563,7 @@ msgstr "Вилучити…"
 msgid "Uninstalling"
 msgstr "Вилучення"
 
-#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:153
-#: src/gs-os-update-page.c:156 src/gs-os-update-page.c:183
+#: src/gs-app-row.c:323 src/gs-app-row.ui:60
 msgid "Critical update"
 msgstr "Критичне оновлення"
 
@@ -1582,7 +1590,7 @@ msgstr "Перейменовано з %s"
 msgid "Stopped Receiving Updates"
 msgstr "Отримання оновлень припинено"
 
-#: src/gs-app-row.ui:58
+#: src/gs-app-row.ui:58 src/gs-os-update-page.c:142
 msgid "Critical Update"
 msgstr "Критичне оновлення"
 
@@ -1632,12 +1640,12 @@ msgid "Login Required"
 msgstr "Потрібна реєстрація"
 
 #. TRANSLATORS: button text
-#: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:298 src/gs-common.c:677
+#: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:272 src/gs-common.c:678
 #: src/gs-details-page.ui:291 src/gs-dkms-dialog.ui:28
 #: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-removal-dialog.ui:24
 #: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:174
-#: src/gs-repos-dialog.c:250 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
-#: src/gs-review-row.c:263 src/gs-updates-page.c:844
+#: src/gs-repos-dialog.c:250 src/gs-review-dialog.ui:24 src/gs-review-row.c:235
+#: src/gs-review-row.c:259 src/gs-updates-page.c:852
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
 msgstr "_Скасувати"
@@ -1730,7 +1738,7 @@ msgid "Recently installed updates are available to review"
 msgstr "Свіже оновлення встановлене і готове до використання"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:103 src/gs-common.c:840
+#: src/gs-common.c:103 src/gs-common.c:846
 msgid "Restart"
 msgstr "Перезапустити"
 
@@ -1739,17 +1747,17 @@ msgid "Launch"
 msgstr "Запустити"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:234
+#: src/gs-common.c:208
 msgid "Install Software?"
 msgstr "Встановити програмне забезпечення?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:236
+#: src/gs-common.c:210
 msgid "Install Third-Party Software?"
 msgstr "Встановити програму третьої сторони?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:240
+#: src/gs-common.c:214
 msgid "Enable Software Repository?"
 msgstr "Увімкнути сховище програмного забезпечення?"
 
@@ -1757,7 +1765,7 @@ msgstr "Увімкнути сховище програмного забезпе�
 #. ask for confirmation
 #. TRANSLATORS: "Enable Third-Party Software Repository?" is
 #. * the confirmation dialog title
-#: src/gs-common.c:242 src/gs-repos-dialog.c:171
+#: src/gs-common.c:216 src/gs-repos-dialog.c:171
 msgid "Enable Third-Party Software Repository?"
 msgstr "Увімкнути сторонні сховища програмного забезпечення?"
 
@@ -1765,7 +1773,7 @@ msgstr "Увімкнути сторонні сховища програмног�
 #. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:254
+#: src/gs-common.c:228
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1778,69 +1786,69 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:264
+#: src/gs-common.c:238
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s постачається через «%s»."
 
-#: src/gs-common.c:273
+#: src/gs-common.c:247
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Для продовження встановлення слід увімкнути це сховище програмного "
 "забезпечення."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:283
+#: src/gs-common.c:257
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
 "В деяких країнах встановлення або використання %s може бути незаконне."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:289
+#: src/gs-common.c:263
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "В деяких країнах встановлення або використання цього кодеку може бути "
 "незаконне."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:301
+#: src/gs-common.c:275
 msgid "Don’t _Warn Again"
 msgstr "Більше _не попереджати"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:310
+#: src/gs-common.c:284
 msgid "Enable and _Install"
 msgstr "Увімкнути та _встановити"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:514
+#: src/gs-common.c:495
 msgid "Detailed errors from the package manager follow:"
 msgstr "Докладні помилки з керування пакунками:"
 
-#: src/gs-common.c:519 src/gs-safety-context-dialog.ui:67
+#: src/gs-common.c:500 src/gs-safety-context-dialog.ui:67
 #: src/gs-updates-paused-banner.c:77 src/gs-utils-error-dialog-simple.ui:31
 msgid "Details"
 msgstr "Подробиці"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:577 src/gs-updates-paused-banner.c:64
+#: src/gs-common.c:558 src/gs-updates-paused-banner.c:64
 msgid "_Close"
 msgstr "З_акрити"
 
-#: src/gs-common.c:597
+#: src/gs-common.c:590
 msgid "Details copied to clipboard"
 msgstr "Подробиці скопійовано до буфера"
 
 #. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:669
+#: src/gs-common.c:670
 msgid "_Accept"
 msgstr "При_йняти"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:815
+#: src/gs-common.c:821
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Було встановлено оновлення"
@@ -1849,7 +1857,7 @@ msgstr[2] "Було встановлено оновлення"
 msgstr[3] "Було встановлено оновлення"
 
 #. TRANSLATORS: we've just uninstalled some apps
-#: src/gs-common.c:825
+#: src/gs-common.c:831
 msgid "An app has been uninstalled"
 msgid_plural "Apps have been uninstalled"
 msgstr[0] "Програми було вилучено"
@@ -1858,7 +1866,7 @@ msgstr[2] "Програми було вилучено"
 msgstr[3] "Програму було вилучено"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:831
+#: src/gs-common.c:837
 msgid "A restart is required for it to take effect"
 msgid_plural "A restart is required for them to take effect"
 msgstr[0] "Для набуття ними чинності слід перезавантажити систему"
@@ -1867,21 +1875,21 @@ msgstr[2] "Для набуття ними чинності слід переза
 msgstr[3] "Для набуття ним чинності слід перезавантажити систему"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:838
+#: src/gs-common.c:844
 msgid "Not Now"
 msgstr "Не зараз"
 
 #. TRANSLATORS: something happened less than a day ago
-#: src/gs-common.c:933
+#: src/gs-common.c:939
 msgid "Today"
 msgstr "Сьогодні"
 
 #. TRANSLATORS: something happened more than a day ago but less than 2 days ago
-#: src/gs-common.c:936
+#: src/gs-common.c:942
 msgid "Yesterday"
 msgstr "Вчора"
 
-#: src/gs-common.c:938
+#: src/gs-common.c:944
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
@@ -1890,7 +1898,7 @@ msgstr[1] "%d дні тому"
 msgstr[2] "%d днів тому"
 msgstr[3] "%d день тому"
 
-#: src/gs-common.c:942
+#: src/gs-common.c:948
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
@@ -1899,7 +1907,7 @@ msgstr[1] "%d тижні тому"
 msgstr[2] "%d тижнів тому"
 msgstr[3] "%d тиждень тому"
 
-#: src/gs-common.c:946
+#: src/gs-common.c:952
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
@@ -1908,7 +1916,7 @@ msgstr[1] "%d місяці тому"
 msgstr[2] "%d місяців тому"
 msgstr[3] "%d місяць тому"
 
-#: src/gs-common.c:950
+#: src/gs-common.c:956
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1918,11 +1926,11 @@ msgstr[2] "%d років тому"
 msgstr[3] "%d рік тому"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:1007
+#: src/gs-common.c:1013
 msgid "Just now"
 msgstr "Просто зараз"
 
-#: src/gs-common.c:1009
+#: src/gs-common.c:1015
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
@@ -1931,11 +1939,20 @@ msgstr[1] "%d хвилини тому"
 msgstr[2] "%d хвилин тому"
 msgstr[3] "%d хвилину тому"
 
+#: src/gs-common.c:1017
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d годину тому"
+msgstr[1] "%d години тому"
+msgstr[2] "%d годин тому"
+msgstr[3] "%d годину тому"
+
 #. Translators: This is to construct a disk size string consisting of the value and its unit, while
 #. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1374
+#: src/gs-common.c:1380
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
@@ -2376,7 +2393,7 @@ msgstr "Потрібно додаткові пакунки"
 msgid "Find in Software"
 msgstr "Знайти серед програм"
 
-#: src/gs-description-box.c:93 src/gs-description-box.c:342
+#: src/gs-description-box.c:93 src/gs-description-box.c:348
 msgid "_Show More"
 msgstr "_Показати більше"
 
@@ -2429,11 +2446,11 @@ msgstr "Вилучаємо…"
 msgid "%s is not installed, but it still has data present."
 msgstr "%s не встановлено, але у системі все ще лишаються її дані."
 
-#: src/gs-details-page.c:1064 src/gs-toast.c:65
+#: src/gs-details-page.c:1073 src/gs-toast.c:65
 msgid "_Restart"
 msgstr "_Перезапустити"
 
-#: src/gs-details-page.c:1070
+#: src/gs-details-page.c:1079
 msgid "_Enable…"
 msgstr "_Увімкнути…"
 
@@ -2441,62 +2458,62 @@ msgstr "_Увімкнути…"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1096
+#: src/gs-details-page.c:1105
 msgid "_Install…"
 msgstr "_Встановити…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1312
+#: src/gs-details-page.c:1315
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s буде показано американською англійською"
 
-#: src/gs-details-page.c:1320
+#: src/gs-details-page.c:1323
 msgid "This app will appear in US English"
 msgstr "Інтерфейс цієї програми буде показано американською англійською"
 
-#: src/gs-details-page.c:1322
+#: src/gs-details-page.c:1325
 msgid "This software will appear in US English"
 msgstr "Інтерфейс цієї програми буде показано американською англійською"
 
-#: src/gs-details-page.c:1357 src/gs-details-page.ui:36
+#: src/gs-details-page.c:1360 src/gs-details-page.ui:36
 msgid "Help _Translate"
 msgstr "Допомогти у п_ерекладі"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1422
+#: src/gs-details-page.c:1425
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Інші програми %s"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1458
+#: src/gs-details-page.c:1461
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "Розробником %s підтверджено належність %s"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1461
+#: src/gs-details-page.c:1464
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "Розробником підтверджено належність %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1824
+#: src/gs-details-page.c:1827
 msgid "You need internet access to write a review"
 msgstr "Щоб написати відгук, потрібен інтернет"
 
-#: src/gs-details-page.c:1925
+#: src/gs-details-page.c:1930
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr "Ця програма більше не підлягає оновленню, зокрема виправленню захисту"
 
-#: src/gs-details-page.c:1926
+#: src/gs-details-page.c:1931
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "Цю програму вже забезпечено вашим дистрибутивом і її не варто заміняти."
 
-#: src/gs-details-page.c:1927
+#: src/gs-details-page.c:1932
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2504,20 +2521,20 @@ msgstr ""
 "Авторами цієї програми не надано жодних посилань на сайти, сховища коду або "
 "сторінку системи стеження за вадами."
 
-#: src/gs-details-page.c:1929
+#: src/gs-details-page.c:1934
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "Це програмне забезпечення більше не підлягає оновленню, зокрема виправленню "
 "захисту"
 
-#: src/gs-details-page.c:1930
+#: src/gs-details-page.c:1935
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr ""
 "Цю програму вже забезпечено вашим дистрибутивом і її не варто заміняти."
 
-#: src/gs-details-page.c:1931
+#: src/gs-details-page.c:1936
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2525,7 +2542,7 @@ msgstr ""
 "Авторами цієї програми не надано жодних посилань на сайти, сховища коду або "
 "сторінку системи стеження за вадами."
 
-#: src/gs-details-page.c:2021 src/gs-details-page.c:2038
+#: src/gs-details-page.c:2026 src/gs-details-page.c:2043
 #, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
@@ -2534,7 +2551,11 @@ msgstr ""
 "«Програмам» не вдалося отримати дані щодо «%s» — програма не може показати "
 "подробиці щодо цієї програми."
 
-#: src/gs-details-page.c:2393
+#: src/gs-details-page.c:2411
+msgid "Invalid review response received from server"
+msgstr "Від сервера отримано некоректну відповідь щодо рецензування"
+
+#: src/gs-details-page.c:2421
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Не вдалося надіслати відгук щодо «%s»: %s"
@@ -2759,7 +2780,7 @@ msgstr ""
 "en-US/quick-docs/mok-enrollment/\">сторінці документації</a>."
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:272
+#: lib/gs-external-appstream-utils.c:293
 msgid "Downloading extra metadata files…"
 msgstr "Отримання додаткових файлів метаданих…"
 
@@ -3523,40 +3544,40 @@ msgstr "Користувач"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:284
+#: src/gs-os-update-page.c:237
 msgid "Additions"
 msgstr "Додавання"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:288
+#: src/gs-os-update-page.c:241
 msgid "Removals"
 msgstr "Вилучення"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:292
+#: src/gs-os-update-page.c:245
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Оновлення"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:296
+#: src/gs-os-update-page.c:249
 msgid "Downgrades"
 msgstr "Зниження версій"
 
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:733
+#: src/gs-overview-page.c:735
 msgid "selected external sources"
 msgstr "вибраних зовнішніх джерел"
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:737
+#: src/gs-overview-page.c:739
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3571,34 +3592,34 @@ msgstr ""
 "забезпечення."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:741
+#: src/gs-overview-page.c:743
 msgid "Enable Third Party Software Repositories?"
 msgstr "Увімкнути сторонні сховища програмного забезпечення?"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:746
+#: src/gs-overview-page.c:748
 msgid "_Ignore"
 msgstr "_Ігнорувати"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:748 src/gs-repos-dialog.c:176
+#: src/gs-overview-page.c:750 src/gs-repos-dialog.c:176
 msgid "_Enable"
 msgstr "_Увімкнути"
 
-#: src/gs-overview-page.c:951
+#: src/gs-overview-page.c:953
 msgid "Available for your operating system"
 msgstr "Доступні для вашої операційної системи"
 
 #. Translators: the '%s' is replaced with the distribution name, constructing
 #. for example: "Available for Fedora Linux"
-#: src/gs-overview-page.c:955
+#: src/gs-overview-page.c:957
 #, c-format
 msgid "Available for %s"
 msgstr "Доступні для %s"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:1252
+#: src/gs-overview-page.c:1256
 msgid "Explore"
 msgstr "Ознайомлення"
 
@@ -3743,7 +3764,7 @@ msgstr "Налаштування"
 msgid "Software Updates"
 msgstr "Оновлення програм"
 
-#: src/gs-prefs-dialog.ui:15 src/gs-safety-context-dialog.ui:104
+#: src/gs-prefs-dialog.ui:15 src/gs-safety-context-dialog.ui:108
 msgid "More Information"
 msgstr "Докладніше"
 
@@ -3827,7 +3848,6 @@ msgid "_Uninstall"
 msgstr "В_илучити"
 
 #: src/gs-remove-app-dialog.ui:19
-#| msgid "App Settings & Data"
 msgid "App Settings &amp; Data"
 msgstr "Параметри і дані програми"
 
@@ -3875,45 +3895,45 @@ msgstr "Ви_мкнути"
 #. TRANSLATORS: this is button text to remove a repo
 #. TRANSLATORS: button text when
 #. * removing a review
-#: src/gs-repos-dialog.c:258 src/gs-review-row.c:266
+#: src/gs-repos-dialog.c:258 src/gs-review-row.c:262
 msgid "_Remove"
 msgstr "В_илучити"
 
-#: src/gs-repos-dialog.c:607
+#: src/gs-repos-dialog.c:605
 msgid "Enable New Repositories"
 msgstr "Увімкнути нові сховища"
 
-#: src/gs-repos-dialog.c:608
+#: src/gs-repos-dialog.c:606
 msgid "Turn on new repositories when they are added"
 msgstr "Увімкнути нові сховища після додавання"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:615
+#: src/gs-repos-dialog.c:613
 msgid "more information"
 msgstr "докладніше"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:620
+#: src/gs-repos-dialog.c:618
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Додаткові сховища з вибраних сторонніх — %s."
 
-#: src/gs-repos-dialog.c:625
+#: src/gs-repos-dialog.c:623
 msgid "Fedora Third Party Repositories"
 msgstr "Сторонні сховища Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:779
+#: src/gs-repos-dialog.c:777
 msgid "the operating system"
 msgstr "операційна система"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:835
+#: src/gs-repos-dialog.c:833
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -4021,67 +4041,67 @@ msgstr "Вилучити"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad app
-#: src/gs-review-dialog.c:88
+#: src/gs-review-dialog.c:92
 msgid "Hate it"
 msgstr "Ненавиджу"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great app
-#: src/gs-review-dialog.c:92
+#: src/gs-review-dialog.c:96
 msgid "Don’t like it"
 msgstr "Не подобається"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good app
-#: src/gs-review-dialog.c:96
+#: src/gs-review-dialog.c:100
 msgid "It’s OK"
 msgstr "Може бути"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good app
-#: src/gs-review-dialog.c:100
+#: src/gs-review-dialog.c:104
 msgid "Like it"
 msgstr "Подобається"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome app
-#: src/gs-review-dialog.c:104
+#: src/gs-review-dialog.c:108
 msgid "Love it"
 msgstr "Обожнюю"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		No star has been clicked yet
-#: src/gs-review-dialog.c:108
+#: src/gs-review-dialog.c:112
 msgid "Select a Star to Leave a Rating"
 msgstr "Виберіть зірку, щоб залишити оцінку"
 
 #. TRANSLATORS: the review can't just be copied and pasted
-#: src/gs-review-dialog.c:126
+#: src/gs-review-dialog.c:130
 msgid "Please take more time writing the review"
 msgstr "Приділіть трохи уваги написанню огляду, будь ласка"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:129
+#: src/gs-review-dialog.c:133
 msgid "Please choose a star rating"
 msgstr "Виберіть рейтинг зірок"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:132
+#: src/gs-review-dialog.c:136
 msgid "The summary is too short"
 msgstr "Підсумок закороткий"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:135
+#: src/gs-review-dialog.c:139
 msgid "The summary is too long"
 msgstr "Підсумок задовгий"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:138
+#: src/gs-review-dialog.c:142
 msgid "The description is too short"
 msgstr "Опис закороткий"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:141
+#: src/gs-review-dialog.c:145
 msgid "The description is too long"
 msgstr "Опис задовгий"
 
@@ -4109,12 +4129,12 @@ msgid "Review Summary"
 msgstr "Резюме рецензії"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:108
+#: src/gs-review-dialog.ui:110
 msgctxt "app review"
 msgid "Write a short review"
 msgstr "Написати коротку рецензію"
 
-#: src/gs-review-dialog.ui:150
+#: src/gs-review-dialog.ui:152
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
 "privacy\">privacy policy</a>. The full name attached to your account will be "
@@ -4139,18 +4159,18 @@ msgid "out of 5 stars"
 msgstr "з 5 зірок"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:59
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Невідоме"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr "Можете звітувати про образливу, грубу або дискримінаційну поведінку."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:232
+#: src/gs-review-row.c:228
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -4159,24 +4179,24 @@ msgstr ""
 
 #. TRANSLATORS: window title when reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:237
+#: src/gs-review-row.c:233
 msgid "Report Review?"
 msgstr "Зазвітувати про огляд?"
 
 #. TRANSLATORS: button text when
 #. * * sending a review for moderation
-#: src/gs-review-row.c:242
+#: src/gs-review-row.c:238
 msgid "_Report"
 msgstr "_Повідомити"
 
 #. TRANSLATORS: window title when the user attempts to remove their
 #. * review
-#: src/gs-review-row.c:258
+#: src/gs-review-row.c:254
 msgid "Remove Review?"
 msgstr "Вилучити рецензію?"
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:261
+#: src/gs-review-row.c:257
 msgid "Removing a review cannot be undone."
 msgstr "Вилучення рецензії є незворотною дією."
 
@@ -4283,12 +4303,16 @@ msgstr "Доступ до пристроїв введення"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:235
-msgid "Microphone Access"
-msgstr "Доступ до мікрофонів"
+#| msgid "Microphone Access"
+msgid "Microphone Access and Audio Playback"
+msgstr "Доступ до мікрофонів і відтворення звукових даних"
 
 #: src/gs-safety-context-dialog.c:236
-msgid "Can listen using microphones without asking permission"
-msgstr "Може отримувати дані з мікрофонів без надсилання запиту щодо дозволів"
+#| msgid "Can listen using microphones without asking permission"
+msgid "Can listen using microphones and play audio without asking permission"
+msgstr ""
+"Може отримувати дані з мікрофонів і відтворювати звукові дані без надсилання"
+" запиту щодо дозволів"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:243
@@ -4527,15 +4551,15 @@ msgid "License"
 msgstr "Ліцензія"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:80
+#: src/gs-safety-context-dialog.ui:81
 msgid "Source"
 msgstr "Джерело"
 
-#: src/gs-safety-context-dialog.ui:100
+#: src/gs-safety-context-dialog.ui:103
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:148
+#: src/gs-safety-context-dialog.ui:152
 msgid ""
 "This app uses an outdated version of the software platform (SDK) and might "
 "contain bugs or security vulnerabilities which will not be fixed."
@@ -4561,36 +4585,36 @@ msgstr "Немає знімків"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:360 src/gs-screenshot-image.c:402
-#: src/gs-screenshot-image.c:606
+#: src/gs-screenshot-image.c:363 src/gs-screenshot-image.c:404
+#: src/gs-screenshot-image.c:608
 msgid "Screenshot not found"
 msgstr "Знімок не знайдено"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:414
 msgid "Failed to load image"
 msgstr "Не вдалося завантажити зображення "
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:634
+#: src/gs-screenshot-image.c:636
 msgid "Screenshot size not found"
 msgstr "Розмір знімка не знайдено"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:723
+#: src/gs-screenshot-image.c:725
 msgid "Could not create cache"
 msgstr "Неможливо створити кеш"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:737
+#: src/gs-screenshot-image.c:739
 msgid "Screenshot not valid"
 msgstr "Знімок — неправильний"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:775
+#: src/gs-screenshot-image.c:777
 msgid "Screenshot not available"
 msgstr "Знімок недоступний"
 
@@ -5316,48 +5340,48 @@ msgstr "Встановлені оновлення"
 msgid "No Updates Installed"
 msgstr "Оновлення не встановлено"
 
-#: src/gs-update-monitor.c:215
+#: src/gs-update-monitor.c:217
 msgid "Updates Are Out of Date"
 msgstr "Оновлення втратило актуальність"
 
-#: src/gs-update-monitor.c:216
+#: src/gs-update-monitor.c:218
 msgid "Please check for available updates"
 msgstr "Будь ласка, виконайте пошук доступних оновлень"
 
-#: src/gs-update-monitor.c:222
+#: src/gs-update-monitor.c:224
 msgid "Critical Updates Ready to Install"
 msgstr "До встановлення готові критичні оновлення"
 
-#: src/gs-update-monitor.c:223
+#: src/gs-update-monitor.c:225
 msgid "Install critical updates as soon as possible"
 msgstr "Встановіть критичні оновлення якомога швидше"
 
-#: src/gs-update-monitor.c:226
+#: src/gs-update-monitor.c:228
 msgid "Critical Updates Available to Download"
 msgstr "Доступні до отримання критичні оновлення"
 
-#: src/gs-update-monitor.c:227
+#: src/gs-update-monitor.c:229
 msgid "Download critical updates as soon as possible"
 msgstr "Отримайте критичні оновлення якомога швидше"
 
-#: src/gs-update-monitor.c:233
+#: src/gs-update-monitor.c:235
 msgid "Updates Ready to Install"
 msgstr "Готові до встановлення оновлення"
 
-#: src/gs-update-monitor.c:234
+#: src/gs-update-monitor.c:236
 msgid "Software updates are ready and waiting"
 msgstr "Оновлення програмного забезпечення готові і очікують"
 
-#: src/gs-update-monitor.c:240
+#: src/gs-update-monitor.c:242
 msgid "Updates Available to Download"
 msgstr "Доступні до отримання оновлення"
 
-#: src/gs-update-monitor.c:241
+#: src/gs-update-monitor.c:243
 msgid "Software updates can be downloaded"
 msgstr "Можна отримати оновлення програмного забезпечення"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:357
+#: src/gs-update-monitor.c:363
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
@@ -5367,7 +5391,7 @@ msgstr[2] "Оновлено %u програм — слід перезавант�
 msgstr[3] "Оновлено %u програму — слід перезавантажити систему"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:363
+#: src/gs-update-monitor.c:369
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
@@ -5377,24 +5401,24 @@ msgstr[2] "Оновлено %u програм"
 msgstr[3] "Оновлено %u програму"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:374
+#: src/gs-update-monitor.c:380
 #, c-format
 msgid "%s has been updated."
 msgstr "Оновлено %s."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:377
+#: src/gs-update-monitor.c:383
 msgid "Please restart the app."
 msgstr "Будь ласка, перезапустіть програму."
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:385
+#: src/gs-update-monitor.c:391
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "Було оновлено %s і %s."
 
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:391 src/gs-update-monitor.c:410
+#: src/gs-update-monitor.c:397 src/gs-update-monitor.c:416
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
@@ -5404,62 +5428,62 @@ msgstr[2] "%u програм потребують перезапуску."
 msgstr[3] "%u програма потребує перезапуску."
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:403
+#: src/gs-update-monitor.c:409
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Включає %s, %s і %s."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:703
+#: src/gs-update-monitor.c:711
 msgid "System Has Reached End of Life"
 msgstr "Термін придатності системи завершено"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:705
+#: src/gs-update-monitor.c:713
 msgid "Upgrade to continue receiving updates"
 msgstr "Оновіть систему, щоб продовжити отримувати оновлення"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:760
+#: src/gs-update-monitor.c:768
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Нова версія %s доступна для встановлення"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:764
+#: src/gs-update-monitor.c:772
 msgid "Software Upgrade Available"
 msgstr "Доступні оновлення програм"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1211
+#: src/gs-update-monitor.c:1270
 msgid "Software Updates Failed"
 msgstr "Не вдалось оновити програми"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1213
+#: src/gs-update-monitor.c:1272
 msgid "Prepared updates were not installed"
 msgstr "Приготовані оновлення не було встановлено"
 
-#: src/gs-update-monitor.c:1214
+#: src/gs-update-monitor.c:1273
 msgid "Show Details"
 msgstr "Показати подробиці"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1259
+#: src/gs-update-monitor.c:1318
 msgid "System Upgrade Complete"
 msgstr "Оновлення системи завершено"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1264
+#: src/gs-update-monitor.c:1323
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Вітаємо у %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1273
+#: src/gs-update-monitor.c:1332
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Оновлення встановлено"
@@ -5468,7 +5492,7 @@ msgstr[2] "Оновлення встановлено"
 msgstr[3] "Оновлення встановлено"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1277
+#: src/gs-update-monitor.c:1336
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "Важливе оновлення системи встановлено."
@@ -5481,30 +5505,30 @@ msgstr[3] "Важливе оновлення системи встановлен
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1288
+#: src/gs-update-monitor.c:1347
 msgctxt "updates"
 msgid "Review"
 msgstr "Переглянути"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1341
+#: src/gs-update-monitor.c:1400
 msgid "Failed To Update"
 msgstr "Не вдалось оновити"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1346
+#: src/gs-update-monitor.c:1405
 msgid "The system was already up to date."
 msgstr "Систему вже оновлено."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1351
+#: src/gs-update-monitor.c:1410
 msgid "The update was cancelled."
 msgstr "Оновлення скасовано."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1356
+#: src/gs-update-monitor.c:1415
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5513,7 +5537,7 @@ msgstr ""
 "доступ до інтернету і спробуйте ще раз."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1361
+#: src/gs-update-monitor.c:1420
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -5522,13 +5546,13 @@ msgstr ""
 "про подальші дії."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1366
+#: src/gs-update-monitor.c:1425
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Недостатньо місця на диску. Спорожніть місце і спробуйте заново."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1370
+#: src/gs-update-monitor.c:1429
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -5538,39 +5562,39 @@ msgstr ""
 "програм."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:255
+#: src/gs-updates-page.c:261
 #, c-format
 msgid "Last checked: %s"
 msgstr "Востаннє перевірено: %s"
 
-#: src/gs-updates-page.c:308
+#: src/gs-updates-page.c:314
 msgid "Stop"
 msgstr "Зупинити"
 
-#: src/gs-updates-page.c:317 src/gs-updates-page.c:329
+#: src/gs-updates-page.c:323 src/gs-updates-page.c:335
 msgid "Check for Updates"
 msgstr "Перевірити наявність оновлень"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:578
+#: src/gs-updates-page.c:586
 #, c-format
 msgid "%s %s has stopped receiving critical software updates"
 msgstr "Отримання критичних оновлень %s %s припинено"
 
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
-#: src/gs-updates-page.c:584
+#: src/gs-updates-page.c:592
 msgid "Your operating system has stopped receiving critical software updates"
 msgstr "Отримання критичних оновлень для вашої операційної системи припинено"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:840
+#: src/gs-updates-page.c:848
 msgid "Charges May Apply"
 msgstr "Може стягуватися сплата за обмін даними"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:842
+#: src/gs-updates-page.c:850
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -5579,23 +5603,23 @@ msgstr ""
 "забрати чимало трафіку."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:846
+#: src/gs-updates-page.c:854
 msgid "Check _Anyway"
 msgstr "Перевірити поп_ри це"
 
-#: src/gs-updates-page.c:884
+#: src/gs-updates-page.c:892
 msgid "Software Upgrades Downloaded"
 msgstr "Отримано нові версії програм"
 
-#: src/gs-updates-page.c:885
+#: src/gs-updates-page.c:893
 msgid "Upgrades are ready to be installed"
 msgstr "Оновлення готові до встановлення"
 
-#: src/gs-updates-page.c:1212
+#: src/gs-updates-page.c:1228
 msgid "Check for updates"
 msgstr "Перевірити на оновлення"
 
-#: src/gs-updates-page.c:1248
+#: src/gs-updates-page.c:1264
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Оновлення"
@@ -5619,11 +5643,11 @@ msgstr "Дія може бути досить тривалою"
 msgid "Up to Date"
 msgstr "Актуальне"
 
-#: src/gs-updates-page.ui:180
+#: src/gs-updates-page.ui:179
 msgid "Use Mobile Data?"
 msgstr "Використовувати мобільне з'єднання?"
 
-#: src/gs-updates-page.ui:181
+#: src/gs-updates-page.ui:180
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -5631,27 +5655,27 @@ msgstr ""
 "Перевіряння на оновлення, коли використання мобільного інтернету може "
 "прискорити розрядження батареї"
 
-#: src/gs-updates-page.ui:184
+#: src/gs-updates-page.ui:183
 msgid "_Check Anyway"
 msgstr "_Однаково перевіряти"
 
-#: src/gs-updates-page.ui:203
+#: src/gs-updates-page.ui:202
 msgid "No Connection"
 msgstr "Немає з'єднання"
 
-#: src/gs-updates-page.ui:204
+#: src/gs-updates-page.ui:203
 msgid "Go online to check for updates"
 msgstr "З'єднатися з інтернетом для пошуку оновлень"
 
-#: src/gs-updates-page.ui:207
+#: src/gs-updates-page.ui:206
 msgid "_Network Settings"
 msgstr "Параметри _мережі"
 
-#: src/gs-updates-page.ui:227 src/gs-updates-page.ui:241
+#: src/gs-updates-page.ui:226 src/gs-updates-page.ui:240
 msgid "Error"
 msgstr "Помилка"
 
-#: src/gs-updates-page.ui:242
+#: src/gs-updates-page.ui:241
 msgid "Updates are automatically managed"
 msgstr "Оновлення автоматично опрацьовуються"
 
@@ -5728,45 +5752,45 @@ msgstr ""
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:321
+#: src/gs-updates-section.c:320
 msgid "_Restart & Update…"
 msgstr "П_ерезавантажити і оновити…"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable apps
-#: src/gs-updates-section.c:327
+#: src/gs-updates-section.c:326
 msgid "U_pdate All"
 msgstr "О_новити все"
 
-#: src/gs-updates-section.c:404
+#: src/gs-updates-section.c:403
 msgid "Software Updates Downloaded"
 msgstr "Отримано оновлення програм"
 
-#: src/gs-updates-section.c:405
+#: src/gs-updates-section.c:404
 msgid "Updates are ready to be installed"
 msgstr "Оновлення готові до встановлення"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:496
+#: src/gs-updates-section.c:495
 msgid "Integrated Firmware"
 msgstr "Вбудовані мікроконтролери"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:501
+#: src/gs-updates-section.c:500
 msgid "Requires Restart"
 msgstr "Потрібно перезавантажити"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:506
+#: src/gs-updates-section.c:505
 msgid "App Updates"
 msgstr "Оновлення програми"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:511
+#: src/gs-updates-section.c:510
 msgid "Device Firmware"
 msgstr "Прошиті програми для пристроїв"
 
@@ -5884,14 +5908,14 @@ msgstr "Увімкнути"
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
 #: plugins/core/gs-plugin-generic-updates.c:69
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3170
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3173
 msgid "System Updates"
 msgstr "Оновлення системи"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
 #: plugins/core/gs-plugin-generic-updates.c:74
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3175
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3178
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
@@ -5942,135 +5966,135 @@ msgstr ""
 "станцій на Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:342
+#: plugins/flatpak/gs-flatpak.c:344
 #, c-format
 msgid "System folder %s"
 msgstr "Тека системи %s"
 
-#: plugins/flatpak/gs-flatpak.c:343 plugins/flatpak/gs-flatpak.c:344
+#: plugins/flatpak/gs-flatpak.c:345 plugins/flatpak/gs-flatpak.c:346
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Підтека домашньої теки %s"
 
-#: plugins/flatpak/gs-flatpak.c:345
+#: plugins/flatpak/gs-flatpak.c:347
 msgid "Host system folders"
 msgstr "Теки основної системи"
 
-#: plugins/flatpak/gs-flatpak.c:346
+#: plugins/flatpak/gs-flatpak.c:348
 msgid "Host system configuration from /etc"
 msgstr "Налаштування основної системи з /etc"
 
-#: plugins/flatpak/gs-flatpak.c:347
+#: plugins/flatpak/gs-flatpak.c:349
 msgid "Desktop folder"
 msgstr "Тека стільниці"
 
-#: plugins/flatpak/gs-flatpak.c:347
+#: plugins/flatpak/gs-flatpak.c:349
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Підтека стільниці %s"
 
-#: plugins/flatpak/gs-flatpak.c:348
+#: plugins/flatpak/gs-flatpak.c:350
 msgid "Documents folder"
 msgstr "Тека документів"
 
-#: plugins/flatpak/gs-flatpak.c:348
+#: plugins/flatpak/gs-flatpak.c:350
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Підтека документів %s"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:351
 msgid "Music folder"
 msgstr "Тека музики"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:351
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Підтека музики %s"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:352
 msgid "Pictures folder"
 msgstr "Тека зображень"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:352
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Підтека зображень %s"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:353
 msgid "Public Share folder"
 msgstr "Тека спільного ресурсу"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:353
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Підтека спільного ресурсу %s"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:354
 msgid "Videos folder"
 msgstr "Тека відео"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:354
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Підтека відео %s"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:355
 msgid "Templates folder"
 msgstr "Тека шаблонів"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:355
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Підтека шаблонів %s"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:356
 msgid "User cache folder"
 msgstr "Тека кешу користувача"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:356
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Підтека кешу користувача %s"
 
-#: plugins/flatpak/gs-flatpak.c:355
+#: plugins/flatpak/gs-flatpak.c:357
 msgid "User configuration folder"
 msgstr "Тека налаштувань користувача"
 
-#: plugins/flatpak/gs-flatpak.c:355
+#: plugins/flatpak/gs-flatpak.c:357
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Підтека налаштувань користувача %s"
 
-#: plugins/flatpak/gs-flatpak.c:356
+#: plugins/flatpak/gs-flatpak.c:358
 msgid "User data folder"
 msgstr "Тека даних користувача"
 
-#: plugins/flatpak/gs-flatpak.c:356
+#: plugins/flatpak/gs-flatpak.c:358
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Підтека даних користувача %s"
 
-#: plugins/flatpak/gs-flatpak.c:357
+#: plugins/flatpak/gs-flatpak.c:359
 msgid "User runtime folder"
 msgstr "Тека середовища виконання користувача"
 
-#: plugins/flatpak/gs-flatpak.c:357
+#: plugins/flatpak/gs-flatpak.c:359
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Підтека середовища виконання користувача %s"
 
-#: plugins/flatpak/gs-flatpak.c:415
+#: plugins/flatpak/gs-flatpak.c:417
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Доступ до файлової системи %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1374
+#: plugins/flatpak/gs-flatpak.c:1371
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Отримуємо метадані flatpak для %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3590
+#: plugins/flatpak/gs-flatpak.c:3597
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Не вдалося очистити додаток «%s»: %s"
@@ -6083,21 +6107,21 @@ msgstr "Встановлення для користувача"
 msgid "System Installation"
 msgstr "Загальносистемне встановлення"
 
-#: plugins/flatpak/gs-flatpak-utils.c:271
+#: plugins/flatpak/gs-flatpak-utils.c:273
 msgid "App ID"
 msgstr "Ідентифікатор програми"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1353
+#: plugins/flatpak/gs-plugin-flatpak.c:1368
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Не вдалося додати для встановлення додатка «%s»: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1367
+#: plugins/flatpak/gs-plugin-flatpak.c:1382
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Не вдалося додати для вилучення додатка «%s»: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1956
+#: plugins/flatpak/gs-plugin-flatpak.c:1971
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -6108,13 +6132,13 @@ msgstr ""
 "помилку: %s"
 
 #. TRANSLATORS: as in laptop battery power
-#: plugins/fwupd/gs-fwupd-app.c:66
+#: plugins/fwupd/gs-fwupd-app.c:70
 msgid "System power is too low to perform the update"
 msgstr ""
 "Живлення системи перебуває на надто низькому рівні, щоб виконати оновлення"
 
 #. TRANSLATORS: as in laptop battery power
-#: plugins/fwupd/gs-fwupd-app.c:70
+#: plugins/fwupd/gs-fwupd-app.c:74
 #, c-format
 msgid "System power is too low to perform the update (%u%%, requires %u%%)"
 msgstr ""
@@ -6122,79 +6146,79 @@ msgstr ""
 "(%u%%, потрібно %u%%)"
 
 #. TRANSLATORS: for example, a Bluetooth mouse that is in powersave mode
-#: plugins/fwupd/gs-fwupd-app.c:76
+#: plugins/fwupd/gs-fwupd-app.c:80
 msgid "Device is unreachable, or out of wireless range"
 msgstr ""
 "Пристрій є недоступним або перебуває поза діапазоном роботи бездротової "
 "мережі"
 
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
-#: plugins/fwupd/gs-fwupd-app.c:82
+#: plugins/fwupd/gs-fwupd-app.c:86
 #, c-format
 msgid "Device battery power is too low"
 msgstr "Заряд акумулятора пристрою є надто низьким"
 
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
-#: plugins/fwupd/gs-fwupd-app.c:85
+#: plugins/fwupd/gs-fwupd-app.c:89
 #, c-format
 msgid "Device battery power is too low (%u%%, requires %u%%)"
 msgstr "Заряд акумулятора пристрою є надто низьким (%u%%, потрібно %u%%)"
 
 #. TRANSLATORS: usually this is when we're waiting for a reboot
-#: plugins/fwupd/gs-fwupd-app.c:91
+#: plugins/fwupd/gs-fwupd-app.c:95
 msgid "Device is waiting for the update to be applied"
 msgstr "Пристрій очікує на застосування оновлення"
 
 #. TRANSLATORS: as in, wired mains power for a laptop
-#: plugins/fwupd/gs-fwupd-app.c:95
+#: plugins/fwupd/gs-fwupd-app.c:99
 msgid "Device requires AC power to be connected"
 msgstr ""
 "Пристрій потребує живлення від мережі змінного струму для встановлення "
 "з'єднання"
 
 #. TRANSLATORS: lid means "laptop top cover"
-#: plugins/fwupd/gs-fwupd-app.c:99
+#: plugins/fwupd/gs-fwupd-app.c:103
 msgid "Device cannot be used while the lid is closed"
 msgstr "Пристроєм не можна користуватися, доки закрито кришку"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:208
+#: plugins/fwupd/gs-fwupd-app.c:212
 #, c-format
 msgid "%s Device Update"
 msgstr "Оновлення для пристрою %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:213
+#: plugins/fwupd/gs-fwupd-app.c:217
 #, c-format
 msgid "%s System Update"
 msgstr "Оновлення системи для %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:218
+#: plugins/fwupd/gs-fwupd-app.c:222
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "Оновлення для вбудованого контролера %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:227
 #, c-format
 msgid "%s ME Update"
 msgstr "Оновлення ME для %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:232
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "Оновлення корпоративного ME для %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:237
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "Оновлення клієнтського ME для %s"
@@ -6202,7 +6226,7 @@ msgstr "Оновлення клієнтського ME для %s"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:239
+#: plugins/fwupd/gs-fwupd-app.c:243
 #, c-format
 msgid "%s Controller Update"
 msgstr "Оновлення для контролера %s"
@@ -6210,141 +6234,141 @@ msgstr "Оновлення для контролера %s"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:245
+#: plugins/fwupd/gs-fwupd-app.c:249
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "Оновлення для контролера Thunderbolt %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:250
+#: plugins/fwupd/gs-fwupd-app.c:254
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "Оновлення для мікропрограми процесора %s"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:255
+#: plugins/fwupd/gs-fwupd-app.c:259
 #, c-format
 msgid "%s Configuration Update"
 msgstr "Оновлення налаштувань %s"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:259
+#: plugins/fwupd/gs-fwupd-app.c:263
 #, c-format
 msgid "%s Battery Update"
 msgstr "Оновлення для акумулятора %s"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:264
+#: plugins/fwupd/gs-fwupd-app.c:268
 #, c-format
 msgid "%s Camera Update"
 msgstr "Оновлення для камери %s"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:268
+#: plugins/fwupd/gs-fwupd-app.c:272
 #, c-format
 msgid "%s TPM Update"
 msgstr "Оновлення для TPM %s"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:272
+#: plugins/fwupd/gs-fwupd-app.c:276
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "Оновлення для сенсорної панелі %s"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:276
+#: plugins/fwupd/gs-fwupd-app.c:280
 #, c-format
 msgid "%s Mouse Update"
 msgstr "Оновлення для миші %s"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:280
+#: plugins/fwupd/gs-fwupd-app.c:284
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "Оновлення для клавіатури %s"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:284
+#: plugins/fwupd/gs-fwupd-app.c:288
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "Оновлення для контролера сховища даних %s"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:289
+#: plugins/fwupd/gs-fwupd-app.c:293
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "Оновлення для інтерфейсу мережі %s"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:294
+#: plugins/fwupd/gs-fwupd-app.c:298
 #, c-format
 msgid "%s Display Update"
 msgstr "Оновлення для дисплея %s"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:303
 #, c-format
 msgid "%s BMC Update"
 msgstr "Оновлення BMC для %s"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:308
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "Оновлення для USB-приймача %s"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:308
+#: plugins/fwupd/gs-fwupd-app.c:312
 #, c-format
 msgid "%s Drive Update"
 msgstr "Оновлення для пристрою %s"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:312
+#: plugins/fwupd/gs-fwupd-app.c:316
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr "Оновлення флеш-диска %s"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:317
+#: plugins/fwupd/gs-fwupd-app.c:321
 #, c-format
 msgid "%s SSD Update"
 msgstr "Оновлення SSD %s"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:322
+#: plugins/fwupd/gs-fwupd-app.c:326
 #, c-format
 msgid "%s GPU Update"
 msgstr "Оновлення графічного процесора %s"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:331
 #, c-format
 msgid "%s Dock Update"
 msgstr "Оновлення док-станції %s"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:336
 #, c-format
 msgid "%s USB Dock Update"
 msgstr "Оновлення док-станції USB %s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:914
+#: plugins/fwupd/gs-plugin-fwupd.c:921
 msgid "Firmware"
 msgstr "Мікропрограма"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1918
+#: plugins/fwupd/gs-plugin-fwupd.c:1945
 msgid "Firmware update could not be applied: "
 msgstr "Не вдалося оновити мікропрограму:"
 
@@ -6408,21 +6432,21 @@ msgid "Packages"
 msgstr "Пакунки"
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1413
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1436
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1439
 msgid "Failed to wait on transaction end before download: "
 msgstr "Не вдалося дочекатися завершення дії перед завантаженням: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1443
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1456
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1446
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1459
 msgid "Failed to download updates: "
 msgstr "Не вдалося отримати оновлення: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1495
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1505
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1498
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1508
 msgid "Failed to trigger update: "
 msgstr "Не вдалося активувати оновлення: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3270
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3273
 msgid "Operating System (OSTree)"
 msgstr "Операційна система (OSTree)"
 
@@ -6439,13 +6463,22 @@ msgstr "Підтримка Snap"
 msgid "A snap is a universal Linux package"
 msgstr "Snap — універсальний пакунок Linux"
 
+#. TRANSLATORS: this is the system OS upgrade
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:766
+#| msgid "system"
+msgid "System"
+msgstr "Система"
+
+#. TRANSLATORS: this is the system component update
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:770
+#| msgid "System Upgrade Complete"
+msgid "System component"
+msgstr "Компонент системи"
+
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1021
 #, c-format
-#~ msgid "%d hour ago"
-#~ msgid_plural "%d hours ago"
-#~ msgstr[0] "%d годину тому"
-#~ msgstr[1] "%d години тому"
-#~ msgstr[2] "%d годин тому"
-#~ msgstr[3] "%d годину тому"
+msgid "Removing sysupdate job '%s' failed with status %i"
+msgstr "Вилучаємо завдання sysupdate «%s» — стан %i"
 
 #~ msgid "A nice way to manage the software on your system."
 #~ msgstr "Гарний спосіб керуванням програмами на вашій системі."
@@ -6822,9 +6855,6 @@ msgstr "Snap — універсальний пакунок Linux"
 
 #~ msgid "Name"
 #~ msgstr "Назва"
-
-#~ msgid "system"
-#~ msgstr "система"
 
 #~ msgid "user"
 #~ msgstr "користувач"
