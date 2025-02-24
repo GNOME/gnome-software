@@ -1814,3 +1814,60 @@ gs_utils_app_sort_kind (GsApp *app1, GsApp *app2)
 
 	return rank1 < rank2 ? -1 : 1;
 }
+
+/**
+ * gs_utils_compare_versions:
+ * @ver1: the first version string
+ * @ver2: the second version string
+ *
+ * Compares @ver1 and @ver2, return value as `strcmp()`, that is, a number
+ * below zero, when the @ver1 is before @ver2 zero, when @ver1 is the same
+ * as @ver2, and a number above zero, when @ver1 is lower than @ver2.
+ *
+ * Returns: a compare result of the two version string comparison
+ *
+ * Since: 48
+ **/
+gint
+gs_utils_compare_versions (const gchar *ver1,
+			   const gchar *ver2)
+{
+	int rc;
+
+	if (ver1 == NULL || ver2 == NULL)
+		return ver1 == ver2 ? 0 : ver1 == NULL ? -1 : 1;
+
+	/* compare with epoch */
+	rc = as_vercmp (ver1, ver2, AS_VERCMP_FLAG_NONE);
+	if (rc > 0) {
+		/* the version can sometimes end with a non-version string, common
+		   in both strings, which can confuse the comparison, thus try without
+		   the suffix, if such exists and is not a number. For example:
+		   "2:2.1-61.fc40" and "2:2.1-61.1.fc40" is reported as a downgrade,
+		   but without the common suffix ".fc40" it's correctly reported
+		   as an update.
+
+		   FIXME: Eventually this needs to be factored out into a plugin-specific
+		   implementation so we can use
+		   https://github.com/PackageKit/PackageKit/issues/826. */
+		size_t lenv1, lenv2;
+
+		lenv1 = strlen (ver1);
+		lenv2 = strlen (ver2);
+
+		for (size_t i = 0; i < lenv1 && i < lenv2; i++) {
+			if (ver1[lenv1 - i - 1] != ver2[lenv2 - i - 1] ||
+			    ver1[lenv1 - i - 1] == '.' ||
+			    ver1[lenv1 - i - 1] == '-') {
+				if (i > 0 && !g_ascii_isdigit (ver1[lenv1 - i])) {
+					g_autofree gchar *cut_v1 = g_strndup (ver1, lenv1 - i - 1);
+					g_autofree gchar *cut_v2 = g_strndup (ver2, lenv2 - i - 1);
+					rc = as_vercmp (cut_v1, cut_v2, AS_VERCMP_FLAG_NONE);
+				}
+				break;
+			}
+		}
+	}
+
+	return rc;
+}
