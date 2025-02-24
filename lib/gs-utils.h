@@ -162,5 +162,7 @@ void		 gs_utils_gstring_replace	(GString		*str,
 						 const gchar		*replace);
 gint		 gs_utils_app_sort_kind		(GsApp			*app1,
 						 GsApp			*app2);
+gint		 gs_utils_compare_versions	(const gchar		*ver1,
+						 const gchar		*ver2);
 
 G_END_DECLS
