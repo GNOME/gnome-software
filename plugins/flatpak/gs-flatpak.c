@@ -460,6 +460,20 @@ perms_from_metadata (GKeyFile *keyfile)
 			if (bus_policy_permission_from_string (bus_policy) >= GS_BUS_POLICY_PERMISSION_TALK)
 				flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 		}
+
+		/* org.gtk.vfs.* is known to allow file system access */
+		{
+			g_auto(GStrv) session_bus_policies = NULL;
+
+			session_bus_policies = g_key_file_get_keys (keyfile, "Session Bus Policy", NULL, NULL);
+			for (size_t i = 0; session_bus_policies != NULL && session_bus_policies[i] != NULL; i++) {
+				if (g_str_has_prefix (session_bus_policies[i], "org.gtk.vfs.")) {
+					g_autofree char *bus_policy = g_key_file_get_string (keyfile, "Session Bus Policy", session_bus_policies[i], NULL);
+					if (bus_policy_permission_from_string (bus_policy) >= GS_BUS_POLICY_PERMISSION_TALK)
+						flags |= GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL;
+				}
+			}
+		}
 	}
 
 	gs_app_permissions_set_flags (permissions, flags);
