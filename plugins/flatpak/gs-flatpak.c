@@ -430,18 +430,18 @@ perms_from_metadata (GKeyFile *keyfile)
 		flags |= GS_APP_PERMISSIONS_FLAGS_SETTINGS;
 	g_free (str);
 
-	if (!(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX)) {
-		str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.Flatpak", NULL);
-		if (str != NULL && g_str_equal (str, "talk"))
-			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
-		g_free (str);
-	}
+	{
+		/* There are various services on the session bus which are known to give sandbox escapes. */
+		const char *known_session_bus_sandbox_escape_names[] = {
+			"org.freedesktop.Flatpak",
+			"org.freedesktop.impl.portal.PermissionStore",
+		};
 
-	if (!(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX)) {
-		str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.impl.portal.PermissionStore", NULL);
-		if (str != NULL && g_str_equal (str, "talk"))
-			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
-		g_free (str);
+		for (size_t i = 0; !(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) && i < G_N_ELEMENTS (known_session_bus_sandbox_escape_names); i++) {
+			g_autofree char *bus_policy = g_key_file_get_string (keyfile, "Session Bus Policy", known_session_bus_sandbox_escape_names[i], NULL);
+			if (bus_policy != NULL && g_str_equal (bus_policy, "talk"))
+				flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		}
 	}
 
 	gs_app_permissions_set_flags (permissions, flags);
