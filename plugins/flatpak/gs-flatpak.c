@@ -435,6 +435,8 @@ perms_from_metadata (GKeyFile *keyfile)
 		const char *known_session_bus_sandbox_escape_names[] = {
 			"org.freedesktop.Flatpak",
 			"org.freedesktop.impl.portal.PermissionStore",
+			/* allows arbitrary JavaScript evaluation: */
+			"org.gnome.Shell",
 		};
 
 		for (size_t i = 0; !(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) && i < G_N_ELEMENTS (known_session_bus_sandbox_escape_names); i++) {
