@@ -569,6 +569,10 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 	page = shell->pages[mode];
 
 	if (mode == GS_SHELL_MODE_SEARCH) {
+		/* Use scroll_up as a hint that the mode change is not meant to preserve context */
+		if (scroll_up)
+			gs_search_page_clear (GS_SEARCH_PAGE (page));
+
 		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
 		gtk_editable_set_text (GTK_EDITABLE (shell->entry_search), data);
 		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);

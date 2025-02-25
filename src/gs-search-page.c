@@ -280,10 +280,17 @@ gs_search_page_load (GsSearchPage *self)
 	self->search_cancellable = g_cancellable_new ();
 	self->stamp++;
 
-	/* search for apps */
+	/* Show the spinner if this is a new search from scratch. But don’t
+	 * immediately show it if we’re already showing some search results, as
+	 * that could result in very briefly flashing the spinner before
+	 * switching to the new results, which is jarring. */
 	gs_search_page_waiting_cancel (self);
-	self->waiting_id = g_timeout_add (250, gs_search_page_waiting_show_cb, self);
+	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (self->stack_search)), "no-search") == 0)
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "spinner");
+	else
+		self->waiting_id = g_timeout_add (250, gs_search_page_waiting_show_cb, self);
 
+	/* search for apps */
 	search_data = g_new0 (GetSearchData, 1);
 	search_data->self = self;
 	search_data->stamp = self->stamp;
@@ -379,6 +386,30 @@ gs_search_page_set_text (GsSearchPage *self, const gchar *value)
 		gs_search_page_load (self);
 	else
 		self->changed = TRUE;
+}
+
+/**
+ * gs_search_page_clear:
+ * @self: a #GsSearchPage
+ *
+ * Clear the search page.
+ *
+ * This changes the view back to the initial one, clearing any existing search
+ * results. It cancels any ongoing searches.
+ *
+ * Since: 48
+ */
+void
+gs_search_page_clear (GsSearchPage *self)
+{
+	g_return_if_fail (GS_IS_SEARCH_PAGE (self));
+
+	g_cancellable_cancel (self->search_cancellable);
+	g_clear_object (&self->search_cancellable);
+
+	/* Reset the UI so we don’t show a glimpse of old search results when
+	 * next switching to the search page. */
+	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-search");
 }
 
 static void
