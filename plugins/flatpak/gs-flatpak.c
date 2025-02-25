@@ -260,9 +260,9 @@ perms_from_metadata (GKeyFile *keyfile)
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "system-bus"))
-		flags |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS;
+		flags |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS | GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "session-bus"))
-		flags |= GS_APP_PERMISSIONS_FLAGS_SESSION_BUS;
+		flags |= GS_APP_PERMISSIONS_FLAGS_SESSION_BUS | GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 	if (strv != NULL &&
 	    !g_strv_contains ((const gchar * const*)strv, "fallback-x11") &&
 	    g_strv_contains ((const gchar * const*)strv, "x11"))
