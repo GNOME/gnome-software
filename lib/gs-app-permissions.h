@@ -56,6 +56,30 @@ typedef enum {
 #define MEDIUM_PERMISSIONS (LIMITED_PERMISSIONS | \
 			GS_APP_PERMISSIONS_FLAGS_X11)
 
+/**
+ * GsBusPolicyPermission:
+ * @GS_BUS_POLICY_PERMISSION_NONE: No permissions. The bus name is invisible to the app.
+ * @GS_BUS_POLICY_PERMISSION_SEE: The bus name can be enumerated by the app.
+ * @GS_BUS_POLICY_PERMISSION_TALK: The app can exchange messages with the bus name.
+ * @GS_BUS_POLICY_PERMISSION_OWN: The app can own the bus name.
+ * @GS_BUS_POLICY_PERMISSION_UNKNOWN: Permissions are unknown.
+ *
+ * Permissions for app interactions with services on a D-Bus bus.
+ *
+ * These are in strictly ascending order of what they allow (so each enum member
+ * allows all of what the lower-valued members allow). It follows exactly the
+ * same semantics as [flatpak](man:flatpak-metadata(5)).
+ *
+ * Since: 48
+ */
+typedef enum {
+	GS_BUS_POLICY_PERMISSION_NONE = 0,
+	GS_BUS_POLICY_PERMISSION_SEE,
+	GS_BUS_POLICY_PERMISSION_TALK,
+	GS_BUS_POLICY_PERMISSION_OWN,
+	GS_BUS_POLICY_PERMISSION_UNKNOWN,
+} GsBusPolicyPermission;
+
 #define GS_TYPE_APP_PERMISSIONS (gs_app_permissions_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsAppPermissions, gs_app_permissions, GS, APP_PERMISSIONS, GObject)

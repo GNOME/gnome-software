@@ -250,6 +250,21 @@ gs_get_strv_index (const gchar * const *strv,
 	return ii;
 }
 
+static GsBusPolicyPermission
+bus_policy_permission_from_string (const char *str)
+{
+	if (str == NULL || g_str_equal (str, "none"))
+		return GS_BUS_POLICY_PERMISSION_NONE;
+	else if (g_str_equal (str, "see"))
+		return GS_BUS_POLICY_PERMISSION_SEE;
+	else if (g_str_equal (str, "talk"))
+		return GS_BUS_POLICY_PERMISSION_TALK;
+	else if (g_str_equal (str, "own"))
+		return GS_BUS_POLICY_PERMISSION_OWN;
+	else
+		return GS_BUS_POLICY_PERMISSION_UNKNOWN;
+}
+
 static GsAppPermissions *
 perms_from_metadata (GKeyFile *keyfile)
 {
@@ -426,7 +441,7 @@ perms_from_metadata (GKeyFile *keyfile)
 	g_strfreev (strv);
 
 	str = g_key_file_get_string (keyfile, "Session Bus Policy", "ca.desrt.dconf", NULL);
-	if (str != NULL && g_str_equal (str, "talk"))
+	if (bus_policy_permission_from_string (str) >= GS_BUS_POLICY_PERMISSION_TALK)
 		flags |= GS_APP_PERMISSIONS_FLAGS_SETTINGS;
 	g_free (str);
 
@@ -441,7 +456,7 @@ perms_from_metadata (GKeyFile *keyfile)
 
 		for (size_t i = 0; !(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) && i < G_N_ELEMENTS (known_session_bus_sandbox_escape_names); i++) {
 			g_autofree char *bus_policy = g_key_file_get_string (keyfile, "Session Bus Policy", known_session_bus_sandbox_escape_names[i], NULL);
-			if (bus_policy != NULL && g_str_equal (bus_policy, "talk"))
+			if (bus_policy_permission_from_string (bus_policy) >= GS_BUS_POLICY_PERMISSION_TALK)
 				flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 		}
 	}
