@@ -255,19 +255,33 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (ProgressData, progress_data_free)
 
 static gboolean
 op_is_related_to_op (FlatpakTransactionOperation *op,
-                     FlatpakTransactionOperation *root_op)
+		     FlatpakTransactionOperation *root_op,
+		     GHashTable *checked_ops)
 {
 	GPtrArray *related_to_ops;  /* (element-type FlatpakTransactionOperation) */
+	gpointer cached_is_related_to = NULL;
 
 	if (op == root_op)
 		return TRUE;
 
+	/* FIXME: Detect infinite loops. These indicate a bug in libflatpak,
+	 * but have been hard to track down so far.
+	 * See: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2689 */
+	if (g_hash_table_lookup_extended (checked_ops, op, NULL, &cached_is_related_to))
+		return GPOINTER_TO_INT (cached_is_related_to);
+
+	g_hash_table_insert (checked_ops, op, GINT_TO_POINTER (TRUE));
+
 	related_to_ops = flatpak_transaction_operation_get_related_to_ops (op);
 	for (gsize i = 0; related_to_ops != NULL && i < related_to_ops->len; i++) {
 		FlatpakTransactionOperation *related_to_op = g_ptr_array_index (related_to_ops, i);
-		if (related_to_op == root_op || op_is_related_to_op (related_to_op, root_op))
+		if (related_to_op == root_op || op_is_related_to_op (related_to_op, root_op, checked_ops)) {
+			g_hash_table_insert (checked_ops, op, GINT_TO_POINTER (TRUE));
 			return TRUE;
+		}
 	}
+
+	g_hash_table_insert (checked_ops, op, GINT_TO_POINTER (FALSE));
 
 	return FALSE;
 }
@@ -287,6 +301,10 @@ saturated_uint64_add (guint64 a, guint64 b)
  *    for; this is the operation currently being run by libflatpak
  * @root_op: the #FlatpakTransactionOperation at the root of the operation subtree
  *    to calculate progress for
+ * @checked_ops: (element-type FlatpakTransactionOperation gboolean): hash table
+ *    of already checked ops, to detect a dependency loop; an op being present in the table
+ *    means it was already checked, and the stored value is the previous return value of
+ *    op_is_related_to_op() for that op
  *
  * Calculate and update the #GsApp:progress for each app associated with
  * @root_op in a flatpak transaction. This will include the #GsApp for the app
@@ -302,7 +320,8 @@ update_progress_for_op (GsFlatpakTransaction        *self,
                         FlatpakTransactionProgress  *current_progress,
                         GList                       *ops,
                         FlatpakTransactionOperation *current_op,
-                        FlatpakTransactionOperation *root_op)
+                        FlatpakTransactionOperation *root_op,
+                        GHashTable                  *checked_ops)
 {
 	g_autoptr(GsApp) root_app = NULL;
 	guint64 related_prior_download_bytes = 0;
@@ -357,7 +376,7 @@ update_progress_for_op (GsFlatpakTransaction        *self,
 		if (op == root_op && root_op_skipped)
 			continue;
 
-		if (op_is_related_to_op (op, root_op)) {
+		if (op_is_related_to_op (op, root_op, checked_ops)) {
 			/* Saturate instead of overflowing */
 			related_download_bytes = saturated_uint64_add (related_download_bytes, op_download_size);
 			if (!seen_current_op)
@@ -400,17 +419,21 @@ update_progress_for_op_recurse_up (GsFlatpakTransaction        *self,
 				   FlatpakTransactionProgress  *progress,
 				   GList                       *ops,
 				   FlatpakTransactionOperation *current_op,
-				   FlatpakTransactionOperation *root_op)
+				   FlatpakTransactionOperation *root_op,
+				   GHashTable                  *checked_ops)
 {
 	GPtrArray *related_to_ops = flatpak_transaction_operation_get_related_to_ops (root_op);
 
+	if (g_hash_table_contains (checked_ops, root_op))
+		return;
+
 	/* Update progress for @root_op */
-	update_progress_for_op (self, progress, ops, current_op, root_op);
+	update_progress_for_op (self, progress, ops, current_op, root_op, checked_ops);
 
 	/* Update progress for ops related to @root_op, e.g. apps whose runtime is @root_op */
 	for (gsize i = 0; related_to_ops != NULL && i < related_to_ops->len; i++) {
 		FlatpakTransactionOperation *related_to_op = g_ptr_array_index (related_to_ops, i);
-		update_progress_for_op_recurse_up (self, progress, ops, current_op, related_to_op);
+		update_progress_for_op_recurse_up (self, progress, ops, current_op, related_to_op, checked_ops);
 	}
 }
 
@@ -421,6 +444,7 @@ _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
 	ProgressData *data = user_data;
 	GsApp *app = data->app;
 	GsFlatpakTransaction *self = data->transaction;
+	g_autoptr(GHashTable) checked_ops = NULL;
 	g_autolist(FlatpakTransactionOperation) ops = NULL;
 
 	if (flatpak_transaction_progress_get_is_estimating (progress)) {
@@ -456,7 +480,8 @@ _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
 	 * ignored manually.
 	 */
 	ops = flatpak_transaction_get_operations (FLATPAK_TRANSACTION (self));
-	update_progress_for_op_recurse_up (self, progress, ops, data->operation, data->operation);
+	checked_ops = g_hash_table_new (NULL, NULL);
+	update_progress_for_op_recurse_up (self, progress, ops, data->operation, data->operation, checked_ops);
 }
 
 static const gchar *
