@@ -1919,9 +1919,6 @@ install_apps_thread_cb (GTask        *task,
 				gs_plugin_report_event (GS_PLUGIN (self), event);
 				g_clear_error (&local_error);
 
-				remove_schedule_entry (schedule_entry_handle);
-				gs_flatpak_set_busy (flatpak, FALSE);
-
 				continue;
 			}
 
