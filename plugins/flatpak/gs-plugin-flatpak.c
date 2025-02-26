@@ -1513,8 +1513,7 @@ uninstall_apps_thread_cb (GTask        *task,
 			g_autofree char *ref = NULL;
 
 			/* not supported */
-			flatpak = gs_plugin_flatpak_get_handler (self, app);
-			if (flatpak == NULL)
+			if (gs_plugin_flatpak_get_handler (self, app) == NULL)
 				continue;
 
 			/* is a source, handled by dedicated function */
@@ -1841,8 +1840,7 @@ install_apps_thread_cb (GTask        *task,
 			gs_plugin_flatpak_ensure_scope (plugin, app);
 
 			/* not supported */
-			flatpak = gs_plugin_flatpak_get_handler (self, app);
-			if (flatpak == NULL)
+			if (gs_plugin_flatpak_get_handler (self, app) == NULL)
 				continue;
 
 			/* is a source, handled by dedicated function */
