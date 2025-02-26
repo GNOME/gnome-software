@@ -1513,8 +1513,7 @@ uninstall_apps_thread_cb (GTask        *task,
 			g_autofree char *ref = NULL;
 
 			/* not supported */
-			flatpak = gs_plugin_flatpak_get_handler (self, app);
-			if (flatpak == NULL)
+			if (gs_plugin_flatpak_get_handler (self, app) == NULL)
 				continue;
 
 			/* is a source, handled by dedicated function */
@@ -1841,8 +1840,7 @@ install_apps_thread_cb (GTask        *task,
 			gs_plugin_flatpak_ensure_scope (plugin, app);
 
 			/* not supported */
-			flatpak = gs_plugin_flatpak_get_handler (self, app);
-			if (flatpak == NULL)
+			if (gs_plugin_flatpak_get_handler (self, app) == NULL)
 				continue;
 
 			/* is a source, handled by dedicated function */
@@ -1902,11 +1900,8 @@ install_apps_thread_cb (GTask        *task,
 			if (local_error != NULL) {
 				g_autoptr(GsPluginEvent) event = NULL;
 
-				/* Reset the state of all the apps in this transaction. */
-				for (guint j = 0; j < gs_app_list_length (list_tmp); j++) {
-					GsApp *recover_app = gs_app_list_index (list_tmp, j);
-					gs_app_set_state_recover (recover_app);
-				}
+				/* Reset the state of the failed app */
+				gs_app_set_state_recover (app);
 
 				gs_flatpak_error_convert (&local_error);
 
@@ -1918,9 +1913,6 @@ install_apps_thread_cb (GTask        *task,
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				gs_plugin_report_event (GS_PLUGIN (self), event);
 				g_clear_error (&local_error);
-
-				remove_schedule_entry (schedule_entry_handle);
-				gs_flatpak_set_busy (flatpak, FALSE);
 
 				continue;
 			}
