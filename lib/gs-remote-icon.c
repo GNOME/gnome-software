@@ -383,13 +383,13 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	if (gs_icon_get_width (icon) != 0 && gs_icon_get_height (icon) != 0 &&
 	    (gs_icon_get_width (icon) != icon_device_width ||
 	     gs_icon_get_height (icon) != icon_device_height)) {
-		g_warning ("Icon downloaded from ‘%s’ has dimensions %ux%u@%u, "
-		           "but was expected to have dimensions %ux%u@%u "
-		           "according to metadata. Overriding with downloaded "
-		           "dimensions.",
-		           uri, icon_device_width, icon_device_height, scale,
-		           gs_icon_get_width (icon), gs_icon_get_height (icon),
-		           gs_icon_get_scale (icon));
+		g_debug ("Icon downloaded from ‘%s’ has dimensions %ux%u@%u, "
+		         "but was expected to have dimensions %ux%u@%u "
+		         "according to metadata. Overriding with downloaded "
+		         "dimensions.",
+		         uri, icon_device_width, icon_device_height, scale,
+		         gs_icon_get_width (icon), gs_icon_get_height (icon),
+		         gs_icon_get_scale (icon));
 		gs_icon_set_width (icon, icon_device_width);
 		gs_icon_set_height (icon, icon_device_height);
 	} else if (gs_icon_get_width (icon) == 0 || gs_icon_get_height (icon) == 0) {
