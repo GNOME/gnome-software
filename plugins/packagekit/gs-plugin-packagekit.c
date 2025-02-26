@@ -2950,10 +2950,12 @@ get_update_detail_cb (GObject      *source_object,
 {
 	PkClient *client = PK_CLIENT (source_object);
 	g_autoptr(GTask) refine_task = g_steal_pointer (&user_data);
+	GsPlugin *plugin = GS_PLUGIN (g_task_get_source_object (refine_task));
 	RefineData *data = g_task_get_task_data (refine_task);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GError) local_error = NULL;
+	gboolean is_markdown;
 
 	results = pk_client_generic_finish (client, result, &local_error);
 	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (refine_task), &local_error)) {
@@ -2961,6 +2963,11 @@ get_update_detail_cb (GObject      *source_object,
 		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
 		return;
 	}
+
+	/* FIXME: This had been added only for the https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2621
+	   and should not be needed once the https://github.com/PackageKit/PackageKit/issues/828 is fixed */
+	is_markdown = gs_plugin_check_distro_id (plugin, "fedora") ||
+		      gs_plugin_check_distro_id (plugin, "rhel");
 
 	/* set the update details for the update */
 	array = pk_results_get_update_detail_array (results);
@@ -2970,7 +2977,6 @@ get_update_detail_cb (GObject      *source_object,
 
 		for (guint i = 0; i < array->len; i++) {
 			const gchar *tmp;
-			g_autofree gchar *desc = NULL;
 			PkUpdateDetail *update_detail;
 
 			/* right package? */
@@ -2978,9 +2984,14 @@ get_update_detail_cb (GObject      *source_object,
 			if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
 				continue;
 			tmp = pk_update_detail_get_update_text (update_detail);
-			desc = gs_plugin_packagekit_fixup_update_description (tmp);
-			if (desc != NULL)
-				gs_app_set_update_details_markup (app, desc);
+			if (is_markdown) {
+				g_autofree gchar *desc = NULL;
+				desc = gs_plugin_packagekit_fixup_update_description (tmp);
+				if (desc != NULL)
+					gs_app_set_update_details_markup (app, desc);
+			} else if (tmp != NULL && *tmp != '\0')  {
+				gs_app_set_update_details_markup (app, tmp);
+			}
 			break;
 		}
 	}
