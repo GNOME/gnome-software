@@ -1902,11 +1902,8 @@ install_apps_thread_cb (GTask        *task,
 			if (local_error != NULL) {
 				g_autoptr(GsPluginEvent) event = NULL;
 
-				/* Reset the state of all the apps in this transaction. */
-				for (guint j = 0; j < gs_app_list_length (list_tmp); j++) {
-					GsApp *recover_app = gs_app_list_index (list_tmp, j);
-					gs_app_set_state_recover (recover_app);
-				}
+				/* Reset the state of the failed app */
+				gs_app_set_state_recover (app);
 
 				gs_flatpak_error_convert (&local_error);
 
