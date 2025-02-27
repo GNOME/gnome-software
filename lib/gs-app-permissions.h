@@ -2,12 +2,17 @@
  * vi:set noexpandtab tabstop=8 shiftwidth=8:
  *
  * Copyright (C) 2022 Red Hat <www.redhat.com>
+ * Copyright (C) 2025 GNOME Foundation, Inc.
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * Additional authors:
+ *  - Philip Withnall <pwithnall@gnome.org>
  */
 
 #pragma once
 
+#include <gio/gio.h>
 #include <glib.h>
 #include <glib-object.h>
 
@@ -27,6 +32,9 @@ G_BEGIN_DECLS
  *   without asking, e.g. by reading Pipewire ScreenCast streams (Since: 46)
  * @GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES: App can access input devices, under `/dev/input` (Since: 46)
  * @GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES: App can access audio devices (such as microphones and speakers) from PulseAudio and pipewire directly (Since: 48)
+ * @GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER: App has one or more #GsBusPolicys
+ *    which give it some access to non-portal services on the system or session
+ *    D-Bus buses. (Since: 49)
  *
  * Flags to indicate what permissions an app requires, at a high level.
  */
@@ -50,6 +58,7 @@ typedef enum {
 	GS_APP_PERMISSIONS_FLAGS_SCREEN			= 1 << 16,
 	GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES		= 1 << 17,
 	GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES		= 1 << 18,
+	GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER	= 1 << 19,
 	GS_APP_PERMISSIONS_FLAGS_LAST  /*< skip >*/
 } GsAppPermissionsFlags;
 
@@ -83,6 +92,32 @@ typedef enum {
 	GS_BUS_POLICY_PERMISSION_OWN,
 	GS_BUS_POLICY_PERMISSION_UNKNOWN,
 } GsBusPolicyPermission;
+
+/**
+ * GsBusPolicy:
+ * @bus_type: Bus type this applies to.
+ * @bus_name: Bus name or prefix (such as `org.gtk.vfs.*`) this applies to.
+ * @permission: Permissions granted.
+ *
+ * A single entry in a bus policy which determines which bus names an app can
+ * interact with while sandboxed.
+ *
+ * Bus policies are keyed by the combination of @bus_type and @bus_name.
+ *
+ * Since: 49
+ */
+typedef struct {
+	GBusType bus_type;
+	char *bus_name;  /* (owned) */
+	GsBusPolicyPermission permission;
+} GsBusPolicy;
+
+GsBusPolicy		*gs_bus_policy_new		(GBusType		 bus_type,
+							 const char		*bus_name,
+							 GsBusPolicyPermission	 permission);
+void			 gs_bus_policy_free		(GsBusPolicy		*self);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsBusPolicy, gs_bus_policy_free)
 
 #define GS_TYPE_APP_PERMISSIONS (gs_app_permissions_get_type ())
 
@@ -119,5 +154,12 @@ const GPtrArray		*gs_app_permissions_get_filesystem_full
 gboolean		 gs_app_permissions_contains_filesystem_full
 							(GsAppPermissions *self,
 							 const gchar *filename);
+
+void			 gs_app_permissions_add_bus_policy	(GsAppPermissions	*self,
+								 GBusType		 bus_type,
+								 const char		*bus_name,
+								 GsBusPolicyPermission	 permission);
+const GsBusPolicy * const *gs_app_permissions_get_bus_policies	(GsAppPermissions	*self,
+								 size_t			*out_n_bus_policies);
 
 G_END_DECLS

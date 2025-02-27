@@ -28,6 +28,52 @@
 
 #include "gs-app-permissions.h"
 
+/**
+ * gs_bus_policy_new:
+ * @bus_type: bus type this applies to
+ * @bus_name: bus name or prefix (such as `org.gtk.vfs.*`) this applies to
+ * @permission: permissions granted
+ *
+ * Create a new #GsBusPolicy.
+ *
+ * Returns: (transfer full): a new #GsBusPolicy
+ * Since: 49
+ */
+GsBusPolicy *
+gs_bus_policy_new (GBusType               bus_type,
+                   const char            *bus_name,
+                   GsBusPolicyPermission  permission)
+{
+	g_autoptr(GsBusPolicy) policy = NULL;
+
+	g_return_val_if_fail (bus_type != G_BUS_TYPE_NONE, NULL);
+	g_return_val_if_fail (bus_name != NULL && *bus_name != '\0', NULL);
+
+	policy = g_new0 (GsBusPolicy, 1);
+	policy->bus_type = bus_type;
+	policy->bus_name = g_strdup (bus_name);
+	policy->permission = permission;
+
+	return g_steal_pointer (&policy);
+}
+
+/**
+ * gs_bus_policy_free:
+ * @self: (transfer full): a #GsBusPolicy
+ *
+ * Free a #GsBusPolicy.
+ *
+ * Since: 49
+ */
+void
+gs_bus_policy_free (GsBusPolicy *self)
+{
+	g_return_if_fail (self != NULL);
+
+	g_free (self->bus_name);
+	g_free (self);
+}
+
 #define DOES_NOT_CONTAIN ((guint) ~0)
 
 struct _GsAppPermissions
@@ -38,6 +84,7 @@ struct _GsAppPermissions
 	GsAppPermissionsFlags flags;
 	GPtrArray *filesystem_read; /* (owner) (nullable) (element-type utf8) */
 	GPtrArray *filesystem_full; /* (owner) (nullable) (element-type utf8) */
+	GPtrArray *bus_policies;  /* (owned) (nullable) (element-type GsBusPolicy) */
 };
 
 G_DEFINE_TYPE (GsAppPermissions, gs_app_permissions, G_TYPE_OBJECT)
@@ -51,6 +98,55 @@ cmp_filename_pointers (gconstpointer item1,
 	return strcmp (*pitem1, *pitem2);
 }
 
+static int
+bus_policy_compare (const GsBusPolicy *policy1,
+                    const GsBusPolicy *policy2)
+{
+	if (policy1->bus_type != policy2->bus_type)
+		return policy1->bus_type - policy2->bus_type;
+
+	return strcmp (policy1->bus_name, policy2->bus_name);
+}
+
+static int
+bus_policy_compare_lopsided_with_permissions (const GsBusPolicy *policy1,
+                                              const GsBusPolicy *policy2)
+{
+	int compare_keys = bus_policy_compare (policy1, policy2);
+
+	if (compare_keys != 0)
+		return compare_keys;
+
+	/* If the two policies have the same keys, they might differ by value
+	 * (GsBusPolicy.permission). If so, we want to flag to the user if
+	 * @policy2 has a higher permission, but not if it has a lower permission.
+	 * Consequently, *this function is not symmetric on its inputs* and
+	 * can’t be used for sorting things.  */
+	if (policy2->permission > policy1->permission)
+		return 1;
+
+	return 0;
+}
+
+static int
+cmp_bus_policy_qsort (const void *item1,
+                      const void *item2)
+{
+	const GsBusPolicy * const *pitem1 = item1;
+	const GsBusPolicy * const *pitem2 = item2;
+
+	return bus_policy_compare (*pitem1, *pitem2);
+}
+
+static GsBusPolicy *
+bus_policy_copy (const GsBusPolicy *policy,
+                 void              *user_data)
+{
+	return gs_bus_policy_new (policy->bus_type,
+				  policy->bus_name,
+				  policy->permission);
+}
+
 static void
 gs_app_permissions_finalize (GObject *object)
 {
@@ -58,6 +154,7 @@ gs_app_permissions_finalize (GObject *object)
 
 	g_clear_pointer (&self->filesystem_read, g_ptr_array_unref);
 	g_clear_pointer (&self->filesystem_full, g_ptr_array_unref);
+	g_clear_pointer (&self->bus_policies, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_app_permissions_parent_class)->finalize (object);
 }
@@ -114,6 +211,9 @@ gs_app_permissions_seal (GsAppPermissions *self)
 
 	if (self->filesystem_full)
 		qsort (self->filesystem_full->pdata, self->filesystem_full->len, sizeof (gpointer), cmp_filename_pointers);
+
+	if (self->bus_policies)
+		qsort (self->bus_policies->pdata, self->bus_policies->len, sizeof (gpointer), cmp_bus_policy_qsort);
 }
 
 /**
@@ -154,7 +254,73 @@ gs_app_permissions_is_empty (GsAppPermissions *self)
 
 	return (self->flags == GS_APP_PERMISSIONS_FLAGS_NONE &&
 		(self->filesystem_read == NULL || self->filesystem_read->len == 0) &&
-		(self->filesystem_full == NULL || self->filesystem_full->len == 0));
+		(self->filesystem_full == NULL || self->filesystem_full->len == 0) &&
+		(self->bus_policies == NULL || self->bus_policies->len == 0));
+}
+
+/* Works out (array2 - array1), i.e. returns all the elements of @array2 which
+ * aren’t in @array1. @array1 and @array2 are required to be sorted in advance.
+ * A `NULL` array is considered equal to an empty array, and `NULL` will be
+ * returned if the resulting array is empty.
+ * @array1 and @array2 are not modified, and any array elements in the result
+ * are copied. */
+static GPtrArray *
+ptr_array_diff (GPtrArray      *array1,
+                GPtrArray      *array2,
+                GCompareFunc    compare_func,
+                GCopyFunc       copy_func,
+                void           *copy_func_data,
+                GDestroyNotify  free_func)
+{
+	g_autoptr(GPtrArray) diff = NULL;
+
+	if (array2 == NULL)
+		return NULL;
+	if (array1 == NULL)
+		return g_ptr_array_copy (array2, copy_func, copy_func_data);
+
+	diff = g_ptr_array_new_with_free_func (free_func);
+
+	/* Walk both arrays in parallel, comparing the elements. As both arrays
+	 * are guaranteed to be sorted, this means that if an element on one
+	 * array compares less than the element on the other array, that element
+	 * isn’t present in the other array.
+	 *
+	 * This loop is guaranteed to terminate as at least one of the indices
+	 * is incremented on each iteration. */
+	for (unsigned int index1 = 0, index2 = 0;
+	     index1 < array1->len || index2 < array2->len;
+	     ) {
+		const void *element1, *element2;
+		int comparison;
+
+		if (index1 >= array1->len) {
+			element2 = g_ptr_array_index (array2, index2);
+			comparison = 1;
+		} else if (index2 >= array2->len) {
+			element1 = g_ptr_array_index (array1, index1);
+			comparison = -1;
+		} else {
+			element1 = g_ptr_array_index (array1, index1);
+			element2 = g_ptr_array_index (array2, index2);
+			comparison = compare_func (element1, element2);
+		}
+
+		if (comparison < 0) {
+			/* @element1 isn’t present in @array2 */
+			index1++;
+		} else if (comparison == 0) {
+			/* Element is present in both */
+			index1++;
+			index2++;
+		} else {
+			/* @element2 isn’t present in @array1 */
+			g_ptr_array_add (diff, copy_func (element2, copy_func_data));
+			index2++;
+		}
+	}
+
+	return (diff->len > 0) ? g_steal_pointer (&diff) : NULL;
 }
 
 /**
@@ -202,6 +368,15 @@ gs_app_permissions_diff (GsAppPermissions *self,
 		if (!gs_app_permissions_contains_filesystem_full (self, new_path))
 			gs_app_permissions_add_filesystem_full (diff, new_path);
 	}
+
+	/* Bus policies. Use a special comparison function which will highlight
+	 * if any of the other->bus_policies have a higher permission than a
+	 * corresponding bus policy in self->bus_policies (but not the other
+	 * way round). */
+	diff->bus_policies = ptr_array_diff (self->bus_policies, other->bus_policies,
+					     (GCompareFunc) bus_policy_compare_lopsided_with_permissions,
+					     (GCopyFunc) bus_policy_copy, NULL,
+					     (GDestroyNotify) gs_bus_policy_free);
 
 	gs_app_permissions_seal (diff);
 
@@ -488,4 +663,87 @@ gs_app_permissions_contains_filesystem_full (GsAppPermissions *self,
 	g_return_val_if_fail (self->is_sealed, FALSE);
 
 	return array_contains_filename (self->filesystem_full, filename);
+}
+
+/**
+ * gs_app_permissions_add_bus_policy:
+ * @self: a #GsAppPermissions
+ * @bus_type: the type of bus this policy applies to
+ * @bus_name: the bus name the policy applies to
+ * @policy: the policy
+ *
+ * Add @policy as the access policy for @bus_name on @bus_type.
+ *
+ * The @bus_name is either a D-Bus well-known name or a prefix of one (such as
+ * `org.gtk.vfs.*`). Policies are indexed by both @bus_type and @bus_name. If a
+ * policy would be a duplicate, the higher @permission of the original and new
+ * policy is stored.
+ *
+ * Since: 49
+ */
+void
+gs_app_permissions_add_bus_policy (GsAppPermissions      *self,
+                                   GBusType               bus_type,
+                                   const char            *bus_name,
+                                   GsBusPolicyPermission  permission)
+{
+	g_return_if_fail (GS_IS_APP_PERMISSIONS (self));
+	g_return_if_fail (bus_type != G_BUS_TYPE_NONE);
+	g_return_if_fail (bus_name != NULL && *bus_name != '\0');
+	g_return_if_fail (permission != GS_BUS_POLICY_PERMISSION_UNKNOWN);
+
+	g_assert (!self->is_sealed);
+
+	/* Already known? */
+	for (unsigned int i = 0; self->bus_policies != NULL && i < self->bus_policies->len; i++) {
+		GsBusPolicy *policy = g_ptr_array_index (self->bus_policies, i);
+
+		if (policy->bus_type == bus_type &&
+		    g_str_equal (policy->bus_name, bus_name)) {
+			policy->permission = MAX (policy->permission, permission);
+			return;
+		}
+	}
+
+	/* Ignore no-op policies */
+	if (permission == GS_BUS_POLICY_PERMISSION_NONE)
+		return;
+
+	if (self->bus_policies == NULL)
+		self->bus_policies = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_bus_policy_free);
+
+	g_ptr_array_add (self->bus_policies, gs_bus_policy_new (bus_type, bus_name, permission));
+}
+
+/**
+ * gs_app_permissions_get_bus_policies:
+ * @self: a #GsAppPermissions
+ * @out_n_bus_policies: (out caller-allocates) (optional): return location for
+ *    the number of bus policies, or %NULL to ignore
+ *
+ * Get the bus policies stored on this #GsAppPermissions.
+ *
+ * Note that if %GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS or
+ * %GS_APP_PERMISSIONS_FLAGS_SESSION_BUS are set, it’s unlikely that there will
+ * be any bus policies to return here, as those flags indicate unfiltered access
+ * to the buses is allowed for the app.
+ *
+ * Otherwise, each #GsBusPolicy returned here indicates a sandbox hole granting
+ * the app permission to interact with that bus service in some way.
+ *
+ * Returns: (nullable) (transfer none): array of #GsBusPolicy instances, which
+ *    must not be modified; may be %NULL if there are no policies
+ * Since: 49
+ */
+const GsBusPolicy * const *
+gs_app_permissions_get_bus_policies (GsAppPermissions *self,
+                                     size_t           *out_n_bus_policies)
+{
+	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (self), NULL);
+	g_return_val_if_fail (self->is_sealed, NULL);
+
+	if (out_n_bus_policies != NULL)
+		*out_n_bus_policies = (self->bus_policies != NULL) ? self->bus_policies->len : 0;
+
+	return (self->bus_policies != NULL && self->bus_policies->len > 0) ? (const GsBusPolicy * const *) self->bus_policies->pdata : NULL;
 }

@@ -36,6 +36,23 @@ test_is_empty (void)
 	g_assert_false (gs_app_permissions_is_empty (permissions));
 
 	g_clear_object (&permissions);
+
+	permissions = gs_app_permissions_new ();
+	gs_app_permissions_add_bus_policy (permissions, G_BUS_TYPE_SESSION,
+					   "org.freedesktop.Flatpak",
+					   GS_BUS_POLICY_PERMISSION_TALK);
+	g_assert_false (gs_app_permissions_is_empty (permissions));
+}
+
+static void
+assert_bus_policy_matches (const GsBusPolicy     *policy,
+                           GBusType               expected_bus_type,
+                           const char            *expected_bus_name,
+                           GsBusPolicyPermission  expected_permission)
+{
+	g_assert_cmpint (policy->bus_type, ==, expected_bus_type);
+	g_assert_cmpstr (policy->bus_name, ==, expected_bus_name);
+	g_assert_cmpint (policy->permission, ==, expected_permission);
 }
 
 static void
@@ -43,6 +60,8 @@ test_diff (void)
 {
 	g_autoptr(GsAppPermissions) old = NULL, new = NULL, diff = NULL;
 	const GPtrArray *array;
+	const GsBusPolicy * const *bus_policies;
+	size_t n_bus_policies;
 
 	g_test_summary ("Test that diffing two sets of permissions works");
 
@@ -56,6 +75,14 @@ test_diff (void)
 	gs_app_permissions_add_filesystem_read (old, "/var/spool/cron/");
 	gs_app_permissions_add_filesystem_full (old, "/tmp/");
 	gs_app_permissions_add_filesystem_full (old, "/home/");
+	gs_app_permissions_add_bus_policy (old, G_BUS_TYPE_SESSION,
+					   "org.freedesktop.Flatpak", GS_BUS_POLICY_PERMISSION_TALK);
+	gs_app_permissions_add_bus_policy (old, G_BUS_TYPE_SYSTEM,
+					   "org.freedesktop.UDisks2", GS_BUS_POLICY_PERMISSION_SEE);
+	gs_app_permissions_add_bus_policy (old, G_BUS_TYPE_SESSION,
+					   "org.gnome.Shell", GS_BUS_POLICY_PERMISSION_OWN);
+	gs_app_permissions_add_bus_policy (old, G_BUS_TYPE_SYSTEM,
+					   "org.systemd.login1", GS_BUS_POLICY_PERMISSION_SEE);
 	gs_app_permissions_seal (old);
 
 	new = gs_app_permissions_new ();
@@ -65,6 +92,14 @@ test_diff (void)
 				      GS_APP_PERMISSIONS_FLAGS_SCREEN);
 	gs_app_permissions_add_filesystem_read (new, "/var/log/");
 	gs_app_permissions_add_filesystem_read (new, "/etc/cups.conf");
+	gs_app_permissions_add_bus_policy (new, G_BUS_TYPE_SESSION,
+					   "org.freedesktop.Flatpak", GS_BUS_POLICY_PERMISSION_TALK);
+	gs_app_permissions_add_bus_policy (new, G_BUS_TYPE_SYSTEM,
+					   "org.freedesktop.UDisks2", GS_BUS_POLICY_PERMISSION_TALK);
+	gs_app_permissions_add_bus_policy (new, G_BUS_TYPE_SESSION,
+					   "org.gnome.Shell", GS_BUS_POLICY_PERMISSION_TALK);
+	gs_app_permissions_add_bus_policy (new, G_BUS_TYPE_SESSION,
+					   "org.gnome.Nautilus", GS_BUS_POLICY_PERMISSION_TALK);
 	gs_app_permissions_seal (new);
 
 	/* Try a diff from old to new. */
@@ -81,6 +116,14 @@ test_diff (void)
 
 	array = gs_app_permissions_get_filesystem_full (diff);
 	g_assert_null (array);
+
+	bus_policies = gs_app_permissions_get_bus_policies (diff, &n_bus_policies);
+	g_assert_cmpuint (n_bus_policies, ==, 2);
+	g_assert_nonnull (bus_policies);
+	assert_bus_policy_matches (bus_policies[0], G_BUS_TYPE_SYSTEM,
+				   "org.freedesktop.UDisks2", GS_BUS_POLICY_PERMISSION_TALK);
+	assert_bus_policy_matches (bus_policies[1], G_BUS_TYPE_SESSION,
+				   "org.gnome.Nautilus", GS_BUS_POLICY_PERMISSION_TALK);
 
 	g_clear_object (&diff);
 
@@ -101,6 +144,14 @@ test_diff (void)
 	g_assert_cmpuint (array->len, ==, 2);
 	g_assert_cmpstr (array->pdata[0], ==, "/home/");
 	g_assert_cmpstr (array->pdata[1], ==, "/tmp/");
+
+	bus_policies = gs_app_permissions_get_bus_policies (diff, &n_bus_policies);
+	g_assert_cmpuint (n_bus_policies, ==, 2);
+	g_assert_nonnull (bus_policies);
+	assert_bus_policy_matches (bus_policies[0], G_BUS_TYPE_SYSTEM,
+				   "org.systemd.login1", GS_BUS_POLICY_PERMISSION_SEE);
+	assert_bus_policy_matches (bus_policies[1], G_BUS_TYPE_SESSION,
+				   "org.gnome.Shell", GS_BUS_POLICY_PERMISSION_OWN);
 
 	g_clear_object (&diff);
 
