@@ -28,6 +28,8 @@
 #include "gs-update-monitor.h"
 #include "gs-shell-search-provider.h"
 
+#define CODE_COPYRIGHT_YEAR 2025
+
 #define ENABLE_REPOS_DIALOG_CONF_KEY "enable-repos-dialog"
 
 struct _GsApplication {
@@ -257,20 +259,22 @@ about_activated (GSimpleAction *action,
 		NULL
 	};
 
-adw_show_about_dialog (GTK_WIDGET (app->main_window),
-		       "application-name", g_get_application_name (),
-		       "application-icon", APPLICATION_ID,
-		       "developer-name", _("The GNOME Project"),
-		       "version", get_version(),
-		       "website", "https://apps.gnome.org/Software",
-		       "support-url", "https://discourse.gnome.org/tag/gnome-software",
-		       "issue-url", "https://gitlab.gnome.org/GNOME/gnome-software/-/issues",
-		       "developers", developers,
-		       "designers", designers,
-		       "copyright", _("Copyright \xc2\xa9 2016–2023 GNOME Software contributors"),
-		       "license-type", GTK_LICENSE_GPL_2_0,
-		       "translator-credits", _("translator-credits"),
-		       NULL);
+	g_autofree gchar *copyright_text = g_strdup_printf (_("Copyright \xc2\xa9 2016–%d GNOME Software contributors"), CODE_COPYRIGHT_YEAR);
+
+	adw_show_about_dialog (GTK_WIDGET (app->main_window),
+			       "application-name", g_get_application_name (),
+			       "application-icon", APPLICATION_ID,
+			       "developer-name", _("The GNOME Project"),
+			       "version", get_version(),
+			       "website", "https://apps.gnome.org/Software",
+			       "support-url", "https://discourse.gnome.org/tag/gnome-software",
+			       "issue-url", "https://gitlab.gnome.org/GNOME/gnome-software/-/issues",
+			       "developers", developers,
+			       "designers", designers,
+			       "copyright", copyright_text,
+			       "license-type", GTK_LICENSE_GPL_2_0,
+			       "translator-credits", _("translator-credits"),
+			       NULL);
 }
 
 static void
