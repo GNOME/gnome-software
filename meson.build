@@ -312,6 +312,11 @@ test_env = [
   'FLATPAK_SYSTEM_HELPER_ON_SESSION=1',
 ]
 
+installed_tests_metadir = join_paths(datadir, 'installed-tests', meson.project_name())
+installed_tests_execdir = join_paths(libexecdir, 'installed-tests', meson.project_name())
+installed_tests_enabled = get_option('installed_tests')
+installed_tests_template = files('tests/template.test.in')
+
 subdir('data')
 subdir('lib')
 subdir('plugins')
