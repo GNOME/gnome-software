@@ -4,8 +4,12 @@
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
  * Copyright (C) 2016-2018 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2016-2019 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2025 GNOME Foundation, Inc.
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * Additional authors:
+ *  - Philip Withnall <pwithnall@gnome.org>
  */
 
 /* Notes:
@@ -269,9 +273,12 @@ static GsAppPermissions *
 perms_from_metadata (GKeyFile *keyfile)
 {
 	char **strv;
-	char *str;
 	GsAppPermissions *permissions = gs_app_permissions_new ();
 	GsAppPermissionsFlags flags = GS_APP_PERMISSIONS_FLAGS_NONE;
+	g_autofree char *app_id = g_key_file_get_value (keyfile, "Application", "name", NULL);
+	g_autofree char *mpris_id = NULL;
+	g_autofree char *app_id_non_devel = NULL;
+	g_autofree char *mpris_id_non_devel = NULL;
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "system-bus"))
@@ -441,34 +448,104 @@ perms_from_metadata (GKeyFile *keyfile)
 	}
 	g_strfreev (strv);
 
-	str = g_key_file_get_string (keyfile, "Session Bus Policy", "ca.desrt.dconf", NULL);
-	if (bus_policy_permission_from_string (str) >= GS_BUS_POLICY_PERMISSION_TALK)
-		flags |= GS_APP_PERMISSIONS_FLAGS_SETTINGS;
-	g_free (str);
-
-	{
-		/* There are various services on the session bus which are known to give sandbox escapes. */
-		const char *known_session_bus_sandbox_escape_names[] = {
-			"org.freedesktop.Flatpak",
-			"org.freedesktop.impl.portal.PermissionStore",
+	/* Iterate over all the D-Bus permissions, working out the consequences of each permission
+	 * and either adding to the GsAppPermissions’ flags, or adding more detailed
+	 * service information to it. */
+	if (!(flags & (GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS | GS_APP_PERMISSIONS_FLAGS_SESSION_BUS))) {
+		const struct {
+			GBusType bus_type;
+			const char *keyfile_group;
+			GsAppPermissionsFlags unfiltered_flag;
+		} bus_policy_types[] = {
+			{ G_BUS_TYPE_SESSION, "Session Bus Policy", GS_APP_PERMISSIONS_FLAGS_SESSION_BUS },
+			{ G_BUS_TYPE_SYSTEM, "System Bus Policy", GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS },
 		};
 
-		for (size_t i = 0; !(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) && i < G_N_ELEMENTS (known_session_bus_sandbox_escape_names); i++) {
-			g_autofree char *bus_policy = g_key_file_get_string (keyfile, "Session Bus Policy", known_session_bus_sandbox_escape_names[i], NULL);
-			if (bus_policy_permission_from_string (bus_policy) >= GS_BUS_POLICY_PERMISSION_TALK)
-				flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		/* Build various IDs for the default bus policies.
+		 * MPRIS (https://specifications.freedesktop.org/mpris-spec/latest/)
+		 * is a spec for remotely controlling media players, and requires
+		 * apps to be able to own a sub-name in the MRPIS namespace on
+		 * the bus. */
+		if (app_id != NULL) {
+			mpris_id = g_strconcat ("org.mpris.MediaPlayer2.", app_id, NULL);
+			app_id_non_devel = g_str_has_suffix (app_id, ".Devel") ? g_strndup (app_id, strlen (app_id) - strlen (".Devel")) : NULL;
+			mpris_id_non_devel = (app_id_non_devel != NULL) ? g_strconcat ("org.mpris.MediaPlayer2.", app_id_non_devel, NULL) : NULL;
 		}
 
-		/* org.gtk.vfs.* is known to allow file system access */
-		{
-			g_auto(GStrv) session_bus_policies = NULL;
+		for (size_t h = 0; h < G_N_ELEMENTS (bus_policy_types); h++) {
+			g_auto(GStrv) bus_policies = NULL;
 
-			session_bus_policies = g_key_file_get_keys (keyfile, "Session Bus Policy", NULL, NULL);
-			for (size_t i = 0; session_bus_policies != NULL && session_bus_policies[i] != NULL; i++) {
-				if (g_str_has_prefix (session_bus_policies[i], "org.gtk.vfs.")) {
-					g_autofree char *bus_policy = g_key_file_get_string (keyfile, "Session Bus Policy", session_bus_policies[i], NULL);
-					if (bus_policy_permission_from_string (bus_policy) >= GS_BUS_POLICY_PERMISSION_TALK)
-						flags |= GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL;
+			/* If the app already has unfiltered access to this bus, skip it. */
+			if (flags & bus_policy_types[h].unfiltered_flag)
+				continue;
+
+			bus_policies = g_key_file_get_keys (keyfile, bus_policy_types[h].keyfile_group, NULL, NULL);
+
+			for (size_t i = 0; bus_policies != NULL && bus_policies[i] != NULL; i++) {
+				const struct {
+					GBusType bus_type;
+					const char *bus_name;
+					gboolean is_prefix;
+					GsBusPolicyPermission permission_is_at_least;
+					GsAppPermissionsFlags flags;
+				} bus_policy_permissions[] = {
+					/* Being able to talk to dconf means the app can read and write all settings: */
+					{ G_BUS_TYPE_SESSION, "ca.desrt.dconf", FALSE, GS_BUS_POLICY_PERMISSION_TALK, GS_APP_PERMISSIONS_FLAGS_SETTINGS },
+
+					/* There are various services on the session bus which are known to give sandbox escapes: */
+					{ G_BUS_TYPE_SESSION, "org.freedesktop.Flatpak", FALSE, GS_BUS_POLICY_PERMISSION_TALK, GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX },
+					{ G_BUS_TYPE_SESSION, "org.freedesktop.impl.portal.PermissionStore", FALSE, GS_BUS_POLICY_PERMISSION_TALK, GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX },
+
+					/* org.gtk.vfs.* is known to allow file system access: */
+					{ G_BUS_TYPE_SESSION, "org.gtk.vfs.", TRUE, GS_BUS_POLICY_PERMISSION_TALK, GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },
+				};
+				const char *bus_name_pattern = bus_policies[i];
+				g_autofree char *bus_policy_str = g_key_file_get_string (keyfile, bus_policy_types[h].keyfile_group, bus_name_pattern, NULL);
+				GsBusPolicyPermission bus_policy;
+				size_t j;
+
+				/* This can’t fail because we’re iterating over the keys */
+				g_assert (bus_policy_str != NULL);
+				bus_policy = bus_policy_permission_from_string (bus_policy_str);
+
+				/* Ignore the default policies (see man:flatpak-metadata(5))*/
+				if (app_id != NULL &&
+				    bus_policy_types[h].bus_type == G_BUS_TYPE_SESSION &&
+				    (g_str_equal (bus_name_pattern, app_id) ||
+				     (g_str_has_prefix (bus_name_pattern, app_id) && bus_name_pattern[strlen (app_id)] == '.') ||
+				     g_str_equal (bus_name_pattern, mpris_id) ||
+				     g_str_equal (bus_name_pattern, "org.freedesktop.DBus") ||
+				     g_str_has_prefix (bus_name_pattern, "org.freedesktop.portal.")))
+					continue;
+
+				/* Allow .Devel apps to own their non-devel names on the session bus. */
+				if (app_id_non_devel != NULL &&
+				    bus_policy_types[h].bus_type == G_BUS_TYPE_SESSION &&
+				    (g_str_equal (bus_name_pattern, app_id_non_devel) ||
+				     (g_str_has_prefix (bus_name_pattern, app_id_non_devel) && bus_name_pattern[strlen (app_id_non_devel)] == '.') ||
+				     g_str_equal (bus_name_pattern, mpris_id_non_devel)))
+					continue;
+
+				/* Search for flags to apply to the GsAppPermissions in response to the app’s policies */
+				for (j = 0; j < G_N_ELEMENTS (bus_policy_permissions); j++) {
+					if (bus_policy_permissions[j].bus_type == bus_policy_types[h].bus_type &&
+					    ((!bus_policy_permissions[j].is_prefix && g_str_equal (bus_name_pattern, bus_policy_permissions[j].bus_name)) ||
+					     (bus_policy_permissions[j].is_prefix && g_str_has_prefix (bus_name_pattern, bus_policy_permissions[j].bus_name))) &&
+					    bus_policy >= bus_policy_permissions[j].permission_is_at_least) {
+						flags |= bus_policy_permissions[j].flags;
+						break;
+					}
+				}
+
+				/* This entry in the keyfile hasn’t matched any of the specific
+				 * `bus_policy_permissions` we know about, so list it generally
+				 * for the user. */
+				if (j == G_N_ELEMENTS (bus_policy_permissions)) {
+					flags |= GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER;
+					gs_app_permissions_add_bus_policy (permissions,
+									   bus_policy_types[h].bus_type,
+									   bus_name_pattern,
+									   bus_policy);
 				}
 			}
 		}
