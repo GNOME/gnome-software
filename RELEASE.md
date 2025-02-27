@@ -13,7 +13,11 @@ Making a release
 
 Adapted from the [GNOME release process](https://handbook.gnome.org/maintainers/making-a-release.html).
 
-With the first release of the year, verify the `src/gs-application.c` has the current year set in the `CODE_COPYRIGHT_YEAR` define.
+With the first release of the year:
+ - verify the `src/gs-application.c` has the current year set in the `CODE_COPYRIGHT_YEAR` define
+ - cut the releases in the `./data/metainfo/org.gnome.Software.metainfo.xml.in` to not hold more than the current year and the previous year of the history.
+
+The above changes do not require a review from the others, as long as they build with no problem.
 
 These instructions use the following variables:
  - `new_version`: the version number of the release you are making, for example 3.38.1
