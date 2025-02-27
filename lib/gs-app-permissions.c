@@ -165,6 +165,57 @@ gs_app_permissions_is_empty (GsAppPermissions *self)
 }
 
 /**
+ * gs_app_permissions_diff:
+ * @self: a #GsAppPermissions
+ * @other: another #GsAppPermissions
+ *
+ * Calculate the difference between two #GsAppPermissions instances.
+ *
+ * This effectively calculates (`other` - `self`), i.e. it returns all the
+ * permissions which are set in @other but not set in @self.
+ *
+ * The returned #GsAppPermissions will be sealed. Both @self and @other must be
+ * sealed before calling this function.
+ *
+ * Returns: (transfer full): difference between @other and @self
+ * Since: 48
+ */
+GsAppPermissions *
+gs_app_permissions_diff (GsAppPermissions *self,
+                         GsAppPermissions *other)
+{
+	g_autoptr(GsAppPermissions) diff = gs_app_permissions_new ();
+	const GPtrArray *new_paths;
+
+	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (self), NULL);
+	g_return_val_if_fail (self->is_sealed, NULL);
+	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (other), NULL);
+	g_return_val_if_fail (other->is_sealed, NULL);
+
+	/* Flags */
+	gs_app_permissions_set_flags (diff, other->flags & ~self->flags);
+
+	/* File access */
+	new_paths = gs_app_permissions_get_filesystem_read (other);
+	for (unsigned int i = 0; new_paths != NULL && i < new_paths->len; i++) {
+		const char *new_path = g_ptr_array_index (new_paths, i);
+		if (!gs_app_permissions_contains_filesystem_read (self, new_path))
+			gs_app_permissions_add_filesystem_read (diff, new_path);
+	}
+
+	new_paths = gs_app_permissions_get_filesystem_full (other);
+	for (unsigned int i = 0; new_paths != NULL && i < new_paths->len; i++) {
+		const char *new_path = g_ptr_array_index (new_paths, i);
+		if (!gs_app_permissions_contains_filesystem_full (self, new_path))
+			gs_app_permissions_add_filesystem_full (diff, new_path);
+	}
+
+	gs_app_permissions_seal (diff);
+
+	return g_steal_pointer (&diff);
+}
+
+/**
  * gs_app_permissions_set_flags:
  * @self: a #GsAppPermissions
  * @flags: a #GsAppPermissionsFlags to set

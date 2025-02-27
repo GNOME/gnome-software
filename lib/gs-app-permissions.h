@@ -93,6 +93,8 @@ void			 gs_app_permissions_seal	(GsAppPermissions	*self);
 gboolean		 gs_app_permissions_is_sealed	(GsAppPermissions	*self);
 
 gboolean		 gs_app_permissions_is_empty	(GsAppPermissions	*self);
+GsAppPermissions	*gs_app_permissions_diff	(GsAppPermissions	*self,
+							 GsAppPermissions	*other);
 
 void			 gs_app_permissions_set_flags	(GsAppPermissions	*self,
 							 GsAppPermissionsFlags	 flags);

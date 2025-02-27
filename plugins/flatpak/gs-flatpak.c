@@ -493,7 +493,7 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 	g_autoptr(GKeyFile) old_keyfile = NULL;
 	g_autoptr(GBytes) bytes = NULL;
 	g_autoptr(GKeyFile) keyfile = NULL;
-	g_autoptr(GsAppPermissions) additional_permissions = gs_app_permissions_new ();
+	g_autoptr(GsAppPermissions) additional_permissions = NULL;
 	g_autoptr(GError) error_local = NULL;
 
 	old_bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, &error_local);
@@ -502,8 +502,8 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 			 gs_app_get_id (app), error_local->message);
 		g_clear_error (&error_local);
 
-		/* Permissions are unknown */
-		g_clear_object (&additional_permissions);
+		/* Permissions are unknown, so leave @additional_permissions as NULL */
+		g_assert (additional_permissions == NULL);
 
 		goto finish;
 	}
@@ -524,12 +524,11 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 			 gs_app_get_origin (app), error_local->message);
 		g_clear_error (&error_local);
 
-		/* Permissions are unknown */
-		g_clear_object (&additional_permissions);
+		/* Permissions are unknown, so leave @additional_permissions as NULL */
+		g_assert (additional_permissions == NULL);
 	} else {
 		g_autoptr(GsAppPermissions) old_permissions = NULL;
 		g_autoptr(GsAppPermissions) new_permissions = NULL;
-		const GPtrArray *new_paths;
 
 		keyfile = g_key_file_new ();
 		g_key_file_load_from_data (keyfile,
@@ -539,31 +538,11 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 
 		old_permissions = perms_from_metadata (old_keyfile);
 		new_permissions = perms_from_metadata (keyfile);
-
-		gs_app_permissions_set_flags (additional_permissions,
-					      gs_app_permissions_get_flags (new_permissions) &
-					     ~gs_app_permissions_get_flags (old_permissions));
-
-		new_paths = gs_app_permissions_get_filesystem_read (new_permissions);
-		for (guint i = 0; new_paths && i < new_paths->len; i++) {
-			const gchar *new_path = g_ptr_array_index (new_paths, i);
-			if (!gs_app_permissions_contains_filesystem_read (old_permissions, new_path))
-				gs_app_permissions_add_filesystem_read (additional_permissions, new_path);
-		}
-
-		new_paths = gs_app_permissions_get_filesystem_full (new_permissions);
-		for (guint i = 0; new_paths && i < new_paths->len; i++) {
-			const gchar *new_path = g_ptr_array_index (new_paths, i);
-			if (!gs_app_permissions_contains_filesystem_full (old_permissions, new_path))
-				gs_app_permissions_add_filesystem_full (additional_permissions, new_path);
-		}
+		additional_permissions = gs_app_permissions_diff (old_permissions, new_permissions);
 	}
 
 finish:
-	/* no new permissions set */
-	if (additional_permissions != NULL)
-		gs_app_permissions_seal (additional_permissions);
-
+	/* Have new permissions been requested by the app? */
 	gs_app_set_update_permissions (app, additional_permissions);
 
 	if (additional_permissions != NULL &&
