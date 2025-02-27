@@ -87,6 +87,9 @@ G_DECLARE_FINAL_TYPE (GsAppPermissions, gs_app_permissions, GS, APP_PERMISSIONS,
 GsAppPermissions	*gs_app_permissions_new		(void);
 void			 gs_app_permissions_seal	(GsAppPermissions	*self);
 gboolean		 gs_app_permissions_is_sealed	(GsAppPermissions	*self);
+
+gboolean		 gs_app_permissions_is_empty	(GsAppPermissions	*self);
+
 void			 gs_app_permissions_set_flags	(GsAppPermissions	*self,
 							 GsAppPermissionsFlags	 flags);
 GsAppPermissionsFlags	 gs_app_permissions_get_flags	(GsAppPermissions	*self);

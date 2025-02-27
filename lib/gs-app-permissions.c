@@ -143,6 +143,28 @@ gs_app_permissions_is_sealed (GsAppPermissions *self)
 }
 
 /**
+ * gs_app_permissions_is_empty:
+ * @self: a #GsAppPermissions
+ *
+ * Gets whether the #GsAppPermissions is empty, i.e. the app is requesting no
+ * permissions.
+ *
+ * This function works regardless of whether the #GsAppPermissions is sealed.
+ *
+ * Returns: true if the #GsAppPermissions is empty, false otherwise
+ * Since: 48
+ */
+gboolean
+gs_app_permissions_is_empty (GsAppPermissions *self)
+{
+	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (self), TRUE);
+
+	return (self->flags == GS_APP_PERMISSIONS_FLAGS_NONE &&
+		(self->filesystem_read == NULL || self->filesystem_read->len == 0) &&
+		(self->filesystem_full == NULL || self->filesystem_full->len == 0));
+}
+
+/**
  * gs_app_permissions_set_flags:
  * @self: a #GsAppPermissions
  * @flags: a #GsAppPermissionsFlags to set
