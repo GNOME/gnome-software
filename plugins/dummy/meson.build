@@ -12,6 +12,10 @@ shared_module(
 )
 
 if get_option('tests')
+  test_env = environment()
+  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
+  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
+
   resources_src = gnome.compile_resources(
     'gs-resources',
     '../../src/gnome-software.gresource.xml',

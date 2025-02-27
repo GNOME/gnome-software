@@ -300,12 +300,12 @@ configure_file(
 add_project_arguments('-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE',
                       language : 'c')
 
-test_env = [
-  'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
-  'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
+common_test_env = [
+  'G_DEBUG=gc-friendly',
+  'G_ENABLE_DIAGNOSTIC=1',
+  'MALLOC_CHECK_=2',
   'GSETTINGS_SCHEMA_DIR=@0@/data/'.format(meson.project_build_root()),
   'GSETTINGS_BACKEND=memory',
-  'MALLOC_CHECK_=2',
 
   # Make flatpak skip parental controls since it requires the system bus.
   # https://github.com/flatpak/flatpak/issues/2993
@@ -316,6 +316,12 @@ installed_tests_metadir = join_paths(datadir, 'installed-tests', meson.project_n
 installed_tests_execdir = join_paths(libexecdir, 'installed-tests', meson.project_name())
 installed_tests_enabled = get_option('installed_tests')
 installed_tests_template = files('tests/template.test.in')
+
+add_test_setup('default',
+  is_default: not meson.is_subproject(),
+  env: common_test_env,
+  timeout_multiplier: 2,
+)
 
 subdir('data')
 subdir('lib')

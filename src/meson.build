@@ -292,6 +292,10 @@ if get_option('packagekit')
 endif
 
 if get_option('tests')
+  test_env = environment()
+  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
+  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
+
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', 'data') + '"']
   e = executable(
     'gs-self-test-src',
