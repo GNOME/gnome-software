@@ -567,7 +567,7 @@ finish:
 	gs_app_set_update_permissions (app, additional_permissions);
 
 	if (additional_permissions != NULL &&
-	    gs_app_permissions_get_flags (additional_permissions) != GS_APP_PERMISSIONS_FLAGS_NONE)
+	    !gs_app_permissions_is_empty (additional_permissions))
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
 	else
 		gs_app_remove_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
