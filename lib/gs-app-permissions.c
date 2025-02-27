@@ -43,19 +43,12 @@ struct _GsAppPermissions
 G_DEFINE_TYPE (GsAppPermissions, gs_app_permissions, G_TYPE_OBJECT)
 
 static gint
-cmp_filename_qsort (gconstpointer item1,
-		    gconstpointer item2)
+cmp_filename_pointers (gconstpointer item1,
+                       gconstpointer item2)
 {
 	const gchar * const *pitem1 = item1;
 	const gchar * const *pitem2 = item2;
 	return strcmp (*pitem1, *pitem2);
-}
-
-static gint
-cmp_filename_bsearch (gconstpointer item1,
-		      gconstpointer item2)
-{
-	return strcmp (item1, item2);
 }
 
 static void
@@ -117,10 +110,10 @@ gs_app_permissions_seal (GsAppPermissions *self)
 
 	/* Sort the arrays, which will help with searching */
 	if (self->filesystem_read)
-		qsort (self->filesystem_read->pdata, self->filesystem_read->len, sizeof (gpointer), cmp_filename_qsort);
+		qsort (self->filesystem_read->pdata, self->filesystem_read->len, sizeof (gpointer), cmp_filename_pointers);
 
 	if (self->filesystem_full)
-		qsort (self->filesystem_full->pdata, self->filesystem_full->len, sizeof (gpointer), cmp_filename_qsort);
+		qsort (self->filesystem_full->pdata, self->filesystem_full->len, sizeof (gpointer), cmp_filename_pointers);
 }
 
 /**
@@ -385,7 +378,7 @@ array_contains_filename (GPtrArray *array,
 	if (array == NULL)
 		return FALSE;
 
-	return bsearch (filename, array->pdata, array->len, sizeof (gpointer), cmp_filename_bsearch) != NULL;
+	return bsearch (&filename, array->pdata, array->len, sizeof (gpointer), cmp_filename_pointers) != NULL;
 }
 
 /**
