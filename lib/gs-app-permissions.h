@@ -15,6 +15,10 @@ G_BEGIN_DECLS
 
 /**
  * GsAppPermissionsFlags:
+ * @GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS: App has unfiltered access to the D-Bus
+ *    system bus (i.e. can talk to and own any name on it).
+ * @GS_APP_PERMISSIONS_FLAGS_SESSION_BUS: App has unfiltered access to the D-Bus
+ *    session bus (i.e. can talk to and own any name on it).
  * @GS_APP_PERMISSIONS_FLAGS_DEVICES: App can access general purpose devices
  *   such as webcams or gaming controllers.
  * @GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES: App can access non-physical
