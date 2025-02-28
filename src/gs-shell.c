@@ -1914,6 +1914,10 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 							  str_origin);
 			toast_text = tmp_toast_text;
 			suggested_details_text = error->message;
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			toast_text = _("Download failed");
+			suggested_details_text = error->message;
 		}
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
@@ -1984,6 +1988,8 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 		return gs_shell_show_event_install (shell, event);
 	else if (GS_IS_PLUGIN_JOB_UNINSTALL_APPS (job))
 		return gs_shell_show_event_remove (shell, event);
+	else if (GS_IS_PLUGIN_JOB_DOWNLOAD_UPGRADE (job))
+		return gs_shell_show_event_upgrade (shell, event);
 
 	/* split up the events by action */
 	action = gs_plugin_event_get_action (event);
@@ -1991,8 +1997,6 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ACTION_INSTALL_REPO:
 	case GS_PLUGIN_ACTION_ENABLE_REPO:
 		return gs_shell_show_event_install (shell, event);
-	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
-		return gs_shell_show_event_upgrade (shell, event);
 	case GS_PLUGIN_ACTION_REMOVE_REPO:
 	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		return gs_shell_show_event_remove (shell, event);

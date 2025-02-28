@@ -25,7 +25,6 @@ typedef struct
 	GsPlugin		*plugin;
 	GsPluginAction		 action;
 	gchar			*search;
-	GsApp			*app;
 	GsAppList		*list;
 	GFile			*file;
 	gint64			 time_created;
@@ -39,7 +38,6 @@ enum {
 	PROP_REFINE_FLAGS,
 	PROP_DEDUPE_FLAGS,
 	PROP_INTERACTIVE,
-	PROP_APP,
 	PROP_LIST,
 	PROP_FILE,
 	PROP_MAX_RESULTS,
@@ -252,24 +250,48 @@ gs_plugin_job_get_search (GsPluginJob *self)
 	return priv->search;
 }
 
+/* FIXME: Find the :app property of the derived class. This will be removed
+ * when the remains of the old threading API are removed. */
+static gboolean
+gs_plugin_job_subclass_has_app_property (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
+
+	return (g_object_class_find_property (G_OBJECT_GET_CLASS (self), "app") != NULL);
+}
+
 void
 gs_plugin_job_set_app (GsPluginJob *self, GsApp *app)
 {
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&priv->app, app);
+
+	if (!gs_plugin_job_subclass_has_app_property (self))
+		return;
+
+	g_object_set (G_OBJECT (self), "app", app, NULL);
 
 	/* ensure we can always operate on a list object */
 	if (priv->list != NULL && app != NULL && gs_app_list_length (priv->list) == 0)
-		gs_app_list_add (priv->list, priv->app);
+		gs_app_list_add (priv->list, app);
 }
 
 GsApp *
 gs_plugin_job_get_app (GsPluginJob *self)
 {
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+	g_autoptr(GsApp) app = NULL;
+
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return priv->app;
+
+	if (!gs_plugin_job_subclass_has_app_property (self))
+		return NULL;
+
+	g_object_get (G_OBJECT (self), "app", &app, NULL);
+
+	/* Don’t steal the reference, let the additional reference be dropped
+	 * because gs_plugin_job_get_app() is (transfer none). The GsPluginJob
+	 * still holds one. */
+	return app;
 }
 
 void
@@ -344,9 +366,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_SEARCH:
 		g_value_set_string (value, priv->search);
 		break;
-	case PROP_APP:
-		g_value_set_object (value, priv->app);
-		break;
 	case PROP_LIST:
 		g_value_set_object (value, priv->list);
 		break;
@@ -386,9 +405,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
 		break;
-	case PROP_APP:
-		gs_plugin_job_set_app (self, g_value_get_object (value));
-		break;
 	case PROP_LIST:
 		gs_plugin_job_set_list (self, g_value_get_object (value));
 		break;
@@ -414,7 +430,6 @@ gs_plugin_job_finalize (GObject *obj)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 
 	g_free (priv->search);
-	g_clear_object (&priv->app);
 	g_clear_object (&priv->list);
 	g_clear_object (&priv->file);
 	g_clear_object (&priv->plugin);
@@ -457,11 +472,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     NULL,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SEARCH, pspec);
-
-	pspec = g_param_spec_object ("app", NULL, NULL,
-				     GS_TYPE_APP,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_APP, pspec);
 
 	pspec = g_param_spec_object ("list", NULL, NULL,
 				     GS_TYPE_APP_LIST,

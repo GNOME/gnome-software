@@ -297,5 +297,6 @@ gs_plugin_job_download_upgrade_new (GsApp *app,
 	return g_object_new (GS_TYPE_PLUGIN_JOB_DOWNLOAD_UPGRADE,
 			     "app", app,
 			     "flags", flags,
+			     "interactive", (flags & GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE) != 0,
 			     NULL);
 }

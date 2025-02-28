@@ -268,33 +268,14 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 	g_idle_add (gs_plugin_loader_notify_idle_cb, plugin_loader);
 }
 
-/**
- * gs_plugin_loader_claim_error:
- * @plugin_loader: a #GsPluginLoader
- * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
- * @action: a #GsPluginAction associated with the @error
- * @app: (nullable): a #GsApp for the event, or %NULL
- * @interactive: whether to set interactive flag
- * @error: a #GError to claim
- *
- * Convert the @error into a plugin event and add it to the queue.
- *
- * The @plugin is used only if the @error contains a reference
- * to a concrete application, in which case any cached application
- * overrides the passed in @app.
- *
- * The %GS_PLUGIN_ERROR_CANCELLED and %G_IO_ERROR_CANCELLED errors
- * are automatically ignored.
- *
- * Since: 41
- **/
-void
-gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
-			      GsPlugin *plugin,
-			      GsPluginAction action,
-			      GsApp *app,
-			      gboolean interactive,
-			      const GError *error)
+static void
+gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
+				       GsPlugin *plugin,
+				       GsPluginJob *job,
+				       GsPluginAction action,
+				       GsApp *app,
+				       gboolean interactive,
+				       const GError *error)
 {
 	g_autoptr(GError) error_copy = NULL;
 	g_autofree gchar *app_id = NULL;
@@ -366,6 +347,7 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 				     "action", action,
 				     "app", event_app,
 				     "origin", event_origin,
+				     "job", job,
 				     NULL);
 	if (interactive)
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -373,6 +355,40 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 
 	/* add event to the queue */
 	gs_plugin_loader_add_event (plugin_loader, event);
+}
+
+/**
+ * gs_plugin_loader_claim_error:
+ * @plugin_loader: a #GsPluginLoader
+ * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
+ * @action: a #GsPluginAction associated with the @error
+ * @app: (nullable): a #GsApp for the event, or %NULL
+ * @interactive: whether to set interactive flag
+ * @error: a #GError to claim
+ *
+ * Convert the @error into a plugin event and add it to the queue.
+ *
+ * The @plugin is used only if the @error contains a reference
+ * to a concrete application, in which case any cached application
+ * overrides the passed in @app.
+ *
+ * The %GS_PLUGIN_ERROR_CANCELLED and %G_IO_ERROR_CANCELLED errors
+ * are automatically ignored.
+ *
+ * Since: 41
+ **/
+void
+gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
+			      GsPlugin *plugin,
+			      GsPluginAction action,
+			      GsApp *app,
+			      gboolean interactive,
+			      const GError *error)
+{
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (error != NULL);
+
+	gs_plugin_loader_claim_error_internal (plugin_loader, plugin, NULL, action, app, interactive, error);
 }
 
 /**
@@ -397,7 +413,8 @@ gs_plugin_loader_claim_job_error (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_PLUGIN_JOB (job));
 	g_return_if_fail (error != NULL);
 
-	gs_plugin_loader_claim_error (plugin_loader, plugin,
+	gs_plugin_loader_claim_error_internal (plugin_loader, plugin,
+		job,
 		gs_plugin_job_get_action (job),
 		gs_plugin_job_get_app (job),
 		gs_plugin_job_get_interactive (job),
@@ -526,9 +543,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 static gboolean
 gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			     GsPlugin *plugin,
-			     GsApp *app,
 			     GsAppList *list,
-			     GsPluginRefineFlags refine_flags,
 			     GCancellable *cancellable,
 			     GError **error)
 {
@@ -554,12 +569,8 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	helper->anything_ran = TRUE;
 
 	/* fallback if unset */
-	if (app == NULL)
-		app = gs_plugin_job_get_app (helper->plugin_job);
 	if (list == NULL)
 		list = gs_plugin_job_get_list (helper->plugin_job);
-	if (refine_flags == GS_PLUGIN_REFINE_FLAGS_NONE)
-		refine_flags = gs_plugin_job_get_refine_flags (helper->plugin_job);
 
 	/* set what plugin is running on the job */
 	gs_plugin_job_set_plugin (helper->plugin_job, plugin);
@@ -671,8 +682,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			gs_utils_error_convert_gio (error);
 			return FALSE;
 		}
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  GS_PLUGIN_REFINE_FLAGS_NONE,
+		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL,
 						  cancellable, &local_error)) {
 			gboolean mask_error;
 
