@@ -1916,7 +1916,7 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 			suggested_details_text = error->message;
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification */
-			toast_text = _("Sorry, something went wrong");
+			toast_text = _("Download failed");
 			suggested_details_text = error->message;
 		}
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
