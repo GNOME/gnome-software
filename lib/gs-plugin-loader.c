@@ -526,9 +526,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 static gboolean
 gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			     GsPlugin *plugin,
-			     GsApp *app,
 			     GsAppList *list,
-			     GsPluginRefineFlags refine_flags,
 			     GCancellable *cancellable,
 			     GError **error)
 {
@@ -554,12 +552,8 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	helper->anything_ran = TRUE;
 
 	/* fallback if unset */
-	if (app == NULL)
-		app = gs_plugin_job_get_app (helper->plugin_job);
 	if (list == NULL)
 		list = gs_plugin_job_get_list (helper->plugin_job);
-	if (refine_flags == GS_PLUGIN_REFINE_FLAGS_NONE)
-		refine_flags = gs_plugin_job_get_refine_flags (helper->plugin_job);
 
 	/* set what plugin is running on the job */
 	gs_plugin_job_set_plugin (helper->plugin_job, plugin);
@@ -671,8 +665,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			gs_utils_error_convert_gio (error);
 			return FALSE;
 		}
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  GS_PLUGIN_REFINE_FLAGS_NONE,
+		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL,
 						  cancellable, &local_error)) {
 			gboolean mask_error;
 
