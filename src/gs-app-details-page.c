@@ -60,6 +60,7 @@ static const struct {
   { GS_APP_PERMISSIONS_FLAGS_NETWORK, N_("Network"), N_("Can communicate over the network") },
   { GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS, N_("System Services"), N_("Can access D-Bus services on the system bus") },
   { GS_APP_PERMISSIONS_FLAGS_SESSION_BUS, N_("Session Services"), N_("Can access D-Bus services on the session bus") },
+  /* The GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER is used only as a flag, with actual bus names being listed separately */
   { GS_APP_PERMISSIONS_FLAGS_DEVICES, N_("Devices"), N_("Can access arbitrary devices such as webcams") },
   { GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES, N_("Devices"), N_("Can access input devices") },
   { GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES, N_("Devices"), N_("Can access microphones and play audio") },
@@ -121,6 +122,8 @@ populate_permissions_section (GsAppDetailsPage *page,
 			      GsAppPermissions *permissions)
 {
 	GsAppPermissionsFlags flags = gs_app_permissions_get_flags (permissions);
+	size_t n_bus_policies = 0;
+	const GsBusPolicy * const *bus_policies = gs_app_permissions_get_bus_policies (permissions, &n_bus_policies);
 
 	gs_widget_remove_all (page->permissions_section_list, (GsRemoveFunc) gtk_list_box_remove);
 
@@ -143,6 +146,19 @@ populate_permissions_section (GsAppDetailsPage *page,
 		gs_app_permissions_get_filesystem_full (permissions),
 		_("Can view, edit and create files"),
 		(GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL & ~MEDIUM_PERMISSIONS) != 0);
+
+	/* D-Bus policies */
+	for (size_t i = 0; i < n_bus_policies; i++) {
+		const GsBusPolicy *policy = bus_policies[i];
+		g_autofree char *title = NULL;
+		const char *subtitle;
+
+		title = gs_utils_format_bus_policy_title (policy);
+		subtitle = gs_utils_format_bus_policy_subtitle (policy);
+
+		add_permissions_row (page, title, subtitle,
+				     (GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER & ~MEDIUM_PERMISSIONS) != 0);
+	}
 }
 
 static void

@@ -77,4 +77,7 @@ gchar		*gs_utils_get_app_data_dir	(GsApp *app);
 gboolean	 gs_utils_remove_app_data_dir	(GsApp *app,
 						 GsPluginLoader *plugin_loader);
 
+char		*gs_utils_format_bus_policy_title (const GsBusPolicy *bus_policy);
+const char	*gs_utils_format_bus_policy_subtitle (const GsBusPolicy *bus_policy);
+
 G_END_DECLS

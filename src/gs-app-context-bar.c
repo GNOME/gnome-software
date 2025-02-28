@@ -314,14 +314,21 @@ update_safety_tile (GsAppContextBar *self)
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app uses D-Bus system services.
 					       * It’s used in a context tile, so should be short. */
-					      _("Uses system services"));
+					      _("Uses non-portal system services"));
 			break;
 		case GS_APP_PERMISSIONS_FLAGS_SESSION_BUS:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app uses D-Bus session services.
 					       * It’s used in a context tile, so should be short. */
-					      _("Uses session services"));
+					      _("Uses non-portal session services"));
+			break;
+		case GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER:
+			add_to_safety_rating (&chosen_rating, descriptions,
+					      SAFETY_POTENTIALLY_UNSAFE,
+					      /* Translators: This indicates an app can access session or system bus services unknown to the Software.
+					       * It’s used in a context tile, so should be short. */
+					      _("Can access some specific non-portal services"));
 			break;
 		case GS_APP_PERMISSIONS_FLAGS_DEVICES:
 			add_to_safety_rating (&chosen_rating, descriptions,
