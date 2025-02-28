@@ -284,9 +284,8 @@ update_safety_tile (GsAppContextBar *self)
 	if (permissions != NULL)
 		perm_flags = gs_app_permissions_get_flags (permissions);
 
-	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE &&
-	    (permissions != NULL ||
-	    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))) {
+	if ((permissions == NULL || gs_app_permissions_is_empty (permissions)) &&
+	    (permissions != NULL || !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))) {
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
 				      /* Translators: This indicates an app requires no permissions to run.

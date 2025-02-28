@@ -43,19 +43,12 @@ struct _GsAppPermissions
 G_DEFINE_TYPE (GsAppPermissions, gs_app_permissions, G_TYPE_OBJECT)
 
 static gint
-cmp_filename_qsort (gconstpointer item1,
-		    gconstpointer item2)
+cmp_filename_pointers (gconstpointer item1,
+                       gconstpointer item2)
 {
 	const gchar * const *pitem1 = item1;
 	const gchar * const *pitem2 = item2;
 	return strcmp (*pitem1, *pitem2);
-}
-
-static gint
-cmp_filename_bsearch (gconstpointer item1,
-		      gconstpointer item2)
-{
-	return strcmp (item1, item2);
 }
 
 static void
@@ -117,10 +110,10 @@ gs_app_permissions_seal (GsAppPermissions *self)
 
 	/* Sort the arrays, which will help with searching */
 	if (self->filesystem_read)
-		qsort (self->filesystem_read->pdata, self->filesystem_read->len, sizeof (gpointer), cmp_filename_qsort);
+		qsort (self->filesystem_read->pdata, self->filesystem_read->len, sizeof (gpointer), cmp_filename_pointers);
 
 	if (self->filesystem_full)
-		qsort (self->filesystem_full->pdata, self->filesystem_full->len, sizeof (gpointer), cmp_filename_qsort);
+		qsort (self->filesystem_full->pdata, self->filesystem_full->len, sizeof (gpointer), cmp_filename_pointers);
 }
 
 /**
@@ -140,6 +133,79 @@ gs_app_permissions_is_sealed (GsAppPermissions *self)
 	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (self), TRUE);
 
 	return self->is_sealed;
+}
+
+/**
+ * gs_app_permissions_is_empty:
+ * @self: a #GsAppPermissions
+ *
+ * Gets whether the #GsAppPermissions is empty, i.e. the app is requesting no
+ * permissions.
+ *
+ * This function works regardless of whether the #GsAppPermissions is sealed.
+ *
+ * Returns: true if the #GsAppPermissions is empty, false otherwise
+ * Since: 48
+ */
+gboolean
+gs_app_permissions_is_empty (GsAppPermissions *self)
+{
+	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (self), TRUE);
+
+	return (self->flags == GS_APP_PERMISSIONS_FLAGS_NONE &&
+		(self->filesystem_read == NULL || self->filesystem_read->len == 0) &&
+		(self->filesystem_full == NULL || self->filesystem_full->len == 0));
+}
+
+/**
+ * gs_app_permissions_diff:
+ * @self: a #GsAppPermissions
+ * @other: another #GsAppPermissions
+ *
+ * Calculate the difference between two #GsAppPermissions instances.
+ *
+ * This effectively calculates (`other` - `self`), i.e. it returns all the
+ * permissions which are set in @other but not set in @self.
+ *
+ * The returned #GsAppPermissions will be sealed. Both @self and @other must be
+ * sealed before calling this function.
+ *
+ * Returns: (transfer full): difference between @other and @self
+ * Since: 48
+ */
+GsAppPermissions *
+gs_app_permissions_diff (GsAppPermissions *self,
+                         GsAppPermissions *other)
+{
+	g_autoptr(GsAppPermissions) diff = gs_app_permissions_new ();
+	const GPtrArray *new_paths;
+
+	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (self), NULL);
+	g_return_val_if_fail (self->is_sealed, NULL);
+	g_return_val_if_fail (GS_IS_APP_PERMISSIONS (other), NULL);
+	g_return_val_if_fail (other->is_sealed, NULL);
+
+	/* Flags */
+	gs_app_permissions_set_flags (diff, other->flags & ~self->flags);
+
+	/* File access */
+	new_paths = gs_app_permissions_get_filesystem_read (other);
+	for (unsigned int i = 0; new_paths != NULL && i < new_paths->len; i++) {
+		const char *new_path = g_ptr_array_index (new_paths, i);
+		if (!gs_app_permissions_contains_filesystem_read (self, new_path))
+			gs_app_permissions_add_filesystem_read (diff, new_path);
+	}
+
+	new_paths = gs_app_permissions_get_filesystem_full (other);
+	for (unsigned int i = 0; new_paths != NULL && i < new_paths->len; i++) {
+		const char *new_path = g_ptr_array_index (new_paths, i);
+		if (!gs_app_permissions_contains_filesystem_full (self, new_path))
+			gs_app_permissions_add_filesystem_full (diff, new_path);
+	}
+
+	gs_app_permissions_seal (diff);
+
+	return g_steal_pointer (&diff);
 }
 
 /**
@@ -312,7 +378,7 @@ array_contains_filename (GPtrArray *array,
 	if (array == NULL)
 		return FALSE;
 
-	return bsearch (filename, array->pdata, array->len, sizeof (gpointer), cmp_filename_bsearch) != NULL;
+	return bsearch (&filename, array->pdata, array->len, sizeof (gpointer), cmp_filename_pointers) != NULL;
 }
 
 /**

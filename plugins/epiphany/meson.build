@@ -34,6 +34,10 @@ i18n.merge_file(
 )
 
 if get_option('tests')
+  test_env = environment()
+  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
+  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
+
   # The DynamicLauncher interface xml comes from:
   # https://github.com/flatpak/xdg-desktop-portal/blob/main/data/org.freedesktop.portal.DynamicLauncher.xml
   gdbus_codegen = find_program('gdbus-codegen')

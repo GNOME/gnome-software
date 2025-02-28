@@ -250,6 +250,21 @@ gs_get_strv_index (const gchar * const *strv,
 	return ii;
 }
 
+static GsBusPolicyPermission
+bus_policy_permission_from_string (const char *str)
+{
+	if (str == NULL || g_str_equal (str, "none"))
+		return GS_BUS_POLICY_PERMISSION_NONE;
+	else if (g_str_equal (str, "see"))
+		return GS_BUS_POLICY_PERMISSION_SEE;
+	else if (g_str_equal (str, "talk"))
+		return GS_BUS_POLICY_PERMISSION_TALK;
+	else if (g_str_equal (str, "own"))
+		return GS_BUS_POLICY_PERMISSION_OWN;
+	else
+		return GS_BUS_POLICY_PERMISSION_UNKNOWN;
+}
+
 static GsAppPermissions *
 perms_from_metadata (GKeyFile *keyfile)
 {
@@ -260,9 +275,9 @@ perms_from_metadata (GKeyFile *keyfile)
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "system-bus"))
-		flags |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS;
+		flags |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS | GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "session-bus"))
-		flags |= GS_APP_PERMISSIONS_FLAGS_SESSION_BUS;
+		flags |= GS_APP_PERMISSIONS_FLAGS_SESSION_BUS | GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 	if (strv != NULL &&
 	    !g_strv_contains ((const gchar * const*)strv, "fallback-x11") &&
 	    g_strv_contains ((const gchar * const*)strv, "x11"))
@@ -312,6 +327,7 @@ perms_from_metadata (GKeyFile *keyfile)
 			{ "xdg-download:ro", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ },
 			{ "xdg-data/flatpak/overrides:create", GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX },
 			{ "xdg-run/pipewire-0", GS_APP_PERMISSIONS_FLAGS_SCREEN | GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES },  /* see https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2329 */
+			{ "xdg-run/gvfsd", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },  /* see https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2760 */
 		};
 		guint filesystems_hits = 0;
 		guint strv_len = g_strv_length (strv);
@@ -426,22 +442,38 @@ perms_from_metadata (GKeyFile *keyfile)
 	g_strfreev (strv);
 
 	str = g_key_file_get_string (keyfile, "Session Bus Policy", "ca.desrt.dconf", NULL);
-	if (str != NULL && g_str_equal (str, "talk"))
+	if (bus_policy_permission_from_string (str) >= GS_BUS_POLICY_PERMISSION_TALK)
 		flags |= GS_APP_PERMISSIONS_FLAGS_SETTINGS;
 	g_free (str);
 
-	if (!(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX)) {
-		str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.Flatpak", NULL);
-		if (str != NULL && g_str_equal (str, "talk"))
-			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
-		g_free (str);
-	}
+	{
+		/* There are various services on the session bus which are known to give sandbox escapes. */
+		const char *known_session_bus_sandbox_escape_names[] = {
+			"org.freedesktop.Flatpak",
+			"org.freedesktop.impl.portal.PermissionStore",
+			/* allows arbitrary JavaScript evaluation: */
+			"org.gnome.Shell",
+		};
 
-	if (!(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX)) {
-		str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.impl.portal.PermissionStore", NULL);
-		if (str != NULL && g_str_equal (str, "talk"))
-			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
-		g_free (str);
+		for (size_t i = 0; !(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) && i < G_N_ELEMENTS (known_session_bus_sandbox_escape_names); i++) {
+			g_autofree char *bus_policy = g_key_file_get_string (keyfile, "Session Bus Policy", known_session_bus_sandbox_escape_names[i], NULL);
+			if (bus_policy_permission_from_string (bus_policy) >= GS_BUS_POLICY_PERMISSION_TALK)
+				flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		}
+
+		/* org.gtk.vfs.* is known to allow file system access */
+		{
+			g_auto(GStrv) session_bus_policies = NULL;
+
+			session_bus_policies = g_key_file_get_keys (keyfile, "Session Bus Policy", NULL, NULL);
+			for (size_t i = 0; session_bus_policies != NULL && session_bus_policies[i] != NULL; i++) {
+				if (g_str_has_prefix (session_bus_policies[i], "org.gtk.vfs.")) {
+					g_autofree char *bus_policy = g_key_file_get_string (keyfile, "Session Bus Policy", session_bus_policies[i], NULL);
+					if (bus_policy_permission_from_string (bus_policy) >= GS_BUS_POLICY_PERMISSION_TALK)
+						flags |= GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL;
+				}
+			}
+		}
 	}
 
 	gs_app_permissions_set_flags (permissions, flags);
@@ -461,7 +493,7 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 	g_autoptr(GKeyFile) old_keyfile = NULL;
 	g_autoptr(GBytes) bytes = NULL;
 	g_autoptr(GKeyFile) keyfile = NULL;
-	g_autoptr(GsAppPermissions) additional_permissions = gs_app_permissions_new ();
+	g_autoptr(GsAppPermissions) additional_permissions = NULL;
 	g_autoptr(GError) error_local = NULL;
 
 	old_bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, &error_local);
@@ -470,8 +502,8 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 			 gs_app_get_id (app), error_local->message);
 		g_clear_error (&error_local);
 
-		/* Permissions are unknown */
-		g_clear_object (&additional_permissions);
+		/* Permissions are unknown, so leave @additional_permissions as NULL */
+		g_assert (additional_permissions == NULL);
 
 		goto finish;
 	}
@@ -492,12 +524,11 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 			 gs_app_get_origin (app), error_local->message);
 		g_clear_error (&error_local);
 
-		/* Permissions are unknown */
-		g_clear_object (&additional_permissions);
+		/* Permissions are unknown, so leave @additional_permissions as NULL */
+		g_assert (additional_permissions == NULL);
 	} else {
 		g_autoptr(GsAppPermissions) old_permissions = NULL;
 		g_autoptr(GsAppPermissions) new_permissions = NULL;
-		const GPtrArray *new_paths;
 
 		keyfile = g_key_file_new ();
 		g_key_file_load_from_data (keyfile,
@@ -507,35 +538,15 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 
 		old_permissions = perms_from_metadata (old_keyfile);
 		new_permissions = perms_from_metadata (keyfile);
-
-		gs_app_permissions_set_flags (additional_permissions,
-					      gs_app_permissions_get_flags (new_permissions) &
-					     ~gs_app_permissions_get_flags (old_permissions));
-
-		new_paths = gs_app_permissions_get_filesystem_read (new_permissions);
-		for (guint i = 0; new_paths && i < new_paths->len; i++) {
-			const gchar *new_path = g_ptr_array_index (new_paths, i);
-			if (!gs_app_permissions_contains_filesystem_read (old_permissions, new_path))
-				gs_app_permissions_add_filesystem_read (additional_permissions, new_path);
-		}
-
-		new_paths = gs_app_permissions_get_filesystem_full (new_permissions);
-		for (guint i = 0; new_paths && i < new_paths->len; i++) {
-			const gchar *new_path = g_ptr_array_index (new_paths, i);
-			if (!gs_app_permissions_contains_filesystem_full (old_permissions, new_path))
-				gs_app_permissions_add_filesystem_full (additional_permissions, new_path);
-		}
+		additional_permissions = gs_app_permissions_diff (old_permissions, new_permissions);
 	}
 
 finish:
-	/* no new permissions set */
-	if (additional_permissions != NULL)
-		gs_app_permissions_seal (additional_permissions);
-
+	/* Have new permissions been requested by the app? */
 	gs_app_set_update_permissions (app, additional_permissions);
 
 	if (additional_permissions != NULL &&
-	    gs_app_permissions_get_flags (additional_permissions) != GS_APP_PERMISSIONS_FLAGS_NONE)
+	    !gs_app_permissions_is_empty (additional_permissions))
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
 	else
 		gs_app_remove_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);

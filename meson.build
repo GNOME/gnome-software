@@ -26,6 +26,9 @@ conf.set_quoted('APPLICATION_ID', application_id)
 gs_plugin_api_version = '22'
 conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 
+datadir = join_paths(get_option('prefix'), get_option('datadir'))
+libexecdir = join_paths(get_option('prefix'), get_option('libexecdir'))
+
 # private subdirectory of libdir for the private shared libgnomesoftware to live in
 gs_private_libdir = join_paths(get_option('prefix'), get_option('libdir'), 'gnome-software')
 
@@ -256,13 +259,13 @@ endif
 if get_option('hardcoded_foss_webapps')
   pwa_list_foss = pwa_list_proj.get_variable('gnome_pwa_list_foss')
   install_data(pwa_list_foss,
-    install_dir : join_paths(get_option('datadir'), 'swcatalog', 'xml'),
+    install_dir : join_paths(datadir, 'swcatalog', 'xml'),
   )
 endif
 if get_option('hardcoded_proprietary_webapps')
   pwa_list_proprietary = pwa_list_proj.get_variable('gnome_pwa_list_proprietary')
   install_data(pwa_list_proprietary,
-    install_dir : join_paths(get_option('datadir'), 'swcatalog', 'xml'),
+    install_dir : join_paths(datadir, 'swcatalog', 'xml'),
   )
 endif
 
@@ -273,9 +276,7 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 conf.set_quoted('LOCALEDIR',
                 join_paths(get_option('prefix'),
                            get_option('localedir')))
-conf.set_quoted('DATADIR',
-                join_paths(get_option('prefix'),
-                           get_option('datadir')))
+conf.set_quoted('DATADIR', datadir)
 conf.set_quoted('LIBDIR',
                 join_paths(get_option('prefix'),
                            get_option('libdir')))
@@ -288,9 +289,7 @@ conf.set_quoted('SYSCONFDIR',
 conf.set_quoted('LOCALSTATEDIR',
                 join_paths(get_option('prefix'),
                            get_option('localstatedir')))
-conf.set_quoted('LIBEXECDIR',
-                join_paths(get_option('prefix'),
-                           get_option('libexecdir')))
+conf.set_quoted('LIBEXECDIR', libexecdir)
 conf.set('ENABLE_EXTERNAL_APPSTREAM', get_option('external_appstream'))
 conf.set('ENABLE_DKMS', get_option('dkms'))
 configure_file(
@@ -301,17 +300,28 @@ configure_file(
 add_project_arguments('-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE',
                       language : 'c')
 
-test_env = [
-  'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
-  'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
+common_test_env = [
+  'G_DEBUG=gc-friendly',
+  'G_ENABLE_DIAGNOSTIC=1',
+  'MALLOC_CHECK_=2',
   'GSETTINGS_SCHEMA_DIR=@0@/data/'.format(meson.project_build_root()),
   'GSETTINGS_BACKEND=memory',
-  'MALLOC_CHECK_=2',
 
   # Make flatpak skip parental controls since it requires the system bus.
   # https://github.com/flatpak/flatpak/issues/2993
   'FLATPAK_SYSTEM_HELPER_ON_SESSION=1',
 ]
+
+installed_tests_metadir = join_paths(datadir, 'installed-tests', meson.project_name())
+installed_tests_execdir = join_paths(libexecdir, 'installed-tests', meson.project_name())
+installed_tests_enabled = get_option('installed_tests')
+installed_tests_template = files('tests/template.test.in')
+
+add_test_setup('default',
+  is_default: not meson.is_subproject(),
+  env: common_test_env,
+  timeout_multiplier: 2,
+)
 
 subdir('data')
 subdir('lib')
