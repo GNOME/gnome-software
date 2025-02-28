@@ -169,8 +169,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		filesystem_full = gs_app_permissions_get_filesystem_full (permissions);
 
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE) &&
-				    filesystem_read == NULL && filesystem_full == NULL,
+				    gs_app_permissions_is_empty (permissions),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
 				    "permissions-sandboxed-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
