@@ -2990,7 +2990,7 @@ get_update_detail_cb (GObject      *source_object,
 				if (desc != NULL)
 					gs_app_set_update_details_markup (app, desc);
 			} else if (tmp != NULL && *tmp != '\0')  {
-				gs_app_set_update_details_markup (app, tmp);
+				gs_app_set_update_details_text (app, tmp);
 			}
 			break;
 		}
