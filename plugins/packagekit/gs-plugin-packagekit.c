@@ -1935,30 +1935,28 @@ gs_plugin_packagekit_resolve_packages_with_filter_finish (GsPluginPackagekit  *s
 }
 
 /*
- * gs_plugin_packagekit_fixup_update_description:
+ * markdown_to_pango:
  *
- * Lets assume Fedora is sending us valid markdown, but fall back to
- * plain text if this fails.
+ * Converts markdown text to pango markup which can be used in a
+ * GtkLabel etc. This function assumes @text is valid markdown.
+ *
+ * Returns: pango markup, or %NULL on failure
+ *
  */
 static gchar *
-gs_plugin_packagekit_fixup_update_description (const gchar *text)
+markdown_to_pango (const gchar *text)
 {
-	gchar *tmp;
 	g_autoptr(GsMarkdown) markdown = NULL;
 
-	/* nothing to do */
-	if (text == NULL)
-		return NULL;
+	g_return_val_if_fail (text != NULL, NULL);
 
 	/* try to parse */
 	markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 	gs_markdown_set_smart_quoting (markdown, FALSE);
 	gs_markdown_set_autocode (markdown, FALSE);
 	gs_markdown_set_autolinkify (markdown, FALSE);
-	tmp = gs_markdown_parse (markdown, text);
-	if (tmp != NULL)
-		return tmp;
-	return g_strdup (text);
+
+	return gs_markdown_parse (markdown, text);
 }
 
 static gboolean
@@ -2955,7 +2953,7 @@ get_update_detail_cb (GObject      *source_object,
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GError) local_error = NULL;
-	gboolean is_markdown;
+	gboolean is_markdown_desc;
 
 	results = pk_client_generic_finish (client, result, &local_error);
 	if (!gs_plugin_packagekit_results_valid (results, g_task_get_cancellable (refine_task), &local_error)) {
@@ -2964,10 +2962,18 @@ get_update_detail_cb (GObject      *source_object,
 		return;
 	}
 
-	/* FIXME: This had been added only for the https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2621
-	   and should not be needed once the https://github.com/PackageKit/PackageKit/issues/828 is fixed */
-	is_markdown = gs_plugin_check_distro_id (plugin, "fedora") ||
-		      gs_plugin_check_distro_id (plugin, "rhel");
+	/*
+	 * Only Fedora and RHEL (PackageKit DNF backend) are known to
+	 * provide update descriptions in markdown format. Other
+	 * distros if any should be added below in future. For more
+	 * details, refer:
+	 *
+	 * - https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2621
+	 * - https://github.com/PackageKit/PackageKit/issues/828
+	 *
+	 */
+	is_markdown_desc = (gs_plugin_check_distro_id (plugin, "fedora") ||
+			    gs_plugin_check_distro_id (plugin, "rhel"));
 
 	/* set the update details for the update */
 	array = pk_results_get_update_detail_array (results);
@@ -2978,21 +2984,23 @@ get_update_detail_cb (GObject      *source_object,
 		for (guint i = 0; i < array->len; i++) {
 			const gchar *tmp;
 			PkUpdateDetail *update_detail;
+			g_autofree gchar *pango_desc = NULL;
 
 			/* right package? */
 			update_detail = g_ptr_array_index (array, i);
 			if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
 				continue;
 			tmp = pk_update_detail_get_update_text (update_detail);
-			if (is_markdown) {
-				g_autofree gchar *desc = NULL;
-				desc = gs_plugin_packagekit_fixup_update_description (tmp);
-				if (desc != NULL)
-					gs_app_set_update_details_markup (app, desc);
-			} else if (tmp != NULL && *tmp != '\0')  {
-				gs_app_set_update_details_markup (app, tmp);
-			}
-			break;
+			if (tmp == NULL || *tmp == '\0')
+				break;
+
+			if (is_markdown_desc)
+				pango_desc = markdown_to_pango (tmp);
+
+			if (pango_desc != NULL && *pango_desc != '\0')
+				gs_app_set_update_details_markup (app, pango_desc);
+			else
+				gs_app_set_update_details_text (app, tmp);
 		}
 	}
 
