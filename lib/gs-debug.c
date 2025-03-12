@@ -89,13 +89,6 @@ gs_log_writer_console (GLogLevelFlags log_level,
 				       g_date_time_get_microsecond (dt) / 1000);
 	}
 
-	/* make these shorter */
-	if (g_strcmp0 (log_domain, "PackageKit") == 0) {
-		log_domain = "PK";
-	} else if (g_strcmp0 (log_domain, "GsPlugin") == 0) {
-		log_domain = "Gs";
-	}
-
 	/* pad out domain */
 	domain = g_string_new (log_domain);
 	for (guint i = domain->len; i < 3; i++)
