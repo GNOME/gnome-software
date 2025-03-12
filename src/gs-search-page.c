@@ -406,6 +406,7 @@ gs_search_page_clear (GsSearchPage *self)
 
 	g_cancellable_cancel (self->search_cancellable);
 	g_clear_object (&self->search_cancellable);
+	g_clear_pointer (&self->value, g_free);
 
 	/* Reset the UI so we don’t show a glimpse of old search results when
 	 * next switching to the search page. */
