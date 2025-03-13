@@ -901,7 +901,7 @@ window_keypress_handler (GtkEventControllerKey *key_controller,
 				break;
 			}
 		} else {
-			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), FALSE);
+			gtk_widget_grab_focus (shell->entry_search);
 		}
 		return GDK_EVENT_STOP;
 	}
