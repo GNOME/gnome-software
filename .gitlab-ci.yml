@@ -156,8 +156,7 @@ dist:
 pages:
   image: "${FEDORA_IMAGE}"
   stage: pages
-  dependencies:
-    - fedora-x86_64
+  needs: ['fedora-x86_64']
   interruptible: false
   script:
     - |
