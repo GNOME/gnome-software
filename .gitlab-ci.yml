@@ -156,8 +156,7 @@ dist:
 pages:
   image: "${FEDORA_IMAGE}"
   stage: pages
-  dependencies:
-    - fedora-x86_64
+  needs: ['fedora-x86_64']
   interruptible: false
   script:
     - |
@@ -180,7 +179,7 @@ pages:
     paths:
     - "public"
   rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    - if: $CI_PROJECT_PATH == "GNOME/gnome-software" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       changes:
         - "help/**/*"
         - ".gitlab-ci/generate-help-index.py"
