@@ -561,7 +561,7 @@ dump_input_stream (GInputStream *input_stream)
 		g_warning ("Got EOF while dumping ODRS response");
 	else
 		g_debug ("ODRS server returned data (first %" G_GSSIZE_FORMAT " bytes): %.*s",
-			 count, (gint) count, (const gchar *) data);
+			 count, (gint) count, g_strescape ((gchar *) data, "\n\\\""));
 }
 
 static void
