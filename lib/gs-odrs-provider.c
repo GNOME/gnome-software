@@ -537,14 +537,8 @@ gs_odrs_provider_json_post_finish (SoupSession    *session,
 }
 
 static gboolean
-is_json_response (SoupMessage *msg)
+is_json_response (const char *content_type)
 {
-	const char *content_type;
-	SoupMessageHeaders *headers;
-
-	headers = soup_message_get_response_headers (msg);
-	content_type = soup_message_headers_get_content_type (headers, NULL);
-
 	if (content_type == NULL)
 		return FALSE;
 
@@ -553,7 +547,7 @@ is_json_response (SoupMessage *msg)
 
 /* Dump few bytes from @input_stream to log */
 static void
-dump_input_stream (GInputStream *input_stream, guint status_code)
+dump_input_stream (GInputStream *input_stream)
 {
 	gssize count;
 	guint8 data[512];
@@ -562,12 +556,12 @@ dump_input_stream (GInputStream *input_stream, guint status_code)
 	count = g_input_stream_read (input_stream, data, sizeof (data), NULL, &local_error);
 
 	if (count < 0)
-		g_warning ("Error while dumping ODRS response (HTTP/%u): %s", status_code, local_error->message);
+		g_warning ("Error while dumping ODRS response: %s", local_error->message);
 	else if (count == 0)
-		g_warning ("Got EOF while dumping ODRS response (HTTP/%u)", status_code);
+		g_warning ("Got EOF while dumping ODRS response");
 	else
-		g_debug ("ODRS server returned (HTTP/%u) with data (first %" G_GSSIZE_FORMAT " bytes): %.*s",
-			 status_code, count, (gint) count, (const gchar *) data);
+		g_debug ("ODRS server returned data (first %" G_GSSIZE_FORMAT " bytes): %.*s",
+			 count, (gint) count, (const gchar *) data);
 }
 
 static void
@@ -941,6 +935,7 @@ open_input_stream_cb (GObject      *source_object,
 	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean json_response;
+	const char *content_type;
 
 	input_stream = soup_session_send_finish (soup_session, result, &local_error);
 
@@ -959,8 +954,10 @@ open_input_stream_cb (GObject      *source_object,
 	}
 
 	status_code = soup_message_get_status (data->message);
-	json_response = is_json_response (data->message);
+	content_type = soup_message_headers_get_content_type (soup_message_get_response_headers (data->message), NULL);
+	json_response = is_json_response (content_type);
 
+	g_debug ("ODRS server returned status: %u, content-type: %s", status_code, content_type);
 	if (SOUP_STATUS_IS_SUCCESSFUL (status_code) && json_response) {
 		/* fall through */
 	} else {
@@ -984,7 +981,7 @@ open_input_stream_cb (GObject      *source_object,
 			 * we dump the stream to see what we received
 			 * than trying to parse it as json.
 			 */
-			dump_input_stream (input_stream, status_code);
+			dump_input_stream (input_stream);
 
 			if (SOUP_STATUS_IS_CLIENT_ERROR (status_code)) {
 				g_set_error (&local_error,
