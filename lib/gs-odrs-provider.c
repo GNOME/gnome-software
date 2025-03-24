@@ -969,11 +969,13 @@ open_input_stream_cb (GObject      *source_object,
 		 */
 		if (SOUP_STATUS_IS_CLIENT_ERROR (status_code) && json_response) {
 			if (!gs_odrs_provider_parse_success (input_stream, &local_error)) {
-				/* return odrs error message */
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
+				/* we received a valid json error from odrs */
 			} else {
 				/* we should not reach here */
+				g_set_error_literal (&local_error,
+						     GS_ODRS_PROVIDER_ERROR,
+						     GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
+						     "ODRS internal error while fetching review");
 			}
 		} else {
 			/*
@@ -988,16 +990,15 @@ open_input_stream_cb (GObject      *source_object,
 					     GS_ODRS_PROVIDER_ERROR,
 					     GS_ODRS_PROVIDER_ERROR_CLIENT_ERROR,
 					     "Failed to fetch review from ODRS: %s", soup_status_get_phrase (status_code));
-				g_task_return_error (task, g_steal_pointer (&local_error));
 			} else {
 				g_set_error (&local_error,
 					     GS_ODRS_PROVIDER_ERROR,
 					     GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
 					     "Failed to fetch review from ODRS: %s", soup_status_get_phrase (status_code));
-				g_task_return_error (task, g_steal_pointer (&local_error));
 			}
 		}
 
+		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
