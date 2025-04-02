@@ -13,6 +13,8 @@ Making a release
 
 Adapted from the [GNOME release process](https://handbook.gnome.org/maintainers/making-a-release.html).
 
+With the first release of the year, verify the `src/gs-application.c` has the current year set in the `CODE_COPYRIGHT_YEAR` define.
+
 These instructions use the following variables:
  - `new_version`: the version number of the release you are making, for example 3.38.1
  - `previous_version`: the version number of the most-recently released version in the same release series, for example 3.38.0
