@@ -1474,7 +1474,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 			gtk_widget_set_visible (self->list_box_version_history, FALSE);
 		else {
 			gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (self->row_latest_version),
-							     version, gs_app_get_release_date (self->app), NULL);
+							     version, gs_app_get_release_date (self->app), NULL, FALSE);
 			gtk_widget_set_visible (self->list_box_version_history, TRUE);
 		}
 	} else {
@@ -1482,15 +1482,17 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		const gchar *version = gs_app_get_version_ui (self->app);
 		if (version == NULL || *version == '\0') {
 			gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (self->row_latest_version),
-						     as_release_get_version (latest_version),
-						     as_release_get_timestamp (latest_version),
-						     as_release_get_description (latest_version));
+							     as_release_get_version (latest_version),
+							     as_release_get_timestamp (latest_version),
+							     as_release_get_description (latest_version),
+							     FALSE);
 		} else {
 			gboolean same_version = g_strcmp0 (version, as_release_get_version (latest_version)) == 0;
 			/* Inherit the description from the release history, when the versions match */
 			gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (self->row_latest_version),
 							     version, gs_app_get_release_date (self->app),
-							     same_version ? as_release_get_description (latest_version) : NULL);
+							     same_version ? as_release_get_description (latest_version) : NULL,
+							     FALSE);
 		}
 		gtk_widget_set_visible (self->list_box_version_history, TRUE);
 	}

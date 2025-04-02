@@ -23,7 +23,6 @@
             </style>
             <child>
               <object class="GtkLabel" id="version_number_label">
-                <property name="hexpand">True</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
                 <property name="wrap">True</property>
@@ -33,9 +32,23 @@
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="version_date_label">
+              <object class="GtkLabel" id="installed_label">
+                <property name="valign">center</property>
+                <property name="label" translatable="yes">Installed</property>
+                <property name="halign">start</property>
+                <property name="margin-start">12</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
+                <style>
+                  <class name="installed-badge"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="version_date_label">
+                <property name="hexpand">True</property>
+                <property name="xalign">1</property>
+                <property name="yalign">0.5</property>
                 <style>
                   <class name="dim-label"/>
                 </style>
