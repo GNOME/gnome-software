@@ -172,6 +172,87 @@ gs_packagekit_task_untrusted_question (PkTask *task,
 	gs_packagekit_task_schedule_question (gs_task, request, title, msg, details, accept_label);
 }
 
+/* This may be called in a PackageKit worker thread. */
+static void
+gs_packagekit_task_key_question (PkTask *task,
+				 guint request,
+				 PkResults *results)
+{
+	GsPackagekitTask *self = GS_PACKAGEKIT_TASK (task);
+	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GString) details = NULL;
+	g_autofree gchar *msg = NULL;
+
+	array = pk_results_get_repo_signature_required_array (results);
+	if (array == NULL) {
+		pk_task_user_declined (task, request);
+		return;
+	}
+
+	details = g_string_new ("");
+
+	for (guint i = 0; i < array->len; i++) {
+		PkRepoSignatureRequired *item = g_ptr_array_index (array, i);
+		g_autofree gchar *key_id = NULL;
+		g_autofree gchar *key_userid = NULL;
+		g_autofree gchar *key_url = NULL;
+		g_autofree gchar *key_fingerprint = NULL;
+		g_autofree gchar *key_filename = NULL;
+		const gchar *from;
+
+		g_object_get (item,
+			      "key-id", &key_id,
+			      "key-url", &key_url,
+			      "key-userid", &key_userid,
+			      "key-fingerprint", &key_fingerprint,
+			      NULL);
+
+		if (key_url != NULL && g_ascii_strncasecmp (key_url, "file:", 5) == 0)
+			key_filename = g_filename_from_uri (key_url, NULL, NULL);
+
+		if (array->len == 1) {
+			/* to mute static analyzers, which may produce a false positive about
+			   overwriting the `msg` content in the second go of the cycle */
+			g_clear_pointer (&msg, g_free);
+
+			/* Translators: the '%s' is replaced with the key ID, usually a few hex digits */
+			msg = g_strdup_printf (_("Do you want to import key %s?"), key_id);
+		} else {
+			/* add empty line between the keys, if there are more to be imported */
+			if (details->len > 0)
+				g_string_append (details, "\n\n");
+
+			/* Translators: the '%s' is replaced with the key ID, usually a few hex digits */
+			g_string_append_printf (details, _("Key %s"), key_id);
+			g_string_append_c (details, '\n');
+		}
+
+		from = key_filename != NULL ? key_filename : key_url;
+
+		#define add_nonempty_line(_format, _value) G_STMT_START { \
+			if ((_value) != NULL && *(_value) != '\0') { \
+				g_string_append_printf (details, _format, _value); \
+				g_string_append_c (details, '\n'); \
+			} \
+		} G_STMT_END
+
+		/* Translators: the '%s' is replaced with the key user name */
+		add_nonempty_line (_("Key user: %s"), key_userid);
+		/* Translators: the '%s' is replaced with the key fingerprint, a few hex digits */
+		add_nonempty_line (_("Fingerprint: %s"), key_fingerprint);
+		/* Translators: the '%s' is replaced with the local path or a URI to the key */
+		add_nonempty_line (_("From: %s"), from);
+
+		#undef add_nonempty_line
+	}
+
+	gs_packagekit_task_schedule_question (self, request,
+					      _("Import Key"),
+					      msg == NULL ? _("Do you want to import keys?") : msg,
+					      details->str,
+					      _("_Import Key"));
+}
+
 static void
 gs_packagekit_task_finalize (GObject *object)
 {
@@ -192,6 +273,7 @@ gs_packagekit_task_class_init (GsPackagekitTaskClass *klass)
 
 	task_class = PK_TASK_CLASS (klass);
 	task_class->untrusted_question = gs_packagekit_task_untrusted_question;
+	task_class->key_question = gs_packagekit_task_key_question;
 
 	object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_packagekit_task_finalize;
