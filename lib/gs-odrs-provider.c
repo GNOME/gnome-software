@@ -536,6 +536,34 @@ gs_odrs_provider_json_post_finish (SoupSession    *session,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+static gboolean
+is_json_response (const char *content_type)
+{
+	if (content_type == NULL)
+		return FALSE;
+
+	return (g_strcmp0 (content_type, "application/json") == 0);
+}
+
+/* Dump few bytes from @input_stream to log */
+static void
+dump_input_stream (GInputStream *input_stream)
+{
+	gssize count;
+	guint8 data[512];
+	g_autoptr(GError) local_error = NULL;
+
+	count = g_input_stream_read (input_stream, data, sizeof (data), NULL, &local_error);
+
+	if (count < 0)
+		g_warning ("Error while dumping ODRS response: %s", local_error->message);
+	else if (count == 0)
+		g_warning ("Got EOF while dumping ODRS response");
+	else
+		g_debug ("ODRS server returned data (first %" G_GSSIZE_FORMAT " bytes): %.*s",
+			 count, (gint) count, g_strescape ((gchar *) data, "\n\\\""));
+}
+
 static void
 soup_send_and_read_cb (GObject *source_object,
                        GAsyncResult *result,
@@ -906,9 +934,10 @@ open_input_stream_cb (GObject      *source_object,
 	guint status_code;
 	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(GError) local_error = NULL;
+	gboolean json_response;
+	const char *content_type;
 
 	input_stream = soup_session_send_finish (soup_session, result, &local_error);
-	status_code = soup_message_get_status (data->message);
 
 	if (input_stream == NULL) {
 		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
@@ -924,17 +953,52 @@ open_input_stream_cb (GObject      *source_object,
 		return;
 	}
 
-	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_odrs_provider_parse_success (input_stream, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+	status_code = soup_message_get_status (data->message);
+	content_type = soup_message_headers_get_content_type (soup_message_get_response_headers (data->message), NULL);
+	json_response = is_json_response (content_type);
+
+	g_debug ("ODRS server returned status: %u, content-type: %s", status_code, content_type);
+	if (SOUP_STATUS_IS_SUCCESSFUL (status_code) && json_response) {
+		/* fall through */
+	} else {
+		/*
+		 * only try parsing HTTP client errors (e.g. HTTP/400
+		 * from ODRS server, which contains odrs error
+		 * messages in json), not 5xx errors which are mostly
+		 * from CDN network (which return html error pages)
+		 */
+		if (SOUP_STATUS_IS_CLIENT_ERROR (status_code) && json_response) {
+			if (!gs_odrs_provider_parse_success (input_stream, &local_error)) {
+				/* we received a valid json error from odrs */
+			} else {
+				/* we should not reach here */
+				g_set_error_literal (&local_error,
+						     GS_ODRS_PROVIDER_ERROR,
+						     GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
+						     "ODRS internal error while fetching review");
+			}
+		} else {
+			/*
+			 * if we're here it's an unexpected error, so
+			 * we dump the stream to see what we received
+			 * than trying to parse it as json.
+			 */
+			dump_input_stream (input_stream);
+
+			if (SOUP_STATUS_IS_CLIENT_ERROR (status_code)) {
+				g_set_error (&local_error,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_CLIENT_ERROR,
+					     "Failed to fetch review from ODRS: %s", soup_status_get_phrase (status_code));
+			} else {
+				g_set_error (&local_error,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
+					     "Failed to fetch review from ODRS: %s", soup_status_get_phrase (status_code));
+			}
 		}
 
-		/* not sure what to do here */
-		g_task_return_new_error (task,
-					 GS_ODRS_PROVIDER_ERROR,
-					 GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
-					 "status code invalid");
+		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
