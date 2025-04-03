@@ -164,9 +164,13 @@ update_permissions_list (GsSafetyContextDialog *self)
 		}
 	} else {
 		const GPtrArray *filesystem_read, *filesystem_full;
+		const GsBusPolicy * const *bus_policies = NULL;
+		size_t n_bus_policies = 0;
 
 		filesystem_read = gs_app_permissions_get_filesystem_read (permissions);
 		filesystem_full = gs_app_permissions_get_filesystem_full (permissions);
+
+		bus_policies = gs_app_permissions_get_bus_policies (permissions, &n_bus_policies);
 
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    gs_app_permissions_is_empty (permissions),
@@ -191,22 +195,6 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("No Network Access"),
 				    _("Cannot access the internet"));
-		add_permission_row (self->permissions_list, &chosen_rating,
-				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "emblem-system-symbolic",
-				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("Uses System Services"),
-				    _("Can request data from system services"),
-				    NULL, NULL, NULL);
-		add_permission_row (self->permissions_list, &chosen_rating,
-				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SESSION_BUS) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "emblem-system-symbolic",
-				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("Uses Session Services"),
-				    _("Can request data from session services"),
-				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_DEVICES) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
@@ -373,6 +361,71 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("No File System Access"),
 				    _("Cannot access the file system at all"),
+				    NULL, NULL, NULL);
+
+		/* D-Bus bus access is similarly complex.
+		 *
+		 * If either of the `GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS` or
+		 * `GS_APP_PERMISSIONS_FLAGS_SESSION_BUS` flags are set, that
+		 * means the app has unfiltered access to that bus (i.e. can own
+		 * any name and talk to any service).
+		 *
+		 * If that flag isn’t set for a bus, the app’s access to that
+		 * bus is filtered, but the app may have some static holes in
+		 * its manifest which give it permissions to own specific names
+		 * or talk to specific services. Most services are not designed
+		 * for this, so this is often a security issue.
+		 *
+		 * Permissions to talk to services which are known to be safe
+		 * (such as `org.freedesktop.DBus` itself, the app’s own ID, and
+		 * portals) are not listed as holes.
+		 *
+		 * For more information, see man:flatpak-metadata(5).
+		 */
+		add_permission_row (self->permissions_list, &chosen_rating,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS) != 0,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+				    "emblem-system-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("Uses System Services"),
+				    _("Can request data from non-portal system services"),
+				    NULL, NULL, NULL);
+		add_permission_row (self->permissions_list, &chosen_rating,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SESSION_BUS) != 0,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+				    "emblem-system-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("Uses Session Services"),
+				    _("Can request data from non-portal session services"),
+				    NULL, NULL, NULL);
+
+		for (size_t i = 0; i < n_bus_policies; i++) {
+			const GsBusPolicy *policy = bus_policies[i];
+			g_autofree char *bus_title = NULL;
+			const char *bus_description;
+
+			bus_title = gs_utils_format_bus_policy_title (policy);
+			bus_description = gs_utils_format_bus_policy_subtitle (policy);
+
+			add_permission_row (self->permissions_list, &chosen_rating,
+					    TRUE,
+					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+					    "emblem-system-symbolic",
+					    bus_title,
+					    bus_description,
+					    NULL, NULL, NULL);
+		}
+
+		add_permission_row (self->permissions_list, &chosen_rating,
+				    !(perm_flags & (GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS |
+						    GS_APP_PERMISSIONS_FLAGS_SESSION_BUS |
+						    GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER)) &&
+				    n_bus_policies == 0,
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
+				    "emblem-system-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("No Service Access"),
+				    _("Cannot access non-portal session or system services at all"),
 				    NULL, NULL, NULL);
 	}
 

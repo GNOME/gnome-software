@@ -1475,3 +1475,60 @@ gs_utils_remove_app_data_dir (GsApp *app,
 
 	return TRUE;
 }
+
+/**
+ * gs_utils_format_bus_policy_title:
+ * @bus_policy: a #GsBusPolicy
+ *
+ * Build a human readable title string for the #GsBusPolicy.
+ *
+ * This is here so it can be shared between #GsAppDetailsPage and
+ * #GsSafetyContextDialog.
+ *
+ * Returns: (transfer full): human readable title for the @bus_policy
+ * Since: 49
+ */
+char *
+gs_utils_format_bus_policy_title (const GsBusPolicy *bus_policy)
+{
+	if (bus_policy->bus_type == G_BUS_TYPE_SYSTEM) {
+		/* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`. */
+		return g_strdup_printf (_("Use the %s System Service"), bus_policy->bus_name);
+	} else if (bus_policy->bus_type == G_BUS_TYPE_SESSION) {
+		/* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`. */
+		return g_strdup_printf (_("Use the %s Session Service"), bus_policy->bus_name);
+	} else {
+		/* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`. */
+		return g_strdup_printf (_("Use the %s Service"), bus_policy->bus_name);
+	}
+}
+
+/**
+ * gs_utils_format_bus_policy_subtitle:
+ * @bus_policy: a #GsBusPolicy
+ *
+ * Build a human readable subtitle string for the #GsBusPolicy.
+ *
+ * This is here so it can be shared between #GsAppDetailsPage and
+ * #GsSafetyContextDialog.
+ *
+ * Returns: (transfer full): human readable subtitle for the @bus_policy
+ * Since: 49
+ */
+const char *
+gs_utils_format_bus_policy_subtitle (const GsBusPolicy *bus_policy)
+{
+	switch (bus_policy->permission) {
+	case GS_BUS_POLICY_PERMISSION_SEE:
+		return _("Can see the non-portal service");
+	case GS_BUS_POLICY_PERMISSION_TALK:
+		return _("Can talk to the non-portal service");
+	case GS_BUS_POLICY_PERMISSION_OWN:
+		return _("Can own the non-portal service");
+	case GS_BUS_POLICY_PERMISSION_NONE:
+	case GS_BUS_POLICY_PERMISSION_UNKNOWN:
+	default:
+		/* These should never be returned by #GsAppPermissions. */
+		g_assert_not_reached ();
+	}
+}
