@@ -44,12 +44,17 @@ struct _GsUpdateMonitor {
 	GCancellable	*refresh_cancellable;  /* (owned) (not nullable) */
 
 	GSettings	*settings;
+	gulong		 settings_changed_handler;
+
 	GsPluginLoader	*plugin_loader;
+
 	GDBusProxy	*proxy_upower;
+	gulong		 upower_changed_handler;
+
 	GError		*last_offline_error;
 
 	GNetworkMonitor *network_monitor;
-	guint		 network_changed_handler;
+	gulong		 network_changed_handler;
 
 #if GLIB_CHECK_VERSION(2, 69, 1)
 	GPowerProfileMonitor	*power_profile_monitor;  /* (owned) (nullable) */
@@ -262,8 +267,10 @@ reset_update_notification_timestamp (GsUpdateMonitor *monitor)
 	g_autoptr(GDateTime) now = NULL;
 
 	now = g_date_time_new_now_local ();
+	g_signal_handler_block (monitor->settings, monitor->settings_changed_handler);
 	g_settings_set (monitor->settings, "update-notification-timestamp", "x",
 	                g_date_time_to_unix (now));
+	g_signal_handler_unblock (monitor->settings, monitor->settings_changed_handler);
 }
 
 static void
@@ -561,8 +568,11 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	}
 
 	/* Update the check-timestamp, when this call is part of the auto-update */
-	if (download_updates_data->check_timestamp > 0)
+	if (download_updates_data->check_timestamp > 0) {
+		g_signal_handler_block (monitor->settings, monitor->settings_changed_handler);
 		g_settings_set (monitor->settings, "check-timestamp", "x", download_updates_data->check_timestamp);
+		g_signal_handler_unblock (monitor->settings, monitor->settings_changed_handler);
+	}
 
 	/* no updates */
 	if (gs_app_list_length (apps) == 0) {
@@ -585,8 +595,10 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		}
 	}
 	if (security_timestamp > 0) {
+		g_signal_handler_block (monitor->settings, monitor->settings_changed_handler);
 		g_settings_set (monitor->settings,
 				"security-timestamp", "x", security_timestamp);
+		g_signal_handler_unblock (monitor->settings, monitor->settings_changed_handler);
 	}
 
 	g_debug ("got %u updates", gs_app_list_length (apps));
@@ -756,8 +768,10 @@ get_upgrades_finished_cb (GObject *object,
 
 	g_debug ("showing distro upgrade notification");
 	now = g_date_time_new_now_local ();
+	g_signal_handler_block (monitor->settings, monitor->settings_changed_handler);
 	g_settings_set (monitor->settings, "upgrade-notification-timestamp", "x",
 	                g_date_time_to_unix (now));
+	g_signal_handler_unblock (monitor->settings, monitor->settings_changed_handler);
 
 	/* rely on the app list already being sorted with the
 	 * chronologically newest release last */
@@ -1222,6 +1236,28 @@ check_updates_on_startup_cb (gpointer data)
 	return G_SOURCE_REMOVE;
 }
 
+static const char * const check_updates_trigger_settings[] = {
+	"check-timestamp",
+	"refresh-when-metered",
+	NULL
+};
+
+static void
+check_updates_settings_changed_cb (GSettings  *settings,
+                                   const char *key,
+                                   gpointer    user_data)
+{
+	GsUpdateMonitor *self = GS_UPDATE_MONITOR (user_data);
+
+	/* Only these keys affect the behaviour of check_updates(). The
+	 * other settings timestamps affect later stages of getting an update. */
+	if (!g_strv_contains (check_updates_trigger_settings, key))
+		return;
+
+	g_debug ("GSettings (%s) changed updates check", key);
+	check_updates (self);
+}
+
 static void
 check_updates_upower_changed_cb (GDBusProxy *proxy,
 				 GParamSpec *pspec,
@@ -1305,8 +1341,10 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	}
 	if (time_last_notified >= latest_install_date) {
 		if (did_clamp) {
+			g_signal_handler_block (monitor->settings, monitor->settings_changed_handler);
 			g_settings_set (monitor->settings,
 					"install-timestamp", "x", latest_install_date);
+			g_signal_handler_unblock (monitor->settings, monitor->settings_changed_handler);
 		}
 		return;
 	}
@@ -1350,8 +1388,10 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	gs_application_send_notification (monitor->application, "offline-updates", notification, MINUTES_IN_A_DAY);
 
 	/* update the timestamp so we don't show again */
+	g_signal_handler_block (monitor->settings, monitor->settings_changed_handler);
 	g_settings_set (monitor->settings,
 			"install-timestamp", "x", latest_install_date);
+	g_signal_handler_unblock (monitor->settings, monitor->settings_changed_handler);
 
 	reset_update_notification_timestamp (monitor);
 }
@@ -1499,7 +1539,19 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
 	GNetworkMonitor *network_monitor;
 	g_autoptr(GError) error = NULL;
+
 	monitor->settings = g_settings_new ("org.gnome.software");
+	monitor->settings_changed_handler = g_signal_connect (monitor->settings, "changed",
+							      G_CALLBACK (check_updates_settings_changed_cb),
+							      monitor);
+
+	/* Explicitly query the GSettings keys which can trigger an updates
+	 * change, so that the ::changed signal above is primed. */
+	for (size_t i = 0; check_updates_trigger_settings[i] != NULL; i++) {
+		g_autoptr(GVariant) value = NULL;
+		value = g_settings_get_value (monitor->settings, check_updates_trigger_settings[i]);
+		(void) value; /* silence compiler warnings about not using the value */
+	}
 
 	/* cleanup at startup */
 	monitor->cleanup_notifications_id =
@@ -1531,9 +1583,9 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 					NULL,
 					&error);
 	if (monitor->proxy_upower != NULL) {
-		g_signal_connect (monitor->proxy_upower, "notify",
-				  G_CALLBACK (check_updates_upower_changed_cb),
-				  monitor);
+		monitor->upower_changed_handler = g_signal_connect (monitor->proxy_upower, "notify",
+								    G_CALLBACK (check_updates_upower_changed_cb),
+								    monitor);
 	} else {
 		g_warning ("failed to connect to upower: %s", error->message);
 	}
@@ -1562,11 +1614,8 @@ gs_update_monitor_dispose (GObject *object)
 {
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
 
-	if (monitor->network_changed_handler != 0) {
-		g_signal_handler_disconnect (monitor->network_monitor,
-					     monitor->network_changed_handler);
-		monitor->network_changed_handler = 0;
-	}
+	g_clear_signal_handler (&monitor->network_changed_handler, monitor->network_monitor);
+	g_clear_object (&monitor->network_monitor);
 
 #if GLIB_CHECK_VERSION(2, 69, 1)
 	g_clear_signal_handler (&monitor->power_profile_changed_handler, monitor->power_profile_monitor);
@@ -1597,7 +1646,11 @@ gs_update_monitor_dispose (GObject *object)
 						      monitor);
 		g_clear_object (&monitor->plugin_loader);
 	}
+
+	g_clear_signal_handler (&monitor->settings_changed_handler, monitor->settings);
 	g_clear_object (&monitor->settings);
+
+	g_clear_signal_handler (&monitor->upower_changed_handler, monitor->proxy_upower);
 	g_clear_object (&monitor->proxy_upower);
 
 	G_OBJECT_CLASS (gs_update_monitor_parent_class)->dispose (object);

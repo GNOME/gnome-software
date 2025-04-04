@@ -54,6 +54,7 @@ struct _GsUpdatesPage
 	GCancellable		*cancellable_refresh;
 	GCancellable		*cancellable_upgrade;
 	GSettings		*settings;
+	gulong			 settings_changed_id;
 	GSettings		*desktop_settings;
 	gboolean		 cache_valid;
 	guint			 action_cnt;
@@ -283,6 +284,16 @@ gs_updates_page_refresh_last_checked (GsUpdatesPage *self)
 		gtk_widget_set_visible (GTK_WIDGET (self->uptodate_description), FALSE);
 		gtk_widget_set_visible (GTK_WIDGET (self->label_last_checked), FALSE);
 	}
+}
+
+static void
+settings_changed_check_timestamp_cb (GSettings  *settings,
+                                     const char *key,
+                                     gpointer    user_data)
+{
+	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
+
+	gs_updates_page_refresh_last_checked (self);
 }
 
 static void
@@ -1317,6 +1328,7 @@ gs_updates_page_dispose (GObject *object)
 
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
+	g_clear_signal_handler (&self->settings_changed_id, self->settings);
 	g_clear_object (&self->settings);
 	g_clear_object (&self->desktop_settings);
 
@@ -1404,7 +1416,12 @@ gs_updates_page_init (GsUpdatesPage *self)
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	self->state = GS_UPDATES_PAGE_STATE_STARTUP;
+
 	self->settings = g_settings_new ("org.gnome.software");
+	self->settings_changed_id = g_signal_connect (self->settings, "changed::check-timestamp",
+						      G_CALLBACK (settings_changed_check_timestamp_cb),
+						      self);
+
 	self->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
 
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);

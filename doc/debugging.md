@@ -64,3 +64,13 @@ sed -i '/^Exec=/ s/$/ --verbose/' ~/.config/autostart/org.gnome.Software.desktop
 Note that this will produce a lot of debug output which will consume a
 noticeable amount of space in your systemd journal over time.
 
+Forcing an auto-update check
+---
+
+GNOME Software automatically checks for updates in the background based on a
+timer. To force a background auto-update check, this timer can be reset and the
+currently running GNOME Software instance will schedule a check:
+
+```
+for key in $(gsettings list-keys org.gnome.software | grep timestamp); do gsettings reset org.gnome.software $key; done
+```
