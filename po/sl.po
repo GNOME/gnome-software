@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-04-02 13:26+0000\n"
-"PO-Revision-Date: 2025-04-03 08:54+0200\n"
+"POT-Creation-Date: 2025-04-03 14:00+0000\n"
+"PO-Revision-Date: 2025-04-04 08:59+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -856,13 +856,13 @@ msgstr "Krajevna datoteka"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6409 src/gs-safety-context-dialog.c:535
+#: lib/gs-app.c:6409 src/gs-safety-context-dialog.c:588
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6486 src/gs-safety-context-dialog.c:772
+#: lib/gs-app.c:6486 src/gs-safety-context-dialog.c:825
 #: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "Paket"
@@ -936,86 +936,87 @@ msgstr "Storitve seje"
 msgid "Can access D-Bus services on the session bus"
 msgstr "Dovoljen je dostop do storitev D-Bus vodila seje"
 
-#: src/gs-app-details-page.c:63 src/gs-app-details-page.c:64
-#: src/gs-app-details-page.c:65 src/gs-app-details-page.c:66
+#. The GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER is used only as a flag, with actual bus names being listed separately
+#: src/gs-app-details-page.c:64 src/gs-app-details-page.c:65
+#: src/gs-app-details-page.c:66 src/gs-app-details-page.c:67
 msgid "Devices"
 msgstr "Naprave"
 
-#: src/gs-app-details-page.c:63
+#: src/gs-app-details-page.c:64
 msgid "Can access arbitrary devices such as webcams"
 msgstr "Lahko dostopa do poljubnih naprav, kot so spletne kamere"
 
 #. Translators: This indicates an app can access input devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:338
-#: src/gs-safety-context-dialog.c:227
+#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:345
+#: src/gs-safety-context-dialog.c:215
 msgid "Can access input devices"
 msgstr "Lahko dostopa do vhodnih naprav"
 
 #. Translators: This indicates an app can access audio devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:345
+#: src/gs-app-details-page.c:66 src/gs-app-context-bar.c:352
 msgid "Can access microphones and play audio"
 msgstr "Lahko dostopa do mikrofona in predvaja zvok"
 
-#: src/gs-app-details-page.c:66
+#: src/gs-app-details-page.c:67
 msgid "Can access system device files"
 msgstr "Omogočen je dostop do sistemskih datotek naprave"
 
-#: src/gs-app-details-page.c:67
+#: src/gs-app-details-page.c:68
 msgid "Screen contents"
 msgstr "Zaslonska vsebina"
 
 #. Translators: This indicates an app can access the screen/display contents.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:359
+#: src/gs-app-details-page.c:68 src/gs-app-context-bar.c:366
 msgid "Can access screen contents"
 msgstr "Omogočen je dostop do vsebine zaslona"
 
-#: src/gs-app-details-page.c:68 src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:70
 msgid "Home folder"
 msgstr "Osebna mapa"
 
-#: src/gs-app-details-page.c:68 src/gs-app-details-page.c:70
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:144
+#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:147
 msgid "Can view, edit and create files"
 msgstr "Omogočeno je pregledovanje, urejanje in ustvarjanje datotek"
 
-#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:139
+#: src/gs-app-details-page.c:70 src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:142
 msgid "Can view files"
 msgstr "Omogočeno je pregledovanje datotek"
 
-#: src/gs-app-details-page.c:70 src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:72
 msgid "File system"
 msgstr "Datotečni sistem"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
 msgid "Downloads folder"
 msgstr "Mapa prejemanja"
 
-#: src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:76
 msgid "Settings"
 msgstr "Nastavitve"
 
-#: src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:76
 msgid "Can view and change any settings"
 msgstr "Dovoljeno pregledovati in spreminjati nastavitve"
 
-#: src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:77
 msgid "Legacy display system"
 msgstr "Opuščen zaslonski sistem"
 
-#: src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:77
 msgid "Uses an old, insecure display system"
 msgstr "Uporablja star, ne-varen zaslonski sistem"
 
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78
 msgid "Sandbox escape"
 msgstr "Izvajanje v peskovniku mimo varnega okolja"
 
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr ""
 "Omogoča izvajanje v peskovniku mimo varnega okolja kot obvod vseh vrst "
@@ -1023,13 +1024,13 @@ msgstr ""
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:210
+#: src/gs-app-details-page.c:226
 msgid "No update description available."
 msgstr "Opis posodobitve ni na voljo."
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:234
+#: src/gs-app-details-page.c:250
 msgid "Update Details"
 msgstr "Posodobi podrobnosti"
 
@@ -1258,85 +1259,91 @@ msgstr "Zahteva dostop do omrežja"
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:317
-msgid "Uses system services"
-msgstr "Uporablja sistemske storitve"
+msgid "Uses non-portal system services"
+msgstr "Uporablja sistemske storitve, ki niso portalske"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:324
-msgid "Uses session services"
-msgstr "Uporablja storitve seje"
+msgid "Uses non-portal session services"
+msgstr "Uporablja storitve seje, ki ni portalska"
+
+#. Translators: This indicates an app can access session or system bus services unknown to the Software.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:331
+msgid "Can access some specific non-portal services"
+msgstr "Omogočen je dostop do nekaterih posebnih storitev, ki niso portalske"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:331
+#: src/gs-app-context-bar.c:338
 msgid "Can access hardware devices"
 msgstr "Uporablja strojno opremo"
 
 #. Translators: This indicates an app can access system devices such as /dev/shm.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:352
+#: src/gs-app-context-bar.c:359
 msgid "Can access system devices"
 msgstr "Lahko dostopa do sistemskih naprav"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:371
+#: src/gs-app-context-bar.c:378
 msgid "Can read/write all your data"
 msgstr "Bere in zapisuje vse podatke"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:383
+#: src/gs-app-context-bar.c:390
 msgid "Can read all your data"
 msgstr "Bere vse podatke"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:390
+#: src/gs-app-context-bar.c:397
 msgid "Can read/write your downloads"
 msgstr "Bere in zapisuje v mapo za prejem datotek"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:397
+#: src/gs-app-context-bar.c:404
 msgid "Can read your downloads"
 msgstr "Bere mapo za prejem datotek"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:404
+#: src/gs-app-context-bar.c:411
 msgid "Can access some specific files"
 msgstr "Omogočen je dostop do nekaterih posebnih datotek"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:411 src/gs-safety-context-dialog.c:275
+#: src/gs-app-context-bar.c:418 src/gs-safety-context-dialog.c:263
 msgid "Can access and change user settings"
 msgstr "Uporablja in spreminja nastavitve uporabnika"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:418 src/gs-safety-context-dialog.c:259
+#: src/gs-app-context-bar.c:425 src/gs-safety-context-dialog.c:247
 msgid "Uses a legacy windowing system"
 msgstr "Uporablja opuščen zaslonski sistem"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:425 src/gs-safety-context-dialog.c:267
+#: src/gs-app-context-bar.c:432 src/gs-safety-context-dialog.c:255
 msgid "Can acquire arbitrary permissions"
 msgstr "Zahteva dovoljenja po potrebi"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:437
+#: src/gs-app-context-bar.c:444
 msgid "Software developer is verified"
 msgstr "Razvijalec programa je preverjen"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:455 src/gs-safety-context-dialog.c:144
+#: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:144
 msgid "Reviewed by OS distributor"
 msgstr "Usklajeno s ponudnikom distribucije"
 
@@ -1345,7 +1352,7 @@ msgstr "Usklajeno s ponudnikom distribucije"
 #. * It’s used in a context tile, so should be short.
 #. * The '%s' is replaced by the distribution name.
 #. Translators: The '%s' is replaced by the distribution name.
-#: src/gs-app-context-bar.c:461 src/gs-safety-context-dialog.c:147
+#: src/gs-app-context-bar.c:468 src/gs-safety-context-dialog.c:147
 #, c-format
 msgid "Reviewed by %s"
 msgstr "Usklajeno s %s"
@@ -1353,37 +1360,37 @@ msgstr "Usklajeno s %s"
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:477 src/gs-safety-context-dialog.c:161
+#: src/gs-app-context-bar.c:484 src/gs-safety-context-dialog.c:161
 msgid "Provided by a third party"
 msgstr "S podporo tretjih virov"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:487
+#: src/gs-app-context-bar.c:494
 msgid "Software no longer supported"
 msgstr "Nameščena programska oprema ni več podprta."
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:499
+#: src/gs-app-context-bar.c:506
 msgid "Auditable code"
 msgstr "Programska koda je odprta za pregled"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:505
+#: src/gs-app-context-bar.c:512
 msgid "Unknown license"
 msgstr "Neznano dovoljenje"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:512
+#: src/gs-app-context-bar.c:519
 msgid "Proprietary code"
 msgstr "Lastniška programska koda"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:519
+#: src/gs-app-context-bar.c:526
 msgid "Special license"
 msgstr "Posebno dovoljenje"
 
@@ -1401,116 +1408,116 @@ msgstr "Posebno dovoljenje"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/
-#: src/gs-app-context-bar.c:533 src/gs-app-context-bar.c:816
+#: src/gs-app-context-bar.c:540 src/gs-app-context-bar.c:823
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:541
+#: src/gs-app-context-bar.c:548
 msgid "Privileged"
 msgstr "Posebna dovoljenja"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:548
+#: src/gs-app-context-bar.c:555
 msgid "Safe"
 msgstr "Varno"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:555
+#: src/gs-app-context-bar.c:562
 msgid "Probably Safe"
 msgstr "Verjetno varno"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:562
+#: src/gs-app-context-bar.c:569
 msgid "Potentially Unsafe"
 msgstr "Pogojno nevarno"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:569
+#: src/gs-app-context-bar.c:576
 msgid "Unsafe"
 msgstr "Nevarno"
 
-#: src/gs-app-context-bar.c:647 src/gs-app-context-bar.c:679
+#: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:686
 #: src/gs-hardware-support-context-dialog.c:615
 msgid "Mobile Only"
 msgstr "Le za mobilno"
 
-#: src/gs-app-context-bar.c:648
+#: src/gs-app-context-bar.c:655
 msgid "Only works on a small screen"
 msgstr "Le za male zaslone"
 
-#: src/gs-app-context-bar.c:653 src/gs-app-context-bar.c:686
-#: src/gs-app-context-bar.c:693 src/gs-app-context-bar.c:743
-#: src/gs-app-context-bar.c:748 src/gs-hardware-support-context-dialog.c:595
+#: src/gs-app-context-bar.c:660 src/gs-app-context-bar.c:693
+#: src/gs-app-context-bar.c:700 src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:755 src/gs-hardware-support-context-dialog.c:595
 msgid "Desktop Only"
 msgstr "Le za namizja"
 
-#: src/gs-app-context-bar.c:654
+#: src/gs-app-context-bar.c:661
 msgid "Only works on a large screen"
 msgstr "Le za velike zaslone"
 
-#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-app-context-bar.c:665 src/gs-hardware-support-context-dialog.c:633
 msgid "Screen Size Mismatch"
 msgstr "Velikost zaslona ne ustreza"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:666 src/gs-hardware-support-context-dialog.c:634
 msgid "Doesn’t support your current screen size"
 msgstr "Ne podpira trenutno nastavljene velikosti zaslona"
 
-#: src/gs-app-context-bar.c:680 src/gs-hardware-support-context-dialog.c:686
+#: src/gs-app-context-bar.c:687 src/gs-hardware-support-context-dialog.c:686
 #: src/gs-hardware-support-context-dialog.c:692
 msgid "Requires a touchscreen"
 msgstr "Zahteva večdotični zaslon"
 
-#: src/gs-app-context-bar.c:687 src/gs-hardware-support-context-dialog.c:646
+#: src/gs-app-context-bar.c:694 src/gs-hardware-support-context-dialog.c:646
 #: src/gs-hardware-support-context-dialog.c:652
 msgid "Requires a keyboard"
 msgstr "Zahteva tipkovnico"
 
-#: src/gs-app-context-bar.c:694
+#: src/gs-app-context-bar.c:701
 msgid "Requires a mouse"
 msgstr "Zahteva miško"
 
-#: src/gs-app-context-bar.c:705
+#: src/gs-app-context-bar.c:712
 msgid "Gamepad Needed"
 msgstr "Zahtevana je igralna konzola"
 
-#: src/gs-app-context-bar.c:706
+#: src/gs-app-context-bar.c:713
 msgid "Requires a gamepad to play"
 msgstr "Zahteva uporabo igralne konzole"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:730
+#: src/gs-app-context-bar.c:737
 msgid "Adaptive"
 msgstr "Prilagodljivo"
 
-#: src/gs-app-context-bar.c:731
+#: src/gs-app-context-bar.c:738
 msgid "Works on phones, tablets and desktops"
 msgstr "Deluje na pametnih telefonih, tabličnih in namiznih računalnikih"
 
-#: src/gs-app-context-bar.c:744
+#: src/gs-app-context-bar.c:751
 msgid "Probably requires a keyboard or mouse"
 msgstr "Najverjetneje zahteva uporabo miške in tipkovnice"
 
-#: src/gs-app-context-bar.c:749
+#: src/gs-app-context-bar.c:756
 msgid "Works on desktops and laptops"
 msgstr "Deluje na namiznih in prenosnih računalnikih"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:791
+#: src/gs-app-context-bar.c:798
 msgid "Contains no age-inappropriate content"
 msgstr "Program ne vsebuje nobene starostno pogojene vsebine"
 
-#: src/gs-app-context-bar.c:839
+#: src/gs-app-context-bar.c:846
 msgid "No age rating information available"
 msgstr "Ni podatkov o morebitni starostno pogojeni vsebini"
 
@@ -1951,6 +1958,36 @@ msgstr[3] "Pred %d urami"
 msgctxt "format-size"
 msgid "%s %s"
 msgstr "%s %s"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1496
+#, c-format
+msgid "Use the %s System Service"
+msgstr "Uporabi sistemsko storitev %s"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1499
+#, c-format
+msgid "Use the %s Session Service"
+msgstr "Uporabi storitev seje %s"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1502
+#, c-format
+msgid "Use the %s Service"
+msgstr "Uporabi storitev %s"
+
+#: src/gs-common.c:1523
+msgid "Can see the non-portal service"
+msgstr "Lahko vidi storitev, ki ni portalska"
+
+#: src/gs-common.c:1525
+msgid "Can talk to the non-portal service"
+msgstr "Lahko se pogovarja s storitvijo, ki ni portalska"
+
+#: src/gs-common.c:1527
+msgid "Can own the non-portal service"
+msgstr "Lahko je lastnik storitve, ki ni portalska"
 
 #: lib/gs-desktop-data.c:16
 msgctxt "Menu of Graphics & Photography"
@@ -3375,7 +3412,7 @@ msgstr ""
 "Vsakdo lahko, če se za to odloči, sodeluje pri zasnovi in razvoju programa."
 
 #. Translators: This indicates an app does not specify which license it's developed under.
-#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:409
+#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:462
 msgid "Unknown License"
 msgstr "Neznano dovoljenje"
 
@@ -3414,7 +3451,7 @@ msgstr ""
 "Pri razvoju te programske opreme morda je, morda ni mogoče sodelovati."
 
 #. Translators: This is used for "License    Proprietary"
-#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:574
+#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:627
 msgid "Proprietary"
 msgstr "Lastniško"
 
@@ -3449,7 +3486,7 @@ msgstr ""
 "na razvoj."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:446
+#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:499
 msgid "Special License"
 msgstr "Posebno dovoljenje"
 
@@ -4211,212 +4248,221 @@ msgid "Check that you trust the vendor, as the app isn’t sandboxed"
 msgstr "Prepričajte se, da zaupate ponudniku, ker program ni sistemsko omejen."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:176
+#: src/gs-safety-context-dialog.c:180
 msgid "No Permissions"
 msgstr "Ni posebnih dovoljenj"
 
-#: src/gs-safety-context-dialog.c:177
+#: src/gs-safety-context-dialog.c:181
 msgid "App is fully sandboxed"
 msgstr "Program se v celoti izvaja v peskovniku"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:188
+#: src/gs-safety-context-dialog.c:192
 msgid "Network Access"
 msgstr "Zahteva dostop do omrežja"
 
-#: src/gs-safety-context-dialog.c:189
+#: src/gs-safety-context-dialog.c:193
 msgid "Can access the internet"
 msgstr "Omogočen je dostop do interneta"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:192
+#: src/gs-safety-context-dialog.c:196
 msgid "No Network Access"
 msgstr "Ne zahteva dostopa do omrežja"
 
-#: src/gs-safety-context-dialog.c:193
+#: src/gs-safety-context-dialog.c:197
 msgid "Cannot access the internet"
 msgstr "Ni omogočenega dostopa do omrežja"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:199
-msgid "Uses System Services"
-msgstr "Uporablja sistemske storitve"
-
-#: src/gs-safety-context-dialog.c:200
-msgid "Can request data from system services"
-msgstr "Lahko zahteva uporabo sistemskih storitev"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:207
-msgid "Uses Session Services"
-msgstr "Uporablja storitve seje"
-
-#: src/gs-safety-context-dialog.c:208
-msgid "Can request data from session services"
-msgstr "Lahko zahteva dostop do storitev seje"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:215
+#: src/gs-safety-context-dialog.c:203
 msgid "User Device Access"
 msgstr "Uporabniški dostop do naprave"
 
-#: src/gs-safety-context-dialog.c:216
+#: src/gs-safety-context-dialog.c:204
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "Lahko dostopa do naprav, kot so spletne kamere in igralne konzole"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:219
+#: src/gs-safety-context-dialog.c:207
 msgid "No User Device Access"
 msgstr "Ne zahteva dostopa do povezanih naprav"
 
-#: src/gs-safety-context-dialog.c:220
+#: src/gs-safety-context-dialog.c:208
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "Nima dostopa do naprav, kot so spletne kamere in igralne konzole"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:226
+#: src/gs-safety-context-dialog.c:214
 msgid "Input Device Access"
 msgstr "Dostop do vhodne naprave"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:234
+#: src/gs-safety-context-dialog.c:222
 msgid "Microphone Access and Audio Playback"
 msgstr "Dostop do mikrofona in predvajanja zvoka"
 
-#: src/gs-safety-context-dialog.c:235
+#: src/gs-safety-context-dialog.c:223
 msgid "Can listen using microphones and play audio without asking permission"
 msgstr ""
 "Omogočen je dostop do mikrofonov in predvaja zvok brez spraševanja za "
 "dovoljenje"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:242
+#: src/gs-safety-context-dialog.c:230
 msgid "System Device Access"
 msgstr "Dostop do sistemske naprave"
 
-#: src/gs-safety-context-dialog.c:243
+#: src/gs-safety-context-dialog.c:231
 msgid "Can access system devices which require elevated permissions"
 msgstr "Lahko dostopa do sistemskih naprav, ki zahtevajo višja dovoljenja"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:250
+#: src/gs-safety-context-dialog.c:238
 msgid "Screen Contents Access"
 msgstr "Dostop do vsebine namizja"
 
-#: src/gs-safety-context-dialog.c:251
+#: src/gs-safety-context-dialog.c:239
 msgid "Can access the contents of the screen or other windows"
 msgstr "Omogočen je dostop vsebine zaslona ali drugih oken"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:258
+#: src/gs-safety-context-dialog.c:246
 msgid "Legacy Windowing System"
 msgstr "Uporablja opuščen zaslonski sistem"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:266
+#: src/gs-safety-context-dialog.c:254
 msgid "Arbitrary Permissions"
 msgstr "Zahteva dovoljenja po potrebi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:274
+#: src/gs-safety-context-dialog.c:262
 msgid "User Settings"
 msgstr "Uporabniške nastavitve"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:286
+#: src/gs-safety-context-dialog.c:274
 msgid "Full File System Read/Write Access"
 msgstr "Poln dostop za branje/pisanje vsebine datotečnega sistema"
 
-#: src/gs-safety-context-dialog.c:287
+#: src/gs-safety-context-dialog.c:275
 msgid "Can read and write all data on the file system"
 msgstr "Bere in zapisuje vse podatke datotečnega sistema"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:295
+#: src/gs-safety-context-dialog.c:283
 msgid "Home Folder Read/Write Access"
 msgstr "Dovoljenje za branje/pisanje vsebine v osebno mapo"
 
-#: src/gs-safety-context-dialog.c:296
+#: src/gs-safety-context-dialog.c:284
 msgid "Can read and write all data in your home directory"
 msgstr "Bere in zapisuje vse podatke v osebni mapi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:304
+#: src/gs-safety-context-dialog.c:292
 msgid "Full File System Read Access"
 msgstr "Poln dostop za branje vsebine datotečnega sistema"
 
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:293
 msgid "Can read all data on the file system"
 msgstr "Bere vse podatke datotečnega sistema"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:314
+#: src/gs-safety-context-dialog.c:302
 msgid "Home Folder Read Access"
 msgstr "Dovoljenje za branje vsebine osebne mape"
 
-#: src/gs-safety-context-dialog.c:315
+#: src/gs-safety-context-dialog.c:303
 msgid "Can read all data in your home directory"
 msgstr "Bere vse podatke v osebni mapi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:324
+#: src/gs-safety-context-dialog.c:312
 msgid "Download Folder Read/Write Access"
 msgstr "Dovoljenje za branje/pisanje vsebine v mapo prejema"
 
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:313
 msgid "Can read and write all data in your downloads directory"
 msgstr "Bere in zapisuje vse podatke v mapi prejemov"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:336
+#: src/gs-safety-context-dialog.c:324
 msgid "Download Folder Read Access"
 msgstr "Dovoljenje za branje vsebine mape prejema"
 
-#: src/gs-safety-context-dialog.c:337
+#: src/gs-safety-context-dialog.c:325
 msgid "Can read all data in your downloads directory"
 msgstr "Bere vse podatke v mapi prejemov"
 
-#: src/gs-safety-context-dialog.c:347
+#: src/gs-safety-context-dialog.c:335
 msgid "Can read and write all data in the directory"
 msgstr "Lahko prebere in zapisuje vse podatke v mapi"
 
-#: src/gs-safety-context-dialog.c:358
+#: src/gs-safety-context-dialog.c:346
 msgid "Can read all data in the directory"
 msgstr "Lahko prebere vse podatke v mapi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:374
+#: src/gs-safety-context-dialog.c:362
 msgid "No File System Access"
 msgstr "Ne zahteva dostopa do datotečnega sistema"
 
-#: src/gs-safety-context-dialog.c:375
+#: src/gs-safety-context-dialog.c:363
 msgid "Cannot access the file system at all"
 msgstr "Ne zahteva in nima dovoljenj za dostop do datotečnega sistema"
 
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:390
+msgid "Uses System Services"
+msgstr "Uporablja sistemske storitve"
+
+#: src/gs-safety-context-dialog.c:391
+msgid "Can request data from non-portal system services"
+msgstr "Lahko zahteva uporabo sistemskih storitev, ki niso portalske"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:398
+msgid "Uses Session Services"
+msgstr "Uporablja storitve seje"
+
+#: src/gs-safety-context-dialog.c:399
+msgid "Can request data from non-portal session services"
+msgstr "Lahko zahteva dostop do storitev seje, ki niso portalske"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:427
+msgid "No Service Access"
+msgstr "Brez dostopa do storitve"
+
+#: src/gs-safety-context-dialog.c:428
+msgid "Cannot access non-portal session or system services at all"
+msgstr "Sploh ni mogoče dostopati do neportalne seje ali sistemskih storitev"
+
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:385
+#: src/gs-safety-context-dialog.c:438
 msgid "App developer is verified"
 msgstr "Razvijalci programa so preverjeni"
 
-#: src/gs-safety-context-dialog.c:386
+#: src/gs-safety-context-dialog.c:439
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "Istovetnost razvijalca tega programa je bila preverjena"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:397
+#: src/gs-safety-context-dialog.c:450
 msgid "Insecure Dependencies"
 msgstr "Ne-varne zahtevane odvisnosti"
 
-#: src/gs-safety-context-dialog.c:398
+#: src/gs-safety-context-dialog.c:451
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
 "Programska oprema ali kateri od odvisnih paketov ni več podprta in "
 "najverjetneje ni varna za uporabo."
 
-#: src/gs-safety-context-dialog.c:411
+#: src/gs-safety-context-dialog.c:464
 msgid ""
 "This app does not specify what license it is developed under, and may be "
 "proprietary"
@@ -4424,7 +4470,7 @@ msgstr ""
 "Za program ni navedeno, pod pogoji katerega dovoljenja je bil razvit, in je "
 "lahko lastniška."
 
-#: src/gs-safety-context-dialog.c:412
+#: src/gs-safety-context-dialog.c:465
 msgid ""
 "This software does not specify what license it is developed under, and may "
 "be proprietary"
@@ -4433,11 +4479,11 @@ msgstr ""
 "razvita, in je lahko lastniška."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:425
+#: src/gs-safety-context-dialog.c:478
 msgid "Proprietary Code"
 msgstr "Lastniška programska koda"
 
-#: src/gs-safety-context-dialog.c:426
+#: src/gs-safety-context-dialog.c:479
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -4445,23 +4491,23 @@ msgstr ""
 "Izvorna koda ni javna, je ni mogoče preveriti, zato je program morda ni varen"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:434
+#: src/gs-safety-context-dialog.c:487
 #, c-format
 msgid "This app is developed under the special license “%s”"
 msgstr "Program je objavljen pod pogoji posebnega dovoljenja »%s«."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:437
+#: src/gs-safety-context-dialog.c:490
 #, c-format
 msgid "This software is developed under the special license “%s”"
 msgstr "Programska oprema je objavljena pod pogoji posebnega dovoljenja »%s«."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:450
+#: src/gs-safety-context-dialog.c:503
 msgid "Auditable Code"
 msgstr "Koda je odprta za pregled"
 
-#: src/gs-safety-context-dialog.c:451
+#: src/gs-safety-context-dialog.c:504
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -4471,41 +4517,41 @@ msgstr ""
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:460
+#: src/gs-safety-context-dialog.c:513
 #, c-format
 msgid "%s is privileged"
 msgstr "Program %s ima dodeljena posebna dovoljenja"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:467
+#: src/gs-safety-context-dialog.c:520
 #, c-format
 msgid "%s is safe"
 msgstr "Program %s varen za uporabo."
 
 #. Translators: The app is considered probably safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:474
+#: src/gs-safety-context-dialog.c:527
 #, c-format
 msgid "%s is probably safe"
 msgstr "Program %s je najverjetneje varen za uporabo"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:481
+#: src/gs-safety-context-dialog.c:534
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "Program %s morda ni povsem varen."
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:488
+#: src/gs-safety-context-dialog.c:541
 #, c-format
 msgid "%s is unsafe"
 msgstr "Program %s ni varen."
 
 #. Translators: This is used for "License    Unknown"
-#: src/gs-safety-context-dialog.c:571
+#: src/gs-safety-context-dialog.c:624
 msgctxt "Unknown license"
 msgid "Unknown"
 msgstr "Neznano"
@@ -5931,135 +5977,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak je okolje za podporo namiznim programom sistema Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:360
+#: plugins/flatpak/gs-flatpak.c:367
 #, c-format
 msgid "System folder %s"
 msgstr "Sistemska mapa %s"
 
-#: plugins/flatpak/gs-flatpak.c:361 plugins/flatpak/gs-flatpak.c:362
+#: plugins/flatpak/gs-flatpak.c:368 plugins/flatpak/gs-flatpak.c:369
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Podrejena osebna mapa %s"
 
-#: plugins/flatpak/gs-flatpak.c:363
+#: plugins/flatpak/gs-flatpak.c:370
 msgid "Host system folders"
 msgstr "Sistemske gostiteljske mape"
 
-#: plugins/flatpak/gs-flatpak.c:364
+#: plugins/flatpak/gs-flatpak.c:371
 msgid "Host system configuration from /etc"
 msgstr "Nastavitve gostiteljevega sistema iz /etc"
 
-#: plugins/flatpak/gs-flatpak.c:365
+#: plugins/flatpak/gs-flatpak.c:372
 msgid "Desktop folder"
 msgstr "Mapa namizja"
 
-#: plugins/flatpak/gs-flatpak.c:365
+#: plugins/flatpak/gs-flatpak.c:372
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Podrejena mapa namizja %s"
 
-#: plugins/flatpak/gs-flatpak.c:366
+#: plugins/flatpak/gs-flatpak.c:373
 msgid "Documents folder"
 msgstr "Mapa dokumentov"
 
-#: plugins/flatpak/gs-flatpak.c:366
+#: plugins/flatpak/gs-flatpak.c:373
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Podrejena mapa dokumentov %s"
 
-#: plugins/flatpak/gs-flatpak.c:367
+#: plugins/flatpak/gs-flatpak.c:374
 msgid "Music folder"
 msgstr "Glasbena mapa"
 
-#: plugins/flatpak/gs-flatpak.c:367
+#: plugins/flatpak/gs-flatpak.c:374
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Podrejena mapa glasbe %s"
 
-#: plugins/flatpak/gs-flatpak.c:368
+#: plugins/flatpak/gs-flatpak.c:375
 msgid "Pictures folder"
 msgstr "Mapa s slikami"
 
-#: plugins/flatpak/gs-flatpak.c:368
+#: plugins/flatpak/gs-flatpak.c:375
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Podrejena mapa slik %s"
 
-#: plugins/flatpak/gs-flatpak.c:369
+#: plugins/flatpak/gs-flatpak.c:376
 msgid "Public Share folder"
 msgstr "Mapa javne souporabe"
 
-#: plugins/flatpak/gs-flatpak.c:369
+#: plugins/flatpak/gs-flatpak.c:376
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Podrejena mapa javne souporabe %s"
 
-#: plugins/flatpak/gs-flatpak.c:370
+#: plugins/flatpak/gs-flatpak.c:377
 msgid "Videos folder"
 msgstr "Mapa video posnetkov"
 
-#: plugins/flatpak/gs-flatpak.c:370
+#: plugins/flatpak/gs-flatpak.c:377
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Podrejena mapa videa %s"
 
-#: plugins/flatpak/gs-flatpak.c:371
+#: plugins/flatpak/gs-flatpak.c:378
 msgid "Templates folder"
 msgstr "Mapa predlog"
 
-#: plugins/flatpak/gs-flatpak.c:371
+#: plugins/flatpak/gs-flatpak.c:378
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Podrejena mapa predlog %s"
 
-#: plugins/flatpak/gs-flatpak.c:372
+#: plugins/flatpak/gs-flatpak.c:379
 msgid "User cache folder"
 msgstr "Uporabnikova mapa predpomnilnika"
 
-#: plugins/flatpak/gs-flatpak.c:372
+#: plugins/flatpak/gs-flatpak.c:379
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Podrejena mapa uporabnikovega predpomnilnika %s"
 
-#: plugins/flatpak/gs-flatpak.c:373
+#: plugins/flatpak/gs-flatpak.c:380
 msgid "User configuration folder"
 msgstr "Mapa uporabniških nastavitev"
 
-#: plugins/flatpak/gs-flatpak.c:373
+#: plugins/flatpak/gs-flatpak.c:380
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Podrejena mapa uporabniških nastavitev %s"
 
-#: plugins/flatpak/gs-flatpak.c:374
+#: plugins/flatpak/gs-flatpak.c:381
 msgid "User data folder"
 msgstr "Uporabniška podatkovna mapa"
 
-#: plugins/flatpak/gs-flatpak.c:374
+#: plugins/flatpak/gs-flatpak.c:381
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Podrejena mapa uporabnikovih podatkov %s"
 
-#: plugins/flatpak/gs-flatpak.c:375
+#: plugins/flatpak/gs-flatpak.c:382
 msgid "User runtime folder"
 msgstr "Uporabniška izvajalna mapa"
 
-#: plugins/flatpak/gs-flatpak.c:375
+#: plugins/flatpak/gs-flatpak.c:382
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Podrejena uporabnikova izvedbena mapa %s"
 
-#: plugins/flatpak/gs-flatpak.c:433
+#: plugins/flatpak/gs-flatpak.c:440
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Dostopa do datotečnega sistema %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1380
+#: plugins/flatpak/gs-flatpak.c:1457
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Pridobi metapodatke flatpak za %s …"
 
-#: plugins/flatpak/gs-flatpak.c:3606
+#: plugins/flatpak/gs-flatpak.c:3683
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Ni mogoče določiti vstavka »%s«: %s"
