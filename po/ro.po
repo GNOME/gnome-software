@@ -10,18 +10,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-03-10 21:07+0000\n"
-"PO-Revision-Date: 2025-03-11 12:37+0100\n"
+"POT-Creation-Date: 2025-04-04 06:09+0000\n"
+"PO-Revision-Date: 2025-04-07 16:17+0200\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
-"Language-Team: Romanian; Moldavian; Moldovan <gnomero-list@lists.sourceforge."
-"net>\n"
+"Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2);\n"
-"X-Generator: Gtranslator 47.1\n"
+"X-Generator: Gtranslator 48.0\n"
 "X-Project-Style: gnome\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -77,8 +76,8 @@ msgid "The update details"
 msgstr "Detaliile actualizărilor"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2742
-#: src/gs-application.c:263
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2768
+#: src/gs-application.c:267
 msgid "The GNOME Project"
 msgstr "Proiectul GNOME"
 
@@ -211,8 +210,8 @@ msgid ""
 "When non-free applications are installed a warning dialog can be shown. This "
 "controls if that dialog is suppressed."
 msgstr ""
-"Când sunt instalate aplicații care nu sunt gratuite, poate fi afișat un "
-"dialog de avertizare. Aceasta controlează dacă acel dialog este suprimat."
+"Când sunt instalate aplicații nelibere, poate fi afișat un dialog de "
+"avertizare. Aceasta controlează dacă acel dialog este eliminat."
 
 #: data/org.gnome.software.gschema.xml:47
 msgid "The last update check timestamp"
@@ -306,8 +305,7 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:118
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
-"Arată dimensiunea instalării pentru aplicațiile din lista de aplicații "
-"instalate"
+"Arată mărimea instalării pentru aplicațiile din lista de aplicații instalate"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
 #: data/org.gnome.software.gschema.xml:122
@@ -316,14 +314,14 @@ msgstr "'https://ro.wikipedia.org/wiki/Software_proprietar'"
 
 #: data/org.gnome.software.gschema.xml:123
 msgid "The URI that explains nonfree and proprietary software"
-msgstr "URI-ul care explică programele nelibere și proprietare"
+msgstr "URI-ul care explică programele nelibere"
 
 #: data/org.gnome.software.gschema.xml:127
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "swcatalog folder"
 msgstr ""
-"O listă de URL-uri care arată către fișiere appstream care vor fi descărcate "
+"O listă de URL-uri care arată către fișiere Appstream care vor fi descărcate "
 "într-un dosar swcatalog"
 
 #: data/org.gnome.software.gschema.xml:131
@@ -332,9 +330,9 @@ msgid ""
 "false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
 "directory"
 msgstr ""
-"Instalează fișierele AppStream la o locație la nivelul întregului sistem "
-"pentru toți utilizatorii. Dacă este fals, fișierele sunt instalate într-un "
-"director non-standard $XDG_DATA_HOME/swcatalog/xml"
+"Instalează fișierele AppStream într-un loc al sistemului pentru toți "
+"utilizatorii. Dacă este fals, fișierele sunt instalate într-un dosar non-"
+"standard $XDG_DATA_HOME/swcatalog/xml"
 
 #: data/org.gnome.software.gschema.xml:135
 msgid ""
@@ -869,13 +867,13 @@ msgstr "Fișier local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6409 src/gs-safety-context-dialog.c:535
+#: lib/gs-app.c:6409 src/gs-safety-context-dialog.c:588
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6486 src/gs-safety-context-dialog.c:772
+#: lib/gs-app.c:6486 src/gs-safety-context-dialog.c:825
 #: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "Pachet"
@@ -949,98 +947,99 @@ msgstr "Servicii de sesiune"
 msgid "Can access D-Bus services on the session bus"
 msgstr "Poate accesa serviciile D-Bus pe magistrala sesiunilor"
 
-#: src/gs-app-details-page.c:63 src/gs-app-details-page.c:64
-#: src/gs-app-details-page.c:65 src/gs-app-details-page.c:66
+#. The GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER is used only as a flag, with actual bus names being listed separately
+#: src/gs-app-details-page.c:64 src/gs-app-details-page.c:65
+#: src/gs-app-details-page.c:66 src/gs-app-details-page.c:67
 msgid "Devices"
 msgstr "Dispozitive"
 
-#: src/gs-app-details-page.c:63
+#: src/gs-app-details-page.c:64
 msgid "Can access arbitrary devices such as webcams"
 msgstr "Poate accesa dispozitive arbitrare, cum ar fi camere web"
 
 #. Translators: This indicates an app can access input devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:338
-#: src/gs-safety-context-dialog.c:227
+#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:345
+#: src/gs-safety-context-dialog.c:215
 msgid "Can access input devices"
 msgstr "Poate accesa dispozitive de intrare"
 
 #. Translators: This indicates an app can access audio devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:345
+#: src/gs-app-details-page.c:66 src/gs-app-context-bar.c:352
 msgid "Can access microphones and play audio"
 msgstr "Poate accesa microfoanele și reda audio"
 
-#: src/gs-app-details-page.c:66
+#: src/gs-app-details-page.c:67
 msgid "Can access system device files"
 msgstr "Pot accesa fișierele de sistem ale dispozitivelor"
 
-#: src/gs-app-details-page.c:67
+#: src/gs-app-details-page.c:68
 msgid "Screen contents"
 msgstr "Conținutul ecranului"
 
 #. Translators: This indicates an app can access the screen/display contents.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:359
+#: src/gs-app-details-page.c:68 src/gs-app-context-bar.c:366
 msgid "Can access screen contents"
 msgstr "Pot accesa conținutul ecranului"
 
-#: src/gs-app-details-page.c:68 src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:70
 msgid "Home folder"
 msgstr "Dosar personal"
 
-#: src/gs-app-details-page.c:68 src/gs-app-details-page.c:70
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:144
+#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:147
 msgid "Can view, edit and create files"
 msgstr "Poate vedea, edita și crea fișiere"
 
-#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:139
+#: src/gs-app-details-page.c:70 src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:142
 msgid "Can view files"
 msgstr "Poate vedea fișiere"
 
-#: src/gs-app-details-page.c:70 src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:72
 msgid "File system"
 msgstr "Sistem de fișiere"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
 msgid "Downloads folder"
 msgstr "Dosar descărcări"
 
-#: src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:76
 msgid "Settings"
 msgstr "Configurări"
 
-#: src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:76
 msgid "Can view and change any settings"
 msgstr "Poate vedea și modifica orice configurare"
 
-#: src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:77
 msgid "Legacy display system"
 msgstr "Sistem de afișare vechi"
 
-#: src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:77
 msgid "Uses an old, insecure display system"
 msgstr "Folosește un sistem de afișare vechi și nesigur"
 
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78
 msgid "Sandbox escape"
 msgstr "Evadare din izolare"
 
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Poate evada din izolare și poate evita orice alte restricții"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:210
+#: src/gs-app-details-page.c:226
 msgid "No update description available."
 msgstr "Nu este disponibilă nicio descriere a actualizării."
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:234
+#: src/gs-app-details-page.c:250
 msgid "Update Details"
 msgstr "Detalii actualizări"
 
@@ -1052,7 +1051,7 @@ msgstr "Necesită permisiuni suplimentare"
 msgid "Invalid ratings data received from server"
 msgstr "Date de evaluare incorecte primite de la server"
 
-#: src/gs-app-reviews-dialog.c:132 src/gs-details-page.c:2414
+#: src/gs-app-reviews-dialog.c:132 src/gs-details-page.c:2416
 msgid "Could not communicate with ratings server"
 msgstr "Nu s-a putut comunica cu serverul de evaluare"
 
@@ -1073,19 +1072,14 @@ msgstr "Nicio recenzie"
 msgid "Version History"
 msgstr "Istoricul versiunilor"
 
-#: src/gs-app-version-history-row.c:135
-#, c-format
-msgid "New in Version %s"
-msgstr "Noutăți în versiunea %s"
-
-#: src/gs-app-version-history-row.c:142
+#: src/gs-app-version-history-row.c:138
 #, c-format
 msgid "Version %s"
 msgstr "Versiunea %s"
 
-#: src/gs-app-version-history-row.c:144
+#: src/gs-app-version-history-row.c:145
 msgid "No details for this release"
-msgstr "Niciun detaliu disponibil pentru această lansare"
+msgstr "Niciun detaliu despre această versiune"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
@@ -1093,58 +1087,62 @@ msgstr "Niciun detaliu disponibil pentru această lansare"
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
+#: src/gs-app-version-history-row.ui:37
+msgid "Installed"
+msgstr "Instalat"
+
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:124
+#: src/gs-application.c:126
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Mod de pornire: fie „updates” (actualizări), „updated” (actualizat), "
 "„installed” (instalat) sau „overview” (prezentare generală)"
 
-#: src/gs-application.c:124
+#: src/gs-application.c:126
 msgid "MODE"
 msgstr "MOD"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "Search for applications"
 msgstr "Caută aplicații"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "SEARCH"
 msgstr "CAUTĂ"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "Show application details (using application ID)"
 msgstr "Arată detaliile aplicației (folosind ID-ul aplicației)"
 
-#: src/gs-application.c:128 src/gs-application.c:132 src/gs-application.c:134
+#: src/gs-application.c:130 src/gs-application.c:134 src/gs-application.c:136
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:132
 msgid "Show application details (using package name)"
 msgstr "Arată detaliile aplicației (folosind numele pachetului)"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:132
 msgid "PKGNAME"
 msgstr "NUME PACHET"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "Install the application (using application ID)"
 msgstr "Instalează aplicația (folosind ID-ul aplicației)"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:136
 msgid "Uninstall the application (using application ID)"
 msgstr "Dezinstalează aplicația (utilizând ID-ul aplicației)"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:138
 msgid "Open a local package file"
 msgstr "Deschide un pachet local"
 
-#: src/gs-application.c:136 src/gs-application.c:141
+#: src/gs-application.c:138 src/gs-application.c:143
 msgid "FILENAME"
 msgstr "NUME FIȘIER"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:140
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -1152,15 +1150,15 @@ msgstr ""
 "Tipul de interacție așteptat de la această acțiune: fie „none”, „notifiy”, "
 "sau „full”"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:141
 msgid "INTERACTION"
 msgstr "INTERACȚIUNE"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:143
 msgid "Show a local metainfo or appdata file"
 msgstr "Arată un fișier local metainfo sau appdata"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:145
 msgid ""
 "Enable verbose debugging output (from the running instance, if already "
 "running)"
@@ -1168,31 +1166,32 @@ msgstr ""
 "Activează ieșirea de depanare detaliată (din instanța care rulează, dacă "
 "deja rulează)"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:147
 msgid "Installs any pending updates in the background"
 msgstr "Instalează orice actualizări apărute în fundal"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:149
 msgid "Show preferences"
 msgstr "Arată preferințele"
 
-#: src/gs-application.c:149
-msgid "Quit the running instance"
-msgstr "Ieși din instanța în curs de rulare"
-
 #: src/gs-application.c:151
+msgid "Quit the running instance"
+msgstr "Ieși din instanța în curs"
+
+#: src/gs-application.c:153
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferă surse de fișiere locale pentru AppStream"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:155
 msgid "Show version number"
-msgstr "Arată numărul de versiune"
+msgstr "Arată numărul versiunii"
 
-#: src/gs-application.c:270
-msgid "Copyright © 2016–2023 GNOME Software contributors"
-msgstr "Drepturi de autor © 2016–2023 Contribuitorii Software GNOME"
+#: src/gs-application.c:262
+#, c-format
+msgid "Copyright © 2016–%d GNOME Software contributors"
+msgstr "Drepturi de autor © 2016–%d Contribuitorii Software GNOME"
 
-#: src/gs-application.c:272
+#: src/gs-application.c:276
 msgid "translator-credits"
 msgstr ""
 "Bogdan Mințoi <mintoi [dot ] bogdan [at] gmail [dot] com>, 2014\n"
@@ -1203,7 +1202,7 @@ msgstr ""
 "Antonio Marin <gnmer [dot] 6qxyg [at] slmail [dot] me>, 2025"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:508
+#: src/gs-application.c:512
 msgid "Sorry! There are no details for that application."
 msgstr "Nu există detalii pentru aplicația aceea."
 
@@ -1211,7 +1210,7 @@ msgstr "Nu există detalii pentru aplicația aceea."
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:162 src/gs-storage-context-dialog.c:133
 msgid "Installed Size"
-msgstr "Dimensiunea instalării"
+msgstr "Spațiu utilizat"
 
 #: src/gs-app-context-bar.c:165
 #, c-format
@@ -1275,85 +1274,91 @@ msgstr "Are acces la rețea"
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:317
-msgid "Uses system services"
-msgstr "Utilizează serviciile sistemului"
+msgid "Uses non-portal system services"
+msgstr "Foloseste direct, fără portal, serviciile sistemului"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:324
-msgid "Uses session services"
-msgstr "Utilizează serviciile sesiunii"
+msgid "Uses non-portal session services"
+msgstr "Foloseste direct, fără portal, serviciile sesiunii"
+
+#. Translators: This indicates an app can access session or system bus services unknown to the Software.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:331
+msgid "Can access some specific non-portal services"
+msgstr "Poate accesa direct, fără portal, unele servicii specifice"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:331
+#: src/gs-app-context-bar.c:338
 msgid "Can access hardware devices"
 msgstr "Poate accesa dispozitivele hardware"
 
 #. Translators: This indicates an app can access system devices such as /dev/shm.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:352
+#: src/gs-app-context-bar.c:359
 msgid "Can access system devices"
 msgstr "Pot accesa dispozitivele sistemului"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:371
+#: src/gs-app-context-bar.c:378
 msgid "Can read/write all your data"
 msgstr "Poate să citească/scrie toate datele"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:383
+#: src/gs-app-context-bar.c:390
 msgid "Can read all your data"
 msgstr "Poate să citească toate datele"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:390
+#: src/gs-app-context-bar.c:397
 msgid "Can read/write your downloads"
 msgstr "Poate să citească/scrie toate descărcările"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:397
+#: src/gs-app-context-bar.c:404
 msgid "Can read your downloads"
 msgstr "Poate să citească toate descărcările"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:404
+#: src/gs-app-context-bar.c:411
 msgid "Can access some specific files"
 msgstr "Pot accesa unele fișiere specifice"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:411 src/gs-safety-context-dialog.c:275
+#: src/gs-app-context-bar.c:418 src/gs-safety-context-dialog.c:263
 msgid "Can access and change user settings"
 msgstr "Poate accesa și schimba configurările utilizatorului"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:418 src/gs-safety-context-dialog.c:259
+#: src/gs-app-context-bar.c:425 src/gs-safety-context-dialog.c:247
 msgid "Uses a legacy windowing system"
 msgstr "Folosește un sistem vechi de ferestre"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:425 src/gs-safety-context-dialog.c:267
+#: src/gs-app-context-bar.c:432 src/gs-safety-context-dialog.c:255
 msgid "Can acquire arbitrary permissions"
 msgstr "Poate obține permisiuni arbitrare"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:437
+#: src/gs-app-context-bar.c:444
 msgid "Software developer is verified"
 msgstr "Dezvoltatorul aplicației este verificat"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:455 src/gs-safety-context-dialog.c:144
+#: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:144
 msgid "Reviewed by OS distributor"
 msgstr "Revizuit de distribuitorul SO"
 
@@ -1362,7 +1367,7 @@ msgstr "Revizuit de distribuitorul SO"
 #. * It’s used in a context tile, so should be short.
 #. * The '%s' is replaced by the distribution name.
 #. Translators: The '%s' is replaced by the distribution name.
-#: src/gs-app-context-bar.c:461 src/gs-safety-context-dialog.c:147
+#: src/gs-app-context-bar.c:468 src/gs-safety-context-dialog.c:147
 #, c-format
 msgid "Reviewed by %s"
 msgstr "Revizuit de %s"
@@ -1370,37 +1375,37 @@ msgstr "Revizuit de %s"
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:477 src/gs-safety-context-dialog.c:161
+#: src/gs-app-context-bar.c:484 src/gs-safety-context-dialog.c:161
 msgid "Provided by a third party"
 msgstr "Oferit de o parte terță"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:487
+#: src/gs-app-context-bar.c:494
 msgid "Software no longer supported"
 msgstr "Aplicația nu mai este întreținută"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:499
+#: src/gs-app-context-bar.c:506
 msgid "Auditable code"
 msgstr "Cod verificabil"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:505
+#: src/gs-app-context-bar.c:512
 msgid "Unknown license"
 msgstr "Licență necunoscută"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:512
+#: src/gs-app-context-bar.c:519
 msgid "Proprietary code"
 msgstr "Cod proprietar"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:519
+#: src/gs-app-context-bar.c:526
 msgid "Special license"
 msgstr "Licență specială"
 
@@ -1418,116 +1423,116 @@ msgstr "Licență specială"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/
-#: src/gs-app-context-bar.c:533 src/gs-app-context-bar.c:816
+#: src/gs-app-context-bar.c:540 src/gs-app-context-bar.c:823
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:541
+#: src/gs-app-context-bar.c:548
 msgid "Privileged"
 msgstr "Privilegiat"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:548
+#: src/gs-app-context-bar.c:555
 msgid "Safe"
 msgstr "Sigur"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:555
+#: src/gs-app-context-bar.c:562
 msgid "Probably Safe"
 msgstr "Probabil sigur"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:562
+#: src/gs-app-context-bar.c:569
 msgid "Potentially Unsafe"
 msgstr "Potențial nesigur"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:569
+#: src/gs-app-context-bar.c:576
 msgid "Unsafe"
 msgstr "Nesigur"
 
-#: src/gs-app-context-bar.c:647 src/gs-app-context-bar.c:679
+#: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:686
 #: src/gs-hardware-support-context-dialog.c:615
 msgid "Mobile Only"
 msgstr "Doar Mobil"
 
-#: src/gs-app-context-bar.c:648
+#: src/gs-app-context-bar.c:655
 msgid "Only works on a small screen"
 msgstr "Funcționează doar pe un ecran mic"
 
-#: src/gs-app-context-bar.c:653 src/gs-app-context-bar.c:686
-#: src/gs-app-context-bar.c:693 src/gs-app-context-bar.c:743
-#: src/gs-app-context-bar.c:748 src/gs-hardware-support-context-dialog.c:595
+#: src/gs-app-context-bar.c:660 src/gs-app-context-bar.c:693
+#: src/gs-app-context-bar.c:700 src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:755 src/gs-hardware-support-context-dialog.c:595
 msgid "Desktop Only"
 msgstr "Doar pe desktop"
 
-#: src/gs-app-context-bar.c:654
+#: src/gs-app-context-bar.c:661
 msgid "Only works on a large screen"
 msgstr "Funcționează doar pe un ecran mare"
 
-#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-app-context-bar.c:665 src/gs-hardware-support-context-dialog.c:633
 msgid "Screen Size Mismatch"
 msgstr "Nepotrivire a dimensiunii ecranului"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:666 src/gs-hardware-support-context-dialog.c:634
 msgid "Doesn’t support your current screen size"
 msgstr "Nu acceptă mărimea actuală a ecranului"
 
-#: src/gs-app-context-bar.c:680 src/gs-hardware-support-context-dialog.c:686
+#: src/gs-app-context-bar.c:687 src/gs-hardware-support-context-dialog.c:686
 #: src/gs-hardware-support-context-dialog.c:692
 msgid "Requires a touchscreen"
 msgstr "Necesită un ecran tactil"
 
-#: src/gs-app-context-bar.c:687 src/gs-hardware-support-context-dialog.c:646
+#: src/gs-app-context-bar.c:694 src/gs-hardware-support-context-dialog.c:646
 #: src/gs-hardware-support-context-dialog.c:652
 msgid "Requires a keyboard"
 msgstr "Necesită o tastatură"
 
-#: src/gs-app-context-bar.c:694
+#: src/gs-app-context-bar.c:701
 msgid "Requires a mouse"
 msgstr "Necesită un maus"
 
-#: src/gs-app-context-bar.c:705
+#: src/gs-app-context-bar.c:712
 msgid "Gamepad Needed"
 msgstr "Este necesar un gamepad"
 
-#: src/gs-app-context-bar.c:706
+#: src/gs-app-context-bar.c:713
 msgid "Requires a gamepad to play"
 msgstr "Necesită un gamepad pentru a juca"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:730
+#: src/gs-app-context-bar.c:737
 msgid "Adaptive"
 msgstr "Adaptiv"
 
-#: src/gs-app-context-bar.c:731
+#: src/gs-app-context-bar.c:738
 msgid "Works on phones, tablets and desktops"
 msgstr "Funcționează pe telefoane, tablete și desktop-uri"
 
-#: src/gs-app-context-bar.c:744
+#: src/gs-app-context-bar.c:751
 msgid "Probably requires a keyboard or mouse"
 msgstr "Probabil necesită o tastatură și un maus"
 
-#: src/gs-app-context-bar.c:749
+#: src/gs-app-context-bar.c:756
 msgid "Works on desktops and laptops"
 msgstr "Funcționează pe desktopuri și laptopuri"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:791
+#: src/gs-app-context-bar.c:798
 msgid "Contains no age-inappropriate content"
 msgstr "Nu conține conținut neadecvat vârstei"
 
-#: src/gs-app-context-bar.c:839
+#: src/gs-app-context-bar.c:846
 msgid "No age rating information available"
 msgstr "Nu sunt disponibile informații pentru ratingul de vârstă"
 
@@ -1661,7 +1666,7 @@ msgstr "Autentificare necesară"
 #: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-removal-dialog.ui:24
 #: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:174
 #: src/gs-repos-dialog.c:250 src/gs-review-dialog.ui:24 src/gs-review-row.c:235
-#: src/gs-review-row.c:259 src/gs-updates-page.c:852
+#: src/gs-review-row.c:259 src/gs-updates-page.c:863
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
 msgstr "_Anulează"
@@ -1962,6 +1967,36 @@ msgstr[2] "%d de ore în urmă"
 msgctxt "format-size"
 msgid "%s %s"
 msgstr "%s %s"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1496
+#, c-format
+msgid "Use the %s System Service"
+msgstr "Utilizează serviciul sistemului %s"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1499
+#, c-format
+msgid "Use the %s Session Service"
+msgstr "Utilizează serviciul sesiunii %s"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1502
+#, c-format
+msgid "Use the %s Service"
+msgstr "Utilizează serviciul %s"
+
+#: src/gs-common.c:1523
+msgid "Can see the non-portal service"
+msgstr "Poate vedea serviciul fără portal"
+
+#: src/gs-common.c:1525
+msgid "Can talk to the non-portal service"
+msgstr "Poate comunica cu serviciul fără portal"
+
+#: src/gs-common.c:1527
+msgid "Can own the non-portal service"
+msgstr "Poate deține serviciul fără portal"
 
 #: lib/gs-desktop-data.c:16
 msgctxt "Menu of Graphics & Photography"
@@ -2504,24 +2539,24 @@ msgid "Developer has proven the ownership of %s"
 msgstr "Programatorul a demonstrat că %s îi aparține"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1827
+#: src/gs-details-page.c:1829
 msgid "You need internet access to write a review"
 msgstr "Aveți nevoie de acces la internet pentru a scrie o recenzie"
 
-#: src/gs-details-page.c:1930
+#: src/gs-details-page.c:1932
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
 "Această aplicație nu mai primește actualizări, inclusiv remedieri de "
 "securitate"
 
-#: src/gs-details-page.c:1931
+#: src/gs-details-page.c:1933
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "Această aplicație este deja furnizată de distribuție și nu ar trebui să fie "
 "înlocuită."
 
-#: src/gs-details-page.c:1932
+#: src/gs-details-page.c:1934
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2529,12 +2564,12 @@ msgstr ""
 "Această aplicație nu oferă nicio legătură către o pagină web, un depozit de "
 "cod sau un instrument de urmărire a problemelor."
 
-#: src/gs-details-page.c:1934
+#: src/gs-details-page.c:1936
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "Acest software nu mai primește actualizări, inclusiv remedieri de securitate"
 
-#: src/gs-details-page.c:1935
+#: src/gs-details-page.c:1937
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2542,7 +2577,7 @@ msgstr ""
 "Această aplicație este deja furnizată de distribuția instalată și nu ar "
 "trebui înlocuită."
 
-#: src/gs-details-page.c:1936
+#: src/gs-details-page.c:1938
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2550,7 +2585,7 @@ msgstr ""
 "Acest program nu oferă adrese către un sit web, depozit de cod sau urmăritor "
 "de probleme."
 
-#: src/gs-details-page.c:2026 src/gs-details-page.c:2043
+#: src/gs-details-page.c:2028 src/gs-details-page.c:2045
 #, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
@@ -2559,11 +2594,11 @@ msgstr ""
 "Nu s-au putut obține informații despre „%s” și nu pot fi arătate detalii "
 "despre această aplicație."
 
-#: src/gs-details-page.c:2411
+#: src/gs-details-page.c:2413
 msgid "Invalid review response received from server"
 msgstr "Răspuns incorect primit de la server pentru recenzie"
 
-#: src/gs-details-page.c:2421
+#: src/gs-details-page.c:2423
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Nu s-a putut trimite recenzia pentru „%s”: %s"
@@ -2782,11 +2817,11 @@ msgstr ""
 
 #: src/gs-dkms-dialog.ui:244
 msgid ""
-"Further guidance can be found on the <a href=\"https://docs.fedoraproject."
-"org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
+"Further guidance can be found on the <a href=\"https://"
+"docs.fedoraproject.org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
 msgstr ""
-"Mai multe îndrumări pot fi găsite pe pagina <a href=\"https://docs."
-"fedoraproject.org/en-US/quick-docs/mok-enrollment/\">documente</a>."
+"Mai multe îndrumări pot fi găsite pe pagina <a href=\"https://"
+"docs.fedoraproject.org/en-US/quick-docs/mok-enrollment/\">documente</a>."
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:293
@@ -3388,7 +3423,7 @@ msgstr ""
 "Poți participa și ajuta la îmbunătățirea lui."
 
 #. Translators: This indicates an app does not specify which license it's developed under.
-#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:409
+#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:462
 msgid "Unknown License"
 msgstr "Licență necunoscută"
 
@@ -3426,7 +3461,7 @@ msgstr ""
 "Este posibil sau nu să contribui la acest program."
 
 #. Translators: This is used for "License    Proprietary"
-#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:574
+#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:627
 msgid "Proprietary"
 msgstr "Neliberă"
 
@@ -3459,7 +3494,7 @@ msgstr ""
 "Este posibil să nu poți contribui la acest program."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:446
+#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:499
 msgid "Special License"
 msgstr "Licență specială"
 
@@ -4015,7 +4050,7 @@ msgstr[2] "%s și %s instalate"
 
 #: src/gs-repo-row.c:242
 msgid "Checking installed software…"
-msgstr "Se verifică software-ul instalat…"
+msgstr "Se verifică programul instalat…"
 
 #. Translators: The first '%s' is replaced with installation kind, like in case of Flatpak 'User Installation',
 #. the second '%s' is replaced with a text like '10 apps installed'.
@@ -4220,214 +4255,225 @@ msgstr ""
 "este izolată"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:176
+#: src/gs-safety-context-dialog.c:180
 msgid "No Permissions"
 msgstr "Nicio permisiune"
 
-#: src/gs-safety-context-dialog.c:177
+#: src/gs-safety-context-dialog.c:181
 msgid "App is fully sandboxed"
 msgstr "Aplicația este izolată complet"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:188
+#: src/gs-safety-context-dialog.c:192
 msgid "Network Access"
 msgstr "Acces la rețea"
 
-#: src/gs-safety-context-dialog.c:189
+#: src/gs-safety-context-dialog.c:193
 msgid "Can access the internet"
 msgstr "Poate accesa internetul"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:192
+#: src/gs-safety-context-dialog.c:196
 msgid "No Network Access"
 msgstr "Nu are acces la rețea"
 
-#: src/gs-safety-context-dialog.c:193
+#: src/gs-safety-context-dialog.c:197
 msgid "Cannot access the internet"
 msgstr "Nu poate accesa internetul"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:199
-msgid "Uses System Services"
-msgstr "Utilizează serviciile sistemului"
-
-#: src/gs-safety-context-dialog.c:200
-msgid "Can request data from system services"
-msgstr "Poate cere date de la serviciile sistemului"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:207
-msgid "Uses Session Services"
-msgstr "Utilizează serviciile sesiunii"
-
-#: src/gs-safety-context-dialog.c:208
-msgid "Can request data from session services"
-msgstr "Poate cere date de la serviciile sesiunii"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:215
+#: src/gs-safety-context-dialog.c:203
 msgid "User Device Access"
 msgstr "Acces la dispozitivele utilizatorului"
 
-#: src/gs-safety-context-dialog.c:216
+#: src/gs-safety-context-dialog.c:204
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr ""
 "Poate accesa dispozitive cum ar fi camere web sau controlere pentru jocuri"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:219
+#: src/gs-safety-context-dialog.c:207
 msgid "No User Device Access"
 msgstr "Niciun acces la dispozitivele utilizatorului"
 
-#: src/gs-safety-context-dialog.c:220
+#: src/gs-safety-context-dialog.c:208
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr ""
 "Nu poate accesa dispozitive cum ar fi camere web sau controlere pentru jocuri"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:226
+#: src/gs-safety-context-dialog.c:214
 msgid "Input Device Access"
 msgstr "Acces la dispozitivele de intrare"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:234
+#: src/gs-safety-context-dialog.c:222
 msgid "Microphone Access and Audio Playback"
 msgstr "Acces la microfon și redare audio"
 
-#: src/gs-safety-context-dialog.c:235
+#: src/gs-safety-context-dialog.c:223
 msgid "Can listen using microphones and play audio without asking permission"
 msgstr ""
 "Poate asculta folosind microfoanele și reda audio fără a cere permisiune"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:242
+#: src/gs-safety-context-dialog.c:230
 msgid "System Device Access"
 msgstr "Acces la dispozitivele sistemului"
 
-#: src/gs-safety-context-dialog.c:243
+#: src/gs-safety-context-dialog.c:231
 msgid "Can access system devices which require elevated permissions"
 msgstr "Poate accesa dispozitivele de sistem care necesită permisiuni ridicate"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:250
+#: src/gs-safety-context-dialog.c:238
 msgid "Screen Contents Access"
 msgstr "Acces la conținutul ecranului"
 
-#: src/gs-safety-context-dialog.c:251
+#: src/gs-safety-context-dialog.c:239
 msgid "Can access the contents of the screen or other windows"
 msgstr "Poate accesa conținutul ecranului sau al altor ferestre"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:258
+#: src/gs-safety-context-dialog.c:246
 msgid "Legacy Windowing System"
 msgstr "Sistem vechi de ferestre"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:266
+#: src/gs-safety-context-dialog.c:254
 msgid "Arbitrary Permissions"
 msgstr "Permisiuni arbitrare"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:274
+#: src/gs-safety-context-dialog.c:262
 msgid "User Settings"
 msgstr "Configurări utilizator"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:286
+#: src/gs-safety-context-dialog.c:274
 msgid "Full File System Read/Write Access"
 msgstr "Acces total la citirea/scrierea sistemului de fișiere"
 
-#: src/gs-safety-context-dialog.c:287
+#: src/gs-safety-context-dialog.c:275
 msgid "Can read and write all data on the file system"
 msgstr "Poate citi și scrie toate datele de pe sistemul de fișiere"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:295
+#: src/gs-safety-context-dialog.c:283
 msgid "Home Folder Read/Write Access"
 msgstr "Acces la citirea/scrierea dosarului personal"
 
-#: src/gs-safety-context-dialog.c:296
+#: src/gs-safety-context-dialog.c:284
 msgid "Can read and write all data in your home directory"
 msgstr "Poate să citească/scrie toate datele din dosarul personal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:304
+#: src/gs-safety-context-dialog.c:292
 msgid "Full File System Read Access"
 msgstr "Acces complet pentru citirea sistemului de fișiere"
 
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:293
 msgid "Can read all data on the file system"
 msgstr "Poate citi toate datele de pe sistemul de fișiere"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:314
+#: src/gs-safety-context-dialog.c:302
 msgid "Home Folder Read Access"
 msgstr "Acces de citire a dosarului personal"
 
-#: src/gs-safety-context-dialog.c:315
+#: src/gs-safety-context-dialog.c:303
 msgid "Can read all data in your home directory"
 msgstr "Poate să citească toate datele din dosarul personal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:324
+#: src/gs-safety-context-dialog.c:312
 msgid "Download Folder Read/Write Access"
 msgstr "Acces de citire a dosarului „Descărcări”"
 
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:313
 msgid "Can read and write all data in your downloads directory"
 msgstr "Poate să citească/scrie toate datele din dosarul „Descărcări”"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:336
+#: src/gs-safety-context-dialog.c:324
 msgid "Download Folder Read Access"
 msgstr "Acces de citire pentru dosarul Descărcări"
 
-#: src/gs-safety-context-dialog.c:337
+#: src/gs-safety-context-dialog.c:325
 msgid "Can read all data in your downloads directory"
 msgstr "Poate să citească toate datele din dosarul „Descărcări”"
 
-#: src/gs-safety-context-dialog.c:347
+#: src/gs-safety-context-dialog.c:335
 msgid "Can read and write all data in the directory"
 msgstr "Poate să citească și să scrie toate datele din director"
 
-#: src/gs-safety-context-dialog.c:358
+#: src/gs-safety-context-dialog.c:346
 msgid "Can read all data in the directory"
 msgstr "Poate să citească toate datele din director"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:374
+#: src/gs-safety-context-dialog.c:362
 msgid "No File System Access"
 msgstr "Nu are acces la sistemul de fișiere"
 
-#: src/gs-safety-context-dialog.c:375
+#: src/gs-safety-context-dialog.c:363
 msgid "Cannot access the file system at all"
 msgstr "Nu poate accesa sistemul de fișiere deloc"
 
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:390
+msgid "Uses System Services"
+msgstr "Utilizează serviciile sistemului"
+
+#: src/gs-safety-context-dialog.c:391
+msgid "Can request data from non-portal system services"
+msgstr "Poate solicita date de la serviciile de sistem, fără portal"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:398
+msgid "Uses Session Services"
+msgstr "Utilizează serviciile sesiunii"
+
+#: src/gs-safety-context-dialog.c:399
+msgid "Can request data from non-portal session services"
+msgstr "Poate solicita date de la serviciile sesiunii, fără portal"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:427
+msgid "No Service Access"
+msgstr "Niciun acces la servicii"
+
+#: src/gs-safety-context-dialog.c:428
+msgid "Cannot access non-portal session or system services at all"
+msgstr ""
+"Nu poate accesa deloc în mod direct, fără portal, sesiunile sau serviciile "
+"sistemului"
+
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:385
+#: src/gs-safety-context-dialog.c:438
 msgid "App developer is verified"
 msgstr "Programatorul aplicației este verificat"
 
-#: src/gs-safety-context-dialog.c:386
+#: src/gs-safety-context-dialog.c:439
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr ""
 "Programatorul acestei aplicații a fost verificat că este cine pretinde a fi"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:397
+#: src/gs-safety-context-dialog.c:450
 msgid "Insecure Dependencies"
 msgstr "Dependențe nesigure"
 
-#: src/gs-safety-context-dialog.c:398
+#: src/gs-safety-context-dialog.c:451
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
 "Programul sau dependențele acestuia nu mai sunt întreținute sau pot fi "
 "nesigure"
 
-#: src/gs-safety-context-dialog.c:411
+#: src/gs-safety-context-dialog.c:464
 msgid ""
 "This app does not specify what license it is developed under, and may be "
 "proprietary"
@@ -4435,7 +4481,7 @@ msgstr ""
 "Această aplicație nu specifică sub ce licență este dezvoltată și poate fi "
 "neliberă"
 
-#: src/gs-safety-context-dialog.c:412
+#: src/gs-safety-context-dialog.c:465
 msgid ""
 "This software does not specify what license it is developed under, and may "
 "be proprietary"
@@ -4443,11 +4489,11 @@ msgstr ""
 "Acest program nu specifică sub ce licență este dezvoltat și poate fi neliber"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:425
+#: src/gs-safety-context-dialog.c:478
 msgid "Proprietary Code"
 msgstr "Cod neliber"
 
-#: src/gs-safety-context-dialog.c:426
+#: src/gs-safety-context-dialog.c:479
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -4456,23 +4502,23 @@ msgstr ""
 "poate fi nesigur"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:434
+#: src/gs-safety-context-dialog.c:487
 #, c-format
 msgid "This app is developed under the special license “%s”"
 msgstr "Această aplicație este dezvoltată sub licența specială „%s”."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:437
+#: src/gs-safety-context-dialog.c:490
 #, c-format
 msgid "This software is developed under the special license “%s”"
 msgstr "Acest program este dezvoltat sub licența specială „%s”."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:450
+#: src/gs-safety-context-dialog.c:503
 msgid "Auditable Code"
 msgstr "Cod verificabil"
 
-#: src/gs-safety-context-dialog.c:451
+#: src/gs-safety-context-dialog.c:504
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -4482,41 +4528,41 @@ msgstr ""
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:460
+#: src/gs-safety-context-dialog.c:513
 #, c-format
 msgid "%s is privileged"
 msgstr "%s este privilegiată"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:467
+#: src/gs-safety-context-dialog.c:520
 #, c-format
 msgid "%s is safe"
 msgstr "%s este sigură"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:474
+#: src/gs-safety-context-dialog.c:527
 #, c-format
 msgid "%s is probably safe"
 msgstr "%s probabil este sigură"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:481
+#: src/gs-safety-context-dialog.c:534
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s este potențial nesigură"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:488
+#: src/gs-safety-context-dialog.c:541
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s este nesigură"
 
 #. Translators: This is used for "License    Unknown"
-#: src/gs-safety-context-dialog.c:571
+#: src/gs-safety-context-dialog.c:624
 msgctxt "Unknown license"
 msgid "Unknown"
 msgstr "Necunoscută"
@@ -5106,10 +5152,8 @@ msgstr "Nu s-a putut porni %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #. TRANSLATORS: we failed to get a proper error code
-#. TRANSLATORS: failure text for the in-app notification
-#. TRANSLATORS: we failed to get a proper error code
 #: src/gs-shell.c:1764 src/gs-shell.c:1792 src/gs-shell.c:1836
-#: src/gs-shell.c:1880 src/gs-shell.c:1919 src/gs-shell.c:1944
+#: src/gs-shell.c:1880 src/gs-shell.c:1944
 msgid "Sorry, something went wrong"
 msgstr "Ceva nu a funcționat"
 
@@ -5150,6 +5194,11 @@ msgstr "Nu s-a putut instala"
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nu s-a putut contacta %s"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1919
+msgid "Download failed"
+msgstr "Descărcare nereușită"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
 #: src/gs-shell.c:1928
@@ -5310,7 +5359,7 @@ msgstr "_Examinează"
 #: src/gs-update-dialog.c:107
 #, c-format
 msgid "Installed on %s"
-msgstr "Instalate la data de %s"
+msgstr "Instalate pe %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
 #: src/gs-update-dialog.c:129
@@ -5319,50 +5368,50 @@ msgstr "Actualizări instalate"
 
 #: src/gs-update-dialog.ui:59
 msgid "No Updates Installed"
-msgstr "Nu sunt instalate actualizări"
+msgstr "Nicio actualizare instalată"
 
-#: src/gs-update-monitor.c:217
+#: src/gs-update-monitor.c:222
 msgid "Updates Are Out of Date"
 msgstr "Actualizările sunt vechi"
 
-#: src/gs-update-monitor.c:218
+#: src/gs-update-monitor.c:223
 msgid "Please check for available updates"
 msgstr "Verifică dacă sunt disponibile actualizări"
 
-#: src/gs-update-monitor.c:224
+#: src/gs-update-monitor.c:229
 msgid "Critical Updates Ready to Install"
 msgstr "Actualizare critică gata de instalat"
 
-#: src/gs-update-monitor.c:225
+#: src/gs-update-monitor.c:230
 msgid "Install critical updates as soon as possible"
 msgstr "Actualizările critice trebuie instalate cât mai curând posibil"
 
-#: src/gs-update-monitor.c:228
+#: src/gs-update-monitor.c:233
 msgid "Critical Updates Available to Download"
 msgstr "Actualizări critice disponibile pentru descărcat"
 
-#: src/gs-update-monitor.c:229
+#: src/gs-update-monitor.c:234
 msgid "Download critical updates as soon as possible"
 msgstr "Actualizările critice trebuie descărcate cât mai curând posibil"
 
-#: src/gs-update-monitor.c:235
+#: src/gs-update-monitor.c:240
 msgid "Updates Ready to Install"
 msgstr "Actualizări gata de instalat"
 
-#: src/gs-update-monitor.c:236
+#: src/gs-update-monitor.c:241
 msgid "Software updates are ready and waiting"
 msgstr "Actualizările sunt în așteptare și gata de instalat"
 
-#: src/gs-update-monitor.c:242
+#: src/gs-update-monitor.c:247
 msgid "Updates Available to Download"
 msgstr "Actualizări disponibile pentru descărcat"
 
-#: src/gs-update-monitor.c:243
+#: src/gs-update-monitor.c:248
 msgid "Software updates can be downloaded"
 msgstr "Actualizările pot fi descărcate"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:363
+#: src/gs-update-monitor.c:370
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
@@ -5371,7 +5420,7 @@ msgstr[1] "%u aplicații actualizate — repornirea necesară"
 msgstr[2] "%u de aplicații actualizate — repornirea necesară"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:369
+#: src/gs-update-monitor.c:376
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
@@ -5380,24 +5429,24 @@ msgstr[1] "%u aplicații actualizate"
 msgstr[2] "%u de aplicații actualizate"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:380
+#: src/gs-update-monitor.c:387
 #, c-format
 msgid "%s has been updated."
 msgstr "%s a fost actualizată."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:383
+#: src/gs-update-monitor.c:390
 msgid "Please restart the app."
 msgstr "Repornește aplicația."
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:391
+#: src/gs-update-monitor.c:398
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s și %s au fost actualizate."
 
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:397 src/gs-update-monitor.c:416
+#: src/gs-update-monitor.c:404 src/gs-update-monitor.c:423
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
@@ -5406,70 +5455,70 @@ msgstr[1] "%u aplicații necesită o repornire."
 msgstr[2] "%u de aplicații necesită o repornire."
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:409
+#: src/gs-update-monitor.c:416
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Include %s, %s și %s."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:711
+#: src/gs-update-monitor.c:723
 msgid "System Has Reached End of Life"
 msgstr "Sistemul a ajuns la sfârșitul duratei de viață"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:713
+#: src/gs-update-monitor.c:725
 msgid "Upgrade to continue receiving updates"
 msgstr "Trebuie avansat pentru a primi în continuare actualizări"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:768
+#: src/gs-update-monitor.c:782
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "O nouă versiune a %s este disponibilă pentru instalat"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:772
+#: src/gs-update-monitor.c:786
 msgid "Software Upgrade Available"
 msgstr "Avansare a sistemului disponibilă"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1270
+#: src/gs-update-monitor.c:1306
 msgid "Software Updates Failed"
 msgstr "Actualizarea aplicațiilor a eșuat"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1272
+#: src/gs-update-monitor.c:1308
 msgid "Prepared updates were not installed"
 msgstr "Actualizările pregătite n-au fost instalate"
 
-#: src/gs-update-monitor.c:1273
+#: src/gs-update-monitor.c:1309
 msgid "Show Details"
 msgstr "Arată detalii"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1318
+#: src/gs-update-monitor.c:1356
 msgid "System Upgrade Complete"
 msgstr "Avansare completă a sistemului"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1323
+#: src/gs-update-monitor.c:1361
 #, c-format
 msgid "Welcome to %s %s!"
-msgstr "Bun venit la %s %s!"
+msgstr "Bun venit în %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1332
+#: src/gs-update-monitor.c:1370
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
-msgstr[0] "Actualizarea aplicației a fost instalată"
-msgstr[1] "Actualizări de aplicații instalate"
-msgstr[2] "Actualizări de aplicații instalate"
+msgstr[0] "Actualizare instalată"
+msgstr[1] "Actualizări instalate"
+msgstr[2] "Actualizări instalate"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1336
+#: src/gs-update-monitor.c:1374
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "O actualizare importantă a sistemului a fost instalată."
@@ -5481,30 +5530,30 @@ msgstr[2] "Actualizări importante ale sistemului au fost instalate."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1347
+#: src/gs-update-monitor.c:1385
 msgctxt "updates"
 msgid "Review"
 msgstr "Recenzează"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1400
+#: src/gs-update-monitor.c:1440
 msgid "Failed To Update"
 msgstr "Actualizarea a eșuat"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1405
+#: src/gs-update-monitor.c:1445
 msgid "The system was already up to date."
 msgstr "Sistemul a fost deja actualizat."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1410
+#: src/gs-update-monitor.c:1450
 msgid "The update was cancelled."
 msgstr "Actualizarea a fost anulată."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1415
+#: src/gs-update-monitor.c:1455
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5513,7 +5562,7 @@ msgstr ""
 "aveți acces la internet și încercați din nou."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1420
+#: src/gs-update-monitor.c:1460
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -5522,14 +5571,14 @@ msgstr ""
 "furnizorul dumneavoastră de aplicații pentru mai multe detalii."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1425
+#: src/gs-update-monitor.c:1465
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Insuficient spațiu disponibil pe disc. Eliberați spațiu și încercați din nou."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1429
+#: src/gs-update-monitor.c:1469
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -5539,39 +5588,39 @@ msgstr ""
 "aplicații."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:261
+#: src/gs-updates-page.c:262
 #, c-format
 msgid "Last checked: %s"
 msgstr "Ultima căutare: %s"
 
-#: src/gs-updates-page.c:314
+#: src/gs-updates-page.c:325
 msgid "Stop"
 msgstr "Oprire"
 
-#: src/gs-updates-page.c:323 src/gs-updates-page.c:335
+#: src/gs-updates-page.c:334 src/gs-updates-page.c:346
 msgid "Check for Updates"
 msgstr "Caută actualizări"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:586
+#: src/gs-updates-page.c:597
 #, c-format
 msgid "%s %s has stopped receiving critical software updates"
 msgstr "%s %s a încetat să mai primească actualizări de software critice"
 
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
-#: src/gs-updates-page.c:592
+#: src/gs-updates-page.c:603
 msgid "Your operating system has stopped receiving critical software updates"
 msgstr "Acest sistem nu mai primește actualizări software critice"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:848
+#: src/gs-updates-page.c:859
 msgid "Charges May Apply"
 msgstr "Se pot aplica taxe"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:850
+#: src/gs-updates-page.c:861
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -5580,23 +5629,23 @@ msgstr ""
 "poate să conducă la suportarea unor taxe."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:854
+#: src/gs-updates-page.c:865
 msgid "Check _Anyway"
 msgstr "Verifică _oricum"
 
-#: src/gs-updates-page.c:892
+#: src/gs-updates-page.c:903
 msgid "Software Upgrades Downloaded"
 msgstr "Actualizări majore de software descărcate"
 
-#: src/gs-updates-page.c:893
+#: src/gs-updates-page.c:904
 msgid "Upgrades are ready to be installed"
 msgstr "Avansările sunt gata să fie instalate"
 
-#: src/gs-updates-page.c:1228
+#: src/gs-updates-page.c:1239
 msgid "Check for updates"
 msgstr "Caută actualizări"
 
-#: src/gs-updates-page.c:1264
+#: src/gs-updates-page.c:1275
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Actualizări"
@@ -5845,13 +5894,8 @@ msgstr "Adaugă, elimină sau actualizează aplicații pe acest calculator"
 
 #. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:12
-msgid ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;"
-msgstr ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;Surse;Instalare;Dezinstalare;Aplicații;Depozite,"
-"Preferințe;Actualizare;Avansare;Magazin;"
+msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
+msgstr "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;Surse;Instalare;Dezinstalare;Aplicații;Depozite,Preferințe;Actualizare;Avansare;Magazin;"
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the first part of a system notification.
@@ -5935,135 +5979,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak este o platformă de aplicații pentru Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:360
+#: plugins/flatpak/gs-flatpak.c:367
 #, c-format
 msgid "System folder %s"
 msgstr "Dosar de sistem %s"
 
-#: plugins/flatpak/gs-flatpak.c:361 plugins/flatpak/gs-flatpak.c:362
+#: plugins/flatpak/gs-flatpak.c:368 plugins/flatpak/gs-flatpak.c:369
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Subdosar personal %s"
 
-#: plugins/flatpak/gs-flatpak.c:363
+#: plugins/flatpak/gs-flatpak.c:370
 msgid "Host system folders"
 msgstr "Dosarele sistemului gazdă"
 
-#: plugins/flatpak/gs-flatpak.c:364
+#: plugins/flatpak/gs-flatpak.c:371
 msgid "Host system configuration from /etc"
 msgstr "Configurarea sistemului gazdă de la /etc"
 
-#: plugins/flatpak/gs-flatpak.c:365
+#: plugins/flatpak/gs-flatpak.c:372
 msgid "Desktop folder"
 msgstr "Dosar desktop"
 
-#: plugins/flatpak/gs-flatpak.c:365
+#: plugins/flatpak/gs-flatpak.c:372
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Subdosar desktop %s"
 
-#: plugins/flatpak/gs-flatpak.c:366
+#: plugins/flatpak/gs-flatpak.c:373
 msgid "Documents folder"
 msgstr "Dosar documente"
 
-#: plugins/flatpak/gs-flatpak.c:366
+#: plugins/flatpak/gs-flatpak.c:373
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Subdosar documente %s"
 
-#: plugins/flatpak/gs-flatpak.c:367
+#: plugins/flatpak/gs-flatpak.c:374
 msgid "Music folder"
 msgstr "Dosar muzică"
 
-#: plugins/flatpak/gs-flatpak.c:367
+#: plugins/flatpak/gs-flatpak.c:374
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Subdosar de muzică %s"
 
-#: plugins/flatpak/gs-flatpak.c:368
+#: plugins/flatpak/gs-flatpak.c:375
 msgid "Pictures folder"
 msgstr "Dosar poze"
 
-#: plugins/flatpak/gs-flatpak.c:368
+#: plugins/flatpak/gs-flatpak.c:375
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Subdosar poze %s"
 
-#: plugins/flatpak/gs-flatpak.c:369
+#: plugins/flatpak/gs-flatpak.c:376
 msgid "Public Share folder"
 msgstr "Dosar public de partajare"
 
-#: plugins/flatpak/gs-flatpak.c:369
+#: plugins/flatpak/gs-flatpak.c:376
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Subdosar public de partajare %s"
 
-#: plugins/flatpak/gs-flatpak.c:370
+#: plugins/flatpak/gs-flatpak.c:377
 msgid "Videos folder"
 msgstr "Dosar video"
 
-#: plugins/flatpak/gs-flatpak.c:370
+#: plugins/flatpak/gs-flatpak.c:377
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Subdosar video %s"
 
-#: plugins/flatpak/gs-flatpak.c:371
+#: plugins/flatpak/gs-flatpak.c:378
 msgid "Templates folder"
 msgstr "Dosar de șabloane"
 
-#: plugins/flatpak/gs-flatpak.c:371
+#: plugins/flatpak/gs-flatpak.c:378
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Subdosar de șabloane %s"
 
-#: plugins/flatpak/gs-flatpak.c:372
+#: plugins/flatpak/gs-flatpak.c:379
 msgid "User cache folder"
 msgstr "Dosar cache al utilizatorului"
 
-#: plugins/flatpak/gs-flatpak.c:372
+#: plugins/flatpak/gs-flatpak.c:379
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Subdosar cache al utilizatorului %s"
 
-#: plugins/flatpak/gs-flatpak.c:373
+#: plugins/flatpak/gs-flatpak.c:380
 msgid "User configuration folder"
 msgstr "Dosar de configurare utilizator"
 
-#: plugins/flatpak/gs-flatpak.c:373
+#: plugins/flatpak/gs-flatpak.c:380
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Subdosar configurare utilizator %s"
 
-#: plugins/flatpak/gs-flatpak.c:374
+#: plugins/flatpak/gs-flatpak.c:381
 msgid "User data folder"
 msgstr "Dosarele de date ale utilizatorului"
 
-#: plugins/flatpak/gs-flatpak.c:374
+#: plugins/flatpak/gs-flatpak.c:381
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Subdosar de date al utilizatorului %s"
 
-#: plugins/flatpak/gs-flatpak.c:375
+#: plugins/flatpak/gs-flatpak.c:382
 msgid "User runtime folder"
 msgstr "Dosar de executare al utilizatorului"
 
-#: plugins/flatpak/gs-flatpak.c:375
+#: plugins/flatpak/gs-flatpak.c:382
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Subdosar de executare al utilizatorului %s"
 
-#: plugins/flatpak/gs-flatpak.c:433
+#: plugins/flatpak/gs-flatpak.c:440
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Accesul sistemului de fișiere la %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1380
+#: plugins/flatpak/gs-flatpak.c:1457
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Se obțin metadatele flatpak pentru %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3606
+#: plugins/flatpak/gs-flatpak.c:3683
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Eșec la depanarea extensiei „%s”: %s"
@@ -6386,6 +6430,48 @@ msgstr ""
 "verificarea originii actualizării, sau dacă a fost manipulată. Actualizările "
 "for fi dezactivate până când actualizările nesemnate sunt fie eliminate, fie "
 "actualizate."
+
+#. Translators: the '%s' is replaced with the key ID, usually a few hex digits
+#: plugins/packagekit/gs-packagekit-task.c:219
+#, c-format
+msgid "Do you want to import key %s?"
+msgstr "Se dorește importarea cheii %s?"
+
+#. Translators: the '%s' is replaced with the key ID, usually a few hex digits
+#: plugins/packagekit/gs-packagekit-task.c:226
+#, c-format
+msgid "Key %s"
+msgstr "Cheia %s"
+
+#. Translators: the '%s' is replaced with the key user name
+#: plugins/packagekit/gs-packagekit-task.c:240
+#, c-format
+msgid "Key user: %s"
+msgstr "Utilizatorul cheii: %s"
+
+#. Translators: the '%s' is replaced with the key fingerprint, a few hex digits
+#: plugins/packagekit/gs-packagekit-task.c:242
+#, c-format
+msgid "Fingerprint: %s"
+msgstr "Amprenta: %s"
+
+#. Translators: the '%s' is replaced with the local path or a URI to the key
+#: plugins/packagekit/gs-packagekit-task.c:244
+#, c-format
+msgid "From: %s"
+msgstr "Locul: %s"
+
+#: plugins/packagekit/gs-packagekit-task.c:250
+msgid "Import Key"
+msgstr "Importă cheia"
+
+#: plugins/packagekit/gs-packagekit-task.c:251
+msgid "Do you want to import keys?"
+msgstr "Se importă chei?"
+
+#: plugins/packagekit/gs-packagekit-task.c:253
+msgid "_Import Key"
+msgstr "_Importă cheia"
 
 #: plugins/packagekit/gs-plugin-packagekit.c:1473
 msgid "Failed to install updates: "
