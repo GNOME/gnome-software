@@ -11,6 +11,7 @@
 #include <gio/gio.h>
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <malloc.h>
 #include <xmlb.h>
 
 #include <gnome-software.h>
@@ -263,6 +264,13 @@ target_item_ensure_silo_for_appstream_paths (TargetItem    *target,
 	                          XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID | XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 	                          cancellable,
 	                          error);
+#ifdef __GLIBC__
+	/* https://gitlab.gnome.org/GNOME/gnome-software/-/issues/941 
+	 * libxmlb <= 0.3.22 makes lots of temporary heap allocations parsing large XMLs
+	 * trim the heap after parsing to control RSS growth. */
+	malloc_trim (0);
+#endif
+
 	if (silo == NULL) {
 		return NULL;
 	}

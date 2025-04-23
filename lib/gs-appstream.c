@@ -12,6 +12,7 @@
 #include <glib/gstdio.h>
 #include <gnome-software.h>
 #include <locale.h>
+#include <malloc.h>
 
 #include "gs-external-appstream-utils.h"
 #include "gs-appstream.h"
@@ -2877,6 +2878,12 @@ gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
 								 XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
 								 XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 								 cancellable, &local_error);
+			#ifdef __GLIBC__
+			/* https://gitlab.gnome.org/GNOME/gnome-software/-/issues/941 
+			* libxmlb <= 0.3.22 makes lots of temporary heap allocations parsing large XMLs
+			* trim the heap after parsing to control RSS growth. */
+			malloc_trim (0);
+			#endif
 			if (md->appstream_silo != NULL)
 				md->appstream_index = gs_appstream_create_silo_index (md->appstream_silo, TRUE);
 			else
