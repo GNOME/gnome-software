@@ -12,6 +12,7 @@
 #include <glib/gi18n.h>
 #include <errno.h>
 #include <gnome-software.h>
+#include <malloc.h>
 #include <xmlb.h>
 
 #include "gs-appstream.h"
@@ -705,6 +706,12 @@ gs_plugin_appstream_ref_silo (GsPluginAppstream  *self,
 			g_main_context_push_thread_default (old_thread_default);
 		return NULL;
 	}
+#ifdef __GLIBC__
+	/* https://gitlab.gnome.org/GNOME/gnome-software/-/issues/941 
+	 * libxmlb <= 0.3.22 makes lots of temporary heap allocations parsing large XMLs
+	 * trim the heap after parsing to control RSS growth. */
+	malloc_trim (0);
+#endif
 
 	if (old_thread_default != NULL)
 		g_main_context_push_thread_default (old_thread_default);
