@@ -19,7 +19,7 @@ gs_plugins_fedora_langpacks_func (GsPluginLoader *plugin_loader)
 {
 	g_autofree gchar *cachefn = NULL;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsApp) app = NULL;
+	GsApp *app = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
