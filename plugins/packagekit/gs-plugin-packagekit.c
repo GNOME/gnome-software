@@ -4184,173 +4184,95 @@ gs_plugin_packagekit_url_to_app_finish (GsPlugin      *plugin,
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
-static gchar *
-get_proxy_http (GsPluginPackagekit *self)
+static void
+get_desktop_proxy_settings (GsPluginPackagekit  *self,
+                            char               **out_http,
+                            char               **out_https,
+                            char               **out_ftp,
+                            char               **out_socks,
+                            char               **out_ignore_hosts,
+                            char               **out_pac)
 {
-	gboolean ret;
-	GString *string = NULL;
-	gint port;
 	GDesktopProxyMode proxy_mode;
-	g_autofree gchar *host = NULL;
-	g_autofree gchar *password = NULL;
-	g_autofree gchar *username = NULL;
+
+	/* Clear all the outputs first. */
+	*out_http = NULL;
+	*out_https = NULL;
+	*out_ftp = NULL;
+	*out_socks = NULL;
+	*out_ignore_hosts = NULL;
+	*out_pac = NULL;
 
 	proxy_mode = g_settings_get_enum (self->settings_proxy, "mode");
-	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
-		return NULL;
 
-	host = g_settings_get_string (self->settings_http, "host");
-	if (host == NULL || host[0] == '\0')
-		return NULL;
+	if (proxy_mode == G_DESKTOP_PROXY_MODE_MANUAL) {
+		g_autofree char *http_host = NULL;
+		g_auto(GStrv) ignore_hosts = NULL;
+		const struct {
+			GSettings *settings;
+			char **out;
+		} similar_protocols[] = {
+			{ self->settings_https, out_https },
+			{ self->settings_ftp, out_ftp },
+			{ self->settings_socks, out_socks },
+		};
 
-	port = g_settings_get_int (self->settings_http, "port");
+		/* HTTP */
+		http_host = g_settings_get_string (self->settings_http, "host");
+		if (http_host != NULL && *http_host != '\0') {
+			GString *string = NULL;
+			gint port;
+			g_autofree gchar *password = NULL;
+			g_autofree gchar *username = NULL;
 
-	ret = g_settings_get_boolean (self->settings_http,
-				      "use-authentication");
-	if (ret) {
-		username = g_settings_get_string (self->settings_http,
-						  "authentication-user");
-		password = g_settings_get_string (self->settings_http,
-						  "authentication-password");
+			port = g_settings_get_int (self->settings_http, "port");
+
+			if (g_settings_get_boolean (self->settings_http,
+						    "use-authentication")) {
+				username = g_settings_get_string (self->settings_http,
+								  "authentication-user");
+				password = g_settings_get_string (self->settings_http,
+								  "authentication-password");
+			}
+
+			/* make PackageKit proxy string */
+			string = g_string_new ("");
+			if (username != NULL || password != NULL) {
+				if (username != NULL)
+					g_string_append_printf (string, "%s", username);
+				if (password != NULL)
+					g_string_append_printf (string, ":%s", password);
+				g_string_append (string, "@");
+			}
+			g_string_append (string, http_host);
+			if (port > 0)
+				g_string_append_printf (string, ":%i", port);
+			*out_http = g_string_free (string, FALSE);
+		}
+
+		/* HTTPS, FTP and SOCKS all follow the same pattern */
+		for (size_t i = 0; i < G_N_ELEMENTS (similar_protocols); i++) {
+			g_autofree char *host = g_settings_get_string (similar_protocols[i].settings, "host");
+			int port = g_settings_get_int (similar_protocols[i].settings, "port");
+
+			if (host != NULL && *host != '\0' && port != 0) {
+				/* make PackageKit proxy string */
+				if (port > 0)
+					*(similar_protocols[i].out) = g_strdup_printf ("%s:%i", host, port);
+				else
+					*(similar_protocols[i].out) = g_steal_pointer (&host);
+			}
+		}
+
+		/* ignore-hosts */
+		ignore_hosts = g_settings_get_strv (self->settings_proxy, "ignore-hosts");
+
+		if (ignore_hosts != NULL)
+			*out_ignore_hosts = g_strjoinv (",", ignore_hosts);
+	} else if (proxy_mode == G_DESKTOP_PROXY_MODE_AUTO) {
+		/* PAC */
+		*out_pac = g_settings_get_string (self->settings_proxy, "autoconfig-url");
 	}
-
-	/* make PackageKit proxy string */
-	string = g_string_new ("");
-	if (username != NULL || password != NULL) {
-		if (username != NULL)
-			g_string_append_printf (string, "%s", username);
-		if (password != NULL)
-			g_string_append_printf (string, ":%s", password);
-		g_string_append (string, "@");
-	}
-	g_string_append (string, host);
-	if (port > 0)
-		g_string_append_printf (string, ":%i", port);
-	return g_string_free (string, FALSE);
-}
-
-static gchar *
-get_proxy_https (GsPluginPackagekit *self)
-{
-	GString *string = NULL;
-	gint port;
-	GDesktopProxyMode proxy_mode;
-	g_autofree gchar *host = NULL;
-
-	proxy_mode = g_settings_get_enum (self->settings_proxy, "mode");
-	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
-		return NULL;
-
-	host = g_settings_get_string (self->settings_https, "host");
-	if (host == NULL || host[0] == '\0')
-		return NULL;
-	port = g_settings_get_int (self->settings_https, "port");
-	if (port == 0)
-		return NULL;
-
-	/* make PackageKit proxy string */
-	string = g_string_new (host);
-	if (port > 0)
-		g_string_append_printf (string, ":%i", port);
-	return g_string_free (string, FALSE);
-}
-
-static gchar *
-get_proxy_ftp (GsPluginPackagekit *self)
-{
-	GString *string = NULL;
-	gint port;
-	GDesktopProxyMode proxy_mode;
-	g_autofree gchar *host = NULL;
-
-	proxy_mode = g_settings_get_enum (self->settings_proxy, "mode");
-	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
-		return NULL;
-
-	host = g_settings_get_string (self->settings_ftp, "host");
-	if (host == NULL || host[0] == '\0')
-		return NULL;
-	port = g_settings_get_int (self->settings_ftp, "port");
-	if (port == 0)
-		return NULL;
-
-	/* make PackageKit proxy string */
-	string = g_string_new (host);
-	if (port > 0)
-		g_string_append_printf (string, ":%i", port);
-	return g_string_free (string, FALSE);
-}
-
-static gchar *
-get_proxy_socks (GsPluginPackagekit *self)
-{
-	GString *string = NULL;
-	gint port;
-	GDesktopProxyMode proxy_mode;
-	g_autofree gchar *host = NULL;
-
-	proxy_mode = g_settings_get_enum (self->settings_proxy, "mode");
-	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
-		return NULL;
-
-	host = g_settings_get_string (self->settings_socks, "host");
-	if (host == NULL || host[0] == '\0')
-		return NULL;
-	port = g_settings_get_int (self->settings_socks, "port");
-	if (port == 0)
-		return NULL;
-
-	/* make PackageKit proxy string */
-	string = g_string_new (host);
-	if (port > 0)
-		g_string_append_printf (string, ":%i", port);
-	return g_string_free (string, FALSE);
-}
-
-static gchar *
-get_no_proxy (GsPluginPackagekit *self)
-{
-	GString *string = NULL;
-	GDesktopProxyMode proxy_mode;
-	g_autofree gchar **hosts = NULL;
-	guint i;
-
-	proxy_mode = g_settings_get_enum (self->settings_proxy, "mode");
-	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
-		return NULL;
-
-	hosts = g_settings_get_strv (self->settings_proxy, "ignore-hosts");
-	if (hosts == NULL)
-		return NULL;
-
-	/* make PackageKit proxy string */
-	string = g_string_new ("");
-	for (i = 0; hosts[i] != NULL; i++) {
-		if (i == 0)
-			g_string_assign (string, hosts[i]);
-		else
-			g_string_append_printf (string, ",%s", hosts[i]);
-		g_free (hosts[i]);
-	}
-
-	return g_string_free (string, FALSE);
-}
-
-static gchar *
-get_pac (GsPluginPackagekit *self)
-{
-	GDesktopProxyMode proxy_mode;
-	gchar *url = NULL;
-
-	proxy_mode = g_settings_get_enum (self->settings_proxy, "mode");
-	if (proxy_mode != G_DESKTOP_PROXY_MODE_AUTO)
-		return NULL;
-
-	url = g_settings_get_string (self->settings_proxy, "autoconfig-url");
-	if (url == NULL)
-		return NULL;
-
-	return url;
 }
 
 static void get_permission_cb (GObject      *source_object,
@@ -4379,15 +4301,19 @@ reload_proxy_settings_async (GsPluginPackagekit  *self,
 	 * We always want to set the proxy settings if they’ve changed, though,
 	 * which is what @force_set is for. */
 	if (!force_set) {
-		g_autofree char *proxy_http = get_proxy_http (self);
-		g_autofree char *proxy_https = get_proxy_https (self);
-		g_autofree char *proxy_ftp = get_proxy_ftp (self);
-		g_autofree char *proxy_socks = get_proxy_socks (self);
-		g_autofree char *no_proxy = get_no_proxy (self);
-		g_autofree char *pac = get_pac (self);
+		g_autofree char *proxy_http = NULL;
+		g_autofree char *proxy_https = NULL;
+		g_autofree char *proxy_ftp = NULL;
+		g_autofree char *proxy_socks = NULL;
+		g_autofree char *proxy_ignore_hosts = NULL;
+		g_autofree char *proxy_pac = NULL;
+
+		get_desktop_proxy_settings (self, &proxy_http, &proxy_https,
+					    &proxy_ftp, &proxy_socks,
+					    &proxy_ignore_hosts, &proxy_pac);
 
 		if (proxy_http == NULL && proxy_https == NULL && proxy_ftp == NULL &&
-		    proxy_socks == NULL && no_proxy == NULL && pac == NULL) {
+		    proxy_socks == NULL && proxy_ignore_hosts == NULL && proxy_pac == NULL) {
 			g_debug ("Setting skipping proxies as they are all empty");
 			g_task_return_boolean (task, TRUE);
 			return;
@@ -4413,8 +4339,8 @@ get_permission_cb (GObject      *source_object,
 	g_autofree gchar *proxy_https = NULL;
 	g_autofree gchar *proxy_ftp = NULL;
 	g_autofree gchar *proxy_socks = NULL;
-	g_autofree gchar *no_proxy = NULL;
-	g_autofree gchar *pac = NULL;
+	g_autofree gchar *proxy_ignore_hosts = NULL;
+	g_autofree gchar *proxy_pac = NULL;
 	g_autoptr(GPermission) permission = NULL;
 	g_autoptr(GError) local_error = NULL;
 
@@ -4430,25 +4356,21 @@ get_permission_cb (GObject      *source_object,
 		return;
 	}
 
-	proxy_http = get_proxy_http (self);
-	proxy_https = get_proxy_https (self);
-	proxy_ftp = get_proxy_ftp (self);
-	proxy_socks = get_proxy_socks (self);
-	no_proxy = get_no_proxy (self);
-	pac = get_pac (self);
+	get_desktop_proxy_settings (self, &proxy_http, &proxy_https, &proxy_ftp,
+				    &proxy_socks, &proxy_ignore_hosts, &proxy_pac);
 
 	g_debug ("Setting proxies (http: %s, https: %s, ftp: %s, socks: %s, "
-		 "no_proxy: %s, pac: %s)",
+		 "ignore-hosts: %s, pac: %s)",
 		 proxy_http, proxy_https, proxy_ftp, proxy_socks,
-		 no_proxy, pac);
+		 proxy_ignore_hosts, proxy_pac);
 
 	pk_control_set_proxy2_async (self->control_proxy,
 				     proxy_http,
 				     proxy_https,
 				     proxy_ftp,
 				     proxy_socks,
-				     no_proxy,
-				     pac,
+				     proxy_ignore_hosts,
+				     proxy_pac,
 				     cancellable,
 				     set_proxy_cb,
 				     g_steal_pointer (&task));
