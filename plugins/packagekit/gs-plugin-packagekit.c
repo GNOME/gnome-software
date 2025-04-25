@@ -110,6 +110,7 @@ static void gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
                                                    const gchar *key,
                                                    gpointer     user_data);
 static void reload_proxy_settings_async (GsPluginPackagekit  *self,
+                                         gboolean             force_set,
                                          GCancellable        *cancellable,
                                          GAsyncReadyCallback  callback,
                                          gpointer             user_data);
@@ -3417,7 +3418,7 @@ gs_plugin_packagekit_setup_async (GsPlugin            *plugin,
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_setup_async);
 
-	reload_proxy_settings_async (self, cancellable, setup_proxy_settings_cb, g_steal_pointer (&task));
+	reload_proxy_settings_async (self, FALSE, cancellable, setup_proxy_settings_cb, g_steal_pointer (&task));
 }
 
 static void
@@ -4361,6 +4362,7 @@ static void set_proxy_cb (GObject      *source_object,
 
 static void
 reload_proxy_settings_async (GsPluginPackagekit  *self,
+                             gboolean             force_set,
                              GCancellable        *cancellable,
                              GAsyncReadyCallback  callback,
                              gpointer             user_data)
@@ -4369,6 +4371,28 @@ reload_proxy_settings_async (GsPluginPackagekit  *self,
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, reload_proxy_settings_async);
+
+	/* Check whether there are any proxy settings set. If not, we can save
+	 * several D-Bus round-trips to query polkit and call SetProxy() on
+	 * PackageKit just to set its defaults.
+	 *
+	 * We always want to set the proxy settings if they’ve changed, though,
+	 * which is what @force_set is for. */
+	if (!force_set) {
+		g_autofree char *proxy_http = get_proxy_http (self);
+		g_autofree char *proxy_https = get_proxy_https (self);
+		g_autofree char *proxy_ftp = get_proxy_ftp (self);
+		g_autofree char *proxy_socks = get_proxy_socks (self);
+		g_autofree char *no_proxy = get_no_proxy (self);
+		g_autofree char *pac = get_pac (self);
+
+		if (proxy_http == NULL && proxy_https == NULL && proxy_ftp == NULL &&
+		    proxy_socks == NULL && no_proxy == NULL && pac == NULL) {
+			g_debug ("Setting skipping proxies as they are all empty");
+			g_task_return_boolean (task, TRUE);
+			return;
+		}
+	}
 
 	/* only if we can achieve the action *without* an auth dialog */
 	gs_utils_get_permission_async ("org.freedesktop.packagekit."
@@ -4414,9 +4438,9 @@ get_permission_cb (GObject      *source_object,
 	pac = get_pac (self);
 
 	g_debug ("Setting proxies (http: %s, https: %s, ftp: %s, socks: %s, "
-	         "no_proxy: %s, pac: %s)",
-	         proxy_http, proxy_https, proxy_ftp, proxy_socks,
-	         no_proxy, pac);
+		 "no_proxy: %s, pac: %s)",
+		 proxy_http, proxy_https, proxy_ftp, proxy_socks,
+		 no_proxy, pac);
 
 	pk_control_set_proxy2_async (self->control_proxy,
 				     proxy_http,
@@ -4473,7 +4497,7 @@ gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
 	g_clear_object (&self->proxy_settings_cancellable);
 	self->proxy_settings_cancellable = g_cancellable_new ();
 
-	reload_proxy_settings_async (self, self->proxy_settings_cancellable,
+	reload_proxy_settings_async (self, TRUE, self->proxy_settings_cancellable,
 				     proxy_changed_reload_proxy_settings_cb, self);
 }
 
