@@ -953,6 +953,8 @@ get_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 	if (gs_app_list_length (app_list) == 0) {
 		g_debug ("no language pack found");
 		return;
+	} else if (gs_app_list_length (app_list) > 1) {
+		g_debug ("More than one language pack found. GsUpdateMonitor currently only supports installing one.");
 	}
 
 	/* there should be one langpack for a given locale */
@@ -988,7 +990,6 @@ check_language_pack (GsUpdateMonitor *monitor) {
 
 	query = gs_app_query_new ("is-langpack-for-locale", locale,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-				  "max-results", 1,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 
