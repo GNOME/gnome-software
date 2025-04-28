@@ -958,7 +958,7 @@ get_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 	}
 
 	/* there should be one langpack for a given locale */
-	app = g_object_ref (gs_app_list_index (app_list, 0));
+	app = gs_app_list_index (app_list, 0);
 	if (!gs_app_is_installed (app)) {
 		WithAppData *with_app_data;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
