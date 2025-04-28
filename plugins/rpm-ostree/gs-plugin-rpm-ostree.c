@@ -1522,6 +1522,69 @@ gs_plugin_rpm_ostree_update_apps_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+static gchar *
+gs_plugin_rpm_ostree_build_version_refspec (GsPluginRpmOstree *self,
+					    GsRPMOSTreeOS *os_proxy,
+					    const gchar *new_version,
+					    GError **error)
+{
+	g_autoptr(GVariant) booted_deployment = gs_rpmostree_os_dup_booted_deployment (os_proxy);
+	g_autoptr(GsOsRelease) os_release = NULL;
+	g_autoptr(GError) local_error = NULL;
+	g_auto(GVariantDict) booted_deployment_dict = { 0, };
+	g_auto(GStrv) split_origin = NULL;
+	const gchar *origin = NULL;
+	const gchar *current_version = NULL;
+
+	/* get the distro name (e.g. 'Fedora') but allow a fallback */
+	os_release = gs_os_release_new (&local_error);
+	if (os_release != NULL) {
+		current_version = gs_os_release_get_version_id (os_release);
+		if (current_version == NULL) {
+			g_set_error_literal (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT, "no distro version specified");
+			return NULL;
+		}
+	} else {
+		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT, "failed to get distro version: %s", local_error->message);
+		return NULL;
+	}
+
+	g_variant_dict_init (&booted_deployment_dict, booted_deployment);
+	if (!g_variant_dict_lookup (&booted_deployment_dict, "origin", "&s", &origin)) {
+		g_set_error_literal (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+				     "no origin property provided by the rpm-ostree daemon");
+		return NULL;
+	}
+
+	if (origin == NULL || !strchr (origin, '/')) {
+		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "received origin '%s' is in unexpected format", origin);
+		return NULL;
+	}
+
+	/*
+	expected formats contain:
+
+	   ostree://fedora/41/x86_64/silverblue
+	   fedora/41/x86_64/silverblue
+	   fedora:fedora/41/x86_64/kinoite
+
+	where the '41' is the `current_version`, to be replaced with the `new_version`
+	*/
+	split_origin = g_strsplit (origin, "/", -1);
+	for (guint i = 0; split_origin[i] != NULL; i++) {
+		if (g_strcmp0 (split_origin[i], current_version) == 0) {
+			g_free (split_origin[i]);
+			split_origin[i] = g_strdup (new_version);
+			return g_strjoinv ("/", split_origin);
+		}
+	}
+
+	g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT,
+		     "cannot find current OS version '%s' in origin '%s'", current_version, origin);
+	return NULL;
+}
+
 static gboolean
 gs_plugin_rpm_ostree_trigger_upgrade_sync (GsPlugin *plugin,
 					   GsApp *app,
@@ -1560,8 +1623,11 @@ gs_plugin_rpm_ostree_trigger_upgrade_sync (GsPlugin *plugin,
 	}
 
 	/* construct new refspec based on the distro version we're upgrading to */
-	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/silverblue",
-	                               gs_app_get_version (app));
+	new_refspec = gs_plugin_rpm_ostree_build_version_refspec (self, os_proxy, gs_app_get_version (app), error);
+	if (new_refspec == NULL) {
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+		return FALSE;
+	}
 
 	/* trigger the upgrade */
 	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_ALLOW_DOWNGRADE |
@@ -2494,8 +2560,9 @@ gs_plugin_rpm_ostree_download_upgrade_sync (GsPlugin *plugin,
 		return FALSE;
 
 	/* construct new refspec based on the distro version we're upgrading to */
-	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/silverblue",
-	                               gs_app_get_version (app));
+	new_refspec = gs_plugin_rpm_ostree_build_version_refspec (self, os_proxy, gs_app_get_version (app), error);
+	if (new_refspec == NULL)
+		return FALSE;
 
 	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_ALLOW_DOWNGRADE |
 	                                          RPMOSTREE_OPTION_DOWNLOAD_ONLY);
