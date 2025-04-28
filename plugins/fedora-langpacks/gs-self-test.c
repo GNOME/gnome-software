@@ -36,6 +36,11 @@ gs_plugins_fedora_langpacks_func (GsPluginLoader *plugin_loader)
 		return;
 	}
 
+	if (gs_plugin_loader_find_plugin (plugin_loader, "packagekit") == NULL) {
+		g_test_skip ("packagekit plugin is required to run fedora-langpacks tests");
+		return;
+	}
+
 	/* start with a clean slate */
 	cachefn = gs_utils_get_cache_filename ("langpacks", "langpacks-pt_BR",
 					       GS_UTILS_CACHE_FLAG_WRITEABLE |
