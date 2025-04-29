@@ -213,7 +213,8 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 
 	if (apps == NULL || !gs_app_list_length (apps)) {
 		/* Notify only when the download is disabled, or cannot download, and it's the 4th day or it's more than 7 days */
-		if ((!should_download || !can_download) && (timestamp_days >= 7 || timestamp_days == 4)) {
+		if ((!should_download || !can_download) && (timestamp_days >= 7 || timestamp_days == 4) &&
+		     gs_plugin_loader_get_allow_updates (monitor->plugin_loader)) {
 			*out_title = _("Updates Are Out of Date");
 			*out_body = _("Please check for available updates");
 			res = TRUE;
