@@ -22,6 +22,8 @@
 #include "gs-updates-section.h"
 #include "gs-upgrade-banner.h"
 #include "gs-application.h"
+#include "gtk/gtk.h"
+#include "gtk/gtkshortcut.h"
 
 /* The "updates-changed" is delays by 3 seconds; give it twice time to be delivered
    and the page reload ignored when the signal comes within this time limit. It's
@@ -1181,6 +1183,8 @@ gs_updates_page_setup (GsPage *page,
                        GError **error)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
+	GtkEventController *refresh_controller;
+	GtkShortcut *refresh_shortcut;
 
 	g_return_val_if_fail (GS_IS_UPDATES_PAGE (self), TRUE);
 
@@ -1242,6 +1246,16 @@ gs_updates_page_setup (GsPage *page,
 	g_signal_connect (self->button_refresh, "clicked",
 			  G_CALLBACK (gs_updates_page_button_refresh_cb),
 			  self);
+
+	refresh_controller = gtk_shortcut_controller_new ();
+	refresh_shortcut = gtk_shortcut_new_with_arguments (
+		gtk_shortcut_trigger_parse_string ("<Control>r"),
+		gtk_shortcut_action_parse_string ("activate"), NULL);
+
+	gtk_shortcut_controller_set_scope (GTK_SHORTCUT_CONTROLLER (refresh_controller), GTK_SHORTCUT_SCOPE_MANAGED);
+	gtk_shortcut_controller_add_shortcut (GTK_SHORTCUT_CONTROLLER (refresh_controller), refresh_shortcut);
+
+	gtk_widget_add_controller (self->button_refresh, refresh_controller);
 
 	g_signal_connect (self->button_updates_mobile, "clicked",
 			  G_CALLBACK (gs_updates_page_button_mobile_refresh_cb),
