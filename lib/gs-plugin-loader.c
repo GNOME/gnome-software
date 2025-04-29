@@ -578,19 +578,9 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	/* run the correct vfunc */
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
-	switch (action) {
-	case GS_PLUGIN_ACTION_GET_LANGPACKS:
-		{
-			GsPluginGetLangPacksFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
-					   gs_plugin_job_get_search (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
-	default:
-		g_critical ("no handler for %s", helper->function_name);
-		break;
-	}
+
+	g_critical ("no handler for %s", helper->function_name);
+
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_dec (plugin);
 
@@ -698,14 +688,8 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 
 			/* Let some actions forgive plugin errors, in case other plugins can handle it,
 			   when one plugin fails. */
-			switch (gs_plugin_job_get_action (helper->plugin_job)) {
-			case GS_PLUGIN_ACTION_GET_LANGPACKS:
-				mask_error = TRUE;
-				break;
-			default:
-				mask_error = GS_IS_PLUGIN_JOB_UPDATE_APPS (helper->plugin_job);
-				break;
-			}
+			mask_error = GS_IS_PLUGIN_JOB_UPDATE_APPS (helper->plugin_job);
+
 			if (mask_error) {
 				g_debug ("plugin '%s' failed to call '%s': %s",
 					 gs_plugin_get_name (plugin),

@@ -454,7 +454,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_LAUNCH:			Launch an app
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an app
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an app
- * @GS_PLUGIN_ACTION_GET_LANGPACKS:		Get appropriate language pack
  * @GS_PLUGIN_ACTION_INSTALL_REPO:		Install a repository (Since: 41)
  * @GS_PLUGIN_ACTION_REMOVE_REPO:		Remove a repository (Since: 41)
  * @GS_PLUGIN_ACTION_ENABLE_REPO:		Enable a repository (Since: 41)
@@ -469,7 +468,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_LAUNCH,
 	GS_PLUGIN_ACTION_FILE_TO_APP,
 	GS_PLUGIN_ACTION_URL_TO_APP,
-	GS_PLUGIN_ACTION_GET_LANGPACKS,
 	GS_PLUGIN_ACTION_INSTALL_REPO,
 	GS_PLUGIN_ACTION_REMOVE_REPO,
 	GS_PLUGIN_ACTION_ENABLE_REPO,

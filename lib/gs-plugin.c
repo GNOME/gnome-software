@@ -1547,8 +1547,6 @@ gs_plugin_error_to_string (GsPluginError error)
 const gchar *
 gs_plugin_action_to_function_name (GsPluginAction action)
 {
-	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
-		return "gs_plugin_add_langpacks";
 	return NULL;
 }
 
@@ -1573,8 +1571,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
 		return "url-to-app";
-	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
-		return "get-langpacks";
 	if (action == GS_PLUGIN_ACTION_INSTALL_REPO)
 		return "repo-install";
 	if (action == GS_PLUGIN_ACTION_REMOVE_REPO)
@@ -1607,8 +1603,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)
 		return GS_PLUGIN_ACTION_URL_TO_APP;
-	if (g_strcmp0 (action, "get-langpacks") == 0)
-		return GS_PLUGIN_ACTION_GET_LANGPACKS;
 	if (g_strcmp0 (action, "repo-install") == 0)
 		return GS_PLUGIN_ACTION_INSTALL_REPO;
 	if (g_strcmp0 (action, "repo-remove") == 0)
