@@ -285,6 +285,17 @@
         <accessibility>
           <property name="label" translatable="yes">Stop</property>
         </accessibility>
+        <child>
+          <object class="GtkShortcutController">
+            <property name="scope">managed</property>
+            <child>
+              <object class="GtkShortcut">
+                <property name="trigger">Escape</property>
+                <property name="action">activate</property>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </object>
