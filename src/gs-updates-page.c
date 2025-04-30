@@ -64,6 +64,7 @@ struct _GsUpdatesPage
 	GsUpdatesPageState	 state;
 	GsUpdatesPageFlags	 result_flags;
 	GtkWidget		*button_refresh;
+	GtkWidget		*button_stop;
 	GtkWidget		*header_spinner_start;
 	GtkWidget		*header_start_box;
 	gboolean		 has_agreed_to_mobile_data;
@@ -323,17 +324,15 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	switch (self->state) {
 	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
 	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
-		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "media-playback-stop-symbolic");
-		gtk_widget_set_tooltip_text(self->button_refresh, _("Stop"));
-		gtk_widget_set_visible (self->button_refresh, TRUE);
+		gtk_widget_set_visible (self->button_refresh, FALSE);
+		gtk_widget_set_visible (self->button_stop, TRUE);
 		break;
 	case GS_UPDATES_PAGE_STATE_STARTUP:
 	case GS_UPDATES_PAGE_STATE_MANAGED:
 		gtk_widget_set_visible (self->button_refresh, FALSE);
+		gtk_widget_set_visible (self->button_stop, FALSE);
 		break;
 	case GS_UPDATES_PAGE_STATE_IDLE:
-		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "view-refresh-symbolic");
-		gtk_widget_set_tooltip_text(self->button_refresh, _("Check for Updates"));
 		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
 			gtk_widget_set_visible (self->button_refresh, TRUE);
 		} else {
@@ -342,11 +341,11 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 				allow_mobile_refresh = FALSE;
 			gtk_widget_set_visible (self->button_refresh, allow_mobile_refresh);
 		}
+		gtk_widget_set_visible (self->button_stop, FALSE);
 		break;
 	case GS_UPDATES_PAGE_STATE_FAILED:
-		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "view-refresh-symbolic");
-		gtk_widget_set_tooltip_text(self->button_refresh, _("Check for Updates"));
 		gtk_widget_set_visible (self->button_refresh, TRUE);
+		gtk_widget_set_visible (self->button_stop, FALSE);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -719,8 +718,6 @@ gs_updates_page_switch_to (GsPage *page)
 		return;
 	}
 
-	gtk_widget_set_visible (self->button_refresh, TRUE);
-
 	/* no need to refresh */
 	if (self->cache_valid) {
 		gs_updates_page_update_ui_state (self);
@@ -838,13 +835,6 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 {
 	AdwDialog *dialog;
 
-	/* cancel existing action? */
-	if (self->state == GS_UPDATES_PAGE_STATE_ACTION_REFRESH) {
-		g_cancellable_cancel (self->cancellable_refresh);
-		g_clear_object (&self->cancellable_refresh);
-		return;
-	}
-
 	/* check we have a "free" network connection */
 	if (gs_plugin_loader_get_network_available (self->plugin_loader) &&
 	    !gs_plugin_loader_get_network_metered (self->plugin_loader)) {
@@ -871,6 +861,15 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 				  self);
 		adw_dialog_present (dialog, GTK_WIDGET (self));
 	}
+}
+
+static void
+gs_updates_page_button_stop_cb (GtkWidget     *widget,
+                                GsUpdatesPage *self)
+{
+	/* cancel existing action? */
+	g_cancellable_cancel (self->cancellable_refresh);
+	g_clear_object (&self->cancellable_refresh);
 }
 
 static void
@@ -1183,8 +1182,6 @@ gs_updates_page_setup (GsPage *page,
                        GError **error)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
-	GtkEventController *refresh_controller;
-	GtkShortcut *refresh_shortcut;
 
 	g_return_val_if_fail (GS_IS_UPDATES_PAGE (self), TRUE);
 
@@ -1230,33 +1227,9 @@ gs_updates_page_setup (GsPage *page,
 	g_signal_connect (self->upgrade_banner, "cancel-clicked",
 			  G_CALLBACK (gs_updates_page_upgrade_cancel_cb), self);
 
-	self->header_start_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
-	gtk_widget_set_visible (self->header_start_box, TRUE);
 	gs_page_set_header_start_widget (GS_PAGE (self), self->header_start_box);
 
-	self->header_spinner_start = gtk_spinner_new ();
-	gtk_box_prepend (GTK_BOX (self->header_start_box), self->header_spinner_start);
-
 	/* setup update details window */
-	self->button_refresh = gtk_button_new_from_icon_name ("view-refresh-symbolic");
-	gtk_accessible_update_property (GTK_ACCESSIBLE (self->button_refresh),
-					GTK_ACCESSIBLE_PROPERTY_LABEL, _("Check for updates"),
-					-1);
-	gtk_box_prepend (GTK_BOX (self->header_start_box), self->button_refresh);
-	g_signal_connect (self->button_refresh, "clicked",
-			  G_CALLBACK (gs_updates_page_button_refresh_cb),
-			  self);
-
-	refresh_controller = gtk_shortcut_controller_new ();
-	refresh_shortcut = gtk_shortcut_new_with_arguments (
-		gtk_shortcut_trigger_parse_string ("<Control>r"),
-		gtk_shortcut_action_parse_string ("activate"), NULL);
-
-	gtk_shortcut_controller_set_scope (GTK_SHORTCUT_CONTROLLER (refresh_controller), GTK_SHORTCUT_SCOPE_MANAGED);
-	gtk_shortcut_controller_add_shortcut (GTK_SHORTCUT_CONTROLLER (refresh_controller), refresh_shortcut);
-
-	gtk_widget_add_controller (self->button_refresh, refresh_controller);
-
 	g_signal_connect (self->button_updates_mobile, "clicked",
 			  G_CALLBACK (gs_updates_page_button_mobile_refresh_cb),
 			  self);
@@ -1409,6 +1382,10 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-updates-page.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_refresh);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_stop);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, header_spinner_start);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, header_start_box);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_box);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_mobile);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_offline);
@@ -1420,6 +1397,9 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, banner_end_of_life);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, up_to_date_image);
+
+	gtk_widget_class_bind_template_callback (widget_class, gs_updates_page_button_refresh_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_updates_page_button_stop_cb);
 }
 
 static void
