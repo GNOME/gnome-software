@@ -54,8 +54,6 @@ typedef struct
 	GHashTable		*vfuncs;		/* string:pointer */
 	GMutex			 vfuncs_mutex;
 	gboolean		 enabled;
-	guint			 interactive_cnt;
-	GMutex			 interactive_mutex;
 	gchar			*language;		/* allow-none */
 	gchar			*name;
 	gchar			*appstream_id;
@@ -256,7 +254,6 @@ gs_plugin_finalize (GObject *object)
 	g_hash_table_unref (priv->cache);
 	g_hash_table_unref (priv->vfuncs);
 	g_mutex_clear (&priv->cache_mutex);
-	g_mutex_clear (&priv->interactive_mutex);
 	g_mutex_clear (&priv->timer_mutex);
 	g_mutex_clear (&priv->vfuncs_mutex);
 	if (priv->module != NULL)
@@ -333,26 +330,6 @@ gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	priv->enabled = enabled;
-}
-
-void
-gs_plugin_interactive_inc (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->interactive_mutex);
-	priv->interactive_cnt++;
-	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-}
-
-void
-gs_plugin_interactive_dec (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->interactive_mutex);
-	if (priv->interactive_cnt > 0)
-		priv->interactive_cnt--;
-	if (priv->interactive_cnt == 0)
-		gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 }
 
 /**
@@ -677,6 +654,38 @@ gs_plugin_get_rules (GsPlugin *plugin, GsPluginRule rule)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	return priv->rules[rule];
+}
+
+/**
+ * gs_plugin_adopt_app:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp
+ *
+ * Called when the @app has not been claimed (i.e. a management plugin has not
+ * been set), using GsPluginClass.adopt_app() if set. This does nothing if
+ * the @plugin does not implement the function.
+ *
+ * A claimed app means other plugins will not try to perform actions
+ * such as install, remove or update. Most apps are claimed when they
+ * are created.
+ *
+ * If a plugin can adopt this app then it should call
+ * gs_app_set_management_plugin() on @app.
+ *
+ * Since: 49
+ */
+void
+gs_plugin_adopt_app (GsPlugin *plugin,
+		     GsApp *app)
+{
+	GsPluginClass *plugin_class;
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_APP (app));
+
+	plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+	if (plugin_class->adopt_app != NULL)
+		plugin_class->adopt_app (plugin, app);
 }
 
 /**
@@ -1537,20 +1546,6 @@ gs_plugin_error_to_string (GsPluginError error)
 }
 
 /**
- * gs_plugin_action_to_function_name: (skip)
- * @action: a #GsPluginAction
- *
- * Converts the enumerated action to the vfunc name.
- *
- * Returns: a string, or %NULL for invalid
- **/
-const gchar *
-gs_plugin_action_to_function_name (GsPluginAction action)
-{
-	return NULL;
-}
-
-/**
  * gs_plugin_action_to_string:
  * @action: a #GsPluginAction
  *
@@ -1684,8 +1679,6 @@ gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 		g_ptr_array_add (cstrs, (gpointer) "require-developer-name");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS)
 		g_ptr_array_add (cstrs, (gpointer) "require-kudos");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING)
-		g_ptr_array_add (cstrs, (gpointer) "content-rating");
 	if (cstrs->len == 0)
 		return g_strdup ("none");
 	g_ptr_array_add (cstrs, NULL);
@@ -1904,7 +1897,6 @@ gs_plugin_init (GsPlugin *plugin)
 	priv->vfuncs = g_hash_table_new_full (g_str_hash, g_str_equal,
 					      g_free, NULL);
 	g_mutex_init (&priv->cache_mutex);
-	g_mutex_init (&priv->interactive_mutex);
 	g_mutex_init (&priv->timer_mutex);
 	g_mutex_init (&priv->vfuncs_mutex);
 }

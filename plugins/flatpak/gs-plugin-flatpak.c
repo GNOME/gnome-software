@@ -202,8 +202,9 @@ _as_component_scope_is_compatible (AsComponentScope scope1, AsComponentScope sco
 	return scope1 == scope2;
 }
 
-void
-gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+static void
+gs_plugin_flatpak_adopt_app (GsPlugin *plugin,
+			     GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK)
 		gs_app_set_management_plugin (app, plugin);
@@ -3068,6 +3069,7 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 
 	object_class->dispose = gs_plugin_flatpak_dispose;
 
+	plugin_class->adopt_app = gs_plugin_flatpak_adopt_app;
 	plugin_class->setup_async = gs_plugin_flatpak_setup_async;
 	plugin_class->setup_finish = gs_plugin_flatpak_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_flatpak_shutdown_async;

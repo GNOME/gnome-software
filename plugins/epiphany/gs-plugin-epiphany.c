@@ -419,9 +419,9 @@ gs_epiphany_refine_app_state (GsPlugin *plugin,
 	}
 }
 
-void
-gs_plugin_adopt_app (GsPlugin *plugin,
-		     GsApp    *app)
+static void
+gs_plugin_epiphany_adopt_app (GsPlugin *plugin,
+			      GsApp    *app)
 {
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP &&
 	    gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE) {
@@ -1616,6 +1616,7 @@ gs_plugin_epiphany_class_init (GsPluginEpiphanyClass *klass)
 	object_class->dispose = gs_plugin_epiphany_dispose;
 	object_class->finalize = gs_plugin_epiphany_finalize;
 
+	plugin_class->adopt_app = gs_plugin_epiphany_adopt_app;
 	plugin_class->setup_async = gs_plugin_epiphany_setup_async;
 	plugin_class->setup_finish = gs_plugin_epiphany_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_epiphany_shutdown_async;

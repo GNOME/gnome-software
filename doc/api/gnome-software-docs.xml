@@ -637,7 +637,7 @@ gs_plugin_example_refine_finish (GsPlugin *plugin,
         </para>
         <para>
           The only extra step a plugin providing its own apps needs to do
-          is to implement the <code>gs_plugin_adopt_app()</code> function.
+          is to implement the <code>GsPluginClass.adopt_app()</code> virtual function.
           This is called when an application does not have a management plugin
           set, and allows the plugin to <emphasis>claim</emphasis> the
           application for itself so it can handle installation, removal and
@@ -655,10 +655,18 @@ gs_plugin_example_refine_finish (GsPlugin *plugin,
         <informalexample>
           <programlisting>
 void
-gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+gs_plugin_sample_adopt_app (GsPlugin *plugin, GsApp *app)
 {
   if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
     gs_app_set_management_plugin (app, plugin);
+}
+
+static void
+gs_plugin_sample_class_init (GsPluginSampleClass *klass)
+{
+  GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
+
+  plugin_class->adopt_app = gs_plugin_sample_adopt_app;
 }
           </programlisting>
         </informalexample>

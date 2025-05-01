@@ -2709,8 +2709,8 @@ gs_plugin_systemd_sysupdate_trigger_upgrade_finish (GsPlugin      *plugin,
 }
 
 void
-gs_plugin_adopt_app (GsPlugin *plugin,
-                     GsApp    *app)
+gs_plugin_systemd_sysupdate_adopt_app (GsPlugin *plugin,
+                                       GsApp    *app)
 {
 	/* Adopt app originally discovered by other plugins
 	 */
@@ -2733,6 +2733,7 @@ gs_plugin_systemd_sysupdate_class_init (GsPluginSystemdSysupdateClass *klass)
 
 	plugin_class->setup_async = gs_plugin_systemd_sysupdate_setup_async;
 	plugin_class->setup_finish = gs_plugin_systemd_sysupdate_setup_finish;
+	plugin_class->adopt_app = gs_plugin_systemd_sysupdate_adopt_app;
 	plugin_class->refine_async = gs_plugin_systemd_sysupdate_refine_async;
 	plugin_class->refine_finish = gs_plugin_systemd_sysupdate_refine_finish;
 	plugin_class->list_apps_async = gs_plugin_systemd_sysupdate_list_apps_async;

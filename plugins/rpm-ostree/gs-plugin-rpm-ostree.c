@@ -546,8 +546,9 @@ app_set_rpm_ostree_packaging_format (GsApp *app)
 	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "error_color");
 }
 
-void
-gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+static void
+gs_plugin_rpm_ostree_adopt_app (GsPlugin *plugin,
+				GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
 	    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM) {
@@ -3697,6 +3698,7 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	object_class->dispose = gs_plugin_rpm_ostree_dispose;
 	object_class->finalize = gs_plugin_rpm_ostree_finalize;
 
+	plugin_class->adopt_app = gs_plugin_rpm_ostree_adopt_app;
 	plugin_class->setup_async = gs_plugin_rpm_ostree_setup_async;
 	plugin_class->setup_finish = gs_plugin_rpm_ostree_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_rpm_ostree_shutdown_async;
