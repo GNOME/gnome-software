@@ -145,30 +145,6 @@ gs_plugin_job_get_dedupe_flags (GsPluginJob *self)
 	return priv->dedupe_flags;
 }
 
-gboolean
-gs_plugin_job_has_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
-	return (priv->refine_flags & refine_flags) > 0;
-}
-
-void
-gs_plugin_job_add_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->refine_flags |= refine_flags;
-}
-
-void
-gs_plugin_job_remove_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->refine_flags &= ~refine_flags;
-}
-
 void
 gs_plugin_job_set_interactive (GsPluginJob *self, gboolean interactive)
 {
