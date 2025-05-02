@@ -29,6 +29,7 @@ typedef struct
 	GtkWidget	*button_report;
 	GtkWidget	*button_remove;
 	GtkWidget	*box_voting;
+	GtkWidget	*your_review_label;
 } GsReviewRowPrivate;
 
 enum {
@@ -87,6 +88,8 @@ gs_review_row_refresh (GsReviewRow *row)
 					priv->actions & 1 << GS_REVIEW_ACTION_DOWNVOTE);
 	}
 	gtk_widget_set_visible (priv->button_remove,
+				priv->actions & 1 << GS_REVIEW_ACTION_REMOVE);
+	gtk_widget_set_visible (priv->your_review_label,
 				priv->actions & 1 << GS_REVIEW_ACTION_REMOVE);
 	gtk_widget_set_visible (priv->button_report,
 				priv->actions & 1 << GS_REVIEW_ACTION_REPORT);
@@ -181,6 +184,7 @@ gs_review_row_class_init (GsReviewRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_report);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_remove);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, box_voting);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, your_review_label);
 }
 
 static void
