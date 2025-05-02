@@ -2,7 +2,7 @@ project('gnome-software', 'c',
   version : '49.alpha',
   license : 'GPL-2.0-or-later',
   default_options : ['warning_level=2', 'c_std=c11'],
-  meson_version : '>=1.0.1'
+  meson_version : '>=1.6.0'
 )
 
 conf = configuration_data()
