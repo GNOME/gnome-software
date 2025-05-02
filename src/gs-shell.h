@@ -83,6 +83,8 @@ void		 gs_shell_setup			(GsShell	*shell,
 						 GCancellable	*cancellable);
 void		 gs_shell_show_notification	(GsShell	*shell,
 						 const gchar	*title);
+void		 gs_shell_show_toast		(GsShell *shell,
+						 AdwToast *toast);
 gboolean	 gs_shell_get_is_narrow		(GsShell	*shell);
 void		 gs_shell_show_metainfo		(GsShell	*shell,
 						 GFile		*file);

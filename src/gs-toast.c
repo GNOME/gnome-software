@@ -67,6 +67,9 @@ gs_toast_setup (AdwToast *self)
 		case GS_TOAST_BUTTON_DETAILS_URI:
 			adw_toast_set_button_label (self, _("_Details"));
 			break;
+		case GS_TOAST_BUTTON_SHOW_APP_REVIEWS:
+			adw_toast_set_button_label (self, _("_Show Review"));
+			break;
 		default:
 			g_warn_if_reached ();
 			break;
