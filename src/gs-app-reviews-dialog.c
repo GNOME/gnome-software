@@ -73,6 +73,12 @@ display_error_toast (GsAppReviewsDialog *dialog,
 static gint
 sort_reviews (AsReview **a, AsReview **b)
 {
+	/* User's review of the app should be displayed first */
+	if (as_review_get_flags (*a) & AS_REVIEW_FLAG_SELF)
+		return -1;
+	if (as_review_get_flags (*b) & AS_REVIEW_FLAG_SELF)
+		return 1;
+
 	return -g_date_time_compare (as_review_get_date (*a), as_review_get_date (*b));
 }
 
