@@ -2716,7 +2716,7 @@ gs_plugin_systemd_sysupdate_trigger_upgrade_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-void
+static void
 gs_plugin_systemd_sysupdate_adopt_app (GsPlugin *plugin,
                                        GsApp    *app)
 {
