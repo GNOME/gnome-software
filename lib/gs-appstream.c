@@ -567,6 +567,8 @@ gs_appstream_refine_app_relation (GsApp           *app,
                                   AsRelationKind   kind,
                                   GError         **error)
 {
+	g_autoptr(GPtrArray) relations = NULL;
+
 	/* Iterate over the children, which might be any combination of zero or
 	 * more <id/>, <modalias/>, <kernel/>, <memory/>, <firmware/>,
 	 * <control/> or <display_length/> elements. For the moment, we only
@@ -629,8 +631,12 @@ gs_appstream_refine_app_relation (GsApp           *app,
 			continue;
 		}
 
-		gs_app_add_relation (app, relation);
+		if (relations == NULL)
+			relations = g_ptr_array_new_with_free_func (g_object_unref);
+		g_ptr_array_add (relations, g_steal_pointer (&relation));
 	}
+
+	gs_app_set_relations (app, relations);
 
 	return TRUE;
 }
