@@ -33,16 +33,16 @@ struct _GsPluginJobClass
 	gboolean (*run_finish) (GsPluginJob   *self,
 	                        GAsyncResult  *result,
 	                        GError       **error);
+	gboolean (*get_interactive) (GsPluginJob *self);
 };
 
+gboolean	 gs_plugin_job_get_interactive		(GsPluginJob	*self);
 void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
 							 GsPluginRefineFlags refine_flags);
 void		 gs_plugin_job_set_refine_require_flags		(GsPluginJob	*self,
 								 GsPluginRefineRequireFlags require_flags);
 void		 gs_plugin_job_set_dedupe_flags		(GsPluginJob	*self,
 							 GsAppListFilterFlags dedupe_flags);
-void		 gs_plugin_job_set_interactive		(GsPluginJob	*self,
-							 gboolean	 interactive);
 void		 gs_plugin_job_set_propagate_error	(GsPluginJob	*self,
 							 gboolean	 propagate_error);
 void		 gs_plugin_job_set_max_results		(GsPluginJob	*self,

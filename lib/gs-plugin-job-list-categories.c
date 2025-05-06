@@ -126,6 +126,13 @@ gs_plugin_job_list_categories_set_property (GObject      *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_list_categories_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobListCategories *self = GS_PLUGIN_JOB_LIST_CATEGORIES (job);
+	return (self->flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE) != 0;
+}
+
 static void plugin_refine_categories_cb (GObject      *source_object,
                                          GAsyncResult *result,
                                          gpointer      user_data);
@@ -325,6 +332,7 @@ gs_plugin_job_list_categories_class_init (GsPluginJobListCategoriesClass *klass)
 	object_class->get_property = gs_plugin_job_list_categories_get_property;
 	object_class->set_property = gs_plugin_job_list_categories_set_property;
 
+	job_class->get_interactive = gs_plugin_job_list_categories_get_interactive;
 	job_class->run_async = gs_plugin_job_list_categories_run_async;
 	job_class->run_finish = gs_plugin_job_list_categories_run_finish;
 

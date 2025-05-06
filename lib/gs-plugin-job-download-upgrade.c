@@ -115,6 +115,13 @@ gs_plugin_job_download_upgrade_set_property (GObject *object,
 	}
 }
 
+static gboolean
+gs_plugin_job_download_upgrade_get_interactive (GsPluginJob *job)
+{
+	GsPluginJobDownloadUpgrade *self = GS_PLUGIN_JOB_DOWNLOAD_UPGRADE (job);
+	return (self->flags & GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE) != 0;
+}
+
 static void plugin_app_func_cb (GObject      *source_object,
 				GAsyncResult *result,
 				gpointer      user_data);
@@ -238,6 +245,7 @@ gs_plugin_job_download_upgrade_class_init (GsPluginJobDownloadUpgradeClass *klas
 	object_class->get_property = gs_plugin_job_download_upgrade_get_property;
 	object_class->set_property = gs_plugin_job_download_upgrade_set_property;
 
+	job_class->get_interactive = gs_plugin_job_download_upgrade_get_interactive;
 	job_class->run_async = gs_plugin_job_download_upgrade_run_async;
 	job_class->run_finish = gs_plugin_job_download_upgrade_run_finish;
 
@@ -297,6 +305,5 @@ gs_plugin_job_download_upgrade_new (GsApp *app,
 	return g_object_new (GS_TYPE_PLUGIN_JOB_DOWNLOAD_UPGRADE,
 			     "app", app,
 			     "flags", flags,
-			     "interactive", (flags & GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE) != 0,
 			     NULL);
 }

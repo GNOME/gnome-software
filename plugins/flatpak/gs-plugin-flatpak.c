@@ -240,8 +240,7 @@ gs_plugin_flatpak_report_warning (GsPlugin *plugin,
 
 	event = gs_plugin_event_new ("error", *error,
 				     NULL);
-	gs_plugin_event_add_flag (event,
-				  GS_PLUGIN_EVENT_FLAG_WARNING);
+	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 	gs_plugin_report_event (plugin, event);
 }
 
@@ -842,7 +841,7 @@ _ref_to_app (FlatpakTransaction *transaction,
 
 	/* search through each GsFlatpak */
 	return gs_plugin_flatpak_find_app_by_ref (self, ref,
-						  gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE),
+						  !flatpak_transaction_get_no_interaction (transaction),
 						  NULL, NULL, NULL);
 }
 
@@ -976,7 +975,7 @@ _webflow_start (FlatpakTransaction *transaction,
 
 			event = gs_plugin_event_new ("error", error_local,
 						     NULL);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_report_event (plugin, event);
 
 			return FALSE;
@@ -991,7 +990,7 @@ _webflow_start (FlatpakTransaction *transaction,
 
 			event = gs_plugin_event_new ("error", error_local,
 						     NULL);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_report_event (plugin, event);
 
 			return FALSE;
@@ -1340,7 +1339,8 @@ static void
 gs_flatpak_cover_addons_in_transaction (GsPlugin *plugin,
 					FlatpakTransaction *transaction,
 					GsApp *parent_app,
-					GsAppState state)
+					GsAppState state,
+					gboolean interactive)
 {
 	g_autoptr(GsAppList) addons = NULL;
 	g_autoptr(GString) errors = NULL;
@@ -1394,6 +1394,8 @@ gs_flatpak_cover_addons_in_transaction (GsPlugin *plugin,
 
 		event = gs_plugin_event_new ("error", error_local,
 					     NULL);
+		if (interactive)
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		gs_plugin_report_event (plugin, event);
 	}
@@ -1561,7 +1563,7 @@ uninstall_apps_thread_cb (GTask        *task,
 				continue;
 			}
 
-			gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_REMOVING);
+			gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_REMOVING, interactive);
 		}
 
 		/* run transaction */
@@ -1919,7 +1921,7 @@ install_apps_thread_cb (GTask        *task,
 				continue;
 			}
 
-			gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_INSTALLING);
+			gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_INSTALLING, interactive);
 		}
 
 		/* run transaction */
