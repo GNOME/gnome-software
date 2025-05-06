@@ -25,7 +25,7 @@
  * which are set, not _any_ properties which are set.
  *
  * The set of apps returned for the query can be controlled with the
- * #GsAppQuery:refine-flags,
+ * #GsAppQuery:refine-flags, #GsAppQuery:refine-require-flags,
  * #GsAppQuery:max-results and
  * #GsAppQuery:dedupe-flags properties. If `refine-flags` is
  * set, all results must be refined using the given set of refine flags (see
@@ -59,6 +59,7 @@ struct _GsAppQuery
 	GObject parent;
 
 	GsPluginRefineFlags refine_flags;
+	GsPluginRefineRequireFlags refine_require_flags;
 	guint max_results;
 	GsAppListFilterFlags dedupe_flags;
 
@@ -99,6 +100,7 @@ G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
 
 typedef enum {
 	PROP_REFINE_FLAGS = 1,
+	PROP_REFINE_REQUIRE_FLAGS,
 	PROP_MAX_RESULTS,
 	PROP_DEDUPE_FLAGS,
 	PROP_SORT_FUNC,
@@ -186,6 +188,9 @@ gs_app_query_get_property (GObject    *object,
 	switch ((GsAppQueryProperty) prop_id) {
 	case PROP_REFINE_FLAGS:
 		g_value_set_flags (value, self->refine_flags);
+		break;
+	case PROP_REFINE_REQUIRE_FLAGS:
+		g_value_set_flags (value, self->refine_require_flags);
 		break;
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, self->max_results);
@@ -284,6 +289,11 @@ gs_app_query_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->refine_flags == 0);
 		self->refine_flags = g_value_get_flags (value);
+		break;
+	case PROP_REFINE_REQUIRE_FLAGS:
+		/* Construct only. */
+		g_assert (self->refine_require_flags == 0);
+		self->refine_require_flags = g_value_get_flags (value);
 		break;
 	case PROP_MAX_RESULTS:
 		/* Construct only. */
@@ -487,14 +497,28 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 	/**
 	 * GsAppQuery:refine-flags:
 	 *
-	 * Flags to specify how the returned apps must be refined, if at all.
+	 * Flags to specify how the refine job should behave, if at all.
 	 *
-	 * Since: 43
+	 * Since: 49
 	 */
 	props[PROP_REFINE_FLAGS] =
 		g_param_spec_flags ("refine-flags", "Refine Flags",
-				    "Flags to specify how the returned apps must be refined, if at all.",
+				    "Flags to specify how the refine job should behave, if at all.",
 				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_NONE,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppQuery:refine-require-flags:
+	 *
+	 * Flags to specify what data should be refined on the returned apps, if at all.
+	 *
+	 * Since: 49
+	 */
+	props[PROP_REFINE_REQUIRE_FLAGS] =
+		g_param_spec_flags ("refine-require-flags", "Refine Require Flags",
+				    "Flags to specify what data should be refined on the returned apps, if at all.",
+				    GS_TYPE_PLUGIN_REFINE_REQUIRE_FLAGS, GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE,
 				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
@@ -1033,7 +1057,7 @@ gs_app_query_new (const gchar *first_property_name,
  * Get the value of #GsAppQuery:refine-flags.
  *
  * Returns: the refine flags for the query
- * Since: 43
+ * Since: 49
  */
 GsPluginRefineFlags
 gs_app_query_get_refine_flags (GsAppQuery *self)
@@ -1041,6 +1065,23 @@ gs_app_query_get_refine_flags (GsAppQuery *self)
 	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_PLUGIN_REFINE_FLAGS_NONE);
 
 	return self->refine_flags;
+}
+
+/**
+ * gs_app_query_get_refine_require_flags:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:refine-require-flags.
+ *
+ * Returns: the refine require flags for the query
+ * Since: 49
+ */
+GsPluginRefineRequireFlags
+gs_app_query_get_refine_require_flags (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
+
+	return self->refine_require_flags;
 }
 
 /**
@@ -1132,6 +1173,7 @@ gs_app_query_get_filter_func (GsAppQuery *self,
  *
  * These are the properties which determine the query results, rather than ones
  * which control refining the results (#GsAppQuery:refine-flags,
+ * #GsAppQuery:refine-require-flags,
  * #GsAppQuery:max-results, #GsAppQuery:dedupe-flags, #GsAppQuery:sort-func and
  * its user data, #GsAppQuery:filter-func and its user data,
  * #GsAppQuery:license-type).

@@ -117,12 +117,13 @@ static void reload_proxy_settings_async (GsPluginPackagekit  *self,
 static gboolean reload_proxy_settings_finish (GsPluginPackagekit  *self,
                                               GAsyncResult        *result,
                                               GError             **error);
-static void gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
-                                               GsAppList           *list,
-                                               GsPluginRefineFlags  flags,
-                                               GCancellable        *cancellable,
-                                               GAsyncReadyCallback  callback,
-                                               gpointer             user_data);
+static void gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
+                                               GsAppList                  *list,
+                                               GsPluginRefineFlags         job_flags,
+                                               GsPluginRefineRequireFlags  require_flags,
+                                               GCancellable               *cancellable,
+                                               GAsyncReadyCallback         callback,
+                                               gpointer                    user_data);
 static gboolean gs_plugin_packagekit_refine_finish (GsPlugin      *plugin,
                                                     GAsyncResult  *result,
                                                     GError       **error);
@@ -1214,8 +1215,9 @@ uninstall_apps_remove_cb (GObject      *source_object,
 	/* Refine the apps so their state is up to date again. */
 	gs_plugin_packagekit_refine_async (GS_PLUGIN (self),
 					   data->apps_to_uninstall,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
+					   GS_PLUGIN_REFINE_FLAGS_NONE,
+					   GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN |
+					   GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION,
 					   cancellable,
 					   uninstall_apps_refine_cb,
 					   g_steal_pointer (&task));
@@ -1962,82 +1964,82 @@ markdown_to_pango (const gchar *text)
 }
 
 static gboolean
-gs_plugin_refine_app_needs_details (GsPluginRefineFlags  flags,
-                                    GsApp               *app)
+gs_plugin_refine_app_needs_details (GsPluginRefineRequireFlags  flags,
+                                    GsApp                      *app)
 {
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) > 0 &&
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE) > 0 &&
 	    gs_app_get_license (app) == NULL)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0 &&
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL) > 0 &&
 	    gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 &&
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE) > 0 &&
 	    gs_app_get_size_installed (app, NULL) != GS_SIZE_TYPE_VALID)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 &&
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE) > 0 &&
 	    gs_app_get_size_download (app, NULL) != GS_SIZE_TYPE_VALID)
 		return TRUE;
 	return FALSE;
 }
 
 static gboolean
-gs_plugin_refine_requires_version (GsApp *app, GsPluginRefineFlags flags)
+gs_plugin_refine_requires_version (GsApp *app, GsPluginRefineRequireFlags flags)
 {
 	const gchar *tmp;
 	tmp = gs_app_get_version (app);
 	if (tmp != NULL)
 		return FALSE;
-	return (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0;
+	return (flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION) > 0;
 }
 
 static gboolean
-gs_plugin_refine_requires_update_details (GsApp *app, GsPluginRefineFlags flags)
+gs_plugin_refine_requires_update_details (GsApp *app, GsPluginRefineRequireFlags flags)
 {
 	const gchar *tmp;
 	tmp = gs_app_get_update_details_markup (app);
 	if (tmp != NULL)
 		return FALSE;
-	return (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) > 0;
+	return (flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS) > 0;
 }
 
 static gboolean
-gs_plugin_refine_requires_origin (GsApp *app, GsPluginRefineFlags flags)
+gs_plugin_refine_requires_origin (GsApp *app, GsPluginRefineRequireFlags flags)
 {
 	const gchar *tmp;
 	tmp = gs_app_get_origin (app);
 	if (tmp != NULL)
 		return FALSE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN) > 0)
 		return TRUE;
 	return FALSE;
 }
 
 static gboolean
-gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
+gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineRequireFlags flags)
 {
 	const gchar *tmp;
 	tmp = gs_app_get_source_id_default (app);
 	if (tmp != NULL)
 		return FALSE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_SEVERITY) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROVENANCE) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) > 0)
+	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION) > 0)
 		return TRUE;
 	return FALSE;
 }
@@ -2275,12 +2277,13 @@ static void sources_related_got_installed_cb (GObject      *source_object,
 					      GAsyncResult *result,
 					      gpointer      user_data);
 static void
-gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
-                                   GsAppList           *list,
-                                   GsPluginRefineFlags  flags,
-                                   GCancellable        *cancellable,
-                                   GAsyncReadyCallback  callback,
-                                   gpointer             user_data)
+gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
+                                   GsAppList                  *list,
+                                   GsPluginRefineFlags         job_flags,
+                                   GsPluginRefineRequireFlags  require_flags,
+                                   GCancellable               *cancellable,
+                                   GAsyncReadyCallback         callback,
+                                   gpointer                    user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GHashTable) resolve_list_apps = g_hash_table_new (NULL, NULL);
@@ -2311,7 +2314,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	data->n_pending_operations = 1;  /* to prevent the task being completed before all operations have been started */
 	data->progress_datas = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	data->client_refine = pk_client_new ();
-	pk_client_set_interactive (data->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	pk_client_set_interactive (data->client_refine, (job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) refine_data_free);
 
 	/* Process the @list and work out what information is needed for each
@@ -2344,9 +2347,9 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		if (sources->len > 0 &&
 		    gs_plugin_packagekit_refine_valid_package_name (g_ptr_array_index (sources, 0)) &&
 		    (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
-		     gs_plugin_refine_requires_package_id (app, flags) ||
-		     gs_plugin_refine_requires_origin (app, flags) ||
-		     gs_plugin_refine_requires_version (app, flags))) {
+		     gs_plugin_refine_requires_package_id (app, require_flags) ||
+		     gs_plugin_refine_requires_origin (app, require_flags) ||
+		     gs_plugin_refine_requires_version (app, require_flags))) {
 			g_hash_table_add (resolve_list_apps, app);
 			gs_app_list_add (resolve_list, app);
 		}
@@ -2354,16 +2357,16 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		if ((gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
 		     gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) &&
 		    gs_app_get_source_id_default (app) != NULL &&
-		    gs_plugin_refine_requires_update_details (app, flags)) {
+		    gs_plugin_refine_requires_update_details (app, require_flags)) {
 			gs_app_list_add (update_details_list, app);
 		}
 
 		if (gs_app_get_source_id_default (app) != NULL &&
-		    gs_plugin_refine_app_needs_details (flags, app)) {
+		    gs_plugin_refine_app_needs_details (require_flags, app)) {
 			gs_app_list_add (details_list, app);
 		}
 
-		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) != 0 &&
+		if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_HISTORY) != 0 &&
 		    sources->len > 0 &&
 		    gs_app_get_install_date (app) == 0) {
 			gs_app_list_add (history_list, app);
@@ -2371,7 +2374,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	}
 
 	/* Add sources' related apps only when refining sources and nothing else */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) != 0 &&
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED) != 0 &&
 	    n_considered > 0 && gs_app_list_length (repos_list) == n_considered) {
 		PkBitfield filter;
 		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
@@ -2393,7 +2396,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 
 	/* re-read /var/lib/PackageKit/prepared-update so we know what packages
 	 * to mark as already downloaded and prepared for offline updates */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) &&
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE) &&
 	    !gs_plugin_systemd_update_cache (self, cancellable, &local_error)) {
 		refine_task_complete_operation_with_error (task, g_steal_pointer (&local_error));
 		return;
@@ -2402,7 +2405,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	/* when we need the cannot-be-upgraded applications, we implement this
 	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
 	 * to the related-apps list with a state of %GS_APP_STATE_UNAVAILABLE */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPGRADE_REMOVED) != 0) {
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
 			g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
@@ -2462,7 +2465,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	}
 
 	/* set the package-id for an installed desktop file */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) != 0) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION) != 0) {
 		g_autoptr(GPtrArray) to_array = g_ptr_array_new_with_free_func (g_free);
 		g_autoptr(GHashTable) source_to_app = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
 		g_autoptr(GsPackagekitHelper) helper = NULL;
@@ -2646,7 +2649,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			g_ptr_array_add (package_ids, NULL);
 
 			#if PK_CHECK_VERSION (1, 2, 7)
-			if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) != 0)
+			if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE) != 0)
 				pk_client_set_details_with_deps_size (data_unowned->client_refine, TRUE);
 			#endif
 
@@ -2661,7 +2664,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	}
 
 	/* get the update severity */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) != 0) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_SEVERITY) != 0) {
 		PkBitfield filter;
 		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 

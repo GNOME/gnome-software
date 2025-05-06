@@ -1611,73 +1611,97 @@ gs_plugin_action_from_string (const gchar *action)
 
 /**
  * gs_plugin_refine_flags_to_string:
- * @refine_flags: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE
+ * @refine_flags: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_INTERACTIVE
  *
- * Converts the flags to a string.
+ * Converts the refine flags to a string.
  *
  * Returns: a string
- **/
+ * Since: 49
+ */
 gchar *
 gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 {
 	g_autoptr(GPtrArray) cstrs = g_ptr_array_new ();
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID)
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0)
+		g_ptr_array_add (cstrs, (gpointer) "interactive");
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) != 0)
+		g_ptr_array_add (cstrs, (gpointer) "allow-packages");
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING) != 0)
+		g_ptr_array_add (cstrs, (gpointer) "disable-filtering");
+	if (cstrs->len == 0)
+		return g_strdup ("none");
+	g_ptr_array_add (cstrs, NULL);
+	return g_strjoinv (",", (gchar**) cstrs->pdata);
+}
+
+/**
+ * gs_plugin_refine_require_flags_to_string:
+ * @require_flags: some #GsPluginRefineRequireFlags, e.g. %GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE
+ *
+ * Converts the flags to a string.
+ *
+ * Returns: a string
+ * Since: 49
+ **/
+gchar *
+gs_plugin_refine_require_flags_to_string (GsPluginRefineRequireFlags require_flags)
+{
+	g_autoptr(GPtrArray) cstrs = g_ptr_array_new ();
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID)
 		g_ptr_array_add (cstrs, (gpointer) "require-id");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE)
 		g_ptr_array_add (cstrs, (gpointer) "require-license");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL)
 		g_ptr_array_add (cstrs, (gpointer) "require-url");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION)
 		g_ptr_array_add (cstrs, (gpointer) "require-description");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE)
 		g_ptr_array_add (cstrs, (gpointer) "require-size");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING)
 		g_ptr_array_add (cstrs, (gpointer) "require-rating");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION)
 		g_ptr_array_add (cstrs, (gpointer) "require-version");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_HISTORY)
 		g_ptr_array_add (cstrs, (gpointer) "require-history");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION)
 		g_ptr_array_add (cstrs, (gpointer) "require-setup-action");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS)
 		g_ptr_array_add (cstrs, (gpointer) "require-update-details");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN)
 		g_ptr_array_add (cstrs, (gpointer) "require-origin");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED)
 		g_ptr_array_add (cstrs, (gpointer) "require-related");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ADDONS)
 		g_ptr_array_add (cstrs, (gpointer) "require-addons");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES)
-		g_ptr_array_add (cstrs, (gpointer) "require-allow-packages");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_SEVERITY)
 		g_ptr_array_add (cstrs, (gpointer) "require-update-severity");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPGRADE_REMOVED)
 		g_ptr_array_add (cstrs, (gpointer) "require-upgrade-removed");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROVENANCE)
 		g_ptr_array_add (cstrs, (gpointer) "require-provenance");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEWS)
 		g_ptr_array_add (cstrs, (gpointer) "require-reviews");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEW_RATINGS)
 		g_ptr_array_add (cstrs, (gpointer) "require-review-ratings");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON)
 		g_ptr_array_add (cstrs, (gpointer) "require-icon");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS)
 		g_ptr_array_add (cstrs, (gpointer) "require-permissions");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_HOSTNAME)
 		g_ptr_array_add (cstrs, (gpointer) "require-origin-hostname");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_UI)
 		g_ptr_array_add (cstrs, (gpointer) "require-origin-ui");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME)
 		g_ptr_array_add (cstrs, (gpointer) "require-runtime");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SCREENSHOTS)
 		g_ptr_array_add (cstrs, (gpointer) "require-screenshots");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_CATEGORIES)
 		g_ptr_array_add (cstrs, (gpointer) "require-categories");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROJECT_GROUP)
 		g_ptr_array_add (cstrs, (gpointer) "require-project-group");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_DEVELOPER_NAME)
 		g_ptr_array_add (cstrs, (gpointer) "require-developer-name");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS)
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS)
 		g_ptr_array_add (cstrs, (gpointer) "require-kudos");
 	if (cstrs->len == 0)
 		return g_strdup ("none");

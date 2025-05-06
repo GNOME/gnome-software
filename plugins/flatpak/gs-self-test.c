@@ -352,7 +352,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	keywords[0] = "flatpak";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -369,12 +369,12 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	keywords[0] = "Bingo";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_HOSTNAME |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -602,7 +602,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 
 	keywords[0] = "Bingo";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -734,8 +734,8 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* convert it to a GsApp */
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME);
+	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -861,8 +861,8 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* convert it to a GsApp */
 	plugin_job = gs_plugin_job_file_to_app_new (file_repo, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME);
+	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app_src = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -895,8 +895,8 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME);
+	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1041,7 +1041,7 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION);
+	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
@@ -1072,7 +1072,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	GsApp *app_tmp;
 	GsApp *runtime;
 	gboolean ret;
-	GsPluginRefineFlags refine_flags;
+	GsPluginRefineRequireFlags require_flags;
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *testdir = NULL;
 	g_autofree gchar *testdir_repourl = NULL;
@@ -1131,7 +1131,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	keywords[0] = "runtime";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -1163,7 +1163,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		fn = gs_test_get_filename (TESTDATADIR, "chiron.flatpak");
 		g_assert_true (fn != NULL);
 		file = g_file_new_for_path (fn);
-		refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
+		require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE;
 	} else {
 		const gchar *fn_repo = "test.flatpakrepo";
 		g_autoptr(GFile) fn_repo_file = NULL;
@@ -1188,10 +1188,10 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		g_assert_no_error (error);
 		g_assert_true (ret);
 
-		refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
+		require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+				GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL |
+				GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION |
+				GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME;
 	}
 
 	/* Wait for the flatpak changes to be delivered through the file
@@ -1201,7 +1201,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_flags (plugin_job, refine_flags);
+	gs_plugin_job_set_refine_require_flags (plugin_job, require_flags);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
@@ -1252,7 +1252,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	keywords[0] = "chiron";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -1270,8 +1270,8 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	/* convert it to a GsApp again, and get the installed thing */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME);
+	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app2 = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app2 != NULL);
@@ -1341,7 +1341,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	keywords[0] = "chiron";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -1463,8 +1463,8 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 
 	keywords[0] = "Bingo";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -1510,8 +1510,8 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* get the updates list */
 	g_object_unref (plugin_job);
 	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -1722,7 +1722,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	keywords[0] = "Bingo";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -1776,8 +1776,8 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	/* get the updates list */
 	g_object_unref (plugin_job);
 	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -1859,7 +1859,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	keywords[0] = "Bingo";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);

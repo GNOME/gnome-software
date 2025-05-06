@@ -136,9 +136,10 @@ gs_plugins_dummy_refine_func (GsPluginLoader *plugin_loader)
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
 	plugin_job = gs_plugin_job_refine_new_for_app (app,
-						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL);
+						       GS_PLUGIN_REFINE_FLAGS_NONE,
+						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION |
+						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE |
+						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -162,7 +163,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	app = gs_app_new ("chiron.desktop");
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
-	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -177,7 +178,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "true");
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -189,7 +190,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "false");
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -210,7 +211,7 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 
 	/* get the extra bits */
 	app = gs_app_new ("chiron.desktop");
-	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -244,8 +245,8 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 
 	/* get the updates list */
 	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS,
 				  "sort-func", gs_utils_app_sort_name,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -292,7 +293,7 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 
 	/* get the updates list */
 	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
-							     GS_PLUGIN_REFINE_FLAGS_NONE);
+							     GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -346,19 +347,19 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GIcon) icon = NULL;
-	GsPluginRefineFlags refine_flags;
+	GsPluginRefineRequireFlags require_flags;
 
 	/* get installed packages */
-	refine_flags = (GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-			GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
-			GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-			GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS |
-			GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-			GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
-			GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE);
+	require_flags = (GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN |
+			 GS_PLUGIN_REFINE_REQUIRE_FLAGS_ADDONS |
+			 GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE |
+			 GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS |
+			 GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+			 GS_PLUGIN_REFINE_REQUIRE_FLAGS_CATEGORIES |
+			 GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROVENANCE);
 
 	query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", refine_flags,
+				  "refine-require-flags", require_flags,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "filter-func", filter_valid_cb,
 				  NULL);
@@ -428,7 +429,7 @@ gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 	/* get search result based on addon keyword */
 	keywords[0] = "zeus";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
@@ -458,7 +459,7 @@ gs_plugins_dummy_search_alternate_func (GsPluginLoader *plugin_loader)
 	/* get search result based on addon keyword */
 	app = gs_app_new ("zeus.desktop");
 	query = gs_app_query_new ("alternate-of", app,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_priority,
 				  NULL);
@@ -486,7 +487,7 @@ gs_plugins_dummy_url_to_app_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	plugin_job = gs_plugin_job_url_to_app_new ("dummy://chiron.desktop", GS_PLUGIN_URL_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
+	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -507,7 +508,7 @@ gs_plugins_dummy_plugin_cache_func (GsPluginLoader *plugin_loader)
 
 	/* ensure we get the same results back from calling the methods twice */
 	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
-							     GS_PLUGIN_REFINE_FLAGS_NONE);
+							     GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	list1 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -517,7 +518,7 @@ gs_plugins_dummy_plugin_cache_func (GsPluginLoader *plugin_loader)
 
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
-							     GS_PLUGIN_REFINE_FLAGS_NONE);
+							     GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	list2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -543,7 +544,7 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	/* use the plugin's default curated list, indicated by setting max-results=5 */
 	query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
 				  "max-results", 5,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 
@@ -558,7 +559,7 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	/* use the plugin’s second list, indicated by setting max-results=6 */
 	query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
 				  "max-results", 6,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 
@@ -612,7 +613,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 
 	/* get the updates list */
 	plugin_job1 = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
-							      GS_PLUGIN_REFINE_FLAGS_NONE);
+							      GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job1, NULL, &local_error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (local_error);

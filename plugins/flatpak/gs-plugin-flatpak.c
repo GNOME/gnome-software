@@ -558,12 +558,12 @@ gs_plugin_flatpak_get_handler (GsPluginFlatpak *self,
 }
 
 static gboolean
-gs_plugin_flatpak_refine_app (GsPluginFlatpak      *self,
-                              GsApp                *app,
-                              GsPluginRefineFlags   flags,
-                              gboolean              interactive,
-                              GCancellable         *cancellable,
-                              GError              **error)
+gs_plugin_flatpak_refine_app (GsPluginFlatpak             *self,
+                              GsApp                       *app,
+                              GsPluginRefineRequireFlags   require_flags,
+                              gboolean                     interactive,
+                              GCancellable                *cancellable,
+                              GError                     **error)
 {
 	GsFlatpak *flatpak = NULL;
 
@@ -591,7 +591,7 @@ gs_plugin_flatpak_refine_app (GsPluginFlatpak      *self,
 	}
 	if (flatpak == NULL)
 		return TRUE;
-	return gs_flatpak_refine_app (flatpak, app, flags, interactive, FALSE, cancellable, error);
+	return gs_flatpak_refine_app (flatpak, app, require_flags, interactive, FALSE, cancellable, error);
 }
 
 static void
@@ -603,12 +603,12 @@ unref_nonnull_hash_table (gpointer ptr)
 }
 
 static gboolean
-refine_app (GsPluginFlatpak      *self,
-            GsApp                *app,
-            GsPluginRefineFlags   flags,
-            gboolean              interactive,
-            GCancellable         *cancellable,
-            GError              **error)
+refine_app (GsPluginFlatpak             *self,
+            GsApp                       *app,
+            GsPluginRefineRequireFlags   require_flags,
+            gboolean                     interactive,
+            GCancellable                *cancellable,
+            GError                     **error)
 {
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineApp, "Flatpak (refine app)", NULL);
 
@@ -617,19 +617,19 @@ refine_app (GsPluginFlatpak      *self,
 		return TRUE;
 
 	/* get the runtime first */
-	if (!gs_plugin_flatpak_refine_app (self, app, flags, interactive, cancellable, error))
+	if (!gs_plugin_flatpak_refine_app (self, app, require_flags, interactive, cancellable, error))
 		return FALSE;
 
 	GS_PROFILER_END_SCOPED (FlatpakRefineApp);
 
 	/* the runtime might be installed in a different scope */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) {
+	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME) {
 		GsApp *runtime = gs_app_get_runtime (app);
 		if (runtime != NULL) {
 			GS_PROFILER_BEGIN_SCOPED (FlatpakRefineAppRuntime, "Flatpak (refine runtime)", NULL);
 
 			if (!gs_plugin_flatpak_refine_app (self, runtime,
-							   flags,
+							   require_flags,
 							   interactive,
 							   cancellable,
 							   error)) {
@@ -648,18 +648,19 @@ static void refine_thread_cb (GTask        *task,
                               GCancellable *cancellable);
 
 static void
-gs_plugin_flatpak_refine_async (GsPlugin            *plugin,
-                                GsAppList           *list,
-                                GsPluginRefineFlags  flags,
-                                GCancellable        *cancellable,
-                                GAsyncReadyCallback  callback,
-                                gpointer             user_data)
+gs_plugin_flatpak_refine_async (GsPlugin                   *plugin,
+                                GsAppList                  *list,
+                                GsPluginRefineFlags         job_flags,
+                                GsPluginRefineRequireFlags  require_flags,
+                                GCancellable               *cancellable,
+                                GAsyncReadyCallback         callback,
+                                gpointer                    user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_refine_async);
 
 	/* Queue a job to refine the apps. */
@@ -677,8 +678,8 @@ refine_thread_cb (GTask        *task,
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
 	GsPluginRefineData *data = task_data;
 	GsAppList *list = data->list;
-	GsPluginRefineFlags flags = data->flags;
-	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
+	GsPluginRefineRequireFlags require_flags = data->require_flags;
+	gboolean interactive = (data->job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
 	g_autoptr(GPtrArray) array_components_by_id = NULL; /* (element-type GHashTable) */
 	g_autoptr(GPtrArray) array_components_by_bundle = NULL; /* (element-type GHashTable) */
 	g_autoptr(GsAppList) app_list = NULL;
@@ -688,7 +689,7 @@ refine_thread_cb (GTask        *task,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (self, app, flags, interactive, cancellable, &local_error)) {
+		if (!refine_app (self, app, require_flags, interactive, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -717,7 +718,7 @@ refine_thread_cb (GTask        *task,
 			GHashTable *components_by_id = array_components_by_id->pdata[i];
 			GHashTable *components_by_bundle = array_components_by_bundle->pdata[i];
 
-			if (!gs_flatpak_refine_wildcard (flatpak, app, list, flags, interactive, &components_by_id, &components_by_bundle,
+			if (!gs_flatpak_refine_wildcard (flatpak, app, list, require_flags, interactive, &components_by_id, &components_by_bundle,
 							 cancellable, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
@@ -1311,7 +1312,7 @@ update_apps_thread_cb (GTask        *task,
 
 			ref = gs_flatpak_app_get_ref_display (app);
 			if (!gs_flatpak_refine_app (flatpak, app,
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
 						    interactive, TRUE,
 						    cancellable, &local_error)) {
 				gs_flatpak_error_convert (&local_error);
@@ -1628,9 +1629,9 @@ uninstall_apps_thread_cb (GTask        *task,
 
 			ref = gs_flatpak_app_get_ref_display (app);
 			if (!gs_flatpak_refine_app (flatpak, app,
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION,
 						    interactive, FALSE,
 						    cancellable, &local_error)) {
 				gs_flatpak_error_convert (&local_error);
@@ -1641,7 +1642,7 @@ uninstall_apps_thread_cb (GTask        *task,
 
 			gs_flatpak_refine_addons (flatpak,
 						  app,
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
+						  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID,
 						  GS_APP_STATE_REMOVING,
 						  interactive,
 						  cancellable);
@@ -2012,9 +2013,9 @@ install_apps_thread_cb (GTask        *task,
 
 			ref = gs_flatpak_app_get_ref_display (app);
 			if (!gs_flatpak_refine_app (flatpak, app,
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION,
 						    interactive, FALSE,
 						    cancellable, &local_error)) {
 				gs_flatpak_error_convert (&local_error);
@@ -2025,7 +2026,7 @@ install_apps_thread_cb (GTask        *task,
 
 			gs_flatpak_refine_addons (flatpak,
 						  app,
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
+						  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID,
 						  GS_APP_STATE_INSTALLING,
 						  interactive,
 						  cancellable);
@@ -2263,7 +2264,7 @@ gs_plugin_flatpak_file_to_app (GsPluginFlatpak *self,
 		/* Ensure the origin for the runtime is set */
 		if (runtime != NULL && gs_app_get_origin (runtime) == NULL) {
 			g_autoptr(GError) error_local = NULL;
-			if (!gs_plugin_flatpak_refine_app (self, runtime, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN, interactive, cancellable, &error_local))
+			if (!gs_plugin_flatpak_refine_app (self, runtime, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN, interactive, cancellable, &error_local))
 				g_debug ("Failed to refine runtime: %s", error_local->message);
 		}
 		gs_plugin_flatpak_ensure_scope (GS_PLUGIN (self), app);

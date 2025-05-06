@@ -64,7 +64,7 @@ static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 static void gs_installed_page_pending_apps_refined_cb (GObject *source,
 						       GAsyncResult *res,
 						       gpointer user_data);
-static GsPluginRefineFlags gs_installed_page_get_refine_flags (GsInstalledPage *self);
+static GsPluginRefineRequireFlags gs_installed_page_get_refine_require_flags (GsInstalledPage *self);
 static void gs_installed_page_notify_state_changed_cb (GsApp *app,
 						       GParamSpec *pspec,
 						       GsInstalledPage *self);
@@ -423,7 +423,8 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 out:
 	if (gs_app_list_length (pending) > 0) {
 		plugin_job = gs_plugin_job_refine_new (pending,
-						       gs_installed_page_get_refine_flags (self));
+						       GS_PLUGIN_REFINE_FLAGS_INTERACTIVE,
+						       gs_installed_page_get_refine_require_flags (self));
 		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 						    self->cancellable,
 						    gs_installed_page_pending_apps_refined_cb,
@@ -470,25 +471,25 @@ filter_app_kinds_cb (GsApp    *app,
 	}
 }
 
-static GsPluginRefineFlags
-gs_installed_page_get_refine_flags (GsInstalledPage *self)
+static GsPluginRefineRequireFlags
+gs_installed_page_get_refine_require_flags (GsInstalledPage *self)
 {
-	GsPluginRefineFlags flags;
+	GsPluginRefineRequireFlags flags;
 
-	flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
-		GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING;
+	flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_HISTORY |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_HOSTNAME |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROVENANCE |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_CATEGORIES |
+		GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING;
 
 	if (should_show_installed_size (self))
-		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE;
+		flags |= GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE;
 
 	return flags;
 }
@@ -513,7 +514,7 @@ gs_installed_page_load (GsInstalledPage *self)
 
 	/* get installed apps */
 	query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", gs_installed_page_get_refine_flags (self),
+				  "refine-require-flags", gs_installed_page_get_refine_require_flags (self),
 				  "filter-func", filter_app_kinds_cb,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);

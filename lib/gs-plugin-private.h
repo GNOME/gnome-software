@@ -45,6 +45,7 @@ GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,
 gpointer	 gs_plugin_get_symbol			(GsPlugin	*plugin,
 							 const gchar	*function_name);
 gchar		*gs_plugin_refine_flags_to_string	(GsPluginRefineFlags refine_flags);
+gchar		*gs_plugin_refine_require_flags_to_string	(GsPluginRefineRequireFlags require_flags);
 void		 gs_plugin_set_network_monitor		(GsPlugin		*plugin,
 							 GNetworkMonitor	*monitor);
 

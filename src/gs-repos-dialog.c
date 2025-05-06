@@ -515,7 +515,7 @@ refine_sources_cb (GObject *source_object,
 	if (gs_app_list_length (related_list) > 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
-		plugin_job = gs_plugin_job_refine_new (related_list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
+		plugin_job = gs_plugin_job_refine_new (related_list, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID);
 		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 						    rd->dialog->cancellable,
 						    refine_sources_related_cb,
@@ -657,7 +657,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	rd = g_new0 (RefineData, 1);
 	rd->dialog = dialog;
 	rd->list = g_object_ref (refine_list);
-	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED);
+	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
 					    refine_sources_cb,
@@ -672,8 +672,8 @@ reload_sources (GsReposDialog *dialog)
 
 	/* get the list of non-core software repositories */
 	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_HOSTNAME |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROVENANCE,
 				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);

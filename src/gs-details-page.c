@@ -49,26 +49,26 @@
    to catch full width and smaller width without bottom gap */
 #define N_DEVELOPER_APPS 18
 
-#define GS_DETAILS_PAGE_REFINE_FLAGS	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL | \
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION
+#define GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS	GS_PLUGIN_REFINE_REQUIRE_FLAGS_ADDONS | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_CATEGORIES | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_DEVELOPER_NAME | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_HISTORY | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_HOSTNAME | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROJECT_GROUP | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROVENANCE | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_SCREENSHOTS | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE_DATA | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL | \
+						GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION
 
 static void gs_details_page_refresh_addons (GsDetailsPage *self);
 static void gs_details_page_refresh_all (GsDetailsPage *self);
@@ -966,10 +966,11 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 		/* Make sure the changed instance contains the reviews and such */
 		plugin_job = gs_plugin_job_refine_new_for_app (self->app,
-							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
-							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE);
+							       GS_PLUGIN_REFINE_FLAGS_INTERACTIVE,
+							       GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING |
+							       GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEW_RATINGS |
+							       GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEWS |
+							       GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE);
 		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 						    self->cancellable,
 						    gs_details_page_app_refine_cb,
@@ -1428,7 +1429,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 			names[0] = self->last_developer_name;
 			query = gs_app_query_new ("developers", names,
 						  "max-results", N_DEVELOPER_APPS * 3, /* Ask for more, some can be skipped */
-						  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID,
 						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 						  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
@@ -1975,13 +1976,14 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 	/* if these tasks fail (e.g. because we have no networking) then it's
 	 * of no huge importance if we don't get the required data */
 	plugin_job1 = gs_plugin_job_refine_new_for_app (self->app,
-							GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-							GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-							GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
-							GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE);
+							GS_PLUGIN_REFINE_FLAGS_INTERACTIVE,
+							GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING |
+							GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEW_RATINGS |
+							GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEWS |
+							GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE);
 
 	query = gs_app_query_new ("alternate-of", self->app,
-				  "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
+				  "refine-require-flags", GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS,
 				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
 				  "filter-func", gs_details_page_filter_origin,
 				  "sort-func", gs_utils_app_sort_priority,
@@ -2111,7 +2113,7 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_DETAILS_PAGE_REFINE_FLAGS);
+	gs_plugin_job_set_refine_require_flags (plugin_job, GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_file_to_app_cb,
@@ -2127,8 +2129,8 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
 	plugin_job = gs_plugin_job_url_to_app_new (url, GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_DETAILS_PAGE_REFINE_FLAGS |
-						    GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES);
+	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES);
+	gs_plugin_job_set_refine_require_flags (plugin_job, GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_url_to_app_cb,
@@ -2152,7 +2154,7 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	g_cancellable_connect (self->cancellable, G_CALLBACK (gs_details_page_cancel_cb), self, NULL);
 
 	/* get extra details about the app */
-	plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_DETAILS_PAGE_REFINE_FLAGS);
+	plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_FLAGS_INTERACTIVE, GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_load_stage1_cb,
@@ -3121,7 +3123,7 @@ gs_details_page_metainfo_thread (GTask *task,
 		return;
 	}
 
-	if (!gs_appstream_refine_app (NULL, app, silo, component, GS_DETAILS_PAGE_REFINE_FLAGS, NULL, NULL, AS_COMPONENT_SCOPE_UNKNOWN, &error)) {
+	if (!gs_appstream_refine_app (NULL, app, silo, component, GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS, NULL, NULL, AS_COMPONENT_SCOPE_UNKNOWN, &error)) {
 		g_task_return_error (task, g_steal_pointer (&error));
 		return;
 	}

@@ -25,7 +25,7 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 	/* get search result based on addon keyword */
 	keywords[0] = "colorhug2";
 	query = gs_app_query_new ("keywords", keywords,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_CATEGORIES,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);

@@ -338,11 +338,11 @@ gs_plugin_malcontent_setup_finish (GsPlugin      *self,
 }
 
 static gboolean
-refine_app_locked (GsPluginMalcontent   *self,
-		   GsApp                *app,
-		   GsPluginRefineFlags   flags,
-		   GCancellable         *cancellable,
-		   GError              **error)
+refine_app_locked (GsPluginMalcontent          *self,
+                   GsApp                       *app,
+                   GsPluginRefineRequireFlags   require_flags,
+                   GCancellable                *cancellable,
+                   GError                     **error)
 {
 	/* not valid */
 	if (gs_app_get_id (app) == NULL)
@@ -359,12 +359,13 @@ refine_app_locked (GsPluginMalcontent   *self,
 }
 
 static void
-gs_plugin_malcontent_refine_async (GsPlugin            *plugin,
-                                   GsAppList           *list,
-                                   GsPluginRefineFlags  flags,
-                                   GCancellable        *cancellable,
-                                   GAsyncReadyCallback  callback,
-                                   gpointer             user_data)
+gs_plugin_malcontent_refine_async (GsPlugin                   *plugin,
+                                   GsAppList                  *list,
+                                   GsPluginRefineFlags         job_flags,
+                                   GsPluginRefineRequireFlags  require_flags,
+                                   GCancellable               *cancellable,
+                                   GAsyncReadyCallback         callback,
+                                   gpointer                    user_data)
 {
 	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (plugin);
 	g_autoptr(GTask) task = NULL;
@@ -376,7 +377,7 @@ gs_plugin_malcontent_refine_async (GsPlugin            *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app_locked (self, app, flags, cancellable, &local_error)) {
+		if (!refine_app_locked (self, app, require_flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}

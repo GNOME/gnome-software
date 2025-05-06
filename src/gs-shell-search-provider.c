@@ -172,8 +172,8 @@ execute_search (GsShellSearchProvider  *self,
 	settings = g_settings_new ("org.gnome.software");
 
 	query = gs_app_query_new ("keywords", terms,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
+							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_HOSTNAME,
 				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 						  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 				  "max-results", GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,

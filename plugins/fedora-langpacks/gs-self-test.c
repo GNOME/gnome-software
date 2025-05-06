@@ -51,7 +51,7 @@ gs_plugins_fedora_langpacks_func (GsPluginLoader *plugin_loader)
 
 	/* get langpacks result based on locale */
 	query = gs_app_query_new ("is-langpack-for-locale", "pt_BR.UTF-8",
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
 				  "max-results", 1,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);

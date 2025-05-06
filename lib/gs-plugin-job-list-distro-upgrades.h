@@ -22,8 +22,8 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsPluginJobListDistroUpgrades, gs_plugin_job_list_distro_upgrades, GS, PLUGIN_JOB_LIST_DISTRO_UPGRADES, GsPluginJob)
 
-GsPluginJob	*gs_plugin_job_list_distro_upgrades_new	(GsPluginListDistroUpgradesFlags flags,
-							 GsPluginRefineFlags             refine_flags);
+GsPluginJob *gs_plugin_job_list_distro_upgrades_new (GsPluginListDistroUpgradesFlags flags,
+                                                     GsPluginRefineRequireFlags      require_flags);
 
 GsAppList	*gs_plugin_job_list_distro_upgrades_get_result_list	(GsPluginJobListDistroUpgrades *self);
 

@@ -32,7 +32,8 @@
 /**
  * gs_plugin_refine_data_new:
  * @list: list of #GsApps to refine
- * @flags: refine flags
+ * @job_flags: job flags
+ * @require_flags: require flags
  *
  * Context data for a call to #GsPluginClass.refine_async.
  *
@@ -40,12 +41,14 @@
  * Since: 42
  */
 GsPluginRefineData *
-gs_plugin_refine_data_new (GsAppList           *list,
-                           GsPluginRefineFlags  flags)
+gs_plugin_refine_data_new (GsAppList                  *list,
+                           GsPluginRefineFlags         job_flags,
+                           GsPluginRefineRequireFlags  require_flags)
 {
 	g_autoptr(GsPluginRefineData) data = g_new0 (GsPluginRefineData, 1);
 	data->list = g_object_ref (list);
-	data->flags = flags;
+	data->job_flags = job_flags;
+	data->require_flags = require_flags;
 
 	return g_steal_pointer (&data);
 }
@@ -54,7 +57,8 @@ gs_plugin_refine_data_new (GsAppList           *list,
  * gs_plugin_refine_data_new_task:
  * @source_object: task source object
  * @list: list of #GsApps to refine
- * @flags: refine flags
+ * @job_flags: job flags
+ * @require_flags: require flags
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -69,15 +73,16 @@ gs_plugin_refine_data_new (GsAppList           *list,
  * Since: 42
  */
 GTask *
-gs_plugin_refine_data_new_task (gpointer             source_object,
-                                GsAppList           *list,
-                                GsPluginRefineFlags  flags,
-                                GCancellable        *cancellable,
-                                GAsyncReadyCallback  callback,
-                                gpointer             user_data)
+gs_plugin_refine_data_new_task (gpointer                    source_object,
+                                GsAppList                  *list,
+                                GsPluginRefineFlags         job_flags,
+                                GsPluginRefineRequireFlags  require_flags,
+                                GCancellable               *cancellable,
+                                GAsyncReadyCallback         callback,
+                                gpointer                    user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_refine_data_new (list, flags), (GDestroyNotify) gs_plugin_refine_data_free);
+	g_task_set_task_data (task, gs_plugin_refine_data_new (list, job_flags, require_flags), (GDestroyNotify) gs_plugin_refine_data_free);
 	return g_steal_pointer (&task);
 }
 

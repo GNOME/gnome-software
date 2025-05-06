@@ -31,11 +31,11 @@ struct _GsPluginDummy {
 
 G_DEFINE_TYPE (GsPluginDummy, gs_plugin_dummy, GS_TYPE_PLUGIN)
 
-static gboolean refine_app (GsPluginDummy        *self,
-                            GsApp                *app,
-                            GsPluginRefineFlags   flags,
-                            GCancellable         *cancellable,
-                            GError              **error);
+static gboolean refine_app (GsPluginDummy               *self,
+                            GsApp                       *app,
+                            GsPluginRefineRequireFlags   require_flags,
+                            GCancellable                *cancellable,
+                            GError                     **error);
 
 /* just flip-flop this every few seconds */
 static gboolean
@@ -495,8 +495,8 @@ uninstall_cb (GObject      *source_object,
 	gs_app_set_state (app_data->app, GS_APP_STATE_UNKNOWN);
 
 	if (!refine_app (self, app_data->app,
-			 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-			 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
+			 GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN |
+			 GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION,
 			 cancellable, &local_error)) {
 		g_debug ("Error refining app ‘%s’ after uninstall: %s",
 			 gs_app_get_id (app_data->app), local_error->message);
@@ -722,11 +722,11 @@ gs_plugin_dummy_install_apps_finish (GsPlugin      *plugin,
 }
 
 static gboolean
-refine_app (GsPluginDummy        *self,
-            GsApp                *app,
-            GsPluginRefineFlags   flags,
-            GCancellable         *cancellable,
-            GError              **error)
+refine_app (GsPluginDummy               *self,
+            GsApp                       *app,
+            GsPluginRefineRequireFlags   require_flags,
+            GCancellable                *cancellable,
+            GError                     **error)
 {
 	/* make the local system EOL */
 	if (gs_app_get_metadata_item (app, "GnomeSoftware::CpeName") != NULL)
@@ -752,14 +752,14 @@ refine_app (GsPluginDummy        *self,
 	}
 
 	/* license */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE) != 0) {
 		if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
 		    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0)
 			gs_app_set_license (app, GS_APP_QUALITY_HIGHEST, "GPL-2.0-or-later");
 	}
 
 	/* homepage */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL) != 0) {
 		if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0) {
 			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 					"http://www.test.org/");
@@ -767,7 +767,7 @@ refine_app (GsPluginDummy        *self,
 	}
 
 	/* origin */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN) != 0) {
 		if (g_strcmp0 (gs_app_get_id (app), "zeus-spell.addon") == 0)
 			gs_app_set_origin (app, "london-east");
 	}
@@ -785,7 +785,7 @@ refine_app (GsPluginDummy        *self,
 	}
 
 	/* description */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION) != 0) {
 		if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0) {
 			gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
 						"long description!");
@@ -793,7 +793,7 @@ refine_app (GsPluginDummy        *self,
 	}
 
 	/* add fake review */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEWS) != 0) {
 		g_autoptr(AsReview) review1 = NULL;
 		g_autoptr(AsReview) review2 = NULL;
 		g_autoptr(GDateTime) dt = NULL;
@@ -823,7 +823,7 @@ refine_app (GsPluginDummy        *self,
 	}
 
 	/* add fake ratings */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEW_RATINGS) != 0) {
 		g_autoptr(GArray) ratings = NULL;
 		const gint data[] = { 0, 10, 20, 30, 15, 2 };
 		ratings = g_array_sized_new (FALSE, FALSE, sizeof (gint), 6);
@@ -832,7 +832,7 @@ refine_app (GsPluginDummy        *self,
 	}
 
 	/* add a rating */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) {
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING) != 0) {
 		gs_app_set_rating (app, 66);
 	}
 
@@ -840,12 +840,13 @@ refine_app (GsPluginDummy        *self,
 }
 
 static void
-gs_plugin_dummy_refine_async (GsPlugin            *plugin,
-                              GsAppList           *list,
-                              GsPluginRefineFlags  flags,
-                              GCancellable        *cancellable,
-                              GAsyncReadyCallback  callback,
-                              gpointer             user_data)
+gs_plugin_dummy_refine_async (GsPlugin                   *plugin,
+                              GsAppList                  *list,
+                              GsPluginRefineFlags         job_flags,
+                              GsPluginRefineRequireFlags  require_flags,
+                              GCancellable               *cancellable,
+                              GAsyncReadyCallback         callback,
+                              gpointer                    user_data)
 {
 	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 	g_autoptr(GTask) task = NULL;
@@ -857,7 +858,7 @@ gs_plugin_dummy_refine_async (GsPlugin            *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 
-		if (!refine_app (self, app, flags, cancellable, &local_error)) {
+		if (!refine_app (self, app, require_flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}

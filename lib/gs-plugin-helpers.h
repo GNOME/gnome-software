@@ -20,17 +20,20 @@ G_BEGIN_DECLS
 
 typedef struct {
 	GsAppList *list;  /* (owned) (not nullable) */
-	GsPluginRefineFlags flags;
+	GsPluginRefineFlags job_flags;
+	GsPluginRefineRequireFlags require_flags;
 } GsPluginRefineData;
 
-GsPluginRefineData *gs_plugin_refine_data_new (GsAppList           *list,
-                                               GsPluginRefineFlags  flags);
-GTask *gs_plugin_refine_data_new_task (gpointer             source_object,
-                                       GsAppList           *list,
-                                       GsPluginRefineFlags  flags,
-                                       GCancellable        *cancellable,
-                                       GAsyncReadyCallback  callback,
-                                       gpointer             user_data);
+GsPluginRefineData *gs_plugin_refine_data_new (GsAppList                  *list,
+                                               GsPluginRefineFlags         job_flags,
+                                               GsPluginRefineRequireFlags  require_flags);
+GTask *gs_plugin_refine_data_new_task (gpointer                    source_object,
+                                       GsAppList                  *list,
+                                       GsPluginRefineFlags         job_flags,
+                                       GsPluginRefineRequireFlags  refine_flags,
+                                       GCancellable               *cancellable,
+                                       GAsyncReadyCallback         callback,
+                                       gpointer                    user_data);
 void gs_plugin_refine_data_free (GsPluginRefineData *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefineData, gs_plugin_refine_data_free)
 

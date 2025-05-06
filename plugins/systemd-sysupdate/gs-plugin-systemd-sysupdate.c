@@ -336,16 +336,19 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_data_free (GsPluginSystemdSy
  * queue and the current working `target` */
 typedef struct {
 	GQueue *queue; /* (owned) (not nullable) (element-type TargetItem) */
-	GsPluginRefineFlags flags;
+	GsPluginRefineFlags job_flags;
+	GsPluginRefineRequireFlags require_flags;
 } GsPluginSystemdSysupdateRefineData;
 
 static GsPluginSystemdSysupdateRefineData *
-gs_plugin_systemd_sysupdate_refine_data_new (GQueue              *queue,
-                                             GsPluginRefineFlags  flags)
+gs_plugin_systemd_sysupdate_refine_data_new (GQueue                     *queue,
+                                             GsPluginRefineFlags         job_flags,
+                                             GsPluginRefineRequireFlags  require_flags)
 {
 	GsPluginSystemdSysupdateRefineData *data = g_new0 (GsPluginSystemdSysupdateRefineData, 1);
 	data->queue = g_steal_pointer (&queue);
-	data->flags = flags;
+	data->job_flags = job_flags;
+	data->require_flags = require_flags;
 	return data;
 }
 
@@ -356,7 +359,8 @@ gs_plugin_systemd_sysupdate_refine_data_free (GsPluginSystemdSysupdateRefineData
 		g_queue_free_full (data->queue, g_object_unref);
 		data->queue = NULL;
 	}
-	data->flags = 0;
+	data->job_flags = 0;
+	data->require_flags = 0;
 	g_free (data);
 }
 
@@ -567,12 +571,13 @@ gs_plugin_systemd_sysupdate_refine_iter (GObject      *source_object,
                                          gpointer      user_data);
 
 static void
-gs_plugin_systemd_sysupdate_refine_app_async (GsPlugin            *plugin,
-                                              GsApp               *app,
-                                              GsPluginRefineFlags  flags,
-                                              GCancellable        *cancellable,
-                                              GAsyncReadyCallback  callback,
-                                              gpointer             user_data);
+gs_plugin_systemd_sysupdate_refine_app_async (GsPlugin                   *plugin,
+                                              GsApp                      *app,
+                                              GsPluginRefineFlags         job_flags,
+                                              GsPluginRefineRequireFlags  require_flags,
+                                              GCancellable               *cancellable,
+                                              GAsyncReadyCallback         callback,
+                                              gpointer                    user_data);
 
 static void
 gs_plugin_systemd_sysupdate_refine_app_proxy_new_cb (GObject      *source_object,
@@ -1570,12 +1575,13 @@ gs_plugin_systemd_sysupdate_setup_finish (GsPlugin      *plugin,
 }
 
 static void
-gs_plugin_systemd_sysupdate_refine_async (GsPlugin            *plugin,
-                                          GsAppList           *list,
-                                          GsPluginRefineFlags  flags,
-                                          GCancellable        *cancellable,
-                                          GAsyncReadyCallback  callback,
-                                          gpointer             user_data)
+gs_plugin_systemd_sysupdate_refine_async (GsPlugin                   *plugin,
+                                          GsAppList                  *list,
+                                          GsPluginRefineFlags         job_flags,
+                                          GsPluginRefineRequireFlags  require_flags,
+                                          GCancellable               *cancellable,
+                                          GAsyncReadyCallback         callback,
+                                          gpointer                    user_data)
 {
 	GsPluginSystemdSysupdateRefineData *data = NULL;
 	g_autoptr(GTask) task = NULL;
@@ -1599,7 +1605,7 @@ gs_plugin_systemd_sysupdate_refine_async (GsPlugin            *plugin,
 	}
 
 	/* put apps in queue to task data */
-	data = gs_plugin_systemd_sysupdate_refine_data_new (g_steal_pointer (&queue), flags);
+	data = gs_plugin_systemd_sysupdate_refine_data_new (g_steal_pointer (&queue), job_flags, require_flags);
 	g_task_set_task_data (task, data, (GDestroyNotify)gs_plugin_systemd_sysupdate_refine_data_free);
 
 	/* invoke the first target */
@@ -1640,7 +1646,8 @@ gs_plugin_systemd_sysupdate_refine_iter (GObject      *source_object,
 
 	gs_plugin_systemd_sysupdate_refine_app_async (GS_PLUGIN (self),
 	                                              app,
-	                                              data->flags,
+	                                              data->job_flags,
+	                                              data->require_flags,
 	                                              cancellable,
 	                                              gs_plugin_systemd_sysupdate_refine_iter,
 	                                              g_steal_pointer (&task));
@@ -1655,12 +1662,13 @@ gs_plugin_systemd_sysupdate_refine_finish (GsPlugin      *plugin,
 }
 
 static void
-gs_plugin_systemd_sysupdate_refine_app_async (GsPlugin            *plugin,
-                                              GsApp               *app,
-                                              GsPluginRefineFlags  flags,
-                                              GCancellable        *cancellable,
-                                              GAsyncReadyCallback  callback,
-                                              gpointer             user_data)
+gs_plugin_systemd_sysupdate_refine_app_async (GsPlugin                   *plugin,
+                                              GsApp                      *app,
+                                              GsPluginRefineFlags         job_flags,
+                                              GsPluginRefineRequireFlags  require_flags,
+                                              GCancellable               *cancellable,
+                                              GAsyncReadyCallback         callback,
+                                              gpointer                    user_data)
 {
 	GsPluginSystemdSysupdateRefineAppData *data = NULL;
 	GsPluginSystemdSysupdate *self = GS_PLUGIN_SYSTEMD_SYSUPDATE (plugin);
@@ -2708,7 +2716,7 @@ gs_plugin_systemd_sysupdate_trigger_upgrade_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-void
+static void
 gs_plugin_systemd_sysupdate_adopt_app (GsPlugin *plugin,
                                        GsApp    *app)
 {

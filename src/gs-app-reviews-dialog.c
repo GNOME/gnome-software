@@ -371,10 +371,11 @@ gs_app_reviews_dialog_app_refine (GsAppReviewsDialog *self)
 	 * it's of no huge importance if we don't get the required data.
 	 */
 	plugin_job = gs_plugin_job_refine_new_for_app (self->app,
-						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
-						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE);
+						       GS_PLUGIN_REFINE_FLAGS_INTERACTIVE,
+						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING |
+						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEW_RATINGS |
+						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEWS |
+						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->refine_cancellable,
 					    gs_app_reviews_dialog_app_refine_cb,

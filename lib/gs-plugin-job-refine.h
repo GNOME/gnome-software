@@ -21,11 +21,13 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsPluginJobRefine, gs_plugin_job_refine, GS, PLUGIN_JOB_REFINE, GsPluginJob)
 
-GsPluginJob	*gs_plugin_job_refine_new_for_app	(GsApp               *app,
-							 GsPluginRefineFlags  flags);
-GsPluginJob	*gs_plugin_job_refine_new		(GsAppList           *app_list,
-							 GsPluginRefineFlags  flags);
+GsPluginJob	*gs_plugin_job_refine_new_for_app	(GsApp                      *app,
+							 GsPluginRefineFlags         job_flags,
+							 GsPluginRefineRequireFlags  require_flags);
+GsPluginJob	*gs_plugin_job_refine_new		(GsAppList                  *app_list,
+							 GsPluginRefineFlags         job_flags,
+							 GsPluginRefineRequireFlags  require_flags);
 
-GsAppList	*gs_plugin_job_refine_get_result_list	(GsPluginJobRefine   *self);
+GsAppList	*gs_plugin_job_refine_get_result_list	(GsPluginJobRefine     *self);
 
 G_END_DECLS

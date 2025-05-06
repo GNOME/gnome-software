@@ -110,11 +110,11 @@ gs_plugin_modalias_matches (GsPluginModalias *self,
 }
 
 static gboolean
-refine_app (GsPluginModalias     *self,
-	    GsApp                *app,
-	    GsPluginRefineFlags   flags,
-	    GCancellable         *cancellable,
-	    GError              **error)
+refine_app (GsPluginModalias            *self,
+            GsApp                       *app,
+            GsPluginRefineRequireFlags   require_flags,
+            GCancellable                *cancellable,
+            GError                     **error)
 {
 	GPtrArray *provided;
 	guint i;
@@ -147,12 +147,13 @@ refine_app (GsPluginModalias     *self,
 }
 
 static void
-gs_plugin_modalias_refine_async (GsPlugin            *plugin,
-                                 GsAppList           *list,
-                                 GsPluginRefineFlags  flags,
-                                 GCancellable        *cancellable,
-                                 GAsyncReadyCallback  callback,
-                                 gpointer             user_data)
+gs_plugin_modalias_refine_async (GsPlugin                   *plugin,
+                                 GsAppList                  *list,
+                                 GsPluginRefineFlags         job_flags,
+                                 GsPluginRefineRequireFlags  require_flags,
+                                 GCancellable               *cancellable,
+                                 GAsyncReadyCallback         callback,
+                                 gpointer                    user_data)
 {
 	GsPluginModalias *self = GS_PLUGIN_MODALIAS (plugin);
 	g_autoptr(GTask) task = NULL;
@@ -163,7 +164,7 @@ gs_plugin_modalias_refine_async (GsPlugin            *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (self, app, flags, cancellable, &local_error)) {
+		if (!refine_app (self, app, require_flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
