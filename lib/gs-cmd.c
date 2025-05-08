@@ -206,7 +206,7 @@ gs_cmd_install_remove_exec (GsCmdSelf *self, gboolean is_install, const gchar *n
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", self->require_flags,
 				  "max-results", self->max_results,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  "license-type", get_query_license_type (self),
 				  NULL);
@@ -404,7 +404,7 @@ main (int argc, char **argv)
 			query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
 						  "refine-require-flags", self->require_flags,
 						  "max-results", self->max_results,
-						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 						  "license-type", get_query_license_type (self),
 						  NULL);
 
@@ -428,7 +428,7 @@ main (int argc, char **argv)
 			query = gs_app_query_new ("keywords", keywords,
 						  "refine-require-flags", self->require_flags,
 						  "max-results", self->max_results,
-						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 						  "sort-func", gs_utils_app_sort_match_value,
 						  "license-type", get_query_license_type (self),
 						  NULL);
@@ -453,7 +453,7 @@ main (int argc, char **argv)
 			query = gs_app_query_new ("alternate-of", app,
 						  "refine-require-flags", self->require_flags,
 						  "max-results", self->max_results,
-						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 						  "sort-func", gs_utils_app_sort_priority,
 						  "license-type", get_query_license_type (self),
 						  NULL);

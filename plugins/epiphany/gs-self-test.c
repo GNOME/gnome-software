@@ -162,7 +162,7 @@ gs_plugins_epiphany_installed_func (GsPluginLoader *plugin_loader)
 
 	query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);

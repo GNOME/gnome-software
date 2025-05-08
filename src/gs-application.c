@@ -854,7 +854,7 @@ launch_activated (GSimpleAction *action,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION |
 							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_PERMISSIONS |
 							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  "license-type", gs_shell_get_query_license_type (self->shell),
 				  "developer-verified-type", gs_shell_get_query_developer_verified_type (self->shell),

@@ -103,6 +103,22 @@ typedef enum {
 	GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY,
 } GsAppQueryDeveloperVerifiedType;
 
+/**
+ * GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT:
+ *
+ * Common default value to use for #GsAppQuery:dedupe-flags.
+ *
+ * This is not set as the default for all #GsAppQuery instances, but is a
+ * typical value which callers might want to specify themselves.
+ *
+ * It deduplicates by ID, source and version.
+ *
+ * Since: 49
+ */
+#define GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT (GS_APP_LIST_FILTER_FLAG_KEY_ID | \
+					   GS_APP_LIST_FILTER_FLAG_KEY_SOURCE | \
+					   GS_APP_LIST_FILTER_FLAG_KEY_VERSION)
+
 #define GS_TYPE_APP_QUERY (gs_app_query_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsAppQuery, gs_app_query, GS, APP_QUERY, GObject)
