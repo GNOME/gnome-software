@@ -51,8 +51,6 @@ void		 gs_plugin_job_set_search		(GsPluginJob	*self,
 							 const gchar	*search);
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,
 							 GsApp		*app);
-void		 gs_plugin_job_set_list			(GsPluginJob	*self,
-							 GsAppList	*list);
 void		 gs_plugin_job_set_file			(GsPluginJob	*self,
 							 GFile		*file);
 

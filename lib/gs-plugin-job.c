@@ -24,7 +24,6 @@ typedef struct
 	guint			 max_results;
 	GsPluginAction		 action;
 	gchar			*search;
-	GsAppList		*list;
 	GFile			*file;
 	gint64			 time_created;
 	GCancellable		*cancellable;
@@ -37,7 +36,6 @@ enum {
 	PROP_REFINE_FLAGS,
 	PROP_REFINE_REQUIRE_FLAGS,
 	PROP_DEDUPE_FLAGS,
-	PROP_LIST,
 	PROP_FILE,
 	PROP_MAX_RESULTS,
 	PROP_PROPAGATE_ERROR,
@@ -91,17 +89,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (priv->file != NULL) {
 		g_autofree gchar *path = g_file_get_path (priv->file);
 		g_string_append_printf (str, " with file=%s", path);
-	}
-	if (priv->list != NULL && gs_app_list_length (priv->list) > 0) {
-		g_autofree const gchar **unique_ids = NULL;
-		g_autofree gchar *unique_ids_str = NULL;
-		unique_ids = g_new0 (const gchar *, gs_app_list_length (priv->list) + 1);
-		for (guint i = 0; i < gs_app_list_length (priv->list); i++) {
-			GsApp *app = gs_app_list_index (priv->list, i);
-			unique_ids[i] = gs_app_get_unique_id (app);
-		}
-		unique_ids_str = g_strjoinv (",", (gchar**) unique_ids);
-		g_string_append_printf (str, " on apps %s", unique_ids_str);
 	}
 	if (time_now - priv->time_created > 1000) {
 		g_string_append_printf (str, ", elapsed time since creation %" G_GINT64_FORMAT "ms",
@@ -254,10 +241,6 @@ gs_plugin_job_set_app (GsPluginJob *self, GsApp *app)
 		return;
 
 	g_object_set (G_OBJECT (self), "app", app, NULL);
-
-	/* ensure we can always operate on a list object */
-	if (priv->list != NULL && app != NULL && gs_app_list_length (priv->list) == 0)
-		gs_app_list_add (priv->list, app);
 }
 
 GsApp *
@@ -276,24 +259,6 @@ gs_plugin_job_get_app (GsPluginJob *self)
 	 * because gs_plugin_job_get_app() is (transfer none). The GsPluginJob
 	 * still holds one. */
 	return app;
-}
-
-void
-gs_plugin_job_set_list (GsPluginJob *self, GsAppList *list)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	if (list == NULL)
-		g_warning ("trying to set list to NULL, not a good idea");
-	g_set_object (&priv->list, list);
-}
-
-GsAppList *
-gs_plugin_job_get_list (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return priv->list;
 }
 
 void
@@ -334,9 +299,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_SEARCH:
 		g_value_set_string (value, priv->search);
 		break;
-	case PROP_LIST:
-		g_value_set_object (value, priv->list);
-		break;
 	case PROP_FILE:
 		g_value_set_object (value, priv->file);
 		break;
@@ -373,9 +335,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
 		break;
-	case PROP_LIST:
-		gs_plugin_job_set_list (self, g_value_get_object (value));
-		break;
 	case PROP_FILE:
 		gs_plugin_job_set_file (self, g_value_get_object (value));
 		break;
@@ -398,7 +357,6 @@ gs_plugin_job_finalize (GObject *obj)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 
 	g_free (priv->search);
-	g_clear_object (&priv->list);
 	g_clear_object (&priv->file);
 	g_clear_object (&priv->cancellable);
 
@@ -439,11 +397,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SEARCH, pspec);
 
-	pspec = g_param_spec_object ("list", NULL, NULL,
-				     GS_TYPE_APP_LIST,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_LIST, pspec);
-
 	pspec = g_param_spec_object ("file", NULL, NULL,
 				     G_TYPE_FILE,
 				     G_PARAM_READWRITE);
@@ -483,7 +436,6 @@ gs_plugin_job_init (GsPluginJob *self)
 	priv->dedupe_flags = GS_APP_LIST_FILTER_FLAG_KEY_ID |
 			     GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
 			     GS_APP_LIST_FILTER_FLAG_KEY_VERSION;
-	priv->list = gs_app_list_new ();
 	priv->time_created = g_get_monotonic_time ();
 }
 
