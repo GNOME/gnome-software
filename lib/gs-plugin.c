@@ -72,7 +72,8 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
 G_DEFINE_QUARK (gs-plugin-error-quark, gs_plugin_error)
 
 typedef enum {
-	PROP_SCALE = 1,
+	PROP_NAME = 1,
+	PROP_SCALE,
 	PROP_SESSION_BUS_CONNECTION,
 	PROP_SYSTEM_BUS_CONNECTION,
 } GsPluginProperty;
@@ -126,27 +127,6 @@ gs_plugin_status_to_string (GsPluginStatus status)
 }
 
 /**
- * gs_plugin_set_name:
- * @plugin: a #GsPlugin
- * @name: a plugin name
- *
- * Sets the name of the plugin.
- *
- * Plugins are not required to set the plugin name as it is automatically set
- * from the `.so` filename.
- *
- * Since: 3.26
- **/
-void
-gs_plugin_set_name (GsPlugin *plugin, const gchar *name)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	if (priv->name != NULL)
-		g_free (priv->name);
-	priv->name = g_strdup (name);
-}
-
-/**
  * gs_plugin_create:
  * @filename: an absolute filename
  * @session_bus_connection: (not nullable) (transfer none): a session bus
@@ -173,10 +153,11 @@ gs_plugin_create (const gchar      *filename,
 	GModule *module = NULL;
 	GType (*query_type_function) (void) = NULL;
 	GType plugin_type;
+	const char *library_prefix = "libgs_plugin_";
 
 	/* get the plugin name from the basename */
 	basename = g_path_get_basename (filename);
-	if (!g_str_has_prefix (basename, "libgs_plugin_")) {
+	if (!g_str_has_prefix (basename, library_prefix)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -212,11 +193,11 @@ gs_plugin_create (const gchar      *filename,
 	plugin = g_object_new (plugin_type,
 			       "session-bus-connection", session_bus_connection,
 			       "system-bus-connection", system_bus_connection,
+			       "name", basename + strlen (library_prefix),
 			       NULL);
 	priv = gs_plugin_get_instance_private (plugin);
 	priv->module = g_steal_pointer (&module);
 
-	gs_plugin_set_name (plugin, basename + 13);
 	return plugin;
 }
 
@@ -1607,6 +1588,11 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
 	switch ((GsPluginProperty) prop_id) {
+	case PROP_NAME:
+		/* Construct only */
+		g_assert (priv->name == NULL);
+		priv->name = g_value_dup_string (value);
+		break;
 	case PROP_SCALE:
 		gs_plugin_set_scale (plugin, g_value_get_uint (value));
 		break;
@@ -1633,6 +1619,9 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
 	switch ((GsPluginProperty) prop_id) {
+	case PROP_NAME:
+		g_value_set_string (value, priv->name);
+		break;
 	case PROP_SCALE:
 		g_value_set_uint (value, gs_plugin_get_scale (plugin));
 		break;
@@ -1658,6 +1647,24 @@ gs_plugin_class_init (GsPluginClass *klass)
 	object_class->get_property = gs_plugin_get_property;
 	object_class->dispose = gs_plugin_dispose;
 	object_class->finalize = gs_plugin_finalize;
+
+	/**
+	 * GsPlugin:name: (not nullable)
+	 *
+	 * Name of the plugin.
+	 *
+	 * This can be used to identify the plugin in log messages, for example.
+	 *
+	 * This must be set at construction time and will not be %NULL
+	 * afterwards. It is automatically set from the `.so` filename by
+	 * gs_plugin_create().
+	 *
+	 * Since: 49
+	 */
+	obj_props[PROP_NAME] =
+		g_param_spec_string ("name", NULL, NULL,
+				     NULL,
+				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPlugin:scale:
