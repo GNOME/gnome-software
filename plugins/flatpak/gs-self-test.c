@@ -95,7 +95,8 @@ gs_plugins_flatpak_repo_non_ascii_func (GsPluginLoader *plugin_loader)
 	ret = gs_flatpak_test_write_repo_file (fn, testdir, &file, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -139,7 +140,8 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 
 	/* load local file */
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -190,7 +192,8 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	/* try again, check state is correct */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	app2 = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -733,9 +736,9 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 
 	/* convert it to a GsApp */
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
-							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -860,9 +863,9 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 
 	/* convert it to a GsApp */
-	plugin_job = gs_plugin_job_file_to_app_new (file_repo, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
-							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
+	plugin_job = gs_plugin_job_file_to_app_new (file_repo, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app_src = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -894,9 +897,9 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
-							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1040,8 +1043,8 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
@@ -1200,8 +1203,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, require_flags);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE, require_flags);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
@@ -1269,9 +1271,9 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* convert it to a GsApp again, and get the installed thing */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
-							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app2 = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app2 != NULL);

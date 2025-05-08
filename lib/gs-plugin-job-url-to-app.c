@@ -276,7 +276,8 @@ finish_op (GTask  *task,
 		file_to_app_job = gs_plugin_job_file_to_app_new (file,
 								 (self->flags & GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE) != 0 ?
 								 GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE :
-								 GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+								 GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+								 GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 		gs_plugin_loader_job_process_async (plugin_loader, file_to_app_job, cancellable,
 						    file_to_app_job_finished_cb, g_object_ref (task));
 		return;

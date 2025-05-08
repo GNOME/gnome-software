@@ -35,7 +35,8 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	fn = gs_test_get_filename (TESTDATADIR, "chiron-0.2.cab");
 	g_assert_nonnull (fn);
 	file = g_file_new_for_path (fn);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);

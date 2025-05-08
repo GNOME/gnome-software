@@ -2112,8 +2112,8 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	g_clear_object (&self->app_local_file);
 	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE,
+						    GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_file_to_app_cb,
