@@ -19,7 +19,6 @@ typedef struct
 {
 	GsPluginRefineFlags	 refine_flags;
 	GsPluginRefineRequireFlags refine_require_flags;
-	gboolean		 propagate_error;
 	GsPluginAction		 action;
 	gint64			 time_created;
 	GCancellable		*cancellable;
@@ -30,7 +29,6 @@ enum {
 	PROP_ACTION,
 	PROP_REFINE_FLAGS,
 	PROP_REFINE_REQUIRE_FLAGS,
-	PROP_PROPAGATE_ERROR,
 	PROP_LAST
 };
 
@@ -67,8 +65,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_autofree gchar *tmp = gs_plugin_refine_require_flags_to_string (priv->refine_require_flags);
 		g_string_append_printf (str, " with refine-require-flags=%s", tmp);
 	}
-	if (priv->propagate_error)
-		g_string_append_printf (str, " with propagate-error=True");
 
 	if (time_now - priv->time_created > 1000) {
 		g_string_append_printf (str, ", elapsed time since creation %" G_GINT64_FORMAT "ms",
@@ -118,22 +114,6 @@ gs_plugin_job_get_interactive (GsPluginJob *self)
 	if (klass->get_interactive == NULL)
 		return FALSE;
 	return klass->get_interactive (self);
-}
-
-void
-gs_plugin_job_set_propagate_error (GsPluginJob *self, gboolean propagate_error)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->propagate_error = propagate_error;
-}
-
-gboolean
-gs_plugin_job_get_propagate_error (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
-	return priv->propagate_error;
 }
 
 void
@@ -207,9 +187,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_REFINE_REQUIRE_FLAGS:
 		g_value_set_flags (value, priv->refine_require_flags);
 		break;
-	case PROP_PROPAGATE_ERROR:
-		g_value_set_boolean (value, priv->propagate_error);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
 		break;
@@ -230,9 +207,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_REFINE_REQUIRE_FLAGS:
 		gs_plugin_job_set_refine_require_flags (self, g_value_get_flags (value));
-		break;
-	case PROP_PROPAGATE_ERROR:
-		gs_plugin_job_set_propagate_error (self, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
@@ -274,11 +248,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				    GS_TYPE_PLUGIN_REFINE_REQUIRE_FLAGS, GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE,
 				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFINE_REQUIRE_FLAGS, pspec);
-
-	pspec = g_param_spec_boolean ("propagate-error", NULL, NULL,
-				      FALSE,
-				      G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_PROPAGATE_ERROR, pspec);
 
 	/**
 	 * GsPluginJob::completed:

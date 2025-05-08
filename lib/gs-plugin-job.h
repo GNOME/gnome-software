@@ -41,8 +41,6 @@ void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
 							 GsPluginRefineFlags refine_flags);
 void		 gs_plugin_job_set_refine_require_flags		(GsPluginJob	*self,
 								 GsPluginRefineRequireFlags require_flags);
-void		 gs_plugin_job_set_propagate_error	(GsPluginJob	*self,
-							 gboolean	 propagate_error);
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,
 							 GsApp		*app);
 
