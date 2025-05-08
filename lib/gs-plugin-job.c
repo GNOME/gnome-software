@@ -17,7 +17,6 @@
 
 typedef struct
 {
-	GsPluginRefineFlags	 refine_flags;
 	GsPluginAction		 action;
 	gint64			 time_created;
 	GCancellable		*cancellable;
@@ -26,7 +25,6 @@ typedef struct
 enum {
 	PROP_0,
 	PROP_ACTION,
-	PROP_REFINE_FLAGS,
 	PROP_LAST
 };
 
@@ -55,32 +53,12 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		else
 			g_string_append_printf (str, "%s", job_type_name);
 	}
-	if (priv->refine_flags > 0) {
-		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (priv->refine_flags);
-		g_string_append_printf (str, " with refine-flags=%s", tmp);
-	}
 
 	if (time_now - priv->time_created > 1000) {
 		g_string_append_printf (str, ", elapsed time since creation %" G_GINT64_FORMAT "ms",
 					(time_now - priv->time_created) / 1000);
 	}
 	return g_string_free (str, FALSE);
-}
-
-void
-gs_plugin_job_set_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->refine_flags = refine_flags;
-}
-
-GsPluginRefineFlags
-gs_plugin_job_get_refine_flags (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_NONE);
-	return priv->refine_flags;
 }
 
 gboolean
@@ -159,9 +137,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_ACTION:
 		g_value_set_enum (value, priv->action);
 		break;
-	case PROP_REFINE_FLAGS:
-		g_value_set_flags (value, priv->refine_flags);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
 		break;
@@ -176,9 +151,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	switch (prop_id) {
 	case PROP_ACTION:
 		gs_plugin_job_set_action (self, g_value_get_enum (value));
-		break;
-	case PROP_REFINE_FLAGS:
-		gs_plugin_job_set_refine_flags (self, g_value_get_flags (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
@@ -211,11 +183,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				   G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_ACTION, pspec);
 
-	pspec = g_param_spec_flags ("refine-flags", NULL, NULL,
-				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_NONE,
-				    G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_REFINE_FLAGS, pspec);
-
 	/**
 	 * GsPluginJob::completed:
 	 *
@@ -235,7 +202,6 @@ gs_plugin_job_init (GsPluginJob *self)
 {
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 
-	priv->refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 	priv->time_created = g_get_monotonic_time ();
 }
 

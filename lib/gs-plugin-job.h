@@ -37,8 +37,6 @@ struct _GsPluginJobClass
 };
 
 gboolean	 gs_plugin_job_get_interactive		(GsPluginJob	*self);
-void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
-							 GsPluginRefineFlags refine_flags);
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,
 							 GsApp		*app);
 
