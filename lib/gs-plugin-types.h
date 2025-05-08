@@ -386,6 +386,9 @@ typedef enum {
  * GsPluginUrlToAppFlags:
  * @GS_PLUGIN_URL_TO_APP_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE: User initiated the job.
+ * @GS_PLUGIN_URL_TO_APP_FLAGS_ALLOW_PACKAGES: Allow unconverted generic
+ *   packages to be returned. This is equivalent to passing
+ *   %GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES to the internal refine job. (Since: 49)
  *
  * Flags for a url-to-app operation.
  *
@@ -394,6 +397,7 @@ typedef enum {
 typedef enum {
 	GS_PLUGIN_URL_TO_APP_FLAGS_NONE	= 0,
 	GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE	= 1 << 0,
+	GS_PLUGIN_URL_TO_APP_FLAGS_ALLOW_PACKAGES = 1 << 1,
 } GsPluginUrlToAppFlags;
 
 /**

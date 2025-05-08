@@ -2128,9 +2128,10 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	g_clear_object (&self->app_local_file);
 	_set_app (self, NULL);
 	self->origin_by_packaging_format = FALSE;
-	plugin_job = gs_plugin_job_url_to_app_new (url, GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE,
+	plugin_job = gs_plugin_job_url_to_app_new (url,
+						   GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE |
+						   GS_PLUGIN_URL_TO_APP_FLAGS_ALLOW_PACKAGES,
 						   GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_url_to_app_cb,

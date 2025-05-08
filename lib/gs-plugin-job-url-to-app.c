@@ -423,9 +423,14 @@ static gboolean
 gs_plugin_job_url_to_app_is_valid_filter (GsApp *app,
 					  gpointer user_data)
 {
-	GsPluginJob *plugin_job = user_data;
+	GsPluginJobUrlToApp *self = GS_PLUGIN_JOB_URL_TO_APP (user_data);
+	GsPluginRefineFlags refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 
-	return gs_plugin_loader_app_is_valid (app, gs_plugin_job_get_refine_flags (plugin_job));
+	/* Include unconverted plain packages in the results? */
+	if (self->flags & GS_PLUGIN_URL_TO_APP_FLAGS_ALLOW_PACKAGES)
+		refine_flags |= GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES;
+
+	return gs_plugin_loader_app_is_valid (app, refine_flags);
 }
 
 static gboolean
