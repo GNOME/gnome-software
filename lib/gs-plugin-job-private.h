@@ -19,7 +19,6 @@ GsAppListFilterFlags	 gs_plugin_job_get_dedupe_flags		(GsPluginJob	*self);
 GsPluginRefineFlags	 gs_plugin_job_get_refine_flags		(GsPluginJob	*self);
 GsPluginRefineRequireFlags	 gs_plugin_job_get_refine_require_flags	(GsPluginJob	*self);
 gboolean		 gs_plugin_job_get_propagate_error	(GsPluginJob	*self);
-const gchar		*gs_plugin_job_get_search		(GsPluginJob	*self);
 GsApp			*gs_plugin_job_get_app			(GsPluginJob	*self);
 gchar			*gs_plugin_job_to_string		(GsPluginJob	*self);
 void			 gs_plugin_job_set_action		(GsPluginJob	*self,

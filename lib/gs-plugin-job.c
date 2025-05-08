@@ -22,7 +22,6 @@ typedef struct
 	GsAppListFilterFlags	 dedupe_flags;
 	gboolean		 propagate_error;
 	GsPluginAction		 action;
-	gchar			*search;
 	gint64			 time_created;
 	GCancellable		*cancellable;
 } GsPluginJobPrivate;
@@ -30,7 +29,6 @@ typedef struct
 enum {
 	PROP_0,
 	PROP_ACTION,
-	PROP_SEARCH,
 	PROP_REFINE_FLAGS,
 	PROP_REFINE_REQUIRE_FLAGS,
 	PROP_DEDUPE_FLAGS,
@@ -76,10 +74,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (priv->propagate_error)
 		g_string_append_printf (str, " with propagate-error=True");
 
-	if (priv->search != NULL) {
-		g_string_append_printf (str, " with search=%s",
-					priv->search);
-	}
 	if (time_now - priv->time_created > 1000) {
 		g_string_append_printf (str, ", elapsed time since creation %" G_GINT64_FORMAT "ms",
 					(time_now - priv->time_created) / 1000);
@@ -178,23 +172,6 @@ gs_plugin_job_get_action (GsPluginJob *self)
 	return priv->action;
 }
 
-void
-gs_plugin_job_set_search (GsPluginJob *self, const gchar *search)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_free (priv->search);
-	priv->search = g_strdup (search);
-}
-
-const gchar *
-gs_plugin_job_get_search (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return priv->search;
-}
-
 /* FIXME: Find the :app property of the derived class. This will be removed
  * when the remains of the old threading API are removed. */
 static gboolean
@@ -253,9 +230,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_DEDUPE_FLAGS:
 		g_value_set_flags (value, priv->dedupe_flags);
 		break;
-	case PROP_SEARCH:
-		g_value_set_string (value, priv->search);
-		break;
 	case PROP_PROPAGATE_ERROR:
 		g_value_set_boolean (value, priv->propagate_error);
 		break;
@@ -283,9 +257,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_DEDUPE_FLAGS:
 		gs_plugin_job_set_dedupe_flags (self, g_value_get_flags (value));
 		break;
-	case PROP_SEARCH:
-		gs_plugin_job_set_search (self, g_value_get_string (value));
-		break;
 	case PROP_PROPAGATE_ERROR:
 		gs_plugin_job_set_propagate_error (self, g_value_get_boolean (value));
 		break;
@@ -301,7 +272,6 @@ gs_plugin_job_finalize (GObject *obj)
 	GsPluginJob *self = GS_PLUGIN_JOB (obj);
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 
-	g_free (priv->search);
 	g_clear_object (&priv->cancellable);
 
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
@@ -335,11 +305,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				    GS_TYPE_APP_LIST_FILTER_FLAGS, GS_APP_LIST_FILTER_FLAG_NONE,
 				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_DEDUPE_FLAGS, pspec);
-
-	pspec = g_param_spec_string ("search", NULL, NULL,
-				     NULL,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_SEARCH, pspec);
 
 	pspec = g_param_spec_boolean ("propagate-error", NULL, NULL,
 				      FALSE,
