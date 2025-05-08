@@ -22,7 +22,6 @@ typedef struct
 	GsAppListFilterFlags	 dedupe_flags;
 	gboolean		 propagate_error;
 	guint			 max_results;
-	GsPlugin		*plugin;
 	GsPluginAction		 action;
 	gchar			*search;
 	GsAppList		*list;
@@ -69,10 +68,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 			g_string_append_printf (str, "%s job", job_type_name + strlen ("GsPluginJob"));
 		else
 			g_string_append_printf (str, "%s", job_type_name);
-	}
-	if (priv->plugin != NULL) {
-		g_string_append_printf (str, " on plugin=%s",
-					gs_plugin_get_name (priv->plugin));
 	}
 	if (priv->dedupe_flags > 0)
 		g_string_append_printf (str, " with dedupe-flags=%" G_GUINT64_FORMAT, priv->dedupe_flags);
@@ -317,22 +312,6 @@ gs_plugin_job_get_file (GsPluginJob *self)
 	return priv->file;
 }
 
-void
-gs_plugin_job_set_plugin (GsPluginJob *self, GsPlugin *plugin)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&priv->plugin, plugin);
-}
-
-GsPlugin *
-gs_plugin_job_get_plugin (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return priv->plugin;
-}
-
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -421,7 +400,6 @@ gs_plugin_job_finalize (GObject *obj)
 	g_free (priv->search);
 	g_clear_object (&priv->list);
 	g_clear_object (&priv->file);
-	g_clear_object (&priv->plugin);
 	g_clear_object (&priv->cancellable);
 
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);

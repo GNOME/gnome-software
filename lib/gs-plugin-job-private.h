@@ -24,7 +24,6 @@ const gchar		*gs_plugin_job_get_search		(GsPluginJob	*self);
 GsApp			*gs_plugin_job_get_app			(GsPluginJob	*self);
 GsAppList		*gs_plugin_job_get_list			(GsPluginJob	*self);
 GFile			*gs_plugin_job_get_file			(GsPluginJob	*self);
-GsPlugin		*gs_plugin_job_get_plugin		(GsPluginJob	*self);
 gchar			*gs_plugin_job_to_string		(GsPluginJob	*self);
 void			 gs_plugin_job_set_action		(GsPluginJob	*self,
 								 GsPluginAction	 action);

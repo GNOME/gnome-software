@@ -55,8 +55,6 @@ void		 gs_plugin_job_set_list			(GsPluginJob	*self,
 							 GsAppList	*list);
 void		 gs_plugin_job_set_file			(GsPluginJob	*self,
 							 GFile		*file);
-void		 gs_plugin_job_set_plugin		(GsPluginJob	*self,
-							 GsPlugin	*plugin);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 
