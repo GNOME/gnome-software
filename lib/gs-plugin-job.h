@@ -51,8 +51,6 @@ void		 gs_plugin_job_set_search		(GsPluginJob	*self,
 							 const gchar	*search);
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,
 							 GsApp		*app);
-void		 gs_plugin_job_set_file			(GsPluginJob	*self,
-							 GFile		*file);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 

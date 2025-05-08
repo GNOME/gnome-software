@@ -24,7 +24,6 @@ typedef struct
 	guint			 max_results;
 	GsPluginAction		 action;
 	gchar			*search;
-	GFile			*file;
 	gint64			 time_created;
 	GCancellable		*cancellable;
 } GsPluginJobPrivate;
@@ -36,7 +35,6 @@ enum {
 	PROP_REFINE_FLAGS,
 	PROP_REFINE_REQUIRE_FLAGS,
 	PROP_DEDUPE_FLAGS,
-	PROP_FILE,
 	PROP_MAX_RESULTS,
 	PROP_PROPAGATE_ERROR,
 	PROP_LAST
@@ -85,10 +83,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (priv->search != NULL) {
 		g_string_append_printf (str, " with search=%s",
 					priv->search);
-	}
-	if (priv->file != NULL) {
-		g_autofree gchar *path = g_file_get_path (priv->file);
-		g_string_append_printf (str, " with file=%s", path);
 	}
 	if (time_now - priv->time_created > 1000) {
 		g_string_append_printf (str, ", elapsed time since creation %" G_GINT64_FORMAT "ms",
@@ -234,7 +228,6 @@ gs_plugin_job_subclass_has_app_property (GsPluginJob *self)
 void
 gs_plugin_job_set_app (GsPluginJob *self, GsApp *app)
 {
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
 
 	if (!gs_plugin_job_subclass_has_app_property (self))
@@ -261,22 +254,6 @@ gs_plugin_job_get_app (GsPluginJob *self)
 	return app;
 }
 
-void
-gs_plugin_job_set_file (GsPluginJob *self, GFile *file)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&priv->file, file);
-}
-
-GFile *
-gs_plugin_job_get_file (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return priv->file;
-}
-
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -298,9 +275,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_SEARCH:
 		g_value_set_string (value, priv->search);
-		break;
-	case PROP_FILE:
-		g_value_set_object (value, priv->file);
 		break;
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, priv->max_results);
@@ -335,9 +309,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
 		break;
-	case PROP_FILE:
-		gs_plugin_job_set_file (self, g_value_get_object (value));
-		break;
 	case PROP_MAX_RESULTS:
 		gs_plugin_job_set_max_results (self, g_value_get_uint (value));
 		break;
@@ -357,7 +328,6 @@ gs_plugin_job_finalize (GObject *obj)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 
 	g_free (priv->search);
-	g_clear_object (&priv->file);
 	g_clear_object (&priv->cancellable);
 
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
@@ -396,11 +366,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     NULL,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SEARCH, pspec);
-
-	pspec = g_param_spec_object ("file", NULL, NULL,
-				     G_TYPE_FILE,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_FILE, pspec);
 
 	pspec = g_param_spec_uint ("max-results", NULL, NULL,
 				   0, G_MAXUINT, 0,

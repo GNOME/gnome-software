@@ -22,7 +22,6 @@ gboolean		 gs_plugin_job_get_propagate_error	(GsPluginJob	*self);
 guint			 gs_plugin_job_get_max_results		(GsPluginJob	*self);
 const gchar		*gs_plugin_job_get_search		(GsPluginJob	*self);
 GsApp			*gs_plugin_job_get_app			(GsPluginJob	*self);
-GFile			*gs_plugin_job_get_file			(GsPluginJob	*self);
 gchar			*gs_plugin_job_to_string		(GsPluginJob	*self);
 void			 gs_plugin_job_set_action		(GsPluginJob	*self,
 								 GsPluginAction	 action);
