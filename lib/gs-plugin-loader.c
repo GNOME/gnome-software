@@ -2949,25 +2949,6 @@ job_process_cb (GTask *task)
 /******************************************************************************/
 
 /**
- * gs_plugin_loader_get_plugin_supported:
- * @plugin_loader: A #GsPluginLoader
- * @function_name: a function name
- *
- * This function returns TRUE if the symbol is found in any enabled plugin.
- */
-gboolean
-gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
-				       const gchar *function_name)
-{
-	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
-		if (gs_plugin_get_symbol (plugin, function_name) != NULL)
-			return TRUE;
-	}
-	return FALSE;
-}
-
-/**
  * gs_plugin_loader_get_plugins:
  * @plugin_loader: a #GsPluginLoader
  *

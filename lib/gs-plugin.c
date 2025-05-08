@@ -261,42 +261,6 @@ gs_plugin_finalize (GObject *object)
 }
 
 /**
- * gs_plugin_get_symbol: (skip)
- * @plugin: a #GsPlugin
- * @function_name: a symbol name
- *
- * Gets the symbol from the module that backs the plugin. If the plugin is not
- * enabled then no symbol is returned.
- *
- * Returns: the pointer to the symbol, or %NULL
- *
- * Since: 3.22
- **/
-gpointer
-gs_plugin_get_symbol (GsPlugin *plugin, const gchar *function_name)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	gpointer func = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->vfuncs_mutex);
-
-	g_return_val_if_fail (function_name != NULL, NULL);
-
-	/* disabled plugins shouldn't be checked */
-	if (!priv->enabled)
-		return NULL;
-
-	/* look up the symbol from the cache */
-	if (g_hash_table_lookup_extended (priv->vfuncs, function_name, NULL, &func))
-		return func;
-
-	/* look up the symbol using the elf headers */
-	g_module_symbol (priv->module, function_name, &func);
-	g_hash_table_insert (priv->vfuncs, g_strdup (function_name), func);
-
-	return func;
-}
-
-/**
  * gs_plugin_get_enabled:
  * @plugin: a #GsPlugin
  *
