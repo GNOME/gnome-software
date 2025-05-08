@@ -41,7 +41,7 @@ typedef enum {
 
 static guint signals[SIGNAL_LAST] = { 0 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsPluginJob, gs_plugin_job, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPluginJob, gs_plugin_job, G_TYPE_OBJECT)
 
 gchar *
 gs_plugin_job_to_string (GsPluginJob *self)
