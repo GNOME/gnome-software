@@ -486,8 +486,8 @@ gs_plugins_dummy_url_to_app_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	plugin_job = gs_plugin_job_url_to_app_new ("dummy://chiron.desktop", GS_PLUGIN_URL_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON);
+	plugin_job = gs_plugin_job_url_to_app_new ("dummy://chiron.desktop", GS_PLUGIN_URL_TO_APP_FLAGS_NONE,
+						   GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);

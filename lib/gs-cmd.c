@@ -525,8 +525,8 @@ main (int argc, char **argv)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_url_to_app_new (argv[2],
 							   self->interactive ? GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE :
-							   GS_PLUGIN_URL_TO_APP_FLAGS_NONE);
-		gs_plugin_job_set_refine_require_flags (plugin_job, self->require_flags);
+							   GS_PLUGIN_URL_TO_APP_FLAGS_NONE,
+							   self->require_flags);
 		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (app == NULL) {
