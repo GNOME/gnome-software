@@ -2921,8 +2921,6 @@ job_process_cb (GTask *task)
 	g_task_set_task_data (task, GSIZE_TO_POINTER (begin_time_nsec), NULL);
 #endif
 
-	gs_plugin_job_set_cancellable (plugin_job, cancellable);
-
 	/* these change the pending count on the installed panel */
 	if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job))
 		gs_plugin_loader_pending_apps_add (plugin_loader, plugin_job);
