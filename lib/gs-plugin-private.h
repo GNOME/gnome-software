@@ -37,8 +37,6 @@ void		 gs_plugin_set_name			(GsPlugin	*plugin,
 							 const gchar	*name);
 void		 gs_plugin_set_language			(GsPlugin	*plugin,
 							 const gchar	*language);
-void		 gs_plugin_set_auth_array		(GsPlugin	*plugin,
-							 GPtrArray	*auth_array);
 GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,
 							 GsPluginRule	 rule);
 gchar		*gs_plugin_refine_flags_to_string	(GsPluginRefineFlags refine_flags);
