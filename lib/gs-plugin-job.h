@@ -46,6 +46,4 @@ void		 gs_plugin_job_set_propagate_error	(GsPluginJob	*self,
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,
 							 GsApp		*app);
 
-#define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
-
 G_END_DECLS
