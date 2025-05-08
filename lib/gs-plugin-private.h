@@ -16,8 +16,6 @@
 
 G_BEGIN_DECLS
 
-GsPlugin	*gs_plugin_new				(GDBusConnection *session_bus_connection,
-							 GDBusConnection *system_bus_connection);
 GsPlugin	*gs_plugin_create			(const gchar	*filename,
 							 GDBusConnection *session_bus_connection,
 							 GDBusConnection *system_bus_connection,

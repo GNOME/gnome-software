@@ -1784,32 +1784,6 @@ gs_plugin_init (GsPlugin *plugin)
 	g_mutex_init (&priv->vfuncs_mutex);
 }
 
-/**
- * gs_plugin_new:
- * @session_bus_connection: (not nullable) (transfer none): a session bus
- *   connection to use
- * @system_bus_connection: (not nullable) (transfer none): a system bus
- *   connection to use
- *
- * Creates a new plugin.
- *
- * Returns: a #GsPlugin
- *
- * Since: 43
- **/
-GsPlugin *
-gs_plugin_new (GDBusConnection *session_bus_connection,
-               GDBusConnection *system_bus_connection)
-{
-	g_return_val_if_fail (G_IS_DBUS_CONNECTION (session_bus_connection), NULL);
-	g_return_val_if_fail (G_IS_DBUS_CONNECTION (system_bus_connection), NULL);
-
-	return g_object_new (GS_TYPE_PLUGIN,
-			     "session-bus-connection", session_bus_connection,
-			     "system-bus-connection", system_bus_connection,
-			     NULL);
-}
-
 typedef struct {
 	GWeakRef  plugin_weak;  /* (owned) (element-type GsPlugin) */
 	GsApp	 *repository;  /* (owned) */
