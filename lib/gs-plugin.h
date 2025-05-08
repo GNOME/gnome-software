@@ -373,9 +373,6 @@ GQuark		 gs_plugin_error_quark			(void);
 
 /* public getters and setters */
 const gchar	*gs_plugin_get_name			(GsPlugin	*plugin);
-const gchar	*gs_plugin_get_appstream_id		(GsPlugin	*plugin);
-void		 gs_plugin_set_appstream_id		(GsPlugin	*plugin,
-							 const gchar	*appstream_id);
 gboolean	 gs_plugin_get_enabled			(GsPlugin	*plugin);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);

@@ -345,9 +345,6 @@ gs_plugin_epiphany_init (GsPluginEpiphany *self)
 	gs_app_permissions_set_flags (self->permissions, GS_APP_PERMISSIONS_FLAGS_NETWORK);
 	gs_app_permissions_seal (self->permissions);
 
-	/* set name of MetaInfo file */
-	gs_plugin_set_appstream_id (GS_PLUGIN (self), "org.gnome.Software.Plugin.Epiphany");
-
 	/* need help from appstream */
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 
