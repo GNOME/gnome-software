@@ -45,8 +45,6 @@ void		 gs_plugin_job_set_dedupe_flags		(GsPluginJob	*self,
 							 GsAppListFilterFlags dedupe_flags);
 void		 gs_plugin_job_set_propagate_error	(GsPluginJob	*self,
 							 gboolean	 propagate_error);
-void		 gs_plugin_job_set_max_results		(GsPluginJob	*self,
-							 guint		 max_results);
 void		 gs_plugin_job_set_search		(GsPluginJob	*self,
 							 const gchar	*search);
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,

@@ -21,7 +21,6 @@ typedef struct
 	GsPluginRefineRequireFlags refine_require_flags;
 	GsAppListFilterFlags	 dedupe_flags;
 	gboolean		 propagate_error;
-	guint			 max_results;
 	GsPluginAction		 action;
 	gchar			*search;
 	gint64			 time_created;
@@ -35,7 +34,6 @@ enum {
 	PROP_REFINE_FLAGS,
 	PROP_REFINE_REQUIRE_FLAGS,
 	PROP_DEDUPE_FLAGS,
-	PROP_MAX_RESULTS,
 	PROP_PROPAGATE_ERROR,
 	PROP_LAST
 };
@@ -78,8 +76,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (priv->propagate_error)
 		g_string_append_printf (str, " with propagate-error=True");
 
-	if (priv->max_results > 0)
-		g_string_append_printf (str, " with max-results=%u", priv->max_results);
 	if (priv->search != NULL) {
 		g_string_append_printf (str, " with search=%s",
 					priv->search);
@@ -164,22 +160,6 @@ gs_plugin_job_get_propagate_error (GsPluginJob *self)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
 	return priv->propagate_error;
-}
-
-void
-gs_plugin_job_set_max_results (GsPluginJob *self, guint max_results)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->max_results = max_results;
-}
-
-guint
-gs_plugin_job_get_max_results (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return priv->max_results;
 }
 
 void
@@ -276,9 +256,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_SEARCH:
 		g_value_set_string (value, priv->search);
 		break;
-	case PROP_MAX_RESULTS:
-		g_value_set_uint (value, priv->max_results);
-		break;
 	case PROP_PROPAGATE_ERROR:
 		g_value_set_boolean (value, priv->propagate_error);
 		break;
@@ -308,9 +285,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
-		break;
-	case PROP_MAX_RESULTS:
-		gs_plugin_job_set_max_results (self, g_value_get_uint (value));
 		break;
 	case PROP_PROPAGATE_ERROR:
 		gs_plugin_job_set_propagate_error (self, g_value_get_boolean (value));
@@ -366,11 +340,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     NULL,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SEARCH, pspec);
-
-	pspec = g_param_spec_uint ("max-results", NULL, NULL,
-				   0, G_MAXUINT, 0,
-				   G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_MAX_RESULTS, pspec);
 
 	pspec = g_param_spec_boolean ("propagate-error", NULL, NULL,
 				      FALSE,
