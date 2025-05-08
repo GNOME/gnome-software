@@ -19,7 +19,6 @@ typedef struct
 {
 	GsPluginRefineFlags	 refine_flags;
 	GsPluginRefineRequireFlags refine_require_flags;
-	GsAppListFilterFlags	 dedupe_flags;
 	gboolean		 propagate_error;
 	GsPluginAction		 action;
 	gint64			 time_created;
@@ -31,7 +30,6 @@ enum {
 	PROP_ACTION,
 	PROP_REFINE_FLAGS,
 	PROP_REFINE_REQUIRE_FLAGS,
-	PROP_DEDUPE_FLAGS,
 	PROP_PROPAGATE_ERROR,
 	PROP_LAST
 };
@@ -61,8 +59,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		else
 			g_string_append_printf (str, "%s", job_type_name);
 	}
-	if (priv->dedupe_flags > 0)
-		g_string_append_printf (str, " with dedupe-flags=%" G_GUINT64_FORMAT, priv->dedupe_flags);
 	if (priv->refine_flags > 0) {
 		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (priv->refine_flags);
 		g_string_append_printf (str, " with refine-flags=%s", tmp);
@@ -97,14 +93,6 @@ gs_plugin_job_set_refine_require_flags (GsPluginJob *self, GsPluginRefineRequire
 	priv->refine_require_flags = refine_require_flags;
 }
 
-void
-gs_plugin_job_set_dedupe_flags (GsPluginJob *self, GsAppListFilterFlags dedupe_flags)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->dedupe_flags = dedupe_flags;
-}
-
 GsPluginRefineFlags
 gs_plugin_job_get_refine_flags (GsPluginJob *self)
 {
@@ -119,14 +107,6 @@ gs_plugin_job_get_refine_require_flags (GsPluginJob *self)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	return priv->refine_require_flags;
-}
-
-GsAppListFilterFlags
-gs_plugin_job_get_dedupe_flags (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_APP_LIST_FILTER_FLAG_NONE);
-	return priv->dedupe_flags;
 }
 
 gboolean
@@ -227,9 +207,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_REFINE_REQUIRE_FLAGS:
 		g_value_set_flags (value, priv->refine_require_flags);
 		break;
-	case PROP_DEDUPE_FLAGS:
-		g_value_set_flags (value, priv->dedupe_flags);
-		break;
 	case PROP_PROPAGATE_ERROR:
 		g_value_set_boolean (value, priv->propagate_error);
 		break;
@@ -253,9 +230,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_REFINE_REQUIRE_FLAGS:
 		gs_plugin_job_set_refine_require_flags (self, g_value_get_flags (value));
-		break;
-	case PROP_DEDUPE_FLAGS:
-		gs_plugin_job_set_dedupe_flags (self, g_value_get_flags (value));
 		break;
 	case PROP_PROPAGATE_ERROR:
 		gs_plugin_job_set_propagate_error (self, g_value_get_boolean (value));
@@ -301,11 +275,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFINE_REQUIRE_FLAGS, pspec);
 
-	pspec = g_param_spec_flags ("dedupe-flags", NULL, NULL,
-				    GS_TYPE_APP_LIST_FILTER_FLAGS, GS_APP_LIST_FILTER_FLAG_NONE,
-				    G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_DEDUPE_FLAGS, pspec);
-
 	pspec = g_param_spec_boolean ("propagate-error", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE);
@@ -332,9 +301,6 @@ gs_plugin_job_init (GsPluginJob *self)
 
 	priv->refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 	priv->refine_require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE;
-	priv->dedupe_flags = GS_APP_LIST_FILTER_FLAG_KEY_ID |
-			     GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
-			     GS_APP_LIST_FILTER_FLAG_KEY_VERSION;
 	priv->time_created = g_get_monotonic_time ();
 }
 
