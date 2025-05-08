@@ -234,6 +234,65 @@ gs_plugin_job_set_cancellable (GsPluginJob *self,
 }
 
 /**
+ * gs_plugin_job_run_async:
+ * @self: a #GsPluginJob
+ * @plugin_loader: plugin loader to provide the plugins to run the job against
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: callback to call once the job is finished
+ * @user_data: data to pass to @callback
+ *
+ * Asynchronously run the job.
+ *
+ * Since: 49
+ */
+void
+gs_plugin_job_run_async (GsPluginJob         *self,
+                         GsPluginLoader      *plugin_loader,
+                         GCancellable        *cancellable,
+                         GAsyncReadyCallback  callback,
+                         gpointer             user_data)
+{
+	GsPluginJobClass *job_class;
+
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	job_class = GS_PLUGIN_JOB_GET_CLASS (self);
+	g_assert (job_class->run_async != NULL);
+
+	job_class->run_async (self, plugin_loader, cancellable, callback, user_data);
+}
+
+/**
+ * gs_plugin_job_run_finish:
+ * @self: a #GsPluginJob
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish an asynchronous plugin job started with gs_plugin_job_run_async().
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ * Since: 49
+ */
+gboolean
+gs_plugin_job_run_finish (GsPluginJob   *self,
+                          GAsyncResult  *result,
+                          GError       **error)
+{
+	GsPluginJobClass *job_class;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
+	g_return_val_if_fail (G_IS_ASYNC_RESULT (result), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	job_class = GS_PLUGIN_JOB_GET_CLASS (self);
+	g_assert (job_class->run_finish != NULL);
+
+	return job_class->run_finish (self, result, error);
+}
+
+/**
  * gs_plugin_job_cancel:
  * @self: a #GsPluginJob
  *

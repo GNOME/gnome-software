@@ -2707,7 +2707,6 @@ run_job_cb (GObject      *source_object,
             gpointer      user_data)
 {
 	GsPluginJob *plugin_job = GS_PLUGIN_JOB (source_object);
-	GsPluginJobClass *job_class;
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (g_task_get_source_object (task));
 	g_autoptr(GError) local_error = NULL;
@@ -2719,11 +2718,7 @@ run_job_cb (GObject      *source_object,
 
 	/* FIXME: This will eventually go away when
 	 * gs_plugin_loader_job_process_finish() is removed. */
-	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
-
-	g_assert (job_class->run_finish != NULL);
-
-	if (!job_class->run_finish (plugin_job, result, &local_error)) {
+	if (!gs_plugin_job_run_finish (plugin_job, result, &local_error)) {
 		if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job) ||
 		    GS_IS_PLUGIN_JOB_UNINSTALL_APPS (plugin_job))
 			gs_plugin_loader_pending_apps_remove (plugin_loader, plugin_job);
@@ -2920,7 +2915,6 @@ job_process_cb (GTask *task)
 	g_autoptr(GsPluginJob) plugin_job = g_object_ref (g_task_get_task_data (task));
 	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
-	GsPluginJobClass *job_class;
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 
@@ -2928,9 +2922,6 @@ job_process_cb (GTask *task)
 #endif
 
 	gs_plugin_job_set_cancellable (plugin_job, cancellable);
-
-	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
-	g_assert (job_class->run_async != NULL);
 
 	/* these change the pending count on the installed panel */
 	if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job))
@@ -2942,8 +2933,8 @@ job_process_cb (GTask *task)
 		}
 	}
 
-	job_class->run_async (plugin_job, plugin_loader, cancellable,
-			      run_job_cb, g_object_ref (task));
+	gs_plugin_job_run_async (plugin_job, plugin_loader, cancellable,
+				 run_job_cb, g_object_ref (task));
 }
 
 /******************************************************************************/
