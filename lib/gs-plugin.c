@@ -1488,38 +1488,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 }
 
 /**
- * gs_plugin_action_from_string:
- * @action: a #GsPluginAction, e.g. "install"
- *
- * Converts the string to an enumerated action.
- *
- * Returns: a #GsPluginAction.
- *
- * Since: 3.26
- **/
-GsPluginAction
-gs_plugin_action_from_string (const gchar *action)
-{
-	if (g_strcmp0 (action, "upgrade-download") == 0)
-		return GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD;
-	if (g_strcmp0 (action, "launch") == 0)
-		return GS_PLUGIN_ACTION_LAUNCH;
-	if (g_strcmp0 (action, "file-to-app") == 0)
-		return GS_PLUGIN_ACTION_FILE_TO_APP;
-	if (g_strcmp0 (action, "url-to-app") == 0)
-		return GS_PLUGIN_ACTION_URL_TO_APP;
-	if (g_strcmp0 (action, "repo-install") == 0)
-		return GS_PLUGIN_ACTION_INSTALL_REPO;
-	if (g_strcmp0 (action, "repo-remove") == 0)
-		return GS_PLUGIN_ACTION_REMOVE_REPO;
-	if (g_strcmp0 (action, "repo-enable") == 0)
-		return GS_PLUGIN_ACTION_ENABLE_REPO;
-	if (g_strcmp0 (action, "repo-disable") == 0)
-		return GS_PLUGIN_ACTION_DISABLE_REPO;
-	return GS_PLUGIN_ACTION_UNKNOWN;
-}
-
-/**
  * gs_plugin_refine_flags_to_string:
  * @refine_flags: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_INTERACTIVE
  *

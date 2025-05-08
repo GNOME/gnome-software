@@ -228,7 +228,6 @@ gs_plugin_func (void)
 				continue;
 			g_critical ("failed to convert %u", i);
 		}
-		g_assert_cmpint (gs_plugin_action_from_string (tmp), ==, i);
 	}
 
 	/* add a couple of duplicate IDs */
