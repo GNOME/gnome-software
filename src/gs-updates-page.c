@@ -582,7 +582,7 @@ gs_updates_page_refine_system_finished_cb (GObject *source_object,
 	g_autoptr(GError) error = NULL;
 
 	/* get result */
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("Failed to refine system: %s", error->message);
@@ -751,7 +751,7 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 	g_autoptr(GError) error = NULL;
 
 	/* get the results */
-	ret = gs_plugin_loader_job_action_finish (plugin_loader, res, &error);
+	ret = gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error);
 	if (!ret) {
 		g_autofree gchar *escaped_text = NULL;
 		/* user cancel */
@@ -893,7 +893,7 @@ upgrade_download_finished_cb (GObject *source,
 
 	g_clear_object (&helper->self->cancellable_upgrade);
 
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
@@ -944,7 +944,7 @@ _cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_dat
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_job_action_finish (self->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (self->plugin_loader, res, NULL, &error)) {
 		g_warning ("failed to cancel trigger: %s", error->message);
 		return;
 	}
@@ -994,7 +994,7 @@ upgrade_trigger_finished_cb (GObject *source,
 	g_clear_object (&self->cancellable_upgrade);
 
 	/* get the results */
-	if (!gs_plugin_loader_job_action_finish (self->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (self->plugin_loader, res, NULL, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}

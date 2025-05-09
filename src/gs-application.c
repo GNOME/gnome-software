@@ -282,7 +282,7 @@ cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data
 {
 	GsApplication *app = GS_APPLICATION (user_data);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_job_action_finish (app->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (app->plugin_loader, res, NULL, &error)) {
 		g_warning ("failed to cancel trigger: %s", error->message);
 		return;
 	}
@@ -402,7 +402,7 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 		   GsApplication *app)
 {
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}

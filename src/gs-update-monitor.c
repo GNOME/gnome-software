@@ -903,7 +903,7 @@ refresh_cache_finished_cb (GObject *object,
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to refresh the cache: %s", error->message);
@@ -921,7 +921,7 @@ install_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(WithAppData) with_app_data = data;
 
-	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_debug ("failed to install language pack: %s", error->message);

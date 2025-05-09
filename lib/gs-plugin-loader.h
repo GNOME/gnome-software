@@ -37,9 +37,6 @@ gboolean	 gs_plugin_loader_job_process_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GsPluginJob	**out_job,
 							 GError		**error);
-gboolean	 gs_plugin_loader_job_action_finish	(GsPluginLoader	*plugin_loader,
-							 GAsyncResult	*res,
-							 GError		**error);
 void		 gs_plugin_loader_setup_async		(GsPluginLoader	*plugin_loader,
 							 const gchar * const *allowlist,
 							 const gchar * const *blocklist,

@@ -682,7 +682,7 @@ update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
-	ret = gs_plugin_loader_job_action_finish (plugin_loader, res, &error);
+	ret = gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);

@@ -203,7 +203,7 @@ _cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_dat
 	g_autoptr(GsUpdatesSection) self = GS_UPDATES_SECTION (g_steal_pointer (&user_data));
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_job_action_finish (self->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (self->plugin_loader, res, NULL, &error)) {
 		g_warning ("failed to cancel trigger: %s", error->message);
 		return;
 	}
@@ -338,7 +338,7 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 	GsUpdatesSection *self = helper->self;
 
 	/* get the results */
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			gs_plugin_loader_claim_job_error (plugin_loader,

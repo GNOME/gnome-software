@@ -677,13 +677,13 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 
 	gs_test_flush_main_context ();
 
-	gs_plugin_loader_job_action_finish (plugin_loader, result1, &local_error);
+	gs_plugin_loader_job_process_finish (plugin_loader, result1, NULL, &local_error);
 	g_assert_no_error (local_error);
 
-	gs_plugin_loader_job_action_finish (plugin_loader, result2, &local_error);
+	gs_plugin_loader_job_process_finish (plugin_loader, result2, NULL, &local_error);
 	g_assert_no_error (local_error);
 
-	gs_plugin_loader_job_action_finish (plugin_loader, result3, &local_error);
+	gs_plugin_loader_job_process_finish (plugin_loader, result3, NULL, &local_error);
 	g_assert_no_error (local_error);
 
 	g_assert_cmpint (gs_app_get_state (app1), ==, GS_APP_STATE_UPDATABLE);

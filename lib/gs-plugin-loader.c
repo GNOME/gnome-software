@@ -589,27 +589,6 @@ gs_plugin_loader_job_process_finish (GsPluginLoader *plugin_loader,
 	return retval;
 }
 
-/**
- * gs_plugin_loader_job_action_finish:
- * @plugin_loader: A #GsPluginLoader
- * @res: a #GAsyncResult
- * @error: A #GError, or %NULL
- *
- * Return value: success
- **/
-gboolean
-gs_plugin_loader_job_action_finish (GsPluginLoader *plugin_loader,
-				     GAsyncResult *res,
-				     GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	return g_task_propagate_boolean (G_TASK (res), error);
-}
-
 /******************************************************************************/
 
 static gboolean
@@ -2464,9 +2443,10 @@ gs_plugin_loader_apps_installed_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = GS_APP_LIST (user_data);
 
-	ret = gs_plugin_loader_job_action_finish (plugin_loader,
-						  res,
-						  &error);
+	ret = gs_plugin_loader_job_process_finish (plugin_loader,
+						   res,
+						   NULL,
+						   &error);
 	remove_apps_from_install_queue (plugin_loader, apps);
 	if (!ret) {
 		for (guint i = 0; i < gs_app_list_length (apps); i++) {

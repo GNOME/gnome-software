@@ -104,7 +104,7 @@ gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer 
 	g_signal_handlers_disconnect_by_data (plugin_loader, self);
 
 	/* not sure how to handle this */
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		g_warning ("failed to load metadata: %s", error->message);
 	}
 

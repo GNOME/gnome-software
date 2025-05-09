@@ -135,9 +135,10 @@ gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
 					    _helper_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
-	ret = gs_plugin_loader_job_action_finish (plugin_loader,
-	                                          helper.res,
-	                                          error);
+	ret = gs_plugin_loader_job_process_finish (plugin_loader,
+	                                           helper.res,
+	                                           NULL,
+	                                           error);
 
 	g_main_context_pop_thread_default (helper.context);
 

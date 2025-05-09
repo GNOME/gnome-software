@@ -174,7 +174,7 @@ refine_app_finished_cb (GObject *source_object,
 	GsAppDetailsPage *self = user_data;
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_clear_object (&self->refine_cancellable);

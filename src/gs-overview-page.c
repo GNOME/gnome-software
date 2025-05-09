@@ -658,7 +658,7 @@ gs_overview_page_get_categories_list_cb (GObject *source_object,
 
 	/* The apps can be mentioned in the appstream data, but no plugin may provide actual app,
 	   thus try to get the content as the Categories page and fine tune the numbers appropriately. */
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get categories: %s", error->message);
@@ -1149,7 +1149,7 @@ gs_overview_page_refresh_cb (GsPluginLoader *plugin_loader,
 	gboolean success;
 	g_autoptr(GError) error = NULL;
 
-	success = gs_plugin_loader_job_action_finish (plugin_loader, result, &error);
+	success = gs_plugin_loader_job_process_finish (plugin_loader, result, NULL, &error);
 	if (!success &&
 	    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 	    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
