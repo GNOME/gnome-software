@@ -303,18 +303,17 @@ refine_cb (GObject      *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GTask) task = G_TASK (user_data);
 	GsPluginJobListDistroUpgrades *self = g_task_get_source_object (task);
-	g_autoptr(GsAppList) new_list = NULL;
+	g_autoptr(GsPluginJobRefine) refine_job = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	new_list = gs_plugin_loader_job_process_finish (plugin_loader, result, &local_error);
-	if (new_list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, result, (GsPluginJob **) &refine_job, &local_error)) {
 		gs_utils_error_convert_gio (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		g_signal_emit_by_name (G_OBJECT (self), "completed");
 		return;
 	}
 
-	finish_task (task, new_list);
+	finish_task (task, gs_plugin_job_refine_get_result_list (refine_job));
 }
 
 static void

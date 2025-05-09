@@ -455,13 +455,13 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
                                 GsUpdatesPage *self)
 {
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
 	self->cache_valid = TRUE;
 
 	/* get the results */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		g_autofree gchar *escaped_text = NULL;
 		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
@@ -474,6 +474,7 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 	self->last_loaded_time = g_get_real_time ();
 
 	/* add the results */
@@ -506,11 +507,14 @@ gs_updates_page_get_upgrades_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListDistroUpgrades) list_distro_upgrades_job = NULL;
+	GsAppList *list;
 
 	/* get the results */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_distro_upgrades_job, &error);
+	list = gs_plugin_job_list_distro_upgrades_get_result_list (list_distro_upgrades_job);
+
+	if (error != NULL) {
 		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPGRADES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {

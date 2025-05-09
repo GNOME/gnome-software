@@ -498,13 +498,16 @@ _search_launchable_details_cb (GObject *source, GAsyncResult *res, gpointer user
 	GsApp *a;
 	GsApplication *app = GS_APPLICATION (user_data);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
-	list = gs_plugin_loader_job_process_finish (app->plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (app->plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		g_warning ("failed to find application: %s", error->message);
 		return;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
+
 	if (gs_app_list_length (list) == 0) {
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 		gs_shell_show_notification (app->shell,

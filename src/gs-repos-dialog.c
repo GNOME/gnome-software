@@ -459,10 +459,8 @@ refine_sources_related_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GsReposDialog *dialog = user_data;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("refine sources' related cancelled");
@@ -483,11 +481,9 @@ refine_sources_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(RefineData) rd = user_data;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) related_list = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("refine sources cancelled");
@@ -532,7 +528,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 {
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 	g_autoptr(GsAppList) refine_list = NULL;
 	g_autoptr(GSList) other_repos = NULL;
 	g_autoptr(GList) sections = NULL;
@@ -542,8 +539,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	GHashTableIter iter;
 
 	/* get the results */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("get sources cancelled");
@@ -554,6 +550,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 		return;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* remove previous */
 	g_hash_table_iter_init (&iter, dialog->sections);
