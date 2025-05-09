@@ -151,18 +151,6 @@ gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
 }
 
 GsApp *
-gs_plugin_loader_job_process_app (GsPluginLoader *plugin_loader,
-				  GsPluginJob *plugin_job,
-				  GCancellable *cancellable,
-				  GError **error)
-{
-	g_autoptr(GsAppList) list = NULL;
-
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, cancellable, error);
-	return (list != NULL) ? g_object_ref (gs_app_list_index (list, 0)) : NULL;
-}
-
-GsApp *
 gs_plugin_loader_app_create (GsPluginLoader *plugin_loader,
 			     const gchar *unique_id,
 			     GCancellable *cancellable,

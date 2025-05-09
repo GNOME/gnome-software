@@ -20,7 +20,8 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *fn = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
-	g_autoptr(GsApp) app = NULL;
+	GsApp *app;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsSizeType size_download_type;
 	guint64 size_download_bytes;
@@ -37,10 +38,12 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
-	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
-	g_assert_nonnull (app);
+	g_assert_nonnull (list);
+	g_assert_cmpuint (gs_app_list_length (list), ==, 1);
+	app = gs_app_list_index (list, 0);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_FIRMWARE);
 	g_assert_nonnull (gs_app_get_license (app));
 	g_assert_true (gs_app_has_category (app, "System"));

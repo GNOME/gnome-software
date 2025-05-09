@@ -514,27 +514,19 @@ main (int argc, char **argv)
 							    self->interactive ? GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE :
 							    GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
 							    self->require_flags);
-		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job, NULL, &error);
-		if (app == NULL) {
+		list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
+		if (list == NULL)
 			ret = FALSE;
-		} else {
-			list = gs_app_list_new ();
-			gs_app_list_add (list, app);
-		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "url-to-app") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_url_to_app_new (argv[2],
 							   self->interactive ? GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE :
 							   GS_PLUGIN_URL_TO_APP_FLAGS_NONE,
 							   self->require_flags);
-		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job,
-						    NULL, &error);
-		if (app == NULL) {
+		list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+						     NULL, &error);
+		if (list == NULL)
 			ret = FALSE;
-		} else {
-			list = gs_app_list_new ();
-			gs_app_list_add (list, app);
-		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsAppQuery) query = NULL;

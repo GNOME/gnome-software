@@ -18,10 +18,6 @@ GsAppList	*gs_plugin_loader_job_process		(GsPluginLoader	*plugin_loader,
 							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GsApp		*gs_plugin_loader_job_process_app	(GsPluginLoader	*plugin_loader,
-							 GsPluginJob	*plugin_job,
-							 GCancellable	*cancellable,
-							 GError		**error);
 gboolean	 gs_plugin_loader_job_action		(GsPluginLoader	*plugin_loader,
 							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
