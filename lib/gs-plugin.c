@@ -55,7 +55,6 @@ typedef struct
 	gboolean		 enabled;
 	gchar			*language;		/* allow-none */
 	gchar			*name;
-	gchar			*appstream_id;
 	guint			 scale;
 	guint			 order;
 	guint			 priority;
@@ -72,7 +71,8 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
 G_DEFINE_QUARK (gs-plugin-error-quark, gs_plugin_error)
 
 typedef enum {
-	PROP_SCALE = 1,
+	PROP_NAME = 1,
+	PROP_SCALE,
 	PROP_SESSION_BUS_CONNECTION,
 	PROP_SYSTEM_BUS_CONNECTION,
 } GsPluginProperty;
@@ -126,27 +126,6 @@ gs_plugin_status_to_string (GsPluginStatus status)
 }
 
 /**
- * gs_plugin_set_name:
- * @plugin: a #GsPlugin
- * @name: a plugin name
- *
- * Sets the name of the plugin.
- *
- * Plugins are not required to set the plugin name as it is automatically set
- * from the `.so` filename.
- *
- * Since: 3.26
- **/
-void
-gs_plugin_set_name (GsPlugin *plugin, const gchar *name)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	if (priv->name != NULL)
-		g_free (priv->name);
-	priv->name = g_strdup (name);
-}
-
-/**
  * gs_plugin_create:
  * @filename: an absolute filename
  * @session_bus_connection: (not nullable) (transfer none): a session bus
@@ -173,10 +152,11 @@ gs_plugin_create (const gchar      *filename,
 	GModule *module = NULL;
 	GType (*query_type_function) (void) = NULL;
 	GType plugin_type;
+	const char *library_prefix = "libgs_plugin_";
 
 	/* get the plugin name from the basename */
 	basename = g_path_get_basename (filename);
-	if (!g_str_has_prefix (basename, "libgs_plugin_")) {
+	if (!g_str_has_prefix (basename, library_prefix)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -212,11 +192,11 @@ gs_plugin_create (const gchar      *filename,
 	plugin = g_object_new (plugin_type,
 			       "session-bus-connection", session_bus_connection,
 			       "system-bus-connection", system_bus_connection,
+			       "name", basename + strlen (library_prefix),
 			       NULL);
 	priv = gs_plugin_get_instance_private (plugin);
 	priv->module = g_steal_pointer (&module);
 
-	gs_plugin_set_name (plugin, basename + 13);
 	return plugin;
 }
 
@@ -245,7 +225,6 @@ gs_plugin_finalize (GObject *object)
 	if (priv->timer_id > 0)
 		g_source_remove (priv->timer_id);
 	g_free (priv->name);
-	g_free (priv->appstream_id);
 	g_free (priv->language);
 	if (priv->network_monitor != NULL)
 		g_object_unref (priv->network_monitor);
@@ -258,42 +237,6 @@ gs_plugin_finalize (GObject *object)
 		g_module_close (priv->module);
 
 	G_OBJECT_CLASS (gs_plugin_parent_class)->finalize (object);
-}
-
-/**
- * gs_plugin_get_symbol: (skip)
- * @plugin: a #GsPlugin
- * @function_name: a symbol name
- *
- * Gets the symbol from the module that backs the plugin. If the plugin is not
- * enabled then no symbol is returned.
- *
- * Returns: the pointer to the symbol, or %NULL
- *
- * Since: 3.22
- **/
-gpointer
-gs_plugin_get_symbol (GsPlugin *plugin, const gchar *function_name)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	gpointer func = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->vfuncs_mutex);
-
-	g_return_val_if_fail (function_name != NULL, NULL);
-
-	/* disabled plugins shouldn't be checked */
-	if (!priv->enabled)
-		return NULL;
-
-	/* look up the symbol from the cache */
-	if (g_hash_table_lookup_extended (priv->vfuncs, function_name, NULL, &func))
-		return func;
-
-	/* look up the symbol using the elf headers */
-	g_module_symbol (priv->module, function_name, &func);
-	g_hash_table_insert (priv->vfuncs, g_strdup (function_name), func);
-
-	return func;
 }
 
 /**
@@ -345,40 +288,6 @@ gs_plugin_get_name (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	return priv->name;
-}
-
-/**
- * gs_plugin_get_appstream_id:
- * @plugin: a #GsPlugin
- *
- * Gets the plugin AppStream ID.
- *
- * Returns: a string, e.g. `org.gnome.Software.Plugin.Epiphany`
- *
- * Since: 3.24
- **/
-const gchar *
-gs_plugin_get_appstream_id (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->appstream_id;
-}
-
-/**
- * gs_plugin_set_appstream_id:
- * @plugin: a #GsPlugin
- * @appstream_id: an appstream ID, e.g. `org.gnome.Software.Plugin.Epiphany`
- *
- * Sets the plugin AppStream ID.
- *
- * Since: 3.24
- **/
-void
-gs_plugin_set_appstream_id (GsPlugin *plugin, const gchar *appstream_id)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_free (priv->appstream_id);
-	priv->appstream_id = g_strdup (appstream_id);
 }
 
 /**
@@ -1524,38 +1433,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 }
 
 /**
- * gs_plugin_action_from_string:
- * @action: a #GsPluginAction, e.g. "install"
- *
- * Converts the string to an enumerated action.
- *
- * Returns: a #GsPluginAction.
- *
- * Since: 3.26
- **/
-GsPluginAction
-gs_plugin_action_from_string (const gchar *action)
-{
-	if (g_strcmp0 (action, "upgrade-download") == 0)
-		return GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD;
-	if (g_strcmp0 (action, "launch") == 0)
-		return GS_PLUGIN_ACTION_LAUNCH;
-	if (g_strcmp0 (action, "file-to-app") == 0)
-		return GS_PLUGIN_ACTION_FILE_TO_APP;
-	if (g_strcmp0 (action, "url-to-app") == 0)
-		return GS_PLUGIN_ACTION_URL_TO_APP;
-	if (g_strcmp0 (action, "repo-install") == 0)
-		return GS_PLUGIN_ACTION_INSTALL_REPO;
-	if (g_strcmp0 (action, "repo-remove") == 0)
-		return GS_PLUGIN_ACTION_REMOVE_REPO;
-	if (g_strcmp0 (action, "repo-enable") == 0)
-		return GS_PLUGIN_ACTION_ENABLE_REPO;
-	if (g_strcmp0 (action, "repo-disable") == 0)
-		return GS_PLUGIN_ACTION_DISABLE_REPO;
-	return GS_PLUGIN_ACTION_UNKNOWN;
-}
-
-/**
  * gs_plugin_refine_flags_to_string:
  * @refine_flags: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_INTERACTIVE
  *
@@ -1675,6 +1552,11 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
 	switch ((GsPluginProperty) prop_id) {
+	case PROP_NAME:
+		/* Construct only */
+		g_assert (priv->name == NULL);
+		priv->name = g_value_dup_string (value);
+		break;
 	case PROP_SCALE:
 		gs_plugin_set_scale (plugin, g_value_get_uint (value));
 		break;
@@ -1701,6 +1583,9 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
 	switch ((GsPluginProperty) prop_id) {
+	case PROP_NAME:
+		g_value_set_string (value, priv->name);
+		break;
 	case PROP_SCALE:
 		g_value_set_uint (value, gs_plugin_get_scale (plugin));
 		break;
@@ -1726,6 +1611,24 @@ gs_plugin_class_init (GsPluginClass *klass)
 	object_class->get_property = gs_plugin_get_property;
 	object_class->dispose = gs_plugin_dispose;
 	object_class->finalize = gs_plugin_finalize;
+
+	/**
+	 * GsPlugin:name: (not nullable)
+	 *
+	 * Name of the plugin.
+	 *
+	 * This can be used to identify the plugin in log messages, for example.
+	 *
+	 * This must be set at construction time and will not be %NULL
+	 * afterwards. It is automatically set from the `.so` filename by
+	 * gs_plugin_create().
+	 *
+	 * Since: 49
+	 */
+	obj_props[PROP_NAME] =
+		g_param_spec_string ("name", NULL, NULL,
+				     NULL,
+				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPlugin:scale:
@@ -1850,32 +1753,6 @@ gs_plugin_init (GsPlugin *plugin)
 	g_mutex_init (&priv->cache_mutex);
 	g_mutex_init (&priv->timer_mutex);
 	g_mutex_init (&priv->vfuncs_mutex);
-}
-
-/**
- * gs_plugin_new:
- * @session_bus_connection: (not nullable) (transfer none): a session bus
- *   connection to use
- * @system_bus_connection: (not nullable) (transfer none): a system bus
- *   connection to use
- *
- * Creates a new plugin.
- *
- * Returns: a #GsPlugin
- *
- * Since: 43
- **/
-GsPlugin *
-gs_plugin_new (GDBusConnection *session_bus_connection,
-               GDBusConnection *system_bus_connection)
-{
-	g_return_val_if_fail (G_IS_DBUS_CONNECTION (session_bus_connection), NULL);
-	g_return_val_if_fail (G_IS_DBUS_CONNECTION (system_bus_connection), NULL);
-
-	return g_object_new (GS_TYPE_PLUGIN,
-			     "session-bus-connection", session_bus_connection,
-			     "system-bus-connection", system_bus_connection,
-			     NULL);
 }
 
 typedef struct {
