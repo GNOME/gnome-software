@@ -70,36 +70,7 @@ gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	GsPluginLoaderHelper helper;
-	gboolean ret;
-
-	/* create temp object */
-	helper.res = NULL;
-	helper.context = g_main_context_new ();
-	helper.loop = g_main_loop_new (helper.context, FALSE);
-
-	g_main_context_push_thread_default (helper.context);
-
-	/* run async method */
-	gs_plugin_loader_job_process_async (plugin_loader,
-					    plugin_job,
-					    cancellable,
-					    _helper_finish_sync,
-					    &helper);
-	g_main_loop_run (helper.loop);
-	ret = gs_plugin_loader_job_process_finish (plugin_loader,
-	                                           helper.res,
-	                                           NULL,
-	                                           error);
-
-	g_main_context_pop_thread_default (helper.context);
-
-	g_main_loop_unref (helper.loop);
-	g_main_context_unref (helper.context);
-	if (helper.res != NULL)
-		g_object_unref (helper.res);
-
-	return ret;
+	return gs_plugin_loader_job_process (plugin_loader, plugin_job, cancellable, error);
 }
 
 GsApp *
