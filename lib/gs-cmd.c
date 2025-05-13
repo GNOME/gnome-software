@@ -190,7 +190,7 @@ static gboolean
 gs_cmd_install_remove_exec (GsCmdSelf *self, gboolean is_install, const gchar *name, GError **error)
 {
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	g_autoptr(GsAppList) list_filtered = NULL;
 	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job2 = NULL;
@@ -212,9 +212,9 @@ gs_cmd_install_remove_exec (GsCmdSelf *self, gboolean is_install, const gchar *n
 				  NULL);
 
 	plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-	list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, error);
-	if (list == NULL)
+	if (!gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, error))
 		return FALSE;
+	list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 	if (gs_app_list_length (list) == 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -291,8 +291,6 @@ main (int argc, char **argv)
 	g_auto(GStrv) plugin_blocklist = NULL;
 	g_auto(GStrv) plugin_allowlist = NULL;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GPtrArray) categories = NULL;
 	g_autoptr(GsDebug) debug = gs_debug_new_from_environment ();
 	g_autofree gchar *plugin_blocklist_str = NULL;
 	g_autofree gchar *plugin_allowlist_str = NULL;
@@ -397,9 +395,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
 
 			query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
 						  "refine-require-flags", self->require_flags,
@@ -409,21 +405,21 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "search") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			const gchar *keywords[2] = { argv[2], NULL };
-
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
 
 			query = gs_app_query_new ("keywords", keywords,
 						  "refine-require-flags", self->require_flags,
@@ -434,11 +430,13 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-alternates") == 0) {
 		app = gs_app_new (argv[2]);
@@ -446,9 +444,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
 
 			query = gs_app_query_new ("alternate-of", app,
 						  "refine-require-flags", self->require_flags,
@@ -459,11 +455,13 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "install") == 0) {
 		ret = gs_cmd_install_remove_exec (self, TRUE, argv[2], &error);
@@ -478,8 +476,12 @@ main (int argc, char **argv)
 								 GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
-		if (ret)
+
+		if (show_results && ret) {
+			g_autoptr(GsAppList) list = gs_app_list_new ();
 			gs_app_list_add (list, app);
+			gs_cmd_show_results_apps (list);
+		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "refine") == 0) {
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
@@ -493,8 +495,12 @@ main (int argc, char **argv)
 			if (!ret)
 				break;
 		}
-		list = gs_app_list_new ();
-		gs_app_list_add (list, app);
+
+		if (show_results) {
+			g_autoptr(GsAppList) list = gs_app_list_new ();
+			gs_app_list_add (list, app);
+			gs_cmd_show_results_apps (list);
+		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "launch") == 0) {
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
@@ -509,30 +515,38 @@ main (int argc, char **argv)
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "filename-to-app") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		GsAppList *list;
+
 		file = g_file_new_for_path (argv[2]);
 		plugin_job = gs_plugin_job_file_to_app_new (file,
 							    self->interactive ? GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE :
 							    GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
 							    self->require_flags);
-		list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
-		if (list == NULL)
-			ret = FALSE;
+		ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
+		list = gs_plugin_job_file_to_app_get_result_list (GS_PLUGIN_JOB_FILE_TO_APP (plugin_job));
+
+		if (show_results && list != NULL)
+			gs_cmd_show_results_apps (list);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "url-to-app") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		GsAppList *list;
+
 		plugin_job = gs_plugin_job_url_to_app_new (argv[2],
 							   self->interactive ? GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE :
 							   GS_PLUGIN_URL_TO_APP_FLAGS_NONE,
 							   self->require_flags);
-		list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
-						     NULL, &error);
-		if (list == NULL)
-			ret = FALSE;
+		ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+						    NULL, &error);
+		list = gs_plugin_job_url_to_app_get_result_list (GS_PLUGIN_JOB_URL_TO_APP (plugin_job));
+
+		if (show_results && list != NULL)
+			gs_cmd_show_results_apps (list);
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
+
 			query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
 						  "refine-require-flags", self->require_flags,
 						  "max-results", self->max_results,
@@ -540,53 +554,57 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_list_apps_new (query, self->interactive ?
 								  GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE :
 								  GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "upgrades") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			GsPluginListDistroUpgradesFlags upgrades_flags = GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE;
-
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
 
 			if (self->interactive)
 				upgrades_flags |= GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_INTERACTIVE;
 
 			plugin_job = gs_plugin_job_list_distro_upgrades_new (upgrades_flags, self->require_flags);
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
-							     NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+							    NULL, &error);
+			list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "sources") == 0) {
 		g_autoptr(GsAppQuery) query = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		GsAppList *list;
+
 		query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE,
 					  "refine-require-flags", self->require_flags,
 					  "max-results", self->max_results,
 					  NULL);
 		plugin_job = gs_plugin_job_list_apps_new (query, self->interactive ? GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-		list = gs_plugin_loader_job_process (self->plugin_loader,
-						     plugin_job,
-						     NULL,
-						     &error);
-		if (list == NULL)
-			ret = FALSE;
+		ret = gs_plugin_loader_job_process (self->plugin_loader,
+						    plugin_job,
+						    NULL,
+						    &error);
+		list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+
+		if (show_results && list != NULL)
+			gs_cmd_show_results_apps (list);
 	} else if (argc == 2 && g_strcmp0 (argv[1], "popular") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
 
 			query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
 						  "refine-require-flags", self->require_flags,
@@ -596,20 +614,20 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
-							     NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+							    NULL, &error);
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "featured") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
 
 			query = gs_app_query_new ("is-featured", GS_APP_QUERY_TRISTATE_TRUE,
 						  "refine-require-flags", self->require_flags,
@@ -618,22 +636,21 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
-							     NULL, &error);
-
-			if (list == NULL) {
-				ret = FALSE;
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+							    NULL, &error);
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "deployment-featured") == 0) {
 		g_auto(GStrv) split = g_strsplit (argv[2], ",", -1);
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
 
 			query = gs_app_query_new ("deployment-featured", split,
 						  "refine-require-flags", self->require_flags,
@@ -643,12 +660,14 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
-							     NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+							    NULL, &error);
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "recent") == 0) {
 		if (cache_age_secs == 0)
@@ -658,9 +677,7 @@ main (int argc, char **argv)
 			g_autoptr(GDateTime) now = NULL;
 			g_autoptr(GDateTime) released_since = NULL;
 			g_autoptr(GsAppQuery) query = NULL;
-
-			if (list != NULL)
-				g_object_unref (list);
+			GsAppList *list;
 
 			now = g_date_time_new_now_local ();
 			released_since = g_date_time_add_seconds (now, -cache_age_secs);
@@ -673,20 +690,20 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
-							     NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+							    NULL, &error);
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			GPtrArray *categories;
 			GsPluginRefineCategoriesFlags flags = GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE;
-
-			if (categories != NULL)
-				g_ptr_array_unref (categories);
 
 			if (self->interactive)
 				flags |= GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE;
@@ -697,7 +714,10 @@ main (int argc, char **argv)
 				break;
 			}
 
-			categories = g_ptr_array_ref (gs_plugin_job_list_categories_get_result_list (GS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job)));
+			categories = gs_plugin_job_list_categories_get_result_list (GS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job));
+
+			if (show_results && i == repeat - 1 && categories != NULL)
+				gs_cmd_show_results_categories (categories);
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-category-apps") == 0) {
 		g_autoptr(GsCategory) category_owned = NULL;
@@ -722,10 +742,8 @@ main (int argc, char **argv)
 
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			GsAppList *list;
 			g_autoptr(GsAppQuery) query = NULL;
-
-			if (list != NULL)
-				g_object_unref (list);
 
 			query = gs_app_query_new ("category", category,
 						  "refine-require-flags", self->require_flags,
@@ -735,11 +753,13 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
-			if (list == NULL) {
-				ret = FALSE;
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			if (!ret)
 				break;
-			}
+
+			if (show_results && i == repeat - 1 && list != NULL)
+				gs_cmd_show_results_apps (list);
 		}
 	} else if (argc >= 2 && g_strcmp0 (argv[1], "refresh") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -775,11 +795,5 @@ main (int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	if (show_results) {
-		if (list != NULL)
-			gs_cmd_show_results_apps (list);
-		if (categories != NULL)
-			gs_cmd_show_results_categories (categories);
-	}
 	return EXIT_SUCCESS;
 }

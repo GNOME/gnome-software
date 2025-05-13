@@ -29,7 +29,7 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app_tmp = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsAppQuery) query = NULL;
 	const gchar *keywords[2] = { NULL, };
@@ -53,7 +53,8 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_nonnull (list);

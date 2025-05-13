@@ -841,7 +841,7 @@ launch_activated (GSimpleAction *action,
 	GsApplication *self = GS_APPLICATION (data);
 	GsApp *app = NULL;
 	const gchar *id, *management_plugin_name;
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	g_autoptr(GsPluginJob) search_job = NULL;
 	g_autoptr(GsPluginJob) launch_job = NULL;
 	g_autoptr(GError) error = NULL;
@@ -863,7 +863,8 @@ launch_activated (GSimpleAction *action,
 				  "developer-verified-type", gs_shell_get_query_developer_verified_type (self->shell),
 				  NULL);
 	search_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
+	gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
+	list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (search_job));
 	if (!list) {
 		g_warning ("Failed to search for application '%s' (from '%s'): %s", id, management_plugin_name, error ? error->message : "Unknown error");
 		return;

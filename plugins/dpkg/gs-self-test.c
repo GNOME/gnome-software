@@ -15,7 +15,7 @@
 static void
 gs_plugins_dpkg_func (GsPluginLoader *plugin_loader)
 {
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	GsApp *app;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
@@ -34,7 +34,8 @@ gs_plugins_dpkg_func (GsPluginLoader *plugin_loader)
 	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	list = gs_plugin_job_file_to_app_get_result_list (GS_PLUGIN_JOB_FILE_TO_APP (plugin_job));
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_nonnull (list);

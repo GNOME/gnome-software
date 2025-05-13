@@ -254,8 +254,8 @@ snapd_client_remove_sync (SnapdClient *client,
 static void
 gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 {
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GsAppList) apps = NULL;
+	g_autoptr(GsPluginJob) plugin_job_list = NULL, plugin_job_install = NULL, plugin_job_uninstall = NULL;
+	GsAppList *apps;
 	gboolean ret;
 	GsApp *app;
 	GPtrArray *screenshots, *images;
@@ -283,10 +283,11 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
-	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-	apps = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	plugin_job_list = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	gs_plugin_loader_job_process (plugin_loader, plugin_job_list, NULL, &error);
+	apps = gs_plugin_job_list_apps_get_result_list (plugin_job_list);
 	g_assert_no_error (error);
-	g_assert (apps != NULL);
+	g_assert_nonnull (apps);
 	g_assert_cmpint (gs_app_list_length (apps), ==, 1);
 	app = gs_app_list_index (apps, 0);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
@@ -323,10 +324,9 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 
 	g_assert_cmpint (gs_app_get_install_date (app), ==, 0);
 
-	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_install_apps_new (apps,
-						     GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	plugin_job_install = gs_plugin_job_install_apps_new (apps,
+							     GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -350,10 +350,9 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gdk_pixbuf_get_width (pixbuf), ==, 128);
 	g_assert_cmpint (gdk_pixbuf_get_height (pixbuf), ==, 128);
 
-	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_uninstall_apps_new (apps, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
+	plugin_job_uninstall = gs_plugin_job_uninstall_apps_new (apps, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
 	gs_test_flush_main_context ();
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 }

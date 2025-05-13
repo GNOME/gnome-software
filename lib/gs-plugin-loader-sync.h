@@ -14,7 +14,7 @@
 
 G_BEGIN_DECLS
 
-GsAppList	*gs_plugin_loader_job_process		(GsPluginLoader	*plugin_loader,
+gboolean	 gs_plugin_loader_job_process		(GsPluginLoader	*plugin_loader,
 							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
 							 GError		**error);

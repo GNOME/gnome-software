@@ -214,7 +214,7 @@ gs_markdown_func (void)
 static void
 gs_plugins_packagekit_local_func (GsPluginLoader *plugin_loader)
 {
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *fn = NULL;
@@ -233,7 +233,8 @@ gs_plugins_packagekit_local_func (GsPluginLoader *plugin_loader)
 	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	list = gs_plugin_job_file_to_app_get_result_list (GS_PLUGIN_JOB_FILE_TO_APP (plugin_job));
 	gs_test_flush_main_context ();
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		g_test_skip ("rpm files not supported");
