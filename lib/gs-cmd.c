@@ -253,8 +253,8 @@ gs_cmd_install_remove_exec (GsCmdSelf *self, gboolean is_install, const gchar *n
 								self->interactive ? GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
 	}
 
-	return gs_plugin_loader_job_action (self->plugin_loader, plugin_job2,
-					    NULL, error);
+	return gs_plugin_loader_job_process (self->plugin_loader, plugin_job2,
+					     NULL, error);
 }
 
 static void
@@ -382,7 +382,7 @@ main (int argc, char **argv)
 			refresh_metadata_flags |= GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
 
 		plugin_job = gs_plugin_job_refresh_metadata_new (G_MAXUINT64, refresh_metadata_flags);
-		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
+		ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (!ret) {
 			g_print ("Failed to refresh plugins: %s\n", error->message);
@@ -474,7 +474,7 @@ main (int argc, char **argv)
 		plugin_job = gs_plugin_job_download_upgrade_new (app,
 								 self->interactive ? GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE :
 								 GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE);
-		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
+		ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 						    NULL, &error);
 
 		if (show_results && ret) {
@@ -490,7 +490,7 @@ main (int argc, char **argv)
 								       self->interactive ? GS_PLUGIN_REFINE_FLAGS_INTERACTIVE :
 								       GS_PLUGIN_REFINE_FLAGS_NONE,
 								       self->require_flags);
-			ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							    NULL, &error);
 			if (!ret)
 				break;
@@ -508,7 +508,7 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_launch_new (app,
 							       self->interactive ? GS_PLUGIN_LAUNCH_FLAGS_INTERACTIVE :
 							       GS_PLUGIN_LAUNCH_FLAGS_NONE);
-			ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							    NULL, &error);
 			if (!ret)
 				break;
@@ -709,7 +709,7 @@ main (int argc, char **argv)
 				flags |= GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE;
 
 			plugin_job = gs_plugin_job_list_categories_new (flags);
-			if (!gs_plugin_loader_job_action (self->plugin_loader, plugin_job, NULL, &error)) {
+			if (!gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error)) {
 				ret = FALSE;
 				break;
 			}
@@ -769,7 +769,7 @@ main (int argc, char **argv)
 			refresh_metadata_flags |= GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
 
 		plugin_job = gs_plugin_job_refresh_metadata_new (cache_age_secs, refresh_metadata_flags);
-		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
+		ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 						    NULL, &error);
 	} else if (argc >= 1 && g_strcmp0 (argv[1], "user-hash") == 0) {
 		g_autofree gchar *user_hash = gs_utils_get_user_hash (&error);

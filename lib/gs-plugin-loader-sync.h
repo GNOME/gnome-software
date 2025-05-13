@@ -18,10 +18,6 @@ gboolean	 gs_plugin_loader_job_process		(GsPluginLoader	*plugin_loader,
 							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_loader_job_action		(GsPluginLoader	*plugin_loader,
-							 GsPluginJob	*plugin_job,
-							 GCancellable	*cancellable,
-							 GError		**error);
 GsApp		*gs_plugin_loader_app_create		(GsPluginLoader	*plugin_loader,
 							 const gchar	*unique_id,
 							 GCancellable	*cancellable,

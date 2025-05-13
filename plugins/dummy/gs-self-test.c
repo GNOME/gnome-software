@@ -56,7 +56,7 @@ gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 	gs_app_list_add (app_list, app);
 	plugin_job = gs_plugin_job_install_apps_new (app_list,
 						     GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -66,7 +66,7 @@ gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_uninstall_apps_new (app_list,
 						       GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -100,7 +100,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	gs_app_list_add (list, app);
 
 	plugin_job = gs_plugin_job_update_apps_new (list, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -140,7 +140,7 @@ gs_plugins_dummy_refine_func (GsPluginLoader *plugin_loader)
 						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION |
 						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_LICENSE |
 						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -164,7 +164,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
 	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -179,7 +179,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -191,7 +191,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_DESCRIPTION);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -212,7 +212,7 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 	/* get the extra bits */
 	app = gs_app_new ("chiron.desktop");
 	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -314,7 +314,7 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	/* download the update */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_download_upgrade_new (app, GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -323,7 +323,7 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	/* trigger the update */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_trigger_upgrade_new (app, GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);

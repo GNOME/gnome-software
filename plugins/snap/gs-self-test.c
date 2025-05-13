@@ -326,7 +326,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 
 	plugin_job_install = gs_plugin_job_install_apps_new (apps,
 							     GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -352,7 +352,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 
 	plugin_job_uninstall = gs_plugin_job_uninstall_apps_new (apps, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
 	gs_test_flush_main_context ();
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 }

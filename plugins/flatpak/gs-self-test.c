@@ -179,7 +179,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	/* now install the remote */
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -216,7 +216,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	/* disable repo */
 	plugin_job_manage_repository2 = gs_plugin_job_manage_repository_new (app, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -225,7 +225,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	/* enable repo */
 	plugin_job_manage_repository3 = gs_plugin_job_manage_repository_new (app, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_ENABLE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository3, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository3, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -234,7 +234,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	/* remove it */
 	plugin_job_manage_repository4 = gs_plugin_job_manage_repository_new (app, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository4, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository4, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -337,7 +337,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -367,7 +367,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	plugin_job_refresh_metadata = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
 									  GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -434,7 +434,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	/* install, also installing runtime */
 	plugin_job_install_apps = gs_plugin_job_install_apps_new (list,
 								  GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install_apps, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -484,7 +484,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* remove the application */
 	plugin_job_uninstall_apps = gs_plugin_job_uninstall_apps_new (list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
@@ -501,7 +501,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	plugin_job_install_apps2 = gs_plugin_job_install_apps_new (list,
 								   GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install_apps2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install_apps2, NULL, &error);
 
 	/* progress should be set to unknown right before installing */
 	while (!seen_unknown)
@@ -517,7 +517,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* remove the application */
 	plugin_job_uninstall_apps2 = gs_plugin_job_uninstall_apps_new (list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
@@ -527,7 +527,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* remove the remote (fail, as the runtime is still installed) */
 	plugin_job_manage_repository2 = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository2, NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED);
 	g_assert_true (!ret);
 	g_clear_error (&error);
@@ -537,7 +537,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	runtime_list = gs_app_list_new ();
 	gs_app_list_add (runtime_list, runtime);
 	plugin_job_uninstall_apps3 = gs_plugin_job_uninstall_apps_new (runtime_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps3, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps3, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -545,7 +545,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* remove the remote */
 	plugin_job_manage_repository3 = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository3, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository3, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -602,7 +602,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -611,7 +611,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	plugin_job_refresh_metadata = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
 									  GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -642,7 +642,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	events_before = gs_plugin_loader_get_events (plugin_loader);
 	plugin_job_install_apps = gs_plugin_job_install_apps_new (list,
 								  GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install_apps, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 	events_after = gs_plugin_loader_get_events (plugin_loader);
@@ -652,7 +652,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* remove the remote */
 	plugin_job_manage_repository2 = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -810,7 +810,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* remove the app */
 	plugin_job_uninstall_apps = gs_plugin_job_uninstall_apps_new (list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -820,7 +820,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	runtime_list = gs_app_list_new ();
 	gs_app_list_add (runtime_list, runtime);
 	plugin_job_uninstall_apps2 = gs_plugin_job_uninstall_apps_new (runtime_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -831,7 +831,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_true (app_source != NULL);
 	g_assert_cmpstr (gs_app_get_unique_id (app_source), ==, "user/flatpak/*/test/*");
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -903,7 +903,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* install the source manually */
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app_src, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);;
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -956,7 +956,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	 * but from the existing test repo */
 	plugin_job_install_apps = gs_plugin_job_install_apps_new (list,
 								  GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install_apps, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -974,7 +974,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* remove the app */
 	plugin_job_uninstall_apps = gs_plugin_job_uninstall_apps_new (list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -984,7 +984,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	runtime_list = gs_app_list_new ();
 	gs_app_list_add (runtime_list, runtime);
 	plugin_job_uninstall_apps2 = gs_plugin_job_uninstall_apps_new (runtime_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -995,7 +995,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_assert_true (app_source != NULL);
 	g_assert_cmpstr (gs_app_get_unique_id (app_source), ==, "user/flatpak/*/test/*");
 	plugin_job_manage_repository2 = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1042,7 +1042,7 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	gs_flatpak_app_set_repo_url (app_source, "file:///wont/work");
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_INSTALLED);
@@ -1086,7 +1086,7 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 
 	/* remove source */
 	plugin_job_manage_repository2 = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository2, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 }
@@ -1151,7 +1151,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_INSTALLED);
@@ -1159,7 +1159,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	/* refresh the appstream metadata */
 	plugin_job_refresh_metadata = gs_plugin_job_refresh_metadata_new (0,
 									  GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -1188,7 +1188,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	/* install the runtime ahead of time */
 	plugin_job_install_apps = gs_plugin_job_install_apps_new (list,
 								  GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install_apps, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (runtime), ==, GS_APP_STATE_INSTALLED);
@@ -1272,7 +1272,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	/* install */
 	plugin_job_install_apps2 = gs_plugin_job_install_apps_new (app_list,
 								   GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install_apps2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install_apps2, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
@@ -1323,7 +1323,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* remove app */
 	plugin_job_uninstall_apps = gs_plugin_job_uninstall_apps_new (app2_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -1331,13 +1331,13 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	runtime_list = gs_app_list_new ();
 	gs_app_list_add (runtime_list, runtime);
 	plugin_job_uninstall_apps2 = gs_plugin_job_uninstall_apps_new (runtime_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
 	/* remove source */
 	plugin_job_manage_repository2 = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository2, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -1349,7 +1349,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		gs_app_set_management_plugin (runtime_source, plugin);
 		gs_app_set_state (runtime_source, GS_APP_STATE_INSTALLED);
 		plugin_job_manage_repository3 = gs_plugin_job_manage_repository_new (runtime_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-		ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository3, NULL, &error);
+		ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository3, NULL, &error);
 		g_assert_no_error (error);
 		g_assert_true (ret);
 	}
@@ -1481,7 +1481,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	repo_url = g_strdup_printf ("file://%s", repo_path);
 	gs_flatpak_app_set_repo_url (app_source, repo_url);
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1490,7 +1490,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	plugin_job_refresh_metadata = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
 									  GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1521,7 +1521,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* install, also installing runtime */
 	plugin_job_install_apps = gs_plugin_job_install_apps_new (list,
 								  GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install_apps, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1537,7 +1537,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	plugin_job_refresh_metadata2 = gs_plugin_job_refresh_metadata_new (0,  /* force now */
 									   GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_refresh_metadata2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata2, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -1629,7 +1629,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 
 	/* remove the app */
 	plugin_job_uninstall_apps = gs_plugin_job_uninstall_apps_new (update_apps_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -1638,7 +1638,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	old_runtime_list = gs_app_list_new ();
 	gs_app_list_add (old_runtime_list, old_runtime);
 	plugin_job_uninstall_apps2 = gs_plugin_job_uninstall_apps_new (old_runtime_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1648,14 +1648,14 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	runtime_list = gs_app_list_new ();
 	gs_app_list_add (runtime_list, runtime);
 	plugin_job_uninstall_apps3 = gs_plugin_job_uninstall_apps_new (runtime_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps3, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps3, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
 	/* remove the remote */
 	plugin_job_manage_repository2 = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1741,7 +1741,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	repo_url = g_strdup_printf ("file://%s", repo_path);
 	gs_flatpak_app_set_repo_url (app_source, repo_url);
 	plugin_job_manage_repository = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1750,7 +1750,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	plugin_job_refresh_metadata = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
 									  GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1780,7 +1780,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	/* install, also installing runtime and suggested extensions */
 	plugin_job_install_apps = gs_plugin_job_install_apps_new (list,
 								  GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_install_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_install_apps, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1804,7 +1804,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	plugin_job_refresh_metadata2 = gs_plugin_job_refresh_metadata_new (0,  /* force now */
 									   GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_refresh_metadata2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata2, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -1915,7 +1915,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* remove the app */
 	plugin_job_uninstall_apps = gs_plugin_job_uninstall_apps_new (list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
@@ -1923,7 +1923,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	runtime_list = gs_app_list_new ();
 	gs_app_list_add (runtime_list, runtime);
 	plugin_job_uninstall_apps2 = gs_plugin_job_uninstall_apps_new (runtime_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_uninstall_apps2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1931,7 +1931,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* remove the remote */
 	plugin_job_manage_repository2 = gs_plugin_job_manage_repository_new (app_source, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job_manage_repository2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_manage_repository2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);

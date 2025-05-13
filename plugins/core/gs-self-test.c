@@ -87,7 +87,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 						       GS_PLUGIN_REFINE_FLAGS_NONE,
 						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_URL |
 						       GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -153,7 +153,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 
 	/* refine to make the generic-updates plugin merge them into a single OsUpdate item */
 	plugin_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -180,7 +180,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	gs_app_set_kind (app_wildcard, AS_COMPONENT_KIND_GENERIC);
 	gs_app_list_add (list_wildcard, app_wildcard);
 	plugin_job2 = gs_plugin_job_refine_new (list_wildcard, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job2, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);

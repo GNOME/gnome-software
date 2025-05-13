@@ -1203,7 +1203,7 @@ invoke_plugin_loader_refresh_metadata_assert_no_error (GsPluginLoader *plugin_lo
 
 	plugin_job = gs_plugin_job_refresh_metadata_new (0, /* always refresh */
 	                                                 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 
 	g_assert_no_error (error);
@@ -1256,7 +1256,7 @@ invoke_plugin_loader_list_apps_for_update_assert_no_error (GsPluginLoader *plugi
 /**
  * RunPluginJobActionData:
  *
- * Holds data to pass to a gs_plugin_loader_job_action() call.
+ * Holds data to pass to a gs_plugin_loader_job_process() call.
  */
 typedef struct {
 	GsPluginLoader *plugin_loader;
@@ -1273,10 +1273,10 @@ run_plugin_job_action_thread_cb (gpointer user_data)
 {
 	RunPluginJobActionData *data = (RunPluginJobActionData *) user_data;
 
-	data->ret = gs_plugin_loader_job_action (data->plugin_loader,
-	                                         data->plugin_job,
-	                                         data->cancellable,
-	                                         &data->error);
+	data->ret = gs_plugin_loader_job_process (data->plugin_loader,
+	                                          data->plugin_job,
+	                                          data->cancellable,
+	                                          &data->error);
 
 	return NULL;
 }
