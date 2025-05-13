@@ -4937,6 +4937,10 @@ download_get_updates_cb (GObject      *source_object,
 	}
 	gs_packagekit_helper_set_progress_list (data->helper, data->progress_list);
 
+	/* make 'download' operation always low priority, so other interactive
+	   operations get to run when a download is in progress */
+	pk_client_set_background (PK_CLIENT (task_update), TRUE);
+
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
