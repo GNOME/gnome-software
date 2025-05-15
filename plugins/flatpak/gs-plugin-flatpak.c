@@ -226,6 +226,10 @@ gs_plugin_flatpak_add_installation (GsPluginFlatpak      *self,
 	return TRUE;
 }
 
+/* Reports a warning/error at the plugin level, rather than at the job level.
+ * This should only be used for warnings/errors which aren’t associated with a
+ * particular `GsPluginJob`; otherwise, use the `event_callback()` from the job
+ * as that exposes more information to the shell. */
 static void
 gs_plugin_flatpak_report_warning (GsPlugin *plugin,
 				  GError **error)
@@ -952,14 +956,36 @@ _basic_auth_start (FlatpakTransaction *transaction,
 	return TRUE;
 }
 
+typedef struct {
+	GsPlugin *plugin;  /* (not owned) (not nullable) */
+	GsPluginEventCallback event_callback;  /* (nullable) */
+	void *event_user_data;
+} WebflowStartData;
+
+static void
+webflow_start_data_free (WebflowStartData *data)
+{
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (WebflowStartData, webflow_start_data_free)
+
+static void
+webflow_start_data_free_closure (WebflowStartData *data,
+                                 GClosure         *closure)
+{
+	webflow_start_data_free (data);
+}
+
 static gboolean
 _webflow_start (FlatpakTransaction *transaction,
                 const char *remote,
                 const char *url,
                 GVariant *options,
                 guint id,
-                GsPlugin *plugin)
+                void *user_data)
 {
+	WebflowStartData *data = user_data;
 	const char *browser;
 	g_autoptr(GError) error_local = NULL;
 
@@ -984,7 +1010,8 @@ _webflow_start (FlatpakTransaction *transaction,
 			event = gs_plugin_event_new ("error", error_local,
 						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			gs_plugin_report_event (plugin, event);
+			if (data->event_callback != NULL)
+				data->event_callback (data->plugin, event, data->event_user_data);
 
 			return FALSE;
 		}
@@ -999,7 +1026,8 @@ _webflow_start (FlatpakTransaction *transaction,
 			event = gs_plugin_event_new ("error", error_local,
 						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			gs_plugin_report_event (plugin, event);
+			if (data->event_callback != NULL)
+				data->event_callback (data->plugin, event, data->event_user_data);
 
 			return FALSE;
 		}
@@ -1022,16 +1050,19 @@ _webflow_done (FlatpakTransaction *transaction,
 /* This can only fail if flatpak_dir_ensure_repo() fails, for example if the
  * repo is configured but doesn’t exist and can’t be created on disk. */
 static FlatpakTransaction *
-_build_transaction (GsPlugin      *plugin,
-                    GsFlatpak     *flatpak,
-                    gboolean       stop_on_first_error,
-                    gboolean       interactive,
-                    GCancellable  *cancellable,
-                    GError       **error)
+_build_transaction (GsPlugin               *plugin,
+                    GsFlatpak              *flatpak,
+                    gboolean                stop_on_first_error,
+                    gboolean                interactive,
+                    GsPluginEventCallback   event_callback,
+                    void                   *event_user_data,
+                    GCancellable           *cancellable,
+                    GError                **error)
 {
 	FlatpakInstallation *installation;
 	g_autoptr(FlatpakInstallation) installation_clone = NULL;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
+	g_autoptr(WebflowStartData) webflow_start_data = NULL;
 
 	installation = gs_flatpak_get_installation (flatpak, interactive);
 
@@ -1049,12 +1080,20 @@ _build_transaction (GsPlugin      *plugin,
 	flatpak_transaction_set_no_interaction (transaction, !interactive);
 
 	/* connect up signals */
+	webflow_start_data = g_new0 (WebflowStartData, 1);
+	webflow_start_data->plugin = plugin;
+	webflow_start_data->event_callback = event_callback;
+	webflow_start_data->event_user_data = event_user_data;
+
 	g_signal_connect (transaction, "ref-to-app",
 			  G_CALLBACK (_ref_to_app), plugin);
 	g_signal_connect (transaction, "basic-auth-start",
 			  G_CALLBACK (_basic_auth_start), plugin);
-	g_signal_connect (transaction, "webflow-start",
-			  G_CALLBACK (_webflow_start), plugin);
+	g_signal_connect_data (transaction, "webflow-start",
+			       G_CALLBACK (_webflow_start),
+			       g_steal_pointer (&webflow_start_data),
+			       (GClosureNotify) webflow_start_data_free_closure,
+			       G_CONNECT_DEFAULT);
 	g_signal_connect (transaction, "webflow-done",
 			  G_CALLBACK (_webflow_done), plugin);
 
@@ -1186,7 +1225,7 @@ update_apps_thread_cb (GTask        *task,
 		 * This approach is the same as what the `flatpak` CLI uses in
 		 * `flatpak-builtins-update.c` in flatpak.
 		 */
-		transaction = _build_transaction (GS_PLUGIN (self), flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, interactive, cancellable, &local_error);
+		transaction = _build_transaction (GS_PLUGIN (self), flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, interactive, data->event_callback, data->event_user_data, cancellable, &local_error);
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
@@ -1506,7 +1545,7 @@ uninstall_apps_thread_cb (GTask        *task,
 		gs_flatpak_set_busy (flatpak, TRUE);
 
 		/* build */
-		transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, cancellable, &local_error);
+		transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, data->event_callback, data->event_user_data, cancellable, &local_error);
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
@@ -1828,7 +1867,7 @@ install_apps_thread_cb (GTask        *task,
 		gs_flatpak_set_busy (flatpak, TRUE);
 
 		/* build */
-		transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, cancellable, &local_error);
+		transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, data->event_callback, data->event_user_data, cancellable, &local_error);
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
