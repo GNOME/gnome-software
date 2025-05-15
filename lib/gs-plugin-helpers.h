@@ -215,14 +215,20 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginCancelOfflineUpdateData, gs_plugin_cancel
 typedef struct {
 	GsApp *app;  /* (owned) (not nullable) */
 	GsPluginDownloadUpgradeFlags flags;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 } GsPluginDownloadUpgradeData;
 
 GsPluginDownloadUpgradeData *
 		gs_plugin_download_upgrade_data_new	(GsApp			     *app,
-							 GsPluginDownloadUpgradeFlags flags);
+							 GsPluginDownloadUpgradeFlags flags,
+							 GsPluginEventCallback	      event_callback,
+							 void			     *event_user_data);
 GTask *		gs_plugin_download_upgrade_data_new_task(gpointer		      source_object,
 							 GsApp			     *app,
 							 GsPluginDownloadUpgradeFlags flags,
+							 GsPluginEventCallback	      event_callback,
+							 void			     *event_user_data,
 							 GCancellable		     *cancellable,
 							 GAsyncReadyCallback	      callback,
 							 gpointer		      user_data);

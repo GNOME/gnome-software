@@ -106,7 +106,7 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   @cancel_offline_update_async. Must be implemented if
  *   @cancel_offline_update_async is implemented. (Since: 47)
  * @download_upgrade_async: (nullable): Start download of a distribution upgrade
- *   in the background. (Since: 47)
+ *   in the background. (Since: 49)
  * @download_upgrade_finish: (nullable): Finish method for
  *   @download_upgrade_async. Must be implemented if
  *   @download_upgrade_async is implemented. (Since: 47)
@@ -322,6 +322,8 @@ struct _GsPluginClass
 	void			(*download_upgrade_async)	(GsPlugin			*plugin,
 								 GsApp				*app,
 								 GsPluginDownloadUpgradeFlags	 flags,
+								 GsPluginEventCallback		 event_callback,
+								 void				*event_user_data,
 								 GCancellable			*cancellable,
 								 GAsyncReadyCallback		 callback,
 								 gpointer			 user_data);

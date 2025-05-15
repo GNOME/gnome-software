@@ -734,19 +734,25 @@ gs_plugin_cancel_offline_update_data_free (GsPluginCancelOfflineUpdateData *data
  * gs_plugin_download_upgrade_data_new:
  * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.download_upgrade_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 47
+ * Since: 49
  */
 GsPluginDownloadUpgradeData *
 gs_plugin_download_upgrade_data_new (GsApp                        *app,
-				     GsPluginDownloadUpgradeFlags  flags)
+                                     GsPluginDownloadUpgradeFlags  flags,
+                                     GsPluginEventCallback         event_callback,
+                                     void                         *event_user_data)
 {
 	g_autoptr(GsPluginDownloadUpgradeData) data = g_new0 (GsPluginDownloadUpgradeData, 1);
 	data->app = g_object_ref (app);
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -756,6 +762,8 @@ gs_plugin_download_upgrade_data_new (GsApp                        *app,
  * @source_object: task source object
  * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -767,18 +775,20 @@ gs_plugin_download_upgrade_data_new (GsApp                        *app,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 47
+ * Since: 49
  */
 GTask *
-gs_plugin_download_upgrade_data_new_task (gpointer                     source_object,
-					  GsApp                       *app,
-					  GsPluginDownloadUpgradeFlags flags,
-					  GCancellable                *cancellable,
-					  GAsyncReadyCallback          callback,
-					  gpointer                     user_data)
+gs_plugin_download_upgrade_data_new_task (gpointer                      source_object,
+                                          GsApp                        *app,
+                                          GsPluginDownloadUpgradeFlags  flags,
+                                          GsPluginEventCallback         event_callback,
+                                          void                         *event_user_data,
+                                          GCancellable                 *cancellable,
+                                          GAsyncReadyCallback           callback,
+                                          gpointer                      user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_download_upgrade_data_new (app, flags), (GDestroyNotify) gs_plugin_download_upgrade_data_free);
+	g_task_set_task_data (task, gs_plugin_download_upgrade_data_new (app, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_download_upgrade_data_free);
 	return g_steal_pointer (&task);
 }
 

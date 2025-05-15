@@ -1346,8 +1346,6 @@ download_iterate_state_machine_cb (GObject      *source_object,
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 				if (data->event_callback != NULL)
 					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
-				else
-					gs_plugin_report_event (GS_PLUGIN (self), event);
 
 				/* Error out. */
 				data->done = TRUE;
@@ -1430,8 +1428,6 @@ download_iterate_state_machine_cb (GObject      *source_object,
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 				if (data->event_callback != NULL)
 					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
-				else
-					gs_plugin_report_event (GS_PLUGIN (self), event);
 			}
 
 			/* Unconditionally call Poll() to get the updater out
@@ -1503,6 +1499,8 @@ static void
 gs_plugin_eos_updater_download_upgrade_async (GsPlugin                     *plugin,
                                               GsApp                        *app,
                                               GsPluginDownloadUpgradeFlags  flags,
+                                              GsPluginEventCallback         event_callback,
+                                              void                         *event_user_data,
                                               GCancellable                 *cancellable,
                                               GAsyncReadyCallback           callback,
                                               gpointer                      user_data)
@@ -1516,7 +1514,7 @@ gs_plugin_eos_updater_download_upgrade_async (GsPlugin                     *plug
 
 	g_debug ("%s", G_STRFUNC);
 
-	gs_plugin_eos_updater_app_upgrade_download_async (self, app, interactive, NULL, NULL, cancellable, upgrade_download_cb, g_steal_pointer (&task));
+	gs_plugin_eos_updater_app_upgrade_download_async (self, app, interactive, event_callback, event_user_data, cancellable, upgrade_download_cb, g_steal_pointer (&task));
 }
 
 static gboolean

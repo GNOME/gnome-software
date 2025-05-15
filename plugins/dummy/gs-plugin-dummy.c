@@ -1454,13 +1454,15 @@ static void
 gs_plugin_dummy_download_upgrade_async (GsPlugin                     *plugin,
                                         GsApp                        *app,
                                         GsPluginDownloadUpgradeFlags  flags,
+                                        GsPluginEventCallback         event_callback,
+                                        void                         *event_user_data,
                                         GCancellable                 *cancellable,
                                         GAsyncReadyCallback           callback,
                                         gpointer                      user_data)
 {
 	g_autoptr(GTask) task = NULL;
 
-	task = gs_plugin_download_upgrade_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	task = gs_plugin_download_upgrade_data_new_task (plugin, app, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_download_upgrade_async);
 
 	/* only process this app if was created by this plugin */
