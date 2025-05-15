@@ -508,7 +508,7 @@ refresh_metadata_thread_cb (GTask        *task,
 		g_autoptr(GError) local_error = NULL;
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
 
-		if (!gs_flatpak_refresh (flatpak, data->cache_age_secs, interactive, cancellable, &local_error))
+		if (!gs_flatpak_refresh (flatpak, data->cache_age_secs, interactive, NULL, NULL, cancellable, &local_error))
 			g_debug ("Failed to refresh metadata for '%s': %s", gs_flatpak_get_id (flatpak), local_error->message);
 	}
 
@@ -558,6 +558,8 @@ gs_plugin_flatpak_refine_app (GsPluginFlatpak             *self,
                               GsApp                       *app,
                               GsPluginRefineRequireFlags   require_flags,
                               gboolean                     interactive,
+                              GsPluginEventCallback        event_callback,
+                              void                        *event_user_data,
                               GCancellable                *cancellable,
                               GError                     **error)
 {
@@ -575,6 +577,7 @@ gs_plugin_flatpak_refine_app (GsPluginFlatpak             *self,
 			GsFlatpak *flatpak_tmp = g_ptr_array_index (self->installations, i);
 			g_autoptr(GError) error_local = NULL;
 			if (gs_flatpak_refine_app_state (flatpak_tmp, app, interactive, FALSE,
+							 event_callback, event_user_data,
 							 cancellable, &error_local)) {
 				flatpak = flatpak_tmp;
 				break;
@@ -587,7 +590,7 @@ gs_plugin_flatpak_refine_app (GsPluginFlatpak             *self,
 	}
 	if (flatpak == NULL)
 		return TRUE;
-	return gs_flatpak_refine_app (flatpak, app, require_flags, interactive, FALSE, cancellable, error);
+	return gs_flatpak_refine_app (flatpak, app, require_flags, interactive, FALSE, event_callback, event_user_data, cancellable, error);
 }
 
 static void
@@ -603,6 +606,8 @@ refine_app (GsPluginFlatpak             *self,
             GsApp                       *app,
             GsPluginRefineRequireFlags   require_flags,
             gboolean                     interactive,
+            GsPluginEventCallback        event_callback,
+            void                        *event_user_data,
             GCancellable                *cancellable,
             GError                     **error)
 {
@@ -613,7 +618,7 @@ refine_app (GsPluginFlatpak             *self,
 		return TRUE;
 
 	/* get the runtime first */
-	if (!gs_plugin_flatpak_refine_app (self, app, require_flags, interactive, cancellable, error))
+	if (!gs_plugin_flatpak_refine_app (self, app, require_flags, interactive, event_callback, event_user_data, cancellable, error))
 		return FALSE;
 
 	GS_PROFILER_END_SCOPED (FlatpakRefineApp);
@@ -627,6 +632,8 @@ refine_app (GsPluginFlatpak             *self,
 			if (!gs_plugin_flatpak_refine_app (self, runtime,
 							   require_flags,
 							   interactive,
+							   event_callback,
+							   event_user_data,
 							   cancellable,
 							   error)) {
 				return FALSE;
@@ -676,6 +683,8 @@ refine_thread_cb (GTask        *task,
 	GsAppList *list = data->list;
 	GsPluginRefineRequireFlags require_flags = data->require_flags;
 	gboolean interactive = (data->job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
+	GsPluginEventCallback event_callback = NULL;  /* FIXME */
+	void *event_user_data = NULL;  /* FIXME */
 	g_autoptr(GPtrArray) array_components_by_id = NULL; /* (element-type GHashTable) */
 	g_autoptr(GPtrArray) array_components_by_bundle = NULL; /* (element-type GHashTable) */
 	g_autoptr(GsAppList) app_list = NULL;
@@ -685,7 +694,7 @@ refine_thread_cb (GTask        *task,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (self, app, require_flags, interactive, cancellable, &local_error)) {
+		if (!refine_app (self, app, require_flags, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -1298,7 +1307,7 @@ update_apps_thread_cb (GTask        *task,
 		/* Get any new state. Ignore failure and fall through to
 		 * refining the apps, since refreshing is not an entirely
 		 * necessary part of the update operation. */
-		if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, &local_error)) {
+		if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, data->event_callback, data->event_user_data, cancellable, &local_error)) {
 			gs_flatpak_error_convert (&local_error);
 			g_warning ("Error refreshing flatpak data for ‘%s’ after update: %s",
 				   gs_flatpak_get_id (flatpak), local_error->message);
@@ -1316,6 +1325,7 @@ update_apps_thread_cb (GTask        *task,
 			if (!gs_flatpak_refine_app (flatpak, app,
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
 						    interactive, TRUE,
+						    data->event_callback, data->event_user_data,
 						    cancellable, &local_error)) {
 				gs_flatpak_error_convert (&local_error);
 				g_warning ("Error refining app ‘%s’ after update: %s", ref, local_error->message);
@@ -1626,7 +1636,7 @@ uninstall_apps_thread_cb (GTask        *task,
 		/* Get any new state. Ignore failure and fall through to
 		 * refining the apps, since refreshing is not an entirely
 		 * necessary part of the uninstall operation. */
-		if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, &local_error)) {
+		if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, data->event_callback, data->event_user_data, cancellable, &local_error)) {
 			gs_flatpak_error_convert (&local_error);
 			g_debug ("Error refreshing flatpak data for ‘%s’ after uninstall: %s",
 				 gs_flatpak_get_id (flatpak), local_error->message);
@@ -1649,6 +1659,7 @@ uninstall_apps_thread_cb (GTask        *task,
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN |
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION,
 						    interactive, FALSE,
+						    data->event_callback, data->event_user_data,
 						    cancellable, &local_error)) {
 				gs_flatpak_error_convert (&local_error);
 				g_debug ("Error refining app ‘%s’ after uninstall: %s", ref, local_error->message);
@@ -2023,7 +2034,7 @@ install_apps_thread_cb (GTask        *task,
 		 * refining the apps, since refreshing is not an entirely
 		 * necessary part of the install operation. */
 		if (!(data->flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_DOWNLOAD) &&
-		    !gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, data->event_callback, data->event_user_data, cancellable, &local_error)) {
 			gs_flatpak_error_convert (&local_error);
 			g_warning ("Error refreshing flatpak data for ‘%s’ after install: %s",
 				   gs_flatpak_get_id (flatpak), local_error->message);
@@ -2043,6 +2054,7 @@ install_apps_thread_cb (GTask        *task,
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN |
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION,
 						    interactive, FALSE,
+						    data->event_callback, data->event_user_data,
 						    cancellable, &local_error)) {
 				gs_flatpak_error_convert (&local_error);
 				g_warning ("Error refining app ‘%s’ after install: %s", ref, local_error->message);
@@ -2191,12 +2203,14 @@ gs_plugin_flatpak_file_to_app_bundle (GsPluginFlatpak  *self,
 }
 
 static GsApp *
-gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
-                                   GFile            *file,
-                                   gboolean          interactive,
-                                   GsApp            *alternate_of,
-                                   GCancellable     *cancellable,
-                                   GError          **error)
+gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak        *self,
+                                   GFile                  *file,
+                                   gboolean                interactive,
+                                   GsApp                  *alternate_of,
+                                   GsPluginEventCallback   event_callback,
+                                   void                   *event_user_data,
+                                   GCancellable           *cancellable,
+                                   GError                **error)
 {
 	GsApp *runtime;
 	g_autofree gchar *ref = NULL;
@@ -2211,7 +2225,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
 
 	/* First make a quick GsApp to get the ref */
 	app = gs_flatpak_file_to_app_ref (flatpak_tmp, file, TRUE /* unrefined */,
-					  interactive, cancellable, error);
+					  interactive, event_callback, event_user_data, cancellable, error);
 	if (app == NULL)
 		return NULL;
 
@@ -2224,7 +2238,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
 	/* If not installed/available, make a fully refined GsApp */
 	g_clear_object (&app);
 	app = gs_flatpak_file_to_app_ref (flatpak_tmp, file, FALSE /* unrefined */,
-					  interactive, cancellable, error);
+					  interactive, event_callback, event_user_data, cancellable, error);
 	if (app == NULL)
 		return NULL;
 
@@ -2260,6 +2274,8 @@ gs_plugin_flatpak_file_to_app (GsPluginFlatpak *self,
 			       GFile *file,
 			       gboolean interactive,
 			       GsApp *alternate_of,
+			       GsPluginEventCallback event_callback,
+			       void *event_user_data,
 			       GCancellable *cancellable,
 			       GError **error)
 {
@@ -2285,14 +2301,14 @@ gs_plugin_flatpak_file_to_app (GsPluginFlatpak *self,
 	else if (g_strv_contains (mimetypes_repo, content_type))
 		app = gs_plugin_flatpak_file_to_app_repo (self, file, interactive, cancellable, error);
 	else if (g_strv_contains (mimetypes_ref, content_type))
-		app = gs_plugin_flatpak_file_to_app_ref (self, file, interactive, alternate_of, cancellable, error);
+		app = gs_plugin_flatpak_file_to_app_ref (self, file, interactive, alternate_of, event_callback, event_user_data, cancellable, error);
 
 	if (app != NULL) {
 		GsApp *runtime = gs_app_get_runtime (app);
 		/* Ensure the origin for the runtime is set */
 		if (runtime != NULL && gs_app_get_origin (runtime) == NULL) {
 			g_autoptr(GError) error_local = NULL;
-			if (!gs_plugin_flatpak_refine_app (self, runtime, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN, interactive, cancellable, &error_local))
+			if (!gs_plugin_flatpak_refine_app (self, runtime, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN, interactive, event_callback, event_user_data, cancellable, &error_local))
 				g_debug ("Failed to refine runtime: %s", error_local->message);
 		}
 		gs_plugin_flatpak_ensure_scope (GS_PLUGIN (self), app);
@@ -2317,7 +2333,7 @@ file_to_app_thread_cb (GTask *task,
 	GsPluginFileToAppData *data = task_data;
 	gboolean interactive = (data->flags & GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE) != 0;
 
-	app = gs_plugin_flatpak_file_to_app (self, data->file, interactive, NULL, cancellable, &local_error);
+	app = gs_plugin_flatpak_file_to_app (self, data->file, interactive, NULL, NULL, NULL, cancellable, &local_error);
 	if (app != NULL) {
 		g_autoptr(GsAppList) list = gs_app_list_new ();
 		gs_app_list_add (list, app);
@@ -2407,7 +2423,7 @@ refine_categories_thread_cb (GTask        *task,
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
 
-		if (!gs_flatpak_refine_category_sizes (flatpak, data->list, interactive, cancellable, &local_error)) {
+		if (!gs_flatpak_refine_category_sizes (flatpak, data->list, interactive, NULL, NULL, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -2461,6 +2477,8 @@ list_apps_thread_cb (GTask        *task,
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	GsPluginListAppsData *data = task_data;
 	gboolean interactive = (data->flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+	GsPluginEventCallback event_callback = NULL;  /* FIXME */
+	void *event_user_data = NULL;  /* FIXME */
 	GDateTime *released_since = NULL;
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppQueryTristate is_featured = GS_APP_QUERY_TRISTATE_UNSET;
@@ -2530,7 +2548,7 @@ list_apps_thread_cb (GTask        *task,
 	    gs_app_get_local_file (alternate_of) != NULL) {
 		g_autoptr(GsApp) app = NULL;
 		GFile *file = gs_app_get_local_file (alternate_of);
-		app = gs_plugin_flatpak_file_to_app (self, file, interactive, alternate_of, cancellable, NULL);
+		app = gs_plugin_flatpak_file_to_app (self, file, interactive, alternate_of, event_callback, event_user_data, cancellable, NULL);
 		if (app != NULL && app != alternate_of) {
 			gs_app_set_local_file (app, file);
 			if (gs_app_get_scope (alternate_of) == AS_COMPONENT_SCOPE_SYSTEM)
@@ -2548,25 +2566,25 @@ list_apps_thread_cb (GTask        *task,
 		const gchar * const provides_tag_strv[2] = { provides_tag, NULL };
 
 		if (released_since != NULL &&
-		    !gs_flatpak_add_recent (flatpak, list, age_secs, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_add_recent (flatpak, list, age_secs, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 
 		if (is_curated != GS_APP_QUERY_TRISTATE_UNSET &&
-		    !gs_flatpak_add_popular (flatpak, list, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_add_popular (flatpak, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 
 		if (is_featured != GS_APP_QUERY_TRISTATE_UNSET &&
-		    !gs_flatpak_add_featured (flatpak, list, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_add_featured (flatpak, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 
 		if (category != NULL &&
-		    !gs_flatpak_add_category_apps (flatpak, category, list, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_add_category_apps (flatpak, category, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -2578,25 +2596,25 @@ list_apps_thread_cb (GTask        *task,
 		}
 
 		if (deployment_featured != NULL &&
-		    !gs_flatpak_add_deployment_featured (flatpak, list, interactive, deployment_featured, cancellable, &local_error)) {
+		    !gs_flatpak_add_deployment_featured (flatpak, list, interactive, event_callback, event_user_data, deployment_featured, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 
 		if (developers != NULL &&
-		    !gs_flatpak_search_developer_apps (flatpak, developers, list, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_search_developer_apps (flatpak, developers, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 
 		if (keywords != NULL &&
-		    !gs_flatpak_search (flatpak, keywords, list, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_search (flatpak, keywords, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 
 		if (alternate_of != NULL &&
-		    !gs_flatpak_add_alternates (flatpak, alternate_of, list, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_add_alternates (flatpak, alternate_of, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -2606,19 +2624,19 @@ list_apps_thread_cb (GTask        *task,
 		 * future. */
 		if (provides_tag != NULL &&
 		    provides_type != GS_APP_QUERY_PROVIDES_UNKNOWN &&
-		    !gs_flatpak_search (flatpak, provides_tag_strv, list, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_search (flatpak, provides_tag_strv, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
 
 		if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
 			g_autoptr(GError) local_error2 = NULL;
-			if (!gs_flatpak_add_updates (flatpak, list, interactive, cancellable, &local_error2))
+			if (!gs_flatpak_add_updates (flatpak, list, interactive, event_callback, event_user_data, cancellable, &local_error2))
 				g_debug ("Failed to get updates for '%s': %s", gs_flatpak_get_id (flatpak), local_error2->message);
 		}
 
 		if (is_source == GS_APP_QUERY_TRISTATE_TRUE &&
-		    !gs_flatpak_add_sources (flatpak, list, interactive, cancellable, &local_error)) {
+		    !gs_flatpak_add_sources (flatpak, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -2673,7 +2691,7 @@ url_to_app_thread_cb (GTask *task,
 
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		if (!gs_flatpak_url_to_app (flatpak, list, data->url, interactive, cancellable, &local_error)) {
+		if (!gs_flatpak_url_to_app (flatpak, list, data->url, interactive, NULL, NULL, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
