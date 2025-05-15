@@ -511,6 +511,20 @@ gs_plugin_loader_app_is_compatible (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
+typedef struct {
+	gint64 begin_time_nsec;
+	GsPluginJob *plugin_job;  /* (owned) */
+} JobProcessData;
+
+static void
+job_process_data_free (JobProcessData *data)
+{
+	g_clear_object (&data->plugin_job);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (JobProcessData, job_process_data_free)
+
 /**
  * gs_plugin_loader_job_process_finish:
  * @plugin_loader: A #GsPluginLoader
@@ -2708,11 +2722,14 @@ run_job_cb (GObject      *source_object,
 {
 	GsPluginJob *plugin_job = GS_PLUGIN_JOB (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+#ifdef HAVE_SYSPROF
+	JobProcessData *data = g_task_get_task_data (task);
+#endif
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (g_task_get_source_object (task));
 	g_autoptr(GError) local_error = NULL;
 
 	GS_PROFILER_ADD_MARK_TAKE (PluginLoader,
-				   GPOINTER_TO_SIZE (g_task_get_task_data (task)),
+				   data->begin_time_nsec,
 				   g_strdup_printf ("process-thread:%s", G_OBJECT_TYPE_NAME (plugin_job)),
 				   gs_plugin_job_to_string (plugin_job));
 
@@ -2866,6 +2883,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GCancellable) cancellable_job = NULL;
 	g_autofree gchar *task_name = NULL;
+	g_autoptr(JobProcessData) data = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
@@ -2878,7 +2896,10 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 	g_task_set_name (task, task_name);
-	g_task_set_task_data (task, g_object_ref (plugin_job), (GDestroyNotify) g_object_unref);
+	data = g_new0 (JobProcessData, 1);
+	data->plugin_job = g_object_ref (plugin_job);
+	data->begin_time_nsec = 0;  /* set in job_process_cb() */
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) job_process_data_free);
 
 	g_atomic_int_inc (&plugin_loader->active_jobs);
 	g_object_weak_ref (G_OBJECT (task),
@@ -2912,13 +2933,14 @@ job_process_setup_complete_cb (GCancellable *cancellable,
 static void
 job_process_cb (GTask *task)
 {
-	g_autoptr(GsPluginJob) plugin_job = g_object_ref (g_task_get_task_data (task));
+	JobProcessData *data = g_task_get_task_data (task);
+	GsPluginJob *plugin_job = data->plugin_job;
 	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 
-	g_task_set_task_data (task, GSIZE_TO_POINTER (begin_time_nsec), NULL);
+	data->begin_time_nsec = begin_time_nsec;
 #endif
 
 	/* these change the pending count on the installed panel */
