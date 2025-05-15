@@ -3661,6 +3661,8 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 			  GsPluginRefineRequireFlags require_flags,
 			  GsAppState state,
 			  gboolean interactive,
+			  GsPluginEventCallback event_callback,
+			  void *event_user_data,
 			  GCancellable *cancellable)
 {
 	g_autoptr(XbSilo) silo = NULL;
@@ -3705,7 +3707,8 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		gs_plugin_report_event (self->plugin, event);
+		if (event_callback != NULL)
+			event_callback (self->plugin, event, event_user_data);
 	}
 }
 

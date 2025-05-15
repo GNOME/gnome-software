@@ -98,7 +98,7 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   installation. (Since: 47)
  * @install_apps_finish: (nullable): Finish method for @install_apps_async. Must
  *   be implemented if @install_apps_async is implemented. (Since: 47)
- * @uninstall_apps_async: (nullable): Uninstall apps. (Since: 47)
+ * @uninstall_apps_async: (nullable): Uninstall apps. (Since: 49)
  * @uninstall_apps_finish: (nullable): Finish method for @uninstall_apps_async.
  *   Must be implemented if @uninstall_apps_async is implemented. (Since: 47)
  * @cancel_offline_update_async: (nullable): Cancels the pending offline update. (Since: 47)
@@ -295,6 +295,8 @@ struct _GsPluginClass
 								 GsPluginUninstallAppsFlags	 flags,
 								 GsPluginProgressCallback	 progress_callback,
 								 gpointer			 progress_user_data,
+								 GsPluginEventCallback		 event_callback,
+								 void				*event_user_data,
 								 GsPluginAppNeedsUserActionCallback	app_needs_user_action_callback,
 								 gpointer				app_needs_user_action_data,
 								 GCancellable			*cancellable,

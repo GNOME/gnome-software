@@ -73,6 +73,8 @@ void		gs_flatpak_refine_addons	(GsFlatpak *self,
 						 GsPluginRefineRequireFlags require_flags,
 						 GsAppState state,
 						 gboolean interactive,
+						 GsPluginEventCallback event_callback,
+						 void *event_user_data,
 						 GCancellable *cancellable);
 gboolean	gs_flatpak_refine_app_state	(GsFlatpak		*self,
 						 GsApp			*app,

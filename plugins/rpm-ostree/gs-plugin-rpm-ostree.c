@@ -2005,6 +2005,8 @@ gs_plugin_rpm_ostree_uninstall_apps_async (GsPlugin                           *p
                                            GsPluginUninstallAppsFlags          flags,
                                            GsPluginProgressCallback            progress_callback,
                                            gpointer                            progress_user_data,
+                                           GsPluginEventCallback               event_callback,
+                                           void                               *event_user_data,
                                            GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                            gpointer                            app_needs_user_action_data,
                                            GCancellable                       *cancellable,
@@ -2017,6 +2019,7 @@ gs_plugin_rpm_ostree_uninstall_apps_async (GsPlugin                           *p
 
 	task = gs_plugin_uninstall_apps_data_new_task (plugin, apps, flags,
 						       progress_callback, progress_user_data,
+						       event_callback, event_user_data,
 						       app_needs_user_action_callback, app_needs_user_action_data,
 						       cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_uninstall_apps_async);
