@@ -206,7 +206,7 @@ gs_cmd_install_remove_exec (GsCmdSelf *self, gboolean is_install, const gchar *n
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", self->require_flags,
 				  "max-results", self->max_results,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  "license-type", get_query_license_type (self),
 				  NULL);
@@ -404,7 +404,7 @@ main (int argc, char **argv)
 			query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
 						  "refine-require-flags", self->require_flags,
 						  "max-results", self->max_results,
-						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 						  "license-type", get_query_license_type (self),
 						  NULL);
 
@@ -428,7 +428,7 @@ main (int argc, char **argv)
 			query = gs_app_query_new ("keywords", keywords,
 						  "refine-require-flags", self->require_flags,
 						  "max-results", self->max_results,
-						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 						  "sort-func", gs_utils_app_sort_match_value,
 						  "license-type", get_query_license_type (self),
 						  NULL);
@@ -453,7 +453,7 @@ main (int argc, char **argv)
 			query = gs_app_query_new ("alternate-of", app,
 						  "refine-require-flags", self->require_flags,
 						  "max-results", self->max_results,
-						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 						  "sort-func", gs_utils_app_sort_priority,
 						  "license-type", get_query_license_type (self),
 						  NULL);
@@ -512,9 +512,8 @@ main (int argc, char **argv)
 		file = g_file_new_for_path (argv[2]);
 		plugin_job = gs_plugin_job_file_to_app_new (file,
 							    self->interactive ? GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE :
-							    GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-		gs_plugin_job_set_refine_require_flags (plugin_job, self->require_flags);
-		gs_plugin_job_set_max_results (plugin_job, self->max_results);
+							    GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+							    self->require_flags);
 		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job, NULL, &error);
 		if (app == NULL) {
 			ret = FALSE;
@@ -526,9 +525,8 @@ main (int argc, char **argv)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_url_to_app_new (argv[2],
 							   self->interactive ? GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE :
-							   GS_PLUGIN_URL_TO_APP_FLAGS_NONE);
-		gs_plugin_job_set_refine_require_flags (plugin_job, self->require_flags);
-		gs_plugin_job_set_max_results (plugin_job, self->max_results);
+							   GS_PLUGIN_URL_TO_APP_FLAGS_NONE,
+							   self->require_flags);
 		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (app == NULL) {

@@ -15,7 +15,7 @@
  *
  * This class is a wrapper around #GsPluginClass.file_to_app_async
  * calling it for all loaded plugins, with #GsPluginJobRefine used to refine the
- * results.
+ * results using the given set of refine flags.
  *
  * Retrieve the resulting #GsAppList using
  * gs_plugin_job_file_to_app_get_result_list().
@@ -43,6 +43,7 @@ struct _GsPluginJobFileToApp
 
 	/* Input arguments. */
 	GFile *file;  /* (owned) (not nullable) */
+	GsPluginRefineRequireFlags require_flags;
 	GsPluginFileToAppFlags flags;
 
 	/* In-progress data. */
@@ -58,7 +59,8 @@ struct _GsPluginJobFileToApp
 G_DEFINE_TYPE (GsPluginJobFileToApp, gs_plugin_job_file_to_app, GS_TYPE_PLUGIN_JOB)
 
 typedef enum {
-	PROP_FLAGS = 1,
+	PROP_REFINE_REQUIRE_FLAGS = 1,
+	PROP_FLAGS,
 	PROP_FILE,
 } GsPluginJobFileToAppProperty;
 
@@ -88,6 +90,9 @@ gs_plugin_job_file_to_app_get_property (GObject    *object,
 	GsPluginJobFileToApp *self = GS_PLUGIN_JOB_FILE_TO_APP (object);
 
 	switch ((GsPluginJobFileToAppProperty) prop_id) {
+	case PROP_REFINE_REQUIRE_FLAGS:
+		g_value_set_flags (value, self->require_flags);
+		break;
 	case PROP_FLAGS:
 		g_value_set_flags (value, self->flags);
 		break;
@@ -109,6 +114,12 @@ gs_plugin_job_file_to_app_set_property (GObject      *object,
 	GsPluginJobFileToApp *self = GS_PLUGIN_JOB_FILE_TO_APP (object);
 
 	switch ((GsPluginJobFileToAppProperty) prop_id) {
+	case PROP_REFINE_REQUIRE_FLAGS:
+		/* Construct only. */
+		g_assert (self->require_flags == 0);
+		self->require_flags = g_value_get_flags (value);
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
 	case PROP_FLAGS:
 		/* Construct only. */
 		g_assert (self->flags == 0);
@@ -246,16 +257,14 @@ finish_op (GTask  *task,
 
 	/* Once all the file-to-app operations are complete, refine the results. */
 	if (self->in_progress_list != NULL) {
-		GsPluginRefineRequireFlags require_flags = gs_plugin_job_get_refine_require_flags (GS_PLUGIN_JOB (self));
-
-		if (require_flags != GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE) {
+		if (self->require_flags != GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE) {
 			g_autoptr(GsPluginJob) refine_job = NULL;
 			GsPluginRefineFlags job_flags;
 
 			/* to not have filtered out repositories */
 			job_flags = GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING;
 
-			refine_job = gs_plugin_job_refine_new (self->in_progress_list, job_flags, require_flags);
+			refine_job = gs_plugin_job_refine_new (self->in_progress_list, job_flags, self->require_flags);
 			gs_plugin_loader_job_process_async (plugin_loader, refine_job, cancellable,
 							    refine_job_finished_cb, g_object_ref (task));
 			return;
@@ -380,6 +389,20 @@ gs_plugin_job_file_to_app_class_init (GsPluginJobFileToAppClass *klass)
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
+	 * GsPluginJobFileToApp:refine-require-flags:
+	 *
+	 * Flags to specify how to refine the returned apps.
+	 *
+	 * Since: 49
+	 */
+	props[PROP_REFINE_REQUIRE_FLAGS] =
+		g_param_spec_flags ("refine-require-flags", "Refine Flags",
+				    "Flags to specify how to refine the returned apps.",
+				    GS_TYPE_PLUGIN_REFINE_REQUIRE_FLAGS, GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
 	 * GsPluginJobFileToApp:flags:
 	 *
 	 * Flags affecting how the operation runs.
@@ -406,20 +429,23 @@ gs_plugin_job_file_to_app_init (GsPluginJobFileToApp *self)
  * gs_plugin_job_file_to_app_new:
  * @file: (not nullable) (transfer none): an #GFile to run the operation on
  * @flags: flags affecting how the operation runs
+ * @require_flags: flags to affect how the results are refined
  *
  * Create a new #GsPluginJobFileToApp to convert the given @file.
  *
  * Returns: (transfer full): a new #GsPluginJobFileToApp
- * Since: 47
+ * Since: 49
  */
 GsPluginJob *
-gs_plugin_job_file_to_app_new (GFile		     *file,
-			       GsPluginFileToAppFlags flags)
+gs_plugin_job_file_to_app_new (GFile                      *file,
+                               GsPluginFileToAppFlags      flags,
+                               GsPluginRefineRequireFlags  require_flags)
 {
 	g_return_val_if_fail (G_IS_FILE (file), NULL);
 
 	return g_object_new (GS_TYPE_PLUGIN_JOB_FILE_TO_APP,
 			     "file", file,
+			     "refine-require-flags", require_flags,
 			     "flags", flags,
 			     NULL);
 }

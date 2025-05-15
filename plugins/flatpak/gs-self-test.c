@@ -95,7 +95,8 @@ gs_plugins_flatpak_repo_non_ascii_func (GsPluginLoader *plugin_loader)
 	ret = gs_flatpak_test_write_repo_file (fn, testdir, &file, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -139,7 +140,8 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 
 	/* load local file */
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -190,7 +192,8 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	/* try again, check state is correct */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
 	app2 = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -353,7 +356,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	keywords[0] = "flatpak";
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -375,7 +378,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_KUDOS |
 							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME |
 							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -603,7 +606,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	keywords[0] = "Bingo";
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -733,9 +736,9 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 
 	/* convert it to a GsApp */
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
-							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -860,9 +863,9 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 
 	/* convert it to a GsApp */
-	plugin_job = gs_plugin_job_file_to_app_new (file_repo, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
-							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
+	plugin_job = gs_plugin_job_file_to_app_new (file_repo, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app_src = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -894,9 +897,9 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
-							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1040,8 +1043,8 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
@@ -1132,7 +1135,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	keywords[0] = "runtime";
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -1200,8 +1203,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, require_flags);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE, require_flags);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
@@ -1253,7 +1255,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	keywords[0] = "chiron";
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -1269,9 +1271,9 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* convert it to a GsApp again, and get the installed thing */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE);
-	gs_plugin_job_set_refine_require_flags (plugin_job, GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
-							    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
+	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION |
+						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME);
 	app2 = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (app2 != NULL);
@@ -1342,7 +1344,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	keywords[0] = "chiron";
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -1465,7 +1467,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
 							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -1723,7 +1725,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	keywords[0] = "Bingo";
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
@@ -1860,7 +1862,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	keywords[0] = "Bingo";
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);

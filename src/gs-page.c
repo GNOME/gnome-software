@@ -52,7 +52,6 @@ typedef struct {
 	AdwDialog	*dialog_install;
 	GsPluginJob	*job;  /* (not nullable) (owned) */
 	GsShellInteraction interaction;
-	gboolean	 propagate_error;
 	gboolean	 remove_app_data_dir;
 	gulong		 app_needs_user_action_id;
 } GsPageHelper;
@@ -134,14 +133,10 @@ gs_page_app_installed_cb (GObject *source,
 		return;
 	}
 	if (!ret) {
-		if (helper->propagate_error) {
-			gs_plugin_loader_claim_job_error (plugin_loader,
-							  NULL,
-							  helper->job,
-							  error);
-		} else {
-			g_warning ("failed to install %s: %s", gs_app_get_id (helper->app), error->message);
-		}
+		gs_plugin_loader_claim_job_error (plugin_loader,
+						  NULL,
+						  helper->job,
+						  error);
 		return;
 	}
 
@@ -193,14 +188,10 @@ gs_page_app_removed_cb (GObject *source,
 		return;
 	}
 	if (!ret) {
-		if (helper->propagate_error) {
-			gs_plugin_loader_claim_job_error (plugin_loader,
-							  NULL,
-							  helper->job,
-							  error);
-		} else {
-			g_warning ("failed to uninstall %s: %s", gs_app_get_id (helper->app), error->message);
-		}
+		gs_plugin_loader_claim_job_error (plugin_loader,
+						  NULL,
+						  helper->job,
+						  error);
 		return;
 	}
 
@@ -280,7 +271,6 @@ gs_page_install_app (GsPage *page,
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
 	helper->interaction = interaction;
-	helper->propagate_error = TRUE;
 
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
 		plugin_job = gs_plugin_job_manage_repository_new (helper->app,
@@ -296,7 +286,6 @@ gs_page_install_app (GsPage *page,
 
 	g_assert (helper->job == NULL);
 	helper->job = g_object_ref (plugin_job);
-	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,
@@ -330,7 +319,6 @@ gs_page_update_app_response_cb (AdwAlertDialog *dialog,
 
 	g_assert (helper->job == NULL);
 	helper->job = g_object_ref (plugin_job);
-	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,
@@ -367,7 +355,6 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
-	helper->propagate_error = TRUE;
 
 	/* generic fallback */
 	list = gs_app_list_new ();
@@ -378,7 +365,6 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 	g_assert (helper->job == NULL);
 	helper->job = g_object_ref (plugin_job);
-	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 	helper->app_needs_user_action_id =
 		g_signal_connect (plugin_job, "app-needs-user-action",
@@ -411,7 +397,6 @@ update_app_needs_user_action_cb (GsPluginJobUpdateApps *plugin_job,
 	new_helper->app = g_object_ref (orig_helper->app);
 	new_helper->page = g_object_ref (orig_helper->page);
 	new_helper->cancellable = g_object_ref (orig_helper->cancellable);
-	new_helper->propagate_error = orig_helper->propagate_error;
 
 	/* TRANSLATORS: this is a prompt message, and
 	 * '%s' is an app summary, e.g. 'GNOME Clocks' */
@@ -485,7 +470,6 @@ gs_page_remove_app_response_cb (AdwAlertDialog *dialog,
 
 	g_assert (helper->job == NULL);
 	helper->job = g_object_ref (plugin_job);
-	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    helper->cancellable,
@@ -528,7 +512,6 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
-	helper->propagate_error = TRUE;
 	helper->interaction = GS_SHELL_INTERACTION_FULL;
 	if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -547,7 +530,6 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 		g_assert (helper->job == NULL);
 		helper->job = g_object_ref (plugin_job);
-		gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
 
 		g_debug ("uninstall %s", gs_app_get_id (app));
 		gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,

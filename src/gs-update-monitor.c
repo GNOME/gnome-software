@@ -533,7 +533,6 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 
 		plugin_job = gs_plugin_job_update_apps_new (update_online,
 							    GS_PLUGIN_UPDATE_APPS_FLAGS_NONE);
-		gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
 						    monitor->update_cancellable,
@@ -617,7 +616,6 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		 * preferences */
 		plugin_job = gs_plugin_job_update_apps_new (apps,
 							    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY);
-		gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 
 		data = g_new0 (UpdateAppsData, 1);
 		data->monitor = g_object_ref (monitor);
@@ -662,7 +660,6 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 
 			plugin_job = gs_plugin_job_update_apps_new (update_online,
 								    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY);
-			gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 
 			data = g_new0 (UpdateAppsData, 1);
 			data->monitor = g_object_ref (monitor);
@@ -1417,7 +1414,6 @@ cleanup_notifications_cb (gpointer user_data)
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-	gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
 					    monitor->shutdown_cancellable,

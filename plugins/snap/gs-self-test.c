@@ -280,7 +280,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
 							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_SCREENSHOTS,
-				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
