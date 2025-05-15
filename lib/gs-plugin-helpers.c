@@ -346,6 +346,11 @@ gs_plugin_refine_categories_data_free (GsPluginRefineCategoriesData *data)
  * gs_plugin_install_apps_data_new:
  * @apps: list of apps to install
  * @flags: install flags
+ * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_user_data: data to pass to @progress_callback
+ * @app_needs_user_action_callback: (nullable): function to call to ask the
+ *   user for a decision
+ * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.install_apps_async.
  *
@@ -438,6 +443,11 @@ gs_plugin_install_apps_data_free (GsPluginInstallAppsData *data)
  * gs_plugin_uninstall_apps_data_new:
  * @apps: list of apps to uninstall
  * @flags: uninstall flags
+ * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_user_data: data to pass to @progress_callback
+ * @app_needs_user_action_callback: (nullable): function to call to ask the
+ *   user for a decision
+ * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.uninstall_apps_async.
  *
@@ -530,6 +540,11 @@ gs_plugin_uninstall_apps_data_free (GsPluginUninstallAppsData *data)
  * gs_plugin_update_apps_data_new:
  * @apps: list of apps to update
  * @flags: update flags
+ * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_user_data: data to pass to @progress_callback
+ * @app_needs_user_action_callback: (nullable): function to call to ask the
+ *   user for a decision
+ * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.update_apps_async.
  *
