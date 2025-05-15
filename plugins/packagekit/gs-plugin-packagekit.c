@@ -3245,6 +3245,19 @@ async_result_cb (GObject      *source_object,
 	g_main_context_wakeup (g_main_context_get_thread_default ());
 }
 
+/* Any events from the auto-prepare-update thread need to be reported via
+ * `GsPlugin`’s event code (rather than, as is more typical, a
+ * `GsPluginEventCallback` provided by a `GsPluginJob`) because this thread is
+ * started in response to an external system change, and is not tied to any
+ * `GsPluginJob`. */
+static void
+prepare_update_event_cb (GsPlugin      *plugin,
+                         GsPluginEvent *event,
+                         void          *user_data)
+{
+	gs_plugin_report_event (plugin, event);
+}
+
 static void
 gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 						 gpointer source_object,
@@ -3267,7 +3280,7 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 		g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
 		g_autoptr(GAsyncResult) result = NULL;
 
-		gs_plugin_packagekit_download_async (self, list, interactive, NULL, NULL, cancellable, async_result_cb, &result);
+		gs_plugin_packagekit_download_async (self, list, interactive, prepare_update_event_cb, NULL, cancellable, async_result_cb, &result);
 		while (result == NULL)
 			g_main_context_iteration (context, TRUE);
 
@@ -4945,8 +4958,6 @@ download_get_updates_cb (GObject      *source_object,
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			if (data->event_callback != NULL)
 				data->event_callback (g_task_get_source_object (task), event, data->event_user_data);
-			else
-				gs_plugin_report_event (g_task_get_source_object (task), event);
 		}
 		finish_download (task, g_steal_pointer (&local_error));
 		return;
@@ -5011,8 +5022,6 @@ download_update_packages_cb (GObject      *source_object,
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			if (data->event_callback != NULL)
 				data->event_callback (g_task_get_source_object (task), event, data->event_user_data);
-			else
-				gs_plugin_report_event (g_task_get_source_object (task), event);
 		}
 		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 		finish_download (task, g_steal_pointer (&local_error));
