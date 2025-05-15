@@ -1518,8 +1518,6 @@ install_install_cb (GObject      *source_object,
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		if (data->event_callback != NULL)
 			data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
-		else
-			gs_plugin_report_event (GS_PLUGIN (self), event);
 
 		gs_app_set_state_recover (data->app);
 
@@ -1968,8 +1966,6 @@ finish_install_or_update_apps_op (GTask  *task,
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		if (data->event_callback != NULL)
 			data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
-		else
-			gs_plugin_report_event (GS_PLUGIN (self), event);
 	}
 
 	if (error_owned != NULL && data->saved_error == NULL)
@@ -1996,6 +1992,8 @@ gs_plugin_fwupd_update_apps_async (GsPlugin                           *plugin,
                                    GsPluginUpdateAppsFlags             flags,
                                    GsPluginProgressCallback            progress_callback,
                                    gpointer                            progress_user_data,
+                                   GsPluginEventCallback               event_callback,
+                                   void                               *event_user_data,
                                    GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                    gpointer                            app_needs_user_action_data,
                                    GCancellable                       *cancellable,
@@ -2006,7 +2004,7 @@ gs_plugin_fwupd_update_apps_async (GsPlugin                           *plugin,
 
 	install_or_update_apps_impl (self, apps, -1, flags,
 				     progress_callback, progress_user_data,
-				     NULL, NULL,
+				     event_callback, event_user_data,
 				     app_needs_user_action_callback, app_needs_user_action_data,
 				     cancellable, callback, user_data);
 }

@@ -208,6 +208,9 @@ static void plugin_progress_cb (GsPlugin *plugin,
                                 guint     progress,
                                 gpointer  user_data);
 static gboolean progress_cb (gpointer user_data);
+static void plugin_event_cb (GsPlugin      *plugin,
+                             GsPluginEvent *event,
+                             void          *user_data);
 static void plugin_update_apps_cb (GObject      *source_object,
                                    GAsyncResult *result,
                                    gpointer      user_data);
@@ -280,6 +283,8 @@ gs_plugin_job_update_apps_run_async (GsPluginJob         *job,
 						 self->apps,
 						 self->flags,
 						 plugin_progress_cb,
+						 task,
+						 plugin_event_cb,
 						 task,
 						 app_needs_user_action_cb,
 						 task,
@@ -359,6 +364,17 @@ progress_cb (gpointer user_data)
 }
 
 static void
+plugin_event_cb (GsPlugin      *plugin,
+                 GsPluginEvent *event,
+                 void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginJob *plugin_job = g_task_get_source_object (task);
+
+	gs_plugin_job_emit_event (plugin_job, plugin, event);
+}
+
+static void
 plugin_update_apps_cb (GObject      *source_object,
                        GAsyncResult *result,
                        gpointer      user_data)
@@ -373,7 +389,7 @@ plugin_update_apps_cb (GObject      *source_object,
 	 * that other plugins don’t get blocked.
 	 *
 	 * If plugins produce errors which should be reported to the user, they
-	 * should report them directly by calling gs_plugin_report_event().
+	 * should report them directly by calling event_callback().
 	 * #GsPluginJobUpdateApps cannot do this as it doesn’t know which errors
 	 * are interesting to the user and which are useless. */
 	if (!plugin_class->update_apps_finish (plugin, result, &local_error) &&

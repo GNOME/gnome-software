@@ -210,6 +210,8 @@ gs_rpmostree_error_convert (GError **perror)
 static void
 gs_rpm_ostree_task_return_error_with_gui (GsPluginRpmOstree *self,
 					  GTask *task,
+					  GsPluginEventCallback event_callback,
+					  void *event_user_data,
 					  GError *in_error,
 					  const gchar *error_prefix,
 					  gboolean interactive)
@@ -228,7 +230,8 @@ gs_rpm_ostree_task_return_error_with_gui (GsPluginRpmOstree *self,
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		gs_plugin_report_event (GS_PLUGIN (self), event);
+		if (event_callback != NULL)
+			event_callback (GS_PLUGIN (self), event, event_user_data);
 	}
 
 	g_task_return_error (task, g_steal_pointer (&local_error));
@@ -1362,6 +1365,8 @@ gs_plugin_rpm_ostree_update_apps_async (GsPlugin                           *plug
                                         GsPluginUpdateAppsFlags             flags,
                                         GsPluginProgressCallback            progress_callback,
                                         gpointer                            progress_user_data,
+                                        GsPluginEventCallback               event_callback,
+                                        void                               *event_user_data,
                                         GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                         gpointer                            app_needs_user_action_data,
                                         GCancellable                       *cancellable,
@@ -1374,6 +1379,7 @@ gs_plugin_rpm_ostree_update_apps_async (GsPlugin                           *plug
 
 	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
 						    progress_callback, progress_user_data,
+						    event_callback, event_user_data,
 						    app_needs_user_action_callback, app_needs_user_action_data,
 						    cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_update_apps_async);
@@ -1412,7 +1418,7 @@ update_apps_thread_cb (GTask        *task,
 		gboolean done;
 
 		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-			gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
+			gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
 			return;
 		}
 
@@ -1438,14 +1444,14 @@ update_apps_thread_cb (GTask        *task,
 				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 					g_clear_error (&local_error);
 					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-						gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
+						gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
 						return;
 					}
 					done = FALSE;
 					continue;
 				}
 				gs_rpmostree_error_convert (&local_error);
-				gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
+				gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
 				return;
 			}
 		}
@@ -1458,7 +1464,7 @@ update_apps_thread_cb (GTask        *task,
 		                                                 &local_error)) {
 			gs_app_list_override_progress (data->apps, GS_APP_PROGRESS_UNKNOWN);
 			gs_rpmostree_error_convert (&local_error);
-			gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
+			gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
 			return;
 		}
 
@@ -1497,7 +1503,7 @@ update_apps_thread_cb (GTask        *task,
 		/* we don't currently put all updates in the OsUpdate proxy app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
 			if (!trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
-				gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
+				gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
 				return;
 			}
 		}
@@ -1507,7 +1513,7 @@ update_apps_thread_cb (GTask        *task,
 			GsApp *app_tmp = gs_app_list_index (related, j);
 
 			if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
-				gs_rpm_ostree_task_return_error_with_gui (self, task, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
+				gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
 				return;
 			}
 		}

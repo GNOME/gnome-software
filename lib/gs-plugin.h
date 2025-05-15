@@ -91,7 +91,7 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   @refine_categories_async. Must be implemented if @refine_categories_async
  *   is implemented. (Since: 43)
  * @update_apps_async: (nullable): Update apps or the OS, or download updates
- *   ready for installation. (Since: 44)
+ *   ready for installation. (Since: 49)
  * @update_apps_finish: (nullable): Finish method for @update_apps_async. Must
  *   be implemented if @update_apps_async is implemented. (Since: 44)
  * @install_apps_async: (nullable): Install apps, or download them ready for
@@ -267,6 +267,8 @@ struct _GsPluginClass
 								 GsPluginUpdateAppsFlags	 flags,
 								 GsPluginProgressCallback	 progress_callback,
 								 gpointer			 progress_user_data,
+								 GsPluginEventCallback		 event_callback,
+								 void				*event_user_data,
 								 GsPluginAppNeedsUserActionCallback	app_needs_user_action_callback,
 								 gpointer				app_needs_user_action_data,
 								 GCancellable			*cancellable,

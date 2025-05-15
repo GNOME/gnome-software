@@ -566,6 +566,8 @@ gs_plugin_uninstall_apps_data_free (GsPluginUninstallAppsData *data)
  * @flags: update flags
  * @progress_callback: (nullable): function to call to notify of progress
  * @progress_user_data: data to pass to @progress_callback
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  * @app_needs_user_action_callback: (nullable): function to call to ask the
  *   user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
@@ -573,13 +575,15 @@ gs_plugin_uninstall_apps_data_free (GsPluginUninstallAppsData *data)
  * Context data for a call to #GsPluginClass.update_apps_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 44
+ * Since: 49
  */
 GsPluginUpdateAppsData *
 gs_plugin_update_apps_data_new (GsAppList                          *apps,
                                 GsPluginUpdateAppsFlags             flags,
                                 GsPluginProgressCallback            progress_callback,
                                 gpointer                            progress_user_data,
+                                GsPluginEventCallback               event_callback,
+                                void                               *event_user_data,
                                 GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                 gpointer                            app_needs_user_action_data)
 {
@@ -588,6 +592,8 @@ gs_plugin_update_apps_data_new (GsAppList                          *apps,
 	data->flags = flags;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 	data->app_needs_user_action_callback = app_needs_user_action_callback;
 	data->app_needs_user_action_data = app_needs_user_action_data;
 
@@ -601,6 +607,8 @@ gs_plugin_update_apps_data_new (GsAppList                          *apps,
  * @flags: update flags
  * @progress_callback: (nullable): function to call to notify of progress
  * @progress_user_data: data to pass to @progress_callback
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  * @app_needs_user_action_callback: (nullable): function to call to ask the
  *   user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
@@ -616,7 +624,7 @@ gs_plugin_update_apps_data_new (GsAppList                          *apps,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 44
+ * Since: 49
  */
 GTask *
 gs_plugin_update_apps_data_new_task (gpointer                            source_object,
@@ -624,6 +632,8 @@ gs_plugin_update_apps_data_new_task (gpointer                            source_
                                      GsPluginUpdateAppsFlags             flags,
                                      GsPluginProgressCallback            progress_callback,
                                      gpointer                            progress_user_data,
+                                     GsPluginEventCallback               event_callback,
+                                     void                               *event_user_data,
                                      GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                      gpointer                            app_needs_user_action_data,
                                      GCancellable                       *cancellable,
@@ -636,6 +646,8 @@ gs_plugin_update_apps_data_new_task (gpointer                            source_
 							      flags,
 							      progress_callback,
 							      progress_user_data,
+							      event_callback,
+							      event_user_data,
 							      app_needs_user_action_callback,
 							      app_needs_user_action_data),
 			      (GDestroyNotify) gs_plugin_update_apps_data_free);
