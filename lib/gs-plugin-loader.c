@@ -514,11 +514,13 @@ gs_plugin_loader_app_is_compatible (GsPluginLoader *plugin_loader,
 typedef struct {
 	gint64 begin_time_nsec;
 	GsPluginJob *plugin_job;  /* (owned) */
+	unsigned long event_handler_id;
 } JobProcessData;
 
 static void
 job_process_data_free (JobProcessData *data)
 {
+	g_clear_signal_handler (&data->event_handler_id, data->plugin_job);
 	g_clear_object (&data->plugin_job);
 	g_free (data);
 }
@@ -2806,6 +2808,10 @@ plugin_loader_task_freed_cb (gpointer user_data,
 	}
 }
 
+static void job_process_event_cb (GsPluginJob   *plugin_job,
+                                  GsPlugin      *plugin,
+                                  GsPluginEvent *event,
+                                  void          *user_data);
 static gboolean job_process_setup_complete_cb (GCancellable *cancellable,
                                                gpointer      user_data);
 static void job_process_cb (GTask *task);
@@ -2849,6 +2855,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	data = g_new0 (JobProcessData, 1);
 	data->plugin_job = g_object_ref (plugin_job);
 	data->begin_time_nsec = 0;  /* set in job_process_cb() */
+	data->event_handler_id = g_signal_connect (plugin_job, "event", G_CALLBACK (job_process_event_cb), task);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) job_process_data_free);
 
 	g_atomic_int_inc (&plugin_loader->active_jobs);
@@ -2867,6 +2874,18 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		g_autoptr(GSource) cancellable_source = g_cancellable_source_new (plugin_loader->setup_complete_cancellable);
 		g_task_attach_source (task, cancellable_source, G_SOURCE_FUNC (job_process_setup_complete_cb));
 	}
+}
+
+static void
+job_process_event_cb (GsPluginJob   *plugin_job,
+                      GsPlugin      *plugin,
+                      GsPluginEvent *event,
+                      void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
+
+	gs_plugin_loader_add_event (plugin_loader, event);
 }
 
 static gboolean
