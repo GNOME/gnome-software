@@ -1398,8 +1398,6 @@ gs_flatpak_cover_addons_in_transaction (GsPlugin              *plugin,
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		if (event_callback != NULL)
 			event_callback (plugin, event, event_user_data);
-		else
-			gs_plugin_report_event (plugin, event);
 	}
 }
 
@@ -1725,6 +1723,8 @@ gs_plugin_flatpak_install_apps_async (GsPlugin                           *plugin
                                       GsPluginInstallAppsFlags            flags,
                                       GsPluginProgressCallback            progress_callback,
                                       gpointer                            progress_user_data,
+                                      GsPluginEventCallback               event_callback,
+                                      void                               *event_user_data,
                                       GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                       gpointer                            app_needs_user_action_data,
                                       GCancellable                       *cancellable,
@@ -1737,6 +1737,7 @@ gs_plugin_flatpak_install_apps_async (GsPlugin                           *plugin
 
 	task = gs_plugin_install_apps_data_new_task (plugin, apps, flags,
 						     progress_callback, progress_user_data,
+						     event_callback, event_user_data,
 						     app_needs_user_action_callback, app_needs_user_action_data,
 						     cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_install_apps_async);
@@ -1827,7 +1828,8 @@ install_apps_thread_cb (GTask        *task,
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			gs_plugin_report_event (GS_PLUGIN (self), event);
+			if (data->event_callback != NULL)
+				data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
 			g_clear_error (&local_error);
 
 			remove_schedule_entry (schedule_entry_handle);
@@ -1927,14 +1929,16 @@ install_apps_thread_cb (GTask        *task,
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				gs_plugin_report_event (GS_PLUGIN (self), event);
+				if (data->event_callback != NULL)
+					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
 				g_clear_error (&local_error);
 
 				continue;
 			}
 
 			gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_INSTALLING, interactive,
-								NULL, NULL);
+								data->event_callback,
+								data->event_user_data);
 		}
 
 		/* run transaction */
@@ -1996,7 +2000,8 @@ install_apps_thread_cb (GTask        *task,
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				gs_plugin_report_event (GS_PLUGIN (self), event);
+				if (data->event_callback != NULL)
+					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
 				g_clear_error (&local_error);
 
 				remove_schedule_entry (schedule_entry_handle);
@@ -2044,8 +2049,8 @@ install_apps_thread_cb (GTask        *task,
 						  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID,
 						  GS_APP_STATE_INSTALLING,
 						  interactive,
-						  NULL,
-						  NULL,
+						  data->event_callback,
+						  data->event_user_data,
 						  cancellable);
 		}
 

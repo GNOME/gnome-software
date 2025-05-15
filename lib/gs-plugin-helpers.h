@@ -101,6 +101,8 @@ typedef struct {
 	GsPluginInstallAppsFlags flags;
 	GsPluginProgressCallback progress_callback;
 	gpointer progress_user_data;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
 	gpointer app_needs_user_action_data;
 } GsPluginInstallAppsData;
@@ -109,6 +111,8 @@ GsPluginInstallAppsData *gs_plugin_install_apps_data_new (GsAppList             
                                                           GsPluginInstallAppsFlags            flags,
                                                           GsPluginProgressCallback            progress_callback,
                                                           gpointer                            progress_user_data,
+                                                          GsPluginEventCallback               event_callback,
+                                                          void                               *event_user_data,
                                                           GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                                           gpointer                            app_needs_user_action_data);
 GTask *gs_plugin_install_apps_data_new_task (gpointer                            source_object,
@@ -116,6 +120,8 @@ GTask *gs_plugin_install_apps_data_new_task (gpointer                           
                                              GsPluginInstallAppsFlags            flags,
                                              GsPluginProgressCallback            progress_callback,
                                              gpointer                            progress_user_data,
+                                             GsPluginEventCallback               event_callback,
+                                             void                               *event_user_data,
                                              GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                              gpointer                            app_needs_user_action_data,
                                              GCancellable                       *cancellable,

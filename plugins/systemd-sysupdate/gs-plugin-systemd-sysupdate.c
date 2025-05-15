@@ -2610,6 +2610,8 @@ gs_plugin_systemd_sysupdate_install_apps_async (GsPlugin                        
                                                 GsPluginInstallAppsFlags            flags,
                                                 GsPluginProgressCallback            progress_callback,
                                                 gpointer                            progress_user_data,
+                                                GsPluginEventCallback               event_callback,
+                                                void                               *event_user_data,
                                                 GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                                 gpointer                            app_needs_user_action_data,
                                                 GCancellable                       *cancellable,
