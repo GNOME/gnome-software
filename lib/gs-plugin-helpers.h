@@ -40,10 +40,14 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefineData, gs_plugin_refine_data_free)
 typedef struct {
 	guint64 cache_age_secs;
 	GsPluginRefreshMetadataFlags flags;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 } GsPluginRefreshMetadataData;
 
-GsPluginRefreshMetadataData *gs_plugin_refresh_metadata_data_new (guint64                      cache_age_secs,
-                                                                  GsPluginRefreshMetadataFlags flags);
+GsPluginRefreshMetadataData *gs_plugin_refresh_metadata_data_new (guint64                       cache_age_secs,
+                                                                  GsPluginRefreshMetadataFlags  flags,
+                                                                  GsPluginEventCallback         event_callback,
+                                                                  void                         *event_user_data);
 void gs_plugin_refresh_metadata_data_free (GsPluginRefreshMetadataData *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefreshMetadataData, gs_plugin_refresh_metadata_data_free)
 

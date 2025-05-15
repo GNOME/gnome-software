@@ -1101,6 +1101,8 @@ static void
 gs_plugin_rpm_ostree_refresh_metadata_async (GsPlugin                     *plugin,
                                              guint64                       cache_age_secs,
                                              GsPluginRefreshMetadataFlags  flags,
+                                             GsPluginEventCallback         event_callback,
+                                             void                         *event_user_data,
                                              GCancellable                 *cancellable,
                                              GAsyncReadyCallback           callback,
                                              gpointer                      user_data)
@@ -1111,7 +1113,7 @@ gs_plugin_rpm_ostree_refresh_metadata_async (GsPlugin                     *plugi
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_refresh_metadata_async);
-	g_task_set_task_data (task, gs_plugin_refresh_metadata_data_new (cache_age_secs, flags), (GDestroyNotify) gs_plugin_refresh_metadata_data_free);
+	g_task_set_task_data (task, gs_plugin_refresh_metadata_data_new (cache_age_secs, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_refresh_metadata_data_free);
 
 	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
 				refresh_metadata_thread_cb, g_steal_pointer (&task));

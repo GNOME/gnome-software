@@ -474,6 +474,8 @@ static void
 gs_plugin_flatpak_refresh_metadata_async (GsPlugin                     *plugin,
                                           guint64                       cache_age_secs,
                                           GsPluginRefreshMetadataFlags  flags,
+                                          GsPluginEventCallback         event_callback,
+                                          void                         *event_user_data,
                                           GCancellable                 *cancellable,
                                           GAsyncReadyCallback           callback,
                                           gpointer                      user_data)
@@ -484,7 +486,7 @@ gs_plugin_flatpak_refresh_metadata_async (GsPlugin                     *plugin,
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_refresh_metadata_async);
-	g_task_set_task_data (task, gs_plugin_refresh_metadata_data_new (cache_age_secs, flags), (GDestroyNotify) gs_plugin_refresh_metadata_data_free);
+	g_task_set_task_data (task, gs_plugin_refresh_metadata_data_new (cache_age_secs, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_refresh_metadata_data_free);
 
 	/* Queue a job to get the installed apps. */
 	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
@@ -508,7 +510,7 @@ refresh_metadata_thread_cb (GTask        *task,
 		g_autoptr(GError) local_error = NULL;
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
 
-		if (!gs_flatpak_refresh (flatpak, data->cache_age_secs, interactive, NULL, NULL, cancellable, &local_error))
+		if (!gs_flatpak_refresh (flatpak, data->cache_age_secs, interactive, data->event_callback, data->event_user_data, cancellable, &local_error))
 			g_debug ("Failed to refresh metadata for '%s': %s", gs_flatpak_get_id (flatpak), local_error->message);
 	}
 

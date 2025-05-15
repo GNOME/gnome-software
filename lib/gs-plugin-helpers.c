@@ -105,19 +105,25 @@ gs_plugin_refine_data_free (GsPluginRefineData *data)
  * gs_plugin_refresh_metadata_data_new:
  * @cache_age_secs: maximum allowed age of the cache in order for it to remain valid, in seconds
  * @flags: refresh metadata flags
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.refresh_metadata_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 42
+ * Since: 49
  */
 GsPluginRefreshMetadataData *
-gs_plugin_refresh_metadata_data_new (guint64                      cache_age_secs,
-                                     GsPluginRefreshMetadataFlags flags)
+gs_plugin_refresh_metadata_data_new (guint64                       cache_age_secs,
+                                     GsPluginRefreshMetadataFlags  flags,
+                                     GsPluginEventCallback         event_callback,
+                                     void                         *event_user_data)
 {
 	g_autoptr(GsPluginRefreshMetadataData) data = g_new0 (GsPluginRefreshMetadataData, 1);
 	data->cache_age_secs = cache_age_secs;
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }

@@ -4565,6 +4565,8 @@ gs_plugin_packagekit_download_upgrade_finish (GsPlugin      *plugin,
 static void gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugin,
                                                          guint64                       cache_age_secs,
                                                          GsPluginRefreshMetadataFlags  flags,
+                                                         GsPluginEventCallback         event_callback,
+                                                         void                         *event_user_data,
                                                          GCancellable                 *cancellable,
                                                          GAsyncReadyCallback           callback,
                                                          gpointer                      user_data);
@@ -4622,6 +4624,7 @@ gs_plugin_packagekit_enable_repository_ready_cb (GObject *source_object,
 	gs_plugin_packagekit_refresh_metadata_async (GS_PLUGIN (self),
 						     1,  /* cache age */
 						     metadata_flags,
+						     NULL, NULL, /* FIXME */
 						     cancellable,
 						     gs_plugin_packagekit_enable_repository_refresh_ready_cb,
 						     g_steal_pointer (&task));
@@ -5243,6 +5246,8 @@ static void
 gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugin,
                                              guint64                       cache_age_secs,
                                              GsPluginRefreshMetadataFlags  flags,
+                                             GsPluginEventCallback         event_callback,
+                                             void                         *event_user_data,
                                              GCancellable                 *cancellable,
                                              GAsyncReadyCallback           callback,
                                              gpointer                      user_data)
