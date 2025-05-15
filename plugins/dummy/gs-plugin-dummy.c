@@ -887,6 +887,8 @@ static void
 gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
                                  GsAppQuery            *query,
                                  GsPluginListAppsFlags  flags,
+                                 GsPluginEventCallback  event_callback,
+                                 void                  *event_user_data,
                                  GCancellable          *cancellable,
                                  GAsyncReadyCallback    callback,
                                  gpointer               user_data)
@@ -903,7 +905,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	const gchar * const *keywords = NULL;
 	GsApp *alternate_of = NULL;
 
-	task = gs_plugin_list_apps_data_new_task (plugin, query, flags, cancellable, callback, user_data);
+	task = gs_plugin_list_apps_data_new_task (plugin, query, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
 
 	if (query != NULL) {

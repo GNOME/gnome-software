@@ -54,13 +54,19 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefreshMetadataData, gs_plugin_refresh_me
 typedef struct {
 	GsAppQuery *query;  /* (owned) (nullable) */
 	GsPluginListAppsFlags flags;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 } GsPluginListAppsData;
 
 GsPluginListAppsData *gs_plugin_list_apps_data_new (GsAppQuery            *query,
-                                                    GsPluginListAppsFlags  flags);
+                                                    GsPluginListAppsFlags  flags,
+                                                    GsPluginEventCallback  event_callback,
+                                                    void                  *event_user_data);
 GTask *gs_plugin_list_apps_data_new_task (gpointer               source_object,
                                           GsAppQuery            *query,
                                           GsPluginListAppsFlags  flags,
+                                          GsPluginEventCallback  event_callback,
+                                          void                  *event_user_data,
                                           GCancellable          *cancellable,
                                           GAsyncReadyCallback    callback,
                                           gpointer               user_data);

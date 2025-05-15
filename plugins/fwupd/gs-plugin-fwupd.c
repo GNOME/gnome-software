@@ -935,6 +935,8 @@ static void
 gs_plugin_fwupd_list_apps_async (GsPlugin *plugin,
 				 GsAppQuery *query,
 				 GsPluginListAppsFlags flags,
+				 GsPluginEventCallback event_callback,
+				 void *event_user_data,
 				 GCancellable *cancellable,
 				 GAsyncReadyCallback callback,
 				 gpointer user_data)

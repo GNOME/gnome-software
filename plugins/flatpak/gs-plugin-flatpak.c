@@ -2451,6 +2451,8 @@ static void
 gs_plugin_flatpak_list_apps_async (GsPlugin              *plugin,
                                    GsAppQuery            *query,
                                    GsPluginListAppsFlags  flags,
+                                   GsPluginEventCallback  event_callback,
+                                   void                  *event_user_data,
                                    GCancellable          *cancellable,
                                    GAsyncReadyCallback    callback,
                                    gpointer               user_data)
@@ -2460,6 +2462,7 @@ gs_plugin_flatpak_list_apps_async (GsPlugin              *plugin,
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
+						  event_callback, event_user_data,
 						  cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_list_apps_async);
 
@@ -2479,8 +2482,8 @@ list_apps_thread_cb (GTask        *task,
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	GsPluginListAppsData *data = task_data;
 	gboolean interactive = (data->flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
-	GsPluginEventCallback event_callback = NULL;  /* FIXME */
-	void *event_user_data = NULL;  /* FIXME */
+	GsPluginEventCallback event_callback = data->event_callback;
+	void *event_user_data = data->event_user_data;
 	GDateTime *released_since = NULL;
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppQueryTristate is_featured = GS_APP_QUERY_TRISTATE_UNSET;

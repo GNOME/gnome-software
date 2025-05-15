@@ -3380,6 +3380,8 @@ static void
 gs_plugin_rpm_ostree_list_apps_async (GsPlugin              *plugin,
                                       GsAppQuery            *query,
                                       GsPluginListAppsFlags  flags,
+                                      GsPluginEventCallback  event_callback,
+                                      void                  *event_user_data,
                                       GCancellable          *cancellable,
                                       GAsyncReadyCallback    callback,
                                       gpointer               user_data)
@@ -3389,6 +3391,7 @@ gs_plugin_rpm_ostree_list_apps_async (GsPlugin              *plugin,
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
+						  event_callback, event_user_data,
 						  cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_list_apps_async);
 
