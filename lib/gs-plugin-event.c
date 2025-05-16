@@ -154,7 +154,7 @@ gs_plugin_event_set_job (GsPluginEvent *event,
  * this will just be the actual #GsApp unique-id. In the cases where only error
  * has been set a virtual (but plausible) ID will be generated.
  *
- * Returns: a string, or %NULL for invalid
+ * Returns: (not nullable): a string
  *
  * Since: 3.22
  **/
@@ -172,22 +172,19 @@ gs_plugin_event_get_unique_id (GsPluginEvent *event)
 	}
 
 	/* generate from error */
-	if (event->error != NULL) {
-		if (event->unique_id == NULL) {
-			g_autofree gchar *id = NULL;
-			id = g_strdup_printf ("%s.error",
-					      gs_plugin_error_to_string (event->error->code));
-			event->unique_id = gs_utils_build_unique_id (AS_COMPONENT_SCOPE_UNKNOWN,
-								     AS_BUNDLE_KIND_UNKNOWN,
-								     NULL,
-								     id,
-								     NULL);
-		}
-		return event->unique_id;
-	}
+	g_assert (event->error != NULL);
 
-	/* failed */
-	return NULL;
+	if (event->unique_id == NULL) {
+		g_autofree gchar *id = NULL;
+		id = g_strdup_printf ("%s.error",
+				      gs_plugin_error_to_string (event->error->code));
+		event->unique_id = gs_utils_build_unique_id (AS_COMPONENT_SCOPE_UNKNOWN,
+							     AS_BUNDLE_KIND_UNKNOWN,
+							     NULL,
+							     id,
+							     NULL);
+	}
+	return event->unique_id;
 }
 
 /**

@@ -144,14 +144,6 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->events_by_id_mutex);
 
-	/* events should always have a unique ID, either constructed from the
-	 * app they are processing or preferably from the GError message */
-	if (gs_plugin_event_get_unique_id (event) == NULL) {
-		g_warning ("failed to add event from action %s",
-			   gs_plugin_action_to_string (gs_plugin_event_get_action (event)));
-		return;
-	}
-
 	g_debug ("%s: Adding event %s", G_STRFUNC, gs_plugin_event_get_unique_id (event));
 
 	g_hash_table_insert (plugin_loader->events_by_id,
