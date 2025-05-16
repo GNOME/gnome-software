@@ -78,7 +78,7 @@
  * faked because we can’t get reasonable progress data out of OSTree.
  *
  * The proxy object (`updater_proxy`) uses the thread-default main context from
- * the gs_plugin_eos_updater_setup() function, which is currently the global default main
+ * the gs_plugin_eos_updater_setup_async() function, which is currently the global default main
  * context from gnome-software’s main thread. This means all the signal
  * callbacks from the proxy will be executed in the main thread, and *must not
  * block*.
@@ -88,12 +88,8 @@
  * main thread and *must not block*. As they all call D-Bus methods, the work
  * they do is minimal and hence is OK to happen in the main thread.
  *
- * The other functions are called in #GTask worker threads. They are allowed to
- * call methods on the proxy; the main thread is only allowed to receive signals
- * and check properties on the proxy, to avoid blocking.
- *
  * `updater_proxy`, `os_upgrade` and `cancellable` are only set in
- * gs_plugin_eos_updater_setup(), and are both internally thread-safe — so they can both be
+ * gs_plugin_eos_updater_setup_async(), and are both internally thread-safe — so they can both be
  * dereferenced and have their methods called from any thread without any
  * locking.
  *
@@ -205,7 +201,7 @@ struct _GsPluginEosUpdater
 {
 	GsPlugin parent;
 
-	/* These members are only set once in gs_plugin_eos_updater_setup(), and are
+	/* These members are only set once in gs_plugin_eos_updater_setup_async(), and are
 	 * internally thread-safe, so can be accessed without any locking. */
 	GsEosUpdater *updater_proxy;  /* (owned) */
 	GsApp *os_upgrade;  /* (owned); represents both large upgrades and small updates */
@@ -1179,7 +1175,7 @@ static void download_iterate_state_machine_cb (GObject      *source_object,
                                                GAsyncResult *result,
                                                gpointer      user_data);
 
-/* Called in a #GTask worker thread or in the main thread. */
+/* Called in the main thread. */
 static void
 gs_plugin_eos_updater_app_upgrade_download_async (GsPluginEosUpdater    *self,
                                                   GsApp                 *app,
