@@ -86,7 +86,7 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   flags specify what data to look up and add. Refining certain kinds of data
  *   can be very expensive (for example, requiring network requests), which is
  *   why it’s not all loaded by default. By refining multiple categories at
- *   once, data requests can be batched by the plugin where possible. (Since: 43)
+ *   once, data requests can be batched by the plugin where possible. (Since: 49)
  * @refine_categories_finish: (nullable): Finish method for
  *   @refine_categories_async. Must be implemented if @refine_categories_async
  *   is implemented. (Since: 43)
@@ -261,6 +261,8 @@ struct _GsPluginClass
 	void			(*refine_categories_async)	(GsPlugin			*plugin,
 								 GPtrArray			*list,
 								 GsPluginRefineCategoriesFlags	 flags,
+								 GsPluginEventCallback		 event_callback,
+								 void				*event_user_data,
 								 GCancellable			*cancellable,
 								 GAsyncReadyCallback		 callback,
 								 gpointer			 user_data);

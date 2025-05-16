@@ -99,13 +99,19 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginManageRepositoryData, gs_plugin_manage_re
 typedef struct {
 	GPtrArray *list;  /* (element-type GsCategory) (owned) (not nullable) */
 	GsPluginRefineCategoriesFlags flags;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 } GsPluginRefineCategoriesData;
 
 GsPluginRefineCategoriesData *gs_plugin_refine_categories_data_new (GPtrArray                     *list,
-                                                                    GsPluginRefineCategoriesFlags  flags);
+                                                                    GsPluginRefineCategoriesFlags  flags,
+                                                                    GsPluginEventCallback          event_callback,
+                                                                    void                          *event_user_data);
 GTask *gs_plugin_refine_categories_data_new_task (gpointer                       source_object,
                                                   GPtrArray                     *list,
                                                   GsPluginRefineCategoriesFlags  flags,
+                                                  GsPluginEventCallback          event_callback,
+                                                  void                          *event_user_data,
                                                   GCancellable                  *cancellable,
                                                   GAsyncReadyCallback            callback,
                                                   gpointer                       user_data);

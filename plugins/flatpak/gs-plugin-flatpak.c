@@ -2427,6 +2427,8 @@ static void
 gs_plugin_flatpak_refine_categories_async (GsPlugin                      *plugin,
                                            GPtrArray                     *list,
                                            GsPluginRefineCategoriesFlags  flags,
+                                           GsPluginEventCallback          event_callback,
+                                           void                          *event_user_data,
                                            GCancellable                  *cancellable,
                                            GAsyncReadyCallback            callback,
                                            gpointer                       user_data)
@@ -2436,6 +2438,7 @@ gs_plugin_flatpak_refine_categories_async (GsPlugin                      *plugin
 	gboolean interactive = (flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_refine_categories_data_new_task (plugin, list, flags,
+							  event_callback, event_user_data,
 							  cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_refine_categories_async);
 
@@ -2468,7 +2471,7 @@ refine_categories_thread_cb (GTask        *task,
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
 
-		if (!gs_flatpak_refine_category_sizes (flatpak, data->list, interactive, NULL, NULL, cancellable, &local_error)) {
+		if (!gs_flatpak_refine_category_sizes (flatpak, data->list, interactive, data->event_callback, data->event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}

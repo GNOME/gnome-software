@@ -1400,6 +1400,8 @@ static void
 gs_plugin_appstream_refine_categories_async (GsPlugin                      *plugin,
                                              GPtrArray                     *list,
                                              GsPluginRefineCategoriesFlags  flags,
+                                             GsPluginEventCallback          event_callback,
+                                             void                          *event_user_data,
                                              GCancellable                  *cancellable,
                                              GAsyncReadyCallback            callback,
                                              gpointer                       user_data)
@@ -1409,6 +1411,7 @@ gs_plugin_appstream_refine_categories_async (GsPlugin                      *plug
 	gboolean interactive = (flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_refine_categories_data_new_task (plugin, list, flags,
+							  event_callback, event_user_data,
 							  cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_appstream_refine_categories_async);
 

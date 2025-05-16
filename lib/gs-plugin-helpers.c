@@ -304,19 +304,25 @@ gs_plugin_manage_repository_data_free (GsPluginManageRepositoryData *data)
  * gs_plugin_refine_categories_data_new:
  * @list: (element-type GsCategory): list of #GsCategory objects to refine
  * @flags: refine flags
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.refine_categories_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 43
+ * Since: 49
  */
 GsPluginRefineCategoriesData *
 gs_plugin_refine_categories_data_new (GPtrArray                     *list,
-                                      GsPluginRefineCategoriesFlags  flags)
+                                      GsPluginRefineCategoriesFlags  flags,
+                                      GsPluginEventCallback          event_callback,
+                                      void                          *event_user_data)
 {
 	g_autoptr(GsPluginRefineCategoriesData) data = g_new0 (GsPluginRefineCategoriesData, 1);
 	data->list = g_ptr_array_ref (list);
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -326,6 +332,8 @@ gs_plugin_refine_categories_data_new (GPtrArray                     *list,
  * @source_object: task source object
  * @list: (element-type GsCategory): list of #GsCategory objects to refine
  * @flags: refine flags
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -338,18 +346,20 @@ gs_plugin_refine_categories_data_new (GPtrArray                     *list,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 43
+ * Since: 49
  */
 GTask *
 gs_plugin_refine_categories_data_new_task (gpointer                       source_object,
                                            GPtrArray                     *list,
                                            GsPluginRefineCategoriesFlags  flags,
+                                           GsPluginEventCallback          event_callback,
+                                           void                          *event_user_data,
                                            GCancellable                  *cancellable,
                                            GAsyncReadyCallback            callback,
                                            gpointer                       user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_refine_categories_data_new (list, flags), (GDestroyNotify) gs_plugin_refine_categories_data_free);
+	g_task_set_task_data (task, gs_plugin_refine_categories_data_new (list, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_refine_categories_data_free);
 	return g_steal_pointer (&task);
 }
 
