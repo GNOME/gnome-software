@@ -750,6 +750,8 @@ gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin                   *plu
                                                  GsAppList                  *list,
                                                  GsPluginRefineFlags         job_flags,
                                                  GsPluginRefineRequireFlags  require_flags,
+                                                 GsPluginEventCallback       event_callback,
+                                                 void                       *event_user_data,
                                                  GCancellable               *cancellable,
                                                  GAsyncReadyCallback         callback,
                                                  gpointer                    user_data)
@@ -758,7 +760,7 @@ gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin                   *plu
 	g_autoptr(GTask) task = NULL;
 	gboolean refine_needed = FALSE;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_refine_async);
 
 	/* Check if any of the apps actually need to be refined by this plugin,

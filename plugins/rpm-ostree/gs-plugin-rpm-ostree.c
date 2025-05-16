@@ -2502,6 +2502,8 @@ gs_plugin_rpm_ostree_refine_async (GsPlugin                   *plugin,
                                    GsAppList                  *list,
                                    GsPluginRefineFlags         job_flags,
                                    GsPluginRefineRequireFlags  require_flags,
+                                   GsPluginEventCallback       event_callback,
+                                   void                       *event_user_data,
                                    GCancellable               *cancellable,
                                    GAsyncReadyCallback         callback,
                                    gpointer                    user_data)
@@ -2510,7 +2512,7 @@ gs_plugin_rpm_ostree_refine_async (GsPlugin                   *plugin,
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_refine_async);
 
 	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),

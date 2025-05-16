@@ -661,6 +661,8 @@ gs_plugin_flatpak_refine_async (GsPlugin                   *plugin,
                                 GsAppList                  *list,
                                 GsPluginRefineFlags         job_flags,
                                 GsPluginRefineRequireFlags  require_flags,
+                                GsPluginEventCallback       event_callback,
+                                void                       *event_user_data,
                                 GCancellable               *cancellable,
                                 GAsyncReadyCallback         callback,
                                 gpointer                    user_data)
@@ -669,7 +671,7 @@ gs_plugin_flatpak_refine_async (GsPlugin                   *plugin,
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_refine_async);
 
 	/* Queue a job to refine the apps. */
@@ -689,8 +691,8 @@ refine_thread_cb (GTask        *task,
 	GsAppList *list = data->list;
 	GsPluginRefineRequireFlags require_flags = data->require_flags;
 	gboolean interactive = (data->job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
-	GsPluginEventCallback event_callback = NULL;  /* FIXME */
-	void *event_user_data = NULL;  /* FIXME */
+	GsPluginEventCallback event_callback = data->event_callback;
+	void *event_user_data = data->event_user_data;
 	g_autoptr(GPtrArray) array_components_by_id = NULL; /* (element-type GHashTable) */
 	g_autoptr(GPtrArray) array_components_by_bundle = NULL; /* (element-type GHashTable) */
 	g_autoptr(GsAppList) app_list = NULL;

@@ -242,6 +242,9 @@ app_is_non_wildcard (GsApp *app, gpointer user_data)
 	return !gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 }
 
+static void plugin_event_cb (GsPlugin      *plugin,
+                             GsPluginEvent *event,
+                             void          *user_data);
 static void plugin_refine_cb (GObject      *source_object,
                               GAsyncResult *result,
                               gpointer      user_data);
@@ -379,6 +382,7 @@ run_refine_internal_async (GsPluginJobRefine          *self,
 		/* run the batched plugin symbol */
 		data->n_pending_ops++;
 		plugin_class->refine_async (plugin, list, job_flags, require_flags,
+					    plugin_event_cb, task,
 					    cancellable, plugin_refine_cb, g_object_ref (task));
 	}
 
@@ -387,6 +391,17 @@ run_refine_internal_async (GsPluginJobRefine          *self,
 
 	data->n_pending_ops++;
 	finish_refine_internal_op (task, g_steal_pointer (&local_error));
+}
+
+static void
+plugin_event_cb (GsPlugin      *plugin,
+                 GsPluginEvent *event,
+                 void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginJob *plugin_job = g_task_get_source_object (task);
+
+	gs_plugin_job_emit_event (plugin_job, plugin, event);
 }
 
 static void
@@ -528,6 +543,7 @@ finish_refine_internal_op (GTask  *task,
 		/* run the batched plugin symbol */
 		data->n_pending_ops++;
 		plugin_class->refine_async (plugin, list, job_flags, require_flags,
+					    plugin_event_cb, task,
 					    cancellable, plugin_refine_cb, g_object_ref (task));
 	}
 

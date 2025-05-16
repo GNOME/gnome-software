@@ -121,6 +121,8 @@ static void gs_plugin_packagekit_refine_async (GsPlugin                   *plugi
                                                GsAppList                  *list,
                                                GsPluginRefineFlags         job_flags,
                                                GsPluginRefineRequireFlags  require_flags,
+                                               GsPluginEventCallback       event_callback,
+                                               void                       *event_user_data,
                                                GCancellable               *cancellable,
                                                GAsyncReadyCallback         callback,
                                                gpointer                    user_data);
@@ -1240,6 +1242,8 @@ uninstall_apps_remove_cb (GObject      *source_object,
 					   GS_PLUGIN_REFINE_FLAGS_NONE,
 					   GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN |
 					   GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION,
+					   data->event_callback,
+					   data->event_user_data,
 					   cancellable,
 					   uninstall_apps_refine_cb,
 					   g_steal_pointer (&task));
@@ -2306,6 +2310,8 @@ gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
                                    GsAppList                  *list,
                                    GsPluginRefineFlags         job_flags,
                                    GsPluginRefineRequireFlags  require_flags,
+                                   GsPluginEventCallback       event_callback,
+                                   void                       *event_user_data,
                                    GCancellable               *cancellable,
                                    GAsyncReadyCallback         callback,
                                    gpointer                    user_data)

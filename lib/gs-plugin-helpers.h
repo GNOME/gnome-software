@@ -22,15 +22,21 @@ typedef struct {
 	GsAppList *list;  /* (owned) (not nullable) */
 	GsPluginRefineFlags job_flags;
 	GsPluginRefineRequireFlags require_flags;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 } GsPluginRefineData;
 
 GsPluginRefineData *gs_plugin_refine_data_new (GsAppList                  *list,
                                                GsPluginRefineFlags         job_flags,
-                                               GsPluginRefineRequireFlags  require_flags);
+                                               GsPluginRefineRequireFlags  require_flags,
+                                               GsPluginEventCallback       event_callback,
+                                               void                       *event_user_data);
 GTask *gs_plugin_refine_data_new_task (gpointer                    source_object,
                                        GsAppList                  *list,
                                        GsPluginRefineFlags         job_flags,
                                        GsPluginRefineRequireFlags  refine_flags,
+                                       GsPluginEventCallback       event_callback,
+                                       void                       *event_user_data,
                                        GCancellable               *cancellable,
                                        GAsyncReadyCallback         callback,
                                        gpointer                    user_data);
