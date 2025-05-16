@@ -393,3 +393,20 @@ gs_plugin_job_manage_repository_new (GsApp			   *repository,
 			     "flags", flags,
 			     NULL);
 }
+
+/**
+ * gs_plugin_job_manage_repository_get_flags:
+ * @self: a #GsPluginJobManageRepository
+ *
+ * Get the flags affecting the behaviour of this #GsPluginJobManageRepository.
+ *
+ * Returns: flags for the job
+ * Since: 49
+ */
+GsPluginManageRepositoryFlags
+gs_plugin_job_manage_repository_get_flags (GsPluginJobManageRepository *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (self), GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_NONE);
+
+	return self->flags;
+}

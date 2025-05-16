@@ -23,4 +23,6 @@ G_DECLARE_FINAL_TYPE (GsPluginJobManageRepository, gs_plugin_job_manage_reposito
 GsPluginJob	*gs_plugin_job_manage_repository_new	(GsApp				 *repository,
 							 GsPluginManageRepositoryFlags	  flags);
 
+GsPluginManageRepositoryFlags gs_plugin_job_manage_repository_get_flags (GsPluginJobManageRepository *self);
+
 G_END_DECLS
