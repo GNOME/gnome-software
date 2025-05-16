@@ -2887,10 +2887,9 @@ job_process_cb (GTask *task)
 	GsPluginJob *plugin_job = data->plugin_job;
 	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
-#ifdef HAVE_SYSPROF
-	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 
-	data->begin_time_nsec = begin_time_nsec;
+#ifdef HAVE_SYSPROF
+	data->begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
 
 	/* these change the pending count on the installed panel */
