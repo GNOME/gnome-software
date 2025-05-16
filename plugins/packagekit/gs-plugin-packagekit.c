@@ -100,6 +100,8 @@ static gboolean gs_plugin_packagekit_refine_history_finish (GsPluginPackagekit  
 static void gs_plugin_packagekit_enable_repository_async (GsPlugin                      *plugin,
                                                           GsApp                         *repository,
                                                           GsPluginManageRepositoryFlags  flags,
+                                                          GsPluginEventCallback          event_callback,
+                                                          void                          *event_user_data,
                                                           GCancellable                  *cancellable,
                                                           GAsyncReadyCallback            callback,
                                                           gpointer                       user_data);
@@ -576,6 +578,7 @@ gs_plugin_packagekit_install_apps_async (GsPlugin                           *plu
 		data->n_pending_enable_repo_ops++;
 		gs_plugin_packagekit_enable_repository_async (plugin, repo_app,
 							      interactive ? GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE : GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_NONE,
+							      data->event_callback, data->event_user_data,
 							      cancellable, install_apps_enable_repo_cb, g_object_ref (task));
 	}
 
@@ -4636,7 +4639,8 @@ gs_plugin_packagekit_enable_repository_ready_cb (GObject *source_object,
 	gs_plugin_packagekit_refresh_metadata_async (GS_PLUGIN (self),
 						     1,  /* cache age */
 						     metadata_flags,
-						     NULL, NULL, /* FIXME */
+						     data->event_callback,
+						     data->event_user_data,
 						     cancellable,
 						     gs_plugin_packagekit_enable_repository_refresh_ready_cb,
 						     g_steal_pointer (&task));
@@ -4646,6 +4650,8 @@ static void
 gs_plugin_packagekit_enable_repository_async (GsPlugin                     *plugin,
 					      GsApp			   *repository,
                                               GsPluginManageRepositoryFlags flags,
+                                              GsPluginEventCallback         event_callback,
+                                              void                         *event_user_data,
                                               GCancellable		   *cancellable,
                                               GAsyncReadyCallback	    callback,
                                               gpointer			    user_data)
@@ -4654,7 +4660,7 @@ gs_plugin_packagekit_enable_repository_async (GsPlugin                     *plug
 	g_autoptr(PkTask) task_enable_repo = NULL;
 	g_autoptr(GTask) task = NULL;
 
-	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_enable_repository_async);
 
 	/* only process this app if was created by this plugin */
@@ -4733,6 +4739,8 @@ static void
 gs_plugin_packagekit_disable_repository_async (GsPlugin                     *plugin,
 					       GsApp			    *repository,
                                                GsPluginManageRepositoryFlags flags,
+                                               GsPluginEventCallback         event_callback,
+                                               void                         *event_user_data,
                                                GCancellable		    *cancellable,
                                                GAsyncReadyCallback	     callback,
                                                gpointer			     user_data)
@@ -4741,7 +4749,7 @@ gs_plugin_packagekit_disable_repository_async (GsPlugin                     *plu
 	g_autoptr(PkTask) task_disable_repo = NULL;
 	g_autoptr(GTask) task = NULL;
 
-	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_disable_repository_async);
 
 	/* only process this app if was created by this plugin */

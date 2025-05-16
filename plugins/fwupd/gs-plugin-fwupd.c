@@ -2241,6 +2241,8 @@ static void
 gs_plugin_fwupd_enable_repository_async (GsPlugin                     *plugin,
 					 GsApp			      *repository,
                                          GsPluginManageRepositoryFlags flags,
+                                         GsPluginEventCallback         event_callback,
+                                         void                         *event_user_data,
                                          GCancellable		      *cancellable,
                                          GAsyncReadyCallback	       callback,
                                          gpointer		       user_data)
@@ -2274,6 +2276,8 @@ static void
 gs_plugin_fwupd_disable_repository_async (GsPlugin                     *plugin,
 					  GsApp			      *repository,
                                           GsPluginManageRepositoryFlags flags,
+                                          GsPluginEventCallback        event_callback,
+                                          void                        *event_user_data,
                                           GCancellable		      *cancellable,
                                           GAsyncReadyCallback	       callback,
                                           gpointer		       user_data)

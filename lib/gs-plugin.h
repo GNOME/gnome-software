@@ -65,19 +65,19 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @list_distro_upgrades_finish: (nullable): Finish method for
  *   @list_distro_upgrades_async. Must be implemented if
  *   @list_distro_upgrades_async is implemented. (Since: 43)
- * @install_repository_async: (nullable): Install repository. (Since: 43)
+ * @install_repository_async: (nullable): Install repository. (Since: 49)
  * @install_repository_finish: (nullable): Finish method for
  *   @install_repository_async. Must be implemented if
  *   @install_repository_async is implemented. (Since: 43)
- * @remove_repository_async: (nullable): Remove repository. (Since: 43)
+ * @remove_repository_async: (nullable): Remove repository. (Since: 49)
  * @remove_repository_finish: (nullable): Finish method for
  *   @remove_repository_async. Must be implemented if
  *   @remove_repository_async is implemented. (Since: 43)
- * @enable_repository_async: (nullable): Enable repository. (Since: 43)
+ * @enable_repository_async: (nullable): Enable repository. (Since: 49)
  * @enable_repository_finish: (nullable): Finish method for
  *   @enable_repository_async. Must be implemented if
  *   @enable_repository_async is implemented. (Since: 43)
- * @disable_repository_async: (nullable): Disable repository. (Since: 43)
+ * @disable_repository_async: (nullable): Disable repository. (Since: 49)
  * @disable_repository_finish: (nullable): Finish method for
  *   @disable_repository_async. Must be implemented if
  *   @disable_repository_async is implemented. (Since: 43)
@@ -224,6 +224,8 @@ struct _GsPluginClass
 	void			(*install_repository_async)	(GsPlugin		*plugin,
 								 GsApp			*repository,
 								 GsPluginManageRepositoryFlags flags,
+								 GsPluginEventCallback	 event_callback,
+								 void			*event_user_data,
 								 GCancellable		*cancellable,
 								 GAsyncReadyCallback	 callback,
 								 gpointer		 user_data);
@@ -233,6 +235,8 @@ struct _GsPluginClass
 	void			(*remove_repository_async)	(GsPlugin		*plugin,
 								 GsApp			*repository,
 								 GsPluginManageRepositoryFlags flags,
+								 GsPluginEventCallback	 event_callback,
+								 void			*event_user_data,
 								 GCancellable		*cancellable,
 								 GAsyncReadyCallback	 callback,
 								 gpointer		 user_data);
@@ -242,6 +246,8 @@ struct _GsPluginClass
 	void			(*enable_repository_async)	(GsPlugin		*plugin,
 								 GsApp			*repository,
 								 GsPluginManageRepositoryFlags flags,
+								 GsPluginEventCallback	 event_callback,
+								 void			*event_user_data,
 								 GCancellable		*cancellable,
 								 GAsyncReadyCallback	 callback,
 								 gpointer		 user_data);
@@ -251,6 +257,8 @@ struct _GsPluginClass
 	void			(*disable_repository_async)	(GsPlugin		*plugin,
 								 GsApp			*repository,
 								 GsPluginManageRepositoryFlags flags,
+								 GsPluginEventCallback	 event_callback,
+								 void			*event_user_data,
 								 GCancellable		*cancellable,
 								 GAsyncReadyCallback	 callback,
 								 gpointer		 user_data);

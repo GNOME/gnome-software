@@ -82,14 +82,20 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginListAppsData, gs_plugin_list_apps_data_fr
 typedef struct {
 	GsApp *repository;  /* (owned) (nullable) */
 	GsPluginManageRepositoryFlags flags;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 } GsPluginManageRepositoryData;
 
 GsPluginManageRepositoryData *
 		gs_plugin_manage_repository_data_new		(GsApp				*repository,
-								 GsPluginManageRepositoryFlags   flags);
+								 GsPluginManageRepositoryFlags   flags,
+								 GsPluginEventCallback		 event_callback,
+								 void				*event_user_data);
 GTask *		gs_plugin_manage_repository_data_new_task	(gpointer			 source_object,
 								 GsApp				*repository,
 								 GsPluginManageRepositoryFlags	 flags,
+								 GsPluginEventCallback		 event_callback,
+								 void				*event_user_data,
 								 GCancellable			*cancellable,
 								 GAsyncReadyCallback		 callback,
 								 gpointer			 user_data);

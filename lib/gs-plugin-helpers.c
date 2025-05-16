@@ -235,21 +235,27 @@ gs_plugin_list_apps_data_free (GsPluginListAppsData *data)
  * gs_plugin_manage_repository_data_new:
  * @repository: (not nullable) (transfer none): a repository to manage
  * @flags: manage repository flags
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.install_repository_async,
  * #GsPluginClass.remove_repository_async, #GsPluginClass.enable_repository_async
  * and #GsPluginClass.disable_repository_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 43
+ * Since: 49
  */
 GsPluginManageRepositoryData *
-gs_plugin_manage_repository_data_new (GsApp			   *repository,
-				      GsPluginManageRepositoryFlags flags)
+gs_plugin_manage_repository_data_new (GsApp                         *repository,
+                                      GsPluginManageRepositoryFlags  flags,
+                                      GsPluginEventCallback          event_callback,
+                                      void                          *event_user_data)
 {
 	g_autoptr(GsPluginManageRepositoryData) data = g_new0 (GsPluginManageRepositoryData, 1);
 	data->repository = g_object_ref (repository);
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -259,6 +265,8 @@ gs_plugin_manage_repository_data_new (GsApp			   *repository,
  * @source_object: task source object
  * @repository: (not nullable) (transfer none): a repository to manage
  * @flags: manage repository flags
+ * @event_callback: (nullable): function to call to notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -270,18 +278,20 @@ gs_plugin_manage_repository_data_new (GsApp			   *repository,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 43
+ * Since: 49
  */
 GTask *
-gs_plugin_manage_repository_data_new_task (gpointer			 source_object,
-					   GsApp			*repository,
-					   GsPluginManageRepositoryFlags flags,
-					   GCancellable			*cancellable,
-					   GAsyncReadyCallback		 callback,
-					   gpointer			 user_data)
+gs_plugin_manage_repository_data_new_task (gpointer                       source_object,
+                                           GsApp                         *repository,
+                                           GsPluginManageRepositoryFlags  flags,
+                                           GsPluginEventCallback          event_callback,
+                                           void                          *event_user_data,
+                                           GCancellable                  *cancellable,
+                                           GAsyncReadyCallback            callback,
+                                           gpointer                       user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_manage_repository_data_new (repository, flags), (GDestroyNotify) gs_plugin_manage_repository_data_free);
+	g_task_set_task_data (task, gs_plugin_manage_repository_data_new (repository, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_manage_repository_data_free);
 	return g_steal_pointer (&task);
 }
 

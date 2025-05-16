@@ -2894,6 +2894,8 @@ static void
 gs_plugin_flatpak_install_repository_async (GsPlugin                     *plugin,
 					    GsApp			 *repository,
                                             GsPluginManageRepositoryFlags flags,
+                                            GsPluginEventCallback         event_callback,
+                                            void                         *event_user_data,
                                             GCancellable		 *cancellable,
                                             GAsyncReadyCallback		  callback,
                                             gpointer			  user_data)
@@ -2902,7 +2904,7 @@ gs_plugin_flatpak_install_repository_async (GsPlugin                     *plugin
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 
-	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_install_repository_async);
 
 	/* only process this app if was created by this plugin */
@@ -2972,6 +2974,8 @@ static void
 gs_plugin_flatpak_remove_repository_async (GsPlugin                     *plugin,
 					   GsApp			*repository,
                                            GsPluginManageRepositoryFlags flags,
+                                           GsPluginEventCallback         event_callback,
+                                           void                         *event_user_data,
                                            GCancellable		 	*cancellable,
                                            GAsyncReadyCallback		 callback,
                                            gpointer			 user_data)
@@ -2980,7 +2984,7 @@ gs_plugin_flatpak_remove_repository_async (GsPlugin                     *plugin,
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 
-	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_remove_repository_async);
 
 	/* only process this app if was created by this plugin */
@@ -3040,6 +3044,8 @@ static void
 gs_plugin_flatpak_enable_repository_async (GsPlugin                     *plugin,
 					   GsApp			*repository,
                                            GsPluginManageRepositoryFlags flags,
+                                           GsPluginEventCallback         event_callback,
+                                           void                         *event_user_data,
                                            GCancellable		 	*cancellable,
                                            GAsyncReadyCallback		 callback,
                                            gpointer			 user_data)
@@ -3048,7 +3054,7 @@ gs_plugin_flatpak_enable_repository_async (GsPlugin                     *plugin,
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 
-	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_enable_repository_async);
 
 	/* only process this app if was created by this plugin */
@@ -3108,6 +3114,8 @@ static void
 gs_plugin_flatpak_disable_repository_async (GsPlugin                     *plugin,
 					    GsApp			 *repository,
                                             GsPluginManageRepositoryFlags flags,
+                                            GsPluginEventCallback         event_callback,
+                                            void                         *event_user_data,
                                             GCancellable	 	 *cancellable,
                                             GAsyncReadyCallback		  callback,
                                             gpointer			  user_data)
@@ -3116,7 +3124,7 @@ gs_plugin_flatpak_disable_repository_async (GsPlugin                     *plugin
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 
-	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_disable_repository_async);
 
 	/* only process this app if was created by this plugin */
