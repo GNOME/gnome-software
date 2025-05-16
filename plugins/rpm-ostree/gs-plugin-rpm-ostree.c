@@ -33,6 +33,10 @@
  * while the rpm-ostreed API is asynchronous over D-Bus, the plugin also needs
  * to use lower level libostree APIs which are entirely synchronous.
  * Message passing to the worker thread is by gs_worker_thread_queue().
+ *
+ * Callbacks to the calling context (such as #GsPluginEventCallback) are done in
+ * the thread-default #GMainContext at the time when the relevant async virtual
+ * function was called.
  */
 
 /* This shows up in the `rpm-ostree status` as the software that
@@ -207,6 +211,32 @@ gs_rpmostree_error_convert (GError **perror)
 		return;
 }
 
+typedef struct {
+	GsPlugin *plugin;  /* (owned) (not nullable) */
+	GsPluginEvent *event;  /* (owned) (not nullable) */
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
+} EventCallbackData;
+
+static void
+event_callback_data_free (EventCallbackData *data)
+{
+	g_clear_object (&data->plugin);
+	g_clear_object (&data->event);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (EventCallbackData, event_callback_data_free)
+
+static gboolean
+event_callback_idle_cb (void *user_data)
+{
+	EventCallbackData *data = user_data;
+
+	data->event_callback (data->plugin, data->event, data->event_user_data);
+	return G_SOURCE_REMOVE;
+}
+
 static void
 gs_rpm_ostree_task_return_error_with_gui (GsPluginRpmOstree *self,
 					  GTask *task,
@@ -220,18 +250,26 @@ gs_rpm_ostree_task_return_error_with_gui (GsPluginRpmOstree *self,
 
 	g_prefix_error (&local_error, "%s", error_prefix);
 
-	if (local_error != NULL && local_error->domain != G_DBUS_ERROR &&
+	if (event_callback != NULL &&
+	    local_error != NULL && local_error->domain != G_DBUS_ERROR &&
 	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY) &&
 	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		g_autoptr(GsPluginEvent) event = NULL;
+		g_autoptr(EventCallbackData) event_data = NULL;
 
 		event = gs_plugin_event_new ("error", local_error,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		if (event_callback != NULL)
-			event_callback (GS_PLUGIN (self), event, event_user_data);
+
+		event_data = g_new0 (EventCallbackData, 1);
+		event_data->plugin = GS_PLUGIN (g_object_ref (self));
+		event_data->event = g_steal_pointer (&event);
+		event_data->event_callback = event_callback;
+		event_data->event_user_data = event_user_data;
+		g_main_context_invoke_full (g_task_get_context (task), G_PRIORITY_DEFAULT,
+					    event_callback_idle_cb, g_steal_pointer (&event_data), (GDestroyNotify) event_callback_data_free);
 	}
 
 	g_task_return_error (task, g_steal_pointer (&local_error));
