@@ -246,7 +246,7 @@ gs_plugin_event_has_flag (GsPluginEvent *event, GsPluginEventFlag flag)
  *
  * Gets the event error.
  *
- * Returns: a #GError, or %NULL for unset
+ * Returns: (not nullable): a #GError
  *
  * Since: 3.22
  **/
@@ -254,6 +254,17 @@ const GError *
 gs_plugin_event_get_error (GsPluginEvent *event)
 {
 	return event->error;
+}
+
+static void
+gs_plugin_event_constructed (GObject *object)
+{
+	GsPluginEvent *self = GS_PLUGIN_EVENT (object);
+
+	G_OBJECT_CLASS (gs_plugin_event_parent_class)->constructed (object);
+
+	/* Check that required properties have been set. */
+	g_assert (self->error != NULL);
 }
 
 static void
@@ -320,10 +331,8 @@ gs_plugin_event_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->error == NULL);
 		self->error = g_value_dup_boxed (value);
-		if (self->error) {
-			/* Just in case the caller left there any D-Bus remote error notes */
-			g_dbus_error_strip_remote_error (self->error);
-		}
+		/* Just in case the caller left there any D-Bus remote error notes */
+		g_dbus_error_strip_remote_error (self->error);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	default:
@@ -360,6 +369,7 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->constructed = gs_plugin_event_constructed;
 	object_class->get_property = gs_plugin_event_get_property;
 	object_class->set_property = gs_plugin_event_set_property;
 	object_class->dispose = gs_plugin_event_dispose;
@@ -423,9 +433,11 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
-	 * GsPluginEvent:error: (nullable)
+	 * GsPluginEvent:error: (not nullable)
 	 *
 	 * The error the event is reporting.
+	 *
+	 * This is required.
 	 *
 	 * Since: 42
 	 */
