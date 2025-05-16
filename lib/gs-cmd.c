@@ -405,12 +405,11 @@ main (int argc, char **argv)
 						  NULL);
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
-			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
-							     NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -431,10 +430,10 @@ main (int argc, char **argv)
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -456,10 +455,10 @@ main (int argc, char **argv)
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -556,10 +555,10 @@ main (int argc, char **argv)
 								  GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -575,10 +574,10 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_list_distro_upgrades_new (upgrades_flags, self->require_flags);
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							    NULL, &error);
-			list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -616,10 +615,10 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							    NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -638,10 +637,10 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							    NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -662,10 +661,10 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							    NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -692,10 +691,10 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							    NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
@@ -754,10 +753,10 @@ main (int argc, char **argv)
 
 			plugin_job = gs_plugin_job_list_apps_new (query, get_list_apps_flags (self));
 			ret = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
-			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (!ret)
 				break;
 
+			list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 			if (show_results && i == repeat - 1 && list != NULL)
 				gs_cmd_show_results_apps (list);
 		}
