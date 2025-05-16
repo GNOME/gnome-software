@@ -469,6 +469,54 @@ gs_plugin_flatpak_shutdown_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+typedef struct {
+	GsPlugin *plugin;  /* (owned) (not nullable) */
+	GsPluginEvent *event;  /* (owned) (not nullable) */
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
+} EventCallbackData;
+
+static void
+event_callback_data_free (EventCallbackData *data)
+{
+	g_clear_object (&data->plugin);
+	g_clear_object (&data->event);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (EventCallbackData, event_callback_data_free)
+
+static gboolean
+event_callback_idle_cb (void *user_data)
+{
+	EventCallbackData *data = user_data;
+
+	data->event_callback (data->plugin, data->event, data->event_user_data);
+	return G_SOURCE_REMOVE;
+}
+
+static void
+event_callback_invoke_take (GsPluginFlatpak       *plugin,
+                            GsPluginEvent         *event,  /* (transfer full) */
+                            GMainContext          *context,
+                            GsPluginEventCallback  event_callback,
+                            void                  *event_user_data)
+{
+	g_autoptr(EventCallbackData) event_data = NULL;
+	g_autoptr(GsPluginEvent) event_owned = g_steal_pointer (&event);
+
+	g_return_if_fail (event_callback != NULL);
+
+	event_data = g_new0 (EventCallbackData, 1);
+	event_data->plugin = GS_PLUGIN (g_object_ref (plugin));
+	event_data->event = g_steal_pointer (&event_owned);
+	event_data->event_callback = event_callback;
+	event_data->event_user_data = event_user_data;
+
+	g_main_context_invoke_full (context, G_PRIORITY_DEFAULT,
+				    event_callback_idle_cb, g_steal_pointer (&event_data), (GDestroyNotify) event_callback_data_free);
+}
+
 static void refresh_metadata_thread_cb (GTask        *task,
                                         gpointer      source_object,
                                         gpointer      task_data,
@@ -959,7 +1007,8 @@ _basic_auth_start (FlatpakTransaction *transaction,
 }
 
 typedef struct {
-	GsPlugin *plugin;  /* (not owned) (not nullable) */
+	GsPluginFlatpak *plugin;  /* (not owned) (not nullable) */
+	GMainContext *callback_context;  /* (owned) (not nullable) */
 	GsPluginEventCallback event_callback;  /* (nullable) */
 	void *event_user_data;
 } WebflowStartData;
@@ -967,6 +1016,7 @@ typedef struct {
 static void
 webflow_start_data_free (WebflowStartData *data)
 {
+	g_clear_pointer (&data->callback_context, g_main_context_unref);
 	g_free (data);
 }
 
@@ -1003,33 +1053,37 @@ _webflow_start (FlatpakTransaction *transaction,
 		args[0] = browser;
 		if (!g_spawn_async (NULL, (char **)args, NULL, G_SPAWN_SEARCH_PATH,
 		                    NULL, NULL, NULL, &error_local)) {
-			g_autoptr(GsPluginEvent) event = NULL;
-
 			g_warning ("Failed to start browser %s: %s", browser, error_local->message);
 
 			gs_flatpak_error_convert (&error_local);
 
-			event = gs_plugin_event_new ("error", error_local,
-						     NULL);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			if (data->event_callback != NULL)
-				data->event_callback (data->plugin, event, data->event_user_data);
+			if (data->event_callback != NULL) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				event = gs_plugin_event_new ("error", error_local,
+							     NULL);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				event_callback_invoke_take (data->plugin, g_steal_pointer (&event), data->callback_context,
+							    data->event_callback, data->event_user_data);
+			}
 
 			return FALSE;
 		}
 	} else {
 		if (!g_app_info_launch_default_for_uri (url, NULL, &error_local)) {
-			g_autoptr(GsPluginEvent) event = NULL;
-
 			g_warning ("Failed to show url: %s", error_local->message);
 
 			gs_flatpak_error_convert (&error_local);
 
-			event = gs_plugin_event_new ("error", error_local,
-						     NULL);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			if (data->event_callback != NULL)
-				data->event_callback (data->plugin, event, data->event_user_data);
+			if (data->event_callback != NULL) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				event = gs_plugin_event_new ("error", error_local,
+							     NULL);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING | GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				event_callback_invoke_take (data->plugin, g_steal_pointer (&event), data->callback_context,
+							    data->event_callback, data->event_user_data);
+			}
 
 			return FALSE;
 		}
@@ -1052,10 +1106,11 @@ _webflow_done (FlatpakTransaction *transaction,
 /* This can only fail if flatpak_dir_ensure_repo() fails, for example if the
  * repo is configured but doesn’t exist and can’t be created on disk. */
 static FlatpakTransaction *
-_build_transaction (GsPlugin               *plugin,
+_build_transaction (GsPluginFlatpak        *plugin,
                     GsFlatpak              *flatpak,
                     gboolean                stop_on_first_error,
                     gboolean                interactive,
+                    GMainContext           *callback_context,
                     GsPluginEventCallback   event_callback,
                     void                   *event_user_data,
                     GCancellable           *cancellable,
@@ -1084,6 +1139,7 @@ _build_transaction (GsPlugin               *plugin,
 	/* connect up signals */
 	webflow_start_data = g_new0 (WebflowStartData, 1);
 	webflow_start_data->plugin = plugin;
+	webflow_start_data->callback_context = g_main_context_ref (callback_context);
 	webflow_start_data->event_callback = event_callback;
 	webflow_start_data->event_user_data = event_user_data;
 
@@ -1227,7 +1283,7 @@ update_apps_thread_cb (GTask        *task,
 		 * This approach is the same as what the `flatpak` CLI uses in
 		 * `flatpak-builtins-update.c` in flatpak.
 		 */
-		transaction = _build_transaction (GS_PLUGIN (self), flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, interactive, data->event_callback, data->event_user_data, cancellable, &local_error);
+		transaction = _build_transaction (self, flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, interactive, g_task_get_context (task), data->event_callback, data->event_user_data, cancellable, &local_error);
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
@@ -1241,13 +1297,16 @@ update_apps_thread_cb (GTask        *task,
 			 * be created, which is unlikely. */
 			gs_flatpak_error_convert (&local_error);
 
-			event = gs_plugin_event_new ("error", local_error,
-						     NULL);
-			if (interactive)
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			if (data->event_callback != NULL)
-				data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+			if (data->event_callback != NULL) {
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+							    data->event_callback, data->event_user_data);
+			}
+
 			g_clear_error (&local_error);
 
 			remove_schedule_entry (schedule_entry_handle);
@@ -1287,14 +1346,17 @@ update_apps_thread_cb (GTask        *task,
 
 				gs_flatpak_error_convert (&local_error);
 
-				event = gs_plugin_event_new ("error", local_error,
-							     "app", app,
-							     NULL);
-				if (interactive)
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				if (data->event_callback != NULL)
-					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+				if (data->event_callback != NULL) {
+					event = gs_plugin_event_new ("error", local_error,
+								     "app", app,
+								     NULL);
+					if (interactive)
+						gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+					event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+								    data->event_callback, data->event_user_data);
+				}
+
 				g_clear_error (&local_error);
 				continue;
 			}
@@ -1306,7 +1368,6 @@ update_apps_thread_cb (GTask        *task,
 		/* FIXME: Link progress reporting from #FlatpakTransaction
 		 * up to `data->progress_callback`. */
 		if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
-			g_autoptr(GsPluginEvent) event = NULL;
 			g_autoptr(GError) prune_error = NULL;
 
 			/* Reset the state of all the apps in this transaction. */
@@ -1329,13 +1390,18 @@ update_apps_thread_cb (GTask        *task,
 
 			gs_flatpak_error_convert (&local_error);
 
-			event = gs_plugin_event_new ("error", local_error,
-						     NULL);
-			if (interactive)
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			if (data->event_callback != NULL)
-				data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+			if (data->event_callback != NULL) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+							    data->event_callback, data->event_user_data);
+			}
+
 			g_clear_error (&local_error);
 
 			remove_schedule_entry (schedule_entry_handle);
@@ -1392,11 +1458,12 @@ gs_plugin_flatpak_update_apps_finish (GsPlugin      *plugin,
 }
 
 static void
-gs_flatpak_cover_addons_in_transaction (GsPlugin              *plugin,
+gs_flatpak_cover_addons_in_transaction (GsPluginFlatpak       *plugin,
                                         FlatpakTransaction    *transaction,
                                         GsApp                 *parent_app,
                                         GsAppState             state,
                                         gboolean               interactive,
+                                        GMainContext          *callback_context,
                                         GsPluginEventCallback  event_callback,
                                         void                  *event_user_data)
 {
@@ -1445,7 +1512,7 @@ gs_flatpak_cover_addons_in_transaction (GsPlugin              *plugin,
 		}
 	}
 
-	if (errors) {
+	if (errors && event_callback != NULL) {
 		g_autoptr(GsPluginEvent) event = NULL;
 		g_autoptr(GError) error_local = g_error_new_literal (GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
 			errors->str);
@@ -1455,8 +1522,9 @@ gs_flatpak_cover_addons_in_transaction (GsPlugin              *plugin,
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		if (event_callback != NULL)
-			event_callback (plugin, event, event_user_data);
+
+		event_callback_invoke_take (plugin, g_steal_pointer (&event), callback_context,
+					    event_callback, event_user_data);
 	}
 }
 
@@ -1503,7 +1571,6 @@ uninstall_apps_thread_cb (GTask        *task,
                           GCancellable *cancellable)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
-	GsPlugin *plugin = GS_PLUGIN (self);
 	GsPluginUninstallAppsData *data = task_data;
 	gboolean interactive = (data->flags & GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GHashTable) applist_by_flatpaks = NULL;
@@ -1547,10 +1614,8 @@ uninstall_apps_thread_cb (GTask        *task,
 		gs_flatpak_set_busy (flatpak, TRUE);
 
 		/* build */
-		transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, data->event_callback, data->event_user_data, cancellable, &local_error);
+		transaction = _build_transaction (self, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, g_task_get_context (task), data->event_callback, data->event_user_data, cancellable, &local_error);
 		if (transaction == NULL) {
-			g_autoptr(GsPluginEvent) event = NULL;
-
 			/* Reset the state of all the apps in this transaction. */
 			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 				GsApp *app = gs_app_list_index (list_tmp, i);
@@ -1561,13 +1626,19 @@ uninstall_apps_thread_cb (GTask        *task,
 			 * be created, which is unlikely. */
 			gs_flatpak_error_convert (&local_error);
 
-			event = gs_plugin_event_new ("error", local_error,
-						     NULL);
-			if (interactive)
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			if (data->event_callback != NULL)
-				data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+			if (data->event_callback != NULL) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+
+				event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+							    data->event_callback, data->event_user_data);
+			}
+
 			g_clear_error (&local_error);
 
 			gs_flatpak_set_busy (flatpak, FALSE);
@@ -1603,8 +1674,6 @@ uninstall_apps_thread_cb (GTask        *task,
 
 			/* Reset state if adding the app to the transaction failed. */
 			if (local_error != NULL) {
-				g_autoptr(GsPluginEvent) event = NULL;
-
 				/* Reset the state of all the apps in this transaction. */
 				for (guint j = 0; j < gs_app_list_length (list_tmp); j++) {
 					GsApp *recover_app = gs_app_list_index (list_tmp, j);
@@ -1613,13 +1682,19 @@ uninstall_apps_thread_cb (GTask        *task,
 
 				gs_flatpak_error_convert (&local_error);
 
-				event = gs_plugin_event_new ("error", local_error,
-							     NULL);
-				if (interactive)
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				if (data->event_callback != NULL)
-					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+				if (data->event_callback != NULL) {
+					g_autoptr(GsPluginEvent) event = NULL;
+
+					event = gs_plugin_event_new ("error", local_error,
+								     NULL);
+					if (interactive)
+						gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+
+					event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+								    data->event_callback, data->event_user_data);
+				}
+
 				g_clear_error (&local_error);
 
 				gs_flatpak_set_busy (flatpak, FALSE);
@@ -1627,7 +1702,8 @@ uninstall_apps_thread_cb (GTask        *task,
 				continue;
 			}
 
-			gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_REMOVING, interactive,
+			gs_flatpak_cover_addons_in_transaction (self, transaction, app, GS_APP_STATE_REMOVING, interactive,
+								g_task_get_context (task),
 								data->event_callback,
 								data->event_user_data);
 		}
@@ -1657,17 +1733,21 @@ uninstall_apps_thread_cb (GTask        *task,
 					gs_app_set_state (error_app, GS_APP_STATE_UNKNOWN);
 				}
 			} else {
-				g_autoptr(GsPluginEvent) event = NULL;
-
 				gs_flatpak_error_convert (&local_error);
 
-				event = gs_plugin_event_new ("error", local_error,
-							     NULL);
-				if (interactive)
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				if (data->event_callback != NULL)
-					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+				if (data->event_callback != NULL) {
+					g_autoptr(GsPluginEvent) event = NULL;
+
+					event = gs_plugin_event_new ("error", local_error,
+								     NULL);
+					if (interactive)
+						gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+
+					event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+								    data->event_callback, data->event_user_data);
+				}
+
 				g_clear_error (&local_error);
 
 				gs_flatpak_set_busy (flatpak, FALSE);
@@ -1869,10 +1949,8 @@ install_apps_thread_cb (GTask        *task,
 		gs_flatpak_set_busy (flatpak, TRUE);
 
 		/* build */
-		transaction = _build_transaction (plugin, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, data->event_callback, data->event_user_data, cancellable, &local_error);
+		transaction = _build_transaction (self, flatpak, GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR, interactive, g_task_get_context (task), data->event_callback, data->event_user_data, cancellable, &local_error);
 		if (transaction == NULL) {
-			g_autoptr(GsPluginEvent) event = NULL;
-
 			/* Reset the state of all the apps in this transaction. */
 			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 				GsApp *app = gs_app_list_index (list_tmp, i);
@@ -1883,13 +1961,19 @@ install_apps_thread_cb (GTask        *task,
 			 * be created, which is unlikely. */
 			gs_flatpak_error_convert (&local_error);
 
-			event = gs_plugin_event_new ("error", local_error,
-						     NULL);
-			if (interactive)
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			if (data->event_callback != NULL)
-				data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+			if (data->event_callback != NULL) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				event = gs_plugin_event_new ("error", local_error,
+							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+
+				event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+							    data->event_callback, data->event_user_data);
+			}
+
 			g_clear_error (&local_error);
 
 			remove_schedule_entry (schedule_entry_handle);
@@ -1976,27 +2060,32 @@ install_apps_thread_cb (GTask        *task,
 
 			/* Reset state if adding the app to the transaction failed. */
 			if (local_error != NULL) {
-				g_autoptr(GsPluginEvent) event = NULL;
-
 				/* Reset the state of the failed app */
 				gs_app_set_state_recover (app);
 
 				gs_flatpak_error_convert (&local_error);
 
-				event = gs_plugin_event_new ("error", local_error,
-							     "app", app,
-							     NULL);
-				if (interactive)
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				if (data->event_callback != NULL)
-					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+				if (data->event_callback != NULL) {
+					g_autoptr(GsPluginEvent) event = NULL;
+
+					event = gs_plugin_event_new ("error", local_error,
+								     "app", app,
+								     NULL);
+					if (interactive)
+						gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+
+					event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+								    data->event_callback, data->event_user_data);
+				}
+
 				g_clear_error (&local_error);
 
 				continue;
 			}
 
-			gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_INSTALLING, interactive,
+			gs_flatpak_cover_addons_in_transaction (self, transaction, app, GS_APP_STATE_INSTALLING, interactive,
+								g_task_get_context (task),
 								data->event_callback,
 								data->event_user_data);
 		}
@@ -2026,8 +2115,6 @@ install_apps_thread_cb (GTask        *task,
 					gs_app_set_state (error_app, GS_APP_STATE_UNKNOWN);
 				}
 			} else {
-				g_autoptr(GsPluginEvent) event = NULL;
-
 				if (error_app != NULL &&
 				    g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REF_NOT_FOUND)) {
 					const gchar *origin = gs_app_get_origin (error_app);
@@ -2054,14 +2141,20 @@ install_apps_thread_cb (GTask        *task,
 
 				gs_flatpak_error_convert (&local_error);
 
-				event = gs_plugin_event_new ("error", local_error,
-							     "app", error_app,
-							     NULL);
-				if (interactive)
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				if (data->event_callback != NULL)
-					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+				if (data->event_callback != NULL) {
+					g_autoptr(GsPluginEvent) event = NULL;
+
+					event = gs_plugin_event_new ("error", local_error,
+								     "app", error_app,
+								     NULL);
+					if (interactive)
+						gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+
+					event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
+								    data->event_callback, data->event_user_data);
+				}
+
 				g_clear_error (&local_error);
 
 				remove_schedule_entry (schedule_entry_handle);
