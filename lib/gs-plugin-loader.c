@@ -138,6 +138,7 @@ gs_plugin_loader_notify_idle_cb (gpointer user_data)
 	return FALSE;
 }
 
+/* Could be called in any thread. */
 void
 gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 {
@@ -974,6 +975,7 @@ gs_plugin_loader_remove_events (GsPluginLoader *plugin_loader)
 	g_hash_table_remove_all (plugin_loader->events_by_id);
 }
 
+/* Could be called in any thread. */
 static void
 gs_plugin_loader_report_event_cb (GsPlugin *plugin,
 				  GsPluginEvent *event,

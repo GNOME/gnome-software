@@ -3260,7 +3260,10 @@ async_result_cb (GObject      *source_object,
  * `GsPlugin`’s event code (rather than, as is more typical, a
  * `GsPluginEventCallback` provided by a `GsPluginJob`) because this thread is
  * started in response to an external system change, and is not tied to any
- * `GsPluginJob`. */
+ * `GsPluginJob`.
+ *
+ * This callback could be called in a worker thread or the main thread.
+ * gs_plugin_report_event() allows that. */
 static void
 prepare_update_event_cb (GsPlugin      *plugin,
                          GsPluginEvent *event,
