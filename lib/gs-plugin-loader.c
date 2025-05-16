@@ -156,7 +156,6 @@ static void
 gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
 				       GsPlugin *plugin,
 				       GsPluginJob *job,
-				       GsPluginAction action,
 				       GsApp *app,
 				       gboolean interactive,
 				       const GError *error)
@@ -228,7 +227,6 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
 
 	/* create event which is handled by the GsShell */
 	event = gs_plugin_event_new ("error", error_copy,
-				     "action", action,
 				     "app", event_app,
 				     "origin", event_origin,
 				     "job", job,
@@ -272,7 +270,7 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (error != NULL);
 
-	gs_plugin_loader_claim_error_internal (plugin_loader, plugin, NULL, action, app, interactive, error);
+	gs_plugin_loader_claim_error_internal (plugin_loader, plugin, NULL, app, interactive, error);
 }
 
 /**
@@ -299,7 +297,6 @@ gs_plugin_loader_claim_job_error (GsPluginLoader *plugin_loader,
 
 	gs_plugin_loader_claim_error_internal (plugin_loader, plugin,
 		job,
-		gs_plugin_job_get_action (job),
 		gs_plugin_job_get_app (job),
 		gs_plugin_job_get_interactive (job),
 		error);
@@ -1282,8 +1279,7 @@ gs_plugin_loader_software_app_created_cb (GObject *source_object,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_RESTART_REQUIRED,
 			     "A restart is required");
-	event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_UNKNOWN,
-				     "app", app,
+	event = gs_plugin_event_new ("app", app,
 				     "error", error,
 				     NULL);
 	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);

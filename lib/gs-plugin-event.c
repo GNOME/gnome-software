@@ -35,7 +35,6 @@ struct _GsPluginEvent
 	GObject			 parent_instance;
 	GsApp			*app;
 	GsApp			*origin;
-	GsPluginAction		 action;
 	GsPluginJob		*job;  /* (owned) (nullable) */
 	GError			*error;
 	GsPluginEventFlag	 flags;
@@ -47,7 +46,6 @@ G_DEFINE_TYPE (GsPluginEvent, gs_plugin_event, G_TYPE_OBJECT)
 typedef enum {
 	PROP_APP = 1,
 	PROP_ORIGIN,
-	PROP_ACTION,
 	PROP_JOB,
 	PROP_ERROR,
 } GsPluginEventProperty;
@@ -86,23 +84,6 @@ gs_plugin_event_get_origin (GsPluginEvent *event)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_EVENT (event), NULL);
 	return event->origin;
-}
-
-/**
- * gs_plugin_event_get_action:
- * @event: A #GsPluginEvent
- *
- * Gets an action that created the event.
- *
- * Returns: (transfer none): a #GsPluginAction
- *
- * Since: 3.22
- **/
-GsPluginAction
-gs_plugin_event_get_action (GsPluginEvent *event)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_EVENT (event), 0);
-	return event->action;
 }
 
 /**
@@ -279,9 +260,6 @@ gs_plugin_event_get_property (GObject    *object,
 	case PROP_ORIGIN:
 		g_value_set_object (value, self->origin);
 		break;
-	case PROP_ACTION:
-		g_value_set_enum (value, self->action);
-		break;
 	case PROP_JOB:
 		g_value_set_object (value, self->job);
 		break;
@@ -313,12 +291,6 @@ gs_plugin_event_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->origin == NULL);
 		self->origin = g_value_dup_object (value);
-		g_object_notify_by_pspec (object, props[prop_id]);
-		break;
-	case PROP_ACTION:
-		/* Construct only. */
-		g_assert (self->action == GS_PLUGIN_ACTION_UNKNOWN);
-		self->action = g_value_get_enum (value);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	case PROP_JOB:
@@ -400,20 +372,6 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 				     GS_TYPE_APP,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
-
-	/**
-	 * GsPluginEvent:action:
-	 *
-	 * The action that caused the event to be created.
-	 *
-	 * Since: 42
-	 */
-	props[PROP_ACTION] =
-		g_param_spec_enum ("action", "Action",
-				   "The action that caused the event to be created.",
-				   GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPluginEvent:job: (nullable)

@@ -1338,7 +1338,6 @@ download_iterate_state_machine_cb (GObject      *source_object,
 				gs_eos_updater_error_convert (&error_local);
 
 				event = gs_plugin_event_new ("app", data->app,
-							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 							     "error", error_local,
 							     NULL);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
@@ -1420,7 +1419,6 @@ download_iterate_state_machine_cb (GObject      *source_object,
 				gs_eos_updater_error_convert (&error_local);
 
 				event = gs_plugin_event_new ("app", data->app,
-							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 							     "error", error_local,
 							     NULL);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);

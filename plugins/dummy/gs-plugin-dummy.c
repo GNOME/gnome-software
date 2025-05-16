@@ -1346,7 +1346,6 @@ update_apps_cb (GObject      *source_object,
 				gs_utils_error_add_origin_id (&local_error, self->cached_origin);
 
 				event = gs_plugin_event_new ("app", app,
-							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 							     "error", local_error,
 							     "origin", self->cached_origin,
 							     NULL);
