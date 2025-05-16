@@ -123,7 +123,7 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @file_to_app_finish: (nullable): Finish method for
  *   @file_to_app_async. Must be implemented if
  *   @file_to_app_async is implemented. (Since: 47)
- * @url_to_app_async: (nullable): Converts a URL to a #GsApp. (Since: 47)
+ * @url_to_app_async: (nullable): Converts a URL to a #GsApp. (Since: 49)
  * @url_to_app_finish: (nullable): Finish method for
  *   @url_to_app_async. Must be implemented if
  *   @url_to_app_async is implemented. (Since: 47)
@@ -370,6 +370,8 @@ struct _GsPluginClass
 	void			(*url_to_app_async)		(GsPlugin			*plugin,
 								 const gchar			*url,
 								 GsPluginUrlToAppFlags		 flags,
+								 GsPluginEventCallback		 event_callback,
+								 void				*event_user_data,
 								 GCancellable			*cancellable,
 								 GAsyncReadyCallback		 callback,
 								 gpointer			 user_data);

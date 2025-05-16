@@ -265,6 +265,8 @@ static void
 gs_plugin_dummy_url_to_app_async (GsPlugin              *plugin,
                                   const gchar           *url,
                                   GsPluginUrlToAppFlags  flags,
+                                  GsPluginEventCallback  event_callback,
+                                  void                  *event_user_data,
                                   GCancellable          *cancellable,
                                   GAsyncReadyCallback    callback,
                                   gpointer               user_data)
@@ -274,7 +276,7 @@ gs_plugin_dummy_url_to_app_async (GsPlugin              *plugin,
 	g_autoptr(GsApp) app = NULL;
 	g_autofree gchar *scheme = NULL;
 
-	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, cancellable, callback, user_data);
+	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_url_to_app_async);
 
 	/* it's us */

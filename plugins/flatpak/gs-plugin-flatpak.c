@@ -2704,6 +2704,8 @@ gs_plugin_flatpak_list_apps_finish (GsPlugin      *plugin,
 
 typedef struct {
 	gboolean interactive;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 	GFile *cache_file;  /* (owned) (not nullable) */
 } UrlToAppDownloadData;
 
@@ -2737,7 +2739,7 @@ url_to_app_thread_cb (GTask *task,
 
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		if (!gs_flatpak_url_to_app (flatpak, list, data->url, interactive, NULL, NULL, cancellable, &local_error)) {
+		if (!gs_flatpak_url_to_app (flatpak, list, data->url, interactive, data->event_callback, data->event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -2750,6 +2752,8 @@ static void
 gs_plugin_flatpak_url_to_app_async (GsPlugin *plugin,
 				    const gchar *url,
 				    GsPluginUrlToAppFlags flags,
+				    GsPluginEventCallback event_callback,
+				    void *event_user_data,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -2759,7 +2763,7 @@ gs_plugin_flatpak_url_to_app_async (GsPlugin *plugin,
 	gboolean interactive = (flags & GS_PLUGIN_URL_TO_APP_FLAGS_INTERACTIVE) != 0;
 	g_autofree char *scheme = NULL;
 
-	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, cancellable, callback, user_data);
+	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_url_to_app_async);
 
 	/* Firstly, try and support `flatpak+https` URIs. This needs to be done
@@ -2800,6 +2804,8 @@ gs_plugin_flatpak_url_to_app_async (GsPlugin *plugin,
 
 		data = g_new0 (UrlToAppDownloadData, 1);
 		data->interactive = interactive;
+		data->event_callback = event_callback;
+		data->event_user_data = event_user_data;
 		data->cache_file = g_object_ref (cache_file);
 		g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) url_to_app_download_data_free);
 
@@ -2842,7 +2848,8 @@ url_to_app_download_cb (GObject      *object,
 	gs_plugin_flatpak_file_to_app_async (GS_PLUGIN (self),
 					     data->cache_file,
 					     data->interactive ? GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE : GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
-					     NULL, NULL, /* FIXME */
+					     data->event_callback,
+					     data->event_user_data,
 					     cancellable,
 					     url_to_app_file_cb, g_steal_pointer (&task));
 }

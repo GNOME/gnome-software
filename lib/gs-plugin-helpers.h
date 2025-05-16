@@ -305,14 +305,20 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginFileToAppData, gs_plugin_file_to_app_data
 typedef struct {
 	gchar *url;  /* (owned) */
 	GsPluginUrlToAppFlags flags;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 } GsPluginUrlToAppData;
 
 GsPluginUrlToAppData *
 		gs_plugin_url_to_app_data_new		(const gchar		    *url,
-							 GsPluginUrlToAppFlags	     flags);
+							 GsPluginUrlToAppFlags	     flags,
+							 GsPluginEventCallback	     event_callback,
+							 void			    *event_user_data);
 GTask *		gs_plugin_url_to_app_data_new_task	(gpointer		     source_object,
 							 const gchar		    *url,
 							 GsPluginUrlToAppFlags	     flags,
+							 GsPluginEventCallback	     event_callback,
+							 void			    *event_user_data,
 							 GCancellable		    *cancellable,
 							 GAsyncReadyCallback	     callback,
 							 gpointer		     user_data);

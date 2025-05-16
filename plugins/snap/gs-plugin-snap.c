@@ -463,6 +463,8 @@ static void
 gs_plugin_snap_url_to_app_async (GsPlugin *plugin,
 				 const gchar *url,
 				 GsPluginUrlToAppFlags flags,
+				 GsPluginEventCallback event_callback,
+				 void *event_user_data,
 				 GCancellable *cancellable,
 				 GAsyncReadyCallback callback,
 				 gpointer user_data)
