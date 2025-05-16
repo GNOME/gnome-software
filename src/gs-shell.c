@@ -1964,8 +1964,6 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 
 	/* get error */
 	error = gs_plugin_event_get_error (event);
-	if (error == NULL)
-		return FALSE;
 
 	/* name and shame the plugin */
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT)) {
@@ -2020,8 +2018,7 @@ gs_shell_rescan_events (GsShell *shell)
 		GsPluginJob *job = gs_plugin_event_get_job (event);
 		const GError *error = gs_plugin_event_get_error (event);
 
-		if (error != NULL &&
-		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			if (error->domain == GS_PLUGIN_ERROR) {
 				g_debug ("%sinteractive job '%s' failed with error '%s': %s",
@@ -2039,8 +2036,7 @@ gs_shell_rescan_events (GsShell *shell)
 			}
 		}
 		if (!gs_shell_show_event (shell, event)) {
-			if (error != NULL &&
-			    !g_error_matches (error,
+			if (!g_error_matches (error,
 					      GS_PLUGIN_ERROR,
 					      GS_PLUGIN_ERROR_CANCELLED) &&
 			    !g_error_matches (error,
