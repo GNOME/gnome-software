@@ -123,6 +123,30 @@ gs_plugin_event_get_job (GsPluginEvent *event)
 }
 
 /**
+ * gs_plugin_event_set_job:
+ * @event: A #GsPluginEvent
+ * @job: (nullable): a plugin job, or `NULL` to clear
+ *
+ * Sets the job that created the event.
+ *
+ * This can be set after construction time, because typically the #GsPluginJob
+ * pointer isn’t available when constructing an event — only later on in the
+ * event handling chain.
+ *
+ * Since: 49
+ */
+void
+gs_plugin_event_set_job (GsPluginEvent *event,
+                         GsPluginJob   *job)
+{
+	g_return_if_fail (GS_IS_PLUGIN_EVENT (event));
+	g_return_if_fail (job == NULL || GS_IS_PLUGIN_JOB (job));
+
+	if (g_set_object (&event->job, job))
+		g_object_notify_by_pspec (G_OBJECT (event), props[PROP_JOB]);
+}
+
+/**
  * gs_plugin_event_get_unique_id:
  * @event: A #GsPluginEvent
  *
@@ -290,10 +314,7 @@ gs_plugin_event_set_property (GObject      *object,
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	case PROP_JOB:
-		/* Construct only. */
-		g_assert (self->job == NULL);
-		self->job = g_value_dup_object (value);
-		g_object_notify_by_pspec (object, props[prop_id]);
+		gs_plugin_event_set_job (self, g_value_get_object (value));
 		break;
 	case PROP_ERROR:
 		/* Construct only. */
@@ -398,7 +419,7 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 		g_param_spec_object ("job", "Job",
 				     "The job that caused the event to be created.",
 				     GS_TYPE_PLUGIN_JOB,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_READWRITE |
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**

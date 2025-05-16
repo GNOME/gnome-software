@@ -2887,6 +2887,7 @@ job_process_event_cb (GsPluginJob   *plugin_job,
 	GTask *task = G_TASK (user_data);
 	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
 
+	gs_plugin_event_set_job (event, plugin_job);
 	gs_plugin_loader_add_event (plugin_loader, event);
 }
 
