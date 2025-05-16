@@ -2060,13 +2060,15 @@ static void
 gs_plugin_fwupd_file_to_app_async (GsPlugin *plugin,
 				   GFile *file,
 				   GsPluginFileToAppFlags flags,
+				   GsPluginEventCallback event_callback,
+				   void *event_user_data,
 				   GCancellable *cancellable,
 				   GAsyncReadyCallback callback,
 				   gpointer user_data)
 {
 	g_autoptr(GTask) task = NULL;
 
-	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, cancellable, callback, user_data);
+	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fwupd_file_to_app_async);
 
 	gs_utils_get_content_type_async (file, cancellable,

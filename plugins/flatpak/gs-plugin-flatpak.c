@@ -2374,7 +2374,7 @@ file_to_app_thread_cb (GTask *task,
 	GsPluginFileToAppData *data = task_data;
 	gboolean interactive = (data->flags & GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE) != 0;
 
-	app = gs_plugin_flatpak_file_to_app (self, data->file, interactive, NULL, NULL, NULL, cancellable, &local_error);
+	app = gs_plugin_flatpak_file_to_app (self, data->file, interactive, NULL, data->event_callback, data->event_user_data, cancellable, &local_error);
 	if (app != NULL) {
 		g_autoptr(GsAppList) list = gs_app_list_new ();
 		gs_app_list_add (list, app);
@@ -2390,6 +2390,8 @@ static void
 gs_plugin_flatpak_file_to_app_async (GsPlugin *plugin,
 				     GFile *file,
 				     GsPluginFileToAppFlags flags,
+				     GsPluginEventCallback event_callback,
+				     void *event_user_data,
 				     GCancellable *cancellable,
 				     GAsyncReadyCallback callback,
 				     gpointer user_data)
@@ -2398,7 +2400,7 @@ gs_plugin_flatpak_file_to_app_async (GsPlugin *plugin,
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	gboolean interactive = (flags & GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, cancellable, callback, user_data);
+	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_file_to_app_async);
 
 	/* Queue a job to get the apps. */
@@ -2840,6 +2842,7 @@ url_to_app_download_cb (GObject      *object,
 	gs_plugin_flatpak_file_to_app_async (GS_PLUGIN (self),
 					     data->cache_file,
 					     data->interactive ? GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE : GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
+					     NULL, NULL, /* FIXME */
 					     cancellable,
 					     url_to_app_file_cb, g_steal_pointer (&task));
 }

@@ -3770,6 +3770,8 @@ static void
 gs_plugin_packagekit_file_to_app_async (GsPlugin *plugin,
 					GFile *file,
 					GsPluginFileToAppFlags flags,
+					GsPluginEventCallback event_callback,
+					void *event_user_data,
 					GCancellable *cancellable,
 					GAsyncReadyCallback callback,
 					gpointer user_data)

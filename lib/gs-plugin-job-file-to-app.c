@@ -146,6 +146,9 @@ gs_plugin_job_file_to_app_get_interactive (GsPluginJob *job)
 	return (self->flags & GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE) != 0;
 }
 
+static void plugin_event_cb (GsPlugin      *plugin,
+                             GsPluginEvent *event,
+                             void          *user_data);
 static void plugin_app_func_cb (GObject      *source_object,
 				GAsyncResult *result,
 				gpointer      user_data);
@@ -199,13 +202,24 @@ gs_plugin_job_file_to_app_run_async (GsPluginJob         *job,
 
 		/* run the plugin */
 		self->n_pending_ops++;
-		plugin_class->file_to_app_async (plugin, self->file, self->flags, cancellable, plugin_app_func_cb, g_object_ref (task));
+		plugin_class->file_to_app_async (plugin, self->file, self->flags, plugin_event_cb, task, cancellable, plugin_app_func_cb, g_object_ref (task));
 	}
 
 	if (!anything_ran)
 		g_debug ("no plugin could handle file-to-app operation");
 
 	finish_op (task, NULL, g_steal_pointer (&local_error));
+}
+
+static void
+plugin_event_cb (GsPlugin      *plugin,
+                 GsPluginEvent *event,
+                 void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginJob *plugin_job = g_task_get_source_object (task);
+
+	gs_plugin_job_emit_event (plugin_job, plugin, event);
 }
 
 static void

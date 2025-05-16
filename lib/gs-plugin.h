@@ -119,7 +119,7 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @launch_finish: (nullable): Finish method for
  *   @launch_async. Must be implemented if
  *   @launch_async is implemented. (Since: 47)
- * @file_to_app_async: (nullable): Converts a local file to a #GsApp. (Since: 47)
+ * @file_to_app_async: (nullable): Converts a local file to a #GsApp. (Since: 49)
  * @file_to_app_finish: (nullable): Finish method for
  *   @file_to_app_async. Must be implemented if
  *   @file_to_app_async is implemented. (Since: 47)
@@ -358,6 +358,8 @@ struct _GsPluginClass
 	void			(*file_to_app_async)		(GsPlugin			*plugin,
 								 GFile				*file,
 								 GsPluginFileToAppFlags		 flags,
+								 GsPluginEventCallback		 event_callback,
+								 void				*event_user_data,
 								 GCancellable			*cancellable,
 								 GAsyncReadyCallback		 callback,
 								 gpointer			 user_data);

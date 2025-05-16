@@ -282,14 +282,20 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginLaunchData, gs_plugin_launch_data_free)
 typedef struct {
 	GFile *file;  /* (owned) */
 	GsPluginFileToAppFlags flags;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 } GsPluginFileToAppData;
 
 GsPluginFileToAppData *
 		gs_plugin_file_to_app_data_new		(GFile			    *file,
-							 GsPluginFileToAppFlags	     flags);
+							 GsPluginFileToAppFlags	     flags,
+							 GsPluginEventCallback	     event_callback,
+							 void			    *event_user_data);
 GTask *		gs_plugin_file_to_app_data_new_task	(gpointer		     source_object,
 							 GFile			    *file,
 							 GsPluginFileToAppFlags	     flags,
+							 GsPluginEventCallback	     event_callback,
+							 void			    *event_user_data,
 							 GCancellable		    *cancellable,
 							 GAsyncReadyCallback	     callback,
 							 gpointer		     user_data);
