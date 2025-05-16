@@ -1960,7 +1960,6 @@ static gboolean
 gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 {
 	const GError *error;
-	GsPluginAction action;
 	GsPluginJob *job;
 
 	/* get error */
@@ -1990,25 +1989,21 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 		return gs_shell_show_event_remove (shell, event);
 	else if (GS_IS_PLUGIN_JOB_DOWNLOAD_UPGRADE (job))
 		return gs_shell_show_event_upgrade (shell, event);
+	else if (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (job)) {
+		GsPluginManageRepositoryFlags repo_flags = gs_plugin_job_manage_repository_get_flags (GS_PLUGIN_JOB_MANAGE_REPOSITORY (job));
 
-	/* split up the events by action */
-	action = gs_plugin_event_get_action (event);
-	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL_REPO:
-	case GS_PLUGIN_ACTION_ENABLE_REPO:
-		return gs_shell_show_event_install (shell, event);
-	case GS_PLUGIN_ACTION_REMOVE_REPO:
-	case GS_PLUGIN_ACTION_DISABLE_REPO:
-		return gs_shell_show_event_remove (shell, event);
-	case GS_PLUGIN_ACTION_LAUNCH:
+		if (repo_flags & (GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL |
+				  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_ENABLE))
+			return gs_shell_show_event_install (shell, event);
+		else if (repo_flags & (GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE |
+				       GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE))
+			return gs_shell_show_event_remove (shell, event);
+	} else if (GS_IS_PLUGIN_JOB_LAUNCH (job))
 		return gs_shell_show_event_launch (shell, event);
-	case GS_PLUGIN_ACTION_FILE_TO_APP:
+	else if (GS_IS_PLUGIN_JOB_FILE_TO_APP (job))
 		return gs_shell_show_event_file_to_app (shell, event);
-	case GS_PLUGIN_ACTION_URL_TO_APP:
+	else if (GS_IS_PLUGIN_JOB_URL_TO_APP (job))
 		return gs_shell_show_event_url_to_app (shell, event);
-	default:
-		break;
-	}
 
 	/* capture some warnings every time */
 	return gs_shell_show_event_fallback (shell, event);
@@ -2022,21 +2017,22 @@ gs_shell_rescan_events (GsShell *shell)
 	/* find the first active event and show it */
 	event = gs_plugin_loader_get_event_default (shell->plugin_loader);
 	if (event != NULL) {
-		GsPluginAction action = gs_plugin_event_get_action (event);
+		GsPluginJob *job = gs_plugin_event_get_job (event);
 		const GError *error = gs_plugin_event_get_error (event);
+
 		if (error != NULL &&
 		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			if (error->domain == GS_PLUGIN_ERROR) {
-				g_debug ("%sinteractive action '%s' failed with error '%s': %s",
+				g_debug ("%sinteractive job '%s' failed with error '%s': %s",
 					 gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE) ? "" : "non-",
-					 gs_plugin_action_to_string (action),
+					 (job != NULL) ? G_OBJECT_TYPE_NAME (job) : "(unknown)",
 					 gs_plugin_error_to_string (error->code),
 					 error->message);
 			} else {
-				g_debug ("%sinteractive action '%s' failed with error '%s::%d': %s",
+				g_debug ("%sinteractive job '%s' failed with error '%s::%d': %s",
 					 gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE) ? "" : "non-",
-					 gs_plugin_action_to_string (action),
+					 (job != NULL) ? G_OBJECT_TYPE_NAME (job) : "(unknown)",
 					 g_quark_to_string (error->domain),
 					 error->code,
 					 error->message);
@@ -2059,10 +2055,10 @@ gs_shell_rescan_events (GsShell *shell)
 									g_quark_to_string (error->domain),
 									error->code);
 				}
-				msg = g_strdup_printf ("not handling %sinteractive error '%s' for action '%s': %s",
+				msg = g_strdup_printf ("not handling %sinteractive error '%s' for job '%s': %s",
 						       gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE) ? "" : "non-",
 						       error_ident,
-						       gs_plugin_action_to_string (action),
+						       (job != NULL) ? G_OBJECT_TYPE_NAME (job) : "(unknown)",
 						       error->message);
 				if (g_strcmp0 (BUILD_TYPE, "debug") == 0)
 					g_warning ("%s", msg);
