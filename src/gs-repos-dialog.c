@@ -98,17 +98,25 @@ _enable_repo (InstallRemoveData *install_data)
 {
 	GsReposDialog *dialog = install_data->dialog;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GCancellable) cancellable = gs_app_peek_cancellable (install_data->repo);
-	if (cancellable != NULL) {
-		g_cancellable_cancel (cancellable);
-		g_clear_object (&cancellable);
+	g_autoptr(GsRepoRow) row = NULL;
+	g_autoptr(GCancellable) new_cancellable = NULL;
+
+	/* Cancel any pending jobs on the row’s repo. */
+	row = g_weak_ref_get (&install_data->row_weakref);
+	if (row != NULL) {
+		GCancellable *old_cancellable = gs_repo_row_get_cancellable (row);
+		g_cancellable_cancel (old_cancellable);
 	}
-	cancellable = g_object_ref (gs_app_get_cancellable (install_data->repo));
+
+	new_cancellable = g_cancellable_new ();
+	if (row != NULL)
+		gs_repo_row_set_cancellable (row, new_cancellable);
+
 	g_debug ("enabling repo %s", gs_app_get_id (install_data->repo));
 	plugin_job = gs_plugin_job_manage_repository_new (install_data->repo,
 							  install_data->operation | GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-	                                    cancellable,
+	                                    new_cancellable,
 	                                    repo_enabled_cb,
 	                                    install_data);
 }
@@ -197,28 +205,35 @@ remove_repo_response_cb (AdwAlertDialog *confirm_dialog,
 	g_autoptr(InstallRemoveData) remove_data = (InstallRemoveData *) user_data;
 	GsReposDialog *dialog = remove_data->dialog;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GCancellable) cancellable = gs_app_peek_cancellable (remove_data->repo);
+	g_autoptr(GsRepoRow) row = NULL;
+	g_autoptr(GCancellable) new_cancellable = NULL;
+
+	row = g_weak_ref_get (&remove_data->row_weakref);
 
 	/* not agreed */
 	if (g_strcmp0 (response, "disable") != 0 &&
 	    g_strcmp0 (response, "remove") != 0) {
-		g_autoptr(GsRepoRow) row = g_weak_ref_get (&remove_data->row_weakref);
 		if (row)
 			gs_repo_row_unmark_busy (row);
 		return;
 	}
 
-	if (cancellable != NULL) {
-		g_cancellable_cancel (cancellable);
-		g_clear_object (&cancellable);
+	/* Cancel any pending jobs on the row’s repo. */
+	if (row != NULL) {
+		GCancellable *old_cancellable = gs_repo_row_get_cancellable (row);
+		g_cancellable_cancel (old_cancellable);
 	}
-	cancellable = g_object_ref (gs_app_get_cancellable (remove_data->repo));
+
+	new_cancellable = g_cancellable_new ();
+	if (row != NULL)
+		gs_repo_row_set_cancellable (row, new_cancellable);
+
 	g_debug ("removing repo %s", gs_app_get_id (remove_data->repo));
 	plugin_job = gs_plugin_job_manage_repository_new (remove_data->repo,
 							  remove_data->operation |
 							  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-					    cancellable,
+					    new_cancellable,
 					    repo_enabled_cb,
 					    g_steal_pointer (&remove_data));
 }
