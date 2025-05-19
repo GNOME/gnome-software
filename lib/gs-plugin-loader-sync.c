@@ -9,6 +9,7 @@
 
 #include "config.h"
 
+#include "gnome-software.h"
 #include "gs-plugin-loader-sync.h"
 
 /* tiny helper to help us do the async operation */
@@ -28,14 +29,14 @@ _helper_finish_sync (GObject *source_object,
 	g_main_loop_quit (helper->loop);
 }
 
-GsAppList *
+gboolean
 gs_plugin_loader_job_process (GsPluginLoader *plugin_loader,
 			      GsPluginJob *plugin_job,
 			      GCancellable *cancellable,
 			      GError **error)
 {
 	GsPluginLoaderHelper helper;
-	GsAppList *list;
+	gboolean success;
 
 	/* create temp object */
 	helper.res = NULL;
@@ -51,9 +52,7 @@ gs_plugin_loader_job_process (GsPluginLoader *plugin_loader,
 					    _helper_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-	                                            helper.res,
-	                                            error);
+	success = gs_plugin_loader_job_process_finish (plugin_loader, helper.res, NULL, error);
 
 	g_main_context_pop_thread_default (helper.context);
 
@@ -62,84 +61,7 @@ gs_plugin_loader_job_process (GsPluginLoader *plugin_loader,
 	if (helper.res != NULL)
 		g_object_unref (helper.res);
 
-	return list;
-}
-
-gboolean
-gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
-			     GsPluginJob *plugin_job,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	GsPluginLoaderHelper helper;
-	gboolean ret;
-
-	/* create temp object */
-	helper.res = NULL;
-	helper.context = g_main_context_new ();
-	helper.loop = g_main_loop_new (helper.context, FALSE);
-
-	g_main_context_push_thread_default (helper.context);
-
-	/* run async method */
-	gs_plugin_loader_job_process_async (plugin_loader,
-					    plugin_job,
-					    cancellable,
-					    _helper_finish_sync,
-					    &helper);
-	g_main_loop_run (helper.loop);
-	ret = gs_plugin_loader_job_action_finish (plugin_loader,
-	                                          helper.res,
-	                                          error);
-
-	g_main_context_pop_thread_default (helper.context);
-
-	g_main_loop_unref (helper.loop);
-	g_main_context_unref (helper.context);
-	if (helper.res != NULL)
-		g_object_unref (helper.res);
-
-	return ret;
-}
-
-GsApp *
-gs_plugin_loader_job_process_app (GsPluginLoader *plugin_loader,
-				  GsPluginJob *plugin_job,
-				  GCancellable *cancellable,
-				  GError **error)
-{
-	GsPluginLoaderHelper helper;
-	g_autoptr(GsAppList) list = NULL;
-	GsApp *app = NULL;
-
-	/* create temp object */
-	helper.res = NULL;
-	helper.context = g_main_context_new ();
-	helper.loop = g_main_loop_new (helper.context, FALSE);
-
-	g_main_context_push_thread_default (helper.context);
-
-	/* run async method */
-	gs_plugin_loader_job_process_async (plugin_loader,
-					    plugin_job,
-					    cancellable,
-					    _helper_finish_sync,
-					    &helper);
-	g_main_loop_run (helper.loop);
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-	                                            helper.res,
-	                                            error);
-	if (list != NULL)
-		app = g_object_ref (gs_app_list_index (list, 0));
-
-	g_main_context_pop_thread_default (helper.context);
-
-	g_main_loop_unref (helper.loop);
-	g_main_context_unref (helper.context);
-	if (helper.res != NULL)
-		g_object_unref (helper.res);
-
-	return app;
+	return success;
 }
 
 GsApp *

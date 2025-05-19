@@ -149,16 +149,18 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 	GsApp *app;
 	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
 	/* get curated apps */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get curated apps: %s", error->message);
 		goto out;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* not enough to show */
 	if (gs_app_list_length (list) < MIN_CURATED_APPS) {
@@ -225,16 +227,18 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	GsApp *app;
 	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
 	/* get recent apps */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get recent apps: %s", error->message);
 		goto out;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* not enough to show */
 	if (gs_app_list_length (list) < N_TILES) {
@@ -297,9 +301,10 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+	gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error);
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 		goto out;
@@ -308,6 +313,8 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		g_debug ("Skipping set of featured apps, because being overwritten");
 		goto out;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	if (list == NULL || gs_app_list_length (list) == 0) {
 		g_warning ("failed to get featured apps: %s",
@@ -336,15 +343,17 @@ gs_overview_page_get_deployment_featured_cb (GObject *source_object,
 	GsApp *app;
 	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
 	/* get deployment-featured apps */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get deployment-featured apps: %s", error->message);
 		goto out;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* not enough to show */
 	if (gs_app_list_length (list) < N_TILES) {
@@ -416,9 +425,11 @@ gs_overview_page_gather_apps_cb (GObject *source_object,
 	GatherAppsData *data = user_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+	gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error);
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* ignore errors */
@@ -610,16 +621,16 @@ gs_overview_page_verify_category_cb (GObject *source_object,
 	g_autoptr(VerifyCategoryData) data = user_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &local_error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &local_error)) {
 		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get apps for category: %s", local_error->message);
 		g_debug ("Failed to get category content '%s' for overview page: %s", gs_category_get_id (data->category), local_error->message);
 	} else {
 		GsCategory *all_subcat = gs_category_find_child (data->category, "all");
+		GsAppList *list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 		guint size = gs_app_list_length (list);
 		g_debug ("overview page verify category '%s' size:%u~>%u subcat:'%s' size:%u~>%u",
 			gs_category_get_id (data->category), gs_category_get_size (data->category), size,
@@ -647,7 +658,7 @@ gs_overview_page_get_categories_list_cb (GObject *source_object,
 
 	/* The apps can be mentioned in the appstream data, but no plugin may provide actual app,
 	   thus try to get the content as the Categories page and fine tune the numbers appropriately. */
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get categories: %s", error->message);
@@ -1138,7 +1149,7 @@ gs_overview_page_refresh_cb (GsPluginLoader *plugin_loader,
 	gboolean success;
 	g_autoptr(GError) error = NULL;
 
-	success = gs_plugin_loader_job_action_finish (plugin_loader, result, &error);
+	success = gs_plugin_loader_job_process_finish (plugin_loader, result, NULL, &error);
 	if (!success &&
 	    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 	    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))

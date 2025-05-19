@@ -1203,7 +1203,7 @@ invoke_plugin_loader_refresh_metadata_assert_no_error (GsPluginLoader *plugin_lo
 
 	plugin_job = gs_plugin_job_refresh_metadata_new (0, /* always refresh */
 	                                                 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 
 	g_assert_no_error (error);
@@ -1214,12 +1214,13 @@ static GsAppList *
 invoke_plugin_loader_list_upgrades_assert_no_error (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	g_autoptr(GError) error = NULL;
 
 	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
 	                                                     GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
 	gs_test_flush_main_context ();
 
 	g_assert_no_error (error);
@@ -1234,14 +1235,15 @@ invoke_plugin_loader_list_apps_for_update_assert_no_error (GsPluginLoader *plugi
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsAppQuery) query = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	g_autoptr(GError) error = NULL;
 
 	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
 	                          "refine-flags", GS_PLUGIN_REFINE_FLAGS_NONE,
 	                          NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 	gs_test_flush_main_context ();
 
 	g_assert_no_error (error);
@@ -1254,7 +1256,7 @@ invoke_plugin_loader_list_apps_for_update_assert_no_error (GsPluginLoader *plugi
 /**
  * RunPluginJobActionData:
  *
- * Holds data to pass to a gs_plugin_loader_job_action() call.
+ * Holds data to pass to a gs_plugin_loader_job_process() call.
  */
 typedef struct {
 	GsPluginLoader *plugin_loader;
@@ -1271,10 +1273,10 @@ run_plugin_job_action_thread_cb (gpointer user_data)
 {
 	RunPluginJobActionData *data = (RunPluginJobActionData *) user_data;
 
-	data->ret = gs_plugin_loader_job_action (data->plugin_loader,
-	                                         data->plugin_job,
-	                                         data->cancellable,
-	                                         &data->error);
+	data->ret = gs_plugin_loader_job_process (data->plugin_loader,
+	                                          data->plugin_job,
+	                                          data->cancellable,
+	                                          &data->error);
 
 	return NULL;
 }

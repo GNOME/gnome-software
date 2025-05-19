@@ -36,6 +36,15 @@ struct _GsPluginJobClass
 	gboolean (*get_interactive) (GsPluginJob *self);
 };
 
+void		gs_plugin_job_run_async			(GsPluginJob		*self,
+							 GsPluginLoader		*plugin_loader,
+							 GCancellable		*cancellable,
+							 GAsyncReadyCallback	 callback,
+							 gpointer		 user_data);
+gboolean	gs_plugin_job_run_finish		(GsPluginJob		*self,
+							 GAsyncResult		*result,
+							 GError			**error);
+
 gboolean	 gs_plugin_job_get_interactive		(GsPluginJob	*self);
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,
 							 GsApp		*app);

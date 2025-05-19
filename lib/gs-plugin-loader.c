@@ -511,34 +511,65 @@ gs_plugin_loader_app_is_compatible (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
+typedef struct {
+	gint64 begin_time_nsec;
+	GsPluginJob *plugin_job;  /* (owned) */
+} JobProcessData;
+
+static void
+job_process_data_free (JobProcessData *data)
+{
+	g_clear_object (&data->plugin_job);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (JobProcessData, job_process_data_free)
+
 /**
  * gs_plugin_loader_job_process_finish:
  * @plugin_loader: A #GsPluginLoader
  * @res: a #GAsyncResult
+ * @out_job: (out) (optional) (not nullable) (transfer full): return location
+ *   for a pointer to the original #GsPluginJob, or %NULL to ignore
  * @error: A #GError, or %NULL
  *
- * Return value: (element-type GsApp) (transfer full): A list of applications
+ * Finish an asynchronous job started with gs_plugin_loader_job_process_async().
+ *
+ * The original job can be returned, for convenience, using @out_job. This
+ * happens regardless of whether an error is returned.
+ *
+ * The results from the original job must be queried from the #GsPluginJob
+ * object using methods specific to the job subclass.
+ *
+ * Return value: %TRUE on success, %FALSE otherwise
+ * Since: 49
  **/
-GsAppList *
+gboolean
 gs_plugin_loader_job_process_finish (GsPluginLoader *plugin_loader,
 				     GAsyncResult *res,
+				     GsPluginJob **out_job,
 				     GError **error)
 {
 	GTask *task;
-	GsAppList *list = NULL;
+	gboolean retval;
+	JobProcessData *data;
 
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+	g_return_val_if_fail (G_IS_TASK (res), FALSE);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
 	task = G_TASK (res);
+	data = g_task_get_task_data (task);
+
+	if (out_job != NULL)
+		*out_job = g_object_ref (data->plugin_job);
 
 	/* Return cancelled if the task was cancelled and there is no other error set.
 	 *
 	 * This is needed because we set the task `check_cancellable` to FALSE,
 	 * to be able to catch other errors such as timeout, but that means
-	 * g_task_propagate_pointer() will ignore if the task was cancelled and only
+	 * g_task_propagate_boolean() will ignore if the task was cancelled and only
 	 * check if there was an error (i.e. g_task_return_*error*).
 	 *
 	 * We only do this if there is no error already set in the task (e.g.
@@ -549,36 +580,13 @@ gs_plugin_loader_job_process_finish (GsPluginLoader *plugin_loader,
 
 		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			gs_utils_error_convert_gio (error);
-			return NULL;
+			return FALSE;
 		}
 	}
-	list = g_task_propagate_pointer (task, error);
+
+	retval = g_task_propagate_boolean (task, error);
 	gs_utils_error_convert_gio (error);
-	return list;
-}
-
-/**
- * gs_plugin_loader_job_action_finish:
- * @plugin_loader: A #GsPluginLoader
- * @res: a #GAsyncResult
- * @error: A #GError, or %NULL
- *
- * Return value: success
- **/
-gboolean
-gs_plugin_loader_job_action_finish (GsPluginLoader *plugin_loader,
-				     GAsyncResult *res,
-				     GError **error)
-{
-	g_autoptr(GsAppList) list = NULL;
-
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	list = g_task_propagate_pointer (G_TASK (res), error);
-	return list != NULL;
+	return retval;
 }
 
 /******************************************************************************/
@@ -1917,16 +1925,17 @@ finish_setup_install_queue_cb (GObject      *source_object,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	g_autoptr(GsAppList) new_list = NULL;
+	g_autoptr(GsPluginJobRefine) refine_job = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	new_list = gs_plugin_loader_job_process_finish (plugin_loader, result, &local_error);
-	if (new_list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, result, (GsPluginJob **) &refine_job, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	} else {
 		g_autoptr(GsAppList) old_pending_apps = NULL;
 		gboolean has_pending_apps = FALSE;
 		gboolean changed;
+		GsAppList *new_list = gs_plugin_job_refine_get_result_list (refine_job);
+
 		g_mutex_lock (&plugin_loader->pending_apps_mutex);
 		changed = plugin_loader->pending_apps != NULL;
 		/* Merge the existing and newly-loaded lists, in case pending apps were added
@@ -2434,9 +2443,10 @@ gs_plugin_loader_apps_installed_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = GS_APP_LIST (user_data);
 
-	ret = gs_plugin_loader_job_action_finish (plugin_loader,
-						  res,
-						  &error);
+	ret = gs_plugin_loader_job_process_finish (plugin_loader,
+						   res,
+						   NULL,
+						   &error);
 	remove_apps_from_install_queue (plugin_loader, apps);
 	if (!ret) {
 		for (guint i = 0; i < gs_app_list_length (apps); i++) {
@@ -2512,14 +2522,13 @@ gs_plugin_loader_pending_apps_refined_cb (GObject      *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	g_autoptr(GsAppList) old_queue = GS_APP_LIST (user_data);
-	g_autoptr(GsAppList) refined_queue = NULL;
+	g_autoptr(GsPluginJobRefine) refine_job = NULL;
+	GsAppList *refined_queue;
 	g_autoptr(GsAppList) to_remove = NULL;
 	g_autoptr(GsAppList) to_install = NULL;
 	g_autoptr(GError) error = NULL;
 
-	refined_queue = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-
-	if (refined_queue == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &refine_job, &error)) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
 		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_debug ("failed to refine pending apps: %s", error->message);
@@ -2534,6 +2543,7 @@ gs_plugin_loader_pending_apps_refined_cb (GObject      *source,
 	}
 
 	/* Remove no-longer-queued apps */
+	refined_queue = gs_plugin_job_refine_get_result_list (refine_job);
 	to_remove = gs_app_list_new ();
 
 	for (guint i = 0; i < gs_app_list_length (old_queue); i++) {
@@ -2707,23 +2717,19 @@ run_job_cb (GObject      *source_object,
             gpointer      user_data)
 {
 	GsPluginJob *plugin_job = GS_PLUGIN_JOB (source_object);
-	GsPluginJobClass *job_class;
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+#ifdef HAVE_SYSPROF
+	JobProcessData *data = g_task_get_task_data (task);
+#endif
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (g_task_get_source_object (task));
 	g_autoptr(GError) local_error = NULL;
 
 	GS_PROFILER_ADD_MARK_TAKE (PluginLoader,
-				   GPOINTER_TO_SIZE (g_task_get_task_data (task)),
+				   data->begin_time_nsec,
 				   g_strdup_printf ("process-thread:%s", G_OBJECT_TYPE_NAME (plugin_job)),
 				   gs_plugin_job_to_string (plugin_job));
 
-	/* FIXME: This will eventually go away when
-	 * gs_plugin_loader_job_process_finish() is removed. */
-	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
-
-	g_assert (job_class->run_finish != NULL);
-
-	if (!job_class->run_finish (plugin_job, result, &local_error)) {
+	if (!gs_plugin_job_run_finish (plugin_job, result, &local_error)) {
 		if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job) ||
 		    GS_IS_PLUGIN_JOB_UNINSTALL_APPS (plugin_job))
 			gs_plugin_loader_pending_apps_remove (plugin_loader, plugin_job);
@@ -2732,36 +2738,8 @@ run_job_cb (GObject      *source_object,
 		return;
 	}
 
-	if (GS_IS_PLUGIN_JOB_REFINE (plugin_job)) {
-		GsAppList *list = gs_plugin_job_refine_get_result_list (GS_PLUGIN_JOB_REFINE (plugin_job));
-		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
-		return;
-	} else if (GS_IS_PLUGIN_JOB_LIST_APPS (plugin_job)) {
-		GsAppList *list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
-		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
-		return;
-	} else if (GS_IS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job)) {
-		GsAppList *list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
-		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
-		return;
-	} else if (GS_IS_PLUGIN_JOB_FILE_TO_APP (plugin_job)) {
-		GsAppList *list = gs_plugin_job_file_to_app_get_result_list (GS_PLUGIN_JOB_FILE_TO_APP (plugin_job));
-		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
-		return;
-	} else if (GS_IS_PLUGIN_JOB_URL_TO_APP (plugin_job)) {
-		GsAppList *list = gs_plugin_job_url_to_app_get_result_list (GS_PLUGIN_JOB_URL_TO_APP (plugin_job));
-		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
-		return;
-	} else if (GS_IS_PLUGIN_JOB_REFRESH_METADATA (plugin_job)) {
-		/* FIXME: For some reason, existing callers of refresh jobs
-		 * expect a #GsAppList instance back, even though it’s empty and
-		 * they don’t use its contents. It’s just used to distinguish
-		 * against returning an error. This will go away when
-		 * job_process_async() does. */
-		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
-		return;
-	} else if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_UNINSTALL_APPS (plugin_job)) {
+	if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job) ||
+	    GS_IS_PLUGIN_JOB_UNINSTALL_APPS (plugin_job)) {
 		/* add apps to the pending installation queue if necessary */
 		GsAppList *apps = NULL;
 
@@ -2791,25 +2769,9 @@ run_job_cb (GObject      *source_object,
 				}
 			}
 		}
-
-		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
-		 * pointer on success, thus return it. */
-		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
-		return;
-	} else if (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_UPDATE_APPS (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_CANCEL_OFFLINE_UPDATE (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_DOWNLOAD_UPGRADE (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_TRIGGER_UPGRADE (plugin_job) ||
-		   GS_IS_PLUGIN_JOB_LAUNCH (plugin_job)) {
-		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
-		 * pointer on success, thus return it. */
-		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
-		return;
 	}
 
-	g_assert_not_reached ();
+	g_task_return_boolean (task, TRUE);
 }
 
 typedef struct {
@@ -2871,6 +2833,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GCancellable) cancellable_job = NULL;
 	g_autofree gchar *task_name = NULL;
+	g_autoptr(JobProcessData) data = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
@@ -2883,7 +2846,10 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 	g_task_set_name (task, task_name);
-	g_task_set_task_data (task, g_object_ref (plugin_job), (GDestroyNotify) g_object_unref);
+	data = g_new0 (JobProcessData, 1);
+	data->plugin_job = g_object_ref (plugin_job);
+	data->begin_time_nsec = 0;  /* set in job_process_cb() */
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) job_process_data_free);
 
 	g_atomic_int_inc (&plugin_loader->active_jobs);
 	g_object_weak_ref (G_OBJECT (task),
@@ -2917,33 +2883,27 @@ job_process_setup_complete_cb (GCancellable *cancellable,
 static void
 job_process_cb (GTask *task)
 {
-	g_autoptr(GsPluginJob) plugin_job = g_object_ref (g_task_get_task_data (task));
+	JobProcessData *data = g_task_get_task_data (task);
+	GsPluginJob *plugin_job = data->plugin_job;
 	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
-	GsPluginJobClass *job_class;
+
 #ifdef HAVE_SYSPROF
-	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
-
-	g_task_set_task_data (task, GSIZE_TO_POINTER (begin_time_nsec), NULL);
+	data->begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
-
-	gs_plugin_job_set_cancellable (plugin_job, cancellable);
-
-	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
-	g_assert (job_class->run_async != NULL);
 
 	/* these change the pending count on the installed panel */
 	if (GS_IS_PLUGIN_JOB_INSTALL_APPS (plugin_job))
 		gs_plugin_loader_pending_apps_add (plugin_loader, plugin_job);
 	else if (GS_IS_PLUGIN_JOB_UNINSTALL_APPS (plugin_job)) {
 		if (gs_plugin_loader_pending_apps_add (plugin_loader, plugin_job)) {
-			g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+			g_task_return_boolean (task, TRUE);
 			return;
 		}
 	}
 
-	job_class->run_async (plugin_job, plugin_loader, cancellable,
-			      run_job_cb, g_object_ref (task));
+	gs_plugin_job_run_async (plugin_job, plugin_loader, cancellable,
+				 run_job_cb, g_object_ref (task));
 }
 
 /******************************************************************************/
@@ -3033,17 +2993,18 @@ app_create_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (g_task_get_source_object (task));
 	const gchar *unique_id = g_task_get_task_data (task);
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobRefine) refine_job = NULL;
+	GsAppList *list = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, result, &local_error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, result, (GsPluginJob **) &refine_job, &local_error)) {
 		g_prefix_error (&local_error, "Failed to refine '%s': ", unique_id);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	/* return the matching GsApp */
+	list = gs_plugin_job_refine_get_result_list (refine_job);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app_tmp = gs_app_list_index (list, i);
 		if (g_strcmp0 (unique_id, gs_app_get_unique_id (app_tmp)) == 0) {

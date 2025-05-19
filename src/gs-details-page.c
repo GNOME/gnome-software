@@ -799,7 +799,8 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 	gboolean instance_changed = FALSE;
 	gboolean origin_by_packaging_format = self->origin_by_packaging_format;
 	GtkWidget *first_row = NULL;
@@ -817,16 +818,15 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		return;
 	}
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-						    res,
-						    &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get alternates: %s", error->message);
 		gtk_widget_set_visible (self->origin_box, FALSE);
 		return;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* deduplicate the list; duplicates can get in the list if
 	 * get_alternates() returns the old/new version of a renamed app, which
@@ -1264,12 +1264,12 @@ gs_details_page_search_developer_apps_cb (GObject *source_object,
 					  gpointer user_data)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 	g_autoptr(GError) local_error = NULL;
 	guint n_added = 0;
 
-	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (source_object), result, &local_error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (source_object), result, (GsPluginJob **) &list_apps_job, &local_error)) {
 		if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("search cancelled");
@@ -1281,6 +1281,8 @@ gs_details_page_search_developer_apps_cb (GObject *source_object,
 
 	if (!self->app || !gs_page_is_active (GS_PAGE (self)))
 		return;
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -1849,7 +1851,8 @@ gs_details_page_app_refine_cb (GObject *source,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
 		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_warning ("failed to refine %s: %s",
@@ -2012,7 +2015,7 @@ gs_details_page_load_stage1_cb (GObject *source,
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
 		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_warning ("failed to refine %s: %s",
@@ -2061,18 +2064,15 @@ gs_details_page_file_to_app_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobFileToApp) file_to_app_job = NULL;
 	g_autoptr(GError) error = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-						    res,
-						    &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &file_to_app_job, &error)) {
 		g_warning ("failed to convert file to GsApp: %s", error->message);
 		/* go back to the overview */
 		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 	} else {
-		GsApp *app = gs_app_list_index (list, 0);
+		GsApp *app = gs_app_list_index (gs_plugin_job_file_to_app_get_result_list (file_to_app_job), 0);
 		g_set_object (&self->app_local_file, app);
 		_set_app (self, app);
 		gs_details_page_load_stage2 (self, TRUE);
@@ -2086,18 +2086,15 @@ gs_details_page_url_to_app_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobUrlToApp) url_to_app_job = NULL;
 	g_autoptr(GError) error = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-						    res,
-						    &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &url_to_app_job, &error)) {
 		g_warning ("failed to convert URL to GsApp: %s", error->message);
 		/* go back to the overview */
 		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 	} else {
-		GsApp *app = gs_app_list_index (list, 0);
+		GsApp *app = gs_app_list_index (gs_plugin_job_url_to_app_get_result_list (url_to_app_job), 0);
 		g_set_object (&self->app_local_file, app);
 		_set_app (self, app);
 		gs_details_page_load_stage2 (self, TRUE);

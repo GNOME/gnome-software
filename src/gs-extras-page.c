@@ -339,7 +339,7 @@ gs_extras_page_app_notify_state_cb (GsApp *app,
 }
 
 static void
-gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchData *search_data)
+gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, SearchData *search_data)
 {
 	GtkWidget *app_row, *child;
 	guint n_can_install = 0;
@@ -623,13 +623,13 @@ search_files_cb (GObject *source_object,
 {
 	SearchData *search_data = (SearchData *) user_data;
 	GsExtrasPage *self = search_data->self;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 	guint i;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		g_autofree gchar *str = NULL;
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
@@ -642,6 +642,8 @@ search_files_cb (GObject *source_object,
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 		return;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* add missing item */
 	if (gs_app_list_length (list) == 0) {
@@ -656,7 +658,7 @@ search_files_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
-		gs_extras_page_add_app (self, app, list, search_data);
+		gs_extras_page_add_app (self, app, search_data);
 	}
 
 	self->pending_search_cnt--;
@@ -676,10 +678,9 @@ file_to_app_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobFileToApp) file_to_app_job = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &file_to_app_job, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("extras: search what provides cancelled");
@@ -700,11 +701,11 @@ file_to_app_cb (GObject *source_object,
 			return;
 		}
 	} else {
-		app = g_object_ref (gs_app_list_index (list, 0));
+		app = g_object_ref (gs_app_list_index (gs_plugin_job_file_to_app_get_result_list (file_to_app_job), 0));
 	}
 
 	g_debug ("%s\n\n", gs_app_to_string (app));
-	gs_extras_page_add_app (self, app, list, search_data);
+	gs_extras_page_add_app (self, app, search_data);
 
 	self->pending_search_cnt--;
 
@@ -720,13 +721,13 @@ get_search_what_provides_cb (GObject *source_object,
 {
 	SearchData *search_data = (SearchData *) user_data;
 	GsExtrasPage *self = search_data->self;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 	guint i;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		g_autofree gchar *str = NULL;
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
@@ -739,6 +740,8 @@ get_search_what_provides_cb (GObject *source_object,
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 		return;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* add missing item */
 	if (gs_app_list_length (list) == 0) {
@@ -753,7 +756,7 @@ get_search_what_provides_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
-		gs_extras_page_add_app (self, app, list, search_data);
+		gs_extras_page_add_app (self, app, search_data);
 	}
 
 	self->pending_search_cnt--;

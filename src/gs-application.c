@@ -282,7 +282,7 @@ cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data
 {
 	GsApplication *app = GS_APPLICATION (user_data);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_job_action_finish (app->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (app->plugin_loader, res, NULL, &error)) {
 		g_warning ("failed to cancel trigger: %s", error->message);
 		return;
 	}
@@ -402,7 +402,7 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 		   GsApplication *app)
 {
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
@@ -498,13 +498,16 @@ _search_launchable_details_cb (GObject *source, GAsyncResult *res, gpointer user
 	GsApp *a;
 	GsApplication *app = GS_APPLICATION (user_data);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
-	list = gs_plugin_loader_job_process_finish (app->plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (app->plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		g_warning ("failed to find application: %s", error->message);
 		return;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
+
 	if (gs_app_list_length (list) == 0) {
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 		gs_shell_show_notification (app->shell,
@@ -838,7 +841,7 @@ launch_activated (GSimpleAction *action,
 	GsApplication *self = GS_APPLICATION (data);
 	GsApp *app = NULL;
 	const gchar *id, *management_plugin_name;
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	g_autoptr(GsPluginJob) search_job = NULL;
 	g_autoptr(GsPluginJob) launch_job = NULL;
 	g_autoptr(GError) error = NULL;
@@ -860,7 +863,8 @@ launch_activated (GSimpleAction *action,
 				  "developer-verified-type", gs_shell_get_query_developer_verified_type (self->shell),
 				  NULL);
 	search_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
+	gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
+	list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (search_job));
 	if (!list) {
 		g_warning ("Failed to search for application '%s' (from '%s'): %s", id, management_plugin_name, error ? error->message : "Unknown error");
 		return;
@@ -883,7 +887,7 @@ launch_activated (GSimpleAction *action,
 	}
 
 	launch_job = gs_plugin_job_launch_new (app, GS_PLUGIN_LAUNCH_FLAGS_NONE);
-	if (!gs_plugin_loader_job_action (self->plugin_loader, launch_job, self->cancellable, &error)) {
+	if (!gs_plugin_loader_job_process (self->plugin_loader, launch_job, self->cancellable, &error)) {
 		g_warning ("Failed to launch app: %s", error->message);
 		return;
 	}

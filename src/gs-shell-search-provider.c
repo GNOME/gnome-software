@@ -68,18 +68,20 @@ search_done_cb (GObject *source,
 	GsShellSearchProvider *self = search->provider;
 	guint i;
 	GVariantBuilder builder;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 
 	/* cache no longer valid */
 	gs_app_list_remove_all (self->search_results);
 
-	list = gs_plugin_loader_job_process_finish (self->plugin_loader, res, NULL);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (self->plugin_loader, res, (GsPluginJob **) &list_apps_job, NULL)) {
 		g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", NULL));
 		pending_search_free (search);
 		g_application_release (g_application_get_default ());
 		return;	
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* sort by kudos, as there is no ratings data by default */
 	gs_app_list_sort (list, search_sort_by_kudo_cb, NULL);

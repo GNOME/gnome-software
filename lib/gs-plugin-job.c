@@ -19,7 +19,7 @@ typedef struct
 {
 	GsPluginAction		 action;
 	gint64			 time_created;
-	GCancellable		*cancellable;
+	GCancellable		*cancellable; /* (nullable) (owned) */
 } GsPluginJobPrivate;
 
 enum {
@@ -206,31 +206,69 @@ gs_plugin_job_init (GsPluginJob *self)
 }
 
 /**
- * gs_plugin_job_set_cancellable:
+ * gs_plugin_job_run_async:
  * @self: a #GsPluginJob
- * @cancellable: (nullable) (transfer none): the cancellable to use
+ * @plugin_loader: plugin loader to provide the plugins to run the job against
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: callback to call once the job is finished
+ * @user_data: data to pass to @callback
  *
- * Sets the #GCancellable which can be used with gs_plugin_job_cancel() to
- * cancel the job.
+ * Asynchronously run the job.
  *
- * FIXME: This is only needed because #GsPluginLoader implements cancellation
- * outside of the #GsPluginJob for old-style jobs. Once all #GsPluginJob
- * subclasses implement `run_async()`, the #GCancellable passed to that can be
- * stored internally in #GsPluginJob and cancelled from gs_plugin_job_cancel().
- * Then this method will be removed.
+ * This stores a reference to @cancellable so that gs_plugin_job_cancel() can be
+ * used to asynchronously cancel the job from another thread.
  *
- * Since: 45
+ * Since: 49
  */
 void
-gs_plugin_job_set_cancellable (GsPluginJob *self,
-			       GCancellable *cancellable)
+gs_plugin_job_run_async (GsPluginJob         *self,
+                         GsPluginLoader      *plugin_loader,
+                         GCancellable        *cancellable,
+                         GAsyncReadyCallback  callback,
+                         gpointer             user_data)
 {
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+	GsPluginJobClass *job_class;
 
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
+	job_class = GS_PLUGIN_JOB_GET_CLASS (self);
+	g_assert (job_class->run_async != NULL);
+
+	/* Store a reference to the cancellable for later use by gs_plugin_job_cancel() */
 	g_set_object (&priv->cancellable, cancellable);
+
+	job_class->run_async (self, plugin_loader, cancellable, callback, user_data);
+}
+
+/**
+ * gs_plugin_job_run_finish:
+ * @self: a #GsPluginJob
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish an asynchronous plugin job started with gs_plugin_job_run_async().
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ * Since: 49
+ */
+gboolean
+gs_plugin_job_run_finish (GsPluginJob   *self,
+                          GAsyncResult  *result,
+                          GError       **error)
+{
+	GsPluginJobClass *job_class;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
+	g_return_val_if_fail (G_IS_ASYNC_RESULT (result), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	job_class = GS_PLUGIN_JOB_GET_CLASS (self);
+	g_assert (job_class->run_finish != NULL);
+
+	return job_class->run_finish (self, result, error);
 }
 
 /**
@@ -238,6 +276,8 @@ gs_plugin_job_set_cancellable (GsPluginJob *self,
  * @self: a #GsPluginJob
  *
  * Cancel the plugin job.
+ *
+ * This will cancel the #GCancellable passed to gs_plugin_job_run_async().
  *
  * Since: 45
  */

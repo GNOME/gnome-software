@@ -33,11 +33,9 @@ void		 gs_plugin_loader_job_process_async	(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
-GsAppList	*gs_plugin_loader_job_process_finish	(GsPluginLoader	*plugin_loader,
+gboolean	 gs_plugin_loader_job_process_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
-							 GError		**error);
-gboolean	 gs_plugin_loader_job_action_finish	(GsPluginLoader	*plugin_loader,
-							 GAsyncResult	*res,
+							 GsPluginJob	**out_job,
 							 GError		**error);
 void		 gs_plugin_loader_setup_async		(GsPluginLoader	*plugin_loader,
 							 const gchar * const *allowlist,

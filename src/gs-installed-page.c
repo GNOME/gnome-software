@@ -398,7 +398,8 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 	GsInstalledPage *self = GS_INSTALLED_PAGE (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 	g_autoptr(GsAppList) pending = gs_plugin_loader_get_pending (plugin_loader);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -407,15 +408,15 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 	self->waiting = FALSE;
 	self->cache_valid = TRUE;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-						    res,
-						    &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get installed apps: %s", error->message);
 		goto out;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
+
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		gs_installed_page_add_app (self, list, app);
@@ -737,10 +738,9 @@ gs_installed_page_pending_apps_refined_cb (GObject *source,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsInstalledPage *self = GS_INSTALLED_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = gs_plugin_loader_job_process_finish (plugin_loader,
-									 res,
-									 &error);
-	if (list == NULL) {
+	g_autoptr(GsPluginJobRefine) refine_job = NULL;
+
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &refine_job, &error)) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
 		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to refine pending apps: %s", error->message);
@@ -750,7 +750,7 @@ gs_installed_page_pending_apps_refined_cb (GObject *source,
 	/* we add the pending apps and install them because this is called after we
 	 * populate the page, and there may be pending apps coming from the saved list
 	 * (i.e. after loading the saved pending apps from the disk) */
-	gs_installed_page_add_pending_apps (self, list, TRUE);
+	gs_installed_page_add_pending_apps (self, gs_plugin_job_refine_get_result_list (refine_job), TRUE);
 }
 
 static void

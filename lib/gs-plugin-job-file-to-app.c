@@ -281,13 +281,13 @@ refine_job_finished_cb (GObject *source_object,
 			gpointer user_data)
 {
 	g_autoptr(GTask) task = G_TASK (g_steal_pointer (&user_data));
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobRefine) refine_job = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (source_object), result, &local_error);
+	gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (source_object), result, (GsPluginJob **) &refine_job, &local_error);
 	g_prefix_error_literal (&local_error, "Failed to refine file-to-app apps:");
 
-	finish_refine_op (task, list, g_steal_pointer (&local_error));
+	finish_refine_op (task, gs_plugin_job_refine_get_result_list (refine_job), g_steal_pointer (&local_error));
 }
 
 /* @error is (transfer full) if non-%NULL */

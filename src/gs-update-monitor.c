@@ -458,11 +458,10 @@ update_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	GsUpdateMonitor *monitor = data->monitor;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobUpdateApps) update_apps_job = NULL;
 
 	/* get result */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &update_apps_job, &error)) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
 						  NULL,
 						  data->job,
@@ -474,7 +473,7 @@ update_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	if (g_settings_get_boolean (monitor->settings, "download-updates-notify")) {
 		g_autoptr(GNotification) n = NULL;
 		gs_application_withdraw_notification (monitor->application, "updates-installed");
-		n = _build_autoupdated_notification (monitor, list);
+		n = _build_autoupdated_notification (monitor, gs_plugin_job_update_apps_get_apps (update_apps_job));
 		if (n != NULL)
 			gs_application_send_notification (monitor->application, "updates-installed", n, MINUTES_IN_A_DAY);
 	}
@@ -499,14 +498,12 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	GsUpdateMonitor *monitor = data->monitor;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) update_online = NULL;
 	g_autoptr(GsAppList) update_offline = NULL;
 	GsAppList *job_apps;
 
 	/* the returned list is always empty, the existence indicates success */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
 						  NULL,
 						  data->job,
@@ -552,13 +549,13 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	GsUpdateMonitor *monitor = download_updates_data->monitor;
 	guint64 security_timestamp = 0;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) apps = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *apps;
 	gboolean install_timestamp_outdated;
 	gboolean should_download;
 
 	/* get result */
-	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
-	if (apps == NULL) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_warning ("failed to get updates: %s", error->message);
@@ -566,6 +563,8 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		}
 		return;
 	}
+
+	apps = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* Update the check-timestamp, when this call is part of the auto-update */
 	if (download_updates_data->check_timestamp > 0) {
@@ -736,11 +735,11 @@ get_upgrades_finished_cb (GObject *object,
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GNotification) n = NULL;
-	g_autoptr(GsAppList) apps = NULL;
+	g_autoptr(GsPluginJobListDistroUpgrades) list_distro_upgrades_job = NULL;
+	GsAppList *apps;
 
 	/* get result */
-	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
-	if (apps == NULL) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, (GsPluginJob **) &list_distro_upgrades_job, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_warning ("failed to get upgrades: %s",
@@ -748,6 +747,8 @@ get_upgrades_finished_cb (GObject *object,
 		}
 		return;
 	}
+
+	apps = gs_plugin_job_list_distro_upgrades_get_result_list (list_distro_upgrades_job);
 
 	/* no results */
 	if (gs_app_list_length (apps) == 0) {
@@ -902,7 +903,7 @@ refresh_cache_finished_cb (GObject *object,
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to refresh the cache: %s", error->message);
@@ -920,7 +921,7 @@ install_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(WithAppData) with_app_data = data;
 
-	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, NULL, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_debug ("failed to install language pack: %s", error->message);
@@ -937,15 +938,17 @@ get_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) app_list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *app_list;
 
-	app_list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
-	if (app_list == NULL) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_debug ("failed to find language pack: %s", error->message);
 		return;
 	}
+
+	app_list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* none found */
 	if (gs_app_list_length (app_list) == 0) {
@@ -1287,12 +1290,12 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	guint64 time_last_notified;
 	gboolean did_clamp = FALSE;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) apps = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *apps;
 	g_autoptr(GNotification) notification = NULL;
 
 	/* get result */
-	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
-	if (apps == NULL) {
+	if (!gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, (GsPluginJob **) &list_apps_job, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("Failed to get historical updates: %s", error->message);
@@ -1314,6 +1317,8 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		gs_application_send_notification (monitor->application, "offline-updates", notification, MINUTES_IN_A_DAY);
 		return;
 	}
+
+	apps = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* no results */
 	if (gs_app_list_length (apps) == 0) {

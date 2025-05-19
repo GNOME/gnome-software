@@ -61,11 +61,12 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 {
 	guint i;
 	guint64 install_date;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
+	GsAppList *list;
 	g_autoptr(GError) error = NULL;
 
 	/* get the results */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+	gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error);
 
 	/* if we're in teardown, short-circuit and return immediately without
 	 * dereferencing priv variables */
@@ -77,11 +78,13 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	/* error */
-	if (list == NULL) {
+	if (error != NULL) {
 		g_warning ("failed to get installed updates: %s", error->message);
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 		return;
 	}
+
+	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
 
 	/* no results */
 	if (gs_app_list_length (list) == 0) {

@@ -148,7 +148,7 @@ gs_plugins_epiphany_installed_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GIcon) icon = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	GsAppList *list;
 	GsApp *app;
 	const char *app_id = "org.gnome.Epiphany.WebApp_e9d0e1e4b0a10856aa3b38d9eb4375de4070d043";
 	const char *metainfo_app_id = "org.gnome.Software.WebApp_e636aa5f2069f6e9c02deccc7b65f43da7985e32.desktop";
@@ -165,7 +165,8 @@ gs_plugins_epiphany_installed_func (GsPluginLoader *plugin_loader)
 				  "dedupe-flags", GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_nonnull (list);
