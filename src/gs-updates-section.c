@@ -385,13 +385,6 @@ static void
 _button_cancel_clicked_cb (GsUpdatesSection *self)
 {
 	g_cancellable_cancel (self->cancellable);
-	/* cancel also individual app's cancellables */
-	for (guint i = 0; i < gs_app_list_length (self->list); i++) {
-		GsApp *app = gs_app_list_index (self->list, i);
-		g_autoptr(GCancellable) cancellable = gs_app_peek_cancellable (app);
-		if (cancellable != NULL)
-			g_cancellable_cancel (cancellable);
-	}
 	_update_buttons (self);
 }
 
