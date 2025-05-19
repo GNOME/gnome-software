@@ -99,17 +99,6 @@ gs_plugin_job_subclass_has_app_property (GsPluginJob *self)
 	return (g_object_class_find_property (G_OBJECT_GET_CLASS (self), "app") != NULL);
 }
 
-void
-gs_plugin_job_set_app (GsPluginJob *self, GsApp *app)
-{
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-
-	if (!gs_plugin_job_subclass_has_app_property (self))
-		return;
-
-	g_object_set (G_OBJECT (self), "app", app, NULL);
-}
-
 GsApp *
 gs_plugin_job_get_app (GsPluginJob *self)
 {
