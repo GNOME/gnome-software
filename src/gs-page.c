@@ -519,13 +519,6 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		g_autoptr(GsAppList) app_list = NULL;
 
-		if (helper->cancellable != gs_app_get_cancellable (app)) {
-			/* cancel any ongoing job, this allows to e.g. cancel pending
-			 * installations, updates, or other ops that may have been queued
-			 * in the plugin loader (due to reaching the max parallel ops allowed) */
-			g_cancellable_cancel (gs_app_get_cancellable (app));
-		}
-
 		app_list = gs_app_list_new ();
 		gs_app_list_add (app_list, app);
 		plugin_job = gs_plugin_job_uninstall_apps_new (app_list, GS_PLUGIN_UNINSTALL_APPS_FLAGS_INTERACTIVE);
