@@ -2342,7 +2342,7 @@ gs_details_page_addon_install_cb (GsAppAddonRow *row,
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
 	addon = gs_app_addon_row_get_addon (row);
-	gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL, NULL);
+	gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL, gs_app_get_cancellable (addon));
 }
 
 static void
@@ -2352,7 +2352,7 @@ gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_data)
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
 	addon = gs_app_addon_row_get_addon (row);
-	gs_page_remove_app (GS_PAGE (self), addon, NULL);
+	gs_page_remove_app (GS_PAGE (self), addon, gs_app_get_cancellable (addon));
 }
 
 static void

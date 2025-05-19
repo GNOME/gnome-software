@@ -271,7 +271,7 @@ gs_page_install_app (GsPage *page,
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
 	helper->interaction = interaction;
 
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
@@ -356,7 +356,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
 
 	/* generic fallback */
 	list = gs_app_list_new ();
@@ -513,7 +513,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
 	helper->interaction = GS_SHELL_INTERACTION_FULL;
 	if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
