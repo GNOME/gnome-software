@@ -89,34 +89,6 @@ gs_plugin_job_get_action (GsPluginJob *self)
 	return priv->action;
 }
 
-/* FIXME: Find the :app property of the derived class. This will be removed
- * when the remains of the old threading API are removed. */
-static gboolean
-gs_plugin_job_subclass_has_app_property (GsPluginJob *self)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
-
-	return (g_object_class_find_property (G_OBJECT_GET_CLASS (self), "app") != NULL);
-}
-
-GsApp *
-gs_plugin_job_get_app (GsPluginJob *self)
-{
-	g_autoptr(GsApp) app = NULL;
-
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-
-	if (!gs_plugin_job_subclass_has_app_property (self))
-		return NULL;
-
-	g_object_get (G_OBJECT (self), "app", &app, NULL);
-
-	/* Don’t steal the reference, let the additional reference be dropped
-	 * because gs_plugin_job_get_app() is (transfer none). The GsPluginJob
-	 * still holds one. */
-	return app;
-}
-
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
