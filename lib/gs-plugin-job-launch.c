@@ -306,3 +306,20 @@ gs_plugin_job_launch_new (GsApp *app,
 			     "flags", flags,
 			     NULL);
 }
+
+/**
+ * gs_plugin_job_launch_get_app:
+ * @self: a #GsPluginJobLaunch
+ *
+ * Gets the value of #GsPluginJobLaunch:app.
+ *
+ * Returns: (transfer none) (not nullable): the app being launched
+ * Since: 49
+ */
+GsApp *
+gs_plugin_job_launch_get_app (GsPluginJobLaunch *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_LAUNCH (self), NULL);
+
+	return self->app;
+}
