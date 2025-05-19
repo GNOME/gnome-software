@@ -161,7 +161,7 @@ gs_utils_get_cache_filename (const gchar *kind,
 	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (g_free);
 	g_autoptr(GError) local_error = NULL;
 
-	/* in the self tests */
+	/* in the tests */
 	tmp = g_getenv ("GS_TEST_CACHEDIR");
 	if (tmp != NULL) {
 		cachedir = g_build_filename (tmp, kind, NULL);

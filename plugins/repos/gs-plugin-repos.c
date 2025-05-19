@@ -62,7 +62,7 @@ gs_plugin_repos_init (GsPluginRepos *self)
 
 	g_mutex_init (&self->mutex);
 
-	/* for debugging and the self tests */
+	/* for debugging and the tests */
 	self->reposdir = g_strdup (g_getenv ("GS_TEST_REPOS_DIR"));
 	if (self->reposdir == NULL)
 		self->reposdir = g_strdup ("/etc/yum.repos.d");

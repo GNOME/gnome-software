@@ -111,7 +111,7 @@ gs_test_expose_icon_theme_paths (void)
  * gs_test_reinitialise_plugin_loader:
  * @plugin_loader: a #GsPluginLoader
  *
- * Calls setup on each plugin. This should only be used from the self tests
+ * Calls setup on each plugin. This should only be used from the tests
  * and in a controlled way.
  *
  * Since: 42

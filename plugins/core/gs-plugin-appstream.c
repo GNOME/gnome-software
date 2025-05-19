@@ -89,7 +89,7 @@ gs_plugin_appstream_init (GsPluginAppstream *self)
 	self->settings = g_settings_new ("org.gnome.software");
 	self->silo_wrapper = gs_silo_wrapper_new (gs_plugin_appstream_build_silo, self, NULL);
 
-	/* Can be NULL when running the self tests */
+	/* Can be NULL when running the tests */
 	if (application) {
 		g_signal_connect_object (application, "repository-changed",
 			G_CALLBACK (gs_plugin_update_cache_state_for_repository), self, G_CONNECT_SWAPPED);
@@ -560,7 +560,7 @@ gs_plugin_appstream_build_silo (GsSiloWrapper *silo_wrapper,
 
 	gs_appstream_add_current_locales (builder);
 
-	/* only when in self test */
+	/* only when in test */
 	test_xml = g_getenv ("GS_TEST_APPSTREAM_XML");
 	if (test_xml != NULL) {
 		g_autoptr(XbBuilderFixup) fixup1 = NULL;
