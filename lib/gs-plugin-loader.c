@@ -243,7 +243,6 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
  * gs_plugin_loader_claim_error:
  * @plugin_loader: a #GsPluginLoader
  * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
- * @action: a #GsPluginAction associated with the @error
  * @app: (nullable): a #GsApp for the event, or %NULL
  * @interactive: whether to set interactive flag
  * @error: a #GError to claim
@@ -257,12 +256,11 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
  * The %GS_PLUGIN_ERROR_CANCELLED and %G_IO_ERROR_CANCELLED errors
  * are automatically ignored.
  *
- * Since: 41
+ * Since: 49
  **/
 void
 gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 			      GsPlugin *plugin,
-			      GsPluginAction action,
 			      GsApp *app,
 			      gboolean interactive,
 			      const GError *error)
