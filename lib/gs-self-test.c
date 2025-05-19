@@ -219,17 +219,6 @@ gs_plugin_func (void)
 	GsAppList *list_remove;
 	GsApp *app;
 
-	/* check enums converted */
-	for (guint i = 0; i < GS_PLUGIN_ACTION_LAST; i++) {
-		const gchar *tmp = gs_plugin_action_to_string (i);
-		if (tmp == NULL) {
-			/* These do not have function, they exist only for better error messages. */
-			if (i == GS_PLUGIN_ACTION_INSTALL)
-				continue;
-			g_critical ("failed to convert %u", i);
-		}
-	}
-
 	/* add a couple of duplicate IDs */
 	app = gs_app_new ("a");
 	list = gs_app_list_new ();

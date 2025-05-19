@@ -1401,38 +1401,6 @@ gs_plugin_error_to_string (GsPluginError error)
 }
 
 /**
- * gs_plugin_action_to_string:
- * @action: a #GsPluginAction
- *
- * Converts the enumerated action to a string.
- *
- * Returns: a string, or %NULL for invalid
- **/
-const gchar *
-gs_plugin_action_to_string (GsPluginAction action)
-{
-	if (action == GS_PLUGIN_ACTION_UNKNOWN)
-		return "unknown";
-	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
-		return "upgrade-download";
-	if (action == GS_PLUGIN_ACTION_LAUNCH)
-		return "launch";
-	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
-		return "file-to-app";
-	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
-		return "url-to-app";
-	if (action == GS_PLUGIN_ACTION_INSTALL_REPO)
-		return "repo-install";
-	if (action == GS_PLUGIN_ACTION_REMOVE_REPO)
-		return "repo-remove";
-	if (action == GS_PLUGIN_ACTION_ENABLE_REPO)
-		return "repo-enable";
-	if (action == GS_PLUGIN_ACTION_DISABLE_REPO)
-		return "repo-disable";
-	return NULL;
-}
-
-/**
  * gs_plugin_refine_flags_to_string:
  * @refine_flags: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_INTERACTIVE
  *

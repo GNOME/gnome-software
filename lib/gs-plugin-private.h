@@ -21,7 +21,6 @@ GsPlugin	*gs_plugin_create			(const gchar	*filename,
 							 GDBusConnection *system_bus_connection,
 							 GError		**error);
 const gchar	*gs_plugin_error_to_string		(GsPluginError	 error);
-const gchar	*gs_plugin_action_to_string		(GsPluginAction	 action);
 
 void		 gs_plugin_set_scale			(GsPlugin	*plugin,
 							 guint		 scale);
