@@ -426,13 +426,11 @@ repos_dialog_compare_sections_cb (gconstpointer aa,
 }
 typedef struct {
 	GsReposDialog *dialog; /* not owned */
-	GsAppList *list; /* owned */
 } RefineData;
 
 static void
 refine_data_free (RefineData *self)
 {
-	g_object_unref (self->list);
 	g_free (self);
 }
 
@@ -481,9 +479,11 @@ refine_sources_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(RefineData) rd = user_data;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsPluginJobRefine) refine_job = NULL;
+	GsAppList *refined_sources;
 	g_autoptr(GsAppList) related_list = NULL;
 
-	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
+	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &refine_job, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("refine sources cancelled");
@@ -495,9 +495,10 @@ refine_sources_cb (GObject *source_object,
 	}
 
 	/* refine related apps with generic or unknown kind, thus the GsRepoRow can use proper data */
+	refined_sources = gs_plugin_job_refine_get_result_list (refine_job);
 	related_list = gs_app_list_new ();
-	for (guint j = 0; j < gs_app_list_length (rd->list); j++) {
-		GsApp *source = gs_app_list_index (rd->list, j);
+	for (guint j = 0; j < gs_app_list_length (refined_sources); j++) {
+		GsApp *source = gs_app_list_index (refined_sources, j);
 		GsAppList *related = gs_app_get_related (source);
 		for (guint i = 0; i < gs_app_list_length (related); i++) {
 			GsApp *app = gs_app_list_index (related, i);
@@ -654,7 +655,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 	rd = g_new0 (RefineData, 1);
 	rd->dialog = dialog;
-	rd->list = g_object_ref (refine_list);
 	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
