@@ -424,17 +424,6 @@ repos_dialog_compare_sections_cb (gconstpointer aa,
 
 	return g_strcmp0 (title_sort_key_a, title_sort_key_b);
 }
-typedef struct {
-	GsReposDialog *dialog; /* not owned */
-} RefineData;
-
-static void
-refine_data_free (RefineData *self)
-{
-	g_free (self);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(RefineData, refine_data_free)
 
 static void
 refine_sources_related_finish (GsReposDialog *dialog)
@@ -477,7 +466,7 @@ refine_sources_cb (GObject *source_object,
 		   gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	g_autoptr(RefineData) rd = user_data;
+	GsReposDialog *dialog = GS_REPOS_DIALOG (user_data);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginJobRefine) refine_job = NULL;
 	GsAppList *refined_sources;
@@ -489,7 +478,7 @@ refine_sources_cb (GObject *source_object,
 			g_debug ("refine sources cancelled");
 		} else {
 			g_warning ("failed to refine sources: %s", error->message);
-			refine_sources_related_finish (rd->dialog);
+			refine_sources_related_finish (dialog);
 		}
 		return;
 	}
@@ -514,11 +503,11 @@ refine_sources_cb (GObject *source_object,
 
 		plugin_job = gs_plugin_job_refine_new (related_list, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_ID);
 		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
-						    rd->dialog->cancellable,
+						    dialog->cancellable,
 						    refine_sources_related_cb,
-						    rd->dialog);
+						    dialog);
 	} else {
-		refine_sources_related_finish (rd->dialog);
+		refine_sources_related_finish (dialog);
 	}
 }
 
@@ -535,7 +524,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	g_autoptr(GSList) other_repos = NULL;
 	g_autoptr(GList) sections = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	RefineData *rd;
 	AdwPreferencesGroup *added_section;
 	GHashTableIter iter;
 
@@ -653,13 +641,11 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 					  ADW_PREFERENCES_GROUP (section));
 	}
 
-	rd = g_new0 (RefineData, 1);
-	rd->dialog = dialog;
 	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
 					    refine_sources_cb,
-					    rd);
+					    dialog);
 }
 
 static void
