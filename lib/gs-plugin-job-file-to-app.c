@@ -205,8 +205,12 @@ gs_plugin_job_file_to_app_run_async (GsPluginJob         *job,
 		plugin_class->file_to_app_async (plugin, self->file, self->flags, plugin_event_cb, task, cancellable, plugin_app_func_cb, g_object_ref (task));
 	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle file-to-app operation");
+	if (!anything_ran) {
+		g_set_error_literal (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle converting file to app");
+	}
 
 	finish_op (task, NULL, g_steal_pointer (&local_error));
 }

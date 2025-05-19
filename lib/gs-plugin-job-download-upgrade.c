@@ -174,8 +174,12 @@ gs_plugin_job_download_upgrade_run_async (GsPluginJob         *job,
 		plugin_class->download_upgrade_async (plugin, self->app, self->flags, plugin_event_cb, task, cancellable, plugin_app_func_cb, g_object_ref (task));
 	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle app operation");
+	if (!anything_ran) {
+		g_set_error_literal (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle downloading an upgrade");
+	}
 
 	finish_op (task, g_steal_pointer (&local_error));
 }

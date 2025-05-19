@@ -202,8 +202,12 @@ gs_plugin_job_list_categories_run_async (GsPluginJob         *job,
 		plugin_class->refine_categories_async (plugin, self->category_list, self->flags, plugin_event_cb, task, cancellable, plugin_refine_categories_cb, g_object_ref (task));
 	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle listing categories");
+	if (!anything_ran) {
+		g_set_error_literal (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle listing categories");
+	}
 
 	finish_op (task, g_steal_pointer (&local_error));
 }

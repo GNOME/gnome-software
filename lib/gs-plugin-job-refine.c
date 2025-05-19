@@ -386,8 +386,12 @@ run_refine_internal_async (GsPluginJobRefine          *self,
 					    cancellable, plugin_refine_cb, g_object_ref (task));
 	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle refining apps");
+	if (!anything_ran) {
+		g_set_error_literal (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle refining apps");
+	}
 
 	data->n_pending_ops++;
 	finish_refine_internal_op (task, g_steal_pointer (&local_error));
