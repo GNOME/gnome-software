@@ -40,11 +40,11 @@ if get_option('tests')
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
 
   e = executable(
-    'gs-self-test-systemd-sysupdate',
+    'systemd-sysupdate',
     systemd_sysupdated_generated,
     compiled_schemas,
     sources : [
-      'gs-self-test.c'
+      'tests/systemd-sysupdate.c'
     ],
     include_directories : [
       include_directories('../..'),
@@ -55,7 +55,7 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-systemd-sysupdate', e, suite: ['plugins', 'systemd-sysupdate'], env: test_env)
+  test('systemd-sysupdate', e, suite: ['plugins', 'systemd-sysupdate'], env: test_env)
 
   subdir('services')
 endif

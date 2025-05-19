@@ -18,15 +18,15 @@ if get_option('tests')
   test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
   e = executable(
-    'gs-self-test-modalias',
+    'modalias',
     compiled_schemas,
     sources : [
-      'gs-self-test.c'
+      'tests/modalias.c'
     ],
     dependencies : [
       plugin_libs,
     ],
     c_args : cargs,
   )
-  test('gs-self-test-modalias', e, suite: ['plugins', 'modalias'], env: test_env)
+  test('modalias', e, suite: ['plugins', 'modalias'], env: test_env)
 endif

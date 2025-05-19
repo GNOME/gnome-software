@@ -77,10 +77,10 @@ if get_option('tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable(
-    'gs-self-test-core',
+    'core',
     compiled_schemas,
     sources : [
-      'gs-self-test.c',
+      'tests/core.c',
     ],
     dependencies : [
       plugin_libs,
@@ -88,5 +88,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-core', e, suite: ['plugins', 'core'], env: test_env)
+  test('core', e, suite: ['plugins', 'core'], env: test_env)
 endif

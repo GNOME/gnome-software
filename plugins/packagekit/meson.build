@@ -32,16 +32,16 @@ if get_option('tests')
 
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable(
-    'gs-self-test-packagekit',
+    'packagekit',
     compiled_schemas,
     sources : [
       'gs-markdown.c',
-      'gs-self-test.c'
+      'tests/packagekit.c'
     ],
     dependencies : [
       plugin_libs,
     ],
     c_args : cargs,
   )
-  test('gs-self-test-packagekit', e, suite: ['plugins', 'packagekit'], env: test_env)
+  test('packagekit', e, suite: ['plugins', 'packagekit'], env: test_env)
 endif

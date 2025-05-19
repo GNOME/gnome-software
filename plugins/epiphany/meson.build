@@ -63,10 +63,10 @@ if get_option('tests')
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', '..', 'data') + '"']
   e = executable(
-    'gs-self-test-epiphany',
+    'epiphany',
     compiled_schemas,
     sources : [
-      'gs-self-test.c',
+      'tests/epiphany.c',
       dynamic_launcher_portal_iface_c,
       dynamic_launcher_portal_iface_h,
       epiphany_generated,
@@ -80,5 +80,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-epiphany', e, suite: ['plugins', 'epiphany'], env: test_env)
+  test('epiphany', e, suite: ['plugins', 'epiphany'], env: test_env)
 endif

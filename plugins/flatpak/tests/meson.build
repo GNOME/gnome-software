@@ -1,6 +1,6 @@
 tar = find_program('tar')
 custom_target(
-  'flatpak-self-test-data',
+  'flatpak-test-data',
   input : 'flatpakrepos.tar.gz',
   output : 'done',
   command : [
@@ -13,7 +13,7 @@ custom_target(
 )
 
 custom_target(
-  'flatpak-self-test-bundle',
+  'flatpak-test-bundle',
   output : 'flatpakrepos.tar.gz',
   command : [
     tar,

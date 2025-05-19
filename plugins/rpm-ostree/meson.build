@@ -29,16 +29,16 @@ if get_option('tests')
 
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable(
-    'gs-self-test-rpm-ostree',
+    'rpm-ostree',
     compiled_schemas,
     sources : [
       'gs-rpm-ostree-utils.c',
-      'gs-self-test.c',
+      'tests/rpm-ostree.c',
     ],
     dependencies : [
       plugin_libs,
     ],
     c_args : cargs,
   )
-  test('gs-self-test-rpm-ostree', e, suite: ['plugins', 'rpm-ostree'], env: test_env)
+  test('rpm-ostree', e, suite: ['plugins', 'rpm-ostree'], env: test_env)
 endif

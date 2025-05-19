@@ -24,16 +24,16 @@ if get_option('tests')
   )
 
   e = executable(
-    'gs-self-test-dummy',
+    'dummy',
     compiled_schemas,
     resources_src,
     sources : [
-      'gs-self-test.c'
+      'tests/dummy.c'
     ],
     dependencies : [
       plugin_libs,
     ],
     c_args : cargs,
   )
-  test('gs-self-test-dummy', e, suite: ['plugins', 'dummy'], env: test_env)
+  test('dummy', e, suite: ['plugins', 'dummy'], env: test_env)
 endif

@@ -17,15 +17,15 @@ if get_option('tests')
 
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable(
-    'gs-self-test-repos',
+    'repos',
     compiled_schemas,
     sources : [
-      'gs-self-test.c'
+      'tests/repos.c'
     ],
     dependencies : [
       plugin_libs,
     ],
     c_args : cargs,
   )
-  test('gs-self-test-repos', e, suite: ['plugins', 'repos'], env: test_env)
+  test('repos', e, suite: ['plugins', 'repos'], env: test_env)
 endif

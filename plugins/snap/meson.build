@@ -29,10 +29,10 @@ if get_option('tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
   e = executable(
-    'gs-self-test-snap',
+    'snap',
     compiled_schemas,
     sources : [
-      'gs-self-test.c'
+      'tests/snap.c'
     ],
     dependencies : [
       plugin_libs,
@@ -40,5 +40,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-snap', e, suite: ['plugins', 'snap'], env: test_env)
+  test('snap', e, suite: ['plugins', 'snap'], env: test_env)
 endif

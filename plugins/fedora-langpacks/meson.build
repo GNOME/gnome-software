@@ -17,15 +17,15 @@ if get_option('tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DLOCALPLUGINDIR_PACKAGEKIT="' + meson.current_build_dir() + '/../packagekit"']
   e = executable(
-    'gs-self-test-fedora-langpacks',
+    'fedora-langpacks',
     compiled_schemas,
     sources : [
-      'gs-self-test.c',
+      'tests/fedora-langpacks.c',
     ],
     dependencies : [
       plugin_libs,
     ],
     c_args : cargs,
   )
-  test('gs-self-test-fedora-langpacks', e, suite: ['plugins', 'fedora-langpacks'], env: test_env)
+  test('fedora-langpacks', e, suite: ['plugins', 'fedora-langpacks'], env: test_env)
 endif

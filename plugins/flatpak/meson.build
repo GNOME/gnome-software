@@ -46,14 +46,14 @@ if get_option('tests')
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_build_dir(), 'tests') + '"']
   e = executable(
-    'gs-self-test-flatpak',
+    'flatpak',
     compiled_schemas,
     sources : [
       'gs-flatpak-app.c',
-      'gs-self-test.c'
+      'tests/flatpak.c'
     ],
     dependencies : deps,
     c_args : cargs,
   )
-  test('gs-self-test-flatpak', e, suite: ['plugins', 'flatpak'], env: test_env, timeout : 120)
+  test('flatpak', e, suite: ['plugins', 'flatpak'], env: test_env, timeout : 120)
 endif

@@ -38,13 +38,13 @@ if get_option('tests')
 
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable(
-    'gs-self-test-fwupd',
+    'fwupd',
     compiled_schemas,
     sources : [
-      'gs-self-test.c'
+      'tests/fwupd.c'
     ],
     dependencies : deps,
     c_args : cargs,
   )
-  test('gs-self-test-fwupd', e, suite: ['plugins', 'fwupd'], env: test_env)
+  test('fwupd', e, suite: ['plugins', 'fwupd'], env: test_env)
 endif
