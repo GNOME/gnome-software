@@ -553,6 +553,8 @@ refine_app (GsPluginEpiphany           *self,
 		g_autoptr(GFileInfo) file_info = NULL;
 		g_autoptr(GFile) icon_file = NULL;
 
+		/* FIXME: Technically this does synchronous I/O, albeit on a
+		 * local file. Ideally it should be done asynchronously. */
 		desktop_info = g_desktop_app_info_new (installed_app_id);
 
 		if (desktop_info == NULL) {
@@ -732,6 +734,8 @@ ensure_installed_apps_cache_get_installed_apps_cb (GObject      *obj,
 
 		g_debug ("%s: Working on installed web app %s", G_STRFUNC, desktop_file_id);
 
+		/* FIXME: Technically this does synchronous I/O, albeit on a
+		 * local file. Ideally it should be done asynchronously. */
 		desktop_info = g_desktop_app_info_new (desktop_file_id);
 
 		if (desktop_info == NULL) {
@@ -935,6 +939,9 @@ gs_plugin_epiphany_refine_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+/* FIXME: This ideally needs to be made async so it doesn’t block the main
+ * thread. Currently it’s being run synchronously on the main thread so could
+ * block the main thread if the local I/O it’s doing stalls for some reason. */
 static GVariant *
 get_serialized_icon (GsApp *app,
 		     GIcon *icon)
