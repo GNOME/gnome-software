@@ -330,6 +330,23 @@ _update_buttons (GsUpdatesSection *self)
 
 }
 
+/* If reporting an error, we want to highlight the app from the job if (and only
+ * if) the job was explicitly constructed for a single app. */
+static GsApp *
+get_app_from_job (GsPluginJob *job)
+{
+	GsAppList *list;
+
+	if (!GS_IS_PLUGIN_JOB_UPDATE_APPS (job))
+		return NULL;
+
+	list = gs_plugin_job_update_apps_get_apps (GS_PLUGIN_JOB_UPDATE_APPS (job));
+	if (list != NULL && gs_app_list_length (list) == 1)
+		return gs_app_list_index (list, 0);
+
+	return NULL;
+}
+
 static void
 _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer user_data)
 {
@@ -344,6 +361,7 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 			gs_plugin_loader_claim_job_error (plugin_loader,
 							  NULL,
 							  helper->job,
+							  get_app_from_job (helper->job),
 							  error);
 		}
 		goto out;
@@ -393,6 +411,7 @@ _download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 			gs_plugin_loader_claim_job_error (plugin_loader,
 							  NULL,
 							  helper->job,
+							  get_app_from_job (helper->job),
 							  error);
 		}
 	} else if (!gs_page_is_active_and_focused (self->page)) {

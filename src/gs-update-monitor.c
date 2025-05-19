@@ -465,6 +465,7 @@ update_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		gs_plugin_loader_claim_job_error (plugin_loader,
 						  NULL,
 						  data->job,
+						  NULL,
 						  error);
 		return;
 	}
@@ -507,6 +508,7 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		gs_plugin_loader_claim_job_error (plugin_loader,
 						  NULL,
 						  data->job,
+						  NULL,
 						  error);
 		return;
 	}

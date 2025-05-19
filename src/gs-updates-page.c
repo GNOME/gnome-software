@@ -900,6 +900,7 @@ upgrade_download_finished_cb (GObject *source,
 		gs_plugin_loader_claim_job_error (plugin_loader,
 						  NULL,
 						  helper->job,
+						  helper->app,
 						  error);
 	} else if (!gs_page_is_active_and_focused (GS_PAGE (helper->self))) {
 		g_autoptr(GNotification) notif = NULL;

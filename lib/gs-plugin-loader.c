@@ -276,17 +276,19 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
  * @plugin_loader: a #GsPluginLoader
  * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
  * @job: a #GsPluginJob for the @error
+ * @app: (nullable): a #GsApp for the event, or %NULL
  * @error: a #GError to claim
  *
  * The same as gs_plugin_loader_claim_error(), only reads the information
  * from the @job.
  *
- * Since: 41
+ * Since: 49
  **/
 void
 gs_plugin_loader_claim_job_error (GsPluginLoader *plugin_loader,
 				  GsPlugin *plugin,
 				  GsPluginJob *job,
+				  GsApp *app,
 				  const GError *error)
 {
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
@@ -295,7 +297,7 @@ gs_plugin_loader_claim_job_error (GsPluginLoader *plugin_loader,
 
 	gs_plugin_loader_claim_error_internal (plugin_loader, plugin,
 		job,
-		gs_plugin_job_get_app (job),
+		app,
 		gs_plugin_job_get_interactive (job),
 		error);
 }

@@ -137,6 +137,7 @@ gs_page_app_installed_cb (GObject *source,
 		gs_plugin_loader_claim_job_error (plugin_loader,
 						  NULL,
 						  helper->job,
+						  helper->app,
 						  error);
 		return;
 	}
@@ -193,6 +194,7 @@ gs_page_app_removed_cb (GObject *source,
 		gs_plugin_loader_claim_job_error (plugin_loader,
 						  NULL,
 						  helper->job,
+						  helper->app,
 						  error);
 		return;
 	}
@@ -662,10 +664,15 @@ gs_page_app_launched_cb (GObject *source,
 			 gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	g_autoptr(GsPluginJob) plugin_job = user_data;
+	g_autoptr(GsPluginJobLaunch) plugin_job = GS_PLUGIN_JOB_LAUNCH (user_data);
 	g_autoptr(GError) error = NULL;
+
 	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
-		gs_plugin_loader_claim_job_error (plugin_loader, NULL, plugin_job, error);
+		gs_plugin_loader_claim_job_error (plugin_loader,
+						  NULL,
+						  GS_PLUGIN_JOB (plugin_job),
+						  gs_plugin_job_launch_get_app (plugin_job),
+						  error);
 		return;
 	}
 }
