@@ -1920,7 +1920,6 @@ finish_setup_install_queue_cb (GObject      *source_object,
 					if (plugin_loader->pending_apps == NULL)
 						plugin_loader->pending_apps = gs_app_list_new ();
 					gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
-					gs_app_set_pending_action (app, GS_PLUGIN_ACTION_INSTALL);
 					gs_app_list_add (plugin_loader->pending_apps, app);
 				}
 			}
