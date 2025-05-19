@@ -154,7 +154,6 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 
 static void
 gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
-				       GsPlugin *plugin,
 				       GsPluginJob *job,
 				       GsApp *app,
 				       gboolean interactive,
@@ -206,25 +205,6 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
 		event_app = g_object_ref (app);
 	event_origin = NULL;
 
-	if (plugin != NULL && as_utils_data_id_valid (app_id)) {
-		g_autoptr(GsApp) cached_app = gs_plugin_cache_lookup (plugin, app_id);
-		if (cached_app != NULL) {
-			g_debug ("found app %s in error", app_id);
-			g_set_object (&event_app, cached_app);
-		} else {
-			g_debug ("no unique ID found for app %s", app_id);
-		}
-	}
-	if (plugin != NULL && as_utils_data_id_valid (origin_id)) {
-		g_autoptr(GsApp) origin = gs_plugin_cache_lookup (plugin, origin_id);
-		if (origin != NULL) {
-			g_debug ("found origin %s in error", origin_id);
-			g_set_object (&event_origin, origin);
-		} else {
-			g_debug ("no unique ID found for origin %s", origin_id);
-		}
-	}
-
 	/* create event which is handled by the GsShell */
 	event = gs_plugin_event_new ("error", error_copy,
 				     "app", event_app,
@@ -242,16 +222,11 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_claim_error:
  * @plugin_loader: a #GsPluginLoader
- * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
  * @app: (nullable): a #GsApp for the event, or %NULL
  * @interactive: whether to set interactive flag
  * @error: a #GError to claim
  *
  * Convert the @error into a plugin event and add it to the queue.
- *
- * The @plugin is used only if the @error contains a reference
- * to a concrete application, in which case any cached application
- * overrides the passed in @app.
  *
  * The %GS_PLUGIN_ERROR_CANCELLED and %G_IO_ERROR_CANCELLED errors
  * are automatically ignored.
@@ -260,7 +235,6 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
  **/
 void
 gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
-			      GsPlugin *plugin,
 			      GsApp *app,
 			      gboolean interactive,
 			      const GError *error)
@@ -268,13 +242,12 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (error != NULL);
 
-	gs_plugin_loader_claim_error_internal (plugin_loader, plugin, NULL, app, interactive, error);
+	gs_plugin_loader_claim_error_internal (plugin_loader, NULL, app, interactive, error);
 }
 
 /**
  * gs_plugin_loader_claim_job_error:
  * @plugin_loader: a #GsPluginLoader
- * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
  * @job: a #GsPluginJob for the @error
  * @app: (nullable): a #GsApp for the event, or %NULL
  * @error: a #GError to claim
@@ -286,7 +259,6 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
  **/
 void
 gs_plugin_loader_claim_job_error (GsPluginLoader *plugin_loader,
-				  GsPlugin *plugin,
 				  GsPluginJob *job,
 				  GsApp *app,
 				  const GError *error)
@@ -295,7 +267,7 @@ gs_plugin_loader_claim_job_error (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_PLUGIN_JOB (job));
 	g_return_if_fail (error != NULL);
 
-	gs_plugin_loader_claim_error_internal (plugin_loader, plugin,
+	gs_plugin_loader_claim_error_internal (plugin_loader,
 		job,
 		app,
 		gs_plugin_job_get_interactive (job),

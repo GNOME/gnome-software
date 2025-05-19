@@ -359,7 +359,6 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			gs_plugin_loader_claim_job_error (plugin_loader,
-							  NULL,
 							  helper->job,
 							  get_app_from_job (helper->job),
 							  error);
@@ -409,7 +408,6 @@ _download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			gs_plugin_loader_claim_job_error (plugin_loader,
-							  NULL,
 							  helper->job,
 							  get_app_from_job (helper->job),
 							  error);

@@ -898,7 +898,6 @@ upgrade_download_finished_cb (GObject *source,
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
 		gs_plugin_loader_claim_job_error (plugin_loader,
-						  NULL,
 						  helper->job,
 						  helper->app,
 						  error);

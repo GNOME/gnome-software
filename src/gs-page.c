@@ -135,7 +135,6 @@ gs_page_app_installed_cb (GObject *source,
 	}
 	if (!ret) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
-						  NULL,
 						  helper->job,
 						  helper->app,
 						  error);
@@ -192,7 +191,6 @@ gs_page_app_removed_cb (GObject *source,
 	}
 	if (!ret) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
-						  NULL,
 						  helper->job,
 						  helper->app,
 						  error);
@@ -669,7 +667,6 @@ gs_page_app_launched_cb (GObject *source,
 
 	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
-						  NULL,
 						  GS_PLUGIN_JOB (plugin_job),
 						  gs_plugin_job_launch_get_app (plugin_job),
 						  error);
