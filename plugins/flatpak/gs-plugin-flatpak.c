@@ -129,7 +129,7 @@ gs_plugin_flatpak_init (GsPluginFlatpak *self)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "rpm-ostree");
 
 	/* used for self tests */
-	self->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
+	self->destdir_for_tests = g_getenv ("GS_TEST_FLATPAK_DATADIR");
 
 	g_signal_connect (self, "notify::cpu-priority",
 			  G_CALLBACK (notify_cpu_priority_cb), NULL);

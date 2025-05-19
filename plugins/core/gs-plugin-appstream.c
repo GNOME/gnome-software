@@ -561,7 +561,7 @@ gs_plugin_appstream_build_silo (GsSiloWrapper *silo_wrapper,
 	gs_appstream_add_current_locales (builder);
 
 	/* only when in self test */
-	test_xml = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
+	test_xml = g_getenv ("GS_TEST_APPSTREAM_XML");
 	if (test_xml != NULL) {
 		g_autoptr(XbBuilderFixup) fixup1 = NULL;
 		g_autoptr(XbBuilderFixup) fixup2 = NULL;

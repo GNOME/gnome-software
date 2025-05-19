@@ -1801,7 +1801,7 @@ get_icon_theme (void)
 		 * datadir which contains the system icon theme. */
 		theme = gtk_icon_theme_new ();
 
-		test_search_path = g_getenv ("GS_SELF_TEST_ICON_THEME_PATH");
+		test_search_path = g_getenv ("GS_TEST_ICON_THEME_PATH");
 		if (test_search_path != NULL) {
 			g_auto(GStrv) dirs = g_strsplit (test_search_path, ":", -1);
 			gtk_icon_theme_set_search_path (theme, (const char * const *) dirs);

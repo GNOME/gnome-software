@@ -65,7 +65,7 @@ gs_os_release_func (void)
 
 	fn = gs_test_get_filename (TESTDATADIR, "tests/os-release");
 	g_assert (fn != NULL);
-	g_setenv ("GS_SELF_TEST_OS_RELEASE_FILENAME", fn, TRUE);
+	g_setenv ("GS_TEST_OS_RELEASE_FILENAME", fn, TRUE);
 
 	os_release = gs_os_release_new (&error);
 	g_assert_no_error (error);

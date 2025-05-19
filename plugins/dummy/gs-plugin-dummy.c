@@ -55,7 +55,7 @@ gs_plugin_dummy_init (GsPluginDummy *self)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
 
-	if (g_getenv ("GS_SELF_TEST_DUMMY_ENABLE") == NULL) {
+	if (g_getenv ("GS_TEST_DUMMY_ENABLE") == NULL) {
 		g_debug ("disabling itself as not in self test");
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
@@ -92,7 +92,7 @@ gs_plugin_dummy_setup_async (GsPlugin            *plugin,
 	g_task_set_source_tag (task, gs_plugin_dummy_setup_async);
 
 	/* toggle this */
-	if (g_getenv ("GS_SELF_TEST_TOGGLE_ALLOW_UPDATES") != NULL) {
+	if (g_getenv ("GS_TEST_TOGGLE_ALLOW_UPDATES") != NULL) {
 		self->allow_updates_id = g_timeout_add_seconds (10,
 			gs_plugin_dummy_allow_updates_cb, plugin);
 	}

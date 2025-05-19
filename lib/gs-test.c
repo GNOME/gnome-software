@@ -71,7 +71,7 @@ gs_test_flush_main_context (void)
 /**
  * gs_test_expose_icon_theme_paths:
  *
- * Calculate and set the `GS_SELF_TEST_ICON_THEME_PATH` environment variable
+ * Calculate and set the `GS_TEST_ICON_THEME_PATH` environment variable
  * to include the current system icon theme paths. This is designed to be called
  * before calling `gs_test_init()`, which will clear the system icon theme paths.
  *
@@ -98,7 +98,7 @@ gs_test_expose_icon_theme_paths (void)
 					(data_dirs_str->len > 0) ? ":" : "",
 					data_dirs[i]);
 	data_dirs_joined = g_string_free (g_steal_pointer (&data_dirs_str), FALSE);
-	g_setenv ("GS_SELF_TEST_ICON_THEME_PATH", data_dirs_joined, TRUE);
+	g_setenv ("GS_TEST_ICON_THEME_PATH", data_dirs_joined, TRUE);
 
 	if (display) {
 		GtkIconTheme *default_theme;

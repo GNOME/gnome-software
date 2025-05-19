@@ -65,7 +65,7 @@ gs_plugin_provenance_get_sources (GsPluginProvenance *self,
 				  const gchar *key)
 {
 	const gchar *tmp;
-	tmp = g_getenv ("GS_SELF_TEST_PROVENANCE_SOURCES");
+	tmp = g_getenv ("GS_TEST_PROVENANCE_SOURCES");
 	if (tmp != NULL) {
 		if (g_strcmp0 (key, "required-repos") == 0)
 			return NULL;
