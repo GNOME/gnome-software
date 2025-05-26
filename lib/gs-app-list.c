@@ -51,6 +51,7 @@ enum {
 	SIGNAL_LAST
 };
 
+static GParamSpec *properties [PROP_LAST];
 static guint signals [SIGNAL_LAST] = { 0 };
 
 /**
@@ -102,7 +103,7 @@ app_list_notify_progress_idle_cb (gpointer user_data)
 {
 	GsAppList *list = user_data;
 
-	g_object_notify (G_OBJECT (list), "progress");
+	g_object_notify_by_pspec (G_OBJECT (list), properties[PROP_PROGRESS]);
 	g_object_unref (list);
 
 	return G_SOURCE_REMOVE;
@@ -201,7 +202,7 @@ gs_app_list_invalidate_progress (GsAppList *self)
 
 	if (self->progress != progress) {
 		self->progress = progress;
-		g_object_notify (G_OBJECT (self), "progress");
+		g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_PROGRESS]);
 	}
 }
 
@@ -224,7 +225,7 @@ gs_app_list_invalidate_state (GsAppList *self)
 	}
 	if (self->state != state) {
 		self->state = state;
-		g_object_notify (G_OBJECT (self), "state");
+		g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_STATE]);
 	}
 }
 
@@ -953,7 +954,6 @@ gs_app_list_finalize (GObject *object)
 static void
 gs_app_list_class_init (GsAppListClass *klass)
 {
-	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->get_property = gs_app_list_get_property;
 	object_class->set_property = gs_app_list_set_property;
@@ -962,11 +962,11 @@ gs_app_list_class_init (GsAppListClass *klass)
 	/**
 	 * GsAppList:state:
 	 */
-	pspec = g_param_spec_enum ("state", NULL, NULL,
+	properties[PROP_STATE] =
+		g_param_spec_enum ("state", NULL, NULL,
 				   GS_TYPE_APP_STATE,
 				   GS_APP_STATE_UNKNOWN,
 				   G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_STATE, pspec);
 
 	/**
 	 * GsAppList:progress:
@@ -976,10 +976,12 @@ gs_app_list_class_init (GsAppListClass *klass)
 	 * %GS_APP_PROGRESS_UNKNOWN if the progress is unknown or has a wide
 	 * confidence interval on any app, or if the app list is empty.
 	 */
-	pspec = g_param_spec_uint ("progress", NULL, NULL,
+	properties[PROP_PROGRESS] =
+		g_param_spec_uint ("progress", NULL, NULL,
 				   0, GS_APP_PROGRESS_UNKNOWN, GS_APP_PROGRESS_UNKNOWN,
 				   G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_PROGRESS, pspec);
+
+	g_object_class_install_properties (object_class, PROP_LAST, properties);
 
 	/**
 	 * GsAppList:app-state-changed:
