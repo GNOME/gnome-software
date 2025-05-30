@@ -1124,6 +1124,12 @@ gs_shell_show_notification (GsShell *shell, const gchar *title)
 	gs_shell_show_event_app_notify (shell, title, GS_TOAST_BUTTON_NONE, NULL, NULL);
 }
 
+void
+gs_shell_show_toast (GsShell *shell, AdwToast *toast)
+{
+	adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (shell->toast_overlay), toast);
+}
+
 static gchar *
 gs_shell_get_title_from_origin (GsApp *app)
 {

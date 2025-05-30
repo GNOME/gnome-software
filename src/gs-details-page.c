@@ -36,6 +36,7 @@
 #include "gs-review-histogram.h"
 #include "gs-review-dialog.h"
 #include "gs-review-row.h"
+#include "gs-toast.h"
 
 #ifdef ENABLE_DKMS
 #include "gs-dkms-private.h"
@@ -1611,16 +1612,8 @@ app_reviews_dialog_destroy_cb (GsDetailsPage *self)
 }
 
 static void
-featured_review_list_row_activated_cb (GtkListBox *list_box,
-				       GtkListBoxRow *row,
-				       GsDetailsPage *self)
+show_app_reviews (GsDetailsPage *self)
 {
-	/* Only the row with the arrow is clickable */
-	if (GS_IS_REVIEW_ROW (row))
-		return;
-
-	g_assert (GS_IS_ODRS_PROVIDER (self->odrs_provider));
-
 	if (self->app_reviews_dialog == NULL) {
 		self->app_reviews_dialog =
 			gs_app_reviews_dialog_new (self->app,
@@ -1634,6 +1627,20 @@ featured_review_list_row_activated_cb (GtkListBox *list_box,
 	}
 
 	adw_dialog_present (ADW_DIALOG (self->app_reviews_dialog), GTK_WIDGET (self));
+}
+
+static void
+featured_review_list_row_activated_cb (GtkListBox *list_box,
+				       GtkListBoxRow *row,
+				       GsDetailsPage *self)
+{
+	/* Only the row with the arrow is clickable */
+	if (GS_IS_REVIEW_ROW (row))
+		return;
+
+	g_assert (GS_IS_ODRS_PROVIDER (self->odrs_provider));
+
+	show_app_reviews (self);
 }
 
 static void gs_details_page_addon_install_cb (GsAppAddonRow *row, gpointer user_data);
@@ -2383,6 +2390,12 @@ submit_review_data_free (ReviewSubmitData *data)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (ReviewSubmitData, submit_review_data_free);
 
 static void
+review_submitted_toast_cb (GsDetailsPage *self)
+{
+	show_app_reviews (self);
+}
+
+static void
 review_submitted_cb (GObject *source_object,
 		     GAsyncResult *result,
 		     gpointer user_data)
@@ -2392,6 +2405,7 @@ review_submitted_cb (GObject *source_object,
 	GsDetailsPage *self = data->details_page;
 	g_autoptr(GsReviewDialog) review_dialog = g_weak_ref_get (&data->dialog_weak);
 	g_autoptr(GError) local_error = NULL;
+	AdwToast *toast;
 
 	/* enable submit action after action completion */
 	gs_review_dialog_submit_set_sensitive (review_dialog, TRUE);
@@ -2431,6 +2445,16 @@ review_submitted_cb (GObject *source_object,
 	/* ensure the dialog is now closed */
 	if (review_dialog != NULL)
 		adw_dialog_force_close (ADW_DIALOG (review_dialog));
+
+	/* display a toast to the user */
+	toast = gs_toast_new (_("Review submitted successfully"),
+			      GS_TOAST_BUTTON_SHOW_APP_REVIEWS,
+			      NULL, NULL);
+
+	g_signal_connect_object (toast, "button-clicked",
+				 G_CALLBACK (review_submitted_toast_cb), self, G_CONNECT_SWAPPED);
+
+	gs_shell_show_toast (self->shell, toast);
 }
 
 static void
