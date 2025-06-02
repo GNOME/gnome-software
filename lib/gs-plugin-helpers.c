@@ -34,7 +34,8 @@
  * @list: list of #GsApps to refine
  * @job_flags: job flags
  * @require_flags: require flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.refine_async.
@@ -65,7 +66,8 @@ gs_plugin_refine_data_new (GsAppList                  *list,
  * @list: list of #GsApps to refine
  * @job_flags: job flags
  * @require_flags: require flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -115,7 +117,8 @@ gs_plugin_refine_data_free (GsPluginRefineData *data)
  * gs_plugin_refresh_metadata_data_new:
  * @cache_age_secs: maximum allowed age of the cache in order for it to remain valid, in seconds
  * @flags: refresh metadata flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.refresh_metadata_async.
@@ -157,7 +160,8 @@ gs_plugin_refresh_metadata_data_free (GsPluginRefreshMetadataData *data)
  * @query: (nullable) (transfer none): a query to filter apps, or %NULL for
  *   no filtering
  * @flags: list apps flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.list_apps_async.
@@ -186,7 +190,8 @@ gs_plugin_list_apps_data_new (GsAppQuery            *query,
  * @query: (nullable) (transfer none): a query to filter apps, or %NULL for
  *   no filtering
  * @flags: list apps flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -235,7 +240,8 @@ gs_plugin_list_apps_data_free (GsPluginListAppsData *data)
  * gs_plugin_manage_repository_data_new:
  * @repository: (not nullable) (transfer none): a repository to manage
  * @flags: manage repository flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.install_repository_async,
@@ -265,7 +271,8 @@ gs_plugin_manage_repository_data_new (GsApp                         *repository,
  * @source_object: task source object
  * @repository: (not nullable) (transfer none): a repository to manage
  * @flags: manage repository flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -314,7 +321,8 @@ gs_plugin_manage_repository_data_free (GsPluginManageRepositoryData *data)
  * gs_plugin_refine_categories_data_new:
  * @list: (element-type GsCategory): list of #GsCategory objects to refine
  * @flags: refine flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.refine_categories_async.
@@ -342,7 +350,8 @@ gs_plugin_refine_categories_data_new (GPtrArray                     *list,
  * @source_object: task source object
  * @list: (element-type GsCategory): list of #GsCategory objects to refine
  * @flags: refine flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -392,12 +401,14 @@ gs_plugin_refine_categories_data_free (GsPluginRefineCategoriesData *data)
  * gs_plugin_install_apps_data_new:
  * @apps: list of apps to install
  * @flags: install flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @app_needs_user_action_callback: (nullable) (closure app_needs_user_action_data):
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.install_apps_async.
@@ -433,12 +444,14 @@ gs_plugin_install_apps_data_new (GsAppList                          *apps,
  * @source_object: task source object
  * @apps: list of apps to install
  * @flags: install flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -501,12 +514,14 @@ gs_plugin_install_apps_data_free (GsPluginInstallAppsData *data)
  * gs_plugin_uninstall_apps_data_new:
  * @apps: list of apps to uninstall
  * @flags: uninstall flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.uninstall_apps_async.
@@ -542,12 +557,14 @@ gs_plugin_uninstall_apps_data_new (GsAppList                          *apps,
  * @source_object: task source object
  * @apps: list of apps to uninstall
  * @flags: uninstall flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -610,12 +627,14 @@ gs_plugin_uninstall_apps_data_free (GsPluginUninstallAppsData *data)
  * gs_plugin_update_apps_data_new:
  * @apps: list of apps to update
  * @flags: update flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.update_apps_async.
@@ -651,12 +670,14 @@ gs_plugin_update_apps_data_new (GsAppList                          *apps,
  * @source_object: task source object
  * @apps: list of apps to update
  * @flags: update flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -780,7 +801,8 @@ gs_plugin_cancel_offline_update_data_free (GsPluginCancelOfflineUpdateData *data
  * gs_plugin_download_upgrade_data_new:
  * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.download_upgrade_async.
@@ -808,7 +830,8 @@ gs_plugin_download_upgrade_data_new (GsApp                        *app,
  * @source_object: task source object
  * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -991,7 +1014,8 @@ gs_plugin_launch_data_free (GsPluginLaunchData *data)
  * gs_plugin_file_to_app_data_new:
  * @file: (not nullable) (transfer none): a #GFile
  * @flags: operation flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.file_to_app_async.
@@ -1019,7 +1043,8 @@ gs_plugin_file_to_app_data_new (GFile                  *file,
  * @source_object: task source object
  * @file: (not nullable) (transfer none): a #GFile
  * @flags: operation flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -1068,7 +1093,8 @@ gs_plugin_file_to_app_data_free (GsPluginFileToAppData *data)
  * gs_plugin_url_to_app_data_new:
  * @url: (not nullable): a URL
  * @flags: operation flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.url_to_app_async.
@@ -1096,7 +1122,8 @@ gs_plugin_url_to_app_data_new (const gchar           *url,
  * @source_object: task source object
  * @url: (not nullable): a URL
  * @flags: operation flags
- * @event_callback: (nullable): function to call to notify of events
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
  * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
