@@ -133,6 +133,9 @@ gs_plugin_job_list_categories_get_interactive (GsPluginJob *job)
 	return (self->flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE) != 0;
 }
 
+static void plugin_event_cb (GsPlugin      *plugin,
+                             GsPluginEvent *event,
+                             void          *user_data);
 static void plugin_refine_categories_cb (GObject      *source_object,
                                          GAsyncResult *result,
                                          gpointer      user_data);
@@ -196,13 +199,24 @@ gs_plugin_job_list_categories_run_async (GsPluginJob         *job,
 
 		/* run the plugin */
 		self->n_pending_ops++;
-		plugin_class->refine_categories_async (plugin, self->category_list, self->flags, cancellable, plugin_refine_categories_cb, g_object_ref (task));
+		plugin_class->refine_categories_async (plugin, self->category_list, self->flags, plugin_event_cb, task, cancellable, plugin_refine_categories_cb, g_object_ref (task));
 	}
 
 	if (!anything_ran)
 		g_debug ("no plugin could handle listing categories");
 
 	finish_op (task, g_steal_pointer (&local_error));
+}
+
+static void
+plugin_event_cb (GsPlugin      *plugin,
+                 GsPluginEvent *event,
+                 void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginJob *plugin_job = g_task_get_source_object (task);
+
+	gs_plugin_job_emit_event (plugin_job, plugin, event);
 }
 
 static void

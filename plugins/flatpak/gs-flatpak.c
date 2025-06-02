@@ -1342,6 +1342,8 @@ gs_flatpak_ref_silo (GsFlatpak *self,
 static gboolean
 gs_flatpak_rescan_app_data (GsFlatpak *self,
 			    gboolean interactive,
+			    GsPluginEventCallback event_callback,
+			    void *event_user_data,
 			    XbSilo **out_silo,
 			    gchar **out_silo_filename,
 			    GHashTable **out_silo_installed_by_desktopid,
@@ -1351,7 +1353,7 @@ gs_flatpak_rescan_app_data (GsFlatpak *self,
 	g_autoptr(XbSilo) silo = NULL;
 
 	if (self->requires_full_rescan) {
-		gboolean res = gs_flatpak_refresh (self, 60, interactive, cancellable, error);
+		gboolean res = gs_flatpak_refresh (self, 60, interactive, event_callback, event_user_data, cancellable, error);
 		if (res) {
 			self->requires_full_rescan = FALSE;
 		} else {
@@ -1494,11 +1496,13 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 }
 
 static gboolean
-gs_flatpak_refresh_appstream (GsFlatpak     *self,
-                              guint64        cache_age_secs,
-                              gboolean       interactive,
-                              GCancellable  *cancellable,
-                              GError       **error)
+gs_flatpak_refresh_appstream (GsFlatpak              *self,
+                              guint64                 cache_age_secs,
+                              gboolean                interactive,
+                              GsPluginEventCallback   event_callback,
+                              void                   *event_user_data,
+                              GCancellable           *cancellable,
+                              GError                **error)
 {
 	gboolean ret;
 	g_autoptr(GPtrArray) xremotes = NULL;
@@ -1580,7 +1584,8 @@ gs_flatpak_refresh_appstream (GsFlatpak     *self,
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			gs_plugin_report_event (self->plugin, event);
+			if (event_callback != NULL)
+				event_callback (self->plugin, event, event_user_data);
 			continue;
 		}
 
@@ -1732,6 +1737,8 @@ gboolean
 gs_flatpak_add_sources (GsFlatpak *self,
 			GsAppList *list,
 			gboolean interactive,
+			GsPluginEventCallback event_callback,
+			void *event_user_data,
 			GCancellable *cancellable,
 			GError **error)
 {
@@ -1740,7 +1747,7 @@ gs_flatpak_add_sources (GsFlatpak *self,
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 
 	/* refresh */
-	if (!gs_flatpak_rescan_app_data (self, interactive, NULL, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, NULL, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	/* get installed apps and runtimes */
@@ -2167,6 +2174,8 @@ gboolean
 gs_flatpak_add_updates (GsFlatpak *self,
 			GsAppList *list,
 			gboolean interactive,
+			GsPluginEventCallback event_callback,
+			void *event_user_data,
 			GCancellable *cancellable,
 			GError **error)
 {
@@ -2174,7 +2183,7 @@ gs_flatpak_add_updates (GsFlatpak *self,
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 
 	/* ensure valid */
-	if (!gs_flatpak_rescan_app_data (self, interactive, NULL, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, NULL, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	/* get all the updatable apps and runtimes */
@@ -2266,6 +2275,8 @@ gboolean
 gs_flatpak_refresh (GsFlatpak *self,
 		    guint64 cache_age_secs,
 		    gboolean interactive,
+		    GsPluginEventCallback event_callback,
+		    void *event_user_data,
 		    GCancellable *cancellable,
 		    GError **error)
 {
@@ -2300,7 +2311,7 @@ gs_flatpak_refresh (GsFlatpak *self,
 	gs_flatpak_invalidate_silo (self);
 
 	/* update AppStream metadata */
-	if (!gs_flatpak_refresh_appstream (self, cache_age_secs, interactive, cancellable, error))
+	if (!gs_flatpak_refresh_appstream (self, cache_age_secs, interactive, event_callback, event_user_data, cancellable, error))
 		return FALSE;
 
 	/* success */
@@ -2593,11 +2604,13 @@ gs_flatpak_refine_app_state (GsFlatpak *self,
                              GsApp *app,
                              gboolean interactive,
 			     gboolean force_state_update,
+			     GsPluginEventCallback event_callback,
+			     void *event_user_data,
                              GCancellable *cancellable,
                              GError **error)
 {
 	/* ensure valid */
-	if (!gs_flatpak_rescan_app_data (self, interactive, NULL, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, NULL, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	return gs_flatpak_refine_app_state_internal (self, app, interactive, force_state_update, cancellable, error);
@@ -3661,6 +3674,8 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 			  GsPluginRefineRequireFlags require_flags,
 			  GsAppState state,
 			  gboolean interactive,
+			  GsPluginEventCallback event_callback,
+			  void *event_user_data,
 			  GCancellable *cancellable)
 {
 	g_autoptr(XbSilo) silo = NULL;
@@ -3670,7 +3685,7 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 	g_autoptr(GString) errors = NULL;
 	guint ii, sz;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, &silo_filename, &silo_installed_by_desktopid, cancellable, NULL))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, &silo_filename, &silo_installed_by_desktopid, cancellable, NULL))
 		return;
 
 	addons = gs_app_dup_addons (parent_app);
@@ -3705,7 +3720,8 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		gs_plugin_report_event (self->plugin, event);
+		if (event_callback != NULL)
+			event_callback (self->plugin, event, event_user_data);
 	}
 }
 
@@ -3715,6 +3731,8 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		       GsPluginRefineRequireFlags require_flags,
 		       gboolean interactive,
 		       gboolean force_state_update,
+		       GsPluginEventCallback event_callback,
+		       void *event_user_data,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -3723,7 +3741,7 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	g_autofree gchar *silo_filename = NULL;
 
 	/* ensure valid */
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, &silo_filename, &silo_installed_by_desktopid, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, &silo_filename, &silo_installed_by_desktopid, cancellable, error))
 		return FALSE;
 
 	return gs_flatpak_refine_app_internal (self, app, require_flags, interactive, force_state_update, NULL,
@@ -4092,6 +4110,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			    GFile *file,
 			    gboolean unrefined,
 			    gboolean interactive,
+			    GsPluginEventCallback event_callback,
+			    void *event_user_data,
 			    GCancellable *cancellable,
 			    GError **error)
 {
@@ -4370,7 +4390,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		gs_plugin_report_event (self->plugin, event);
+		if (event_callback != NULL)
+			event_callback (self->plugin, event, event_user_data);
 		g_clear_error (&error_local);
 	}
 
@@ -4422,6 +4443,8 @@ gs_flatpak_search (GsFlatpak *self,
 		   const gchar * const *values,
 		   GsAppList *list,
 		   gboolean interactive,
+		   GsPluginEventCallback event_callback,
+		   void *event_user_data,
 		   GCancellable *cancellable,
 		   GError **error)
 {
@@ -4432,7 +4455,7 @@ gs_flatpak_search (GsFlatpak *self,
 	GHashTableIter iter;
 	gpointer key, value;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	if (!gs_appstream_search (self->plugin, silo, values, list_tmp, cancellable, error))
@@ -4494,6 +4517,8 @@ gs_flatpak_search_developer_apps (GsFlatpak *self,
 				  const gchar * const *values,
 				  GsAppList *list,
 				  gboolean interactive,
+				  GsPluginEventCallback event_callback,
+				  void *event_user_data,
 				  GCancellable *cancellable,
 				  GError **error)
 {
@@ -4504,7 +4529,7 @@ gs_flatpak_search_developer_apps (GsFlatpak *self,
 	GHashTableIter iter;
 	gpointer key, value;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	if (!gs_appstream_search_developer_apps (self->plugin, silo, values, list_tmp, cancellable, error))
@@ -4566,27 +4591,31 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 			      GsCategory *category,
 			      GsAppList *list,
 			      gboolean interactive,
+			      GsPluginEventCallback event_callback,
+			      void *event_user_data,
 			      GCancellable *cancellable,
 			      GError **error)
 {
 	g_autoptr(XbSilo) silo = NULL;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	return gs_appstream_add_category_apps (self->plugin, silo, category, list, cancellable, error);
 }
 
 gboolean
-gs_flatpak_refine_category_sizes (GsFlatpak     *self,
-                                  GPtrArray     *list,
-                                  gboolean       interactive,
-                                  GCancellable  *cancellable,
-                                  GError       **error)
+gs_flatpak_refine_category_sizes (GsFlatpak              *self,
+                                  GPtrArray              *list,
+                                  gboolean                interactive,
+                                  GsPluginEventCallback   event_callback,
+                                  void                   *event_user_data,
+                                  GCancellable           *cancellable,
+                                  GError                **error)
 {
 	g_autoptr(XbSilo) silo = NULL;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	return gs_appstream_refine_category_sizes (silo, list, cancellable, error);
@@ -4596,13 +4625,15 @@ gboolean
 gs_flatpak_add_popular (GsFlatpak *self,
 			GsAppList *list,
 			gboolean interactive,
+			GsPluginEventCallback event_callback,
+			void *event_user_data,
 			GCancellable *cancellable,
 			GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 	g_autoptr(XbSilo) silo = NULL;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	if (!gs_appstream_add_popular (silo, list_tmp, cancellable, error))
@@ -4617,13 +4648,15 @@ gboolean
 gs_flatpak_add_featured (GsFlatpak *self,
 			 GsAppList *list,
 			 gboolean interactive,
+			 GsPluginEventCallback event_callback,
+			 void *event_user_data,
 			 GCancellable *cancellable,
 			 GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 	g_autoptr(XbSilo) silo = NULL;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	if (!gs_appstream_add_featured (silo, list_tmp, cancellable, error))
@@ -4638,13 +4671,15 @@ gboolean
 gs_flatpak_add_deployment_featured (GsFlatpak *self,
 				    GsAppList *list,
 				    gboolean interactive,
+				    GsPluginEventCallback event_callback,
+				    void *event_user_data,
 				    const gchar *const *deployments,
 				    GCancellable *cancellable,
 				    GError **error)
 {
 	g_autoptr(XbSilo) silo = NULL;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	return gs_appstream_add_deployment_featured (silo, deployments, list, cancellable, error);
@@ -4655,13 +4690,15 @@ gs_flatpak_add_alternates (GsFlatpak *self,
 			   GsApp *app,
 			   GsAppList *list,
 			   gboolean interactive,
+			   GsPluginEventCallback event_callback,
+			   void *event_user_data,
 			   GCancellable *cancellable,
 			   GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 	g_autoptr(XbSilo) silo = NULL;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	if (!gs_appstream_add_alternates (silo, app, list_tmp, cancellable, error))
@@ -4677,13 +4714,15 @@ gs_flatpak_add_recent (GsFlatpak *self,
 		       GsAppList *list,
 		       guint64 age,
 		       gboolean interactive,
+		       GsPluginEventCallback event_callback,
+		       void *event_user_data,
 		       GCancellable *cancellable,
 		       GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 	g_autoptr(XbSilo) silo = NULL;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	if (!gs_appstream_add_recent (self->plugin, silo, list_tmp, age, cancellable, error))
@@ -4700,13 +4739,15 @@ gs_flatpak_url_to_app (GsFlatpak *self,
 		       GsAppList *list,
 		       const gchar *url,
 		       gboolean interactive,
+		       GsPluginEventCallback event_callback,
+		       void *event_user_data,
 		       GCancellable *cancellable,
 		       GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 	g_autoptr(XbSilo) silo = NULL;
 
-	if (!gs_flatpak_rescan_app_data (self, interactive, &silo, NULL, NULL, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo, NULL, NULL, cancellable, error))
 		return FALSE;
 
 	if (!gs_appstream_url_to_app (self->plugin, silo, list_tmp, url, cancellable, error))

@@ -209,6 +209,9 @@ static void plugin_progress_cb (GsPlugin *plugin,
                                 guint     progress,
                                 gpointer  user_data);
 static gboolean progress_cb (gpointer user_data);
+static void plugin_event_cb (GsPlugin      *plugin,
+                             GsPluginEvent *event,
+                             void          *user_data);
 static void plugin_install_apps_cb (GObject      *source_object,
                                     GAsyncResult *result,
                                     gpointer      user_data);
@@ -277,15 +280,17 @@ gs_plugin_job_install_apps_run_async (GsPluginJob         *job,
 		/* run the plugin */
 		self->n_pending_ops++;
 		plugin_class->install_apps_async (plugin,
-						 self->apps,
-						 self->flags,
-						 plugin_progress_cb,
-						 task,
-						 app_needs_user_action_cb,
-						 task,
-						 cancellable,
-						 plugin_install_apps_cb,
-						 g_object_ref (task));
+						  self->apps,
+						  self->flags,
+						  plugin_progress_cb,
+						  task,
+						  plugin_event_cb,
+						  task,
+						  app_needs_user_action_cb,
+						  task,
+						  cancellable,
+						  plugin_install_apps_cb,
+						  g_object_ref (task));
 	}
 
 	/* some functions are really required for proper operation */
@@ -359,6 +364,17 @@ progress_cb (gpointer user_data)
 }
 
 static void
+plugin_event_cb (GsPlugin      *plugin,
+                 GsPluginEvent *event,
+                 void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginJob *plugin_job = g_task_get_source_object (task);
+
+	gs_plugin_job_emit_event (plugin_job, plugin, event);
+}
+
+static void
 plugin_install_apps_cb (GObject      *source_object,
                         GAsyncResult *result,
                         gpointer      user_data)
@@ -373,7 +389,7 @@ plugin_install_apps_cb (GObject      *source_object,
 	 * that other plugins don’t get blocked.
 	 *
 	 * If plugins produce errors which should be reported to the user, they
-	 * should report them directly by calling gs_plugin_report_event().
+	 * should report them directly by calling event_callback().
 	 * #GsPluginJobInstallApps cannot do this as it doesn’t know which errors
 	 * are interesting to the user and which are useless. */
 	if (!plugin_class->install_apps_finish (plugin, result, &local_error) &&

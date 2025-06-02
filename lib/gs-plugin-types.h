@@ -416,6 +416,25 @@ typedef void (* GsPluginProgressCallback)		(GsPlugin	*plugin,
 							 guint		 progress,
 							 gpointer	 user_data);
 
+typedef struct _GsPluginEvent GsPluginEvent;
+
+/**
+ * GsPluginEventCallback:
+ * @plugin: the #GsPlugin reporting an event
+ * @event: the event being reported
+ * @user_data: user data passed to the calling function
+ *
+ * Callback to report an event from a particular @plugin through a particular
+ * operation.
+ *
+ * Typically these events will be errors to potentially show to the user.
+ *
+ * Since: 49
+ */
+typedef void (* GsPluginEventCallback)			(GsPlugin	*plugin,
+							 GsPluginEvent	*event,
+							 void		*user_data);
+
 /**
  * GsPluginAppNeedsUserActionCallback:
  * @plugin: the #GsPlugin asking for user action

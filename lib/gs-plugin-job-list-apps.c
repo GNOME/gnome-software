@@ -242,6 +242,9 @@ app_filter_qt_for_gtk_and_compatible (GsApp    *app,
 	return gs_plugin_loader_app_is_compatible (plugin_loader, app);
 }
 
+static void plugin_event_cb (GsPlugin      *plugin,
+                             GsPluginEvent *event,
+                             void          *user_data);
 static void plugin_list_apps_cb (GObject      *source_object,
                                  GAsyncResult *result,
                                  gpointer      user_data);
@@ -298,13 +301,24 @@ gs_plugin_job_list_apps_run_async (GsPluginJob         *job,
 
 		/* run the plugin */
 		self->n_pending_ops++;
-		plugin_class->list_apps_async (plugin, self->query, self->flags, cancellable, plugin_list_apps_cb, g_object_ref (task));
+		plugin_class->list_apps_async (plugin, self->query, self->flags, plugin_event_cb, task, cancellable, plugin_list_apps_cb, g_object_ref (task));
 	}
 
 	if (!anything_ran)
 		g_debug ("no plugin could handle listing apps");
 
 	finish_op (task, g_steal_pointer (&local_error));
+}
+
+static void
+plugin_event_cb (GsPlugin      *plugin,
+                 GsPluginEvent *event,
+                 void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginJob *plugin_job = g_task_get_source_object (task);
+
+	gs_plugin_job_emit_event (plugin_job, plugin, event);
 }
 
 static void

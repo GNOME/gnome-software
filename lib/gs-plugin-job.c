@@ -30,6 +30,7 @@ enum {
 
 typedef enum {
 	SIGNAL_COMPLETED,
+	SIGNAL_EVENT,
 	SIGNAL_LAST
 } GsPluginJobSignal;
 
@@ -195,6 +196,21 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      0, NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 0);
+
+	/**
+	 * GsPluginJob::event:
+	 *
+	 * Emitted when an event happens while running the job.
+	 *
+	 * This typically means that a plugin has encountered an error.
+	 *
+	 * Since: 49
+	 */
+	signals[SIGNAL_EVENT] =
+		g_signal_new ("event",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 2, GS_TYPE_PLUGIN, GS_TYPE_PLUGIN_EVENT);
 }
 
 static void
@@ -289,4 +305,35 @@ gs_plugin_job_cancel (GsPluginJob *self)
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
 
 	g_cancellable_cancel (priv->cancellable);
+}
+
+/**
+ * gs_plugin_job_emit_event:
+ * @self: a plugin job
+ * @plugin: (nullable) (transfer none): plugin which reported the event, or
+ *   `NULL` if the event is not associated to a specific plugin
+ * @event: (transfer none): event being reported
+ *
+ * Emit an event from the plugin job.
+ *
+ * This is typically used to report errors while running the job, and it allows
+ * multiple errors to be reported and for the job to continue after those
+ * errors. Returning a #GError would not allow that.
+ *
+ * @plugin may be `NULL` if the event is not associated with a specific plugin.
+ * It will typically be non-`NULL`, though, as most events come from
+ * plugin-specific code.
+ *
+ * Since: 49
+ */
+void
+gs_plugin_job_emit_event (GsPluginJob   *self,
+                          GsPlugin      *plugin,
+                          GsPluginEvent *event)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_return_if_fail (plugin == NULL || GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_PLUGIN_EVENT (event));
+
+	g_signal_emit (self, signals[SIGNAL_EVENT], 0, plugin, event);
 }

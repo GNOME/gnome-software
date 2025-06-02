@@ -441,6 +441,8 @@ static void
 gs_plugin_epiphany_list_apps_async (GsPlugin              *plugin,
                                     GsAppQuery            *query,
                                     GsPluginListAppsFlags  flags,
+                                    GsPluginEventCallback  event_callback,
+                                    void                  *event_user_data,
                                     GCancellable          *cancellable,
                                     GAsyncReadyCallback    callback,
                                     gpointer               user_data)
@@ -450,6 +452,7 @@ gs_plugin_epiphany_list_apps_async (GsPlugin              *plugin,
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
+						  event_callback, event_user_data,
 						  cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_epiphany_list_apps_async);
 
@@ -876,6 +879,8 @@ gs_plugin_epiphany_refine_async (GsPlugin                   *plugin,
                                  GsAppList                  *list,
                                  GsPluginRefineFlags         job_flags,
                                  GsPluginRefineRequireFlags  require_flags,
+                                 GsPluginEventCallback       event_callback,
+                                 void                       *event_user_data,
                                  GCancellable               *cancellable,
                                  GAsyncReadyCallback         callback,
                                  gpointer                    user_data)
@@ -884,7 +889,7 @@ gs_plugin_epiphany_refine_async (GsPlugin                   *plugin,
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
 
-	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, job_flags, require_flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_epiphany_refine_async);
 
 	/* Queue a job for the refine. */
@@ -1018,6 +1023,8 @@ typedef struct {
 	GsPluginInstallAppsFlags flags;
 	GsPluginProgressCallback progress_callback;
 	gpointer progress_user_data;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 
 	/* In-progress data. */
 	guint n_pending_ops;
@@ -1075,6 +1082,8 @@ gs_plugin_epiphany_install_apps_async (GsPlugin                           *plugi
                                        GsPluginInstallAppsFlags            flags,
                                        GsPluginProgressCallback            progress_callback,
                                        gpointer                            progress_user_data,
+                                       GsPluginEventCallback               event_callback,
+                                       void                               *event_user_data,
                                        GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                        gpointer                            app_needs_user_action_data,
                                        GCancellable                       *cancellable,
@@ -1095,6 +1104,8 @@ gs_plugin_epiphany_install_apps_async (GsPlugin                           *plugi
 	data->flags = flags;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 	data->n_apps = gs_app_list_length (apps);
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) install_apps_data_free);
 
@@ -1156,7 +1167,8 @@ gs_plugin_epiphany_install_apps_async (GsPlugin                           *plugi
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			gs_plugin_report_event (GS_PLUGIN (self), event);
+			if (event_callback != NULL)
+				event_callback (GS_PLUGIN (self), event, event_user_data);
 			g_clear_error (&local_error);
 
 			continue;
@@ -1245,7 +1257,8 @@ install_request_token_cb (GObject      *source_object,
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		gs_plugin_report_event (GS_PLUGIN (self), event);
+		if (data->event_callback != NULL)
+			data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
 		g_clear_error (&local_error);
 
 		finish_install_apps_op (task, g_steal_pointer (&local_error));
@@ -1299,7 +1312,8 @@ install_install_cb (GObject      *source_object,
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		gs_plugin_report_event (GS_PLUGIN (self), event);
+		if (data->event_callback != NULL)
+			data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
 		g_clear_error (&local_error);
 
 		finish_install_apps_op (task, g_steal_pointer (&local_error));
@@ -1358,6 +1372,8 @@ typedef struct {
 	GsPluginUninstallAppsFlags flags;
 	GsPluginProgressCallback progress_callback;
 	gpointer progress_user_data;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 
 	/* In-progress data. */
 	guint n_pending_ops;
@@ -1407,6 +1423,8 @@ gs_plugin_epiphany_uninstall_apps_async (GsPlugin                           *plu
                                          GsPluginUninstallAppsFlags          flags,
                                          GsPluginProgressCallback            progress_callback,
                                          gpointer                            progress_user_data,
+                                         GsPluginEventCallback               event_callback,
+                                         void                               *event_user_data,
                                          GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                          gpointer                            app_needs_user_action_data,
                                          GCancellable                       *cancellable,
@@ -1427,6 +1445,8 @@ gs_plugin_epiphany_uninstall_apps_async (GsPlugin                           *plu
 	data->flags = flags;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) uninstall_apps_data_free);
 
 	/* Start a load of operations in parallel to uninstall the apps.
@@ -1460,7 +1480,8 @@ gs_plugin_epiphany_uninstall_apps_async (GsPlugin                           *plu
 			if (interactive)
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			gs_plugin_report_event (GS_PLUGIN (self), event);
+			if (event_callback != NULL)
+				event_callback (GS_PLUGIN (self), event, event_user_data);
 			g_clear_error (&local_error);
 
 			continue;
@@ -1526,7 +1547,8 @@ uninstall_cb (GObject      *source_object,
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		gs_plugin_report_event (GS_PLUGIN (self), event);
+		if (data->event_callback != NULL)
+			data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
 		g_clear_error (&local_error);
 
 		finish_uninstall_apps_op (task, NULL);

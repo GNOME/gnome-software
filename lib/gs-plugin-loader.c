@@ -138,18 +138,11 @@ gs_plugin_loader_notify_idle_cb (gpointer user_data)
 	return FALSE;
 }
 
+/* Could be called in any thread. */
 void
 gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->events_by_id_mutex);
-
-	/* events should always have a unique ID, either constructed from the
-	 * app they are processing or preferably from the GError message */
-	if (gs_plugin_event_get_unique_id (event) == NULL) {
-		g_warning ("failed to add event from action %s",
-			   gs_plugin_action_to_string (gs_plugin_event_get_action (event)));
-		return;
-	}
 
 	g_debug ("%s: Adding event %s", G_STRFUNC, gs_plugin_event_get_unique_id (event));
 
@@ -163,7 +156,6 @@ static void
 gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
 				       GsPlugin *plugin,
 				       GsPluginJob *job,
-				       GsPluginAction action,
 				       GsApp *app,
 				       gboolean interactive,
 				       const GError *error)
@@ -235,7 +227,6 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
 
 	/* create event which is handled by the GsShell */
 	event = gs_plugin_event_new ("error", error_copy,
-				     "action", action,
 				     "app", event_app,
 				     "origin", event_origin,
 				     "job", job,
@@ -252,7 +243,6 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
  * gs_plugin_loader_claim_error:
  * @plugin_loader: a #GsPluginLoader
  * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
- * @action: a #GsPluginAction associated with the @error
  * @app: (nullable): a #GsApp for the event, or %NULL
  * @interactive: whether to set interactive flag
  * @error: a #GError to claim
@@ -266,12 +256,11 @@ gs_plugin_loader_claim_error_internal (GsPluginLoader *plugin_loader,
  * The %GS_PLUGIN_ERROR_CANCELLED and %G_IO_ERROR_CANCELLED errors
  * are automatically ignored.
  *
- * Since: 41
+ * Since: 49
  **/
 void
 gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 			      GsPlugin *plugin,
-			      GsPluginAction action,
 			      GsApp *app,
 			      gboolean interactive,
 			      const GError *error)
@@ -279,7 +268,7 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (error != NULL);
 
-	gs_plugin_loader_claim_error_internal (plugin_loader, plugin, NULL, action, app, interactive, error);
+	gs_plugin_loader_claim_error_internal (plugin_loader, plugin, NULL, app, interactive, error);
 }
 
 /**
@@ -306,7 +295,6 @@ gs_plugin_loader_claim_job_error (GsPluginLoader *plugin_loader,
 
 	gs_plugin_loader_claim_error_internal (plugin_loader, plugin,
 		job,
-		gs_plugin_job_get_action (job),
 		gs_plugin_job_get_app (job),
 		gs_plugin_job_get_interactive (job),
 		error);
@@ -514,11 +502,13 @@ gs_plugin_loader_app_is_compatible (GsPluginLoader *plugin_loader,
 typedef struct {
 	gint64 begin_time_nsec;
 	GsPluginJob *plugin_job;  /* (owned) */
+	unsigned long event_handler_id;
 } JobProcessData;
 
 static void
 job_process_data_free (JobProcessData *data)
 {
+	g_clear_signal_handler (&data->event_handler_id, data->plugin_job);
 	g_clear_object (&data->plugin_job);
 	g_free (data);
 }
@@ -972,6 +962,7 @@ gs_plugin_loader_remove_events (GsPluginLoader *plugin_loader)
 	g_hash_table_remove_all (plugin_loader->events_by_id);
 }
 
+/* Could be called in any thread. */
 static void
 gs_plugin_loader_report_event_cb (GsPlugin *plugin,
 				  GsPluginEvent *event,
@@ -1286,8 +1277,7 @@ gs_plugin_loader_software_app_created_cb (GObject *source_object,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_RESTART_REQUIRED,
 			     "A restart is required");
-	event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_UNKNOWN,
-				     "app", app,
+	event = gs_plugin_event_new ("app", app,
 				     "error", error,
 				     NULL);
 	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -2806,6 +2796,10 @@ plugin_loader_task_freed_cb (gpointer user_data,
 	}
 }
 
+static void job_process_event_cb (GsPluginJob   *plugin_job,
+                                  GsPlugin      *plugin,
+                                  GsPluginEvent *event,
+                                  void          *user_data);
 static gboolean job_process_setup_complete_cb (GCancellable *cancellable,
                                                gpointer      user_data);
 static void job_process_cb (GTask *task);
@@ -2849,6 +2843,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	data = g_new0 (JobProcessData, 1);
 	data->plugin_job = g_object_ref (plugin_job);
 	data->begin_time_nsec = 0;  /* set in job_process_cb() */
+	data->event_handler_id = g_signal_connect (plugin_job, "event", G_CALLBACK (job_process_event_cb), task);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) job_process_data_free);
 
 	g_atomic_int_inc (&plugin_loader->active_jobs);
@@ -2867,6 +2862,19 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		g_autoptr(GSource) cancellable_source = g_cancellable_source_new (plugin_loader->setup_complete_cancellable);
 		g_task_attach_source (task, cancellable_source, G_SOURCE_FUNC (job_process_setup_complete_cb));
 	}
+}
+
+static void
+job_process_event_cb (GsPluginJob   *plugin_job,
+                      GsPlugin      *plugin,
+                      GsPluginEvent *event,
+                      void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
+
+	gs_plugin_event_set_job (event, plugin_job);
+	gs_plugin_loader_add_event (plugin_loader, event);
 }
 
 static gboolean

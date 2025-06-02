@@ -34,21 +34,28 @@
  * @list: list of #GsApps to refine
  * @job_flags: job flags
  * @require_flags: require flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.refine_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 42
+ * Since: 49
  */
 GsPluginRefineData *
 gs_plugin_refine_data_new (GsAppList                  *list,
                            GsPluginRefineFlags         job_flags,
-                           GsPluginRefineRequireFlags  require_flags)
+                           GsPluginRefineRequireFlags  require_flags,
+                           GsPluginEventCallback       event_callback,
+                           void                       *event_user_data)
 {
 	g_autoptr(GsPluginRefineData) data = g_new0 (GsPluginRefineData, 1);
 	data->list = g_object_ref (list);
 	data->job_flags = job_flags;
 	data->require_flags = require_flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -59,6 +66,9 @@ gs_plugin_refine_data_new (GsAppList                  *list,
  * @list: list of #GsApps to refine
  * @job_flags: job flags
  * @require_flags: require flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -70,19 +80,21 @@ gs_plugin_refine_data_new (GsAppList                  *list,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 42
+ * Since: 49
  */
 GTask *
 gs_plugin_refine_data_new_task (gpointer                    source_object,
                                 GsAppList                  *list,
                                 GsPluginRefineFlags         job_flags,
                                 GsPluginRefineRequireFlags  require_flags,
+                                GsPluginEventCallback       event_callback,
+                                void                       *event_user_data,
                                 GCancellable               *cancellable,
                                 GAsyncReadyCallback         callback,
                                 gpointer                    user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_refine_data_new (list, job_flags, require_flags), (GDestroyNotify) gs_plugin_refine_data_free);
+	g_task_set_task_data (task, gs_plugin_refine_data_new (list, job_flags, require_flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_refine_data_free);
 	return g_steal_pointer (&task);
 }
 
@@ -105,19 +117,26 @@ gs_plugin_refine_data_free (GsPluginRefineData *data)
  * gs_plugin_refresh_metadata_data_new:
  * @cache_age_secs: maximum allowed age of the cache in order for it to remain valid, in seconds
  * @flags: refresh metadata flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.refresh_metadata_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 42
+ * Since: 49
  */
 GsPluginRefreshMetadataData *
-gs_plugin_refresh_metadata_data_new (guint64                      cache_age_secs,
-                                     GsPluginRefreshMetadataFlags flags)
+gs_plugin_refresh_metadata_data_new (guint64                       cache_age_secs,
+                                     GsPluginRefreshMetadataFlags  flags,
+                                     GsPluginEventCallback         event_callback,
+                                     void                         *event_user_data)
 {
 	g_autoptr(GsPluginRefreshMetadataData) data = g_new0 (GsPluginRefreshMetadataData, 1);
 	data->cache_age_secs = cache_age_secs;
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -141,19 +160,26 @@ gs_plugin_refresh_metadata_data_free (GsPluginRefreshMetadataData *data)
  * @query: (nullable) (transfer none): a query to filter apps, or %NULL for
  *   no filtering
  * @flags: list apps flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.list_apps_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 43
+ * Since: 49
  */
 GsPluginListAppsData *
 gs_plugin_list_apps_data_new (GsAppQuery            *query,
-                              GsPluginListAppsFlags  flags)
+                              GsPluginListAppsFlags  flags,
+                              GsPluginEventCallback  event_callback,
+                              void                  *event_user_data)
 {
 	g_autoptr(GsPluginListAppsData) data = g_new0 (GsPluginListAppsData, 1);
 	data->query = (query != NULL) ? g_object_ref (query) : NULL;
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -164,6 +190,9 @@ gs_plugin_list_apps_data_new (GsAppQuery            *query,
  * @query: (nullable) (transfer none): a query to filter apps, or %NULL for
  *   no filtering
  * @flags: list apps flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -175,18 +204,20 @@ gs_plugin_list_apps_data_new (GsAppQuery            *query,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 43
+ * Since: 49
  */
 GTask *
 gs_plugin_list_apps_data_new_task (gpointer               source_object,
                                    GsAppQuery            *query,
                                    GsPluginListAppsFlags  flags,
+                                   GsPluginEventCallback  event_callback,
+                                   void                  *event_user_data,
                                    GCancellable          *cancellable,
                                    GAsyncReadyCallback    callback,
                                    gpointer               user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_list_apps_data_new (query, flags), (GDestroyNotify) gs_plugin_list_apps_data_free);
+	g_task_set_task_data (task, gs_plugin_list_apps_data_new (query, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_list_apps_data_free);
 	return g_steal_pointer (&task);
 }
 
@@ -209,21 +240,28 @@ gs_plugin_list_apps_data_free (GsPluginListAppsData *data)
  * gs_plugin_manage_repository_data_new:
  * @repository: (not nullable) (transfer none): a repository to manage
  * @flags: manage repository flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.install_repository_async,
  * #GsPluginClass.remove_repository_async, #GsPluginClass.enable_repository_async
  * and #GsPluginClass.disable_repository_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 43
+ * Since: 49
  */
 GsPluginManageRepositoryData *
-gs_plugin_manage_repository_data_new (GsApp			   *repository,
-				      GsPluginManageRepositoryFlags flags)
+gs_plugin_manage_repository_data_new (GsApp                         *repository,
+                                      GsPluginManageRepositoryFlags  flags,
+                                      GsPluginEventCallback          event_callback,
+                                      void                          *event_user_data)
 {
 	g_autoptr(GsPluginManageRepositoryData) data = g_new0 (GsPluginManageRepositoryData, 1);
 	data->repository = g_object_ref (repository);
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -233,6 +271,9 @@ gs_plugin_manage_repository_data_new (GsApp			   *repository,
  * @source_object: task source object
  * @repository: (not nullable) (transfer none): a repository to manage
  * @flags: manage repository flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -244,18 +285,20 @@ gs_plugin_manage_repository_data_new (GsApp			   *repository,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 43
+ * Since: 49
  */
 GTask *
-gs_plugin_manage_repository_data_new_task (gpointer			 source_object,
-					   GsApp			*repository,
-					   GsPluginManageRepositoryFlags flags,
-					   GCancellable			*cancellable,
-					   GAsyncReadyCallback		 callback,
-					   gpointer			 user_data)
+gs_plugin_manage_repository_data_new_task (gpointer                       source_object,
+                                           GsApp                         *repository,
+                                           GsPluginManageRepositoryFlags  flags,
+                                           GsPluginEventCallback          event_callback,
+                                           void                          *event_user_data,
+                                           GCancellable                  *cancellable,
+                                           GAsyncReadyCallback            callback,
+                                           gpointer                       user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_manage_repository_data_new (repository, flags), (GDestroyNotify) gs_plugin_manage_repository_data_free);
+	g_task_set_task_data (task, gs_plugin_manage_repository_data_new (repository, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_manage_repository_data_free);
 	return g_steal_pointer (&task);
 }
 
@@ -278,19 +321,26 @@ gs_plugin_manage_repository_data_free (GsPluginManageRepositoryData *data)
  * gs_plugin_refine_categories_data_new:
  * @list: (element-type GsCategory): list of #GsCategory objects to refine
  * @flags: refine flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Context data for a call to #GsPluginClass.refine_categories_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 43
+ * Since: 49
  */
 GsPluginRefineCategoriesData *
 gs_plugin_refine_categories_data_new (GPtrArray                     *list,
-                                      GsPluginRefineCategoriesFlags  flags)
+                                      GsPluginRefineCategoriesFlags  flags,
+                                      GsPluginEventCallback          event_callback,
+                                      void                          *event_user_data)
 {
 	g_autoptr(GsPluginRefineCategoriesData) data = g_new0 (GsPluginRefineCategoriesData, 1);
 	data->list = g_ptr_array_ref (list);
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -300,6 +350,9 @@ gs_plugin_refine_categories_data_new (GPtrArray                     *list,
  * @source_object: task source object
  * @list: (element-type GsCategory): list of #GsCategory objects to refine
  * @flags: refine flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -312,18 +365,20 @@ gs_plugin_refine_categories_data_new (GPtrArray                     *list,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 43
+ * Since: 49
  */
 GTask *
 gs_plugin_refine_categories_data_new_task (gpointer                       source_object,
                                            GPtrArray                     *list,
                                            GsPluginRefineCategoriesFlags  flags,
+                                           GsPluginEventCallback          event_callback,
+                                           void                          *event_user_data,
                                            GCancellable                  *cancellable,
                                            GAsyncReadyCallback            callback,
                                            gpointer                       user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_refine_categories_data_new (list, flags), (GDestroyNotify) gs_plugin_refine_categories_data_free);
+	g_task_set_task_data (task, gs_plugin_refine_categories_data_new (list, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_refine_categories_data_free);
 	return g_steal_pointer (&task);
 }
 
@@ -346,17 +401,28 @@ gs_plugin_refine_categories_data_free (GsPluginRefineCategoriesData *data)
  * gs_plugin_install_apps_data_new:
  * @apps: list of apps to install
  * @flags: install flags
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
+ * @progress_user_data: data to pass to @progress_callback
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
+ * @app_needs_user_action_callback: (nullable) (closure app_needs_user_action_data):
+ *   function to call to ask the user for a decision
+ * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.install_apps_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 47
+ * Since: 49
  */
 GsPluginInstallAppsData *
 gs_plugin_install_apps_data_new (GsAppList                          *apps,
                                  GsPluginInstallAppsFlags            flags,
                                  GsPluginProgressCallback            progress_callback,
                                  gpointer                            progress_user_data,
+                                 GsPluginEventCallback               event_callback,
+                                 void                               *event_user_data,
                                  GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                  gpointer                            app_needs_user_action_data)
 {
@@ -365,6 +431,8 @@ gs_plugin_install_apps_data_new (GsAppList                          *apps,
 	data->flags = flags;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 	data->app_needs_user_action_callback = app_needs_user_action_callback;
 	data->app_needs_user_action_data = app_needs_user_action_data;
 
@@ -376,10 +444,14 @@ gs_plugin_install_apps_data_new (GsAppList                          *apps,
  * @source_object: task source object
  * @apps: list of apps to install
  * @flags: install flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -393,7 +465,7 @@ gs_plugin_install_apps_data_new (GsAppList                          *apps,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 47
+ * Since: 49
  */
 GTask *
 gs_plugin_install_apps_data_new_task (gpointer                            source_object,
@@ -401,6 +473,8 @@ gs_plugin_install_apps_data_new_task (gpointer                            source
                                       GsPluginInstallAppsFlags            flags,
                                       GsPluginProgressCallback            progress_callback,
                                       gpointer                            progress_user_data,
+                                      GsPluginEventCallback               event_callback,
+                                      void                               *event_user_data,
                                       GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                       gpointer                            app_needs_user_action_data,
                                       GCancellable                       *cancellable,
@@ -413,6 +487,8 @@ gs_plugin_install_apps_data_new_task (gpointer                            source
 							       flags,
 							       progress_callback,
 							       progress_user_data,
+							       event_callback,
+							       event_user_data,
 							       app_needs_user_action_callback,
 							       app_needs_user_action_data),
 			      (GDestroyNotify) gs_plugin_install_apps_data_free);
@@ -438,17 +514,28 @@ gs_plugin_install_apps_data_free (GsPluginInstallAppsData *data)
  * gs_plugin_uninstall_apps_data_new:
  * @apps: list of apps to uninstall
  * @flags: uninstall flags
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
+ * @progress_user_data: data to pass to @progress_callback
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
+ * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.uninstall_apps_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 47
+ * Since: 49
  */
 GsPluginUninstallAppsData *
 gs_plugin_uninstall_apps_data_new (GsAppList                          *apps,
                                    GsPluginUninstallAppsFlags          flags,
                                    GsPluginProgressCallback            progress_callback,
                                    gpointer                            progress_user_data,
+                                   GsPluginEventCallback               event_callback,
+                                   gpointer                            event_user_data,
                                    GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                    gpointer                            app_needs_user_action_data)
 {
@@ -457,6 +544,8 @@ gs_plugin_uninstall_apps_data_new (GsAppList                          *apps,
 	data->flags = flags;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 	data->app_needs_user_action_callback = app_needs_user_action_callback;
 	data->app_needs_user_action_data = app_needs_user_action_data;
 
@@ -468,10 +557,14 @@ gs_plugin_uninstall_apps_data_new (GsAppList                          *apps,
  * @source_object: task source object
  * @apps: list of apps to uninstall
  * @flags: uninstall flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -485,7 +578,7 @@ gs_plugin_uninstall_apps_data_new (GsAppList                          *apps,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 47
+ * Since: 49
  */
 GTask *
 gs_plugin_uninstall_apps_data_new_task (gpointer                            source_object,
@@ -493,6 +586,8 @@ gs_plugin_uninstall_apps_data_new_task (gpointer                            sour
                                         GsPluginUninstallAppsFlags          flags,
                                         GsPluginProgressCallback            progress_callback,
                                         gpointer                            progress_user_data,
+                                        GsPluginEventCallback               event_callback,
+                                        gpointer                            event_user_data,
                                         GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                         gpointer                            app_needs_user_action_data,
                                         GCancellable                       *cancellable,
@@ -505,6 +600,8 @@ gs_plugin_uninstall_apps_data_new_task (gpointer                            sour
 								 flags,
 								 progress_callback,
 								 progress_user_data,
+								 event_callback,
+								 event_user_data,
 								 app_needs_user_action_callback,
 								 app_needs_user_action_data),
 			      (GDestroyNotify) gs_plugin_uninstall_apps_data_free);
@@ -530,17 +627,28 @@ gs_plugin_uninstall_apps_data_free (GsPluginUninstallAppsData *data)
  * gs_plugin_update_apps_data_new:
  * @apps: list of apps to update
  * @flags: update flags
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
+ * @progress_user_data: data to pass to @progress_callback
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
+ * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  *
  * Context data for a call to #GsPluginClass.update_apps_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 44
+ * Since: 49
  */
 GsPluginUpdateAppsData *
 gs_plugin_update_apps_data_new (GsAppList                          *apps,
                                 GsPluginUpdateAppsFlags             flags,
                                 GsPluginProgressCallback            progress_callback,
                                 gpointer                            progress_user_data,
+                                GsPluginEventCallback               event_callback,
+                                void                               *event_user_data,
                                 GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                 gpointer                            app_needs_user_action_data)
 {
@@ -549,6 +657,8 @@ gs_plugin_update_apps_data_new (GsAppList                          *apps,
 	data->flags = flags;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 	data->app_needs_user_action_callback = app_needs_user_action_callback;
 	data->app_needs_user_action_data = app_needs_user_action_data;
 
@@ -560,10 +670,14 @@ gs_plugin_update_apps_data_new (GsAppList                          *apps,
  * @source_object: task source object
  * @apps: list of apps to update
  * @flags: update flags
- * @progress_callback: (nullable): function to call to notify of progress
+ * @progress_callback: (nullable) (closure progress_user_data): function to call
+ *   to notify of progress
  * @progress_user_data: data to pass to @progress_callback
- * @app_needs_user_action_callback: (nullable): function to call to ask the
- *   user for a decision
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
+ * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
+ *   function to call to ask the user for a decision
  * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
@@ -577,7 +691,7 @@ gs_plugin_update_apps_data_new (GsAppList                          *apps,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 44
+ * Since: 49
  */
 GTask *
 gs_plugin_update_apps_data_new_task (gpointer                            source_object,
@@ -585,6 +699,8 @@ gs_plugin_update_apps_data_new_task (gpointer                            source_
                                      GsPluginUpdateAppsFlags             flags,
                                      GsPluginProgressCallback            progress_callback,
                                      gpointer                            progress_user_data,
+                                     GsPluginEventCallback               event_callback,
+                                     void                               *event_user_data,
                                      GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                      gpointer                            app_needs_user_action_data,
                                      GCancellable                       *cancellable,
@@ -597,6 +713,8 @@ gs_plugin_update_apps_data_new_task (gpointer                            source_
 							      flags,
 							      progress_callback,
 							      progress_user_data,
+							      event_callback,
+							      event_user_data,
 							      app_needs_user_action_callback,
 							      app_needs_user_action_data),
 			      (GDestroyNotify) gs_plugin_update_apps_data_free);
@@ -683,19 +801,26 @@ gs_plugin_cancel_offline_update_data_free (GsPluginCancelOfflineUpdateData *data
  * gs_plugin_download_upgrade_data_new:
  * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.download_upgrade_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 47
+ * Since: 49
  */
 GsPluginDownloadUpgradeData *
 gs_plugin_download_upgrade_data_new (GsApp                        *app,
-				     GsPluginDownloadUpgradeFlags  flags)
+                                     GsPluginDownloadUpgradeFlags  flags,
+                                     GsPluginEventCallback         event_callback,
+                                     void                         *event_user_data)
 {
 	g_autoptr(GsPluginDownloadUpgradeData) data = g_new0 (GsPluginDownloadUpgradeData, 1);
 	data->app = g_object_ref (app);
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -705,6 +830,9 @@ gs_plugin_download_upgrade_data_new (GsApp                        *app,
  * @source_object: task source object
  * @app: (not nullable) (transfer none): a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @flags: operation flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -716,18 +844,20 @@ gs_plugin_download_upgrade_data_new (GsApp                        *app,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 47
+ * Since: 49
  */
 GTask *
-gs_plugin_download_upgrade_data_new_task (gpointer                     source_object,
-					  GsApp                       *app,
-					  GsPluginDownloadUpgradeFlags flags,
-					  GCancellable                *cancellable,
-					  GAsyncReadyCallback          callback,
-					  gpointer                     user_data)
+gs_plugin_download_upgrade_data_new_task (gpointer                      source_object,
+                                          GsApp                        *app,
+                                          GsPluginDownloadUpgradeFlags  flags,
+                                          GsPluginEventCallback         event_callback,
+                                          void                         *event_user_data,
+                                          GCancellable                 *cancellable,
+                                          GAsyncReadyCallback           callback,
+                                          gpointer                      user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_download_upgrade_data_new (app, flags), (GDestroyNotify) gs_plugin_download_upgrade_data_free);
+	g_task_set_task_data (task, gs_plugin_download_upgrade_data_new (app, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_download_upgrade_data_free);
 	return g_steal_pointer (&task);
 }
 
@@ -884,19 +1014,26 @@ gs_plugin_launch_data_free (GsPluginLaunchData *data)
  * gs_plugin_file_to_app_data_new:
  * @file: (not nullable) (transfer none): a #GFile
  * @flags: operation flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.file_to_app_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 47
+ * Since: 49
  */
 GsPluginFileToAppData *
-gs_plugin_file_to_app_data_new (GFile                 *file,
-				GsPluginFileToAppFlags flags)
+gs_plugin_file_to_app_data_new (GFile                  *file,
+                                GsPluginFileToAppFlags  flags,
+                                GsPluginEventCallback   event_callback,
+                                void                   *event_user_data)
 {
 	g_autoptr(GsPluginFileToAppData) data = g_new0 (GsPluginFileToAppData, 1);
 	data->file = g_object_ref (file);
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -906,6 +1043,9 @@ gs_plugin_file_to_app_data_new (GFile                 *file,
  * @source_object: task source object
  * @file: (not nullable) (transfer none): a #GFile
  * @flags: operation flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -917,18 +1057,20 @@ gs_plugin_file_to_app_data_new (GFile                 *file,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 47
+ * Since: 49
  */
 GTask *
-gs_plugin_file_to_app_data_new_task (gpointer               source_object,
-				     GFile                 *file,
-				     GsPluginFileToAppFlags flags,
-				     GCancellable          *cancellable,
-				     GAsyncReadyCallback    callback,
-				     gpointer               user_data)
+gs_plugin_file_to_app_data_new_task (gpointer                source_object,
+                                     GFile                  *file,
+                                     GsPluginFileToAppFlags  flags,
+                                     GsPluginEventCallback   event_callback,
+                                     void                   *event_user_data,
+                                     GCancellable           *cancellable,
+                                     GAsyncReadyCallback     callback,
+                                     gpointer                user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_file_to_app_data_new (file, flags), (GDestroyNotify) gs_plugin_file_to_app_data_free);
+	g_task_set_task_data (task, gs_plugin_file_to_app_data_new (file, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_file_to_app_data_free);
 	return g_steal_pointer (&task);
 }
 
@@ -951,19 +1093,26 @@ gs_plugin_file_to_app_data_free (GsPluginFileToAppData *data)
  * gs_plugin_url_to_app_data_new:
  * @url: (not nullable): a URL
  * @flags: operation flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  *
  * Common context data for a call to #GsPluginClass.url_to_app_async.
  *
  * Returns: (transfer full): context data structure
- * Since: 47
+ * Since: 49
  */
 GsPluginUrlToAppData *
-gs_plugin_url_to_app_data_new (const gchar          *url,
-			       GsPluginUrlToAppFlags flags)
+gs_plugin_url_to_app_data_new (const gchar           *url,
+                               GsPluginUrlToAppFlags  flags,
+                               GsPluginEventCallback  event_callback,
+                               void                  *event_user_data)
 {
 	g_autoptr(GsPluginUrlToAppData) data = g_new0 (GsPluginUrlToAppData, 1);
 	data->url = g_strdup (url);
 	data->flags = flags;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 
 	return g_steal_pointer (&data);
 }
@@ -973,6 +1122,9 @@ gs_plugin_url_to_app_data_new (const gchar          *url,
  * @source_object: task source object
  * @url: (not nullable): a URL
  * @flags: operation flags
+ * @event_callback: (nullable) (closure event_user_data): function to call to
+ *   notify of events
+ * @event_user_data: data to pass to @event_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -984,18 +1136,20 @@ gs_plugin_url_to_app_data_new (const gchar          *url,
  * g_task_new() and g_task_set_task_data().
  *
  * Returns: (transfer full): new #GTask with the given context data
- * Since: 47
+ * Since: 49
  */
 GTask *
 gs_plugin_url_to_app_data_new_task (gpointer              source_object,
 				    const gchar          *url,
 				    GsPluginUrlToAppFlags flags,
+				    GsPluginEventCallback event_callback,
+				    void                 *event_user_data,
 				    GCancellable         *cancellable,
 				    GAsyncReadyCallback   callback,
 				    gpointer              user_data)
 {
 	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
-	g_task_set_task_data (task, gs_plugin_url_to_app_data_new (url, flags), (GDestroyNotify) gs_plugin_url_to_app_data_free);
+	g_task_set_task_data (task, gs_plugin_url_to_app_data_new (url, flags, event_callback, event_user_data), (GDestroyNotify) gs_plugin_url_to_app_data_free);
 	return g_steal_pointer (&task);
 }
 

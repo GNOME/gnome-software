@@ -35,7 +35,6 @@ struct _GsPluginEvent
 	GObject			 parent_instance;
 	GsApp			*app;
 	GsApp			*origin;
-	GsPluginAction		 action;
 	GsPluginJob		*job;  /* (owned) (nullable) */
 	GError			*error;
 	GsPluginEventFlag	 flags;
@@ -47,7 +46,6 @@ G_DEFINE_TYPE (GsPluginEvent, gs_plugin_event, G_TYPE_OBJECT)
 typedef enum {
 	PROP_APP = 1,
 	PROP_ORIGIN,
-	PROP_ACTION,
 	PROP_JOB,
 	PROP_ERROR,
 } GsPluginEventProperty;
@@ -89,23 +87,6 @@ gs_plugin_event_get_origin (GsPluginEvent *event)
 }
 
 /**
- * gs_plugin_event_get_action:
- * @event: A #GsPluginEvent
- *
- * Gets an action that created the event.
- *
- * Returns: (transfer none): a #GsPluginAction
- *
- * Since: 3.22
- **/
-GsPluginAction
-gs_plugin_event_get_action (GsPluginEvent *event)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_EVENT (event), 0);
-	return event->action;
-}
-
-/**
  * gs_plugin_event_get_job:
  * @event: A #GsPluginEvent
  *
@@ -123,6 +104,30 @@ gs_plugin_event_get_job (GsPluginEvent *event)
 }
 
 /**
+ * gs_plugin_event_set_job:
+ * @event: A #GsPluginEvent
+ * @job: (nullable): a plugin job, or `NULL` to clear
+ *
+ * Sets the job that created the event.
+ *
+ * This can be set after construction time, because typically the #GsPluginJob
+ * pointer isn’t available when constructing an event — only later on in the
+ * event handling chain.
+ *
+ * Since: 49
+ */
+void
+gs_plugin_event_set_job (GsPluginEvent *event,
+                         GsPluginJob   *job)
+{
+	g_return_if_fail (GS_IS_PLUGIN_EVENT (event));
+	g_return_if_fail (job == NULL || GS_IS_PLUGIN_JOB (job));
+
+	if (g_set_object (&event->job, job))
+		g_object_notify_by_pspec (G_OBJECT (event), props[PROP_JOB]);
+}
+
+/**
  * gs_plugin_event_get_unique_id:
  * @event: A #GsPluginEvent
  *
@@ -130,7 +135,7 @@ gs_plugin_event_get_job (GsPluginEvent *event)
  * this will just be the actual #GsApp unique-id. In the cases where only error
  * has been set a virtual (but plausible) ID will be generated.
  *
- * Returns: a string, or %NULL for invalid
+ * Returns: (not nullable): a string
  *
  * Since: 3.22
  **/
@@ -148,22 +153,19 @@ gs_plugin_event_get_unique_id (GsPluginEvent *event)
 	}
 
 	/* generate from error */
-	if (event->error != NULL) {
-		if (event->unique_id == NULL) {
-			g_autofree gchar *id = NULL;
-			id = g_strdup_printf ("%s.error",
-					      gs_plugin_error_to_string (event->error->code));
-			event->unique_id = gs_utils_build_unique_id (AS_COMPONENT_SCOPE_UNKNOWN,
-								     AS_BUNDLE_KIND_UNKNOWN,
-								     NULL,
-								     id,
-								     NULL);
-		}
-		return event->unique_id;
-	}
+	g_assert (event->error != NULL);
 
-	/* failed */
-	return NULL;
+	if (event->unique_id == NULL) {
+		g_autofree gchar *id = NULL;
+		id = g_strdup_printf ("%s.error",
+				      gs_plugin_error_to_string (event->error->code));
+		event->unique_id = gs_utils_build_unique_id (AS_COMPONENT_SCOPE_UNKNOWN,
+							     AS_BUNDLE_KIND_UNKNOWN,
+							     NULL,
+							     id,
+							     NULL);
+	}
+	return event->unique_id;
 }
 
 /**
@@ -222,7 +224,7 @@ gs_plugin_event_has_flag (GsPluginEvent *event, GsPluginEventFlag flag)
  *
  * Gets the event error.
  *
- * Returns: a #GError, or %NULL for unset
+ * Returns: (not nullable): a #GError
  *
  * Since: 3.22
  **/
@@ -230,6 +232,17 @@ const GError *
 gs_plugin_event_get_error (GsPluginEvent *event)
 {
 	return event->error;
+}
+
+static void
+gs_plugin_event_constructed (GObject *object)
+{
+	GsPluginEvent *self = GS_PLUGIN_EVENT (object);
+
+	G_OBJECT_CLASS (gs_plugin_event_parent_class)->constructed (object);
+
+	/* Check that required properties have been set. */
+	g_assert (self->error != NULL);
 }
 
 static void
@@ -246,9 +259,6 @@ gs_plugin_event_get_property (GObject    *object,
 		break;
 	case PROP_ORIGIN:
 		g_value_set_object (value, self->origin);
-		break;
-	case PROP_ACTION:
-		g_value_set_enum (value, self->action);
 		break;
 	case PROP_JOB:
 		g_value_set_object (value, self->job);
@@ -283,26 +293,15 @@ gs_plugin_event_set_property (GObject      *object,
 		self->origin = g_value_dup_object (value);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
-	case PROP_ACTION:
-		/* Construct only. */
-		g_assert (self->action == GS_PLUGIN_ACTION_UNKNOWN);
-		self->action = g_value_get_enum (value);
-		g_object_notify_by_pspec (object, props[prop_id]);
-		break;
 	case PROP_JOB:
-		/* Construct only. */
-		g_assert (self->job == NULL);
-		self->job = g_value_dup_object (value);
-		g_object_notify_by_pspec (object, props[prop_id]);
+		gs_plugin_event_set_job (self, g_value_get_object (value));
 		break;
 	case PROP_ERROR:
 		/* Construct only. */
 		g_assert (self->error == NULL);
 		self->error = g_value_dup_boxed (value);
-		if (self->error) {
-			/* Just in case the caller left there any D-Bus remote error notes */
-			g_dbus_error_strip_remote_error (self->error);
-		}
+		/* Just in case the caller left there any D-Bus remote error notes */
+		g_dbus_error_strip_remote_error (self->error);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	default:
@@ -339,6 +338,7 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->constructed = gs_plugin_event_constructed;
 	object_class->get_property = gs_plugin_event_get_property;
 	object_class->set_property = gs_plugin_event_set_property;
 	object_class->dispose = gs_plugin_event_dispose;
@@ -374,20 +374,6 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
-	 * GsPluginEvent:action:
-	 *
-	 * The action that caused the event to be created.
-	 *
-	 * Since: 42
-	 */
-	props[PROP_ACTION] =
-		g_param_spec_enum ("action", "Action",
-				   "The action that caused the event to be created.",
-				   GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
-
-	/**
 	 * GsPluginEvent:job: (nullable)
 	 *
 	 * The job that caused the event to be created.
@@ -398,13 +384,15 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 		g_param_spec_object ("job", "Job",
 				     "The job that caused the event to be created.",
 				     GS_TYPE_PLUGIN_JOB,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_READWRITE |
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
-	 * GsPluginEvent:error: (nullable)
+	 * GsPluginEvent:error: (not nullable)
 	 *
 	 * The error the event is reporting.
+	 *
+	 * This is required.
 	 *
 	 * Since: 42
 	 */

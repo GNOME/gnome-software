@@ -179,6 +179,9 @@ static void refresh_progress_tuple_cb (gsize    bytes_downloaded,
                                        gsize    total_download_size,
                                        gpointer user_data);
 static gboolean progress_cb (gpointer user_data);
+static void plugin_event_cb (GsPlugin      *plugin,
+                             GsPluginEvent *event,
+                             void          *user_data);
 #ifdef ENABLE_EXTERNAL_APPSTREAM
 static void external_appstream_refresh_cb (GObject      *source_object,
                                            GAsyncResult *result,
@@ -280,6 +283,8 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 		plugin_class->refresh_metadata_async (plugin,
 						      self->cache_age_secs,
 						      self->flags,
+						      plugin_event_cb,
+						      task,
 						      cancellable,
 						      plugin_refresh_metadata_cb,
 						      g_object_ref (task));
@@ -371,6 +376,17 @@ progress_cb (gpointer user_data)
 	}
 
 	return G_SOURCE_CONTINUE;
+}
+
+static void
+plugin_event_cb (GsPlugin      *plugin,
+                 GsPluginEvent *event,
+                 void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginJob *plugin_job = g_task_get_source_object (task);
+
+	gs_plugin_job_emit_event (plugin_job, plugin, event);
 }
 
 #ifdef ENABLE_EXTERNAL_APPSTREAM

@@ -265,6 +265,8 @@ static void
 gs_plugin_dummy_url_to_app_async (GsPlugin              *plugin,
                                   const gchar           *url,
                                   GsPluginUrlToAppFlags  flags,
+                                  GsPluginEventCallback  event_callback,
+                                  void                  *event_user_data,
                                   GCancellable          *cancellable,
                                   GAsyncReadyCallback    callback,
                                   gpointer               user_data)
@@ -274,7 +276,7 @@ gs_plugin_dummy_url_to_app_async (GsPlugin              *plugin,
 	g_autoptr(GsApp) app = NULL;
 	g_autofree gchar *scheme = NULL;
 
-	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, cancellable, callback, user_data);
+	task = gs_plugin_url_to_app_data_new_task (plugin, url, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_url_to_app_async);
 
 	/* it's us */
@@ -402,6 +404,8 @@ gs_plugin_dummy_uninstall_apps_async (GsPlugin                           *plugin
                                       GsPluginUninstallAppsFlags          flags,
                                       GsPluginProgressCallback            progress_callback,
                                       gpointer                            progress_user_data,
+                                      GsPluginEventCallback               event_callback,
+                                      void                               *event_user_data,
                                       GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                       gpointer                            app_needs_user_action_data,
                                       GCancellable                       *cancellable,
@@ -593,6 +597,8 @@ gs_plugin_dummy_install_apps_async (GsPlugin                           *plugin,
                                     GsPluginInstallAppsFlags            flags,
                                     GsPluginProgressCallback            progress_callback,
                                     gpointer                            progress_user_data,
+                                    GsPluginEventCallback               event_callback,
+                                    void                               *event_user_data,
                                     GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                     gpointer                            app_needs_user_action_data,
                                     GCancellable                       *cancellable,
@@ -844,6 +850,8 @@ gs_plugin_dummy_refine_async (GsPlugin                   *plugin,
                               GsAppList                  *list,
                               GsPluginRefineFlags         job_flags,
                               GsPluginRefineRequireFlags  require_flags,
+                              GsPluginEventCallback       event_callback,
+                              void                       *event_user_data,
                               GCancellable               *cancellable,
                               GAsyncReadyCallback         callback,
                               gpointer                    user_data)
@@ -883,6 +891,8 @@ static void
 gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
                                  GsAppQuery            *query,
                                  GsPluginListAppsFlags  flags,
+                                 GsPluginEventCallback  event_callback,
+                                 void                  *event_user_data,
                                  GCancellable          *cancellable,
                                  GAsyncReadyCallback    callback,
                                  gpointer               user_data)
@@ -899,7 +909,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	const gchar * const *keywords = NULL;
 	GsApp *alternate_of = NULL;
 
-	task = gs_plugin_list_apps_data_new_task (plugin, query, flags, cancellable, callback, user_data);
+	task = gs_plugin_list_apps_data_new_task (plugin, query, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
 
 	if (query != NULL) {
@@ -1277,6 +1287,8 @@ gs_plugin_dummy_update_apps_async (GsPlugin                           *plugin,
                                    GsPluginUpdateAppsFlags             flags,
                                    GsPluginProgressCallback            progress_callback,
                                    gpointer                            progress_user_data,
+                                   GsPluginEventCallback               event_callback,
+                                   void                               *event_user_data,
                                    GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
                                    gpointer                            app_needs_user_action_data,
                                    GCancellable                       *cancellable,
@@ -1287,6 +1299,7 @@ gs_plugin_dummy_update_apps_async (GsPlugin                           *plugin,
 
 	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
 						    progress_callback, progress_user_data,
+						    event_callback, event_user_data,
 						    app_needs_user_action_callback, app_needs_user_action_data,
 						    cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_update_apps_async);
@@ -1333,14 +1346,14 @@ update_apps_cb (GObject      *source_object,
 				gs_utils_error_add_origin_id (&local_error, self->cached_origin);
 
 				event = gs_plugin_event_new ("app", app,
-							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 							     "error", local_error,
 							     "origin", self->cached_origin,
 							     NULL);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				gs_plugin_report_event (plugin, event);
+				if (data->event_callback != NULL)
+					data->event_callback (plugin, event, data->event_user_data);
 
 				g_clear_error (&local_error);
 				continue;
@@ -1386,6 +1399,8 @@ static void
 gs_plugin_dummy_refresh_metadata_async (GsPlugin                     *plugin,
                                         guint64                       cache_age_secs,
                                         GsPluginRefreshMetadataFlags  flags,
+                                        GsPluginEventCallback         event_callback,
+                                        void                         *event_user_data,
                                         GCancellable                 *cancellable,
                                         GAsyncReadyCallback           callback,
                                         gpointer                      user_data)
@@ -1446,13 +1461,15 @@ static void
 gs_plugin_dummy_download_upgrade_async (GsPlugin                     *plugin,
                                         GsApp                        *app,
                                         GsPluginDownloadUpgradeFlags  flags,
+                                        GsPluginEventCallback         event_callback,
+                                        void                         *event_user_data,
                                         GCancellable                 *cancellable,
                                         GAsyncReadyCallback           callback,
                                         gpointer                      user_data)
 {
 	g_autoptr(GTask) task = NULL;
 
-	task = gs_plugin_download_upgrade_data_new_task (plugin, app, flags, cancellable, callback, user_data);
+	task = gs_plugin_download_upgrade_data_new_task (plugin, app, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_download_upgrade_async);
 
 	/* only process this app if was created by this plugin */

@@ -358,6 +358,8 @@ gs_plugin_repos_refine_async (GsPlugin                   *plugin,
                               GsAppList                  *list,
                               GsPluginRefineFlags         job_flags,
                               GsPluginRefineRequireFlags  require_flags,
+                              GsPluginEventCallback       event_callback,
+                              void                       *event_user_data,
                               GCancellable               *cancellable,
                               GAsyncReadyCallback         callback,
                               gpointer                    user_data)

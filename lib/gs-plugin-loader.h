@@ -100,7 +100,6 @@ GsJobManager	*gs_plugin_loader_get_job_manager	(GsPluginLoader	*plugin_loader);
 GsCategoryManager *gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader);
 void		 gs_plugin_loader_claim_error		(GsPluginLoader *plugin_loader,
 							 GsPlugin *plugin,
-							 GsPluginAction action,
 							 GsApp *app,
 							 gboolean interactive,
 							 const GError *error);

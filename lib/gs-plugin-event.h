@@ -47,8 +47,9 @@ const gchar		*gs_plugin_event_get_unique_id	(GsPluginEvent		*event);
 
 GsApp			*gs_plugin_event_get_app	(GsPluginEvent		*event);
 GsApp			*gs_plugin_event_get_origin	(GsPluginEvent		*event);
-GsPluginAction		 gs_plugin_event_get_action	(GsPluginEvent		*event);
 GsPluginJob		*gs_plugin_event_get_job	(GsPluginEvent		*event);
+void			 gs_plugin_event_set_job	(GsPluginEvent		*event,
+							 GsPluginJob		*job);
 const GError		*gs_plugin_event_get_error	(GsPluginEvent		*event);
 
 void			 gs_plugin_event_add_flag	(GsPluginEvent		*event,

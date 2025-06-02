@@ -124,6 +124,9 @@ gs_plugin_job_manage_repository_get_interactive (GsPluginJob *job)
 	return (self->flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE) != 0;
 }
 
+static void plugin_event_cb (GsPlugin      *plugin,
+                             GsPluginEvent *event,
+                             void          *user_data);
 static void plugin_repository_func_cb (GObject      *source_object,
 				       GAsyncResult *result,
 				       gpointer      user_data);
@@ -158,6 +161,8 @@ gs_plugin_job_manage_repository_run_async (GsPluginJob         *job,
 		void (* repository_func_async) (GsPlugin *plugin,
 						GsApp *repository,
 						GsPluginManageRepositoryFlags flags,
+						GsPluginEventCallback event_callback,
+						void *event_user_data,
 						GCancellable *cancellable,
 						GAsyncReadyCallback callback,
 						gpointer user_data) = NULL;
@@ -187,13 +192,24 @@ gs_plugin_job_manage_repository_run_async (GsPluginJob         *job,
 
 		/* run the plugin */
 		self->n_pending_ops++;
-		repository_func_async (plugin, self->repository, self->flags, cancellable, plugin_repository_func_cb, g_object_ref (task));
+		repository_func_async (plugin, self->repository, self->flags, plugin_event_cb, task, cancellable, plugin_repository_func_cb, g_object_ref (task));
 	}
 
 	if (!anything_ran)
 		g_debug ("no plugin could handle repository operation");
 
 	finish_op (task, g_steal_pointer (&local_error));
+}
+
+static void
+plugin_event_cb (GsPlugin      *plugin,
+                 GsPluginEvent *event,
+                 void          *user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginJob *plugin_job = g_task_get_source_object (task);
+
+	gs_plugin_job_emit_event (plugin_job, plugin, event);
 }
 
 static void
@@ -376,4 +392,21 @@ gs_plugin_job_manage_repository_new (GsApp			   *repository,
 			     "repository", repository,
 			     "flags", flags,
 			     NULL);
+}
+
+/**
+ * gs_plugin_job_manage_repository_get_flags:
+ * @self: a #GsPluginJobManageRepository
+ *
+ * Get the flags affecting the behaviour of this #GsPluginJobManageRepository.
+ *
+ * Returns: flags for the job
+ * Since: 49
+ */
+GsPluginManageRepositoryFlags
+gs_plugin_job_manage_repository_get_flags (GsPluginJobManageRepository *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (self), GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_NONE);
+
+	return self->flags;
 }
