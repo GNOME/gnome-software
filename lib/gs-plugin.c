@@ -95,36 +95,6 @@ static guint signals [SIGNAL_LAST] = { 0 };
 typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
 
 /**
- * gs_plugin_status_to_string:
- * @status: a #GsPluginStatus, e.g. %GS_PLUGIN_STATUS_DOWNLOADING
- *
- * Converts the #GsPluginStatus enum to a string.
- *
- * Returns: the string representation, or "unknown"
- *
- * Since: 3.22
- **/
-const gchar *
-gs_plugin_status_to_string (GsPluginStatus status)
-{
-	if (status == GS_PLUGIN_STATUS_WAITING)
-		return "waiting";
-	if (status == GS_PLUGIN_STATUS_FINISHED)
-		return "finished";
-	if (status == GS_PLUGIN_STATUS_SETUP)
-		return "setup";
-	if (status == GS_PLUGIN_STATUS_DOWNLOADING)
-		return "downloading";
-	if (status == GS_PLUGIN_STATUS_QUERYING)
-		return "querying";
-	if (status == GS_PLUGIN_STATUS_INSTALLING)
-		return "installing";
-	if (status == GS_PLUGIN_STATUS_REMOVING)
-		return "removing";
-	return "unknown";
-}
-
-/**
  * gs_plugin_create:
  * @filename: an absolute filename
  * @session_bus_connection: (not nullable) (transfer none): a session bus

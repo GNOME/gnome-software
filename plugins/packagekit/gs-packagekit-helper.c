@@ -41,7 +41,6 @@ gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer use
 
 	if (type == PK_PROGRESS_TYPE_STATUS) {
 		PkStatusEnum status = pk_progress_get_status (progress);
-		GsPluginStatus plugin_status = packagekit_status_enum_to_plugin_status (status);
 
 		/* If we’re installing or removing a package, this may
 		 * invalidate a previously-returned pending OS upgrade’s list of
@@ -55,8 +54,10 @@ gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer use
 		 * accessible to modify its download state.
 		 * */
 		if ((self->allow_emit_updates_changed) &&
-		    (plugin_status == GS_PLUGIN_STATUS_INSTALLING ||
-		     plugin_status == GS_PLUGIN_STATUS_REMOVING) &&
+		    (status == PK_STATUS_ENUM_INSTALL ||
+		     status == PK_STATUS_ENUM_UPDATE ||
+		     status == PK_STATUS_ENUM_CLEANUP ||
+		     status == PK_STATUS_ENUM_REMOVE) &&
 		    (app == NULL ||
 		     (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM &&
 		      gs_app_get_id (app) != NULL))) {

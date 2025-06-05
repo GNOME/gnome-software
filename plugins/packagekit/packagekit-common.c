@@ -15,60 +15,6 @@
 
 #include "packagekit-common.h"
 
-GsPluginStatus
-packagekit_status_enum_to_plugin_status (PkStatusEnum status)
-{
-	GsPluginStatus plugin_status = GS_PLUGIN_STATUS_UNKNOWN;
-
-	switch (status) {
-	case PK_STATUS_ENUM_SETUP:
-	case PK_STATUS_ENUM_CANCEL:
-	case PK_STATUS_ENUM_FINISHED:
-	case PK_STATUS_ENUM_UNKNOWN:
-		break;
-	case PK_STATUS_ENUM_WAIT:
-	case PK_STATUS_ENUM_WAITING_FOR_LOCK:
-	case PK_STATUS_ENUM_WAITING_FOR_AUTH:
-		plugin_status = GS_PLUGIN_STATUS_WAITING;
-		break;
-	case PK_STATUS_ENUM_LOADING_CACHE:
-	case PK_STATUS_ENUM_TEST_COMMIT:
-	case PK_STATUS_ENUM_RUNNING:
-	case PK_STATUS_ENUM_SIG_CHECK:
-	case PK_STATUS_ENUM_REFRESH_CACHE:
-		plugin_status = GS_PLUGIN_STATUS_SETUP;
-		break;
-	case PK_STATUS_ENUM_DOWNLOAD:
-	case PK_STATUS_ENUM_DOWNLOAD_REPOSITORY:
-	case PK_STATUS_ENUM_DOWNLOAD_PACKAGELIST:
-	case PK_STATUS_ENUM_DOWNLOAD_FILELIST:
-	case PK_STATUS_ENUM_DOWNLOAD_CHANGELOG:
-	case PK_STATUS_ENUM_DOWNLOAD_GROUP:
-	case PK_STATUS_ENUM_DOWNLOAD_UPDATEINFO:
-		plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
-		break;
-	case PK_STATUS_ENUM_INSTALL:
-	case PK_STATUS_ENUM_UPDATE:
-		plugin_status = GS_PLUGIN_STATUS_INSTALLING;
-		break;
-	case PK_STATUS_ENUM_CLEANUP:
-	case PK_STATUS_ENUM_REMOVE:
-		plugin_status = GS_PLUGIN_STATUS_REMOVING;
-		break;
-	case PK_STATUS_ENUM_REQUEST:
-	case PK_STATUS_ENUM_QUERY:
-	case PK_STATUS_ENUM_INFO:
-	case PK_STATUS_ENUM_DEP_RESOLVE:
-		plugin_status = GS_PLUGIN_STATUS_QUERYING;
-		break;
-	default:
-		g_warning ("no mapping for %s",
-			   pk_status_enum_to_string (status));
-		break;
-	}
-	return plugin_status;
-}
-
 gboolean
 gs_plugin_packagekit_error_convert (GError **error,
 				    GCancellable *check_cancellable)
