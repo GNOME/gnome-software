@@ -181,22 +181,6 @@ _get_all_apps (GsUpdatesPage *self)
 	return apps;
 }
 
-static guint
-_get_num_updates (GsUpdatesPage *self)
-{
-	guint count = 0;
-	g_autoptr(GsAppList) apps = _get_all_apps (self);
-
-	for (guint i = 0; i < gs_app_list_length (apps); ++i) {
-		GsApp *app = gs_app_list_index (apps, i);
-		if (gs_app_is_updatable (app) ||
-		    gs_app_get_state (app) == GS_APP_STATE_INSTALLING ||
-		    gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING)
-			++count;
-	}
-	return count;
-}
-
 static gchar *
 gs_updates_page_last_checked_time_string (GsUpdatesPage *self,
 					  gint *out_hours_ago,
@@ -217,18 +201,30 @@ gs_updates_page_last_checked_time_string (GsUpdatesPage *self,
 static void
 refresh_headerbar_updates_counter (GsUpdatesPage *self)
 {
-	guint new_updates_counter;
+	guint new_updates_counter = 0;
 
-	new_updates_counter = _get_num_updates (self);
-	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader) ||
-	    self->state == GS_UPDATES_PAGE_STATE_FAILED)
-		new_updates_counter = 0;
+	if (gs_plugin_loader_get_allow_updates (self->plugin_loader) &&
+	    self->state != GS_UPDATES_PAGE_STATE_FAILED) {
+		for (size_t i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
+			new_updates_counter += gs_updates_section_get_counter (self->sections[i]);
+		}
+	}
 
 	if (new_updates_counter == self->updates_counter)
 		return;
 
 	self->updates_counter = new_updates_counter;
 	g_object_notify (G_OBJECT (self), "counter");
+}
+
+static void
+section_notify_counter_cb (GObject    *obj,
+                           GParamSpec *pspec,
+                           void       *user_data)
+{
+	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
+
+	refresh_headerbar_updates_counter (self);
 }
 
 static void
@@ -1198,6 +1194,9 @@ gs_updates_page_setup (GsPage *page,
 		g_object_bind_property (G_OBJECT (self), "is-narrow",
 					self->sections[i], "is-narrow",
 					G_BINDING_SYNC_CREATE);
+		g_signal_connect (self->sections[i], "notify::counter",
+				  G_CALLBACK (section_notify_counter_cb),
+				  self);
 		gtk_box_append (GTK_BOX (self->updates_box), GTK_WIDGET (self->sections[i]));
 	}
 
@@ -1313,6 +1312,9 @@ gs_updates_page_dispose (GObject *object)
 
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
 		if (self->sections[i] != NULL) {
+			g_signal_handlers_disconnect_by_func (self->sections[i],
+							      section_notify_counter_cb,
+							      self);
 			gtk_widget_unparent (GTK_WIDGET (self->sections[i]));
 			self->sections[i] = NULL;
 		}
