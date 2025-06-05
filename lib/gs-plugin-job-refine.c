@@ -438,8 +438,6 @@ plugin_refine_cb (GObject      *source_object,
 		g_clear_error (&local_error);
 	}
 
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-
 	finish_refine_internal_op (task, NULL);
 }
 

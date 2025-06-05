@@ -197,7 +197,6 @@ static gboolean
 delay_timeout_cb (gpointer user_data)
 {
 	GTask *task = G_TASK (user_data);
-	GsPlugin *plugin = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	DelayData *data = g_task_get_task_data (task);
 	g_autoptr(GError) local_error = NULL;
@@ -218,7 +217,6 @@ delay_timeout_cb (gpointer user_data)
 	/* Update the app’s progress and continue. */
 	if (data->app != NULL)
 		gs_app_set_progress (data->app, data->percent_complete);
-	gs_plugin_status_update (plugin, data->app, GS_PLUGIN_STATUS_DOWNLOADING);
 
 	data->percent_complete++;
 
@@ -1070,9 +1068,6 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	}
 
 	if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE) {
-		/* update UI as this might take some time */
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-
 		/* spin */
 		gs_plugin_dummy_timeout_async (self, 2000, cancellable,
 					       list_apps_timeout_cb, g_steal_pointer (&task));

@@ -1427,26 +1427,13 @@ gs_flatpak_progress_cb (const gchar *status,
 			gpointer user_data)
 {
 	GsFlatpakProgressHelper *phelper = (GsFlatpakProgressHelper *) user_data;
-	GsPluginStatus plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
 
 	if (phelper->app != NULL) {
 		if (estimating)
 			gs_app_set_progress (phelper->app, GS_APP_PROGRESS_UNKNOWN);
 		else
 			gs_app_set_progress (phelper->app, progress);
-
-		switch (gs_app_get_state (phelper->app)) {
-		case GS_APP_STATE_INSTALLING:
-			plugin_status = GS_PLUGIN_STATUS_INSTALLING;
-			break;
-		case GS_APP_STATE_REMOVING:
-			plugin_status = GS_PLUGIN_STATUS_REMOVING;
-			break;
-		default:
-			break;
-		}
 	}
-	gs_plugin_status_update (phelper->plugin, phelper->app, plugin_status);
 }
 
 static gboolean
@@ -1465,7 +1452,6 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 	/* TRANSLATORS: status text when downloading new metadata */
 	str = g_strdup_printf (_("Getting flatpak metadata for %s…"), remote_name);
 	gs_app_set_summary_missing (app_dl, str);
-	gs_plugin_status_update (self->plugin, app_dl, GS_PLUGIN_STATUS_DOWNLOADING);
 
 	if (!flatpak_installation_update_remote_sync (installation,
 						      remote_name,

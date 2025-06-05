@@ -1448,9 +1448,6 @@ gs_plugin_systemd_sysupdate_setup_async (GsPlugin            *plugin,
 	/* Check that the proxies exist (and are owned; they should auto-start)
 	 * so we can disable the plugin for systems which don’t have
 	 * systemd-sysupdate. */
-
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_SETUP);
-
 	g_dbus_connection_call (gs_plugin_get_system_bus_connection (plugin),
 	                        "org.freedesktop.DBus",
 	                        "/org/freedesktop/DBus",
@@ -1601,8 +1598,6 @@ gs_plugin_systemd_sysupdate_refine_async (GsPlugin                   *plugin,
 		if (!gs_app_has_management_plugin (app, plugin))
 			continue;
 
-		gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
-
 		g_queue_push_tail (queue, g_object_ref (app));
 	}
 
@@ -1733,8 +1728,6 @@ gs_plugin_systemd_sysupdate_refine_app_proxy_new_cb (GObject      *source_object
 	version = target->latest_version != NULL ? target->latest_version
 	                                         : target->current_version;
 
-	gs_plugin_status_update (GS_PLUGIN (self), data->app, GS_PLUGIN_STATUS_QUERYING);
-
 	/* if the version is not available, it will result an error
 	 * later in the callback */
 	gs_systemd_sysupdate_target_call_describe (proxy,
@@ -1754,9 +1747,7 @@ gs_plugin_systemd_sysupdate_refine_app_describe_cb (GObject      *source_object,
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
-	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 	g_autofree gchar *json = NULL;
-	GsPluginSystemdSysupdateRefineAppData *data = g_task_get_task_data (task);
 
 	/* `systemd-sysupdated` also returns error when the given
 	 * version is not available (case both no version installed and
@@ -1768,8 +1759,6 @@ gs_plugin_systemd_sysupdate_refine_app_describe_cb (GObject      *source_object,
 	                                                       &local_error)) {
 		g_debug ("Describe target error ignored, error = `%s`", local_error->message);
 	}
-
-	gs_plugin_status_update (GS_PLUGIN (self), data->app, GS_PLUGIN_STATUS_FINISHED);
 
 	g_task_return_boolean (task, TRUE);
 }
@@ -1911,8 +1900,6 @@ gs_plugin_systemd_sysupdate_refresh_metadata_async (GsPlugin                    
 	if (data->flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE) {
 		call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
 	}
-
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_QUERYING);
 
 	/* here we ask `systemd-sysupdated` to list all available
 	 * targets and enumerate the targets reported in the callback. */
@@ -2316,7 +2303,6 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	/* Install the given system updates
 	 */
 	GsPluginSystemdSysupdateUpdateAppsData *data = NULL;
-	GsPluginSystemdSysupdate *self = GS_PLUGIN_SYSTEMD_SYSUPDATE (plugin);
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GQueue) queue = NULL;
 
@@ -2361,8 +2347,6 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 		    gs_app_get_state (app) != GS_APP_STATE_QUEUED_FOR_INSTALL) {
 			continue;
 		}
-
-		gs_plugin_status_update (GS_PLUGIN (self), app, GS_PLUGIN_STATUS_WAITING);
 
 		g_queue_push_head (queue, g_object_ref (app));
 	}
@@ -2467,7 +2451,6 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	/* Install the given system updates
 	 */
 	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
-	GsPluginSystemdSysupdate *self = GS_PLUGIN_SYSTEMD_SYSUPDATE (plugin);
 	g_autoptr(GTask) task = NULL;
 	gulong cancelled_id = 0;
 
@@ -2475,8 +2458,6 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_apps_async);
-
-	gs_plugin_status_update (GS_PLUGIN (self), app, GS_PLUGIN_STATUS_WAITING);
 
 	/* connect to cancellation signal */
 	if (cancellable != NULL) {
@@ -2530,8 +2511,6 @@ gs_plugin_systemd_sysupdate_update_app_download_scheduler_cb (GObject      *sour
 		return;
 	}
 
-	gs_plugin_status_update (GS_PLUGIN (self), data->app, GS_PLUGIN_STATUS_DOWNLOADING);
-
 	/* update the 'target' to specific version */
 	gs_plugin_systemd_sysupdate_update_target_async (self,
 	                                                 data->app,
@@ -2577,7 +2556,6 @@ gs_plugin_systemd_sysupdate_update_app_remove_from_download_scheduler_cb (GObjec
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginSystemdSysupdateUpdateAppData *data = g_task_get_task_data (task);
-	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 	g_autoptr(GError) local_error = NULL;
 
 	if (result != NULL &&
@@ -2586,8 +2564,6 @@ gs_plugin_systemd_sysupdate_update_app_remove_from_download_scheduler_cb (GObjec
 		           local_error->message);
 		g_clear_error (&local_error);
 	}
-
-	gs_plugin_status_update (GS_PLUGIN (self), data->app, GS_PLUGIN_STATUS_FINISHED);
 
 	g_task_return_boolean (task, TRUE);
 }

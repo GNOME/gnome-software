@@ -252,8 +252,6 @@ plugin_refine_categories_cb (GObject      *source_object,
 		g_clear_error (&local_error);
 	}
 
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-
 	finish_op (task, g_steal_pointer (&local_error));
 }
 

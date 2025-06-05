@@ -50,7 +50,6 @@ struct _GsPluginLoader
 	gchar			*language;
 	gboolean		 plugin_dir_dirty;
 	GPtrArray		*file_monitors;
-	GsPluginStatus		 global_status_last;
 
 	GMutex			 pending_apps_mutex;
 	GsAppList		*pending_apps;		/* (nullable) (owned) */
@@ -89,14 +88,10 @@ struct _GsPluginLoader
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
 static void add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app);
 static gboolean remove_apps_from_install_queue (GsPluginLoader *plugin_loader, GsAppList *apps);
-static void gs_plugin_loader_status_changed_cb (GsPlugin       *plugin,
-                                                GsApp          *app,
-                                                GsPluginStatus  status,
-                                                GsPluginLoader *plugin_loader);
+
 G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
 enum {
-	SIGNAL_STATUS_CHANGED,
 	SIGNAL_PENDING_APPS_CHANGED,
 	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_RELOAD,
@@ -980,34 +975,6 @@ gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
 }
 
 static void
-gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
-				    GsApp *app,
-				    GsPluginStatus status,
-				    GsPluginLoader *plugin_loader)
-{
-	/* nothing specific */
-	if (app == NULL || gs_app_get_id (app) == NULL) {
-		if (plugin_loader->global_status_last != status) {
-			g_debug ("emitting global %s",
-				 gs_plugin_status_to_string (status));
-			g_signal_emit (plugin_loader,
-				       signals[SIGNAL_STATUS_CHANGED],
-				       0, app, status);
-			plugin_loader->global_status_last = status;
-		}
-		return;
-	}
-
-	/* a specific app */
-	g_debug ("emitting %s(%s)",
-		 gs_plugin_status_to_string (status),
-		 gs_app_get_id (app));
-	g_signal_emit (plugin_loader,
-		       signals[SIGNAL_STATUS_CHANGED],
-		       0, app, status);
-}
-
-static void
 gs_plugin_loader_basic_auth_start_cb (GsPlugin *plugin,
                                       const gchar *remote,
                                       const gchar *realm,
@@ -1155,9 +1122,6 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	g_signal_connect (plugin, "reload",
 			  G_CALLBACK (gs_plugin_loader_reload_cb),
-			  plugin_loader);
-	g_signal_connect (plugin, "status-changed",
-			  G_CALLBACK (gs_plugin_loader_status_changed_cb),
 			  plugin_loader);
 	g_signal_connect (plugin, "basic-auth-start",
 			  G_CALLBACK (gs_plugin_loader_basic_auth_start_cb),
@@ -2202,11 +2166,6 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
-	signals [SIGNAL_STATUS_CHANGED] =
-		g_signal_new ("status-changed",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      0, NULL, NULL, g_cclosure_marshal_generic,
-			      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 	signals [SIGNAL_PENDING_APPS_CHANGED] =
 		g_signal_new ("pending-apps-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,

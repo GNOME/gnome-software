@@ -442,7 +442,6 @@ plugin_refresh_metadata_cb (GObject      *source_object,
 
 	if (!plugin_class->refresh_metadata_finish (plugin, result, &local_error))
 		g_debug ("Failed to refresh plugin '%s': %s", gs_plugin_get_name (plugin), local_error->message);
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 
 	/* Update progress reporting. */
 	self->plugins_progress.n_plugins_complete++;

@@ -1144,15 +1144,6 @@ gs_updates_page_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_updates_page_status_changed_cb (GsPluginLoader *plugin_loader,
-                                   GsApp *app,
-                                   GsPluginStatus status,
-                                   GsUpdatesPage *self)
-{
-	gs_updates_page_update_ui_state (self);
-}
-
-static void
 gs_updates_page_allow_updates_notify_cb (GsPluginLoader *plugin_loader,
                                          GParamSpec *pspec,
                                          GsUpdatesPage *self)
@@ -1205,9 +1196,6 @@ gs_updates_page_setup (GsPage *page,
 	self->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (self->plugin_loader, "pending-apps-changed",
 			  G_CALLBACK (gs_updates_page_pending_apps_changed_cb),
-			  self);
-	g_signal_connect (self->plugin_loader, "status-changed",
-			  G_CALLBACK (gs_updates_page_status_changed_cb),
 			  self);
 	g_signal_connect (self->plugin_loader, "updates-changed",
 			  G_CALLBACK (gs_updates_page_changed_cb),

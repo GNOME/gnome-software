@@ -563,7 +563,6 @@ gs_plugin_packagekit_install_apps_async (GsPlugin                           *plu
 				return;
 			}
 
-			gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 			repo_app_id = gs_app_get_id (repo_app);
 			g_hash_table_replace (repos, (gpointer) repo_app_id, g_steal_pointer (&repo_app));
 		}
@@ -1399,8 +1398,6 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 
 	/* do sync call */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-
 	task_updates = gs_packagekit_task_new (plugin);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
 	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
@@ -1667,7 +1664,6 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 		return;
 	}
 
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
 	task_list_apps = gs_packagekit_task_new (plugin);
@@ -4676,7 +4672,6 @@ gs_plugin_packagekit_enable_repository_async (GsPlugin                     *plug
 	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
 	/* do the call */
-	gs_plugin_status_update (plugin, repository, GS_PLUGIN_STATUS_WAITING);
 	gs_app_set_state (repository, GS_APP_STATE_INSTALLING);
 
 	helper = gs_packagekit_helper_new (plugin);
@@ -4765,7 +4760,6 @@ gs_plugin_packagekit_disable_repository_async (GsPlugin                     *plu
 	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
 	/* do the call */
-	gs_plugin_status_update (plugin, repository, GS_PLUGIN_STATUS_WAITING);
 	gs_app_set_state (repository, GS_APP_STATE_REMOVING);
 
 	helper = gs_packagekit_helper_new (plugin);
@@ -4924,7 +4918,6 @@ download_schedule_cb (GObject      *source_object,
 	}
 
 	/* get the list of packages to update */
-	gs_plugin_status_update (GS_PLUGIN (self), NULL, GS_PLUGIN_STATUS_WAITING);
 
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
@@ -5285,7 +5278,6 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
 	g_task_set_source_tag (task, gs_plugin_packagekit_refresh_metadata_async);
 	g_task_set_task_data (task, g_object_ref (helper), g_object_unref);
 
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
 	task_refresh = gs_packagekit_task_new (plugin);

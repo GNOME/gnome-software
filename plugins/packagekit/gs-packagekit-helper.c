@@ -42,8 +42,6 @@ gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer use
 	if (type == PK_PROGRESS_TYPE_STATUS) {
 		PkStatusEnum status = pk_progress_get_status (progress);
 		GsPluginStatus plugin_status = packagekit_status_enum_to_plugin_status (status);
-		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-			gs_plugin_status_update (plugin, app, plugin_status);
 
 		/* If we’re installing or removing a package, this may
 		 * invalidate a previously-returned pending OS upgrade’s list of

@@ -400,8 +400,6 @@ plugin_install_apps_cb (GObject      *source_object,
 		g_clear_error (&local_error);
 	}
 
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-
 	GS_PROFILER_ADD_MARK_TAKE (PluginJobInstallApps,
 				   self->begin_time_nsec,
 				   g_strdup_printf ("%s:%s",

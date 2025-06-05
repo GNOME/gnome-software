@@ -26,17 +26,6 @@ const gchar * const allowlist[] = {
 	NULL
 };
 
-static guint _status_changed_cnt = 0;
-
-static void
-gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
-				    GsApp *app,
-				    GsPluginStatus status,
-				    gpointer user_data)
-{
-	_status_changed_cnt++;
-}
-
 static void
 gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 {
@@ -883,8 +872,6 @@ main (int argc, char **argv)
 
 	/* we can only load this once per process */
 	plugin_loader = gs_plugin_loader_new (NULL, NULL);
-	g_signal_connect (plugin_loader, "status-changed",
-			  G_CALLBACK (gs_plugin_loader_status_changed_cb), NULL);
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR);
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR_CORE);
 	ret = gs_plugin_loader_setup (plugin_loader,

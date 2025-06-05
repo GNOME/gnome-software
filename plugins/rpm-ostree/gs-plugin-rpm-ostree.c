@@ -667,23 +667,6 @@ on_transaction_progress (GDBusProxy *proxy,
 
 		if (tp->app != NULL)
 			gs_app_set_progress (tp->app, (guint) percentage);
-
-		if (tp->app != NULL && tp->plugin != NULL) {
-			GsPluginStatus plugin_status;
-
-			switch (gs_app_get_state (tp->app)) {
-			case GS_APP_STATE_INSTALLING:
-				plugin_status = GS_PLUGIN_STATUS_INSTALLING;
-				break;
-			case GS_APP_STATE_REMOVING:
-				plugin_status = GS_PLUGIN_STATUS_REMOVING;
-				break;
-			default:
-				plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
-				break;
-			}
-			gs_plugin_status_update (tp->plugin, tp->app, plugin_status);
-		}
 	} else if (g_strcmp0 (signal_name, "DownloadProgress") == 0) {
 		guint32 percentage = 0;
 		guint32 fetched, requested;
@@ -701,8 +684,6 @@ on_transaction_progress (GDBusProxy *proxy,
 			gs_app_set_progress (tp->app, (guint) percentage);
 		if (tp->download_progress_list)
 			gs_app_list_override_progress (tp->download_progress_list, (guint) percentage);
-		if (tp->app != NULL && tp->plugin != NULL)
-			gs_plugin_status_update (tp->plugin, tp->app, GS_PLUGIN_STATUS_DOWNLOADING);
 	} else if (g_strcmp0 (signal_name, "Finished") == 0) {
 		if (tp->error == NULL) {
 			g_autofree gchar *error_message = NULL;
