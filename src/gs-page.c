@@ -135,8 +135,8 @@ gs_page_app_installed_cb (GObject *source,
 	}
 	if (!ret) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
-						  NULL,
 						  helper->job,
+						  helper->app,
 						  error);
 		return;
 	}
@@ -191,8 +191,8 @@ gs_page_app_removed_cb (GObject *source,
 	}
 	if (!ret) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
-						  NULL,
 						  helper->job,
+						  helper->app,
 						  error);
 		return;
 	}
@@ -271,7 +271,7 @@ gs_page_install_app (GsPage *page,
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
 	helper->interaction = interaction;
 
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
@@ -356,7 +356,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
 
 	/* generic fallback */
 	list = gs_app_list_new ();
@@ -513,18 +513,11 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable != NULL ? cancellable : gs_app_get_cancellable (app));
+	helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
 	helper->interaction = GS_SHELL_INTERACTION_FULL;
 	if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		g_autoptr(GsAppList) app_list = NULL;
-
-		if (helper->cancellable != gs_app_get_cancellable (app)) {
-			/* cancel any ongoing job, this allows to e.g. cancel pending
-			 * installations, updates, or other ops that may have been queued
-			 * in the plugin loader (due to reaching the max parallel ops allowed) */
-			g_cancellable_cancel (gs_app_get_cancellable (app));
-		}
 
 		app_list = gs_app_list_new ();
 		gs_app_list_add (app_list, app);
@@ -662,10 +655,14 @@ gs_page_app_launched_cb (GObject *source,
 			 gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	g_autoptr(GsPluginJob) plugin_job = user_data;
+	g_autoptr(GsPluginJobLaunch) plugin_job = GS_PLUGIN_JOB_LAUNCH (user_data);
 	g_autoptr(GError) error = NULL;
+
 	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
-		gs_plugin_loader_claim_job_error (plugin_loader, NULL, plugin_job, error);
+		gs_plugin_loader_claim_job_error (plugin_loader,
+						  GS_PLUGIN_JOB (plugin_job),
+						  gs_plugin_job_launch_get_app (plugin_job),
+						  error);
 		return;
 	}
 }

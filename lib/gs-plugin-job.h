@@ -46,8 +46,6 @@ gboolean	gs_plugin_job_run_finish		(GsPluginJob		*self,
 							 GError			**error);
 
 gboolean	 gs_plugin_job_get_interactive		(GsPluginJob	*self);
-void		 gs_plugin_job_set_app			(GsPluginJob	*self,
-							 GsApp		*app);
 
 void		 gs_plugin_job_emit_event		(GsPluginJob	*self,
 							 GsPlugin	*plugin,

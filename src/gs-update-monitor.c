@@ -463,8 +463,8 @@ update_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	/* get result */
 	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &update_apps_job, &error)) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
-						  NULL,
 						  data->job,
+						  NULL,
 						  error);
 		return;
 	}
@@ -505,8 +505,8 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 	/* the returned list is always empty, the existence indicates success */
 	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error)) {
 		gs_plugin_loader_claim_job_error (plugin_loader,
-						  NULL,
 						  data->job,
+						  NULL,
 						  error);
 		return;
 	}

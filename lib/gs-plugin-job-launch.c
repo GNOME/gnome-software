@@ -170,8 +170,12 @@ gs_plugin_job_launch_run_async (GsPluginJob         *job,
 		plugin_class->launch_async (plugin, self->app, self->flags, cancellable, plugin_app_func_cb, g_object_ref (task));
 	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle app operation");
+	if (!anything_ran) {
+		g_set_error_literal (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle launching an app");
+	}
 
 	finish_op (task, g_steal_pointer (&local_error));
 }
@@ -305,4 +309,21 @@ gs_plugin_job_launch_new (GsApp *app,
 			     "app", app,
 			     "flags", flags,
 			     NULL);
+}
+
+/**
+ * gs_plugin_job_launch_get_app:
+ * @self: a #GsPluginJobLaunch
+ *
+ * Gets the value of #GsPluginJobLaunch:app.
+ *
+ * Returns: (transfer none) (not nullable): the app being launched
+ * Since: 49
+ */
+GsApp *
+gs_plugin_job_launch_get_app (GsPluginJobLaunch *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_LAUNCH (self), NULL);
+
+	return self->app;
 }

@@ -265,8 +265,7 @@ gs_details_page_app_has_pending_action (GsDetailsPage *self)
 
 	pending_jobs_for_app = gs_job_manager_get_pending_jobs_for_app (job_manager, self->app);
 
-	return (gs_app_get_pending_action (self->app) != GS_PLUGIN_ACTION_UNKNOWN) ||
-	       (gs_app_get_state (self->app) == GS_APP_STATE_QUEUED_FOR_INSTALL) ||
+	return (gs_app_get_state (self->app) == GS_APP_STATE_QUEUED_FOR_INSTALL) ||
 	       pending_jobs_for_app->len > 0;
 }
 
@@ -2288,9 +2287,6 @@ gs_details_page_app_cancel_button_cb (GtkWidget *widget, GsDetailsPage *self)
 	g_cancellable_cancel (self->app_cancellable);
 	gtk_widget_set_sensitive (widget, FALSE);
 
-	/* reset the pending-action from the app if needed */
-	gs_app_set_pending_action (self->app, GS_PLUGIN_ACTION_UNKNOWN);
-
 	/* FIXME: We should be able to revert the QUEUED_FOR_INSTALL without
 	 * having to pretend to remove the app */
 	if (gs_app_get_state (self->app) == GS_APP_STATE_QUEUED_FOR_INSTALL)
@@ -2346,7 +2342,7 @@ gs_details_page_addon_install_cb (GsAppAddonRow *row,
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
 	addon = gs_app_addon_row_get_addon (row);
-	gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL, NULL);
+	gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL, gs_app_get_cancellable (addon));
 }
 
 static void
@@ -2356,7 +2352,7 @@ gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_data)
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
 	addon = gs_app_addon_row_get_addon (row);
-	gs_page_remove_app (GS_PAGE (self), addon, NULL);
+	gs_page_remove_app (GS_PAGE (self), addon, gs_app_get_cancellable (addon));
 }
 
 static void

@@ -304,8 +304,12 @@ gs_plugin_job_list_apps_run_async (GsPluginJob         *job,
 		plugin_class->list_apps_async (plugin, self->query, self->flags, plugin_event_cb, task, cancellable, plugin_list_apps_cb, g_object_ref (task));
 	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle listing apps");
+	if (!anything_ran) {
+		g_set_error_literal (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle listing apps");
+	}
 
 	finish_op (task, g_steal_pointer (&local_error));
 }

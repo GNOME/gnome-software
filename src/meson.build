@@ -19,6 +19,7 @@ gdbus_src = gnome.gdbus_codegen(
 enums = gnome.mkenums_simple('gs-enums',
   sources : [
     'gs-context-dialog-row.h',
+    'gs-review-row.h',
     'gs-updates-paused-banner.h',
   ],
   install_header : false,

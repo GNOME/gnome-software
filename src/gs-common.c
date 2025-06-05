@@ -1468,7 +1468,7 @@ gs_utils_remove_app_data_dir (GsApp *app,
 
 	if (error != NULL && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
 		gs_utils_error_convert_gio (&error);
-		gs_plugin_loader_claim_error (plugin_loader,  NULL,
+		gs_plugin_loader_claim_error (plugin_loader,
 					      app, TRUE, error);
 		return FALSE;
 	}

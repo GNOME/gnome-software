@@ -160,8 +160,12 @@ gs_plugin_job_cancel_offline_update_run_async (GsPluginJob         *job,
 		plugin_class->cancel_offline_update_async (plugin, self->flags, cancellable, plugin_func_cb, g_object_ref (task));
 	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle cancel-offline-update operation");
+	if (!anything_ran) {
+		g_set_error_literal (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle cancelling an offline update");
+	}
 
 	finish_op (task, g_steal_pointer (&local_error));
 }

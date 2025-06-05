@@ -17,16 +17,9 @@
 
 typedef struct
 {
-	GsPluginAction		 action;
 	gint64			 time_created;
 	GCancellable		*cancellable; /* (nullable) (owned) */
 } GsPluginJobPrivate;
-
-enum {
-	PROP_0,
-	PROP_ACTION,
-	PROP_LAST
-};
 
 typedef enum {
 	SIGNAL_COMPLETED,
@@ -44,16 +37,14 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	GString *str = g_string_new (NULL);
 	gint64 time_now = g_get_monotonic_time ();
+	const gchar *job_type_name = G_OBJECT_TYPE_NAME (self);
+
 	g_string_append (str, "running ");
-	if (priv->action != GS_PLUGIN_ACTION_UNKNOWN) {
-		g_string_append_printf (str, "%s", gs_plugin_action_to_string (priv->action));
-	} else {
-		const gchar *job_type_name = G_OBJECT_TYPE_NAME (self);
-		if (job_type_name != NULL && g_str_has_prefix (job_type_name, "GsPluginJob"))
-			g_string_append_printf (str, "%s job", job_type_name + strlen ("GsPluginJob"));
-		else
-			g_string_append_printf (str, "%s", job_type_name);
-	}
+
+	if (job_type_name != NULL && g_str_has_prefix (job_type_name, "GsPluginJob"))
+		g_string_append_printf (str, "%s job", job_type_name + strlen ("GsPluginJob"));
+	else
+		g_string_append_printf (str, "%s", job_type_name);
 
 	if (time_now - priv->time_created > 1000) {
 		g_string_append_printf (str, ", elapsed time since creation %" G_GINT64_FORMAT "ms",
@@ -73,92 +64,6 @@ gs_plugin_job_get_interactive (GsPluginJob *self)
 	return klass->get_interactive (self);
 }
 
-void
-gs_plugin_job_set_action (GsPluginJob *self, GsPluginAction action)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->action = action;
-}
-
-GsPluginAction
-gs_plugin_job_get_action (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_ACTION_UNKNOWN);
-	return priv->action;
-}
-
-/* FIXME: Find the :app property of the derived class. This will be removed
- * when the remains of the old threading API are removed. */
-static gboolean
-gs_plugin_job_subclass_has_app_property (GsPluginJob *self)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
-
-	return (g_object_class_find_property (G_OBJECT_GET_CLASS (self), "app") != NULL);
-}
-
-void
-gs_plugin_job_set_app (GsPluginJob *self, GsApp *app)
-{
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-
-	if (!gs_plugin_job_subclass_has_app_property (self))
-		return;
-
-	g_object_set (G_OBJECT (self), "app", app, NULL);
-}
-
-GsApp *
-gs_plugin_job_get_app (GsPluginJob *self)
-{
-	g_autoptr(GsApp) app = NULL;
-
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-
-	if (!gs_plugin_job_subclass_has_app_property (self))
-		return NULL;
-
-	g_object_get (G_OBJECT (self), "app", &app, NULL);
-
-	/* Don’t steal the reference, let the additional reference be dropped
-	 * because gs_plugin_job_get_app() is (transfer none). The GsPluginJob
-	 * still holds one. */
-	return app;
-}
-
-static void
-gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
-{
-	GsPluginJob *self = GS_PLUGIN_JOB (obj);
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-
-	switch (prop_id) {
-	case PROP_ACTION:
-		g_value_set_enum (value, priv->action);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GParamSpec *pspec)
-{
-	GsPluginJob *self = GS_PLUGIN_JOB (obj);
-
-	switch (prop_id) {
-	case PROP_ACTION:
-		gs_plugin_job_set_action (self, g_value_get_enum (value));
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
-		break;
-	}
-}
-
 static void
 gs_plugin_job_finalize (GObject *obj)
 {
@@ -173,16 +78,9 @@ gs_plugin_job_finalize (GObject *obj)
 static void
 gs_plugin_job_class_init (GsPluginJobClass *klass)
 {
-	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = gs_plugin_job_finalize;
-	object_class->get_property = gs_plugin_job_get_property;
-	object_class->set_property = gs_plugin_job_set_property;
 
-	pspec = g_param_spec_enum ("action", NULL, NULL,
-				   GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
-				   G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_ACTION, pspec);
+	object_class->finalize = gs_plugin_job_finalize;
 
 	/**
 	 * GsPluginJob::completed:

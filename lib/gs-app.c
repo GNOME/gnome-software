@@ -135,7 +135,6 @@ typedef struct
 	AsContentRating		*content_rating;
 	AsScreenshot		*action_screenshot;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
-	GsPluginAction		 pending_action;
 	GsAppPermissions        *permissions;
 	gboolean		 is_update_downloaded;
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
@@ -164,7 +163,6 @@ typedef enum {
 	PROP_INSTALL_DATE,
 	PROP_RELEASE_DATE,
 	PROP_QUIRK,
-	PROP_PENDING_ACTION,
 	PROP_KEY_COLORS,
 	PROP_IS_UPDATE_DOWNLOADED,
 	PROP_URLS,
@@ -1180,18 +1178,6 @@ gs_app_set_allow_cancel (GsApp *app, gboolean allow_cancel)
 	gs_app_queue_notify (app, obj_props[PROP_CAN_CANCEL_INSTALLATION]);
 }
 
-static void
-gs_app_set_pending_action_internal (GsApp *app,
-				    GsPluginAction action)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	if (priv->pending_action == action)
-		return;
-
-	priv->pending_action = action;
-	gs_app_queue_notify (app, obj_props[PROP_PENDING_ACTION]);
-}
-
 /**
  * gs_app_set_state:
  * @app: a #GsApp
@@ -1225,21 +1211,8 @@ gs_app_set_state (GsApp *app, GsAppState state)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	if (gs_app_set_state_internal (app, state)) {
-		/* since the state changed, and the pending-action refers to
-		 * actions that usually change the state, we assign it to the
-		 * appropriate action here */
-		GsPluginAction action = GS_PLUGIN_ACTION_UNKNOWN;
-		if (priv->state == GS_APP_STATE_QUEUED_FOR_INSTALL) {
-			if (priv->kind == AS_COMPONENT_KIND_REPOSITORY)
-				action = GS_PLUGIN_ACTION_INSTALL_REPO;
-			else
-				action = GS_PLUGIN_ACTION_INSTALL;
-		}
-		gs_app_set_pending_action_internal (app, action);
-
+	if (gs_app_set_state_internal (app, state))
 		gs_app_queue_notify (app, obj_props[PROP_STATE]);
-	}
 }
 
 /**
@@ -5321,68 +5294,6 @@ gs_app_get_cancellable (GsApp *app)
 	return priv->cancellable;
 }
 
-/**
- * gs_app_peek_cancellable:
- * @app: a #GsApp
- *
- * Peek the current cancellable used by the @app. It's referenced for thread safety;
- * if not %NULL, free it with g_object_unref() when no longer needed.
- *
- * Returns: (nullable) (transfer full): the current cancellable, or %NULL
- *
- * Since: 44
- **/
-GCancellable *
-gs_app_peek_cancellable (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-
-	locker = g_mutex_locker_new (&priv->mutex);
-	if (priv->cancellable)
-		return g_object_ref (priv->cancellable);
-
-	return NULL;
-}
-
-/**
- * gs_app_get_pending_action:
- * @app: a #GsApp
- *
- * Get the pending action for this #GsApp, or %NULL if no action is pending.
- *
- * Returns: the #GsAppAction of the @app.
- **/
-GsPluginAction
-gs_app_get_pending_action (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_return_val_if_fail (GS_IS_APP (app), GS_PLUGIN_ACTION_UNKNOWN);
-	locker = g_mutex_locker_new (&priv->mutex);
-	return priv->pending_action;
-}
-
-/**
- * gs_app_set_pending_action:
- * @app: a #GsApp
- * @action: a #GsPluginAction
- *
- * Set an action that is pending on this #GsApp.
- **/
-void
-gs_app_set_pending_action (GsApp *app,
-			   GsPluginAction action)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_return_if_fail (GS_IS_APP (app));
-	locker = g_mutex_locker_new (&priv->mutex);
-	gs_app_set_pending_action_internal (app, action);
-}
-
 static void
 gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -5431,9 +5342,6 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		break;
 	case PROP_QUIRK:
 		g_value_set_flags (value, priv->quirk);
-		break;
-	case PROP_PENDING_ACTION:
-		g_value_set_enum (value, priv->pending_action);
 		break;
 	case PROP_KEY_COLORS:
 		g_value_set_boxed (value, gs_app_get_key_colors (app));
@@ -5585,10 +5493,6 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_QUIRK:
 		priv->quirk = g_value_get_flags (value);
-		break;
-	case PROP_PENDING_ACTION:
-		/* Read only */
-		g_assert_not_reached ();
 		break;
 	case PROP_KEY_COLORS:
 		gs_app_set_key_colors (app, g_value_get_boxed (value));
@@ -5864,13 +5768,6 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_QUIRK] = g_param_spec_flags ("quirk", NULL, NULL,
 				     GS_TYPE_APP_QUIRK, GS_APP_QUIRK_NONE,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
-
-	/**
-	 * GsApp:pending-action:
-	 */
-	obj_props[PROP_PENDING_ACTION] = g_param_spec_enum ("pending-action", NULL, NULL,
-				     GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
-				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:key-colors:

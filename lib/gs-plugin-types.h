@@ -477,33 +477,4 @@ typedef enum {
 	GS_PLUGIN_RULE_LAST  /*< skip >*/
 } GsPluginRule;
 
-/**
- * GsPluginAction:
- * @GS_PLUGIN_ACTION_UNKNOWN:			Action is unknown
- * @GS_PLUGIN_ACTION_INSTALL:			Install an app
- * @GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:		Download a distro upgrade
- * @GS_PLUGIN_ACTION_LAUNCH:			Launch an app
- * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an app
- * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an app
- * @GS_PLUGIN_ACTION_INSTALL_REPO:		Install a repository (Since: 41)
- * @GS_PLUGIN_ACTION_REMOVE_REPO:		Remove a repository (Since: 41)
- * @GS_PLUGIN_ACTION_ENABLE_REPO:		Enable a repository (Since: 41)
- * @GS_PLUGIN_ACTION_DISABLE_REPO:		Disable a repository (Since: 41)
- *
- * The plugin action.
- **/
-typedef enum {
-	GS_PLUGIN_ACTION_UNKNOWN,
-	GS_PLUGIN_ACTION_INSTALL,
-	GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-	GS_PLUGIN_ACTION_LAUNCH,
-	GS_PLUGIN_ACTION_FILE_TO_APP,
-	GS_PLUGIN_ACTION_URL_TO_APP,
-	GS_PLUGIN_ACTION_INSTALL_REPO,
-	GS_PLUGIN_ACTION_REMOVE_REPO,
-	GS_PLUGIN_ACTION_ENABLE_REPO,
-	GS_PLUGIN_ACTION_DISABLE_REPO,
-	GS_PLUGIN_ACTION_LAST  /*< skip >*/
-} GsPluginAction;
-
 G_END_DECLS

@@ -219,17 +219,6 @@ gs_plugin_func (void)
 	GsAppList *list_remove;
 	GsApp *app;
 
-	/* check enums converted */
-	for (guint i = 0; i < GS_PLUGIN_ACTION_LAST; i++) {
-		const gchar *tmp = gs_plugin_action_to_string (i);
-		if (tmp == NULL) {
-			/* These do not have function, they exist only for better error messages. */
-			if (i == GS_PLUGIN_ACTION_INSTALL)
-				continue;
-			g_critical ("failed to convert %u", i);
-		}
-	}
-
 	/* add a couple of duplicate IDs */
 	app = gs_app_new ("a");
 	list = gs_app_list_new ();
@@ -642,20 +631,6 @@ gs_app_func (void)
 	gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 	g_assert_cmpuint (gs_app_get_progress (app), ==, GS_APP_PROGRESS_UNKNOWN);
 	g_assert_false ((gint) 0 <= (gint) GS_APP_PROGRESS_UNKNOWN && GS_APP_PROGRESS_UNKNOWN <= 100);
-
-	/* check pending action */
-	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
-	gs_app_set_state_recover (app);
-
-	/* check pending action */
-	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_state (app, GS_APP_STATE_DOWNLOADING);
-	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
-	gs_app_set_state_recover (app);
 }
 
 static void

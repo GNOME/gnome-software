@@ -195,8 +195,12 @@ gs_plugin_job_manage_repository_run_async (GsPluginJob         *job,
 		repository_func_async (plugin, self->repository, self->flags, plugin_event_cb, task, cancellable, plugin_repository_func_cb, g_object_ref (task));
 	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle repository operation");
+	if (!anything_ran) {
+		g_set_error_literal (&local_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle repository operations");
+	}
 
 	finish_op (task, g_steal_pointer (&local_error));
 }

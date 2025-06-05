@@ -28,12 +28,14 @@ typedef struct
 	gboolean	 supports_enable_disable;
 	gboolean	 always_allow_enable_disable;
 	gboolean	 related_loaded;
+	GCancellable	*cancellable;  /* (nullable) (owned) */
 } GsRepoRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsRepoRow, gs_repo_row, GTK_TYPE_LIST_BOX_ROW)
 
 typedef enum {
 	PROP_RELATED_LOADED = 1,
+	PROP_CANCELLABLE,
 } GsRepoRowProperty;
 
 enum {
@@ -42,7 +44,7 @@ enum {
 	SIGNAL_LAST
 };
 
-static GParamSpec *obj_props[PROP_RELATED_LOADED + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_CANCELLABLE + 1] = { NULL, };
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static void
@@ -343,6 +345,9 @@ gs_repo_row_get_property (GObject *object,
 	case PROP_RELATED_LOADED:
 		g_value_set_boolean (value, gs_repo_row_get_related_loaded (self));
 		break;
+	case PROP_CANCELLABLE:
+		g_value_set_object (value, gs_repo_row_get_cancellable (self));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -360,6 +365,9 @@ gs_repo_row_set_property (GObject *object,
 	switch ((GsRepoRowProperty) prop_id) {
 	case PROP_RELATED_LOADED:
 		gs_repo_row_set_related_loaded (self, g_value_get_boolean (value));
+		break;
+	case PROP_CANCELLABLE:
+		gs_repo_row_set_cancellable (self, g_value_get_object (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -382,6 +390,8 @@ gs_repo_row_dispose (GObject *object)
 		g_source_remove (priv->refresh_idle_id);
 		priv->refresh_idle_id = 0;
 	}
+
+	g_clear_object (&priv->cancellable);
 
 	G_OBJECT_CLASS (gs_repo_row_parent_class)->dispose (object);
 }
@@ -425,6 +435,18 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 		g_param_spec_boolean ("related-loaded", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsRepoRow:cancellable: (nullable)
+	 *
+	 * A #GCancellable associated with a pending operation for this row.
+	 *
+	 * Since: 49
+	 */
+	obj_props[PROP_CANCELLABLE] =
+		g_param_spec_object ("cancellable", NULL, NULL,
+				     G_TYPE_CANCELLABLE,
+				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
@@ -593,4 +615,46 @@ gs_repo_row_set_related_loaded (GsRepoRow *self,
 	refresh_comment_label (self);
 
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_RELATED_LOADED]);
+}
+
+/**
+ * gs_repo_row_get_cancellable:
+ * @row: a #GsRepoRow
+ *
+ * Gets the value of #GsRepoRow:cancellable.
+ *
+ * Returns: (nullable) (transfer none): a #GCancellable, or %NULL if not set
+ * Since: 49
+ */
+GCancellable *
+gs_repo_row_get_cancellable (GsRepoRow *row)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
+
+	g_return_val_if_fail (GS_IS_REPO_ROW (row), NULL);
+
+	return priv->cancellable;
+}
+
+/**
+ * gs_repo_row_set_cancellable:
+ * @row: a #GsRepoRow
+ * @cancellable: (nullable) (transfer none): a cancellable to associate with the
+ *   row, or %NULL to clear
+ *
+ * Sets the value of #GsRepoRow:cancellable.
+ *
+ * Since: 49
+ */
+void
+gs_repo_row_set_cancellable (GsRepoRow    *row,
+                             GCancellable *cancellable)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
+
+	g_return_if_fail (GS_IS_REPO_ROW (row));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	if (g_set_object (&priv->cancellable, cancellable))
+		g_object_notify_by_pspec (G_OBJECT (row), obj_props[PROP_CANCELLABLE]);
 }

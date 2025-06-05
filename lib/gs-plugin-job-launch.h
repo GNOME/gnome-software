@@ -23,4 +23,6 @@ G_DECLARE_FINAL_TYPE (GsPluginJobLaunch, gs_plugin_job_launch, GS, PLUGIN_JOB_LA
 GsPluginJob	*gs_plugin_job_launch_new	(GsApp			 *app,
 						 GsPluginLaunchFlags	  flags);
 
+GsApp		*gs_plugin_job_launch_get_app	(GsPluginJobLaunch	 *self);
+
 G_END_DECLS
