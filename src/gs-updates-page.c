@@ -442,9 +442,9 @@ gs_updates_page_decrement_refresh_count (GsUpdatesPage *self)
 }
 
 static void
-gs_updates_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
-                                             GParamSpec *pspec,
-                                             GsUpdatesPage *self)
+gs_updates_page_network_available_or_metered_notify_cb (GsPluginLoader *plugin_loader,
+                                                        GParamSpec     *pspec,
+                                                        GsUpdatesPage  *self)
 {
 	gs_updates_page_update_ui_state (self);
 }
@@ -1217,7 +1217,10 @@ gs_updates_page_setup (GsPage *page,
 				 G_CALLBACK (gs_updates_page_allow_updates_notify_cb),
 				 self, 0);
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
-				 G_CALLBACK (gs_updates_page_network_available_notify_cb),
+				 G_CALLBACK (gs_updates_page_network_available_or_metered_notify_cb),
+				 self, 0);
+	g_signal_connect_object (self->plugin_loader, "notify::network-metered",
+				 G_CALLBACK (gs_updates_page_network_available_or_metered_notify_cb),
 				 self, 0);
 	self->cancellable = g_object_ref (cancellable);
 
