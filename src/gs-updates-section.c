@@ -52,9 +52,10 @@ G_DEFINE_TYPE (GsUpdatesSection, gs_updates_section, GTK_TYPE_BOX)
 
 typedef enum {
 	PROP_IS_NARROW = 1,
+	PROP_COUNTER,
 } GsUpdatesSectionProperty;
 
-static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_COUNTER + 1] = { NULL, };
 
 GsAppList *
 gs_updates_section_get_list (GsUpdatesSection *self)
@@ -114,6 +115,9 @@ _row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
 
 	if (!gs_app_list_length (self->list))
 		gtk_widget_set_visible (widget, FALSE);
+
+	/* The change in app list has probably changed the update counter. */
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_COUNTER]);
 }
 
 static void
@@ -158,6 +162,9 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 				app_row, "is-narrow",
 				G_BINDING_SYNC_CREATE);
 	gtk_widget_set_visible (GTK_WIDGET (self), TRUE);
+
+	/* The change in app list has probably changed the update counter. */
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_COUNTER]);
 }
 
 void
@@ -169,6 +176,9 @@ gs_updates_section_remove_all (GsUpdatesSection *self)
 	gs_app_list_remove_all (self->list);
 	gtk_widget_set_visible (GTK_WIDGET (self), FALSE);
 	g_clear_object (&self->cancellable);
+
+	/* The change in app list has probably changed the update counter. */
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_COUNTER]);
 }
 
 typedef struct {
@@ -555,6 +565,9 @@ gs_updates_section_get_property (GObject    *object,
 	case PROP_IS_NARROW:
 		g_value_set_boolean (value, gs_updates_section_get_is_narrow (self));
 		break;
+	case PROP_COUNTER:
+		g_value_set_uint (value, gs_updates_section_get_counter (self));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -573,6 +586,10 @@ gs_updates_section_set_property (GObject      *object,
 	case PROP_IS_NARROW:
 		gs_updates_section_set_is_narrow (self, g_value_get_boolean (value));
 		break;
+	case PROP_COUNTER:
+		/* Read only */
+		g_assert_not_reached ();
+		return;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -626,6 +643,21 @@ gs_updates_section_class_init (GsUpdatesSectionClass *klass)
 		g_param_spec_boolean ("is-narrow", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsUpdatesSection:counter:
+	 *
+	 * Counter of the number of not-yet-installed updates.
+	 *
+	 * This is the number of updates in this section which are updateable,
+	 * downloading or installing.
+	 *
+	 * Since: 49
+	 */
+	obj_props[PROP_COUNTER] =
+		g_param_spec_uint ("counter", NULL, NULL,
+				   0, G_MAXUINT, 0,
+				   G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
@@ -684,19 +716,24 @@ gs_updates_section_app_state_changed_cb (GsAppList *list,
 					 GsApp *in_app,
 					 GsUpdatesSection *self)
 {
-	guint busy, len;
+	if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
+		guint busy, len;
 
-	len = gs_app_list_length (self->list);
-	busy = gs_updates_section_count_busy_apps (self);
+		len = gs_app_list_length (self->list);
+		busy = gs_updates_section_count_busy_apps (self);
 
-	if (busy == len && busy > 0 && self->cancellable == NULL) {
-		/* this will show the "Cancel" button, instead of "Update All" */
-		self->cancellable = g_cancellable_new ();
-	} else if (busy == 0 && self->cancellable != NULL) {
-		g_clear_object (&self->cancellable);
+		if (busy == len && busy > 0 && self->cancellable == NULL) {
+			/* this will show the "Cancel" button, instead of "Update All" */
+			self->cancellable = g_cancellable_new ();
+		} else if (busy == 0 && self->cancellable != NULL) {
+			g_clear_object (&self->cancellable);
+		}
+
+		_update_buttons (self);
 	}
 
-	_update_buttons (self);
+	/* The change in state has probably affected the update count. */
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_COUNTER]);
 }
 
 static void
@@ -762,6 +799,34 @@ gs_updates_section_set_is_narrow (GsUpdatesSection *self, gboolean is_narrow)
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
 }
 
+/**
+ * gs_updates_section_get_counter:
+ * @self: a #GsUpdatesSection
+ *
+ * Get the value of #GsUpdatesSection:counter.
+ *
+ * Returns: number of not-yet-installed updates in this section
+ * Since: 49
+ */
+unsigned int
+gs_updates_section_get_counter (GsUpdatesSection *self)
+{
+	unsigned int counter = 0;
+
+	g_return_val_if_fail (GS_IS_UPDATES_SECTION (self), 0);
+
+	for (unsigned int i = 0; i < gs_app_list_length (self->list); ++i) {
+		GsApp *app = gs_app_list_index (self->list, i);
+
+		if (gs_app_is_updatable (app) ||
+		    gs_app_get_state (app) == GS_APP_STATE_INSTALLING ||
+		    gs_app_get_state (app) == GS_APP_STATE_DOWNLOADING)
+			counter++;
+	}
+
+	return counter;
+}
+
 GsUpdatesSection *
 gs_updates_section_new (GsUpdatesSectionKind kind,
 			GsPluginLoader *plugin_loader,
@@ -774,11 +839,9 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 	self->page = page;
 	_setup_section_header (self);
 
-	if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
-		g_signal_connect_object (self->list, "app-state-changed",
-					 G_CALLBACK (gs_updates_section_app_state_changed_cb),
-					 self, 0);
-	}
+	g_signal_connect_object (self->list, "app-state-changed",
+				 G_CALLBACK (gs_updates_section_app_state_changed_cb),
+				 self, 0);
 
 	return self;
 }
