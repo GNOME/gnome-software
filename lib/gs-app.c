@@ -136,7 +136,6 @@ typedef struct
 	AsScreenshot		*action_screenshot;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
 	GsAppPermissions        *permissions;
-	gboolean		 is_update_downloaded;
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 	GPtrArray		*relations;  /* (nullable) (element-type AsRelation) (owned) */
 	gboolean		 has_translations;
@@ -164,7 +163,6 @@ typedef enum {
 	PROP_RELEASE_DATE,
 	PROP_QUIRK,
 	PROP_KEY_COLORS,
-	PROP_IS_UPDATE_DOWNLOADED,
 	PROP_URLS,
 	PROP_URL_MISSING,
 	PROP_CONTENT_RATING,
@@ -1906,38 +1904,6 @@ gs_app_get_action_screenshot (GsApp *app)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	return priv->action_screenshot;
-}
-
-/**
- * gs_app_get_icons:
- * @app: a #GsApp
- *
- * Gets the icons for the application.
- *
- * This will never return an empty array; it will always return either %NULL or
- * a non-empty array.
- *
- * Returns: (transfer none) (element-type GIcon) (nullable): an array of icons,
- *     or %NULL if there are no icons
- *
- * Since: 3.22
- *
- * Deprecated: 45: Use gs_app_dup_icons() or gs_app_has_icons() instead.
- **/
-GPtrArray *
-gs_app_get_icons (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-
-	locker = g_mutex_locker_new (&priv->mutex);
-
-	if (priv->icons == NULL || priv->icons->len == 0)
-		return NULL;
-
-	return priv->icons;
 }
 
 /**
@@ -4593,44 +4559,6 @@ gs_app_remove_category (GsApp *app, const gchar *category)
 	return FALSE;
 }
 
-/**
- * gs_app_set_is_update_downloaded:
- * @app: a #GsApp
- * @is_update_downloaded: Whether a new update is already downloaded locally
- *
- * Sets if the new update is already downloaded for the app.
- *
- * Since: 3.36
- * Deprecated: 44: No longer supported.
- **/
-void
-gs_app_set_is_update_downloaded (GsApp *app, gboolean is_update_downloaded)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_if_fail (GS_IS_APP (app));
-	priv->is_update_downloaded = is_update_downloaded;
-}
-
-/**
- * gs_app_get_is_update_downloaded:
- * @app: a #GsApp
- *
- * Gets if the new update is already downloaded for the app and
- * is locally available.
- *
- * Returns: (element-type gboolean): Whether a new update for the #GsApp is already downloaded.
- *
- * Since: 3.36
- * Deprecated: 44: No longer supported.
- **/
-gboolean
-gs_app_get_is_update_downloaded (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	return priv->is_update_downloaded;
-}
-
 static void
 calculate_key_colors (GsApp *app)
 {
@@ -5346,9 +5274,6 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_KEY_COLORS:
 		g_value_set_boxed (value, gs_app_get_key_colors (app));
 		break;
-	case PROP_IS_UPDATE_DOWNLOADED:
-		g_value_set_boolean (value, priv->is_update_downloaded);
-		break;
 	case PROP_URLS:
 		g_value_set_boxed (value, priv->urls);
 		break;
@@ -5496,11 +5421,6 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_KEY_COLORS:
 		gs_app_set_key_colors (app, g_value_get_boxed (value));
-		break;
-	case PROP_IS_UPDATE_DOWNLOADED:
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-		gs_app_set_is_update_downloaded (app, g_value_get_boolean (value));
-G_GNUC_END_IGNORE_DEPRECATIONS
 		break;
 	case PROP_URLS:
 		/* Read only */
@@ -5774,15 +5694,6 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_KEY_COLORS] = g_param_spec_boxed ("key-colors", NULL, NULL,
 				    G_TYPE_ARRAY, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	/**
-	 * GsApp:is-update-downloaded:
-	 *
-	 * Deprecated: 44: No longer supported.
-	 */
-	obj_props[PROP_IS_UPDATE_DOWNLOADED] = g_param_spec_boolean ("is-update-downloaded", NULL, NULL,
-					       FALSE,
-					       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_DEPRECATED);
 
 	/**
 	 * GsApp:urls: (nullable) (element-type AsUrlKind utf8)

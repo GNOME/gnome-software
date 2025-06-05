@@ -394,8 +394,6 @@ GIcon		*gs_app_get_icon_for_size	(GsApp		*app,
 						 guint		 size,
 						 guint		 scale,
 						 const gchar	*fallback_icon_name);
-G_DEPRECATED_FOR(gs_app_dup_icons)
-GPtrArray	*gs_app_get_icons		(GsApp		*app);
 GPtrArray	*gs_app_dup_icons		(GsApp		*app);
 gboolean	 gs_app_has_icons		(GsApp		*app);
 void		 gs_app_add_icon		(GsApp		*app,
@@ -492,12 +490,6 @@ gboolean	 gs_app_get_key_color_for_color_scheme
 						(GsApp		*app,
 						 GsColorScheme	 for_color_scheme,
 						 GdkRGBA	*out_rgba);
-G_DEPRECATED
-void            gs_app_set_is_update_downloaded (GsApp         *app,
-                                                 gboolean       is_update_downloaded);
-G_DEPRECATED
-gboolean        gs_app_get_is_update_downloaded (GsApp         *app);
-
 gboolean	 gs_app_has_category		(GsApp		*app,
 						 const gchar	*category);
 void		 gs_app_add_category		(GsApp		*app,
