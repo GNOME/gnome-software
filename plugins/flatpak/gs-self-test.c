@@ -1198,7 +1198,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		fn = gs_test_get_filename (TESTDATADIR, "chiron.flatpak");
 		g_assert_true (fn != NULL);
 		file = g_file_new_for_path (fn);
-		require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE;
+		require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME;
 	} else {
 		const gchar *fn_repo = "test.flatpakrepo";
 		g_autoptr(GFile) fn_repo_file = NULL;

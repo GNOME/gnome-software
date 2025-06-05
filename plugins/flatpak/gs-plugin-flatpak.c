@@ -16,12 +16,13 @@
  * Some GsApp's created have have flatpak::kind of app or runtime
  * The GsApp:origin is the remote name, e.g. test-repo
  *
- * The plugin has a worker thread which all operations are delegated to, as the
- * libflatpak API is entirely synchronous (and thread-safe). * Message passing
- * to the worker thread is by gs_worker_thread_queue().
- *
- * FIXME: It may speed things up in future to have one worker thread *per*
- * `FlatpakInstallation`, all operating in parallel.
+ * The plugin has two worker threads which all operations are delegated to, as
+ * the libflatpak API is entirely synchronous (and thread-safe). Message passing
+ * to the worker threads is by gs_worker_thread_queue(). One worker thread is
+ * for ‘long-running’ operations, such as updating, installing and removing
+ * apps. These are operations which might take a long time to complete, and we
+ * don’t want them blocking other flatpak plugin operations in the meantime,
+ * such as listing apps. The other worker thread is for all other operations.
  */
 
 #include <config.h>
@@ -55,6 +56,7 @@ struct _GsPluginFlatpak
 	GsPlugin		 parent;
 
 	GsWorkerThread		*worker;  /* (owned) */
+	GsWorkerThread		*long_running_worker;  /* (owned) */
 
 	GPtrArray		*installations;  /* (element-type GsFlatpak) (owned); may be NULL before setup or after shutdown */
 	gboolean		 has_system_helper;
@@ -69,7 +71,8 @@ struct _GsPluginFlatpak
 G_DEFINE_TYPE (GsPluginFlatpak, gs_plugin_flatpak, GS_TYPE_PLUGIN)
 
 #define assert_in_worker(self) \
-	g_assert (gs_worker_thread_is_in_worker_context (self->worker))
+	g_assert (gs_worker_thread_is_in_worker_context (self->worker) || \
+		  gs_worker_thread_is_in_worker_context (self->long_running_worker))
 
 /* Work around flatpak_transaction_get_no_interaction() not existing before
  * flatpak 1.13.0. */
@@ -99,6 +102,7 @@ gs_plugin_flatpak_dispose (GObject *object)
 	g_clear_pointer (&self->installations, g_ptr_array_unref);
 	g_clear_object (&self->purge_cancellable);
 	g_clear_object (&self->worker);
+	g_clear_object (&self->long_running_worker);
 
 	G_OBJECT_CLASS (gs_plugin_flatpak_parent_class)->dispose (object);
 }
@@ -178,7 +182,7 @@ gs_plugin_flatpak_purge_timeout_cb (gpointer user_data)
 				g_task_set_source_tag (task, gs_plugin_flatpak_purge_timeout_cb);
 				g_task_set_task_data (task, g_steal_pointer (&flatpaks), (GDestroyNotify) g_ptr_array_unref);
 
-				gs_worker_thread_queue (self->worker, G_PRIORITY_LOW,
+				gs_worker_thread_queue (self->long_running_worker, G_PRIORITY_LOW,
 						        gs_plugin_flatpak_purge_thread_cb, g_steal_pointer (&task));
 			}
 		}
@@ -276,8 +280,9 @@ gs_plugin_flatpak_setup_async (GsPlugin            *plugin,
 	/* Shouldn’t end up setting up twice */
 	g_assert (self->installations == NULL || self->installations->len == 0);
 
-	/* Start up a worker thread to process all the plugin’s function calls. */
+	/* Start up two worker threads to process all the plugin’s function calls. */
 	self->worker = gs_worker_thread_new ("gs-plugin-flatpak");
+	self->long_running_worker = gs_worker_thread_new ("gs-plugin-flatpak-long");
 
 	/* Queue a job to find and set up the installations. */
 	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
@@ -434,7 +439,7 @@ gs_plugin_flatpak_shutdown_async (GsPlugin            *plugin,
 
 	g_clear_pointer (&self->cache_files_to_delete, g_ptr_array_unref);
 
-	/* Stop the worker thread. */
+	/* Stop the worker threads. */
 	gs_worker_thread_shutdown_async (self->worker, cancellable, shutdown_cb, g_steal_pointer (&task));
 }
 
@@ -445,13 +450,23 @@ shutdown_cb (GObject      *source_object,
 {
 	g_autoptr(GTask) task = G_TASK (user_data);
 	GsPluginFlatpak *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autoptr(GsWorkerThread) worker = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	worker = g_steal_pointer (&self->worker);
+	if (self->worker != NULL)
+		worker = g_steal_pointer (&self->worker);
+	else
+		worker = g_steal_pointer (&self->long_running_worker);
 
 	if (!gs_worker_thread_shutdown_finish (worker, result, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Clear the other worker. */
+	if (self->long_running_worker != NULL) {
+		gs_worker_thread_shutdown_async (self->long_running_worker, cancellable, shutdown_cb, g_steal_pointer (&task));
 		return;
 	}
 
@@ -1201,7 +1216,7 @@ gs_plugin_flatpak_update_apps_async (GsPlugin                           *plugin,
 	g_task_set_source_tag (task, gs_plugin_flatpak_update_apps_async);
 
 	/* Queue a job to get the apps. */
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+	gs_worker_thread_queue (self->long_running_worker, get_priority_for_interactivity (interactive),
 				update_apps_thread_cb, g_steal_pointer (&task));
 }
 
@@ -1559,7 +1574,7 @@ gs_plugin_flatpak_uninstall_apps_async (GsPlugin                           *plug
 	g_task_set_source_tag (task, gs_plugin_flatpak_uninstall_apps_async);
 
 	/* Queue a job to uninstall the apps. */
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+	gs_worker_thread_queue (self->long_running_worker, get_priority_for_interactivity (interactive),
 				uninstall_apps_thread_cb, g_steal_pointer (&task));
 }
 
@@ -1883,7 +1898,7 @@ gs_plugin_flatpak_install_apps_async (GsPlugin                           *plugin
 	g_task_set_source_tag (task, gs_plugin_flatpak_install_apps_async);
 
 	/* Queue a job to install the apps. */
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+	gs_worker_thread_queue (self->long_running_worker, get_priority_for_interactivity (interactive),
 				install_apps_thread_cb, g_steal_pointer (&task));
 }
 
@@ -3009,7 +3024,7 @@ gs_plugin_flatpak_install_repository_async (GsPlugin                     *plugin
 	/* is a source */
 	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+	gs_worker_thread_queue (self->long_running_worker, get_priority_for_interactivity (interactive),
 				install_repository_thread_cb, g_steal_pointer (&task));
 }
 
@@ -3089,7 +3104,7 @@ gs_plugin_flatpak_remove_repository_async (GsPlugin                     *plugin,
 	/* is a source */
 	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+	gs_worker_thread_queue (self->long_running_worker, get_priority_for_interactivity (interactive),
 				remove_repository_thread_cb, g_steal_pointer (&task));
 }
 
@@ -3159,7 +3174,7 @@ gs_plugin_flatpak_enable_repository_async (GsPlugin                     *plugin,
 	/* is a source */
 	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+	gs_worker_thread_queue (self->long_running_worker, get_priority_for_interactivity (interactive),
 				enable_repository_thread_cb, g_steal_pointer (&task));
 }
 
@@ -3229,7 +3244,7 @@ gs_plugin_flatpak_disable_repository_async (GsPlugin                     *plugin
 	/* is a source */
 	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+	gs_worker_thread_queue (self->long_running_worker, get_priority_for_interactivity (interactive),
 				disable_repository_thread_cb, g_steal_pointer (&task));
 }
 
