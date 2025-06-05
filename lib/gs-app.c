@@ -1907,38 +1907,6 @@ gs_app_get_action_screenshot (GsApp *app)
 }
 
 /**
- * gs_app_get_icons:
- * @app: a #GsApp
- *
- * Gets the icons for the application.
- *
- * This will never return an empty array; it will always return either %NULL or
- * a non-empty array.
- *
- * Returns: (transfer none) (element-type GIcon) (nullable): an array of icons,
- *     or %NULL if there are no icons
- *
- * Since: 3.22
- *
- * Deprecated: 45: Use gs_app_dup_icons() or gs_app_has_icons() instead.
- **/
-GPtrArray *
-gs_app_get_icons (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-
-	locker = g_mutex_locker_new (&priv->mutex);
-
-	if (priv->icons == NULL || priv->icons->len == 0)
-		return NULL;
-
-	return priv->icons;
-}
-
-/**
  * gs_app_dup_icons:
  * @app: a #GsApp
  *
