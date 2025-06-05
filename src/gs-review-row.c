@@ -169,7 +169,7 @@ gs_review_row_class_init (GsReviewRowClass *klass)
 		g_signal_new ("button-clicked",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (GsReviewRowClass, button_clicked),
-			      NULL, NULL, g_cclosure_marshal_VOID__UINT,
+			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 1, GS_TYPE_REVIEW_ACTION);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-review-row.ui");
