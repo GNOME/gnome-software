@@ -23,4 +23,6 @@ G_DECLARE_FINAL_TYPE (GsPluginJobDownloadUpgrade, gs_plugin_job_download_upgrade
 GsPluginJob	*gs_plugin_job_download_upgrade_new	(GsApp				 *app,
 							 GsPluginDownloadUpgradeFlags	  flags);
 
+GsApp		*gs_plugin_job_download_upgrade_get_app	(GsPluginJobDownloadUpgrade	 *self);
+
 G_END_DECLS

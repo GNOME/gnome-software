@@ -325,3 +325,22 @@ gs_plugin_job_download_upgrade_new (GsApp *app,
 			     "flags", flags,
 			     NULL);
 }
+
+/**
+ * gs_plugin_job_download_upgrade_get_app:
+ * @self: a #GsPluginJobDownloadUpgrade
+ *
+ * Get the app being downloaded by this #GsPluginJobDownloadUpgrade.
+ *
+ * Typically this is a #GsApp representing the whole system.
+ *
+ * Returns: (transfer none) (not nullable): app being downloaded
+ * Since: 49
+ */
+GsApp *
+gs_plugin_job_download_upgrade_get_app (GsPluginJobDownloadUpgrade *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_DOWNLOAD_UPGRADE (self), NULL);
+
+	return self->app;
+}
