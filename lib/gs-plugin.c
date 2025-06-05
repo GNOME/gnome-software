@@ -92,8 +92,6 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
-typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
-
 /**
  * gs_plugin_create:
  * @filename: an absolute filename
