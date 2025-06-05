@@ -2916,18 +2916,22 @@ out:
 	return ret;
 }
 
+/* Run in @worker. */
 static void
-gs_plugin_rpm_ostree_file_to_app_thread (GTask *task,
-					 gpointer source_object,
-					 gpointer task_data,
-					 GCancellable *cancellable)
+file_to_app_thread_cb (GTask        *task,
+                       gpointer      source_object,
+                       gpointer      task_data,
+                       GCancellable *cancellable)
+
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	g_autoptr(GError) local_error = NULL;
-	GsPlugin *plugin = GS_PLUGIN (source_object);
 	GsPluginFileToAppData *data = task_data;
 
-	if (gs_plugin_rpm_ostree_file_to_app_sync (plugin, data->file, list, cancellable, &local_error))
+	assert_in_worker (self);
+
+	if (gs_plugin_rpm_ostree_file_to_app_sync (GS_PLUGIN (self), data->file, list, cancellable, &local_error))
 		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 	else if (local_error != NULL)
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -2945,11 +2949,16 @@ gs_plugin_rpm_ostree_file_to_app_async (GsPlugin *plugin,
 					GAsyncReadyCallback callback,
 					gpointer user_data)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_FILE_TO_APP_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_file_to_app_data_new_task (plugin, file, flags, event_callback, event_user_data, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_file_to_app_async);
-	g_task_run_in_thread (task, gs_plugin_rpm_ostree_file_to_app_thread);
+
+	/* Queue a job to get the app. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				file_to_app_thread_cb, g_steal_pointer (&task));
 }
 
 static GsAppList *
