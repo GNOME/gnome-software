@@ -18,7 +18,7 @@
  * Sets the package provenance to TRUE if installed by an official
  * software source. Also sets compulsory quirk when a required repository.
  *
- * This plugin executes entirely in the main thread.
+ * This plugin executes entirely in the main thread, and requires no locking.
  */
 
 struct _GsPluginProvenance {

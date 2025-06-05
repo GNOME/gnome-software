@@ -15,6 +15,18 @@
 
 #include "gs-plugin-modalias.h"
 
+/**
+ * SECTION:
+ * Plugin to set a default icon and basic properties for apps which provide
+ * support for hardware devices which are attached to this system.
+ *
+ * This plugin uses udev to detect attached hardware, and matches it to apps
+ * which claim to provide support for that modalias in their metainfo.
+ *
+ * It does simple listing and matching, so runs entirely in the main thread and
+ * doesn’t require any locking.
+ */
+
 struct _GsPluginModalias {
 	GsPlugin		 parent;
 

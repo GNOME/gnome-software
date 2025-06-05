@@ -26,6 +26,16 @@
  * This plugin calls UpdatesChanged() if any of the AppStream stores are
  * changed in any way.
  *
+ * The plugin builds and uses an `XbSilo` to contain the merged AppStream
+ * catalog data. Querying the silo is fast, but can be CPU intensive, so it’s
+ * done in a worker thread. Relevant fields in `GsPluginAppstream` must be
+ * accessed under a lock as a result.
+ *
+ * Rebuilding the silo is very CPU and memory intensive (it requires lots of XML
+ * parsing) so that also happens in a worker thread. The silo is only rebuilt if
+ * any of the input AppStream catalog files change. This typically happens when
+ * repository metadata is updated or an app is installed or removed.
+ *
  * Methods:     | AddCategory
  * Refines:     | [source]->[name,summary,pixbuf,id,kind]
  */

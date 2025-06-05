@@ -43,6 +43,11 @@
  *    used in method calls to the org.gnome.Epiphany.WebAppProvider interface,
  *    and used for gs_app_set_launchable() and g_desktop_app_info_new().
  *
+ * The webapps API is provided by Epiphany over D-Bus, so this plugin can run
+ * entirely in the main thread; most of the work is done by a process belonging
+ * to Epiphany. This plugin does need to do some local I/O (e.g. on app icons).
+ * As all work happens in the main thread, no locking is required.
+ *
  * Since: 43
  */
 

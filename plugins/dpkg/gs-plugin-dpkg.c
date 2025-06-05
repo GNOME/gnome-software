@@ -14,6 +14,17 @@
 
 #include "gs-plugin-dpkg.h"
 
+/**
+ * SECTION:
+ * Plugin to support loading `.deb` package files.
+ *
+ * It requires the `dpkg-deb` program to be installed.
+ *
+ * This plugin runs entirely in the main thread, deferring most of its work to
+ * a `dpkg-deb` subprocess, which it communicates with asynchronously. No
+ * locking is required.
+ */
+
 struct _GsPluginDpkg
 {
 	GsPlugin	parent;

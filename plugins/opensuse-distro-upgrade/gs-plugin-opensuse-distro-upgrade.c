@@ -14,6 +14,15 @@
 
 #include "gs-plugin-opensuse-distro-upgrade.h"
 
+/*
+ * SECTION:
+ * Plugin to list distribution upgrades on openSUSE systems.
+ *
+ * The distro upgrade API for openSUSE is a JSON/REST HTTP API, which this
+ * plugin queries asynchronously and caches the result. This means the plugin
+ * can run entirely in the main thread, and requires no locking.
+ */
+
 #define OPENSUSE_DISTRO_UPGRADE_API_URI "https://get.opensuse.org/api/v0/distributions.json"
 
 struct _GsPluginOpensuseDistroUpgrade {

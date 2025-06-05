@@ -49,6 +49,15 @@
  * and https://www.freedesktop.org/software/systemd/man/latest/systemd.offline-updates.html
  * for details of how offline updates work.
  *
+ * As PackageKit provides a D-Bus API, this plugin is a wrapper around that and
+ * runs almost entirely asynchronously in the main thread. A few PackageKit
+ * operations don’t yet have an asynchronous API provided in libpackagekit-glib2
+ * so have to be run in a #GTask thread pool thread. These operations happen
+ * infrequently, so it’s not worth keeping a #GsWorkerThread around for them.
+ * The few fields which are used for them in `GsPluginPackagekit` are locked
+ * individually; most fields in `GsPluginPackagekit` do not require a lock to
+ * access.
+ *
  * Requires:    | [source-id], [repos::repo-filename]
  * Refines:     | [source-id], [source], [update-details], [management-plugin]
  */

@@ -13,6 +13,18 @@
 
 #include "gs-plugin-generic-updates.h"
 
+/**
+ * SECTION:
+ *
+ * Plugin to group system package updates together under a single ‘System
+ * Updates’ meta-update in the UI.
+ *
+ * Updates which qualify are chosen using
+ * gs_plugin_generic_updates_merge_os_update().
+ *
+ * This plugin runs entirely in the main thread and requires no locking.
+ */
+
 struct _GsPluginGenericUpdates
 {
 	GsPlugin		 parent;

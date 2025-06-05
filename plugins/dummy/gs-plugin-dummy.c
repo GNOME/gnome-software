@@ -15,7 +15,9 @@
 
 /*
  * SECTION:
- * Provides some dummy data that is useful in self test programs.
+ * Provides some dummy data that is useful in test programs.
+ *
+ * This plugin runs entirely in the main thread and requires no locking.
  */
 
 struct _GsPluginDummy {
