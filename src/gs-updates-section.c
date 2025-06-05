@@ -37,6 +37,9 @@ struct _GsUpdatesSection
 	GtkWidget		*title;
 
 	GsAppList		*list;
+	gulong			 list_app_state_changed_id;
+	gulong			 list_notify_progress_id;
+
 	GsUpdatesSectionKind	 kind;
 	GCancellable		*cancellable;
 	GsPage			*page; /* (transfer none) */
@@ -602,6 +605,8 @@ gs_updates_section_dispose (GObject *object)
 	GsUpdatesSection *self = GS_UPDATES_SECTION (object);
 
 	g_clear_object (&self->cancellable);
+	g_clear_signal_handler (&self->list_app_state_changed_id, self->list);
+	g_clear_signal_handler (&self->list_notify_progress_id, self->list);
 	g_clear_object (&self->list);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->sizegroup_name);
@@ -748,9 +753,16 @@ gs_updates_section_init (GsUpdatesSection *self)
 			      GS_APP_LIST_FLAG_WATCH_APPS |
 			      GS_APP_LIST_FLAG_WATCH_APPS_ADDONS |
 			      GS_APP_LIST_FLAG_WATCH_APPS_RELATED);
-	g_signal_connect_object (self->list, "notify::progress",
-				 G_CALLBACK (gs_updates_section_progress_notify_cb),
-				 self, 0);
+
+	self->list_app_state_changed_id =
+		g_signal_connect_object (self->list, "app-state-changed",
+					 G_CALLBACK (gs_updates_section_app_state_changed_cb),
+					 self, 0);
+	self->list_notify_progress_id =
+		g_signal_connect_object (self->list, "notify::progress",
+					 G_CALLBACK (gs_updates_section_progress_notify_cb),
+					 self, 0);
+
 	gtk_list_box_set_selection_mode (GTK_LIST_BOX (self->listbox),
 					 GTK_SELECTION_NONE);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->listbox),
@@ -838,10 +850,6 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->page = page;
 	_setup_section_header (self);
-
-	g_signal_connect_object (self->list, "app-state-changed",
-				 G_CALLBACK (gs_updates_section_app_state_changed_cb),
-				 self, 0);
 
 	return self;
 }
