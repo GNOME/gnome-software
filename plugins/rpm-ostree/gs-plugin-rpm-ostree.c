@@ -34,6 +34,9 @@
  * to use lower level libostree APIs which are entirely synchronous.
  * Message passing to the worker thread is by gs_worker_thread_queue().
  *
+ * State in the `GsPluginRpmOstree` struct is shared between the main thread and
+ * worker thread, and various fields must be locked before access.
+ *
  * Callbacks to the calling context (such as #GsPluginEventCallback) are done in
  * the thread-default #GMainContext at the time when the relevant async virtual
  * function was called.
