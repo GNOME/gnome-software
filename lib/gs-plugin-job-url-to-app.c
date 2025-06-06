@@ -248,7 +248,6 @@ plugin_app_func_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	list = plugin_class->url_to_app_finish (plugin, result, &local_error);
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 
 	g_assert (list != NULL || local_error != NULL);
 

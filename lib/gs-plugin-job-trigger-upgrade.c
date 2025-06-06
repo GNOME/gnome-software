@@ -193,7 +193,6 @@ plugin_app_func_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	success = plugin_class->trigger_upgrade_finish (plugin, result, &local_error);
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 
 	g_assert (success || local_error != NULL);
 

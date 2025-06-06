@@ -243,7 +243,6 @@ plugin_repository_func_cb (GObject      *source_object,
 		g_assert_not_reached ();
 
 	success = repository_func_finish (plugin, result, &local_error);
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 
 	g_assert (success || local_error != NULL);
 

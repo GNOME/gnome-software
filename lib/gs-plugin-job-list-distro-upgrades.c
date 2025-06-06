@@ -238,7 +238,6 @@ plugin_list_distro_upgrades_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	plugin_apps = plugin_class->list_distro_upgrades_finish (plugin, result, &local_error);
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 
 	if (plugin_apps != NULL)
 		gs_app_list_add_list (self->merged_list, plugin_apps);

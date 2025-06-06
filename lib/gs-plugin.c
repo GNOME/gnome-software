@@ -81,7 +81,6 @@ static GParamSpec *obj_props[PROP_SYSTEM_BUS_CONNECTION + 1] = { NULL, };
 
 enum {
 	SIGNAL_UPDATES_CHANGED,
-	SIGNAL_STATUS_CHANGED,
 	SIGNAL_RELOAD,
 	SIGNAL_REPORT_EVENT,
 	SIGNAL_ALLOW_UPDATES,
@@ -92,38 +91,6 @@ enum {
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
-
-typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
-
-/**
- * gs_plugin_status_to_string:
- * @status: a #GsPluginStatus, e.g. %GS_PLUGIN_STATUS_DOWNLOADING
- *
- * Converts the #GsPluginStatus enum to a string.
- *
- * Returns: the string representation, or "unknown"
- *
- * Since: 3.22
- **/
-const gchar *
-gs_plugin_status_to_string (GsPluginStatus status)
-{
-	if (status == GS_PLUGIN_STATUS_WAITING)
-		return "waiting";
-	if (status == GS_PLUGIN_STATUS_FINISHED)
-		return "finished";
-	if (status == GS_PLUGIN_STATUS_SETUP)
-		return "setup";
-	if (status == GS_PLUGIN_STATUS_DOWNLOADING)
-		return "downloading";
-	if (status == GS_PLUGIN_STATUS_QUERYING)
-		return "querying";
-	if (status == GS_PLUGIN_STATUS_INSTALLING)
-		return "installing";
-	if (status == GS_PLUGIN_STATUS_REMOVING)
-		return "removing";
-	return "unknown";
-}
 
 /**
  * gs_plugin_create:
@@ -577,68 +544,6 @@ gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
 	if (g_strcmp0 (id, distro_id) != 0)
 		return FALSE;
 	return TRUE;
-}
-
-typedef struct {
-	GWeakRef	 plugin_weak;  /* (element-type GsPlugin) */
-	GsApp		*app;  /* (owned) */
-	GsPluginStatus	 status;
-	guint		 percentage;
-} GsPluginStatusHelper;
-
-static void
-gs_plugin_status_helper_free (GsPluginStatusHelper *helper)
-{
-	g_weak_ref_clear (&helper->plugin_weak);
-	g_clear_object (&helper->app);
-	g_slice_free (GsPluginStatusHelper, helper);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginStatusHelper, gs_plugin_status_helper_free)
-
-static gboolean
-gs_plugin_status_update_cb (gpointer user_data)
-{
-	GsPluginStatusHelper *helper = (GsPluginStatusHelper *) user_data;
-	g_autoptr(GsPlugin) plugin = NULL;
-
-	/* Does the plugin still exist? */
-	plugin = g_weak_ref_get (&helper->plugin_weak);
-
-	if (plugin != NULL)
-		g_signal_emit (plugin,
-			       signals[SIGNAL_STATUS_CHANGED], 0,
-			       helper->app,
-			       helper->status);
-
-	return G_SOURCE_REMOVE;
-}
-
-/**
- * gs_plugin_status_update:
- * @plugin: a #GsPlugin
- * @app: a #GsApp, or %NULL
- * @status: a #GsPluginStatus, e.g. %GS_PLUGIN_STATUS_DOWNLOADING
- *
- * Update the state of the plugin so any UI can be updated.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
-{
-	g_autoptr(GsPluginStatusHelper) helper = NULL;
-	g_autoptr(GSource) idle_source = NULL;
-
-	helper = g_slice_new0 (GsPluginStatusHelper);
-	g_weak_ref_init (&helper->plugin_weak, plugin);
-	helper->status = status;
-	if (app != NULL)
-		helper->app = g_object_ref (app);
-
-	idle_source = g_idle_source_new ();
-	g_source_set_callback (idle_source, gs_plugin_status_update_cb, g_steal_pointer (&helper), (GDestroyNotify) gs_plugin_status_helper_free);
-	g_source_attach (idle_source, NULL);
 }
 
 typedef struct {
@@ -1650,13 +1555,6 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, updates_changed),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
-
-	signals [SIGNAL_STATUS_CHANGED] =
-		g_signal_new ("status-changed",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginClass, status_changed),
-			      NULL, NULL, g_cclosure_marshal_generic,
-			      G_TYPE_NONE, 2, GS_TYPE_APP, G_TYPE_UINT);
 
 	signals [SIGNAL_RELOAD] =
 		g_signal_new ("reload",

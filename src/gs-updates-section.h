@@ -45,4 +45,6 @@ gboolean		 gs_updates_section_get_is_narrow	(GsUpdatesSection	*self);
 void			 gs_updates_section_set_is_narrow	(GsUpdatesSection	*self,
 								 gboolean		 is_narrow);
 
+unsigned int		 gs_updates_section_get_counter		(GsUpdatesSection	*self);
+
 G_END_DECLS

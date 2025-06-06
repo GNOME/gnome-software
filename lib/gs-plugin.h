@@ -136,9 +136,6 @@ struct _GsPluginClass
 {
 	GObjectClass		 parent_class;
 	void			(*updates_changed)	(GsPlugin	*plugin);
-	void			(*status_changed)	(GsPlugin	*plugin,
-							 GsApp		*app,
-							 guint		 status);
 	void			(*reload)		(GsPlugin	*plugin);
 	void			(*report_event)		(GsPlugin	*plugin,
 							 GsPluginEvent	*event);
@@ -427,9 +424,6 @@ void		 gs_plugin_cache_remove			(GsPlugin	*plugin,
 							 const gchar	*key);
 void		 gs_plugin_cache_invalidate		(GsPlugin	*plugin);
 GsAppList	*gs_plugin_list_cached			(GsPlugin	*plugin);
-void		 gs_plugin_status_update		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsPluginStatus	 status);
 void		 gs_plugin_app_launch_async		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginLaunchFlags flags,
@@ -473,7 +467,6 @@ gboolean	 gs_plugin_app_launch_filtered_finish	(GsPlugin	*plugin,
 							 GError		**error);
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 void		 gs_plugin_reload			(GsPlugin	*plugin);
-const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 void		 gs_plugin_report_event			(GsPlugin	*plugin,
 							 GsPluginEvent	*event);
 void		 gs_plugin_set_allow_updates		(GsPlugin	*plugin,

@@ -13,31 +13,6 @@
 G_BEGIN_DECLS
 
 /**
- * GsPluginStatus:
- * @GS_PLUGIN_STATUS_UNKNOWN:		Unknown status
- * @GS_PLUGIN_STATUS_WAITING:		Waiting
- * @GS_PLUGIN_STATUS_FINISHED:		Finished
- * @GS_PLUGIN_STATUS_SETUP:		Setup in progress
- * @GS_PLUGIN_STATUS_DOWNLOADING:	Downloading in progress
- * @GS_PLUGIN_STATUS_QUERYING:		Querying in progress
- * @GS_PLUGIN_STATUS_INSTALLING:	Installing in progress
- * @GS_PLUGIN_STATUS_REMOVING:		Removing in progress
- *
- * The status of the plugin.
- **/
-typedef enum {
-	GS_PLUGIN_STATUS_UNKNOWN,
-	GS_PLUGIN_STATUS_WAITING,
-	GS_PLUGIN_STATUS_FINISHED,
-	GS_PLUGIN_STATUS_SETUP,
-	GS_PLUGIN_STATUS_DOWNLOADING,
-	GS_PLUGIN_STATUS_QUERYING,
-	GS_PLUGIN_STATUS_INSTALLING,
-	GS_PLUGIN_STATUS_REMOVING,
-	GS_PLUGIN_STATUS_LAST  /*< skip >*/
-} GsPluginStatus;
-
-/**
  * GsPluginError:
  * @GS_PLUGIN_ERROR_FAILED:			Generic failure
  * @GS_PLUGIN_ERROR_NOT_SUPPORTED:		Action not supported
