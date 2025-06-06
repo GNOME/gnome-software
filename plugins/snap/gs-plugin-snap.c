@@ -429,7 +429,7 @@ snap_to_app (GsPluginSnap *self, SnapdSnap *snap, const gchar *branch)
 	if (gs_plugin_check_distro_id (GS_PLUGIN (self), "ubuntu"))
 		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	if (branch != NULL && (g_str_has_suffix (branch, "/beta") || g_str_has_suffix (branch, "/edge")))
-		gs_app_add_quirk (app, GS_APP_QUIRK_DEVELOPMENT_SOURCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_FROM_DEVELOPMENT_REPOSITORY);
 
 	return g_steal_pointer (&app);
 }

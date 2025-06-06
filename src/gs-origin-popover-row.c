@@ -105,7 +105,7 @@ refresh_ui (GsOriginPopoverRow *row)
 		gtk_label_set_text (GTK_LABEL (priv->info_label), _("Unknown source"));
 
 	gtk_widget_set_visible (priv->installed_image, gs_app_is_installed (priv->app));
-	gtk_widget_set_visible (priv->beta_box, gs_app_has_quirk (priv->app, GS_APP_QUIRK_DEVELOPMENT_SOURCE));
+	gtk_widget_set_visible (priv->beta_box, gs_app_has_quirk (priv->app, GS_APP_QUIRK_FROM_DEVELOPMENT_REPOSITORY));
 
 	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_FLATPAK &&
 	    gs_app_get_scope (priv->app) != AS_COMPONENT_SCOPE_UNKNOWN) {
