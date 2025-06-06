@@ -32,6 +32,25 @@
  *
  * Information about other #GsApp objects can be stored in this object, for
  * instance in the gs_app_add_related() method or gs_app_get_history().
+ *
+ * ## Sources, origins and repositories
+ *
+ * A #GsApp may have sources and an origin. An app source is a string
+ * identifying where the app _can_ come from. For example, this could be a
+ * package name, such as `gnome-calculator`, or a flatpak ref, such as
+ * `org.gnome.Platform/x86_64/48`. An app can have zero or more sources.
+ *
+ * An app’s origin describes where it _has_ come from. For example, this could
+ * be a remote ID for a flatpak repository (such as `flathub-beta`), the ID
+ * of an RPM repository (such as `rpmfusion-nonfree`) or `local` for apps
+ * installed from a local package file which didn’t come from a repository.
+ *
+ * An app itself may be of kind %AS_COMPONENT_KIND_REPOSITORY, which means the
+ * app represents a software repository — either one on the internet, or a local
+ * `.flatpakrepo` or `.repo` file which the user has opened. Semantically, a
+ * repository is one possible origin for an app, although #GsApp’s origin
+ * properties don’t point to another #GsApp instance of kind
+ * %AS_COMPONENT_KIND_REPOSITORY.
  */
 
 #include "config.h"
@@ -1540,6 +1559,8 @@ gs_app_add_source (GsApp *app, const gchar *source)
  *
  * Gets the list of sources for the application.
  *
+ * See the documentation for #GsApp for an overview of what sources are.
+ *
  * Returns: (element-type utf8) (transfer none): a list
  *
  * Since: 3.22
@@ -1581,6 +1602,8 @@ gs_app_set_sources (GsApp *app, GPtrArray *sources)
  *
  * This is the first source ID in the app’s list of source IDs.
  *
+ * See the documentation for #GsApp for an overview of what sources are.
+ *
  * Returns: (nullable): a string, or %NULL if no source IDs are set
  * Since: 49
  **/
@@ -1599,6 +1622,8 @@ gs_app_get_default_source_id (GsApp *app)
  * @app: a #GsApp
  *
  * Gets the list of source IDs.
+ *
+ * See the documentation for #GsApp for an overview of what sources are.
  *
  * Returns: (element-type utf8) (transfer none): a list
  *
@@ -2854,6 +2879,8 @@ gs_app_set_menu_path (GsApp *app, gchar **menu_path)
  * @app: a #GsApp
  *
  * Gets the origin for the application, e.g. "fedora".
+ *
+ * See the documentation for #GsApp for an overview of what origins are.
  *
  * Returns: a string, or %NULL for unset
  *
