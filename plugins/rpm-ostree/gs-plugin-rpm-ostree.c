@@ -1921,7 +1921,7 @@ install_apps_thread_cb (GTask        *task,
 		switch (gs_app_get_state (app)) {
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_QUEUED_FOR_INSTALL:
-			if (gs_app_get_source_default (app) == NULL) {
+			if (gs_app_get_default_source (app) == NULL) {
 				g_task_return_new_error (task,
 							 GS_PLUGIN_ERROR,
 							 GS_PLUGIN_ERROR_NOT_SUPPORTED,
@@ -1929,7 +1929,7 @@ install_apps_thread_cb (GTask        *task,
 				return;
 			}
 
-			install_package = gs_app_get_source_default (app);
+			install_package = gs_app_get_default_source (app);
 			break;
 		case GS_APP_STATE_AVAILABLE_LOCAL:
 			if (gs_app_get_local_file (app) == NULL) {
@@ -2113,7 +2113,7 @@ uninstall_apps_thread_cb (GTask        *task,
 			done = TRUE;
 			if (!rpmostree_update_deployment (os_proxy,
 							  NULL /* install package */,
-							  gs_app_get_source_default (app),
+							  gs_app_get_default_source (app),
 							  NULL /* install local package */,
 							  options,
 							  interactive,
@@ -2214,10 +2214,10 @@ resolve_installed_packages_app (GsPlugin *plugin,
 {
 	RpmOstreePackage *pkg;
 
-	if (!gs_app_get_source_default (app))
+	if (!gs_app_get_default_source (app))
 		return FALSE;
 
-	pkg = g_hash_table_lookup (packages, gs_app_get_source_default (app));
+	pkg = g_hash_table_lookup (packages, gs_app_get_default_source (app));
 
 	if (pkg) {
 		gs_app_set_version (app, rpm_ostree_package_get_evr (pkg));
@@ -2295,7 +2295,7 @@ resolve_appstream_source_file_to_package_name (GsPlugin                    *plug
 
 		/* add default source */
 		name = headerGetString (h, RPMTAG_NAME);
-		if (gs_app_get_source_default (app) == NULL) {
+		if (gs_app_get_default_source (app) == NULL) {
 			const gchar *nevra = headerGetString (h, RPMTAG_NEVRA);
 			g_debug ("rpm: setting source to '%s' with nevra '%s'", name, nevra);
 			gs_app_add_source (app, name);
@@ -2346,7 +2346,7 @@ gs_rpm_ostree_refine_apps (GsPlugin                    *plugin,
 		if (gs_app_has_management_plugin (app, NULL) &&
 		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
 		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
-		    gs_app_get_source_default (app) != NULL) {
+		    gs_app_get_default_source (app) != NULL) {
 			gs_app_set_management_plugin (app, plugin);
 			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 			app_set_rpm_ostree_packaging_format (app);
@@ -2355,13 +2355,13 @@ gs_rpm_ostree_refine_apps (GsPlugin                    *plugin,
 		if (gs_app_has_management_plugin (app, NULL) &&
 		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
 		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
-		    gs_app_get_source_default (app) == NULL) {
+		    gs_app_get_default_source (app) == NULL) {
 			if (!resolve_appstream_source_file_to_package_name (plugin, app, require_flags, &ts, cancellable, error))
 				return FALSE;
 		}
 		if (!gs_app_has_management_plugin (app, plugin))
 			continue;
-		if (gs_app_get_source_default (app) == NULL)
+		if (gs_app_get_default_source (app) == NULL)
 			continue;
 
 		gs_app_list_add (todo_apps, app);
@@ -2433,7 +2433,7 @@ gs_rpm_ostree_refine_apps (GsPlugin                    *plugin,
 		/* first try to resolve from installed packages and
 		   if we didn't find anything, try resolving from available packages */
 		if (!resolve_installed_packages_app (plugin, packages, layered_packages, layered_local_packages, app))
-			g_hash_table_insert (lookup_apps, (gpointer) gs_app_get_source_default (app), app);
+			g_hash_table_insert (lookup_apps, (gpointer) gs_app_get_default_source (app), app);
 	}
 
 	if (g_hash_table_size (lookup_apps) > 0) {

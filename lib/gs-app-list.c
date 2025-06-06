@@ -796,8 +796,8 @@ gs_app_list_filter_app_get_keys (GsApp *app, GsAppListFilterFlags flags)
 		if (tmp != NULL)
 			g_string_append (key, gs_app_get_id (app));
 	}
-	if (flags & GS_APP_LIST_FILTER_FLAG_KEY_SOURCE) {
-		const gchar *tmp = gs_app_get_source_default (app);
+	if (flags & GS_APP_LIST_FILTER_FLAG_KEY_DEFAULT_SOURCE) {
+		const gchar *tmp = gs_app_get_default_source (app);
 		if (tmp != NULL)
 			g_string_append_printf (key, ":%s", tmp);
 	}

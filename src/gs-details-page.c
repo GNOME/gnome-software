@@ -2036,7 +2036,7 @@ gs_details_page_load_stage1_cb (GObject *source,
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
 		str = g_strdup_printf (_("Software failed to retrieve information for “%s” and is unable to show the details for this app."),
-				       id == NULL ? gs_app_get_source_default (self->app) : id);
+				       id == NULL ? gs_app_get_default_source (self->app) : id);
 		adw_status_page_set_description (ADW_STATUS_PAGE (self->page_failed), str);
 		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 		return;
@@ -2053,7 +2053,7 @@ gs_details_page_load_stage1_cb (GObject *source,
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
 		str = g_strdup_printf (_("Software failed to retrieve information for “%s” and is unable to show the details for this app."),
-				       id == NULL ? gs_app_get_source_default (self->app) : id);
+				       id == NULL ? gs_app_get_default_source (self->app) : id);
 		adw_status_page_set_description (ADW_STATUS_PAGE (self->page_failed), str);
 		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 		return;

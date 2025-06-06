@@ -332,12 +332,12 @@ gs_plugin_loader_get_app_str (GsApp *app)
 		return id;
 
 	/* then try the source */
-	id = gs_app_get_source_default (app);
+	id = gs_app_get_default_source (app);
 	if (id != NULL)
 		return id;
 
 	/* lastly try the source id */
-	id = gs_app_get_source_id_default (app);
+	id = gs_app_get_default_source_id (app);
 	if (id != NULL)
 		return id;
 

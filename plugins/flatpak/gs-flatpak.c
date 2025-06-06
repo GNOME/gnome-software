@@ -2371,7 +2371,7 @@ gs_refine_item_metadata (GsFlatpak  *self,
 
 	/* AppStream sets the source to appname/arch/branch, if this isn't set
 	 * we can't break out the fields */
-	if (gs_app_get_source_default (app) == NULL) {
+	if (gs_app_get_default_source (app) == NULL) {
 		g_autofree gchar *tmp = gs_app_to_string (app);
 		g_warning ("no source set by appstream for %s: %s",
 			   gs_plugin_get_name (self->plugin), tmp);
@@ -2379,11 +2379,11 @@ gs_refine_item_metadata (GsFlatpak  *self,
 	}
 
 	/* parse the ref */
-	xref = flatpak_ref_parse (gs_app_get_source_default (app), error);
+	xref = flatpak_ref_parse (gs_app_get_default_source (app), error);
 	if (xref == NULL) {
 		gs_flatpak_error_convert (error);
 		g_prefix_error (error, "failed to parse '%s': ",
-				gs_app_get_source_default (app));
+				gs_app_get_default_source (app));
 		return FALSE;
 	}
 	gs_flatpak_set_metadata (self, app, xref);
@@ -2659,7 +2659,7 @@ gs_flatpak_create_runtime (GsFlatpak   *self,
 		/* since the cached runtime can have been created somewhere else
 		 * (we're using a global cache), we need to make sure that a
 		 * source is set */
-		if (gs_app_get_source_default (app_cache) == NULL) {
+		if (gs_app_get_default_source (app_cache) == NULL) {
 			gs_app_add_source (app_cache, source);
 			gs_app_set_metadata (app_cache, "GnomeSoftware::packagename-value",  source);
 		}
@@ -3428,7 +3428,7 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 			     GError **error)
 {
 	const gchar *origin = gs_app_get_origin (app);
-	const gchar *source = gs_app_get_source_default (app);
+	const gchar *source = gs_app_get_default_source (app);
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(XbNode) component = NULL;
 

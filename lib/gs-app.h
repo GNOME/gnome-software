@@ -297,13 +297,13 @@ void		 gs_app_set_name		(GsApp		*app,
 const gchar	*gs_app_get_renamed_from	(GsApp		*app);
 void		 gs_app_set_renamed_from	(GsApp		*app,
 						 const gchar	*renamed_from);
-const gchar	*gs_app_get_source_default	(GsApp		*app);
+const gchar	*gs_app_get_default_source	(GsApp		*app);
 void		 gs_app_add_source		(GsApp		*app,
 						 const gchar	*source);
 GPtrArray	*gs_app_get_sources		(GsApp		*app);
 void		 gs_app_set_sources		(GsApp		*app,
 						 GPtrArray	*sources);
-const gchar	*gs_app_get_source_id_default	(GsApp		*app);
+const gchar	*gs_app_get_default_source_id	(GsApp		*app);
 void		 gs_app_add_source_id		(GsApp		*app,
 						 const gchar	*source_id);
 GPtrArray	*gs_app_get_source_ids		(GsApp		*app);

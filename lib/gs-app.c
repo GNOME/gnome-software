@@ -718,7 +718,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		GsApp *app_tmp = gs_app_list_index (priv->related, i);
 		const gchar *id = gs_app_get_unique_id (app_tmp);
 		if (id == NULL)
-			id = gs_app_get_source_default (app_tmp);
+			id = gs_app_get_default_source (app_tmp);
 		/* For example PackageKit can create apps without id */
 		if (id != NULL)
 			gs_app_kv_lpad (str, "related", id);
@@ -727,7 +727,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		GsApp *app_tmp = gs_app_list_index (priv->history, i);
 		const gchar *id = gs_app_get_unique_id (app_tmp);
 		if (id == NULL)
-			id = gs_app_get_source_default (app_tmp);
+			id = gs_app_get_default_source (app_tmp);
 		/* For example PackageKit can create apps without id */
 		if (id != NULL)
 			gs_app_kv_lpad (str, "history", id);
@@ -1483,17 +1483,18 @@ gs_app_set_branch (GsApp *app, const gchar *branch)
 }
 
 /**
- * gs_app_get_source_default:
+ * gs_app_get_default_source:
  * @app: a #GsApp
  *
  * Gets the default source.
  *
- * Returns: a string, or %NULL
+ * This is the first source in the app’s list of sources.
  *
- * Since: 3.22
+ * Returns: (nullable): a string, or %NULL if no sources are set
+ * Since: 49
  **/
 const gchar *
-gs_app_get_source_default (GsApp *app)
+gs_app_get_default_source (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
@@ -1573,17 +1574,18 @@ gs_app_set_sources (GsApp *app, GPtrArray *sources)
 }
 
 /**
- * gs_app_get_source_id_default:
+ * gs_app_get_default_source_id:
  * @app: a #GsApp
  *
  * Gets the default source ID.
  *
- * Returns: a string, or %NULL for unset
+ * This is the first source ID in the app’s list of source IDs.
  *
- * Since: 3.22
+ * Returns: (nullable): a string, or %NULL if no source IDs are set
+ * Since: 49
  **/
 const gchar *
-gs_app_get_source_id_default (GsApp *app)
+gs_app_get_default_source_id (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
