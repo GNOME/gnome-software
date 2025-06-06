@@ -312,3 +312,22 @@ gs_plugin_job_trigger_upgrade_new (GsApp *app,
 			     "flags", flags,
 			     NULL);
 }
+
+/**
+ * gs_plugin_job_trigger_upgrade_get_app:
+ * @self: a #GsPluginJobTriggerUpgrade
+ *
+ * Get the app being upgraded by this #GsPluginJobTriggerUpgrade.
+ *
+ * Typically this is a #GsApp representing the whole system.
+ *
+ * Returns: (transfer none) (not nullable): app being upgraded
+ * Since: 49
+ */
+GsApp *
+gs_plugin_job_trigger_upgrade_get_app (GsPluginJobTriggerUpgrade *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_TRIGGER_UPGRADE (self), NULL);
+
+	return self->app;
+}

@@ -399,6 +399,23 @@ gs_plugin_job_manage_repository_new (GsApp			   *repository,
 }
 
 /**
+ * gs_plugin_job_manage_repository_get_repository:
+ * @self: a #GsPluginJobManageRepository
+ *
+ * Get the repository being modified by this #GsPluginJobManageRepository.
+ *
+ * Returns: (transfer none) (not nullable): repository being managed
+ * Since: 49
+ */
+GsApp *
+gs_plugin_job_manage_repository_get_repository (GsPluginJobManageRepository *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (self), NULL);
+
+	return self->repository;
+}
+
+/**
  * gs_plugin_job_manage_repository_get_flags:
  * @self: a #GsPluginJobManageRepository
  *

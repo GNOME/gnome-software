@@ -23,4 +23,6 @@ G_DECLARE_FINAL_TYPE (GsPluginJobTriggerUpgrade, gs_plugin_job_trigger_upgrade, 
 GsPluginJob	*gs_plugin_job_trigger_upgrade_new	(GsApp				 *app,
 							 GsPluginTriggerUpgradeFlags	  flags);
 
+GsApp		*gs_plugin_job_trigger_upgrade_get_app	(GsPluginJobTriggerUpgrade	 *self);
+
 G_END_DECLS

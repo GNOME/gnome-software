@@ -978,6 +978,27 @@ gs_plugin_job_refine_new_for_app (GsApp                      *app,
 }
 
 /**
+ * gs_plugin_job_refine_get_app_list:
+ * @self: a #GsPluginJobRefine
+ *
+ * Get the list of input #GsApps for the refine operation.
+ *
+ * This is not modified after the operation is complete; see
+ * gs_plugin_job_refine_get_result_list() to get the result list (which may be a
+ * different list of apps).
+ *
+ * Returns: (transfer none) (nullable): the input app list
+ * Since: 49
+ */
+GsAppList *
+gs_plugin_job_refine_get_app_list (GsPluginJobRefine *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_REFINE (self), NULL);
+
+	return self->app_list;
+}
+
+/**
  * gs_plugin_job_refine_get_result_list:
  * @self: a #GsPluginJobRefine
  *

@@ -28,6 +28,7 @@ GsPluginJob	*gs_plugin_job_refine_new		(GsAppList                  *app_list,
 							 GsPluginRefineFlags         job_flags,
 							 GsPluginRefineRequireFlags  require_flags);
 
+GsAppList	*gs_plugin_job_refine_get_app_list	(GsPluginJobRefine     *self);
 GsAppList	*gs_plugin_job_refine_get_result_list	(GsPluginJobRefine     *self);
 
 G_END_DECLS

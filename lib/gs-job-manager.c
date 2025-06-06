@@ -41,6 +41,11 @@
 #include "gs-plugin-job-install-apps.h"
 #include "gs-plugin-job-uninstall-apps.h"
 #include "gs-plugin-job-update-apps.h"
+#include "gs-plugin-job-download-upgrade.h"
+#include "gs-plugin-job-trigger-upgrade.h"
+#include "gs-plugin-job-refine.h"
+#include "gs-plugin-job-manage-repository.h"
+#include "gs-plugin-job-launch.h"
 #include "gs-plugin-types.h"
 #include "gs-utils.h"
 
@@ -143,6 +148,7 @@ job_contains_app_by_unique_id (GsPluginJob *job,
                                const gchar *app_unique_id)
 {
 	GsAppList *apps = NULL;
+	GsApp *app = NULL;
 
 	/* FIXME: This could be improved in future by making GsPluginJob subclasses
 	 * implement an interface to query which apps they are acting on. */
@@ -152,11 +158,19 @@ job_contains_app_by_unique_id (GsPluginJob *job,
 		apps = gs_plugin_job_install_apps_get_apps (GS_PLUGIN_JOB_INSTALL_APPS (job));
 	else if (GS_IS_PLUGIN_JOB_UNINSTALL_APPS (job))
 		apps = gs_plugin_job_uninstall_apps_get_apps (GS_PLUGIN_JOB_UNINSTALL_APPS (job));
+	else if (GS_IS_PLUGIN_JOB_DOWNLOAD_UPGRADE (job))
+		app = gs_plugin_job_download_upgrade_get_app (GS_PLUGIN_JOB_DOWNLOAD_UPGRADE (job));
+	else if (GS_IS_PLUGIN_JOB_TRIGGER_UPGRADE (job))
+		app = gs_plugin_job_trigger_upgrade_get_app (GS_PLUGIN_JOB_TRIGGER_UPGRADE (job));
+	else if (GS_IS_PLUGIN_JOB_REFINE (job))
+		apps = gs_plugin_job_refine_get_app_list (GS_PLUGIN_JOB_REFINE (job));
+	else if (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (job))
+		app = gs_plugin_job_manage_repository_get_repository (GS_PLUGIN_JOB_MANAGE_REPOSITORY (job));
+	else if (GS_IS_PLUGIN_JOB_LAUNCH (job))
+		app = gs_plugin_job_launch_get_app (GS_PLUGIN_JOB_LAUNCH (job));
 
-	if (apps == NULL)
-		return FALSE;
-
-	return (gs_app_list_lookup (apps, app_unique_id) != NULL);
+	return ((apps != NULL && gs_app_list_lookup (apps, app_unique_id) != NULL) ||
+		(app != NULL && g_strcmp0 (gs_app_get_unique_id (app), app_unique_id) == 0));
 }
 
 static gboolean
