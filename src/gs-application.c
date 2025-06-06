@@ -222,7 +222,7 @@ sources_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       app)
 {
-	gs_shell_show_sources (GS_APPLICATION (app)->shell);
+	gs_shell_show_repositories (GS_APPLICATION (app)->shell);
 }
 
 static void

@@ -2293,7 +2293,7 @@ gs_shell_show_installed_updates (GsShell *shell)
 }
 
 void
-gs_shell_show_sources (GsShell *shell)
+gs_shell_show_repositories (GsShell *shell)
 {
 	GtkWidget *dialog;
 
