@@ -17,7 +17,7 @@
  * SECTION:
  * Blocklists some applications based on a hardcoded list.
  *
- * This plugin executes entirely in the main thread.
+ * This plugin executes entirely in the main thread and requires no locking.
  */
 
 struct _GsPluginHardcodedBlocklist

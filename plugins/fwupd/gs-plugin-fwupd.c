@@ -32,9 +32,9 @@
  *
  * Since fwupd is a daemon accessible over D-Bus, this plugin basically
  * translates every job into one or more D-Bus calls, and all the real work is
- * done in the fwupd daemon. FIXME: This means the plugin can therefore execute
- * entirely in the main thread, making asynchronous D-Bus calls, once all the
- * vfuncs have been ported.
+ * done in the fwupd daemon. This means the plugin can therefore execute
+ * entirely in the main thread, making asynchronous D-Bus calls, with no
+ * locking.
  */
 
 struct _GsPluginFwupd {
@@ -44,7 +44,6 @@ struct _GsPluginFwupd {
 	GsApp			*app_current;
 	GsApp			*cached_origin;
 	GHashTable		*cached_sources; /* (nullable) (owned) (element-type utf8 GsApp); sources by id, each value is weak reffed */
-	GMutex			 cached_sources_mutex;
 };
 
 G_DEFINE_TYPE (GsPluginFwupd, gs_plugin_fwupd, GS_TYPE_PLUGIN)
@@ -56,9 +55,6 @@ cached_sources_weak_ref_cb (gpointer user_data,
 	GsPluginFwupd *self = user_data;
 	GHashTableIter iter;
 	gpointer key, value;
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
 
 	g_assert (self->cached_sources != NULL);
 
@@ -131,7 +127,6 @@ static void
 gs_plugin_fwupd_init (GsPluginFwupd *self)
 {
 	self->client = fwupd_client_new ();
-	g_mutex_init (&self->cached_sources_mutex);
 }
 
 static void
@@ -156,16 +151,6 @@ gs_plugin_fwupd_dispose (GObject *object)
 	}
 
 	G_OBJECT_CLASS (gs_plugin_fwupd_parent_class)->dispose (object);
-}
-
-static void
-gs_plugin_fwupd_finalize (GObject *object)
-{
-	GsPluginFwupd *self = GS_PLUGIN_FWUPD (object);
-
-	g_mutex_clear (&self->cached_sources_mutex);
-
-	G_OBJECT_CLASS (gs_plugin_fwupd_parent_class)->finalize (object);
 }
 
 static void
@@ -863,7 +848,6 @@ gs_plugin_fwupd_list_sources_got_remotes_cb (GObject *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GPtrArray) remotes = NULL;
 	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (g_task_get_source_object (task));
 	GsPlugin *plugin = GS_PLUGIN (self);
@@ -875,7 +859,7 @@ gs_plugin_fwupd_list_sources_got_remotes_cb (GObject *source_object,
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+
 	list = gs_app_list_new ();
 	if (self->cached_sources == NULL)
 		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -2313,7 +2297,6 @@ gs_plugin_fwupd_class_init (GsPluginFwupdClass *klass)
 	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_fwupd_dispose;
-	object_class->finalize = gs_plugin_fwupd_finalize;
 
 	plugin_class->adopt_app = gs_plugin_fwupd_adopt_app;
 	plugin_class->setup_async = gs_plugin_fwupd_setup_async;

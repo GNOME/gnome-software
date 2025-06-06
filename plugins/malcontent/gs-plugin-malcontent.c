@@ -28,7 +28,9 @@
  * %GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE will be added if the app is listed on
  * the current parental controls blocklist.
  *
- * Parental controls policy is loaded using libmalcontent.
+ * Parental controls policy is loaded using libmalcontent. This operates
+ * asynchronously over D-Bus, so this plugin can run entirely in the main thread
+ * with no locking.
  *
  * This plugin is ordered after flatpak and appstream as it uses OARS data from
  * them.
@@ -43,10 +45,9 @@
 struct _GsPluginMalcontent {
 	GsPlugin	 parent;
 
-	GMutex		 mutex;  /* protects @app_filter **/
 	MctManager	*manager;  /* (owned) */
 	gulong		 manager_app_filter_changed_id;
-	MctAppFilter	*app_filter;  /* (mutex) (owned) (nullable) */
+	MctAppFilter	*app_filter;  /* (owned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsPluginMalcontent, gs_plugin_malcontent, GS_TYPE_PLUGIN)
@@ -224,11 +225,8 @@ reload_app_filter_finish (GsPluginMalcontent  *self,
 	if (new_app_filter == NULL)
 		return FALSE;
 
-	{
-		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
-		old_app_filter = g_steal_pointer (&self->app_filter);
-		self->app_filter = g_steal_pointer (&new_app_filter);
-	}
+	old_app_filter = g_steal_pointer (&self->app_filter);
+	self->app_filter = g_steal_pointer (&new_app_filter);
 
 	return TRUE;
 }
@@ -314,7 +312,6 @@ get_app_filter_cb (GObject      *source_object,
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginMalcontent *self = g_task_get_source_object (task);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GError) local_error = NULL;
 
 	self->app_filter = mct_manager_get_app_filter_finish (self->manager, result, &local_error);
@@ -334,27 +331,6 @@ gs_plugin_malcontent_setup_finish (GsPlugin      *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-refine_app_locked (GsPluginMalcontent          *self,
-                   GsApp                       *app,
-                   GsPluginRefineRequireFlags   require_flags,
-                   GCancellable                *cancellable,
-                   GError                     **error)
-{
-	/* not valid */
-	if (gs_app_get_id (app) == NULL)
-		return TRUE;
-
-	/* Filter by various parental filters. The filter can’t be %NULL,
-	 * otherwise setup() would have failed and the plugin would have been
-	 * disabled. */
-	g_assert (self->app_filter != NULL);
-
-	app_set_parental_quirks (self, app, self->app_filter);
-
-	return TRUE;
-}
-
 static void
 gs_plugin_malcontent_refine_async (GsPlugin                   *plugin,
                                    GsAppList                  *list,
@@ -368,18 +344,23 @@ gs_plugin_malcontent_refine_async (GsPlugin                   *plugin,
 {
 	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (plugin);
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
-	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_malcontent_refine_async);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app_locked (self, app, require_flags, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
+
+		/* not valid */
+		if (gs_app_get_id (app) == NULL)
+			continue;
+
+		/* Filter by various parental filters. The filter can’t be %NULL,
+		 * otherwise setup() would have failed and the plugin would have been
+		 * disabled. */
+		g_assert (self->app_filter != NULL);
+
+		app_set_parental_quirks (self, app, self->app_filter);
 	}
 
 	g_task_return_boolean (task, TRUE);

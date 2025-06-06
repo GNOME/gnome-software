@@ -784,6 +784,8 @@ gs_flatpak_claim_changed_idle_cb (gpointer user_data)
 	return G_SOURCE_REMOVE;
 }
 
+/* This is called whenever a flatpak in this `FlatpakInstallation` is installed,
+ * updated or uninstalled. */
 static void
 gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GFile *child,

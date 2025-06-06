@@ -4,17 +4,23 @@
  * Copyright (C) 2019 Sundeep Anand <suanand@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
- *
- * This plugin does following..
- *  1. locates the active locale, say, xx
- *  2. identifies related langpacks-xx
- *  3. tries to add langpack-xx in app list
- *  4. logs install information; not to try again
  */
 
 #include <gnome-software.h>
 
 #include "gs-plugin-fedora-langpacks.h"
+
+/**
+ * SECTION:
+ *
+ * This plugin does following:
+ *  1. locates the active locale, say, `xx`
+ *  2. identifies related `langpacks-xx` packages
+ *  3. tries to install `langpack-xx`
+ *  4. logs install information; not to try again
+ *
+ * It runs entirely in the main thread and requires no locking.
+ */
 
 struct _GsPluginFedoraLangpacks {
 	GsPlugin	 parent;

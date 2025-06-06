@@ -83,7 +83,7 @@
  * callbacks from the proxy will be executed in the main thread, and *must not
  * block*.
  *
- * Asynchronous plugin vfuncs (such as
+ * All the asynchronous plugin vfuncs (such as
  * gs_plugin_eos_updater_refresh_metadata_async()) are run in gnome-software’s
  * main thread and *must not block*. As they all call D-Bus methods, the work
  * they do is minimal and hence is OK to happen in the main thread.

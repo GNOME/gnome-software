@@ -28,6 +28,10 @@
  * It follows the procedure of installing the akmods key as described here:
  * https://src.fedoraproject.org/rpms/akmods/blob/f40/f/README.secureboot
  * only by simulating user input with a GUI front end, not on the command line.
+ *
+ * This plugin runs entirely in the main thread, deferring the bulk of its work
+ * to a `gnome-software-dkms-helper` subprocess, which it communicates with
+ * asynchronously. No locking is required.
  */
 #include "config.h"
 

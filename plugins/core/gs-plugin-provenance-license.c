@@ -19,7 +19,7 @@
  * Marks the application as Free Software if it comes from an origin
  * that is recognized as being DFSGish-free.
  *
- * This plugin executes entirely in the main thread.
+ * This plugin executes entirely in the main thread, and requires no locking.
  */
 
 struct _GsPluginProvenanceLicense {

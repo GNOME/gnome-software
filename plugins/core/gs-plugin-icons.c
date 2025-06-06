@@ -23,16 +23,18 @@
  * It is provided so that each plugin handling icons does not
  * have to handle the download and caching functionality.
  *
+ * It runs entirely in the main thread and requires no locking. Downloading the
+ * remote icons is done in a worker thread owned by #GsIconDownloader.
+ *
  * FIXME: This plugin will eventually go away. Currently it only exists as the
- * plugin threading code is a convenient way of ensuring that loading the remote
- * icons happens in a worker thread.
+ * plugin ordering code is a convenient way of ensuring that loading the remote
+ * icons happens after all other plugins have refined icons.
  */
 
 struct _GsPluginIcons
 {
 	GsPlugin	parent;
 
-	GMutex		 mutex;  /* protects @icon_downloader **/
 	GsIconDownloader	*icon_downloader; /* (owned) */
 	SoupSession	*soup_session;  /* (owned) */
 };
@@ -70,7 +72,6 @@ gs_plugin_icons_setup_async (GsPlugin            *plugin,
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_icons_setup_async);
 
-	g_mutex_init (&self->mutex);
 	self->soup_session = gs_build_soup_session ();
 
 	/* Currently a 160px icon is needed for #GsFeatureTile, at most.
@@ -140,23 +141,6 @@ gs_plugin_icons_shutdown_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-refine_app_unlocked (GsPluginIcons               *self,
-                     GsApp                       *app,
-                     GsPluginRefineRequireFlags   require_flags,
-                     gboolean                     interactive,
-                     GCancellable                *cancellable,
-                     GError                     **error)
-{
-	/* not required */
-	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON) == 0)
-		return TRUE;
-
-	gs_icon_downloader_queue_app (self->icon_downloader, app, interactive);
-
-	return TRUE;
-}
-
 static void
 gs_plugin_icons_refine_async (GsPlugin                   *plugin,
                               GsAppList                  *list,
@@ -181,18 +165,10 @@ gs_plugin_icons_refine_async (GsPlugin                   *plugin,
 		return;
 	}
 
-	{
-		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
 
-		for (guint i = 0; i < gs_app_list_length (list); i++) {
-			g_autoptr(GError) local_error = NULL;
-			GsApp *app = gs_app_list_index (list, i);
-
-			if (!refine_app_unlocked (self, app, require_flags, interactive, cancellable, &local_error)) {
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
-			}
-		}
+		gs_icon_downloader_queue_app (self->icon_downloader, app, interactive);
 	}
 
 	g_task_return_boolean (task, TRUE);

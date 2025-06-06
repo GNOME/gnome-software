@@ -21,10 +21,13 @@
  * This plugin is only useful on distributions which use `/etc/yum.repos.d`.
  *
  * It enumerates `/etc/yum.repos.d` in a worker thread and updates its internal
- * hash tables and state from that worker thread (while holding a lock).
+ * hash tables and state from that worker thread (while holding a lock). The
+ * internal thread pool of #GTask is used, rather than #GsWorkerThread, because
+ * enumerations and updates are expected to be rare, so not worth keeping a
+ * dedicated #GsWorkerThread around all the time for.
  *
- * Other tasks on the plugin access the data synchronously, not using a worker
- * thread. Data accesses should be fast.
+ * Other tasks on the plugin access the data synchronously (under a mutex), not
+ * using a worker thread. Data accesses should be fast.
  */
 
 struct _GsPluginRepos {

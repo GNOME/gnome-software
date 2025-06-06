@@ -22,9 +22,9 @@
  *
  * Since snapd is a daemon accessible via HTTP calls on a Unix socket, this
  * plugin basically translates every job into one or more HTTP request, and all
- * the real work is done in the snapd daemon. FIXME: This means the plugin can
- * therefore execute entirely in the main thread, making asynchronous calls,
- * once all the vfuncs have been ported.
+ * the real work is done in the snapd daemon. This means the plugin can execute
+ * entirely in the main thread, making asynchronous calls. It doesn’t need to do
+ * any locking.
  */
 
 struct _GsPluginSnap {
@@ -34,7 +34,6 @@ struct _GsPluginSnap {
 	gchar			*store_hostname;
 	SnapdSystemConfinement	 system_confinement;
 
-	GMutex			 store_snaps_lock;
 	GHashTable		*store_snaps;
 };
 
@@ -134,8 +133,6 @@ gs_plugin_snap_init (GsPluginSnap *self)
 {
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr (GError) error = NULL;
-
-	g_mutex_init (&self->store_snaps_lock);
 
 	client = get_client (self, FALSE, &error);
 	if (client == NULL) {
@@ -323,7 +320,6 @@ store_snap_cache_lookup (GsPluginSnap *self,
                          gboolean      need_details)
 {
 	CacheEntry *entry;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->store_snaps_lock);
 
 	entry = g_hash_table_lookup (self->store_snaps, name);
 	if (entry == NULL)
@@ -340,7 +336,6 @@ store_snap_cache_update (GsPluginSnap *self,
                          GPtrArray    *snaps,
                          gboolean      full_details)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->store_snaps_lock);
 	guint i;
 
 	for (i = 0; i < snaps->len; i++) {
@@ -574,16 +569,6 @@ gs_plugin_snap_dispose (GObject *object)
 	g_clear_pointer (&self->store_snaps, g_hash_table_unref);
 
 	G_OBJECT_CLASS (gs_plugin_snap_parent_class)->dispose (object);
-}
-
-static void
-gs_plugin_snap_finalize (GObject *object)
-{
-	GsPluginSnap *self = GS_PLUGIN_SNAP (object);
-
-	g_mutex_clear (&self->store_snaps_lock);
-
-	G_OBJECT_CLASS (gs_plugin_snap_parent_class)->finalize (object);
 }
 
 static gboolean
@@ -2719,7 +2704,6 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_snap_dispose;
-	object_class->finalize = gs_plugin_snap_finalize;
 
 	plugin_class->adopt_app = gs_plugin_snap_adopt_app;
 	plugin_class->setup_async = gs_plugin_snap_setup_async;

@@ -23,6 +23,8 @@
 #include "gs-systemd-sysupdated-generated.h"
 
 /*
+ * Plugin to allow system updates using `systemd-sysupdated`.
+ *
  * This plugin only works when systemd-sysupdated's org.freedesktop.sysupdate1
  * D-Bus service is available on the system. For more information see the
  * following links:
@@ -33,6 +35,10 @@
  * - https://github.com/systemd/systemd/blob/main/man/sysupdate.d.xml
  * - https://github.com/systemd/systemd/blob/main/man/sysupdate.features.xml
  * - https://github.com/systemd/systemd/blob/main/man/updatectl.xml
+ *
+ * `systemd-sysupdated` provides a D-Bus interface, so this plugin runs
+ * asynchronously in the main thread, acting as a thin wrapper over that D-Bus
+ * interface. It doesn’t need to do any locking.
  */
 
 #define FREEDESKTOP_DBUS_LIST_ACTIVATABLE_NAMES_TIMEOUT_MS (200)
