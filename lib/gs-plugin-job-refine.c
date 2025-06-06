@@ -224,18 +224,6 @@ app_is_valid_filter (GsApp    *app,
 	return gs_plugin_loader_app_is_valid (app, self->job_flags);
 }
 
-static gint
-review_score_sort_cb (gconstpointer a, gconstpointer b)
-{
-	AsReview *ra = *((AsReview **) a);
-	AsReview *rb = *((AsReview **) b);
-	if (as_review_get_priority (ra) < as_review_get_priority (rb))
-		return 1;
-	if (as_review_get_priority (ra) > as_review_get_priority (rb))
-		return -1;
-	return 0;
-}
-
 static gboolean
 app_is_non_wildcard (GsApp *app, gpointer user_data)
 {
@@ -592,16 +580,6 @@ finish_refine_internal_op (GTask  *task,
 
 	/* filter any wildcard apps left in the list */
 	gs_app_list_filter (list, app_is_non_wildcard, NULL);
-
-	/* ensure these are sorted by score */
-	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEWS) != 0) {
-		GPtrArray *reviews;
-		for (guint i = 0; i < gs_app_list_length (list); i++) {
-			GsApp *app = gs_app_list_index (list, i);
-			reviews = gs_app_get_reviews (app);
-			g_ptr_array_sort (reviews, review_score_sort_cb);
-		}
-	}
 
 	/* Now run several recursive calls to run_refine_internal_async() in
 	 * parallel, to refine related components. */

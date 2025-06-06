@@ -100,7 +100,8 @@ typedef struct
 	guint			 priority;
 	gint			 rating;
 	GArray			*review_ratings;
-	GPtrArray		*reviews; /* of AsReview */
+	GPtrArray		*reviews; /* of AsReview; must be kept in sorted order according to review_score_sort_cb() */
+	gboolean		 reviews_sorted;  /* whether ->reviews is currently in sorted order */
 	GPtrArray		*provided; /* of AsProvided */
 
 	GsSizeType		 size_installed_type;
@@ -3429,11 +3430,27 @@ gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
 	_g_set_array (&priv->review_ratings, review_ratings);
 }
 
+static gint
+review_score_sort_cb (gconstpointer a, gconstpointer b)
+{
+	AsReview *ra = *((AsReview **) a);
+	AsReview *rb = *((AsReview **) b);
+	if (as_review_get_priority (ra) < as_review_get_priority (rb))
+		return 1;
+	if (as_review_get_priority (ra) > as_review_get_priority (rb))
+		return -1;
+	return 0;
+}
+
 /**
  * gs_app_get_reviews:
  * @app: a #GsApp
  *
  * Gets all the user-submitted reviews for the application.
+ *
+ * The reviews are guaranteed to be returned in decreasing order of review priority.
+ *
+ * The returned array must not be modified.
  *
  * Returns: (element-type AsReview) (transfer none): the list of reviews
  *
@@ -3443,7 +3460,20 @@ GPtrArray *
 gs_app_get_reviews (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	/* Ensure the array is sorted. It’s more efficient to do this here than
+	 * inserting in sorted order in gs_app_add_review() because inserting
+	 * into the middle of a #GPtrArray is relatively expensive. */
+	if (!priv->reviews_sorted) {
+		g_ptr_array_sort (priv->reviews, review_score_sort_cb);
+		priv->reviews_sorted = TRUE;
+	}
+
 	return priv->reviews;
 }
 
@@ -3465,6 +3495,7 @@ gs_app_add_review (GsApp *app, AsReview *review)
 	g_return_if_fail (AS_IS_REVIEW (review));
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_ptr_array_add (priv->reviews, g_object_ref (review));
+	priv->reviews_sorted = FALSE;
 }
 
 /**
