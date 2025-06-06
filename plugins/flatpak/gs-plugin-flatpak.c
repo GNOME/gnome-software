@@ -2256,10 +2256,10 @@ gs_plugin_flatpak_file_to_app_repo (GsPluginFlatpak  *self,
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
 		g_autoptr(GError) error_local = NULL;
 		g_autoptr(GsApp) app_tmp = NULL;
-		app_tmp = gs_flatpak_find_source_by_url (flatpak,
-							 gs_flatpak_app_get_repo_url (app),
-							 interactive,
-							 cancellable, &error_local);
+		app_tmp = gs_flatpak_find_repository_by_url (flatpak,
+							     gs_flatpak_app_get_repo_url (app),
+							     interactive,
+							     cancellable, &error_local);
 		if (app_tmp == NULL) {
 			g_debug ("%s", error_local->message);
 			continue;
@@ -2795,7 +2795,7 @@ list_apps_thread_cb (GTask        *task,
 		}
 
 		if (gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY) &&
-		    !gs_flatpak_add_sources (flatpak, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
+		    !gs_flatpak_add_repositories (flatpak, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -3059,7 +3059,7 @@ install_repository_thread_cb (GTask        *task,
 		return;
 	}
 
-	if (gs_flatpak_app_install_source (flatpak, data->repository, TRUE, interactive, cancellable, &local_error))
+	if (gs_flatpak_add_repository_app (flatpak, data->repository, TRUE, interactive, cancellable, &local_error))
 		g_task_return_boolean (task, TRUE);
 	else
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -3129,7 +3129,7 @@ remove_repository_thread_cb (GTask        *task,
 		return;
 	}
 
-	if (gs_flatpak_app_remove_source (flatpak, data->repository, TRUE, interactive, cancellable, &local_error))
+	if (gs_flatpak_remove_repository_app (flatpak, data->repository, TRUE, interactive, cancellable, &local_error))
 		g_task_return_boolean (task, TRUE);
 	else
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -3199,7 +3199,7 @@ enable_repository_thread_cb (GTask        *task,
 		return;
 	}
 
-	if (gs_flatpak_app_install_source (flatpak, data->repository, FALSE, interactive, cancellable, &local_error))
+	if (gs_flatpak_add_repository_app (flatpak, data->repository, FALSE, interactive, cancellable, &local_error))
 		g_task_return_boolean (task, TRUE);
 	else
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -3269,7 +3269,7 @@ disable_repository_thread_cb (GTask        *task,
 		return;
 	}
 
-	if (gs_flatpak_app_remove_source (flatpak, data->repository, FALSE, interactive, cancellable, &local_error))
+	if (gs_flatpak_remove_repository_app (flatpak, data->repository, FALSE, interactive, cancellable, &local_error))
 		g_task_return_boolean (task, TRUE);
 	else
 		g_task_return_error (task, g_steal_pointer (&local_error));

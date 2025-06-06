@@ -1722,13 +1722,13 @@ gs_flatpak_add_installed (GsFlatpak *self,
 }
 
 gboolean
-gs_flatpak_add_sources (GsFlatpak *self,
-			GsAppList *list,
-			gboolean interactive,
-			GsPluginEventCallback event_callback,
-			void *event_user_data,
-			GCancellable *cancellable,
-			GError **error)
+gs_flatpak_add_repositories (GsFlatpak              *self,
+                             GsAppList              *list,
+                             gboolean                interactive,
+                             GsPluginEventCallback   event_callback,
+                             void                   *event_user_data,
+                             GCancellable           *cancellable,
+                             GError                **error)
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
@@ -1787,11 +1787,11 @@ gs_flatpak_add_sources (GsFlatpak *self,
 }
 
 GsApp *
-gs_flatpak_find_source_by_url (GsFlatpak *self,
-			       const gchar *url,
-			       gboolean interactive,
-			       GCancellable *cancellable,
-			       GError **error)
+gs_flatpak_find_repository_by_url (GsFlatpak     *self,
+                                   const gchar   *url,
+                                   gboolean       interactive,
+                                   GCancellable  *cancellable,
+                                   GError       **error)
 {
 	g_autoptr(GPtrArray) xremotes = NULL;
 
@@ -2023,7 +2023,7 @@ gs_flatpak_remote_by_name (GsFlatpak *self,
  * enabled. If it’s being enabled, no properties apart from enabled/disabled
  * should be modified. */
 gboolean
-gs_flatpak_app_install_source (GsFlatpak *self,
+gs_flatpak_add_repository_app (GsFlatpak *self,
 			       GsApp *app,
 			       gboolean is_install,
 			       gboolean interactive,
@@ -3919,12 +3919,12 @@ gs_flatpak_launch (GsFlatpak *self,
 }
 
 gboolean
-gs_flatpak_app_remove_source (GsFlatpak *self,
-			      GsApp *app,
-			      gboolean is_remove,
-			      gboolean interactive,
-			      GCancellable *cancellable,
-			      GError **error)
+gs_flatpak_remove_repository_app (GsFlatpak     *self,
+                                  GsApp         *app,
+                                  gboolean       is_remove,
+                                  gboolean       interactive,
+                                  GCancellable  *cancellable,
+                                  GError       **error)
 {
 	g_autoptr(FlatpakRemote) xremote = NULL;
 	gboolean success;
