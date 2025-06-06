@@ -586,7 +586,7 @@ main (int argc, char **argv)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		GsAppList *list;
 
-		query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE,
+		query = gs_app_query_new ("component-kinds", (AsComponentKind[]) { AS_COMPONENT_KIND_REPOSITORY, 0 },
 					  "refine-require-flags", self->require_flags,
 					  "max-results", self->max_results,
 					  NULL);

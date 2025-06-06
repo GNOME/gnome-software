@@ -2644,7 +2644,7 @@ list_apps_thread_cb (GTask        *task,
 	GsCategory *category = NULL;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
-	GsAppQueryTristate is_source = GS_APP_QUERY_TRISTATE_UNSET;
+	const AsComponentKind *component_kinds = NULL;
 	guint64 age_secs = 0;
 	const gchar * const *deployment_featured = NULL;
 	const gchar *const *developers = NULL;
@@ -2668,7 +2668,7 @@ list_apps_thread_cb (GTask        *task,
 		alternate_of = gs_app_query_get_alternate_of (data->query);
 		provides_type = gs_app_query_get_provides (data->query, &provides_tag);
 		is_for_update = gs_app_query_get_is_for_update (data->query);
-		is_source = gs_app_query_get_is_source (data->query);
+		component_kinds = gs_app_query_get_component_kinds (data->query);
 	}
 
 	if (released_since != NULL) {
@@ -2689,12 +2689,12 @@ list_apps_thread_cb (GTask        *task,
 	     alternate_of == NULL &&
 	     provides_tag == NULL &&
 	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
-	     is_source == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     component_kinds == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
-	    is_source == GS_APP_QUERY_TRISTATE_FALSE ||
+	    (component_kinds != NULL && !gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY)) ||
 	    gs_app_query_get_n_properties_set (data->query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -2794,7 +2794,7 @@ list_apps_thread_cb (GTask        *task,
 				g_debug ("Failed to get updates for '%s': %s", gs_flatpak_get_id (flatpak), local_error2->message);
 		}
 
-		if (is_source == GS_APP_QUERY_TRISTATE_TRUE &&
+		if (gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY) &&
 		    !gs_flatpak_add_sources (flatpak, list, interactive, event_callback, event_user_data, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;

@@ -1642,7 +1642,7 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppQueryTristate is_historical_update = GS_APP_QUERY_TRISTATE_UNSET;
-	GsAppQueryTristate is_source = GS_APP_QUERY_TRISTATE_UNSET;
+	const AsComponentKind *component_kinds = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GTask) task = NULL;
 
@@ -1655,7 +1655,7 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 		provides_type = gs_app_query_get_provides (query, &provides_tag);
 		is_for_update = gs_app_query_get_is_for_update (query);
 		is_historical_update = gs_app_query_get_is_historical_update (query);
-		is_source = gs_app_query_get_is_source (query);
+		component_kinds = gs_app_query_get_component_kinds (query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once. */
@@ -1663,10 +1663,10 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 	     provides_tag == NULL &&
 	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
 	     is_historical_update == GS_APP_QUERY_TRISTATE_UNSET &&
-	     is_source == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     component_kinds == NULL) ||
 	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_historical_update == GS_APP_QUERY_TRISTATE_FALSE ||
-	    is_source == GS_APP_QUERY_TRISTATE_FALSE ||
+	    (component_kinds != NULL && !gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY)) ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -1715,7 +1715,7 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 			g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 		else
 			g_task_return_error (task, g_steal_pointer (&local_error));
-	} else if (is_source == GS_APP_QUERY_TRISTATE_TRUE) {
+	} else if (gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY)) {
 		/* ask PK for the repo details */
 		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
 						 PK_FILTER_ENUM_NOT_DEVELOPMENT,

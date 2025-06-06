@@ -119,6 +119,9 @@ typedef enum {
 					   GS_APP_LIST_FILTER_FLAG_KEY_SOURCE | \
 					   GS_APP_LIST_FILTER_FLAG_KEY_VERSION)
 
+gboolean gs_component_kind_array_contains (const AsComponentKind *haystack,
+                                           AsComponentKind        needle);
+
 #define GS_TYPE_APP_QUERY (gs_app_query_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsAppQuery, gs_app_query, GS, APP_QUERY, GObject)
@@ -157,7 +160,7 @@ GsAppQueryDeveloperVerifiedType
 GsAppQueryTristate	 gs_app_query_get_is_for_update	 (GsAppQuery *self);
 GsAppQueryTristate	 gs_app_query_get_is_historical_update
 							 (GsAppQuery *self);
-GsAppQueryTristate	 gs_app_query_get_is_source	 (GsAppQuery *self);
+const AsComponentKind	*gs_app_query_get_component_kinds (GsAppQuery *self);
 const gchar		*gs_app_query_get_is_langpack_for_locale (GsAppQuery *self);
 
 G_END_DECLS

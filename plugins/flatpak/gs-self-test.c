@@ -352,7 +352,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (kf_remote_url, !=, NULL);
 
 	/* check the source now exists */
-	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	query = gs_app_query_new ("component-kinds", (AsComponentKind[]) { AS_COMPONENT_KIND_REPOSITORY, 0 }, NULL);
 	plugin_job_list_apps = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
 	gs_plugin_loader_job_process (plugin_loader, plugin_job_list_apps, NULL, &error);
@@ -777,7 +777,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (runtime), ==, GS_APP_STATE_AVAILABLE);
 
 	/* check the number of sources */
-	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	query = gs_app_query_new ("component-kinds", (AsComponentKind[]) { AS_COMPONENT_KIND_REPOSITORY, 0 }, NULL);
 	plugin_job_list_apps = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
 	gs_plugin_loader_job_process (plugin_loader, plugin_job_list_apps, NULL, &error);
@@ -799,7 +799,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (runtime), ==, GS_APP_STATE_INSTALLED);
 
 	/* check the number of sources */
-	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	query = gs_app_query_new ("component-kinds", (AsComponentKind[]) { AS_COMPONENT_KIND_REPOSITORY, 0 }, NULL);
 	plugin_job_list_apps2 = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
 	gs_plugin_loader_job_process (plugin_loader, plugin_job_list_apps2, NULL, &error);
@@ -943,7 +943,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (runtime), ==, GS_APP_STATE_AVAILABLE);
 
 	/* check the number of sources */
-	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	query = gs_app_query_new ("component-kinds", (AsComponentKind[]) { AS_COMPONENT_KIND_REPOSITORY, 0 }, NULL);
 	plugin_job_list_apps = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
 	gs_plugin_loader_job_process (plugin_loader, plugin_job_list_apps, NULL, &error);
@@ -964,7 +964,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (runtime), ==, GS_APP_STATE_INSTALLED);
 
 	/* check the number of sources */
-	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	query = gs_app_query_new ("component-kinds", (AsComponentKind[]) { AS_COMPONENT_KIND_REPOSITORY, 0 }, NULL);
 	plugin_job_list_apps2 = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
 	gs_plugin_loader_job_process (plugin_loader, plugin_job_list_apps2, NULL, &error);
@@ -1355,7 +1355,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	}
 
 	/* there should be no sources now */
-	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE, NULL);
+	query = gs_app_query_new ("component-kinds", (AsComponentKind[]) { AS_COMPONENT_KIND_REPOSITORY, 0 }, NULL);
 	plugin_job_list_apps3 = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
 	gs_plugin_loader_job_process (plugin_loader, plugin_job_list_apps3, NULL, &error);
