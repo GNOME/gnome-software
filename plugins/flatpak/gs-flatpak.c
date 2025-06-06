@@ -4060,7 +4060,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 
 	/* not quite true: this just means we can update this specific app */
 	if (flatpak_bundle_ref_get_origin (xref_bundle))
-		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_LOCAL_HAS_REPOSITORY);
 
 	/* success */
 	return g_steal_pointer (&app);
@@ -4291,7 +4291,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	gs_app_set_size_installed (app, (app_installed_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, app_installed_size);
 #endif
 
-	gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_LOCAL_HAS_REPOSITORY);
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REF);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 

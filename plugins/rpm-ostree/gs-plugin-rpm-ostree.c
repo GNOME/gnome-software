@@ -2760,7 +2760,7 @@ add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 		NULL };
 
 	if (g_strv_contains (packages_with_repos, package_name))
-		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_LOCAL_HAS_REPOSITORY);
 }
 
 static gboolean

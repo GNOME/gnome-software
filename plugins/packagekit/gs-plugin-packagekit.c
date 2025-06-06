@@ -3750,7 +3750,7 @@ add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 		NULL };
 
 	if (g_strv_contains (packages_with_repos, package_name))
-		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_LOCAL_HAS_REPOSITORY);
 }
 
 typedef struct {
@@ -4083,7 +4083,7 @@ file_to_app_get_files_cb (GObject      *source_object,
 		for (guint j = 0; fns[j] != NULL; j++) {
 			if (g_str_has_prefix (fns[j], "/etc/yum.repos.d/") &&
 			    g_str_has_suffix (fns[j], ".repo")) {
-				gs_app_add_quirk (data->app, GS_APP_QUIRK_HAS_SOURCE);
+				gs_app_add_quirk (data->app, GS_APP_QUIRK_LOCAL_HAS_REPOSITORY);
 			}
 			if (g_str_has_prefix (fns[j], "/usr/share/applications/") &&
 			    g_str_has_suffix (fns[j], ".desktop")) {

@@ -122,7 +122,7 @@ typedef enum {
  * @GS_APP_QUIRK_NONE:			No special attributes
  * @GS_APP_QUIRK_PROVENANCE:		Installed by OS vendor
  * @GS_APP_QUIRK_COMPULSORY:		Cannot be removed
- * @GS_APP_QUIRK_HAS_SOURCE:		Has a source to allow staying up-to-date
+ * @GS_APP_QUIRK_LOCAL_HAS_REPOSITORY:	App is from a local file, but it contains repository information which allows it to be kept up-to-date (Since: 49)
  * @GS_APP_QUIRK_IS_WILDCARD:		Matches applications from any plugin
  * @GS_APP_QUIRK_NEEDS_REBOOT:		A reboot is required after the action
  * @GS_APP_QUIRK_NOT_REVIEWABLE:	The app is not reviewable
@@ -145,7 +145,7 @@ typedef enum {
 	GS_APP_QUIRK_NONE		= 0,		/* Since: 3.32 */
 	GS_APP_QUIRK_PROVENANCE		= 1 << 0,	/* Since: 3.32 */
 	GS_APP_QUIRK_COMPULSORY		= 1 << 1,	/* Since: 3.32 */
-	GS_APP_QUIRK_HAS_SOURCE		= 1 << 2,	/* Since: 3.32 */
+	GS_APP_QUIRK_LOCAL_HAS_REPOSITORY	= 1 << 2,	/* Since: 49 */
 	GS_APP_QUIRK_IS_WILDCARD	= 1 << 3,	/* Since: 3.32 */
 	GS_APP_QUIRK_NEEDS_REBOOT	= 1 << 4,	/* Since: 3.32 */
 	GS_APP_QUIRK_NOT_REVIEWABLE	= 1 << 5,	/* Since: 3.32 */

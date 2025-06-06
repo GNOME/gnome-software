@@ -1513,7 +1513,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (GTK_WIDGET (self->license_tile), TRUE);
 		gtk_widget_set_visible (self->infobar_details_app_repo,
 					gs_app_has_quirk (self->app,
-							  GS_APP_QUIRK_HAS_SOURCE) &&
+							  GS_APP_QUIRK_LOCAL_HAS_REPOSITORY) &&
 					gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 		gtk_widget_set_visible (self->infobar_details_repo, FALSE);
 		break;
@@ -1524,7 +1524,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->infobar_details_app_repo, FALSE);
 		gtk_widget_set_visible (self->infobar_details_repo,
 					gs_app_has_quirk (self->app,
-							  GS_APP_QUIRK_HAS_SOURCE) &&
+							  GS_APP_QUIRK_LOCAL_HAS_REPOSITORY) &&
 					gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 		break;
 	case AS_COMPONENT_KIND_WEB_APP:
@@ -1549,7 +1549,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		} else {
 			gtk_widget_set_visible (self->infobar_details_app_norepo,
 						!gs_app_has_quirk (self->app,
-							  GS_APP_QUIRK_HAS_SOURCE) &&
+							  GS_APP_QUIRK_LOCAL_HAS_REPOSITORY) &&
 						gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 		}
 		break;

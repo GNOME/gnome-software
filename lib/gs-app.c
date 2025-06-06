@@ -341,8 +341,8 @@ _as_component_quirk_flag_to_string (GsAppQuirk quirk)
 		return "provenance";
 	case GS_APP_QUIRK_COMPULSORY:
 		return "compulsory";
-	case GS_APP_QUIRK_HAS_SOURCE:
-		return "has-source";
+	case GS_APP_QUIRK_LOCAL_HAS_REPOSITORY:
+		return "local-has-repository";
 	case GS_APP_QUIRK_IS_WILDCARD:
 		return "is-wildcard";
 	case GS_APP_QUIRK_NEEDS_REBOOT:
