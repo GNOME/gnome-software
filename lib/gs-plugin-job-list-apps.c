@@ -460,7 +460,7 @@ finish_task (GTask     *task,
 	GsAppQueryLicenseType license_type = GS_APP_QUERY_LICENSE_ANY;
 	GsAppQueryDeveloperVerifiedType developer_verified_type = GS_APP_QUERY_DEVELOPER_VERIFIED_ANY;
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
-	GsAppQueryTristate is_source = GS_APP_QUERY_TRISTATE_UNSET;
+	const AsComponentKind *component_kinds = NULL;
 	GsAppListFilterFunc filter_func = NULL;
 	gpointer filter_func_data = NULL;
 	guint max_results = 0;
@@ -470,11 +470,13 @@ finish_task (GTask     *task,
 		license_type = gs_app_query_get_license_type (self->query);
 		developer_verified_type = gs_app_query_get_developer_verified_type (self->query);
 		is_for_update = gs_app_query_get_is_for_update (self->query);
-		is_source = gs_app_query_get_is_source (self->query);
+		component_kinds = gs_app_query_get_component_kinds (self->query);
 	}
 
-	if (is_source == GS_APP_QUERY_TRISTATE_UNSET ||
-	    is_source == GS_APP_QUERY_TRISTATE_FALSE) {
+	if (gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY)) {
+		/* Filtering for sources/repositories. */
+		gs_app_list_filter (merged_list, filter_sources, self);
+	} else {
 		/* Standard filtering for apps.
 		 *
 		 * FIXME: It feels like this filter should be done in a different layer. */
@@ -489,9 +491,6 @@ finish_task (GTask     *task,
 			gs_app_list_filter (merged_list, filter_updatable_apps, self);
 		else if (is_for_update == GS_APP_QUERY_TRISTATE_FALSE)
 			gs_app_list_filter (merged_list, filter_nonupdatable_apps, self);
-	} else if (is_source == GS_APP_QUERY_TRISTATE_TRUE) {
-		/* Filtering for sources/repositories. */
-		gs_app_list_filter (merged_list, filter_sources, self);
 	}
 
 	/* Caller-specified filtering. */

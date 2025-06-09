@@ -670,7 +670,7 @@ reload_sources (GsReposDialog *dialog)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get the list of non-core software repositories */
-	query = gs_app_query_new ("is-source", GS_APP_QUERY_TRISTATE_TRUE,
+	query = gs_app_query_new ("component-kinds", (AsComponentKind[]) { AS_COMPONENT_KIND_REPOSITORY, 0 },
 				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_ORIGIN_HOSTNAME |
 							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_PROVENANCE,
 				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,

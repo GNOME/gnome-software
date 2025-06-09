@@ -3449,7 +3449,7 @@ list_apps_thread_cb (GTask        *task,
 	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	GsAppQueryTristate is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	GsAppQueryTristate is_historical_update = GS_APP_QUERY_TRISTATE_UNSET;
-	GsAppQueryTristate is_source = GS_APP_QUERY_TRISTATE_UNSET;
+	const AsComponentKind *component_kinds = NULL;
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
@@ -3461,17 +3461,17 @@ list_apps_thread_cb (GTask        *task,
 		provides_type = gs_app_query_get_provides (data->query, &provides_tag);
 		is_for_update = gs_app_query_get_is_for_update (data->query);
 		is_historical_update = gs_app_query_get_is_historical_update (data->query);
-		is_source = gs_app_query_get_is_source (data->query);
+		component_kinds = gs_app_query_get_component_kinds (data->query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once. */
 	if ((provides_tag == NULL &&
 	     is_for_update == GS_APP_QUERY_TRISTATE_UNSET &&
 	     is_historical_update == GS_APP_QUERY_TRISTATE_UNSET &&
-	     is_source == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     component_kinds == NULL) ||
 	    is_for_update == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_historical_update == GS_APP_QUERY_TRISTATE_FALSE ||
-	    is_source == GS_APP_QUERY_TRISTATE_FALSE ||
+	    (component_kinds != NULL && !gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY)) ||
 	    gs_app_query_get_n_properties_set (data->query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -3490,7 +3490,7 @@ list_apps_thread_cb (GTask        *task,
 		list = list_apps_for_update_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
 	} else if (is_historical_update == GS_APP_QUERY_TRISTATE_TRUE) {
 		list = list_apps_historical_updates_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
-	} else if (is_source == GS_APP_QUERY_TRISTATE_TRUE) {
+	} else if (gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY)) {
 		list = list_apps_sources_sync (self, interactive, os_proxy, sysroot_proxy, cancellable, &local_error);
 	}
 

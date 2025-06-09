@@ -54,6 +54,60 @@
 #include "gs-plugin-types.h"
 #include "gs-utils.h"
 
+#define GS_TYPE_COMPONENT_KIND_ARRAY (gs_component_kind_array_get_type ())
+static GType gs_component_kind_array_get_type (void);
+typedef AsComponentKind* GsComponentKindArray;
+
+static AsComponentKind *
+gs_component_kind_array_copy (const AsComponentKind *kinds)
+{
+	size_t length;
+
+	if (kinds == NULL)
+		return NULL;
+
+	/* Work out how long the input array is */
+	for (length = 0; kinds[length] != 0; length++)
+		;
+
+	return g_memdup2 (kinds, (length + 1) * sizeof (*kinds));
+}
+
+G_DEFINE_BOXED_TYPE (GsComponentKindArray, gs_component_kind_array,
+		     (GBoxedCopyFunc) gs_component_kind_array_copy, g_free)
+
+/**
+ * gs_component_kind_array_contains:
+ * @haystack: (nullable) (array zero-terminated=1): array of #AsComponentKind
+ *   values, terminated with a zero (%AS_COMPONENT_KIND_UNKNOWN)
+ * @needle: component kind to search for in the array
+ *
+ * Search for @needle in @haystack.
+ *
+ * If @haystack is %NULL, that is treated as equivalent to it being an empty
+ * array.
+ *
+ * Returns: %TRUE if @needle is in @haystack, %FALSE otherwise
+ * Since: 49
+ */
+gboolean
+gs_component_kind_array_contains (const AsComponentKind *haystack,
+                                  AsComponentKind        needle)
+{
+	g_return_val_if_fail (needle != AS_COMPONENT_KIND_UNKNOWN, FALSE);
+
+	/* NULL array is equivalent to empty array */
+	if (haystack == NULL)
+		return FALSE;
+
+	for (size_t i = 0; haystack[i] != 0; i++) {
+		if (haystack[i] == needle)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
 struct _GsAppQuery
 {
 	GObject parent;
@@ -92,7 +146,8 @@ struct _GsAppQuery
 	GsAppQueryDeveloperVerifiedType developer_verified_type;
 	GsAppQueryTristate is_for_update;
 	GsAppQueryTristate is_historical_update;
-	GsAppQueryTristate is_source;
+	/* This is guaranteed to either be %NULL, or a non-empty array */
+	AsComponentKind *component_kinds;  /* (owned) (nullable) (array zero-terminated=1) */
 	gchar *is_langpack_for_locale;  /* (nullable) (owned) */
 };
 
@@ -125,7 +180,7 @@ typedef enum {
 	PROP_DEVELOPER_VERIFIED_TYPE,
 	PROP_IS_FOR_UPDATE,
 	PROP_IS_HISTORICAL_UPDATE,
-	PROP_IS_SOURCE,
+	PROP_COMPONENT_KINDS,
 	PROP_IS_LANGPACK_FOR_LOCALE,
 } GsAppQueryProperty;
 
@@ -264,8 +319,8 @@ gs_app_query_get_property (GObject    *object,
 	case PROP_IS_HISTORICAL_UPDATE:
 		g_value_set_enum (value, self->is_historical_update);
 		break;
-	case PROP_IS_SOURCE:
-		g_value_set_enum (value, self->is_source);
+	case PROP_COMPONENT_KINDS:
+		g_value_set_boxed (value, self->component_kinds);
 		break;
 	case PROP_IS_LANGPACK_FOR_LOCALE:
 		g_value_set_string (value, self->is_langpack_for_locale);
@@ -430,10 +485,15 @@ gs_app_query_set_property (GObject      *object,
 		g_assert (self->is_historical_update == GS_APP_QUERY_TRISTATE_UNSET);
 		self->is_historical_update = g_value_get_enum (value);
 		break;
-	case PROP_IS_SOURCE:
+	case PROP_COMPONENT_KINDS:
 		/* Construct only. */
-		g_assert (self->is_source == GS_APP_QUERY_TRISTATE_UNSET);
-		self->is_source = g_value_get_enum (value);
+		g_assert (self->component_kinds == NULL);
+		self->component_kinds = g_value_dup_boxed (value);
+
+		/* Squash empty arrays to %NULL. */
+		if (self->component_kinds != NULL && self->component_kinds[0] == AS_COMPONENT_KIND_UNKNOWN)
+			g_clear_pointer (&self->component_kinds, g_free);
+
 		break;
 	case PROP_IS_LANGPACK_FOR_LOCALE:
 		/* Construct only. */
@@ -959,25 +1019,26 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
-	 * GsAppQuery:is-source:
+	 * GsAppQuery:component-kinds:
 	 *
-	 * Get the list of sources, for example the repos listed in `/etc/yum.repos.d`
-	 * or the remotes configured in flatpak.
+	 * Get the kinds of apps to include in the results.
 	 *
-	 * Plugins are expected to add new apps using gs_app_list_add() of type
-	 * %AS_COMPONENT_KIND_REPOSITORY.
+	 * If set, it’s a zero-terminated array of #AsComponentKinds. To query
+	 * for the list of repositories listed in `/etc/yum.repos.d` or remotes
+	 * configured in flatpak, for example, the array
+	 * `{ AS_COMPONENT_KIND_REPOSITORY, AS_COMPONENT_KIND_UNKNOWN }` would
+	 * be used.
 	 *
-	 * If this is %GS_APP_QUERY_TRISTATE_UNSET, then it doesn't matter.
+	 * If this is %NULL, then it doesn't matter.
 	 *
-	 * Since: 47
+	 * Since: 49
 	 */
-	props[PROP_IS_SOURCE] =
-		g_param_spec_enum ("is-source", "Is Source",
-				   "Whether to include only repos.",
-				   GS_TYPE_APP_QUERY_TRISTATE,
-				   GS_APP_QUERY_TRISTATE_UNSET,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+	props[PROP_COMPONENT_KINDS] =
+		g_param_spec_boxed ("component-kinds", "Component Kinds",
+				    "Kinds of component to include.",
+				    GS_TYPE_COMPONENT_KIND_ARRAY,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppQuery:is-langpack-for-locale: (nullable)
@@ -1019,7 +1080,6 @@ gs_app_query_init (GsAppQuery *self)
 	self->is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	self->is_for_update = GS_APP_QUERY_TRISTATE_UNSET;
 	self->is_historical_update = GS_APP_QUERY_TRISTATE_UNSET;
-	self->is_source = GS_APP_QUERY_TRISTATE_UNSET;
 	self->provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	self->license_type = GS_APP_QUERY_LICENSE_ANY;
 	self->developer_verified_type = GS_APP_QUERY_DEVELOPER_VERIFIED_ANY;
@@ -1214,7 +1274,7 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 		n++;
 	if (self->is_historical_update != GS_APP_QUERY_TRISTATE_UNSET)
 		n++;
-	if (self->is_source != GS_APP_QUERY_TRISTATE_UNSET)
+	if (self->component_kinds != NULL)
 		n++;
 	if (self->is_langpack_for_locale != NULL)
 		n++;
@@ -1516,23 +1576,21 @@ gs_app_query_get_is_historical_update (GsAppQuery *self)
 }
 
 /**
- * gs_app_query_get_is_source:
+ * gs_app_query_get_component_kinds:
  * @self: a #GsAppQuery
  *
- * Get the value of #GsAppQuery:is-source.
+ * Get the value of #GsAppQuery:component-kinds.
  *
- * Returns: %GS_APP_QUERY_TRISTATE_TRUE if query is only for repos
- *   (aka #GsApps with type %AS_COMPONENT_KIND_REPOSITORY),
- *   %GS_APP_QUERY_TRISTATE_FALSE if query is only for non-repos apps, or
- *   %GS_APP_QUERY_TRISTATE_UNSET if it doesn’t matter
- * Since: 47
+ * Returns: a set of component kinds which apps must match one of, or %NULL to
+ *   not filter by it
+ * Since: 49
  */
-GsAppQueryTristate
-gs_app_query_get_is_source (GsAppQuery *self)
+const AsComponentKind *
+gs_app_query_get_component_kinds (GsAppQuery *self)
 {
-	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_UNSET);
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
 
-	return self->is_source;
+	return self->component_kinds;
 }
 
 /**
