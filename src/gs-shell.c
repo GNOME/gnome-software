@@ -704,6 +704,13 @@ gs_shell_plugin_event_dismissed_cb (GsShell *shell)
 	guint i;
 	g_autoptr(GPtrArray) events = NULL;
 
+	/* If a toast is showing when the GsShell is disposed, libadwaita will
+	 * explicitly dismiss the toast. Unfortunately this happens after
+	 * chaining up from GsShell.dispose(), so the plugin loader has already
+	 * been cleared. */
+	if (shell->plugin_loader == NULL)
+		return;
+
 	/* mark any events currently showing as invalid */
 	events = gs_plugin_loader_get_events (shell->plugin_loader);
 	for (i = 0; i < events->len; i++) {
