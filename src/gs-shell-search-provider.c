@@ -262,7 +262,8 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 				g_variant_builder_add (&meta, "{sv}", "gicon", g_variant_new_string (icon_str));
 			} else {
 				g_autoptr(GVariant) icon_serialized = g_icon_serialize (icon);
-				g_variant_builder_add (&meta, "{sv}", "icon", icon_serialized);
+				if (icon_serialized != NULL)
+					g_variant_builder_add (&meta, "{sv}", "icon", icon_serialized);
 			}
 		}
 
