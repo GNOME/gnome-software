@@ -26,13 +26,21 @@ main (int argc, char **argv)
 	int status = 0;
 	g_autoptr(GDesktopAppInfo) appinfo = NULL;
 	g_autoptr(GsApplication) application = NULL;
-	g_autoptr(GsDebug) debug = gs_debug_new_from_environment ();
+	g_autoptr(GsDebug) debug = NULL;
 
 	setlocale (LC_ALL, "");
 
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
+
+	if (getuid () == 0 || geteuid () == 0) {
+		/* TRANSLATORS: only run app as non-root user */
+		g_warning (_("Software should be run as a non-root user. Exiting…"));
+		return EXIT_FAILURE;
+	}
+
+	debug = gs_debug_new_from_environment ();
 
 	/* Override the umask to 022 to make it possible to share files between
 	 * the gnome-software process and flatpak system helper process.
