@@ -346,7 +346,7 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 	app_row = g_object_new (GS_TYPE_APP_ROW,
 				"app", app,
 				"show-buttons", TRUE,
-				"show-source", gs_utils_list_has_component_fuzzy (list, app),
+				"show-origin", gs_utils_list_has_component_fuzzy (list, app),
 				"show-installed-size", !gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY) && should_show_installed_size (self),
 				NULL);
 
@@ -384,7 +384,7 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 				    self->sizegroup_button_image);
 
 	gs_app_row_set_show_description (GS_APP_ROW (app_row), FALSE);
-	gs_app_row_set_show_source (GS_APP_ROW (app_row), FALSE);
+	gs_app_row_set_show_origin (GS_APP_ROW (app_row), FALSE);
 	g_object_bind_property (self, "is-narrow", app_row, "is-narrow", G_BINDING_SYNC_CREATE);
 }
 

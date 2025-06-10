@@ -111,12 +111,12 @@ typedef enum {
  * This is not set as the default for all #GsAppQuery instances, but is a
  * typical value which callers might want to specify themselves.
  *
- * It deduplicates by ID, source and version.
+ * It deduplicates by ID, default source and version.
  *
  * Since: 49
  */
 #define GS_APP_QUERY_DEDUPE_FLAGS_DEFAULT (GS_APP_LIST_FILTER_FLAG_KEY_ID | \
-					   GS_APP_LIST_FILTER_FLAG_KEY_SOURCE | \
+					   GS_APP_LIST_FILTER_FLAG_KEY_DEFAULT_SOURCE | \
 					   GS_APP_LIST_FILTER_FLAG_KEY_VERSION)
 
 gboolean gs_component_kind_array_contains (const AsComponentKind *haystack,

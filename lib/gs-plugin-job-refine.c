@@ -652,7 +652,7 @@ finish_refine_internal_op (GTask  *task,
 				GsApp *app2 = gs_app_list_index (related, j);
 				g_debug ("refining related: %s[%s]",
 					 gs_app_get_id (app2),
-					 gs_app_get_source_default (app2));
+					 gs_app_get_default_source (app2));
 				gs_app_list_add (related_list, app2);
 			}
 		}
@@ -786,12 +786,12 @@ run_cb (GObject      *source_object,
 			g_autoptr(GsAppList) addons = gs_app_dup_addons (app);
 
 			/* find any apps with the same source */
-			const gchar *pkgname_parent = gs_app_get_source_default (app);
+			const gchar *pkgname_parent = gs_app_get_default_source (app);
 			if (pkgname_parent == NULL)
 				continue;
 			for (guint j = 0; addons != NULL && j < gs_app_list_length (addons); j++) {
 				GsApp *addon = gs_app_list_index (addons, j);
-				if (g_strcmp0 (gs_app_get_source_default (addon),
+				if (g_strcmp0 (gs_app_get_default_source (addon),
 					       pkgname_parent) == 0) {
 					g_debug ("%s has the same pkgname of %s as %s",
 						 gs_app_get_unique_id (app),

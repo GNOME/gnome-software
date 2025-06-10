@@ -349,7 +349,7 @@ gs_plugin_func (void)
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list), ==, 3);
 	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID |
-					     GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
+					     GS_APP_LIST_FILTER_FLAG_KEY_DEFAULT_SOURCE |
 					     GS_APP_LIST_FILTER_FLAG_KEY_VERSION);
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==, "user/foo/repo-security/*/*");

@@ -46,7 +46,7 @@ typedef struct
 	gboolean	 show_buttons;
 	gboolean	 show_rating;
 	gboolean	 show_description;
-	gboolean	 show_source;
+	gboolean	 show_origin;
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
 	gboolean	 show_installed;
@@ -69,7 +69,7 @@ typedef enum {
 	PROP_APP = 1,
 	PROP_COLORFUL,
 	PROP_SHOW_DESCRIPTION,
-	PROP_SHOW_SOURCE,
+	PROP_SHOW_ORIGIN,
 	PROP_SHOW_BUTTONS,
 	PROP_SHOW_RATING,
 	PROP_SHOW_UPDATE,
@@ -403,7 +403,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	}
 
 	/* where did this app come from */
-	if (priv->show_source) {
+	if (priv->show_origin) {
 		tmp = gs_app_get_origin_hostname (priv->app);
 		if (tmp != NULL) {
 			g_autofree gchar *origin_tmp = NULL;
@@ -823,8 +823,8 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_SHOW_DESCRIPTION:
 		g_value_set_boolean (value, gs_app_row_get_show_description (app_row));
 		break;
-	case PROP_SHOW_SOURCE:
-		g_value_set_boolean (value, priv->show_source);
+	case PROP_SHOW_ORIGIN:
+		g_value_set_boolean (value, priv->show_origin);
 		break;
 	case PROP_SHOW_BUTTONS:
 		g_value_set_boolean (value, priv->show_buttons);
@@ -865,8 +865,8 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 	case PROP_SHOW_DESCRIPTION:
 		gs_app_row_set_show_description (app_row, g_value_get_boolean (value));
 		break;
-	case PROP_SHOW_SOURCE:
-		gs_app_row_set_show_source (app_row, g_value_get_boolean (value));
+	case PROP_SHOW_ORIGIN:
+		gs_app_row_set_show_origin (app_row, g_value_get_boolean (value));
 		break;
 	case PROP_SHOW_BUTTONS:
 		gs_app_row_set_show_buttons (app_row, g_value_get_boolean (value));
@@ -955,14 +955,14 @@ gs_app_row_class_init (GsAppRowClass *klass)
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
-	 * GsAppRow:show-source:
+	 * GsAppRow:show-origin:
 	 *
-	 * Show the source of the app in the row.
+	 * Show the origin of the app in the row.
 	 *
-	 * Since: 3.38
+	 * Since: 49
 	 */
-	obj_props[PROP_SHOW_SOURCE] =
-		g_param_spec_boolean ("show-source", NULL, NULL,
+	obj_props[PROP_SHOW_ORIGIN] =
+		g_param_spec_boolean ("show-origin", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
@@ -1236,18 +1236,18 @@ gs_app_row_set_show_description (GsAppRow *app_row, gboolean show_description)
 }
 
 void
-gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
+gs_app_row_set_show_origin (GsAppRow *app_row, gboolean show_origin)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	g_return_if_fail (GS_IS_APP_ROW (app_row));
 
-	if ((!priv->show_source) == (!show_source))
+	if ((!priv->show_origin) == (!show_origin))
 		return;
 
-	priv->show_source = show_source;
+	priv->show_origin = show_origin;
 	gs_app_row_schedule_refresh (app_row);
-	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_SOURCE]);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_ORIGIN]);
 }
 
 void

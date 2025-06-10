@@ -57,7 +57,7 @@ void		 gs_shell_install		(GsShell		*shell,
 void		 gs_shell_uninstall		(GsShell	*shell,
 						 GsApp		*app);
 void		 gs_shell_show_installed_updates(GsShell	*shell);
-void		 gs_shell_show_sources		(GsShell	*shell);
+void		 gs_shell_show_repositories	(GsShell	*shell);
 void		 gs_shell_show_prefs		(GsShell	*shell);
 void		 gs_shell_show_app		(GsShell	*shell,
 						 GsApp		*app);

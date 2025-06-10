@@ -148,7 +148,7 @@ gs_plugin_dummy_adopt_app (GsPlugin *plugin,
 	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "com.hughski.ColorHug2.driver") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus-spell.addon") == 0 ||
-	    g_strcmp0 (gs_app_get_source_default (app), "chiron") == 0)
+	    g_strcmp0 (gs_app_get_default_source (app), "chiron") == 0)
 		gs_app_set_management_plugin (app, plugin);
 }
 

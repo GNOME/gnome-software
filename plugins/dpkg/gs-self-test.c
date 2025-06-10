@@ -41,7 +41,7 @@ gs_plugins_dpkg_func (GsPluginLoader *plugin_loader)
 	g_assert_nonnull (list);
 	g_assert_cmpuint (gs_app_list_length (list), ==, 1);
 	app = gs_app_list_index (list, 0);
-	g_assert_cmpstr (gs_app_get_source_default (app), ==, "chiron");
+	g_assert_cmpstr (gs_app_get_default_source (app), ==, "chiron");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "chiron");
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.1-1");

@@ -206,7 +206,7 @@ refine_app (GsPlugin                    *plugin,
 	}
 
 	/* this only works for packages */
-	origin = gs_app_get_source_id_default (app);
+	origin = gs_app_get_default_source_id (app);
 	if (origin == NULL)
 		return TRUE;
 	origin = g_strrstr (origin, ";");

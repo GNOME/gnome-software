@@ -32,6 +32,25 @@
  *
  * Information about other #GsApp objects can be stored in this object, for
  * instance in the gs_app_add_related() method or gs_app_get_history().
+ *
+ * ## Sources, origins and repositories
+ *
+ * A #GsApp may have sources and an origin. An app source is a string
+ * identifying where the app _can_ come from. For example, this could be a
+ * package name, such as `gnome-calculator`, or a flatpak ref, such as
+ * `org.gnome.Platform/x86_64/48`. An app can have zero or more sources.
+ *
+ * An app’s origin describes where it _has_ come from. For example, this could
+ * be a remote ID for a flatpak repository (such as `flathub-beta`), the ID
+ * of an RPM repository (such as `rpmfusion-nonfree`) or `local` for apps
+ * installed from a local package file which didn’t come from a repository.
+ *
+ * An app itself may be of kind %AS_COMPONENT_KIND_REPOSITORY, which means the
+ * app represents a software repository — either one on the internet, or a local
+ * `.flatpakrepo` or `.repo` file which the user has opened. Semantically, a
+ * repository is one possible origin for an app, although #GsApp’s origin
+ * properties don’t point to another #GsApp instance of kind
+ * %AS_COMPONENT_KIND_REPOSITORY.
  */
 
 #include "config.h"
@@ -322,8 +341,8 @@ _as_component_quirk_flag_to_string (GsAppQuirk quirk)
 		return "provenance";
 	case GS_APP_QUIRK_COMPULSORY:
 		return "compulsory";
-	case GS_APP_QUIRK_HAS_SOURCE:
-		return "has-source";
+	case GS_APP_QUIRK_LOCAL_HAS_REPOSITORY:
+		return "local-has-repository";
 	case GS_APP_QUIRK_IS_WILDCARD:
 		return "is-wildcard";
 	case GS_APP_QUIRK_NEEDS_REBOOT:
@@ -718,7 +737,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		GsApp *app_tmp = gs_app_list_index (priv->related, i);
 		const gchar *id = gs_app_get_unique_id (app_tmp);
 		if (id == NULL)
-			id = gs_app_get_source_default (app_tmp);
+			id = gs_app_get_default_source (app_tmp);
 		/* For example PackageKit can create apps without id */
 		if (id != NULL)
 			gs_app_kv_lpad (str, "related", id);
@@ -727,7 +746,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		GsApp *app_tmp = gs_app_list_index (priv->history, i);
 		const gchar *id = gs_app_get_unique_id (app_tmp);
 		if (id == NULL)
-			id = gs_app_get_source_default (app_tmp);
+			id = gs_app_get_default_source (app_tmp);
 		/* For example PackageKit can create apps without id */
 		if (id != NULL)
 			gs_app_kv_lpad (str, "history", id);
@@ -1483,17 +1502,18 @@ gs_app_set_branch (GsApp *app, const gchar *branch)
 }
 
 /**
- * gs_app_get_source_default:
+ * gs_app_get_default_source:
  * @app: a #GsApp
  *
  * Gets the default source.
  *
- * Returns: a string, or %NULL
+ * This is the first source in the app’s list of sources.
  *
- * Since: 3.22
+ * Returns: (nullable): a string, or %NULL if no sources are set
+ * Since: 49
  **/
 const gchar *
-gs_app_get_source_default (GsApp *app)
+gs_app_get_default_source (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
@@ -1539,6 +1559,8 @@ gs_app_add_source (GsApp *app, const gchar *source)
  *
  * Gets the list of sources for the application.
  *
+ * See the documentation for #GsApp for an overview of what sources are.
+ *
  * Returns: (element-type utf8) (transfer none): a list
  *
  * Since: 3.22
@@ -1573,17 +1595,20 @@ gs_app_set_sources (GsApp *app, GPtrArray *sources)
 }
 
 /**
- * gs_app_get_source_id_default:
+ * gs_app_get_default_source_id:
  * @app: a #GsApp
  *
  * Gets the default source ID.
  *
- * Returns: a string, or %NULL for unset
+ * This is the first source ID in the app’s list of source IDs.
  *
- * Since: 3.22
+ * See the documentation for #GsApp for an overview of what sources are.
+ *
+ * Returns: (nullable): a string, or %NULL if no source IDs are set
+ * Since: 49
  **/
 const gchar *
-gs_app_get_source_id_default (GsApp *app)
+gs_app_get_default_source_id (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
@@ -1597,6 +1622,8 @@ gs_app_get_source_id_default (GsApp *app)
  * @app: a #GsApp
  *
  * Gets the list of source IDs.
+ *
+ * See the documentation for #GsApp for an overview of what sources are.
  *
  * Returns: (element-type utf8) (transfer none): a list
  *
@@ -2852,6 +2879,8 @@ gs_app_set_menu_path (GsApp *app, gchar **menu_path)
  * @app: a #GsApp
  *
  * Gets the origin for the application, e.g. "fedora".
+ *
+ * See the documentation for #GsApp for an overview of what origins are.
  *
  * Returns: a string, or %NULL for unset
  *

@@ -122,7 +122,7 @@ typedef enum {
  * @GS_APP_QUIRK_NONE:			No special attributes
  * @GS_APP_QUIRK_PROVENANCE:		Installed by OS vendor
  * @GS_APP_QUIRK_COMPULSORY:		Cannot be removed
- * @GS_APP_QUIRK_HAS_SOURCE:		Has a source to allow staying up-to-date
+ * @GS_APP_QUIRK_LOCAL_HAS_REPOSITORY:	App is from a local file, but it contains repository information which allows it to be kept up-to-date (Since: 49)
  * @GS_APP_QUIRK_IS_WILDCARD:		Matches applications from any plugin
  * @GS_APP_QUIRK_NEEDS_REBOOT:		A reboot is required after the action
  * @GS_APP_QUIRK_NOT_REVIEWABLE:	The app is not reviewable
@@ -137,7 +137,7 @@ typedef enum {
  * @GS_APP_QUIRK_HIDE_FROM_SEARCH:	The app should not be shown in search results
  * @GS_APP_QUIRK_HIDE_EVERYWHERE:	The app should not be shown anywhere (it’s blocklisted)
  * @GS_APP_QUIRK_DO_NOT_AUTO_UPDATE:	The app should not be automatically updated
- * @GS_APP_QUIRK_DEVELOPMENT_SOURCE:	The app is from a development source (Since: 43)
+ * @GS_APP_QUIRK_FROM_DEVELOPMENT_REPOSITORY: The app is from a development/beta repository (Since: 49)
  *
  * The application attributes.
  **/
@@ -145,7 +145,7 @@ typedef enum {
 	GS_APP_QUIRK_NONE		= 0,		/* Since: 3.32 */
 	GS_APP_QUIRK_PROVENANCE		= 1 << 0,	/* Since: 3.32 */
 	GS_APP_QUIRK_COMPULSORY		= 1 << 1,	/* Since: 3.32 */
-	GS_APP_QUIRK_HAS_SOURCE		= 1 << 2,	/* Since: 3.32 */
+	GS_APP_QUIRK_LOCAL_HAS_REPOSITORY	= 1 << 2,	/* Since: 49 */
 	GS_APP_QUIRK_IS_WILDCARD	= 1 << 3,	/* Since: 3.32 */
 	GS_APP_QUIRK_NEEDS_REBOOT	= 1 << 4,	/* Since: 3.32 */
 	GS_APP_QUIRK_NOT_REVIEWABLE	= 1 << 5,	/* Since: 3.32 */
@@ -161,7 +161,7 @@ typedef enum {
 	GS_APP_QUIRK_HIDE_FROM_SEARCH	= 1 << 15,	/* Since: 3.32 */
 	GS_APP_QUIRK_HIDE_EVERYWHERE	= 1 << 16,	/* Since: 3.36 */
 	GS_APP_QUIRK_DO_NOT_AUTO_UPDATE	= 1 << 17,	/* Since: 3.36 */
-	GS_APP_QUIRK_DEVELOPMENT_SOURCE	= 1 << 18,	/* Since: 43 */
+	GS_APP_QUIRK_FROM_DEVELOPMENT_REPOSITORY = 1 << 18,	/* Since: 49 */
 	GS_APP_QUIRK_LAST  /*< skip >*/
 } GsAppQuirk;
 
@@ -297,13 +297,13 @@ void		 gs_app_set_name		(GsApp		*app,
 const gchar	*gs_app_get_renamed_from	(GsApp		*app);
 void		 gs_app_set_renamed_from	(GsApp		*app,
 						 const gchar	*renamed_from);
-const gchar	*gs_app_get_source_default	(GsApp		*app);
+const gchar	*gs_app_get_default_source	(GsApp		*app);
 void		 gs_app_add_source		(GsApp		*app,
 						 const gchar	*source);
 GPtrArray	*gs_app_get_sources		(GsApp		*app);
 void		 gs_app_set_sources		(GsApp		*app,
 						 GPtrArray	*sources);
-const gchar	*gs_app_get_source_id_default	(GsApp		*app);
+const gchar	*gs_app_get_default_source_id	(GsApp		*app);
 void		 gs_app_add_source_id		(GsApp		*app,
 						 const gchar	*source_id);
 GPtrArray	*gs_app_get_source_ids		(GsApp		*app);

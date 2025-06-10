@@ -2055,7 +2055,7 @@ static gboolean
 gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineRequireFlags flags)
 {
 	const gchar *tmp;
-	tmp = gs_app_get_source_id_default (app);
+	tmp = gs_app_get_default_source_id (app);
 	if (tmp != NULL)
 		return FALSE;
 	if ((flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION) > 0)
@@ -2395,12 +2395,12 @@ gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
 
 		if ((gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
 		     gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) &&
-		    gs_app_get_source_id_default (app) != NULL &&
+		    gs_app_get_default_source_id (app) != NULL &&
 		    gs_plugin_refine_requires_update_details (app, require_flags)) {
 			gs_app_list_add (update_details_list, app);
 		}
 
-		if (gs_app_get_source_id_default (app) != NULL &&
+		if (gs_app_get_default_source_id (app) != NULL &&
 		    gs_plugin_refine_app_needs_details (require_flags, app)) {
 			gs_app_list_add (details_list, app);
 		}
@@ -2516,7 +2516,7 @@ gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
 
 			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
-			if (gs_app_get_source_id_default (app) != NULL)
+			if (gs_app_get_default_source_id (app) != NULL)
 				continue;
 			if (!gs_app_has_management_plugin (app, NULL) &&
 			    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
@@ -2658,7 +2658,7 @@ gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
 		package_ids = g_new0 (const gchar *, gs_app_list_length (update_details_list) + 1);
 		for (guint i = 0; i < gs_app_list_length (update_details_list); i++) {
 			app = gs_app_list_index (update_details_list, i);
-			package_ids[i] = gs_app_get_source_id_default (app);
+			package_ids[i] = gs_app_get_default_source_id (app);
 			g_assert (package_ids[i] != NULL);  /* checked when update_details_list is built */
 		}
 
@@ -2830,13 +2830,13 @@ sources_related_got_installed_cb (GObject      *source_object,
 	for (guint i = 0; i < gs_app_list_length (installed); i++) {
 		g_auto(GStrv) split = NULL;
 		GsApp *app = gs_app_list_index (installed, i);
-		split = pk_package_id_split (gs_app_get_source_id_default (app));
+		split = pk_package_id_split (gs_app_get_default_source_id (app));
 		if (split == NULL) {
 			g_set_error (&local_error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "invalid package-id: %s",
-				     gs_app_get_source_id_default (app));
+				     gs_app_get_default_source_id (app));
 			refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -2845,7 +2845,7 @@ sources_related_got_installed_cb (GObject      *source_object,
 			GsApp *app_tmp = g_hash_table_lookup (sources_hash, id);
 			if (app_tmp != NULL) {
 				g_debug ("found package %s from %s",
-					 gs_app_get_source_default (app), id);
+					 gs_app_get_default_source (app), id);
 				gs_app_add_related (app_tmp, app);
 			}
 		}
@@ -3023,7 +3023,7 @@ get_update_detail_cb (GObject      *source_object,
 	array = pk_results_get_update_detail_array (results);
 	for (guint j = 0; j < gs_app_list_length (data->update_details_list); j++) {
 		GsApp *app = gs_app_list_index (data->update_details_list, j);
-		const gchar *package_id = gs_app_get_source_id_default (app);
+		const gchar *package_id = gs_app_get_default_source_id (app);
 
 		for (guint i = 0; i < array->len; i++) {
 			const gchar *tmp;
@@ -3129,7 +3129,7 @@ get_updates_cb (GObject      *source_object,
 
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
-		package_id = gs_app_get_source_id_default (app);
+		package_id = gs_app_get_default_source_id (app);
 		if (package_id == NULL)
 			continue;
 		pkg = pk_package_sack_find_by_id (sack, package_id);
@@ -3611,7 +3611,7 @@ gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
 	package_names = g_new0 (const gchar *, gs_app_list_length (list) + 1);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
-		package_names[i] = gs_app_get_source_default (app);
+		package_names[i] = gs_app_get_default_source (app);
 	}
 
 	g_debug ("getting history for %u packages", gs_app_list_length (list));
@@ -3697,7 +3697,7 @@ refine_history_cb (GObject      *source_object,
 		g_autoptr(GVariant) entries = NULL;
 		GsApp *app = gs_app_list_index (list, i);
 		ret = g_variant_lookup (tuple,
-					gs_app_get_source_default (app),
+					gs_app_get_default_source (app),
 					"@aa{sv}",
 					&entries);
 		if (!ret) {
@@ -3750,7 +3750,7 @@ add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 		NULL };
 
 	if (g_strv_contains (packages_with_repos, package_name))
-		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_LOCAL_HAS_REPOSITORY);
 }
 
 typedef struct {
@@ -3968,7 +3968,7 @@ file_to_app_get_details_local_cb (GObject      *source_object,
 	data->app = g_steal_pointer (&app);
 
 	/* is already installed? */
-	names[0] = gs_app_get_source_default (data->app);
+	names[0] = gs_app_get_default_source (data->app);
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
 					 PK_FILTER_ENUM_INSTALLED,
@@ -4083,7 +4083,7 @@ file_to_app_get_files_cb (GObject      *source_object,
 		for (guint j = 0; fns[j] != NULL; j++) {
 			if (g_str_has_prefix (fns[j], "/etc/yum.repos.d/") &&
 			    g_str_has_suffix (fns[j], ".repo")) {
-				gs_app_add_quirk (data->app, GS_APP_QUIRK_HAS_SOURCE);
+				gs_app_add_quirk (data->app, GS_APP_QUIRK_LOCAL_HAS_REPOSITORY);
 			}
 			if (g_str_has_prefix (fns[j], "/usr/share/applications/") &&
 			    g_str_has_suffix (fns[j], ".desktop")) {
