@@ -66,8 +66,17 @@ struct _GsShell
 	AdwApplicationWindow	 parent_object;
 
 	GSettings		*settings;
+	gulong			 settings_changed_download_updates_id;
+
 	GCancellable		*cancellable;
+
 	GsPluginLoader		*plugin_loader;
+	gulong			 plugin_loader_reload_id;
+	gulong			 plugin_loader_notify_events_id;
+	gulong			 plugin_loader_notify_network_metered_id;
+	gulong			 plugin_loader_basic_auth_start_id;
+	gulong			 plugin_loader_ask_untrusted_id;
+
 	GtkWidget		*header_start_widget;
 	GtkWidget		*header_end_widget;
 	GtkWidget		*sub_header_end_widget;
@@ -106,6 +115,7 @@ struct _GsShell
 	guint			 allocation_changed_cb_id;
 
 	GsPage			*pages[GS_SHELL_MODE_LAST];
+	gulong			 overview_page_refreshed_id;
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, ADW_TYPE_APPLICATION_WINDOW)
@@ -704,6 +714,13 @@ gs_shell_plugin_event_dismissed_cb (GsShell *shell)
 	guint i;
 	g_autoptr(GPtrArray) events = NULL;
 
+	/* If a toast is showing when the GsShell is disposed, libadwaita will
+	 * explicitly dismiss the toast. Unfortunately this happens after
+	 * chaining up from GsShell.dispose(), so the plugin loader has already
+	 * been cleared. */
+	if (shell->plugin_loader == NULL)
+		return;
+
 	/* mark any events currently showing as invalid */
 	events = gs_plugin_loader_get_events (shell->plugin_loader);
 	for (i = 0; i < events->len; i++) {
@@ -831,11 +848,12 @@ overview_page_refresh_done (GsOverviewPage *overview_page, gpointer data)
 {
 	GsShell *shell = data;
 
-	g_signal_handlers_disconnect_by_func (overview_page, overview_page_refresh_done, data);
+	g_clear_signal_handler (&shell->overview_page_refreshed_id, overview_page);
 
 	/* now that we're finished with the loading page, connect the reload signal handler */
-	g_signal_connect (shell->plugin_loader, "reload",
-	                  G_CALLBACK (gs_shell_reload_cb), shell);
+	shell->plugin_loader_reload_id =
+		g_signal_connect (shell->plugin_loader, "reload",
+			          G_CALLBACK (gs_shell_reload_cb), shell);
 
 	/* schedule to change the mode in an idle callback, since it can take a
 	 * while and this callback handler is typically called at the end of a
@@ -858,15 +876,17 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 	/* if the "loaded" signal handler didn't change the mode, kick off async
 	 * overview page refresh, and switch to the page once done */
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_LOADING || been_overview) {
-		g_signal_connect (shell->pages[GS_SHELL_MODE_OVERVIEW], "refreshed",
-		                  G_CALLBACK (overview_page_refresh_done), shell);
+		shell->overview_page_refreshed_id =
+			g_signal_connect (shell->pages[GS_SHELL_MODE_OVERVIEW], "refreshed",
+				          G_CALLBACK (overview_page_refresh_done), shell);
 		gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_OVERVIEW]));
 		return;
 	}
 
 	/* now that we're finished with the loading page, connect the reload signal handler */
-	g_signal_connect (shell->plugin_loader, "reload",
-	                  G_CALLBACK (gs_shell_reload_cb), shell);
+	shell->plugin_loader_reload_id =
+		g_signal_connect (shell->plugin_loader, "reload",
+			          G_CALLBACK (gs_shell_reload_cb), shell);
 }
 
 static gboolean
@@ -2192,8 +2212,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	gs_shell_setup_pages (shell);
 
 	/* set up the metered data info bar and mogwai */
-	g_signal_connect (shell->settings, "changed::download-updates",
-			  (GCallback) gs_shell_download_updates_changed_cb, shell);
+	shell->settings_changed_download_updates_id =
+		g_signal_connect (shell->settings, "changed::download-updates",
+				  (GCallback) gs_shell_download_updates_changed_cb, shell);
 
 	odrs_provider = gs_plugin_loader_get_odrs_provider (shell->plugin_loader);
 	gs_details_page_set_odrs_provider (GS_DETAILS_PAGE (shell->pages[GS_SHELL_MODE_DETAILS]), odrs_provider);
@@ -2459,6 +2480,8 @@ gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
 
+	g_clear_signal_handler (&shell->overview_page_refreshed_id, shell->pages[GS_SHELL_MODE_OVERVIEW]);
+
 	g_clear_object (&shell->sub_page_header_title_binding);
 
 	if (shell->back_entry_stack != NULL) {
@@ -2466,11 +2489,20 @@ gs_shell_dispose (GObject *object)
 		shell->back_entry_stack = NULL;
 	}
 	g_clear_object (&shell->cancellable);
+
+	g_clear_signal_handler (&shell->plugin_loader_reload_id, shell->plugin_loader);
+	g_clear_signal_handler (&shell->plugin_loader_notify_events_id, shell->plugin_loader);
+	g_clear_signal_handler (&shell->plugin_loader_notify_network_metered_id, shell->plugin_loader);
+	g_clear_signal_handler (&shell->plugin_loader_basic_auth_start_id, shell->plugin_loader);
+	g_clear_signal_handler (&shell->plugin_loader_ask_untrusted_id, shell->plugin_loader);
 	g_clear_object (&shell->plugin_loader);
+
 	g_clear_object (&shell->header_start_widget);
 	g_clear_object (&shell->header_end_widget);
 	g_clear_object (&shell->sub_header_end_widget);
 	g_clear_object (&shell->page);
+
+	g_clear_signal_handler (&shell->settings_changed_download_updates_id, shell->settings);
 	g_clear_object (&shell->settings);
 
 #ifdef HAVE_MOGWAI
