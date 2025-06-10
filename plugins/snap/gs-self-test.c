@@ -285,7 +285,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 				  NULL);
 	plugin_job_list = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	gs_plugin_loader_job_process (plugin_loader, plugin_job_list, NULL, &error);
-	apps = gs_plugin_job_list_apps_get_result_list (plugin_job_list);
+	apps = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job_list));
 	g_assert_no_error (error);
 	g_assert_nonnull (apps);
 	g_assert_cmpint (gs_app_list_length (apps), ==, 1);
