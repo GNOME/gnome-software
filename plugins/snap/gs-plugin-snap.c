@@ -1485,7 +1485,7 @@ gs_plugin_snap_refine_async (GsPlugin                   *plugin,
 		gs_app_list_add (snap_apps, app);
 	}
 
-	data = gs_plugin_refine_data_new (snap_apps, job_flags, require_flags);
+	data = gs_plugin_refine_data_new (snap_apps, job_flags, require_flags, event_callback, event_user_data);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) gs_plugin_refine_data_free);
 
 	client = get_client (self, interactive, &local_error);
