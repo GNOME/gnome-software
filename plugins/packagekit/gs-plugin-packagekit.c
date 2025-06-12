@@ -3224,21 +3224,9 @@ static gboolean gs_plugin_packagekit_download_finish (GsPluginPackagekit  *self,
                                                       GAsyncResult        *result,
                                                       GError             **error);
 
-static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
-{
-	GAsyncResult **result_out = user_data;
-
-	g_assert (result_out != NULL && *result_out == NULL);
-	*result_out = g_object_ref (result);
-	g_main_context_wakeup (g_main_context_get_thread_default ());
-}
-
-/* Any events from the auto-prepare-update thread need to be reported via
+/* Any events from the auto-prepare-update job need to be reported via
  * `GsPlugin`’s event code (rather than, as is more typical, a
- * `GsPluginEventCallback` provided by a `GsPluginJob`) because this thread is
+ * `GsPluginEventCallback` provided by a `GsPluginJob`) because this job is
  * started in response to an external system change, and is not tied to any
  * `GsPluginJob`.
  *
@@ -3250,63 +3238,6 @@ prepare_update_event_cb (GsPlugin      *plugin,
                          void          *user_data)
 {
 	gs_plugin_report_event (plugin, event);
-}
-
-static void
-gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
-						 gpointer source_object,
-						 gpointer task_data,
-						 GCancellable *cancellable)
-{
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
-	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GError) local_error = NULL;
-	gboolean interactive = FALSE; /* this is done in the background, thus not interactive */
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (GS_PLUGIN (self));
-	g_autoptr(PkTask) task_updates = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GMainContext) context = g_main_context_new ();
-	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
-	g_autoptr(GAsyncResult) get_updates_result = NULL;
-
-	list = gs_app_list_new ();
-
-	/* do sync call */
-	task_updates = gs_packagekit_task_new (GS_PLUGIN (self));
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
-	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
-
-	pk_client_get_updates_async (PK_CLIENT (task_updates),
-				     pk_bitfield_value (PK_FILTER_ENUM_NONE),
-				     cancellable,
-				     gs_packagekit_helper_cb, helper,
-				     async_result_cb, &get_updates_result);
-	while (get_updates_result == NULL)
-		g_main_context_iteration (context, TRUE);
-
-	results = pk_client_generic_finish (PK_CLIENT (task_updates), get_updates_result, &local_error);
-	if (!gs_plugin_package_list_updates_process_results (GS_PLUGIN (self), results, list, cancellable, &local_error)) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	if (gs_app_list_length (list) > 0) {
-		g_autoptr(GAsyncResult) result = NULL;
-
-		gs_plugin_packagekit_download_async (self, list, interactive, prepare_update_event_cb, NULL, cancellable, async_result_cb, &result);
-		while (result == NULL)
-			g_main_context_iteration (context, TRUE);
-
-		if (!gs_plugin_packagekit_download_finish (self, result, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
-	}
-
-	/* Ignore errors here */
-	gs_plugin_systemd_update_cache (self, cancellable, NULL);
-
-	g_task_return_boolean (task, TRUE);
 }
 
 static void
@@ -3324,19 +3255,92 @@ gs_plugin_packagekit_auto_prepare_update_cb (GObject *source_object,
 	}
 }
 
+static void prepare_update_get_updates_cb (GObject      *source_object,
+                                           GAsyncResult *result,
+                                           void         *user_data);
+static void prepare_update_download_cb (GObject      *source_object,
+                                        GAsyncResult *result,
+                                        void         *user_data);
+
 static gboolean
 gs_plugin_packagekit_run_prepare_update_cb (gpointer user_data)
 {
-	GsPluginPackagekit *self = user_data;
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (user_data);
 	g_autoptr(GTask) task = NULL;
+	GCancellable *cancellable = self->proxy_settings_cancellable;
+	gboolean interactive = FALSE; /* this is done in the background, thus not interactive */
+	g_autoptr(GsPackagekitHelper) helper = NULL;
+	g_autoptr(PkTask) task_updates = NULL;
 
 	self->prepare_update_timeout_id = 0;
 
 	g_debug ("Going to auto-prepare update");
-	task = g_task_new (self, self->proxy_settings_cancellable, gs_plugin_packagekit_auto_prepare_update_cb, NULL);
+	task = g_task_new (self, cancellable, gs_plugin_packagekit_auto_prepare_update_cb, NULL);
 	g_task_set_source_tag (task, gs_plugin_packagekit_run_prepare_update_cb);
-	g_task_run_in_thread (task, gs_plugin_packagekit_auto_prepare_update_thread);
+
+	/* Get updates */
+	task_updates = gs_packagekit_task_new (GS_PLUGIN (self));
+	helper = gs_packagekit_helper_new (GS_PLUGIN (self));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_updates), helper);
+
+	pk_client_get_updates_async (PK_CLIENT (task_updates),
+				     pk_bitfield_value (PK_FILTER_ENUM_NONE),
+				     cancellable,
+				     gs_packagekit_helper_cb, g_steal_pointer (&helper),
+				     prepare_update_get_updates_cb, g_steal_pointer (&task));
+
 	return G_SOURCE_REMOVE;
+}
+
+static void
+prepare_update_get_updates_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               void         *user_data)
+{
+	PkTask *task_updates = PK_TASK (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	gboolean interactive = FALSE; /* this is done in the background, thus not interactive */
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(PkResults) results = NULL;
+
+	list = gs_app_list_new ();
+	results = pk_client_generic_finish (PK_CLIENT (task_updates), result, &local_error);
+	if (!gs_plugin_package_list_updates_process_results (GS_PLUGIN (self), results, list, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* It’s OK to call this with an empty list; it’ll return immediately */
+	gs_plugin_packagekit_download_async (self, list, interactive,
+					     prepare_update_event_cb, NULL,
+					     cancellable,
+					     prepare_update_download_cb, g_steal_pointer (&task));
+}
+
+static void
+prepare_update_download_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            void         *user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_packagekit_download_finish (self, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Ignore errors here */
+	gs_plugin_systemd_update_cache (self, cancellable, NULL);
+
+	g_task_return_boolean (task, TRUE);
 }
 
 /* Run in the main thread. */
