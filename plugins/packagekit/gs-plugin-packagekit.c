@@ -1395,31 +1395,6 @@ gs_plugin_package_list_updates_process_results (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_packagekit_add_updates (GsPlugin *plugin,
-				  GsAppList *list,
-				  gboolean interactive,
-				  GCancellable *cancellable,
-				  GError **error)
-{
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_updates = NULL;
-	g_autoptr(PkResults) results = NULL;
-
-	/* do sync call */
-	task_updates = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
-	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
-
-	results = pk_client_get_updates (PK_CLIENT (task_updates),
-					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-
-	return gs_plugin_package_list_updates_process_results (plugin, results, list, cancellable, error);
-}
-
 static void
 gs_packagekit_list_updates_cb (GObject *source_object,
 			       GAsyncResult *result,
@@ -3287,9 +3262,24 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) local_error = NULL;
 	gboolean interactive = FALSE; /* this is done in the background, thus not interactive */
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (GS_PLUGIN (self));
+	g_autoptr(PkTask) task_updates = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	list = gs_app_list_new ();
-	if (!gs_plugin_packagekit_add_updates (GS_PLUGIN (self), list, interactive, cancellable, &local_error)) {
+
+	/* do sync call */
+	task_updates = gs_packagekit_task_new (GS_PLUGIN (self));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
+
+	results = pk_client_get_updates (PK_CLIENT (task_updates),
+					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
+					 cancellable,
+					 gs_packagekit_helper_cb, helper,
+					 &local_error);
+
+	if (!gs_plugin_package_list_updates_process_results (GS_PLUGIN (self), results, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
