@@ -3265,6 +3265,9 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (GS_PLUGIN (self));
 	g_autoptr(PkTask) task_updates = NULL;
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMainContext) context = g_main_context_new ();
+	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
+	g_autoptr(GAsyncResult) get_updates_result = NULL;
 
 	list = gs_app_list_new ();
 
@@ -3273,20 +3276,21 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
 	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
 
-	results = pk_client_get_updates (PK_CLIENT (task_updates),
-					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 &local_error);
+	pk_client_get_updates_async (PK_CLIENT (task_updates),
+				     pk_bitfield_value (PK_FILTER_ENUM_NONE),
+				     cancellable,
+				     gs_packagekit_helper_cb, helper,
+				     async_result_cb, &get_updates_result);
+	while (get_updates_result == NULL)
+		g_main_context_iteration (context, TRUE);
 
+	results = pk_client_generic_finish (PK_CLIENT (task_updates), get_updates_result, &local_error);
 	if (!gs_plugin_package_list_updates_process_results (GS_PLUGIN (self), results, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	if (gs_app_list_length (list) > 0) {
-		g_autoptr(GMainContext) context = g_main_context_new ();
-		g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
 		g_autoptr(GAsyncResult) result = NULL;
 
 		gs_plugin_packagekit_download_async (self, list, interactive, prepare_update_event_cb, NULL, cancellable, async_result_cb, &result);
