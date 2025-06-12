@@ -592,7 +592,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	for (i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
 		GIcon *icon = g_ptr_array_index (priv->icons, i);
 		g_autofree gchar *icon_str = g_icon_to_string (icon);
-		gs_app_kv_lpad (str, "icon", icon_str);
+		gs_app_kv_lpad (str, "icon", (icon_str != NULL) ? icon_str : G_OBJECT_TYPE_NAME (icon));
 	}
 	if (priv->match_value != 0)
 		gs_app_kv_printf (str, "match-value", "%05x", priv->match_value);
