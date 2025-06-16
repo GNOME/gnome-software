@@ -3240,25 +3240,13 @@ prepare_update_event_cb (GsPlugin      *plugin,
 	gs_plugin_report_event (plugin, event);
 }
 
-static void
-gs_plugin_packagekit_auto_prepare_update_cb (GObject *source_object,
-					     GAsyncResult *result,
-					     gpointer user_data)
-{
-	g_autoptr(GError) local_error = NULL;
-
-	if (g_task_propagate_boolean (G_TASK (result), &local_error)) {
-		g_debug ("Successfully auto-prepared update");
-		gs_plugin_updates_changed (GS_PLUGIN (source_object));
-	} else {
-		g_debug ("Failed to auto-prepare update: %s", local_error->message);
-	}
-}
-
 static void prepare_update_get_updates_cb (GObject      *source_object,
                                            GAsyncResult *result,
                                            void         *user_data);
 static void prepare_update_download_cb (GObject      *source_object,
+                                        GAsyncResult *result,
+                                        void         *user_data);
+static void prepare_update_finished_cb (GObject      *source_object,
                                         GAsyncResult *result,
                                         void         *user_data);
 
@@ -3275,7 +3263,7 @@ gs_plugin_packagekit_run_prepare_update_cb (gpointer user_data)
 	self->prepare_update_timeout_id = 0;
 
 	g_debug ("Going to auto-prepare update");
-	task = g_task_new (self, cancellable, gs_plugin_packagekit_auto_prepare_update_cb, NULL);
+	task = g_task_new (self, cancellable, prepare_update_finished_cb, NULL);
 	g_task_set_source_tag (task, gs_plugin_packagekit_run_prepare_update_cb);
 
 	/* Get updates */
@@ -3341,6 +3329,21 @@ prepare_update_download_cb (GObject      *source_object,
 	gs_plugin_systemd_update_cache (self, cancellable, NULL);
 
 	g_task_return_boolean (task, TRUE);
+}
+
+static void
+prepare_update_finished_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            void         *user_data)
+{
+	g_autoptr(GError) local_error = NULL;
+
+	if (g_task_propagate_boolean (G_TASK (result), &local_error)) {
+		g_debug ("Successfully auto-prepared update");
+		gs_plugin_updates_changed (GS_PLUGIN (source_object));
+	} else {
+		g_debug ("Failed to auto-prepare update: %s", local_error->message);
+	}
 }
 
 /* Run in the main thread. */
