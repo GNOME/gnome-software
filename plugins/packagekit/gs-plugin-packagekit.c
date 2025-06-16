@@ -84,7 +84,6 @@ struct _GsPluginPackagekit {
 	GPermission		*permission;
 	gboolean		 is_triggered;
 	GHashTable		*prepared_updates;  /* (element-type utf8); set of package IDs for updates which are already prepared */
-	GMutex			 prepared_updates_mutex;
 	guint			 prepare_update_timeout_id;
 
 	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
@@ -203,7 +202,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), self);
 
 	/* offline updates */
-	g_mutex_init (&self->prepared_updates_mutex);
 	self->prepared_updates = g_hash_table_new_full (g_str_hash, g_str_equal,
 							g_free, NULL);
 
@@ -272,7 +270,6 @@ gs_plugin_packagekit_finalize (GObject *object)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
 
-	g_mutex_clear (&self->prepared_updates_mutex);
 	g_mutex_clear (&self->cached_sources_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
@@ -2072,7 +2069,6 @@ gs_plugin_systemd_update_cache (GsPluginPackagekit  *self,
 	g_autoptr(GError) error_local = NULL;
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GHashTable) new_prepared_updates = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* get new list of package-ids. This loads a local file, so should be
 	 * just about fast enough to be sync. */
@@ -2098,7 +2094,6 @@ gs_plugin_systemd_update_cache (GsPluginPackagekit  *self,
 	g_clear_pointer (&package_ids, g_free);
 
 	/* Update the shared state. */
-	locker = g_mutex_locker_new (&self->prepared_updates_mutex);
 	g_clear_pointer (&self->prepared_updates, g_hash_table_unref);
 	self->prepared_updates = g_steal_pointer (&new_prepared_updates);
 
@@ -3063,9 +3058,7 @@ get_details_cb (GObject      *source_object,
 	details_collection = gs_plugin_packagekit_details_array_to_hash (array);
 
 	/* set the update details for the update */
-	g_mutex_lock (&self->prepared_updates_mutex);
 	prepared_updates = g_hash_table_ref (self->prepared_updates);
-	g_mutex_unlock (&self->prepared_updates_mutex);
 
 	for (guint i = 0; i < gs_app_list_length (data->details_list); i++) {
 		GsApp *app = gs_app_list_index (data->details_list, i);
@@ -4222,9 +4215,7 @@ gs_plugin_packagekit_url_to_app_resolved_cb (GObject *source_object,
 		if (gs_app_get_local_file (app) == NULL) {
 			details_collection = gs_plugin_packagekit_details_array_to_hash (details);
 
-			g_mutex_lock (&self->prepared_updates_mutex);
 			prepared_updates = g_hash_table_ref (self->prepared_updates);
-			g_mutex_unlock (&self->prepared_updates_mutex);
 
 			gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
 			gs_plugin_packagekit_refine_details_app (plugin, details_collection, prepared_updates, app);
