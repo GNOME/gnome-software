@@ -89,7 +89,6 @@ struct _GsPluginPackagekit {
 	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
 
 	GHashTable		*cached_sources; /* (nullable) (owned) (element-type utf8 GsApp); sources by id, each value is weak reffed */
-	GMutex			 cached_sources_mutex;
 };
 
 G_DEFINE_TYPE (GsPluginPackagekit, gs_plugin_packagekit, GS_TYPE_PLUGIN)
@@ -147,9 +146,6 @@ cached_sources_weak_ref_cb (gpointer user_data,
 	GsPluginPackagekit *self = user_data;
 	GHashTableIter iter;
 	gpointer key, value;
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
 
 	g_assert (self->cached_sources != NULL);
 
@@ -204,8 +200,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	/* offline updates */
 	self->prepared_updates = g_hash_table_new_full (g_str_hash, g_str_equal,
 							g_free, NULL);
-
-	g_mutex_init (&self->cached_sources_mutex);
 
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
@@ -263,16 +257,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	}
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->dispose (object);
-}
-
-static void
-gs_plugin_packagekit_finalize (GObject *object)
-{
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
-
-	g_mutex_clear (&self->cached_sources_mutex);
-
-	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
 }
 
 static gboolean
@@ -396,7 +380,6 @@ gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
                                           GError             **error)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsApp) repo_app = NULL;
 	const gchar *repo_id;
@@ -410,7 +393,6 @@ gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
 		return NULL;
 	}
 
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
 	repo_app = g_hash_table_lookup (self->cached_sources, repo_id);
 	if (repo_app != NULL) {
 		g_object_ref (repo_app);
@@ -423,8 +405,6 @@ gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
 		gs_app_add_quirk (repo_app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_plugin_packagekit_set_packaging_format (plugin, repo_app);
 	}
-
-	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	return g_steal_pointer (&repo_app);
 }
@@ -1538,7 +1518,6 @@ gs_packagekit_list_sources_cb (GObject *source_object,
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GsAppList) list = gs_app_list_new ();
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GError) local_error = NULL;
@@ -1550,7 +1529,7 @@ gs_packagekit_list_sources_cb (GObject *source_object,
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+
 	if (self->cached_sources == NULL)
 		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	array = pk_results_get_repo_detail_array (results);
@@ -5448,7 +5427,6 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_packagekit_dispose;
-	object_class->finalize = gs_plugin_packagekit_finalize;
 
 	plugin_class->adopt_app = gs_plugin_packagekit_adopt_app;
 	plugin_class->setup_async = gs_plugin_packagekit_setup_async;
