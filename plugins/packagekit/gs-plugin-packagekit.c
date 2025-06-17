@@ -84,13 +84,11 @@ struct _GsPluginPackagekit {
 	GPermission		*permission;
 	gboolean		 is_triggered;
 	GHashTable		*prepared_updates;  /* (element-type utf8); set of package IDs for updates which are already prepared */
-	GMutex			 prepared_updates_mutex;
 	guint			 prepare_update_timeout_id;
 
 	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
 
 	GHashTable		*cached_sources; /* (nullable) (owned) (element-type utf8 GsApp); sources by id, each value is weak reffed */
-	GMutex			 cached_sources_mutex;
 };
 
 G_DEFINE_TYPE (GsPluginPackagekit, gs_plugin_packagekit, GS_TYPE_PLUGIN)
@@ -148,9 +146,6 @@ cached_sources_weak_ref_cb (gpointer user_data,
 	GsPluginPackagekit *self = user_data;
 	GHashTableIter iter;
 	gpointer key, value;
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
 
 	g_assert (self->cached_sources != NULL);
 
@@ -203,11 +198,8 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), self);
 
 	/* offline updates */
-	g_mutex_init (&self->prepared_updates_mutex);
 	self->prepared_updates = g_hash_table_new_full (g_str_hash, g_str_equal,
 							g_free, NULL);
-
-	g_mutex_init (&self->cached_sources_mutex);
 
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
@@ -265,17 +257,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	}
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->dispose (object);
-}
-
-static void
-gs_plugin_packagekit_finalize (GObject *object)
-{
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
-
-	g_mutex_clear (&self->prepared_updates_mutex);
-	g_mutex_clear (&self->cached_sources_mutex);
-
-	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
 }
 
 static gboolean
@@ -399,7 +380,6 @@ gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
                                           GError             **error)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsApp) repo_app = NULL;
 	const gchar *repo_id;
@@ -413,7 +393,6 @@ gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
 		return NULL;
 	}
 
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
 	repo_app = g_hash_table_lookup (self->cached_sources, repo_id);
 	if (repo_app != NULL) {
 		g_object_ref (repo_app);
@@ -426,8 +405,6 @@ gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
 		gs_app_add_quirk (repo_app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_plugin_packagekit_set_packaging_format (plugin, repo_app);
 	}
-
-	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	return g_steal_pointer (&repo_app);
 }
@@ -1395,31 +1372,6 @@ gs_plugin_package_list_updates_process_results (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_packagekit_add_updates (GsPlugin *plugin,
-				  GsAppList *list,
-				  gboolean interactive,
-				  GCancellable *cancellable,
-				  GError **error)
-{
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_updates = NULL;
-	g_autoptr(PkResults) results = NULL;
-
-	/* do sync call */
-	task_updates = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
-	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
-
-	results = pk_client_get_updates (PK_CLIENT (task_updates),
-					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-
-	return gs_plugin_package_list_updates_process_results (plugin, results, list, cancellable, error);
-}
-
 static void
 gs_packagekit_list_updates_cb (GObject *source_object,
 			       GAsyncResult *result,
@@ -1566,7 +1518,6 @@ gs_packagekit_list_sources_cb (GObject *source_object,
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GsAppList) list = gs_app_list_new ();
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GError) local_error = NULL;
@@ -1578,7 +1529,7 @@ gs_packagekit_list_sources_cb (GObject *source_object,
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
-	locker = g_mutex_locker_new (&self->cached_sources_mutex);
+
 	if (self->cached_sources == NULL)
 		self->cached_sources = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	array = pk_results_get_repo_detail_array (results);
@@ -2097,7 +2048,6 @@ gs_plugin_systemd_update_cache (GsPluginPackagekit  *self,
 	g_autoptr(GError) error_local = NULL;
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GHashTable) new_prepared_updates = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* get new list of package-ids. This loads a local file, so should be
 	 * just about fast enough to be sync. */
@@ -2123,7 +2073,6 @@ gs_plugin_systemd_update_cache (GsPluginPackagekit  *self,
 	g_clear_pointer (&package_ids, g_free);
 
 	/* Update the shared state. */
-	locker = g_mutex_locker_new (&self->prepared_updates_mutex);
 	g_clear_pointer (&self->prepared_updates, g_hash_table_unref);
 	self->prepared_updates = g_steal_pointer (&new_prepared_updates);
 
@@ -3088,9 +3037,7 @@ get_details_cb (GObject      *source_object,
 	details_collection = gs_plugin_packagekit_details_array_to_hash (array);
 
 	/* set the update details for the update */
-	g_mutex_lock (&self->prepared_updates_mutex);
 	prepared_updates = g_hash_table_ref (self->prepared_updates);
-	g_mutex_unlock (&self->prepared_updates_mutex);
 
 	for (guint i = 0; i < gs_app_list_length (data->details_list); i++) {
 		GsApp *app = gs_app_list_index (data->details_list, i);
@@ -3249,21 +3196,9 @@ static gboolean gs_plugin_packagekit_download_finish (GsPluginPackagekit  *self,
                                                       GAsyncResult        *result,
                                                       GError             **error);
 
-static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
-{
-	GAsyncResult **result_out = user_data;
-
-	g_assert (result_out != NULL && *result_out == NULL);
-	*result_out = g_object_ref (result);
-	g_main_context_wakeup (g_main_context_get_thread_default ());
-}
-
-/* Any events from the auto-prepare-update thread need to be reported via
+/* Any events from the auto-prepare-update job need to be reported via
  * `GsPlugin`’s event code (rather than, as is more typical, a
- * `GsPluginEventCallback` provided by a `GsPluginJob`) because this thread is
+ * `GsPluginEventCallback` provided by a `GsPluginJob`) because this job is
  * started in response to an external system change, and is not tied to any
  * `GsPluginJob`.
  *
@@ -3277,36 +3212,89 @@ prepare_update_event_cb (GsPlugin      *plugin,
 	gs_plugin_report_event (plugin, event);
 }
 
-static void
-gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
-						 gpointer source_object,
-						 gpointer task_data,
-						 GCancellable *cancellable)
+static void prepare_update_get_updates_cb (GObject      *source_object,
+                                           GAsyncResult *result,
+                                           void         *user_data);
+static void prepare_update_download_cb (GObject      *source_object,
+                                        GAsyncResult *result,
+                                        void         *user_data);
+static void prepare_update_finished_cb (GObject      *source_object,
+                                        GAsyncResult *result,
+                                        void         *user_data);
+
+static gboolean
+gs_plugin_packagekit_run_prepare_update_cb (gpointer user_data)
 {
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (user_data);
+	g_autoptr(GTask) task = NULL;
+	GCancellable *cancellable = self->proxy_settings_cancellable;
+	gboolean interactive = FALSE; /* this is done in the background, thus not interactive */
+	g_autoptr(GsPackagekitHelper) helper = NULL;
+	g_autoptr(PkTask) task_updates = NULL;
+
+	self->prepare_update_timeout_id = 0;
+
+	g_debug ("Going to auto-prepare update");
+	task = g_task_new (self, cancellable, prepare_update_finished_cb, NULL);
+	g_task_set_source_tag (task, gs_plugin_packagekit_run_prepare_update_cb);
+
+	/* Get updates */
+	task_updates = gs_packagekit_task_new (GS_PLUGIN (self));
+	helper = gs_packagekit_helper_new (GS_PLUGIN (self));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_updates), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_packagekit_helper_set_allow_emit_updates_changed (helper, FALSE);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_updates), helper);
+
+	pk_client_get_updates_async (PK_CLIENT (task_updates),
+				     pk_bitfield_value (PK_FILTER_ENUM_NONE),
+				     cancellable,
+				     gs_packagekit_helper_cb, g_steal_pointer (&helper),
+				     prepare_update_get_updates_cb, g_steal_pointer (&task));
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+prepare_update_get_updates_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               void         *user_data)
+{
+	PkTask *task_updates = PK_TASK (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	gboolean interactive = FALSE; /* this is done in the background, thus not interactive */
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) local_error = NULL;
-	gboolean interactive = FALSE; /* this is done in the background, thus not interactive */
+	g_autoptr(PkResults) results = NULL;
 
 	list = gs_app_list_new ();
-	if (!gs_plugin_packagekit_add_updates (GS_PLUGIN (self), list, interactive, cancellable, &local_error)) {
+	results = pk_client_generic_finish (PK_CLIENT (task_updates), result, &local_error);
+	if (!gs_plugin_package_list_updates_process_results (GS_PLUGIN (self), results, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	if (gs_app_list_length (list) > 0) {
-		g_autoptr(GMainContext) context = g_main_context_new ();
-		g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
-		g_autoptr(GAsyncResult) result = NULL;
+	/* It’s OK to call this with an empty list; it’ll return immediately */
+	gs_plugin_packagekit_download_async (self, list, interactive,
+					     prepare_update_event_cb, NULL,
+					     cancellable,
+					     prepare_update_download_cb, g_steal_pointer (&task));
+}
 
-		gs_plugin_packagekit_download_async (self, list, interactive, prepare_update_event_cb, NULL, cancellable, async_result_cb, &result);
-		while (result == NULL)
-			g_main_context_iteration (context, TRUE);
+static void
+prepare_update_download_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            void         *user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
 
-		if (!gs_plugin_packagekit_download_finish (self, result, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
+	if (!gs_plugin_packagekit_download_finish (self, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* Ignore errors here */
@@ -3316,9 +3304,9 @@ gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
 }
 
 static void
-gs_plugin_packagekit_auto_prepare_update_cb (GObject *source_object,
-					     GAsyncResult *result,
-					     gpointer user_data)
+prepare_update_finished_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            void         *user_data)
 {
 	g_autoptr(GError) local_error = NULL;
 
@@ -3328,21 +3316,6 @@ gs_plugin_packagekit_auto_prepare_update_cb (GObject *source_object,
 	} else {
 		g_debug ("Failed to auto-prepare update: %s", local_error->message);
 	}
-}
-
-static gboolean
-gs_plugin_packagekit_run_prepare_update_cb (gpointer user_data)
-{
-	GsPluginPackagekit *self = user_data;
-	g_autoptr(GTask) task = NULL;
-
-	self->prepare_update_timeout_id = 0;
-
-	g_debug ("Going to auto-prepare update");
-	task = g_task_new (self, self->proxy_settings_cancellable, gs_plugin_packagekit_auto_prepare_update_cb, NULL);
-	g_task_set_source_tag (task, gs_plugin_packagekit_run_prepare_update_cb);
-	g_task_run_in_thread (task, gs_plugin_packagekit_auto_prepare_update_thread);
-	return G_SOURCE_REMOVE;
 }
 
 /* Run in the main thread. */
@@ -4221,9 +4194,7 @@ gs_plugin_packagekit_url_to_app_resolved_cb (GObject *source_object,
 		if (gs_app_get_local_file (app) == NULL) {
 			details_collection = gs_plugin_packagekit_details_array_to_hash (details);
 
-			g_mutex_lock (&self->prepared_updates_mutex);
 			prepared_updates = g_hash_table_ref (self->prepared_updates);
-			g_mutex_unlock (&self->prepared_updates_mutex);
 
 			gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
 			gs_plugin_packagekit_refine_details_app (plugin, details_collection, prepared_updates, app);
@@ -5456,7 +5427,6 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_packagekit_dispose;
-	object_class->finalize = gs_plugin_packagekit_finalize;
 
 	plugin_class->adopt_app = gs_plugin_packagekit_adopt_app;
 	plugin_class->setup_async = gs_plugin_packagekit_setup_async;
