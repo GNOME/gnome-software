@@ -200,27 +200,38 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 {
 	gboolean has_important = FALSE, all_downloaded = FALSE, any_downloaded = FALSE;
 	gboolean should_download, res = FALSE;
-	gint64 timestamp_days;
+	gint64 notification_timestamp_days;
 
-	if (!get_timestamp_difference_days (monitor, "update-notification-timestamp", &timestamp_days)) {
+	if (!get_timestamp_difference_days (monitor, "update-notification-timestamp", &notification_timestamp_days)) {
 		/* Large-enough number to succeed for the initial test */
-		timestamp_days = 365;
+		notification_timestamp_days = 365;
 	}
 
-	should_download = should_download_updates (monitor);
+	/* can_download reflects whether GNOME Software should *automatically*
+	 * download updates, not whether the user is able to do so. E.g. it is
+	 * false if power saving mode is enabled.
+	 *
+	 * Beware it is expected to be spuriously false, e.g. immediately after
+	 * resuming from suspend when no network is available for a second or
+	 * two. This is OK because it should not be spuriously false for
+	 * long periods of time.
+	 */
+	should_download = should_download_updates (monitor) && can_download;
+
 	if (apps != NULL)
 		check_updates_kind (apps, &has_important, &all_downloaded, &any_downloaded);
 
 	if (apps == NULL || !gs_app_list_length (apps)) {
-		/* Notify only when the download is disabled, or cannot download, and it's the 4th day or it's more than 7 days */
-		if ((!should_download || !can_download) && (timestamp_days >= 7 || timestamp_days == 4) &&
-		     gs_plugin_loader_get_allow_updates (monitor->plugin_loader)) {
+		if (!should_download &&
+		    gs_plugin_loader_get_allow_updates (monitor->plugin_loader) &&
+		    notification_timestamp_days >= 1 &&
+		    check_if_timestamp_more_than_days_ago (monitor, "check-timestamp", 7)) {
 			*out_title = _("Updates Are Out of Date");
 			*out_body = _("Please check for available updates");
 			res = TRUE;
 		}
 	} else if (has_important) {
-		if (timestamp_days >= 1) {
+		if (notification_timestamp_days >= 1) {
 			if (all_downloaded) {
 				*out_title = _("Critical Updates Ready to Install");
 				*out_body = _("Install critical updates as soon as possible");
@@ -232,14 +243,13 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 			}
 		}
 	} else if (all_downloaded) {
-		if (timestamp_days >= 3) {
+		if (notification_timestamp_days >= 3) {
 			*out_title = _("Updates Ready to Install");
 			*out_body = _("Software updates are ready and waiting");
 			res = TRUE;
 		}
-	/* To not hide downloaded updates for 14 days when new updates were discovered meanwhile.
-	   Never show "Available to Download" when it's supposed to download the updates. */
-	} else if (!should_download && timestamp_days >= 14) {
+	} else if (!should_download && notification_timestamp_days >= 3 &&
+		   check_if_timestamp_more_than_days_ago (monitor, "install-timestamp", 14)) {
 		*out_title = _("Updates Available to Download");
 		*out_body = _("Software updates can be downloaded");
 		res = TRUE;
@@ -247,7 +257,7 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 
 	g_debug ("%s: last_test_days:%" G_GINT64_FORMAT " n-apps:%u should_download:%d can_download:%d has_important:%d "
 		"all_downloaded:%d any_downloaded:%d res:%d%s%s%s%s", G_STRFUNC,
-		timestamp_days, apps == NULL ? 0 : gs_app_list_length (apps), should_download, can_download, has_important,
+		notification_timestamp_days, apps == NULL ? 0 : gs_app_list_length (apps), should_download, can_download, has_important,
 		all_downloaded, any_downloaded, res,
 		res ? " reason:" : "",
 		res ? *out_title : "",
