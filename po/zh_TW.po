@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-02-17 17:44+0000\n"
-"PO-Revision-Date: 2025-02-20 16:38+0800\n"
+"POT-Creation-Date: 2025-06-10 15:17+0000\n"
+"PO-Revision-Date: 2025-06-23 21:29+0800\n"
 "Last-Translator: Cheng-Chia Tseng <zerngjia@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <http://darkbear.mercusysddns.com/"
 "projects/gnome-44/gnome-software-main-zh_tw/zh_Hant/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 "X-DamnedLies-Scope: partial\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35
@@ -72,7 +72,7 @@ msgid "The update details"
 msgstr "更新的詳細資訊"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2703
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2807
 #: src/gs-application.c:263
 msgid "The GNOME Project"
 msgstr "GNOME 專案"
@@ -312,8 +312,8 @@ msgid ""
 msgstr ""
 "偏好的軟體包格式優先順序，愈重要的格式愈往前列出。空白陣列表示使用預設順序；"
 "省略的格式則列在後方。軟體包格式範例有：「deb」、「flatpak」、「rpm」、"
-"「snap」等。可以選擇使用原始名稱指定格式，並用冒號分隔，例如「flatpak:"
-"flathub」。"
+"「snap」等。可以選擇使用原始名稱指定格式，並用冒號分隔，例如"
+"「flatpak:flathub」。"
 
 #: data/org.gnome.software.gschema.xml:139
 msgid "The timestamp of the last attempt to remove unused Flatpak runtimes"
@@ -807,7 +807,7 @@ msgstr "年齡分級"
 msgid "_How to contribute missing information"
 msgstr "如何貢獻缺少的資訊(_H)"
 
-#: lib/gs-app.c:6367
+#: lib/gs-app.c:6390
 msgid "Local file"
 msgstr "本機檔案"
 
@@ -816,13 +816,13 @@ msgstr "本機檔案"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6386 src/gs-safety-context-dialog.c:536
+#: lib/gs-app.c:6409 src/gs-safety-context-dialog.c:535
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6463 src/gs-safety-context-dialog.c:773
+#: lib/gs-app.c:6486 src/gs-safety-context-dialog.c:772
 #: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "軟體包"
@@ -907,14 +907,14 @@ msgstr "可以取用如網路攝影機等任意裝置"
 
 #. Translators: This indicates an app can access input devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:339
-#: src/gs-safety-context-dialog.c:228
+#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:338
+#: src/gs-safety-context-dialog.c:227
 msgid "Can access input devices"
 msgstr "可以取用輸入裝置"
 
 #. Translators: This indicates an app can access audio devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:346
+#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:345
 msgid "Can access microphones and play audio"
 msgstr "可以取用麥克風與播放音訊"
 
@@ -928,7 +928,7 @@ msgstr "螢幕內容"
 
 #. Translators: This indicates an app can access the screen/display contents.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:360
+#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:359
 msgid "Can access screen contents"
 msgstr "可以取用螢幕內容"
 
@@ -1204,98 +1204,98 @@ msgstr "未知大小"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:294
+#: src/gs-app-context-bar.c:293
 msgid "No permissions"
 msgstr "沒有取用權"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:311
+#: src/gs-app-context-bar.c:310
 msgid "Has network access"
 msgstr "可以取用網路"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:318
+#: src/gs-app-context-bar.c:317
 msgid "Uses system services"
 msgstr "使用系統服務"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:325
+#: src/gs-app-context-bar.c:324
 msgid "Uses session services"
 msgstr "使用作業階段服務"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:332
+#: src/gs-app-context-bar.c:331
 msgid "Can access hardware devices"
 msgstr "可以取用硬體裝置"
 
 #. Translators: This indicates an app can access system devices such as /dev/shm.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:353
+#: src/gs-app-context-bar.c:352
 msgid "Can access system devices"
 msgstr "可以取用系統裝置"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:372
+#: src/gs-app-context-bar.c:371
 msgid "Can read/write all your data"
 msgstr "可以讀取/寫入所有您的資料"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:384
+#: src/gs-app-context-bar.c:383
 msgid "Can read all your data"
 msgstr "可以讀取您的所有資料"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:391
+#: src/gs-app-context-bar.c:390
 msgid "Can read/write your downloads"
 msgstr "可以讀取/寫入您的下載目錄"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:398
+#: src/gs-app-context-bar.c:397
 msgid "Can read your downloads"
 msgstr "可以讀取您的下載目錄"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:405
+#: src/gs-app-context-bar.c:404
 msgid "Can access some specific files"
 msgstr "可以取用一些特定檔案"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:276
+#: src/gs-app-context-bar.c:411 src/gs-safety-context-dialog.c:275
 msgid "Can access and change user settings"
 msgstr "可以取用並更改使用者設定"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:419 src/gs-safety-context-dialog.c:260
+#: src/gs-app-context-bar.c:418 src/gs-safety-context-dialog.c:259
 msgid "Uses a legacy windowing system"
 msgstr "使用舊世代視窗顯示系統"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:426 src/gs-safety-context-dialog.c:268
+#: src/gs-app-context-bar.c:425 src/gs-safety-context-dialog.c:267
 msgid "Can acquire arbitrary permissions"
 msgstr "可以擁有任意取用權"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:438
+#: src/gs-app-context-bar.c:437
 msgid "Software developer is verified"
 msgstr "軟體開發者已通過核驗"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:456 src/gs-safety-context-dialog.c:144
+#: src/gs-app-context-bar.c:455 src/gs-safety-context-dialog.c:144
 msgid "Reviewed by OS distributor"
 msgstr "由作業系統散布單位檢閱"
 
@@ -1304,7 +1304,7 @@ msgstr "由作業系統散布單位檢閱"
 #. * It’s used in a context tile, so should be short.
 #. * The '%s' is replaced by the distribution name.
 #. Translators: The '%s' is replaced by the distribution name.
-#: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:147
+#: src/gs-app-context-bar.c:461 src/gs-safety-context-dialog.c:147
 #, c-format
 msgid "Reviewed by %s"
 msgstr "由 %s 檢閱"
@@ -1312,37 +1312,37 @@ msgstr "由 %s 檢閱"
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:478 src/gs-safety-context-dialog.c:161
+#: src/gs-app-context-bar.c:477 src/gs-safety-context-dialog.c:161
 msgid "Provided by a third party"
 msgstr "由第三方提供"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:488
+#: src/gs-app-context-bar.c:487
 msgid "Software no longer supported"
 msgstr "不再支援的軟體"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:500
+#: src/gs-app-context-bar.c:499
 msgid "Auditable code"
 msgstr "可稽核的程式碼"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:505
 msgid "Unknown license"
 msgstr "未知的授權"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:513
+#: src/gs-app-context-bar.c:512
 msgid "Proprietary code"
 msgstr "專有授權程式碼"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:520
+#: src/gs-app-context-bar.c:519
 msgid "Special license"
 msgstr "特殊授權"
 
@@ -1360,116 +1360,116 @@ msgstr "特殊授權"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/
-#: src/gs-app-context-bar.c:534 src/gs-app-context-bar.c:817
+#: src/gs-app-context-bar.c:533 src/gs-app-context-bar.c:816
 msgid "; "
 msgstr "；"
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:542
+#: src/gs-app-context-bar.c:541
 msgid "Privileged"
 msgstr "享有特權"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:549
+#: src/gs-app-context-bar.c:548
 msgid "Safe"
 msgstr "安全"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:556
+#: src/gs-app-context-bar.c:555
 msgid "Probably Safe"
 msgstr "可能安全"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:563
+#: src/gs-app-context-bar.c:562
 msgid "Potentially Unsafe"
 msgstr "可能不安全"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:570
+#: src/gs-app-context-bar.c:569
 msgid "Unsafe"
 msgstr "不安全"
 
-#: src/gs-app-context-bar.c:648 src/gs-app-context-bar.c:680
+#: src/gs-app-context-bar.c:647 src/gs-app-context-bar.c:679
 #: src/gs-hardware-support-context-dialog.c:615
 msgid "Mobile Only"
 msgstr "僅適用於行動裝置"
 
-#: src/gs-app-context-bar.c:649
+#: src/gs-app-context-bar.c:648
 msgid "Only works on a small screen"
 msgstr "僅能在小螢幕上運作"
 
-#: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:687
-#: src/gs-app-context-bar.c:694 src/gs-app-context-bar.c:744
-#: src/gs-app-context-bar.c:749 src/gs-hardware-support-context-dialog.c:595
+#: src/gs-app-context-bar.c:653 src/gs-app-context-bar.c:686
+#: src/gs-app-context-bar.c:693 src/gs-app-context-bar.c:743
+#: src/gs-app-context-bar.c:748 src/gs-hardware-support-context-dialog.c:595
 msgid "Desktop Only"
 msgstr "僅適用於桌面環境"
 
-#: src/gs-app-context-bar.c:655
+#: src/gs-app-context-bar.c:654
 msgid "Only works on a large screen"
 msgstr "僅能在大螢幕上運作"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:633
 msgid "Screen Size Mismatch"
 msgstr "螢幕大小不相符"
 
-#: src/gs-app-context-bar.c:660 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:634
 msgid "Doesn’t support your current screen size"
 msgstr "不支援目前的螢幕大小"
 
-#: src/gs-app-context-bar.c:681 src/gs-hardware-support-context-dialog.c:686
+#: src/gs-app-context-bar.c:680 src/gs-hardware-support-context-dialog.c:686
 #: src/gs-hardware-support-context-dialog.c:692
 msgid "Requires a touchscreen"
 msgstr "需要觸控板"
 
-#: src/gs-app-context-bar.c:688 src/gs-hardware-support-context-dialog.c:646
+#: src/gs-app-context-bar.c:687 src/gs-hardware-support-context-dialog.c:646
 #: src/gs-hardware-support-context-dialog.c:652
 msgid "Requires a keyboard"
 msgstr "需要鍵盤"
 
-#: src/gs-app-context-bar.c:695
+#: src/gs-app-context-bar.c:694
 msgid "Requires a mouse"
 msgstr "需要滑鼠"
 
-#: src/gs-app-context-bar.c:706
+#: src/gs-app-context-bar.c:705
 msgid "Gamepad Needed"
 msgstr "需要遊戲手把"
 
-#: src/gs-app-context-bar.c:707
+#: src/gs-app-context-bar.c:706
 msgid "Requires a gamepad to play"
 msgstr "需要遊戲手把才能玩"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:731
+#: src/gs-app-context-bar.c:730
 msgid "Adaptive"
 msgstr "適應性"
 
-#: src/gs-app-context-bar.c:732
+#: src/gs-app-context-bar.c:731
 msgid "Works on phones, tablets and desktops"
 msgstr "可運作於手機、平板及桌面環境"
 
-#: src/gs-app-context-bar.c:745
+#: src/gs-app-context-bar.c:744
 msgid "Probably requires a keyboard or mouse"
 msgstr "可能需要鍵盤或滑鼠"
 
-#: src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:749
 msgid "Works on desktops and laptops"
 msgstr "可運作於桌上型與筆記型電腦"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:792
+#: src/gs-app-context-bar.c:791
 msgid "Contains no age-inappropriate content"
 msgstr "不含不適齡內容"
 
-#: src/gs-app-context-bar.c:840
+#: src/gs-app-context-bar.c:839
 msgid "No age rating information available"
 msgstr "無年齡分級資訊"
 
@@ -2676,8 +2676,8 @@ msgstr ""
 
 #: src/gs-dkms-dialog.ui:244
 msgid ""
-"Further guidance can be found on the <a href=\"https://docs.fedoraproject."
-"org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
+"Further guidance can be found on the <a href=\"https://"
+"docs.fedoraproject.org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
 msgstr ""
 "更深入的指引可以在<a href=\"https://docs.fedoraproject.org/en-US/quick-docs/"
 "mok-enrollment/\">文件頁面</a>中查看。"
@@ -3246,7 +3246,7 @@ msgstr ""
 "您可以參與協作讓它更加美好。"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
-#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:410
+#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:409
 msgid "Unknown License"
 msgstr "未知授權"
 
@@ -3282,7 +3282,7 @@ msgstr ""
 "您也許能，也許不能為該軟體做些貢獻。"
 
 #. Translators: This is used for "License    Proprietary"
-#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:575
+#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:574
 msgid "Proprietary"
 msgstr "專有授權"
 
@@ -3313,7 +3313,7 @@ msgstr ""
 "您可能無法為該軟體做些貢獻。"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:447
+#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:446
 msgid "Special License"
 msgstr "特殊授權"
 
@@ -3489,7 +3489,7 @@ msgstr "其他類別"
 msgid "No App Data Found"
 msgstr "找不到程式資料"
 
-#: lib/gs-plugin-loader.c:2744
+#: lib/gs-plugin-loader.c:2754
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "未知"
@@ -4034,248 +4034,248 @@ msgid "Check that you trust the vendor, as the app isn’t sandboxed"
 msgstr "由於程式並未完全運作於沙盒中，請確保這是您信任的提供者"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:177
+#: src/gs-safety-context-dialog.c:176
 msgid "No Permissions"
 msgstr "沒有取用權"
 
-#: src/gs-safety-context-dialog.c:178
+#: src/gs-safety-context-dialog.c:177
 msgid "App is fully sandboxed"
 msgstr "應用程式完全運作於沙盒"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:189
+#: src/gs-safety-context-dialog.c:188
 msgid "Network Access"
 msgstr "網路取用權"
 
-#: src/gs-safety-context-dialog.c:190
+#: src/gs-safety-context-dialog.c:189
 msgid "Can access the internet"
 msgstr "可以取用網際網路"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:193
+#: src/gs-safety-context-dialog.c:192
 msgid "No Network Access"
 msgstr "沒有網路取用權"
 
-#: src/gs-safety-context-dialog.c:194
+#: src/gs-safety-context-dialog.c:193
 msgid "Cannot access the internet"
 msgstr "無法取用網際網路"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:200
+#: src/gs-safety-context-dialog.c:199
 msgid "Uses System Services"
 msgstr "使用系統服務"
 
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:200
 msgid "Can request data from system services"
 msgstr "可以請求系統服務的資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:208
+#: src/gs-safety-context-dialog.c:207
 msgid "Uses Session Services"
 msgstr "使用作業階段服務"
 
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:208
 msgid "Can request data from session services"
 msgstr "可以請求作業階段服務的資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:216
+#: src/gs-safety-context-dialog.c:215
 msgid "User Device Access"
 msgstr "使用者裝置取用權"
 
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:216
 msgid "Can access devices such as webcams or gaming controllers"
-msgstr "可以取用如網路攝像機、遊戲控制器之類的裝置"
+msgstr "可以取用如網路攝影機、遊戲控制器之類的裝置"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:220
+#: src/gs-safety-context-dialog.c:219
 msgid "No User Device Access"
 msgstr "沒有使用者裝置取用權"
 
-#: src/gs-safety-context-dialog.c:221
+#: src/gs-safety-context-dialog.c:220
 msgid "Cannot access devices such as webcams or gaming controllers"
-msgstr "無法取用如網路攝像機、遊戲控制器之類的裝置"
+msgstr "無法取用如網路攝影機、遊戲控制器之類的裝置"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:227
+#: src/gs-safety-context-dialog.c:226
 msgid "Input Device Access"
 msgstr "輸入裝置取用權"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:235
+#: src/gs-safety-context-dialog.c:234
 msgid "Microphone Access and Audio Playback"
-msgstr "麥克風取用權與音訊回放"
+msgstr "麥克風取用權與音訊播放控制"
 
-#: src/gs-safety-context-dialog.c:236
+#: src/gs-safety-context-dialog.c:235
 msgid "Can listen using microphones and play audio without asking permission"
 msgstr "可以在不請求許可之下就使用麥克風與播放音訊"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:243
+#: src/gs-safety-context-dialog.c:242
 msgid "System Device Access"
 msgstr "系統裝置取用權"
 
-#: src/gs-safety-context-dialog.c:244
+#: src/gs-safety-context-dialog.c:243
 msgid "Can access system devices which require elevated permissions"
 msgstr "可以透過提升的權限取用系統裝置檔案"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:251
+#: src/gs-safety-context-dialog.c:250
 msgid "Screen Contents Access"
 msgstr "螢幕內容取用權"
 
-#: src/gs-safety-context-dialog.c:252
+#: src/gs-safety-context-dialog.c:251
 msgid "Can access the contents of the screen or other windows"
 msgstr "可以取用螢幕或其他視窗的內容"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:259
+#: src/gs-safety-context-dialog.c:258
 msgid "Legacy Windowing System"
 msgstr "舊世代視窗顯示系統"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:266
 msgid "Arbitrary Permissions"
 msgstr "任意取用權"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:275
+#: src/gs-safety-context-dialog.c:274
 msgid "User Settings"
 msgstr "使用者設定值"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:287
+#: src/gs-safety-context-dialog.c:286
 msgid "Full File System Read/Write Access"
 msgstr "完整的檔案系統/讀取寫入權"
 
-#: src/gs-safety-context-dialog.c:288
+#: src/gs-safety-context-dialog.c:287
 msgid "Can read and write all data on the file system"
 msgstr "可以讀取與寫入檔案系統中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:296
+#: src/gs-safety-context-dialog.c:295
 msgid "Home Folder Read/Write Access"
 msgstr "家目錄的讀取/寫入權"
 
-#: src/gs-safety-context-dialog.c:297
+#: src/gs-safety-context-dialog.c:296
 msgid "Can read and write all data in your home directory"
 msgstr "可以讀取與寫入家目錄中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:304
 msgid "Full File System Read Access"
 msgstr "完整的檔案系統讀取權"
 
-#: src/gs-safety-context-dialog.c:306
+#: src/gs-safety-context-dialog.c:305
 msgid "Can read all data on the file system"
 msgstr "可以讀取檔案系統中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:315
+#: src/gs-safety-context-dialog.c:314
 msgid "Home Folder Read Access"
 msgstr "家目錄的讀取權"
 
-#: src/gs-safety-context-dialog.c:316
+#: src/gs-safety-context-dialog.c:315
 msgid "Can read all data in your home directory"
 msgstr "可以讀取家目錄中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:324
 msgid "Download Folder Read/Write Access"
 msgstr "下載資料夾的讀取/寫入權"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:325
 msgid "Can read and write all data in your downloads directory"
 msgstr "可以讀取與寫入下載目錄中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:337
+#: src/gs-safety-context-dialog.c:336
 msgid "Download Folder Read Access"
 msgstr "下載資料夾的讀取權"
 
-#: src/gs-safety-context-dialog.c:338
+#: src/gs-safety-context-dialog.c:337
 msgid "Can read all data in your downloads directory"
 msgstr "可以讀取下載目錄中的所有資料"
 
-#: src/gs-safety-context-dialog.c:348
+#: src/gs-safety-context-dialog.c:347
 msgid "Can read and write all data in the directory"
 msgstr "可以讀取與寫入該目錄中的所有資料"
 
-#: src/gs-safety-context-dialog.c:359
+#: src/gs-safety-context-dialog.c:358
 msgid "Can read all data in the directory"
 msgstr "可以讀取該目錄中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:375
+#: src/gs-safety-context-dialog.c:374
 msgid "No File System Access"
 msgstr "沒有檔案系統取用權"
 
-#: src/gs-safety-context-dialog.c:376
+#: src/gs-safety-context-dialog.c:375
 msgid "Cannot access the file system at all"
 msgstr "無法取用檔案系統"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:386
+#: src/gs-safety-context-dialog.c:385
 msgid "App developer is verified"
 msgstr "程式開發者已通過核驗"
 
-#: src/gs-safety-context-dialog.c:387
+#: src/gs-safety-context-dialog.c:386
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "應用程式的開發者通過核驗為其所言之人"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:398
+#: src/gs-safety-context-dialog.c:397
 msgid "Insecure Dependencies"
 msgstr "不安全的依賴關係"
 
-#: src/gs-safety-context-dialog.c:399
+#: src/gs-safety-context-dialog.c:398
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr "軟體本身或其依賴關係已不再被支援，可能造成安全性問題"
 
-#: src/gs-safety-context-dialog.c:412
+#: src/gs-safety-context-dialog.c:411
 msgid ""
 "This app does not specify what license it is developed under, and may be "
 "proprietary"
 msgstr "該程式未指定其開發所採用的授權條款，可能是專有程式"
 
-#: src/gs-safety-context-dialog.c:413
+#: src/gs-safety-context-dialog.c:412
 msgid ""
 "This software does not specify what license it is developed under, and may "
 "be proprietary"
 msgstr "該軟體未指定其開發所採用的授權條款，可能是專有軟體"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:426
+#: src/gs-safety-context-dialog.c:425
 msgid "Proprietary Code"
 msgstr "專有授權程式碼"
 
-#: src/gs-safety-context-dialog.c:427
+#: src/gs-safety-context-dialog.c:426
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
 msgstr "源始碼未開放，無法獨立稽核及確保安全性"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:435
+#: src/gs-safety-context-dialog.c:434
 #, c-format
 msgid "This app is developed under the special license “%s”"
 msgstr "該程式採用特殊授權條款「%s」開發"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:438
+#: src/gs-safety-context-dialog.c:437
 #, c-format
 msgid "This software is developed under the special license “%s”"
 msgstr "該軟體採用特殊授權條款「%s」開發"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:451
+#: src/gs-safety-context-dialog.c:450
 msgid "Auditable Code"
 msgstr "可稽核程式碼"
 
-#: src/gs-safety-context-dialog.c:452
+#: src/gs-safety-context-dialog.c:451
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -4283,41 +4283,41 @@ msgstr "可以獨立稽核的開放源始碼，使應用程式的安全性較有
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:461
+#: src/gs-safety-context-dialog.c:460
 #, c-format
 msgid "%s is privileged"
 msgstr "《%s》享有特權"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:468
+#: src/gs-safety-context-dialog.c:467
 #, c-format
 msgid "%s is safe"
 msgstr "《%s》安全"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:475
+#: src/gs-safety-context-dialog.c:474
 #, c-format
 msgid "%s is probably safe"
 msgstr "《%s》可能安全"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:482
+#: src/gs-safety-context-dialog.c:481
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "《%s》可能不安全"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:489
+#: src/gs-safety-context-dialog.c:488
 #, c-format
 msgid "%s is unsafe"
 msgstr "《%s》不安全"
 
 #. Translators: This is used for "License    Unknown"
-#: src/gs-safety-context-dialog.c:572
+#: src/gs-safety-context-dialog.c:571
 msgctxt "Unknown license"
 msgid "Unknown"
 msgstr "未知"
@@ -4429,98 +4429,98 @@ msgstr "找不到程式"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1131 src/gs-shell.c:1136 src/gs-shell.c:1151
-#: src/gs-shell.c:1155
+#: src/gs-shell.c:1155 src/gs-shell.c:1160 src/gs-shell.c:1175
+#: src/gs-shell.c:1179
 #, c-format
 msgid "“%s”"
 msgstr "《%s》"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1209 src/gs-shell.c:1261
+#: src/gs-shell.c:1233 src/gs-shell.c:1285
 msgid "Unable to download updates"
 msgstr "無法下載更新"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1214
+#: src/gs-shell.c:1238
 msgid "Unable to download firmware updates"
 msgstr "無法下載韌體更新"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1217
+#: src/gs-shell.c:1241
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "無法從 %s 下載韌體更新"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1222
+#: src/gs-shell.c:1246
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "無法自 %s 下載更新"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1229 src/gs-shell.c:1447
+#: src/gs-shell.c:1253 src/gs-shell.c:1471
 msgid "Unable to update: internet access required"
 msgstr "無法更新：需要取用網際網路"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1232 src/gs-shell.c:1450
+#: src/gs-shell.c:1256 src/gs-shell.c:1474
 msgid "Unable to update: not enough disk space"
 msgstr "無法更新：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1237
+#: src/gs-shell.c:1261
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "無法自 %s 下載更新：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1243 src/gs-shell.c:1461
+#: src/gs-shell.c:1267 src/gs-shell.c:1485
 msgid "Unable to update: authentication required"
 msgstr "無法更新：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1247 src/gs-shell.c:1472
+#: src/gs-shell.c:1271 src/gs-shell.c:1496
 msgid "Unable to update: invalid authentication"
 msgstr "無法更新：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1251 src/gs-shell.c:1483
+#: src/gs-shell.c:1275 src/gs-shell.c:1507
 msgid "Unable to update: permission required"
 msgstr "無法更新：需要取用權"
 
-#: src/gs-shell.c:1252
+#: src/gs-shell.c:1276
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "無法下載更新：您沒有安裝軟體的許可權"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1264
+#: src/gs-shell.c:1288
 msgid "Unable to get list of updates"
 msgstr "無法取得更新列表"
 
-#: src/gs-shell.c:1299
+#: src/gs-shell.c:1323
 msgid "Unable to install: download failed"
 msgstr "無法安裝：下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1305
+#: src/gs-shell.c:1329
 #, c-format
 msgid "Unable to install %s: failed download from %s"
 msgstr "無法安裝 %s：無法從 %s 下載"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1310
+#: src/gs-shell.c:1334
 #, c-format
 msgid "Unable to install %s: download failed"
 msgstr "無法安裝 %s：下載失敗"
 
-#: src/gs-shell.c:1316
+#: src/gs-shell.c:1340
 msgid "Unable to install: missing runtime"
 msgstr "無法安裝：缺少執行時期環境"
 
@@ -4528,89 +4528,89 @@ msgstr "無法安裝：缺少執行時期環境"
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1322
+#: src/gs-shell.c:1346
 #, c-format
 msgid "Unable to install %s: runtime %s unavailable"
 msgstr "無法安裝 %s：執行時期環境 %s 無法使用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1325 src/gs-shell.c:1381 src/gs-shell.c:1383
+#: src/gs-shell.c:1349 src/gs-shell.c:1405 src/gs-shell.c:1407
 #, c-format
 msgid "Unable to install %s"
 msgstr "無法安裝 %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1331
+#: src/gs-shell.c:1355
 msgid "Unable to install: internet access required"
 msgstr "無法安裝：需要取用網際網路"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1334
+#: src/gs-shell.c:1358
 msgid "Unable to install: invalid app format"
 msgstr "無法安裝：程式格式無效"
 
-#: src/gs-shell.c:1337
+#: src/gs-shell.c:1361
 msgid "Unable to install: not enough disk space"
 msgstr "無法安裝：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1340
+#: src/gs-shell.c:1364
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "無法安裝 %s：磁碟空間不足"
 
-#: src/gs-shell.c:1344
+#: src/gs-shell.c:1368
 msgid "Unable to install: authentication required"
 msgstr "無法安裝：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1346
+#: src/gs-shell.c:1370
 #, c-format
 msgid "Unable to install %s: authentication required"
 msgstr "無法安裝 %s：需要核對身分"
 
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1374
 msgid "Unable to install: invalid authentication"
 msgstr "無法安裝：無法核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1353
+#: src/gs-shell.c:1377
 #, c-format
 msgid "Unable to install %s: invalid authentication"
 msgstr "無法安裝 %s：身分核對無效"
 
-#: src/gs-shell.c:1357
+#: src/gs-shell.c:1381
 msgid "Unable to install: permission required"
 msgstr "無法安裝：需要取用權"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1360
+#: src/gs-shell.c:1384
 #, c-format
 msgid "Unable to install %s: permission required"
 msgstr "無法安裝 %s：需要取用權"
 
-#: src/gs-shell.c:1364
+#: src/gs-shell.c:1388
 msgid "Unable to install: device must be plugged in"
 msgstr "無法安裝：裝置必須接上電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1367
+#: src/gs-shell.c:1391
 #, c-format
 msgid "Unable to install %s: device must be plugged in"
 msgstr "無法安裝 %s：裝置必須接上電源"
 
-#: src/gs-shell.c:1370
+#: src/gs-shell.c:1394
 msgid "Unable to install: low battery"
 msgstr "無法安裝：低電量"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1373
+#: src/gs-shell.c:1397
 #, c-format
 msgid "Unable to install %s: low battery"
 msgstr "無法安裝 %s：低電量"
@@ -4619,14 +4619,14 @@ msgstr "無法安裝 %s：低電量"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1426
+#: src/gs-shell.c:1450
 #, c-format
 msgid "Unable to update %s from %s: download failed"
 msgstr "無法從 %2$s 更新 %1$s：下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1432
+#: src/gs-shell.c:1456
 #, c-format
 msgid "Unable to update %s: download failed"
 msgstr "無法更新 %s：下載失敗"
@@ -4634,274 +4634,276 @@ msgstr "無法更新 %s：下載失敗"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1439
+#: src/gs-shell.c:1463
 #, c-format
 msgid "Unable to install updates from %s: download failed"
 msgstr "無法從 %s 安裝更新：下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1443
+#: src/gs-shell.c:1467
 msgid "Unable to update: download failed"
 msgstr "無法更新：下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1455
+#: src/gs-shell.c:1479
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "無法更新 %s：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1466
+#: src/gs-shell.c:1490
 #, c-format
 msgid "Unable to update %s: authentication required"
 msgstr "無法更新 %s：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1477
+#: src/gs-shell.c:1501
 #, c-format
 msgid "Unable to update %s: invalid authentication"
 msgstr "無法更新 %s：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1488
+#: src/gs-shell.c:1512
 #, c-format
 msgid "Unable to update %s: permission required"
 msgstr "無法更新 %s：需要取用權"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1494
+#: src/gs-shell.c:1518
 msgid "Unable to update: device must be plugged in"
 msgstr "無法更新：裝置必須接上電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1499
+#: src/gs-shell.c:1523
 #, c-format
 msgid "Unable to update %s: device must be plugged in"
 msgstr "無法更新 %s：裝置必須接上電源"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1504
+#: src/gs-shell.c:1528
 msgid "Unable to update: low battery"
 msgstr "無法更新：過量過低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1509
+#: src/gs-shell.c:1533
 #, c-format
 msgid "Unable to update %s: low battery"
 msgstr "無法更新 %s：過量過低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1544
 #, c-format
 msgid "Unable to update %s"
 msgstr "無法更新 %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1524
+#: src/gs-shell.c:1548
 msgid "Unable to update"
 msgstr "無法更新"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1561 src/gs-shell.c:1634
+#: src/gs-shell.c:1585 src/gs-shell.c:1658
 msgid "Unable to upgrade"
 msgstr "無法升級"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1565
+#: src/gs-shell.c:1589
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "無法自 %2$s 升級至 %1$s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1569
+#: src/gs-shell.c:1593
 msgid "Unable to upgrade: download failed"
 msgstr "無法升級：下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1572
+#: src/gs-shell.c:1596
 #, c-format
 msgid "Unable to upgrade to %s: download failed"
 msgstr "無法升級至 %s：下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1578
+#: src/gs-shell.c:1602
 msgid "Unable to upgrade: internet access required"
 msgstr "無法升級：需要取用網際網路"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1581
+#: src/gs-shell.c:1605
 #, c-format
 msgid "Unable to upgrade to %s: internet access required"
 msgstr "無法升級至 %s：需要取用網際網路"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1585
+#: src/gs-shell.c:1609
 msgid "Unable to upgrade: not enough disk space"
 msgstr "無法升級：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1588
+#: src/gs-shell.c:1612
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "無法升級至 %s：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1593
+#: src/gs-shell.c:1617
 msgid "Unable to upgrade: authentication required"
 msgstr "無法升級：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1596
+#: src/gs-shell.c:1620
 #, c-format
 msgid "Unable to upgrade to %s: authentication required"
 msgstr "無法升級至 %s：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1601
+#: src/gs-shell.c:1625
 msgid "Unable to upgrade: invalid authentication"
 msgstr "無法升級：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1604
+#: src/gs-shell.c:1628
 #, c-format
 msgid "Unable to upgrade to %s: invalid authentication"
 msgstr "無法升級至 %s：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1609
+#: src/gs-shell.c:1633
 msgid "Unable to upgrade: permission required"
 msgstr "無法升級：需要取用權"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1612
+#: src/gs-shell.c:1636
 #, c-format
 msgid "Unable to upgrade to %s: permission required"
 msgstr "無法升級至 %s：需要取用權"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1617
+#: src/gs-shell.c:1641
 msgid "Unable to upgrade: device must be plugged in"
 msgstr "無法升級：裝置必須接上電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1620
+#: src/gs-shell.c:1644
 #, c-format
 msgid "Unable to upgrade to %s: device must be plugged in"
 msgstr "無法升級至 %s：裝置必須接上電源"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1624
+#: src/gs-shell.c:1648
 msgid "Unable to upgrade: low battery"
 msgstr "無法升級：低電量"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1627
+#: src/gs-shell.c:1651
 #, c-format
 msgid "Unable to upgrade to %s: low battery"
 msgstr "無法升級至 %s：低電量"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1637
+#: src/gs-shell.c:1661
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "無法升級至 %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1671
+#: src/gs-shell.c:1695
 msgid "Unable to uninstall: authentication required"
 msgstr "無法解除安裝：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1674
+#: src/gs-shell.c:1698
 #, c-format
 msgid "Unable to uninstall %s: authentication required"
 msgstr "無法解除安裝 %s：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1679
+#: src/gs-shell.c:1703
 msgid "Unable to uninstall: invalid authentication"
 msgstr "無法解除安裝：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1682
+#: src/gs-shell.c:1706
 #, c-format
 msgid "Unable to uninstall %s: invalid authentication"
 msgstr "無法解除安裝 %s：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1687
+#: src/gs-shell.c:1711
 msgid "Unable to uninstall: permission required"
 msgstr "無法解除安裝：需要取用權"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1690
+#: src/gs-shell.c:1714
 #, c-format
 msgid "Unable to uninstall %s: permission required"
 msgstr "無法解除安裝 %s：需要取用權"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1695
+#: src/gs-shell.c:1719
 msgid "Unable to uninstall: device must be plugged in"
 msgstr "無法解除安裝：裝置必須接上電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1698
+#: src/gs-shell.c:1722
 #, c-format
 msgid "Unable to uninstall %s: device must be plugged in"
 msgstr "無法解除安裝 %s：裝置必須接上電源"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1702
+#: src/gs-shell.c:1726
 msgid "Unable to uninstall: low battery"
 msgstr "無法解除安裝：低電量"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1705
+#: src/gs-shell.c:1729
 #, c-format
 msgid "Unable to uninstall %s: low battery"
 msgstr "無法解除安裝 %s：低電量"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1716
+#: src/gs-shell.c:1740
 #, c-format
 msgid "Unable to uninstall %s"
 msgstr "無法解除安裝 %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the '%s' is
 #. replaced with the app name (e.g. "GIMP")
-#: src/gs-shell.c:1755
+#: src/gs-shell.c:1779
 #, c-format
 msgid "Unable to launch %s"
 msgstr "無法啟動 %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1760 src/gs-shell.c:1788 src/gs-shell.c:1832
-#: src/gs-shell.c:1876 src/gs-shell.c:1936
+#. TRANSLATORS: failure text for the in-app notification
+#. TRANSLATORS: we failed to get a proper error code
+#: src/gs-shell.c:1784 src/gs-shell.c:1812 src/gs-shell.c:1856
+#: src/gs-shell.c:1900 src/gs-shell.c:1939 src/gs-shell.c:1964
 msgid "Sorry, something went wrong"
 msgstr "很抱歉，發生問題"
 
@@ -4909,52 +4911,52 @@ msgstr "很抱歉，發生問題"
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1768
+#: src/gs-shell.c:1792
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "無法啟動%s：未安裝 %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1778 src/gs-shell.c:1822 src/gs-shell.c:1866
-#: src/gs-shell.c:1916
+#: src/gs-shell.c:1802 src/gs-shell.c:1846 src/gs-shell.c:1890
+#: src/gs-shell.c:1944
 msgid "Not enough disk space for operation"
 msgstr "磁碟空間不足無法操作"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1814
+#: src/gs-shell.c:1838
 msgid "Unable to install: file type not supported"
 msgstr "無法安裝：檔案類型未支援"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1818 src/gs-shell.c:1862
+#: src/gs-shell.c:1842 src/gs-shell.c:1886
 msgid "Unable to install: authentication failed"
 msgstr "無法安裝：身分核對失敗"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1858
+#: src/gs-shell.c:1882
 msgid "Unable to install"
 msgstr "無法安裝"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1909
+#: src/gs-shell.c:1933
 #, c-format
 msgid "Unable to contact %s"
 msgstr "無法聯絡 %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
-#: src/gs-shell.c:1920
+#: src/gs-shell.c:1948
 msgid "Restart Software to use new plugins"
 msgstr "《軟體》需重新啟動才能使用新的外掛元件"
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1924
+#: src/gs-shell.c:1952
 msgid "Device needs to be plugged in"
 msgstr "裝置需要接上電源"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1927
+#: src/gs-shell.c:1955
 msgid "Battery level is too low"
 msgstr "電池低電量"
 
@@ -5611,13 +5613,10 @@ msgstr "在電腦上加入、移除、或更新軟體"
 
 #. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:12
-msgid ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;"
+msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
 msgstr ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;;更新;升級;來源;套件庫;軟體庫;倉庫;偏好設定;安裝;解除安裝;"
-"程式;軟體;應用;商店;"
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;;"
+"更新;升級;來源;套件庫;軟體庫;倉庫;偏好設定;安裝;解除安裝;程式;軟體;應用;商店;"
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the first part of a system notification.
@@ -5697,135 +5696,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "《Flatpak》為一種用於 Linux 的桌面程式框架"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:344
+#: plugins/flatpak/gs-flatpak.c:361
 #, c-format
 msgid "System folder %s"
 msgstr "系統資料夾 %s"
 
-#: plugins/flatpak/gs-flatpak.c:345 plugins/flatpak/gs-flatpak.c:346
+#: plugins/flatpak/gs-flatpak.c:362 plugins/flatpak/gs-flatpak.c:363
 #, c-format
 msgid "Home subfolder %s"
 msgstr "家目錄中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:347
+#: plugins/flatpak/gs-flatpak.c:364
 msgid "Host system folders"
 msgstr "主機系統資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:348
+#: plugins/flatpak/gs-flatpak.c:365
 msgid "Host system configuration from /etc"
 msgstr "/etc 中的主機系統設定值"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:366
 msgid "Desktop folder"
 msgstr "桌面資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:366
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "「桌面」中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:367
 msgid "Documents folder"
 msgstr "文件資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:367
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "「文件」中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:368
 msgid "Music folder"
 msgstr "音樂資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:368
 #, c-format
 msgid "Music subfolder %s"
 msgstr "「音樂」中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:369
 msgid "Pictures folder"
 msgstr "圖片資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:369
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "「圖片」中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:370
 msgid "Public Share folder"
 msgstr "公共資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:370
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "「公共」中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:371
 msgid "Videos folder"
 msgstr "影片資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:371
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "「影片」中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:355
+#: plugins/flatpak/gs-flatpak.c:372
 msgid "Templates folder"
 msgstr "模本資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:355
+#: plugins/flatpak/gs-flatpak.c:372
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "「模本」中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:356
+#: plugins/flatpak/gs-flatpak.c:373
 msgid "User cache folder"
 msgstr "使用者快取資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:356
+#: plugins/flatpak/gs-flatpak.c:373
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "使用者快取中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:357
+#: plugins/flatpak/gs-flatpak.c:374
 msgid "User configuration folder"
 msgstr "使用者設定值資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:357
+#: plugins/flatpak/gs-flatpak.c:374
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "使用者設定值中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:358
+#: plugins/flatpak/gs-flatpak.c:375
 msgid "User data folder"
 msgstr "使用者資料資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:358
+#: plugins/flatpak/gs-flatpak.c:375
 #, c-format
 msgid "User data subfolder %s"
 msgstr "使用者資料中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:359
+#: plugins/flatpak/gs-flatpak.c:376
 msgid "User runtime folder"
 msgstr "使用者執行時期資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:359
+#: plugins/flatpak/gs-flatpak.c:376
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "使用者執行時期中的 %s 資料夾"
 
-#: plugins/flatpak/gs-flatpak.c:417
+#: plugins/flatpak/gs-flatpak.c:434
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "%s 的檔案系統取用權"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1371
+#: plugins/flatpak/gs-flatpak.c:1387
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "正在取得《%s》的 flatpak 中介資料…"
 
-#: plugins/flatpak/gs-flatpak.c:3597
+#: plugins/flatpak/gs-flatpak.c:3613
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "無法將附加元件「%s」最佳化︰%s"
@@ -5852,7 +5851,7 @@ msgstr "無法將附加元件「%s」加入至安裝︰%s"
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "無法將附加元件「%s」加入至解除安裝︰%s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1971
+#: plugins/flatpak/gs-plugin-flatpak.c:1963
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -6183,16 +6182,16 @@ msgid "A snap is a universal Linux package"
 msgstr "《Snap》為一種通用的 Linux 軟體包"
 
 #. TRANSLATORS: this is the system OS upgrade
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:766
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:774
 msgid "System"
 msgstr "系統"
 
 #. TRANSLATORS: this is the system component update
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:770
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:778
 msgid "System component"
 msgstr "系統組件"
 
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1021
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1029
 #, c-format
 msgid "Removing sysupdate job '%s' failed with status %i"
 msgstr "移除系統更新工作「%s」失敗，狀態碼為 %i"
