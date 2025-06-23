@@ -16,9 +16,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-02-03 08:17+0000\n"
-"PO-Revision-Date: 2025-02-03 15:02+0300\n"
-"Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
+"POT-Creation-Date: 2025-06-17 10:42+0000\n"
+"PO-Revision-Date: 2025-06-23 08:00+0300\n"
+"Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -80,8 +80,8 @@ msgid "The update details"
 msgstr "Güncelleme ayrıntıları"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2703
-#: src/gs-application.c:263
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2772
+#: src/gs-application.c:267
 msgid "The GNOME Project"
 msgstr "GNOME Projesi"
 
@@ -843,7 +843,7 @@ msgstr "Yaş Derecelendirmesi"
 msgid "_How to contribute missing information"
 msgstr "Eksik bilgilere _nasıl katkıda bulunulur"
 
-#: lib/gs-app.c:6367
+#: lib/gs-app.c:6258
 msgid "Local file"
 msgstr "Yerel dosya"
 
@@ -852,13 +852,13 @@ msgstr "Yerel dosya"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6386 src/gs-safety-context-dialog.c:536
+#: lib/gs-app.c:6277 src/gs-safety-context-dialog.c:588
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6463 src/gs-safety-context-dialog.c:773
+#: lib/gs-app.c:6354 src/gs-safety-context-dialog.c:825
 #: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "Paket"
@@ -867,17 +867,17 @@ msgstr "Paket"
 msgid "Pending"
 msgstr "Beklemede"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:532 src/gs-details-page.c:394
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:532 src/gs-details-page.c:393
 msgid "Pending install"
 msgstr "Kurulum bekleniyor"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:536 src/gs-details-page.c:401
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:536 src/gs-details-page.c:400
 msgid "Pending remove"
 msgstr "Kaldırma bekleniyor"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:215 src/gs-details-page.c:382
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:215 src/gs-details-page.c:381
 msgid "Installing"
 msgstr "Kuruluyor"
 
@@ -887,7 +887,7 @@ msgstr "Kaldırılıyor"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being downloaded
-#: src/gs-app-addon-row.c:113 src/gs-app-row.c:229 src/gs-details-page.c:387
+#: src/gs-app-addon-row.c:113 src/gs-app-row.c:229 src/gs-details-page.c:386
 #: src/gs-details-page.ui:316
 msgid "Downloading"
 msgstr "İndiriliyor"
@@ -899,7 +899,7 @@ msgstr "İndiriliyor"
 #. * can be live-installed
 #. TRANSLATORS: update the fw
 #: src/gs-app-addon-row.ui:21 src/gs-common.c:279 src/gs-details-page.c:1056
-#: src/gs-details-page.c:1091 src/gs-details-page.ui:203 src/gs-page.c:425
+#: src/gs-details-page.c:1091 src/gs-details-page.ui:203 src/gs-page.c:412
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Kur"
@@ -932,98 +932,99 @@ msgstr "Oturum Hizmetleri"
 msgid "Can access D-Bus services on the session bus"
 msgstr "Oturum veri yolundaki D-Bus hizmetlerine erişebilir"
 
-#: src/gs-app-details-page.c:63 src/gs-app-details-page.c:64
-#: src/gs-app-details-page.c:65 src/gs-app-details-page.c:66
+#. The GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER is used only as a flag, with actual bus names being listed separately
+#: src/gs-app-details-page.c:64 src/gs-app-details-page.c:65
+#: src/gs-app-details-page.c:66 src/gs-app-details-page.c:67
 msgid "Devices"
 msgstr "Aygıtlar"
 
-#: src/gs-app-details-page.c:63
+#: src/gs-app-details-page.c:64
 msgid "Can access arbitrary devices such as webcams"
 msgstr "Web kameraları gibi gelişigüzel aygıtlara erişebilir"
 
 #. Translators: This indicates an app can access input devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:339
-#: src/gs-safety-context-dialog.c:228
+#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:345
+#: src/gs-safety-context-dialog.c:215
 msgid "Can access input devices"
 msgstr "Girdi aygıtlarına erişebilir"
 
 #. Translators: This indicates an app can access audio devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:346
+#: src/gs-app-details-page.c:66 src/gs-app-context-bar.c:352
 msgid "Can access microphones and play audio"
 msgstr "Mikrofonlara erişebilir ve ses oynatabilir"
 
-#: src/gs-app-details-page.c:66
+#: src/gs-app-details-page.c:67
 msgid "Can access system device files"
 msgstr "Sistem aygıt dosyalarına erişebilir"
 
-#: src/gs-app-details-page.c:67
+#: src/gs-app-details-page.c:68
 msgid "Screen contents"
 msgstr "Ekran içerikleri"
 
 #. Translators: This indicates an app can access the screen/display contents.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:360
+#: src/gs-app-details-page.c:68 src/gs-app-context-bar.c:366
 msgid "Can access screen contents"
 msgstr "Ekran içeriklerine erişebilir"
 
-#: src/gs-app-details-page.c:68 src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:70
 msgid "Home folder"
 msgstr "Ev klasörü"
 
-#: src/gs-app-details-page.c:68 src/gs-app-details-page.c:70
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:144
+#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:147
 msgid "Can view, edit and create files"
 msgstr "Dosyaları görüntüleyebilir, düzenleyebilir ve oluşturabilir"
 
-#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:139
+#: src/gs-app-details-page.c:70 src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:142
 msgid "Can view files"
 msgstr "Dosyaları görüntüleyebilir"
 
-#: src/gs-app-details-page.c:70 src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:72
 msgid "File system"
 msgstr "Dosya sistemi"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
 msgid "Downloads folder"
 msgstr "İndirilenler klasörü"
 
-#: src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:76
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:76
 msgid "Can view and change any settings"
 msgstr "Ayarları görüntüleyebilir ve değiştirebilir"
 
-#: src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:77
 msgid "Legacy display system"
 msgstr "Eski görüntü sistemi"
 
-#: src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:77
 msgid "Uses an old, insecure display system"
 msgstr "Eski, güvenli olmayan bir görüntü sistemi kullanır"
 
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78
 msgid "Sandbox escape"
 msgstr "Yalıtılmış alandan kaçış"
 
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Yalıtılmış alandan kaçabilir ve diğer kısıtlamaları aşabilir"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:210
+#: src/gs-app-details-page.c:225
 msgid "No update description available."
 msgstr "Güncelleme tanımı yok."
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:234
+#: src/gs-app-details-page.c:249
 msgid "Update Details"
 msgstr "Güncelleme Ayrıntıları"
 
@@ -1031,11 +1032,11 @@ msgstr "Güncelleme Ayrıntıları"
 msgid "Requires additional permissions"
 msgstr "Ek izinler gerektirir"
 
-#: src/gs-app-reviews-dialog.c:129
+#: src/gs-app-reviews-dialog.c:135
 msgid "Invalid ratings data received from server"
 msgstr "Sunucudan alınan puanlama verileri geçersiz"
 
-#: src/gs-app-reviews-dialog.c:132 src/gs-details-page.c:2414
+#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2425
 msgid "Could not communicate with ratings server"
 msgstr "Puanlama sunucusu ile iletişim kurulamadı"
 
@@ -1056,78 +1057,77 @@ msgstr "İnceleme Yok"
 msgid "Version History"
 msgstr "Sürüm Geçmişi"
 
-#: src/gs-app-version-history-row.c:135
-#, c-format
-msgid "New in Version %s"
-msgstr "%s Sürümü Yenilikleri"
-
-#: src/gs-app-version-history-row.c:142
+#: src/gs-app-version-history-row.c:138
 #, c-format
 msgid "Version %s"
 msgstr "Sürüm %s"
 
-#: src/gs-app-version-history-row.c:144
+#: src/gs-app-version-history-row.c:145
 msgid "No details for this release"
 msgstr "Bu sürüm için ayrıntı yok"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:63
+#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:64
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
+#: src/gs-app-version-history-row.ui:37
+msgid "Installed"
+msgstr "Kuruldu"
+
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:124
+#: src/gs-application.c:126
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Başlangıç kipi: ‘updates’ (güncellemeler), ‘updated’ (güncellendi), "
 "‘installed’ (kuruldu) ya da ‘overview’ (genel görünüm)"
 
-#: src/gs-application.c:124
+#: src/gs-application.c:126
 msgid "MODE"
 msgstr "KİP"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "Search for applications"
 msgstr "Uygulamalarda ara"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "SEARCH"
 msgstr "ARA"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "Show application details (using application ID)"
 msgstr "Uygulama ayrıntılarını göster (uygulama kimliğini kullanarak)"
 
-#: src/gs-application.c:128 src/gs-application.c:132 src/gs-application.c:134
+#: src/gs-application.c:130 src/gs-application.c:134 src/gs-application.c:136
 msgid "ID"
 msgstr "Kimlik"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:132
 msgid "Show application details (using package name)"
 msgstr "Uygulama ayrıntılarını göster (paket adını kullanarak)"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:132
 msgid "PKGNAME"
 msgstr "PKTADI"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "Install the application (using application ID)"
 msgstr "Uygulama kur (uygulama kimliğini kullanarak)"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:136
 msgid "Uninstall the application (using application ID)"
 msgstr "Uygulama kaldır (uygulama kimliğini kullanarak)"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:138
 msgid "Open a local package file"
 msgstr "Yerel paket dosyası aç"
 
-#: src/gs-application.c:136 src/gs-application.c:141
+#: src/gs-application.c:138 src/gs-application.c:143
 msgid "FILENAME"
 msgstr "DOSYAADI"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:140
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -1135,46 +1135,47 @@ msgstr ""
 "Bu eylem için beklenen etkileşim türü: ‘none’ (hiçbiri), ‘notify’ (bildir), "
 "veya ‘full’ (dolu)"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:141
 msgid "INTERACTION"
 msgstr "ETKİLEŞİM"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:143
 msgid "Show a local metainfo or appdata file"
 msgstr "Yerel metainfo veya appdata dosyası göster"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:145
 msgid ""
 "Enable verbose debugging output (from the running instance, if already "
 "running)"
 msgstr ""
 "Ayrıntılı hata ayıklama çıktısını etkinleştir (çalışıyorsa, çalışan örnekten)"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:147
 msgid "Installs any pending updates in the background"
 msgstr "Bekleyen güncellemeleri arka planda kurar"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:149
 msgid "Show preferences"
 msgstr "Tercihleri göster"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:151
 msgid "Quit the running instance"
 msgstr "Çalışan oluşumdan çık"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:153
 msgid "Prefer local file sources to AppStream"
 msgstr "AppStream yerine yerel dosya kaynaklarını yeğle"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:155
 msgid "Show version number"
 msgstr "Sürüm numarasını göster"
 
-#: src/gs-application.c:270
-msgid "Copyright © 2016–2023 GNOME Software contributors"
-msgstr "Telif Hakkı © 2016–2023 GNOME Yazılımlar katkıcıları"
+#: src/gs-application.c:262
+#, c-format
+msgid "Copyright © 2016–%d GNOME Software contributors"
+msgstr "Telif Hakkı © 2016–%d GNOME Yazılımlar katkıcıları"
 
-#: src/gs-application.c:272
+#: src/gs-application.c:276
 msgid "translator-credits"
 msgstr ""
 "Emin Tufan Çetin <etcetin@gmail.com>\n"
@@ -1182,7 +1183,7 @@ msgstr ""
 "Muhammet Kara <muhammetk@gmail.com>"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:508
+#: src/gs-application.c:515
 msgid "Sorry! There are no details for that application."
 msgstr "Üzgünüz! Bu uygulama için ayrıntı yok."
 
@@ -1241,98 +1242,104 @@ msgstr "Boyut bilinmiyor"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:294
+#: src/gs-app-context-bar.c:293
 msgid "No permissions"
 msgstr "İzin yok"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:311
+#: src/gs-app-context-bar.c:310
 msgid "Has network access"
 msgstr "Ağ erişimi var"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:318
-msgid "Uses system services"
-msgstr "Sistem hizmetleri kullanır"
+#: src/gs-app-context-bar.c:317
+msgid "Uses non-portal system services"
+msgstr "Kapı dışı sistem hizmetleri kullanır"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:325
-msgid "Uses session services"
-msgstr "Oturum hizmetleri kullanır"
+#: src/gs-app-context-bar.c:324
+msgid "Uses non-portal session services"
+msgstr "Kapı dışı oturum hizmetleri kullanır"
+
+#. Translators: This indicates an app can access session or system bus services unknown to the Software.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:331
+msgid "Can access some specific non-portal services"
+msgstr "Kimi belirli kapı dışı hizmetlere erişebilir"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:332
+#: src/gs-app-context-bar.c:338
 msgid "Can access hardware devices"
 msgstr "Donanım aygıtlarına erişebilir"
 
 #. Translators: This indicates an app can access system devices such as /dev/shm.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:353
+#: src/gs-app-context-bar.c:359
 msgid "Can access system devices"
 msgstr "Sistem aygıtlarına erişebilir"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:372
+#: src/gs-app-context-bar.c:378
 msgid "Can read/write all your data"
 msgstr "Tüm verinizi okuyabilir/yazabilir"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:384
+#: src/gs-app-context-bar.c:390
 msgid "Can read all your data"
 msgstr "Tüm verinizi okuyabilir"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:391
+#: src/gs-app-context-bar.c:397
 msgid "Can read/write your downloads"
 msgstr "İndirmelerinizi okuyabilir/yazabilir"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:398
+#: src/gs-app-context-bar.c:404
 msgid "Can read your downloads"
 msgstr "İndirmelerinizi okuyabilir"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:405
+#: src/gs-app-context-bar.c:411
 msgid "Can access some specific files"
 msgstr "Kimi belirli dosyalara erişebilir"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:276
+#: src/gs-app-context-bar.c:418 src/gs-safety-context-dialog.c:263
 msgid "Can access and change user settings"
 msgstr "Kullanıcı ayarlarına erişebilir ve değiştirebilir"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:419 src/gs-safety-context-dialog.c:260
+#: src/gs-app-context-bar.c:425 src/gs-safety-context-dialog.c:247
 msgid "Uses a legacy windowing system"
 msgstr "Eski pencereleme sistemi kullanır"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:426 src/gs-safety-context-dialog.c:268
+#: src/gs-app-context-bar.c:432 src/gs-safety-context-dialog.c:255
 msgid "Can acquire arbitrary permissions"
 msgstr "İsteğe bağlı izinler edinir"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:438
+#: src/gs-app-context-bar.c:444
 msgid "Software developer is verified"
 msgstr "Yazılım geliştirici doğrulandı"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:456 src/gs-safety-context-dialog.c:144
+#: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:144
 msgid "Reviewed by OS distributor"
 msgstr "İS dağıtıcısınca incelendi"
 
@@ -1341,7 +1348,7 @@ msgstr "İS dağıtıcısınca incelendi"
 #. * It’s used in a context tile, so should be short.
 #. * The '%s' is replaced by the distribution name.
 #. Translators: The '%s' is replaced by the distribution name.
-#: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:147
+#: src/gs-app-context-bar.c:468 src/gs-safety-context-dialog.c:147
 #, c-format
 msgid "Reviewed by %s"
 msgstr "%s tarafından incelendi"
@@ -1349,37 +1356,37 @@ msgstr "%s tarafından incelendi"
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:478 src/gs-safety-context-dialog.c:161
+#: src/gs-app-context-bar.c:484 src/gs-safety-context-dialog.c:161
 msgid "Provided by a third party"
 msgstr "Üçüncü tarafça sağlanmış"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:488
+#: src/gs-app-context-bar.c:494
 msgid "Software no longer supported"
 msgstr "Yazılım artık desteklenmiyor"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:500
+#: src/gs-app-context-bar.c:506
 msgid "Auditable code"
 msgstr "Denetlenebilir kod"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:512
 msgid "Unknown license"
 msgstr "Bilinmeyen lisans"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:513
+#: src/gs-app-context-bar.c:519
 msgid "Proprietary code"
 msgstr "Sahipli kod"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:520
+#: src/gs-app-context-bar.c:526
 msgid "Special license"
 msgstr "Özel lisans"
 
@@ -1397,116 +1404,116 @@ msgstr "Özel lisans"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/
-#: src/gs-app-context-bar.c:534 src/gs-app-context-bar.c:817
+#: src/gs-app-context-bar.c:540 src/gs-app-context-bar.c:823
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:542
+#: src/gs-app-context-bar.c:548
 msgid "Privileged"
 msgstr "Ayrıcalıklı"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:549
+#: src/gs-app-context-bar.c:555
 msgid "Safe"
 msgstr "Güvenli"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:556
+#: src/gs-app-context-bar.c:562
 msgid "Probably Safe"
 msgstr "Olası Güvenli"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:563
+#: src/gs-app-context-bar.c:569
 msgid "Potentially Unsafe"
 msgstr "Güvenli Olmayabilir"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:570
+#: src/gs-app-context-bar.c:576
 msgid "Unsafe"
 msgstr "Güvenli Değil"
 
-#: src/gs-app-context-bar.c:648 src/gs-app-context-bar.c:680
+#: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:686
 #: src/gs-hardware-support-context-dialog.c:615
 msgid "Mobile Only"
 msgstr "Yalnızca Mobil"
 
-#: src/gs-app-context-bar.c:649
+#: src/gs-app-context-bar.c:655
 msgid "Only works on a small screen"
 msgstr "Yalnızca küçük ekranda çalışır"
 
-#: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:687
-#: src/gs-app-context-bar.c:694 src/gs-app-context-bar.c:744
-#: src/gs-app-context-bar.c:749 src/gs-hardware-support-context-dialog.c:595
+#: src/gs-app-context-bar.c:660 src/gs-app-context-bar.c:693
+#: src/gs-app-context-bar.c:700 src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:755 src/gs-hardware-support-context-dialog.c:595
 msgid "Desktop Only"
 msgstr "Yalnızca Masaüstü"
 
-#: src/gs-app-context-bar.c:655
+#: src/gs-app-context-bar.c:661
 msgid "Only works on a large screen"
 msgstr "Yalnızca büyük ekranda çalışır"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-app-context-bar.c:665 src/gs-hardware-support-context-dialog.c:633
 msgid "Screen Size Mismatch"
 msgstr "Ekran Boyutu Uygunsuzluğu"
 
-#: src/gs-app-context-bar.c:660 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:666 src/gs-hardware-support-context-dialog.c:634
 msgid "Doesn’t support your current screen size"
 msgstr "Geçerli ekran boyutunuzu desteklemiyor"
 
-#: src/gs-app-context-bar.c:681 src/gs-hardware-support-context-dialog.c:686
+#: src/gs-app-context-bar.c:687 src/gs-hardware-support-context-dialog.c:686
 #: src/gs-hardware-support-context-dialog.c:692
 msgid "Requires a touchscreen"
 msgstr "Dokunmatik ekran gerektirir"
 
-#: src/gs-app-context-bar.c:688 src/gs-hardware-support-context-dialog.c:646
+#: src/gs-app-context-bar.c:694 src/gs-hardware-support-context-dialog.c:646
 #: src/gs-hardware-support-context-dialog.c:652
 msgid "Requires a keyboard"
 msgstr "Klavye gerektirir"
 
-#: src/gs-app-context-bar.c:695
+#: src/gs-app-context-bar.c:701
 msgid "Requires a mouse"
 msgstr "Fare gerektirir"
 
-#: src/gs-app-context-bar.c:706
+#: src/gs-app-context-bar.c:712
 msgid "Gamepad Needed"
 msgstr "Oyun Kolu Gereklidir"
 
-#: src/gs-app-context-bar.c:707
+#: src/gs-app-context-bar.c:713
 msgid "Requires a gamepad to play"
 msgstr "Oynamak için oyun kolu gerektirir"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:731
+#: src/gs-app-context-bar.c:737
 msgid "Adaptive"
 msgstr "Uyarlanır"
 
-#: src/gs-app-context-bar.c:732
+#: src/gs-app-context-bar.c:738
 msgid "Works on phones, tablets and desktops"
 msgstr "Telefonlarda, tabletlerde ve masaüstülerde çalışır"
 
-#: src/gs-app-context-bar.c:745
+#: src/gs-app-context-bar.c:751
 msgid "Probably requires a keyboard or mouse"
 msgstr "Klavye veya fare gerektirebilir"
 
-#: src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:756
 msgid "Works on desktops and laptops"
 msgstr "Masaüstülerde ve dizüstülerde çalışır"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:792
+#: src/gs-app-context-bar.c:798
 msgid "Contains no age-inappropriate content"
 msgstr "Yaş uygunsuz içerik barındırmaz"
 
-#: src/gs-app-context-bar.c:840
+#: src/gs-app-context-bar.c:846
 msgid "No age rating information available"
 msgstr "Yaş derecelendirme bilgisi yok"
 
@@ -1569,7 +1576,7 @@ msgid "Device cannot be used during update."
 msgstr "Aygıt güncelleme sırasında kullanılamaz."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:411 src/gs-shell-search-provider.c:270
+#: src/gs-app-row.c:411 src/gs-shell-search-provider.c:273
 #, c-format
 msgid "Source: %s"
 msgstr "Kaynak: %s"
@@ -1633,12 +1640,12 @@ msgid "Login Required"
 msgstr "Giriş Gerekiyor"
 
 #. TRANSLATORS: button text
-#: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:272 src/gs-common.c:660
+#: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:272 src/gs-common.c:678
 #: src/gs-details-page.ui:291 src/gs-dkms-dialog.ui:28
-#: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-removal-dialog.ui:24
-#: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:174
-#: src/gs-repos-dialog.c:250 src/gs-review-dialog.ui:24 src/gs-review-row.c:235
-#: src/gs-review-row.c:259 src/gs-updates-page.c:852
+#: src/gs-dkms-dialog.ui:120 src/gs-page.c:410 src/gs-removal-dialog.ui:24
+#: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:182
+#: src/gs-repos-dialog.c:265 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
+#: src/gs-review-row.c:263 src/gs-updates-page.c:854
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
 msgstr "_İptal"
@@ -1731,7 +1738,7 @@ msgid "Recently installed updates are available to review"
 msgstr "Son olarak kurulan güncellemeler gözden geçirme için uygun"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:103 src/gs-common.c:828
+#: src/gs-common.c:103 src/gs-common.c:846
 msgid "Restart"
 msgstr "Yeniden Başlat"
 
@@ -1758,7 +1765,7 @@ msgstr "Yazılım Deposu Etkinleştirilsin Mi?"
 #. ask for confirmation
 #. TRANSLATORS: "Enable Third-Party Software Repository?" is
 #. * the confirmation dialog title
-#: src/gs-common.c:216 src/gs-repos-dialog.c:171
+#: src/gs-common.c:216 src/gs-repos-dialog.c:179
 msgid "Enable Third-Party Software Repository?"
 msgstr "Üçüncü Taraf Yazılım Deposu Etkinleştirilsin Mi?"
 
@@ -1828,84 +1835,84 @@ msgstr "Ayrıntılar"
 msgid "_Close"
 msgstr "_Kapat"
 
-#: src/gs-common.c:578
+#: src/gs-common.c:590
 msgid "Details copied to clipboard"
 msgstr "Ayrıntılar panoya kopyalandı"
 
 #. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:652
+#: src/gs-common.c:670
 msgid "_Accept"
 msgstr "_Kabul Et"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:803
+#: src/gs-common.c:821
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Güncellemeler kuruldu"
 
 #. TRANSLATORS: we've just uninstalled some apps
-#: src/gs-common.c:813
+#: src/gs-common.c:831
 msgid "An app has been uninstalled"
 msgid_plural "Apps have been uninstalled"
 msgstr[0] "Uygulama(lar) kaldırıldı"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:819
+#: src/gs-common.c:837
 msgid "A restart is required for it to take effect"
 msgid_plural "A restart is required for them to take effect"
 msgstr[0] "Bunların etkili olması için yeniden başlatma gerekiyor"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:826
+#: src/gs-common.c:844
 msgid "Not Now"
 msgstr "Şimdi Değil"
 
 #. TRANSLATORS: something happened less than a day ago
-#: src/gs-common.c:921
+#: src/gs-common.c:939
 msgid "Today"
 msgstr "Bugün"
 
 #. TRANSLATORS: something happened more than a day ago but less than 2 days ago
-#: src/gs-common.c:924
+#: src/gs-common.c:942
 msgid "Yesterday"
 msgstr "Dün"
 
-#: src/gs-common.c:926
+#: src/gs-common.c:944
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "%d gün önce"
 
-#: src/gs-common.c:930
+#: src/gs-common.c:948
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "%d hafta önce"
 
-#: src/gs-common.c:934
+#: src/gs-common.c:952
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "%d ay önce"
 
-#: src/gs-common.c:938
+#: src/gs-common.c:956
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
 msgstr[0] "%d yıl önce"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:995
+#: src/gs-common.c:1013
 msgid "Just now"
 msgstr "Şimdi"
 
-#: src/gs-common.c:997
+#: src/gs-common.c:1015
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d dakika önce"
 
-#: src/gs-common.c:999
+#: src/gs-common.c:1017
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
@@ -1915,11 +1922,41 @@ msgstr[0] "%d saat önce"
 #. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1362
+#: src/gs-common.c:1380
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
 msgstr "%s %s"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1496
+#, c-format
+msgid "Use the %s System Service"
+msgstr "%s Sistem Hizmetini Kullan"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1499
+#, c-format
+msgid "Use the %s Session Service"
+msgstr "%s Oturum Hizmetini Kullan"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
+#: src/gs-common.c:1502
+#, c-format
+msgid "Use the %s Service"
+msgstr "%s Hizmetini Kullan"
+
+#: src/gs-common.c:1523
+msgid "Can see the non-portal service"
+msgstr "Kapı dışı hizmetleri görebilir"
+
+#: src/gs-common.c:1525
+msgid "Can talk to the non-portal service"
+msgstr "Kapı dışı hizmetlere konuşabilir"
+
+#: src/gs-common.c:1527
+msgid "Can own the non-portal service"
+msgstr "Kapı dışı hizmet edinebilir"
 
 #: lib/gs-desktop-data.c:16
 msgctxt "Menu of Graphics & Photography"
@@ -2364,47 +2401,47 @@ msgstr "Daha Çoğunu Gö_ster"
 msgid "_Show Less"
 msgstr "Daha Az _Göster"
 
-#: src/gs-details-page.c:377
+#: src/gs-details-page.c:376
 msgid "Removing…"
 msgstr "Kaldırılıyor…"
 
-#: src/gs-details-page.c:392
+#: src/gs-details-page.c:391
 msgid "Requires restart to finish install"
 msgstr "Kurulumu bitirmek için yeniden başlatma gerekir"
 
-#: src/gs-details-page.c:399
+#: src/gs-details-page.c:398
 msgid "Requires restart to finish remove"
 msgstr "Kaldırmayı bitirmek için yeniden başlatma gerekir"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:415
+#: src/gs-details-page.c:414
 msgid "Pending installation…"
 msgstr "Kurulum bekleniyor…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:421
+#: src/gs-details-page.c:420
 msgid "Pending update…"
 msgstr "Güncellemeler bekleniyor…"
 
 #. Translators: This string is shown when downloading an app before install.
-#: src/gs-details-page.c:436 src/gs-upgrade-banner.c:180
+#: src/gs-details-page.c:435 src/gs-upgrade-banner.c:180
 msgid "Downloading…"
 msgstr "İndiriliyor…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:439
+#: src/gs-details-page.c:438
 msgid "Preparing…"
 msgstr "Hazırlanıyor…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:442
+#: src/gs-details-page.c:441
 msgid "Uninstalling…"
 msgstr "Kaldırılıyor…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:569
+#: src/gs-details-page.c:568
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "%s kurulmamış, ancak yine de verisi var."
@@ -2426,58 +2463,58 @@ msgid "_Install…"
 msgstr "_Kur…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1315
+#: src/gs-details-page.c:1317
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s Amerikan İngilizcesinde görünecek"
 
-#: src/gs-details-page.c:1323
+#: src/gs-details-page.c:1325
 msgid "This app will appear in US English"
 msgstr "Bu uygulama Amerikan İngilizcesinde görünecek"
 
-#: src/gs-details-page.c:1325
+#: src/gs-details-page.c:1327
 msgid "This software will appear in US English"
 msgstr "Bu yazılım Amerikan İngilizcesinde görünecek"
 
-#: src/gs-details-page.c:1360 src/gs-details-page.ui:36
+#: src/gs-details-page.c:1362 src/gs-details-page.ui:36
 msgid "Help _Translate"
 msgstr "Çeviriye _Yardım Et"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1425
+#: src/gs-details-page.c:1427
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Diğer %s Uygulamaları"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1461
+#: src/gs-details-page.c:1463
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "Geliştirici %s, %s sahipliğini kanıtladı"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1464
+#: src/gs-details-page.c:1466
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "Geliştirici %s sahipliğini kanıtladı"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1827
+#: src/gs-details-page.c:1837
 msgid "You need internet access to write a review"
 msgstr "Değerlendirme yazmanız için İnternet erişimi gerekiyor"
 
-#: src/gs-details-page.c:1930
+#: src/gs-details-page.c:1941
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
 "Bu uygulama artık güvenlik düzeltmelerini de içeren hiçbir güncelleme almıyor"
 
-#: src/gs-details-page.c:1931
+#: src/gs-details-page.c:1942
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "Bu uygulama halihazırda dağıtımınızca sağlanmaktadır ve değiştirilmemelidir."
 
-#: src/gs-details-page.c:1932
+#: src/gs-details-page.c:1943
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2485,19 +2522,19 @@ msgstr ""
 "Bu uygulama bir web sitesine, kod deposuna veya sorun izleyicisine bağlantı "
 "sağlamıyor."
 
-#: src/gs-details-page.c:1934
+#: src/gs-details-page.c:1945
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "Bu yazılım artık güvenlik düzeltmelerini de içeren hiçbir güncelleme almıyor"
 
-#: src/gs-details-page.c:1935
+#: src/gs-details-page.c:1946
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr ""
 "Bu yazılım halihazırda dağıtımınızca sağlanmaktadır ve değiştirilmemelidir."
 
-#: src/gs-details-page.c:1936
+#: src/gs-details-page.c:1947
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2505,7 +2542,7 @@ msgstr ""
 "Bu yazılım bir web sitesine, kod deposuna veya sorun izleyicisine bağlantı "
 "sağlamıyor."
 
-#: src/gs-details-page.c:2026 src/gs-details-page.c:2043
+#: src/gs-details-page.c:2038 src/gs-details-page.c:2055
 #, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
@@ -2514,14 +2551,19 @@ msgstr ""
 "Yazılımlar, “%s” için bilgi alamadı ve bu uygulamanın ayrıntılarını "
 "gösteremeyecek."
 
-#: src/gs-details-page.c:2411
+#: src/gs-details-page.c:2422
 msgid "Invalid review response received from server"
 msgstr "Sunucudan alınan inceleme yanıtı geçersiz"
 
-#: src/gs-details-page.c:2421
+#: src/gs-details-page.c:2432
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
-msgstr "“%s” için yorum gönderilemedi: %s"
+msgstr "“%s” için inceleme gönderilemedi: %s"
+
+#. display a toast to the user
+#: src/gs-details-page.c:2446
+msgid "Review submitted successfully"
+msgstr "İnceleme başarıyla gönderildi"
 
 #: src/gs-details-page.ui:7
 msgid "Details page"
@@ -2935,21 +2977,21 @@ msgid_plural ""
 "information."
 msgstr[0] "Aradığınız %s bulunamadı. Daha çok bilgi için lütfen %s bakın."
 
-#: src/gs-extras-page.c:640 src/gs-extras-page.c:697 src/gs-extras-page.c:737
+#: src/gs-extras-page.c:640 src/gs-extras-page.c:698 src/gs-extras-page.c:738
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "Herhangi bir arama sonucu bulunamadı: %s"
 
-#: src/gs-extras-page.c:954
+#: src/gs-extras-page.c:957
 #, c-format
 msgid "%s file format"
 msgstr "%s dosya biçimi"
 
-#: src/gs-extras-page.c:1312
+#: src/gs-extras-page.c:1315
 msgid "Install _All"
 msgstr "_Tümünü Kur"
 
-#: src/gs-extras-page.c:1342
+#: src/gs-extras-page.c:1345
 msgid "Unable to Find Requested Software"
 msgstr "İstenen Yazılım Bulunamadı"
 
@@ -3227,7 +3269,7 @@ msgid "Open Keyboard Shortcuts"
 msgstr "Klavye Kısayollarını Aç"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
-#: src/gs-installed-page.c:820
+#: src/gs-installed-page.c:821
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "Kurulu"
@@ -3319,7 +3361,7 @@ msgstr ""
 "Katılarak daha iyi olmasını sağlayabilirsiniz."
 
 #. Translators: This indicates an app does not specify which license it's developed under.
-#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:410
+#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:462
 msgid "Unknown License"
 msgstr "Bilinmeyen Lisans"
 
@@ -3357,7 +3399,7 @@ msgstr ""
 "Bu yazılıma katkıda bulunabilir veya bulunamayabilirsiniz."
 
 #. Translators: This is used for "License    Proprietary"
-#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:575
+#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:627
 msgid "Proprietary"
 msgstr "Sahipli"
 
@@ -3390,7 +3432,7 @@ msgstr ""
 "Bu yazılıma katkıda bulunamayabilirsiniz."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:447
+#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:499
 msgid "Special License"
 msgstr "Özel Lisans"
 
@@ -3455,6 +3497,11 @@ msgstr "Sayfa yükleniyor"
 msgid "Starting Up"
 msgstr "Başlatılıyor"
 
+#. TRANSLATORS: only run app as non-root user
+#: src/gs-main.c:39
+msgid "Software should be run as a non-root user. Exiting…"
+msgstr "Yazılımlar kök olmayan kullanıcıyla çalıştırılmalıdır. Çıkılıyor…"
+
 #: src/gs-origin-popover-row.c:105
 msgid "Unknown source"
 msgstr "Bilinmeyen kaynak"
@@ -3497,14 +3544,14 @@ msgstr "Sürüm Düşürmeler"
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:735
+#: src/gs-overview-page.c:746
 msgid "selected external sources"
 msgstr "Seçili dış kaynaklardan"
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:739
+#: src/gs-overview-page.c:750
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3518,34 +3565,34 @@ msgstr ""
 "etkinleştirebilirsiniz."
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:743
+#: src/gs-overview-page.c:754
 msgid "Enable Third Party Software Repositories?"
 msgstr "Üçüncü Taraf Yazılım Depoları Etkinleştirilsin Mi?"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:748
+#: src/gs-overview-page.c:759
 msgid "_Ignore"
 msgstr "_Yok Say"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:750 src/gs-repos-dialog.c:176
+#: src/gs-overview-page.c:761 src/gs-repos-dialog.c:184
 msgid "_Enable"
 msgstr "_Etkinleştir"
 
-#: src/gs-overview-page.c:953
+#: src/gs-overview-page.c:964
 msgid "Available for your operating system"
 msgstr "İşletim sisteminiz için kullanılabilir"
 
 #. Translators: the '%s' is replaced with the distribution name, constructing
 #. for example: "Available for Fedora Linux"
-#: src/gs-overview-page.c:957
+#: src/gs-overview-page.c:968
 #, c-format
 msgid "Available for %s"
 msgstr "%s için kullanılabilir"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:1256
+#: src/gs-overview-page.c:1267
 msgid "Explore"
 msgstr "Keşfet"
 
@@ -3567,36 +3614,36 @@ msgstr "Diğer Kategoriler"
 msgid "No App Data Found"
 msgstr "Uygulama Verisi Bulunamadı"
 
-#: lib/gs-plugin-loader.c:2744
+#: lib/gs-plugin-loader.c:2283
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
 #. TRANSLATORS: button text
-#: src/gs-page.c:91
+#: src/gs-page.c:90
 msgid "_OK"
 msgstr "_Tamam"
 
-#: src/gs-page.c:272
+#: src/gs-page.c:265
 msgid "User declined installation"
 msgstr "Kullanıcı kurulumu reddetti"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:418
+#: src/gs-page.c:405
 #, c-format
 msgid "Prepare %s"
 msgstr "%s Uygulamasını Hazırla"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:566
+#: src/gs-page.c:543
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "%s deposunu kaldırmak istediğinizden emin misiniz?"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is a repository name.
-#: src/gs-page.c:570
+#: src/gs-page.c:547
 #, c-format
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
@@ -3618,8 +3665,8 @@ msgstr ""
 #. * name of a firmware
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:579 src/gs-page.c:590 src/gs-page.c:601 src/gs-page.c:612
-#: src/gs-page.c:623 src/gs-page.c:635
+#: src/gs-page.c:556 src/gs-page.c:567 src/gs-page.c:578 src/gs-page.c:589
+#: src/gs-page.c:600 src/gs-page.c:612
 #, c-format
 msgid "Uninstall %s?"
 msgstr "%s Kaldırılsın Mı?"
@@ -3627,21 +3674,21 @@ msgstr "%s Kaldırılsın Mı?"
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of an addon or an input method.
 #. Translators: the '%s' is replaced with the app name
-#: src/gs-page.c:583 src/gs-page.c:642
+#: src/gs-page.c:560 src/gs-page.c:619
 #, c-format
 msgid "It will not be possible to use %s after removal."
 msgstr "Kaldırdıktan sonra %s kullanılamayacak."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
-#: src/gs-page.c:594
+#: src/gs-page.c:571
 #, c-format
 msgid ""
 "It will not be possible to use any apps which depend on %s after removal."
 msgstr "Kaldırdıktan sonra %s bağlantılı uygulamalar kullanılamayacak."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
-#: src/gs-page.c:604
+#: src/gs-page.c:581
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use "
@@ -3651,7 +3698,7 @@ msgstr ""
 "yazı tipinde görünecek."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
-#: src/gs-page.c:615
+#: src/gs-page.c:592
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media "
@@ -3661,7 +3708,7 @@ msgstr ""
 "oynatılamayacağı anlamına da gelebilir."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
-#: src/gs-page.c:626
+#: src/gs-page.c:603
 #, c-format
 msgid ""
 "Hardware which depends on %s may no longer function correctly after removal."
@@ -3669,7 +3716,7 @@ msgstr "%s bağımlı donanım kaldırıldıktan sonra artık düzgün çalışm
 
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
-#: src/gs-page.c:650
+#: src/gs-page.c:627
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. App data and settings will "
@@ -3790,68 +3837,68 @@ msgid "Permanently deletes data to save disk space"
 msgstr "Disk alanını korumak için verileri kalıcı olarak siler"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:243
+#: src/gs-repos-dialog.c:258
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
 msgstr "“%s” kaynağından kurulan yazılımlar güncelleme almayacak."
 
 #. ask for confirmation
-#: src/gs-repos-dialog.c:247
+#: src/gs-repos-dialog.c:262
 msgid "Disable Repository?"
 msgstr "Depoyu Devre Dışı Bırakılsın Mı?"
 
-#: src/gs-repos-dialog.c:247
+#: src/gs-repos-dialog.c:262
 msgid "Remove Repository?"
 msgstr "Depo Kaldırılsın Mı?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:254
+#: src/gs-repos-dialog.c:269
 msgid "_Disable"
 msgstr "_Devre Dışı Bırak"
 
 #. TRANSLATORS: this is button text to remove a repo
 #. TRANSLATORS: button text when
 #. * removing a review
-#: src/gs-repos-dialog.c:258 src/gs-review-row.c:262
+#: src/gs-repos-dialog.c:273 src/gs-review-row.c:266
 msgid "_Remove"
 msgstr "_Kaldır"
 
-#: src/gs-repos-dialog.c:605
+#: src/gs-repos-dialog.c:607
 msgid "Enable New Repositories"
 msgstr "Yeni Depoları Etkinleştir"
 
-#: src/gs-repos-dialog.c:606
+#: src/gs-repos-dialog.c:608
 msgid "Turn on new repositories when they are added"
 msgstr "Yeni depolar eklendiğinde etkinleştir"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:613
+#: src/gs-repos-dialog.c:615
 msgid "more information"
 msgstr "daha çok bilgi"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:618
+#: src/gs-repos-dialog.c:620
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Seçilen üçüncü taraflardan ek depolar — %s."
 
-#: src/gs-repos-dialog.c:623
+#: src/gs-repos-dialog.c:625
 msgid "Fedora Third Party Repositories"
 msgstr "Fedora Üçüncü Taraf Depolar"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:777
+#: src/gs-repos-dialog.c:776
 msgid "the operating system"
 msgstr "işletim sistemi"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:833
+#: src/gs-repos-dialog.c:832
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Bu depolar %s tarafından sağlanan öntanımlı yazılımı tamamlar."
@@ -3867,7 +3914,7 @@ msgstr "Depo Yok"
 #. TRANSLATORS: This string states how many apps have been
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of apps.
-#: src/gs-repo-row.c:182
+#: src/gs-repo-row.c:184
 #, c-format
 msgid "%u app installed"
 msgid_plural "%u apps installed"
@@ -3876,7 +3923,7 @@ msgstr[0] "%u uygulama kuruldu"
 #. TRANSLATORS: This string states how many add-ons have been
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of add-ons.
-#: src/gs-repo-row.c:190
+#: src/gs-repo-row.c:192
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -3888,7 +3935,7 @@ msgstr[0] "%u eklenti kuruldu"
 #. * that repo. The placeholder is the number of apps, and the translated
 #. * string will be substituted in for the first placeholder in the
 #. * string “%s and %s installed”.
-#: src/gs-repo-row.c:201
+#: src/gs-repo-row.c:203
 #, c-format
 msgid "%u app"
 msgid_plural "%u apps"
@@ -3900,7 +3947,7 @@ msgstr[0] "%u uygulama"
 #. * that repo. The placeholder is the number of add-ons, and the translated
 #. * string will be substituted in for the second placeholder in the
 #. * string “%s and %s installed”.
-#: src/gs-repo-row.c:210
+#: src/gs-repo-row.c:212
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -3919,25 +3966,25 @@ msgstr[0] "%u eklenti"
 #. *  - “2 apps and 1 add-on installed” - uses count 3
 #. *  - “4 apps and 5 add-ons installed” - uses count 9
 #.
-#: src/gs-repo-row.c:226
+#: src/gs-repo-row.c:228
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s ve %s kuruldu"
 
-#: src/gs-repo-row.c:242
+#: src/gs-repo-row.c:244
 msgid "Checking installed software…"
 msgstr "Kurulu yazılım denetleniyor…"
 
 #. Translators: The first '%s' is replaced with installation kind, like in case of Flatpak 'User Installation',
 #. the second '%s' is replaced with a text like '10 apps installed'.
-#: src/gs-repo-row.c:250
+#: src/gs-repo-row.c:252
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
 msgstr "%s • %s"
 
-#: src/gs-repo-row.c:400
+#: src/gs-repo-row.c:410
 msgid "Remove"
 msgstr "Kaldır"
 
@@ -4057,19 +4104,19 @@ msgid "out of 5 stars"
 msgstr "/ 5 yıldız"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:56
+#: src/gs-review-row.c:57
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:223
+#: src/gs-review-row.c:227
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Küfürlü, kaba veya ayrımcı tutum içeren incelemeleri bildirebilirsiniz."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:228
+#: src/gs-review-row.c:232
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -4078,40 +4125,44 @@ msgstr ""
 
 #. TRANSLATORS: window title when reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:233
+#: src/gs-review-row.c:237
 msgid "Report Review?"
 msgstr "İnceleme Bildirilsin Mi?"
 
 #. TRANSLATORS: button text when
 #. * * sending a review for moderation
-#: src/gs-review-row.c:238
+#: src/gs-review-row.c:242
 msgid "_Report"
 msgstr "_Bildir"
 
 #. TRANSLATORS: window title when the user attempts to remove their
 #. * review
-#: src/gs-review-row.c:254
+#: src/gs-review-row.c:258
 msgid "Remove Review?"
 msgstr "İnceleme Kaldırılsın Mı?"
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:257
+#: src/gs-review-row.c:261
 msgid "Removing a review cannot be undone."
 msgstr "İncelemenin kaldırılması geri alınamaz."
 
-#: src/gs-review-row.ui:89
+#: src/gs-review-row.ui:81
+msgid "Your review"
+msgstr "İncelemeniz"
+
+#: src/gs-review-row.ui:102
 msgid "Like Review"
 msgstr "İncelemeyi Beğendim"
 
-#: src/gs-review-row.ui:101
+#: src/gs-review-row.ui:114
 msgid "Dislike Review"
 msgstr "İncelemeyi Beğenmedim"
 
-#: src/gs-review-row.ui:117
+#: src/gs-review-row.ui:130
 msgid "Report…"
 msgstr "Bildir…"
 
-#: src/gs-review-row.ui:130
+#: src/gs-review-row.ui:143
 msgid "Remove…"
 msgstr "Kaldır…"
 
@@ -4127,208 +4178,217 @@ msgstr ""
 "Sağlayıcıya güveninizi gözden geçirin çünkü uygulama yalıtılmış alanda değil"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:177
+#: src/gs-safety-context-dialog.c:180
 msgid "No Permissions"
 msgstr "İzin Yok"
 
-#: src/gs-safety-context-dialog.c:178
+#: src/gs-safety-context-dialog.c:181
 msgid "App is fully sandboxed"
 msgstr "Uygulama tümüyle yalıtılmış alandadır"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:189
+#: src/gs-safety-context-dialog.c:192
 msgid "Network Access"
 msgstr "Ağ Erişimi"
 
-#: src/gs-safety-context-dialog.c:190
+#: src/gs-safety-context-dialog.c:193
 msgid "Can access the internet"
 msgstr "İnternete erişebilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:193
+#: src/gs-safety-context-dialog.c:196
 msgid "No Network Access"
 msgstr "Ağ Erişimi Yok"
 
-#: src/gs-safety-context-dialog.c:194
+#: src/gs-safety-context-dialog.c:197
 msgid "Cannot access the internet"
 msgstr "İnternete erişemez"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:200
-msgid "Uses System Services"
-msgstr "Sistem Hizmetlerini Kullanır"
-
-#: src/gs-safety-context-dialog.c:201
-msgid "Can request data from system services"
-msgstr "Sistem hizmetlerinden veri isteyebilir"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:208
-msgid "Uses Session Services"
-msgstr "Oturum Hizmetlerini Kullanır"
-
-#: src/gs-safety-context-dialog.c:209
-msgid "Can request data from session services"
-msgstr "Oturum hizmetlerinden veri isteyebilir"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:216
+#: src/gs-safety-context-dialog.c:203
 msgid "User Device Access"
 msgstr "Kullanıcı Aygıtı Erişimi"
 
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:204
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "Web kameraları veya oyun denetçileri gibi aygıtlara erişebilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:220
+#: src/gs-safety-context-dialog.c:207
 msgid "No User Device Access"
 msgstr "Kullanıcı Aygıtı Erişimi Yok"
 
-#: src/gs-safety-context-dialog.c:221
+#: src/gs-safety-context-dialog.c:208
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "Web kameraları veya oyun denetçileri gibi aygıtlara erişemez"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:227
+#: src/gs-safety-context-dialog.c:214
 msgid "Input Device Access"
 msgstr "Girdi Aygıtı Erişimi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:235
+#: src/gs-safety-context-dialog.c:222
 msgid "Microphone Access and Audio Playback"
 msgstr "Mikrofon Erişimi ve Ses Oynatımı"
 
-#: src/gs-safety-context-dialog.c:236
+#: src/gs-safety-context-dialog.c:223
 msgid "Can listen using microphones and play audio without asking permission"
 msgstr "İzin istemeden mikrofonlarla dinleyebilir ve sesleri oynatabilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:243
+#: src/gs-safety-context-dialog.c:230
 msgid "System Device Access"
 msgstr "Sistem Aygıtı Erişimi"
 
-#: src/gs-safety-context-dialog.c:244
+#: src/gs-safety-context-dialog.c:231
 msgid "Can access system devices which require elevated permissions"
 msgstr "Yükseltilmiş izinler gerektiren sistem aygıtlarına erişebilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:251
+#: src/gs-safety-context-dialog.c:238
 msgid "Screen Contents Access"
 msgstr "Ekran İçerikleri Erişimi"
 
-#: src/gs-safety-context-dialog.c:252
+#: src/gs-safety-context-dialog.c:239
 msgid "Can access the contents of the screen or other windows"
 msgstr "Ekranın ya da diğer pencerelerin içeriklerine erişebilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:259
+#: src/gs-safety-context-dialog.c:246
 msgid "Legacy Windowing System"
 msgstr "Eski Pencereleme Sistemi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:254
 msgid "Arbitrary Permissions"
 msgstr "İsteğe Bağlı İzinler"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:275
+#: src/gs-safety-context-dialog.c:262
 msgid "User Settings"
 msgstr "Kullanıcı Ayarları"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:287
+#: src/gs-safety-context-dialog.c:274
 msgid "Full File System Read/Write Access"
 msgstr "Tüm Dosya Sistemini Okuma/Yazma Erişimi"
 
-#: src/gs-safety-context-dialog.c:288
+#: src/gs-safety-context-dialog.c:275
 msgid "Can read and write all data on the file system"
 msgstr "Dosya sistemindeki tüm veriyi okuyabilir ve yazabilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:296
+#: src/gs-safety-context-dialog.c:283
 msgid "Home Folder Read/Write Access"
 msgstr "Ev Klasörü Okuma/Yazma Erişimi"
 
-#: src/gs-safety-context-dialog.c:297
+#: src/gs-safety-context-dialog.c:284
 msgid "Can read and write all data in your home directory"
 msgstr "Ev dizininizdeki tüm veriyi okuyabilir ve yazabilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:292
 msgid "Full File System Read Access"
 msgstr "Tüm Dosya Sistemini Okuma Erişimi"
 
-#: src/gs-safety-context-dialog.c:306
+#: src/gs-safety-context-dialog.c:293
 msgid "Can read all data on the file system"
 msgstr "Dosya sistemindeki tüm veriyi okuyabilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:315
+#: src/gs-safety-context-dialog.c:302
 msgid "Home Folder Read Access"
 msgstr "Ev Klasörü Okuma Erişimi"
 
-#: src/gs-safety-context-dialog.c:316
+#: src/gs-safety-context-dialog.c:303
 msgid "Can read all data in your home directory"
 msgstr "Ev dizininizdeki tüm verinizi okuyabilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:312
 msgid "Download Folder Read/Write Access"
 msgstr "İndirilenler Klasörü Okuma/Yazma Erişimi"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:313
 msgid "Can read and write all data in your downloads directory"
 msgstr "İndirilenler dizininizdeki tüm veriyi okuyabilir ve yazabilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:337
+#: src/gs-safety-context-dialog.c:324
 msgid "Download Folder Read Access"
 msgstr "İndirilenler Klasörü Okuma Erişimi"
 
-#: src/gs-safety-context-dialog.c:338
+#: src/gs-safety-context-dialog.c:325
 msgid "Can read all data in your downloads directory"
 msgstr "İndirilenler dizininizdeki tüm veriyi okuyabilir"
 
-#: src/gs-safety-context-dialog.c:348
+#: src/gs-safety-context-dialog.c:335
 msgid "Can read and write all data in the directory"
 msgstr "Dizindeki tüm veriyi okuyabilir ve yazabilir"
 
-#: src/gs-safety-context-dialog.c:359
+#: src/gs-safety-context-dialog.c:346
 msgid "Can read all data in the directory"
 msgstr "Dizindeki tüm veriyi okuyabilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:375
+#: src/gs-safety-context-dialog.c:362
 msgid "No File System Access"
 msgstr "Dosya Sistemi Erişimi Yok"
 
-#: src/gs-safety-context-dialog.c:376
+#: src/gs-safety-context-dialog.c:363
 msgid "Cannot access the file system at all"
-msgstr "Dosya sistemine tümüyle erişemez"
+msgstr "Dosya sistemine asla erişemez"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:390
+msgid "Uses System Services"
+msgstr "Sistem Hizmetlerini Kullanır"
+
+#: src/gs-safety-context-dialog.c:391
+msgid "Can request data from non-portal system services"
+msgstr "Kapı dışı sistem hizmetlerinden veri isteyebilir"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:398
+msgid "Uses Session Services"
+msgstr "Oturum Hizmetlerini Kullanır"
+
+#: src/gs-safety-context-dialog.c:399
+msgid "Can request data from non-portal session services"
+msgstr "Kapı dışı oturum hizmetlerinden veri isteyebilir"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:427
+msgid "No Service Access"
+msgstr "Hizmet Erişimi Yok"
+
+#: src/gs-safety-context-dialog.c:428
+msgid "Cannot access non-portal session or system services at all"
+msgstr "Kapı dışı oturum ya da sistem hizmetlerine asla erişemez"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:386
+#: src/gs-safety-context-dialog.c:438
 msgid "App developer is verified"
 msgstr "Uygulama geliştirici doğrulandı"
 
-#: src/gs-safety-context-dialog.c:387
+#: src/gs-safety-context-dialog.c:439
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "Bu uygulamanın geliştiricisinin söylediği kişi olduğu doğrulandı"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:398
+#: src/gs-safety-context-dialog.c:450
 msgid "Insecure Dependencies"
 msgstr "Güvensiz Bağımlılıklar"
 
-#: src/gs-safety-context-dialog.c:399
+#: src/gs-safety-context-dialog.c:451
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr "Yazılım veya bağımlılıkları artık desteklenmiyor ve güvensiz olabilir"
 
-#: src/gs-safety-context-dialog.c:412
+#: src/gs-safety-context-dialog.c:464
 msgid ""
 "This app does not specify what license it is developed under, and may be "
 "proprietary"
@@ -4336,7 +4396,7 @@ msgstr ""
 "Bu uygulama, hangi lisans altında geliştirildiğini belirtmemiştir ve sahipli "
 "olabilir"
 
-#: src/gs-safety-context-dialog.c:413
+#: src/gs-safety-context-dialog.c:465
 msgid ""
 "This software does not specify what license it is developed under, and may "
 "be proprietary"
@@ -4345,11 +4405,11 @@ msgstr ""
 "olabilir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:426
+#: src/gs-safety-context-dialog.c:478
 msgid "Proprietary Code"
 msgstr "Sahipli Kod"
 
-#: src/gs-safety-context-dialog.c:427
+#: src/gs-safety-context-dialog.c:479
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -4358,23 +4418,23 @@ msgstr ""
 "güvenilir olmayabilir"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:435
+#: src/gs-safety-context-dialog.c:487
 #, c-format
 msgid "This app is developed under the special license “%s”"
 msgstr "Bu uygulama özel “%s” lisansı altında geliştirilmiştir"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:438
+#: src/gs-safety-context-dialog.c:490
 #, c-format
 msgid "This software is developed under the special license “%s”"
 msgstr "Bu yazılım özel “%s” lisansı altında geliştirilmiştir."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:451
+#: src/gs-safety-context-dialog.c:503
 msgid "Auditable Code"
 msgstr "Denetlenebilir Kod"
 
-#: src/gs-safety-context-dialog.c:452
+#: src/gs-safety-context-dialog.c:504
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -4384,41 +4444,41 @@ msgstr ""
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:461
+#: src/gs-safety-context-dialog.c:513
 #, c-format
 msgid "%s is privileged"
 msgstr "%s ayrıcalıklı"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:468
+#: src/gs-safety-context-dialog.c:520
 #, c-format
 msgid "%s is safe"
 msgstr "%s güvenilir"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:475
+#: src/gs-safety-context-dialog.c:527
 #, c-format
 msgid "%s is probably safe"
 msgstr "%s muhtemelen güvenli"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:482
+#: src/gs-safety-context-dialog.c:534
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s güvenilir olmayabilir"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:489
+#: src/gs-safety-context-dialog.c:541
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s güvenilir değil"
 
 #. Translators: This is used for "License    Unknown"
-#: src/gs-safety-context-dialog.c:572
+#: src/gs-safety-context-dialog.c:624
 msgctxt "Unknown license"
 msgid "Unknown"
 msgstr "Bilinmeyen"
@@ -4466,36 +4526,36 @@ msgstr "Ekran Görüntüsü Yok"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:360 src/gs-screenshot-image.c:402
-#: src/gs-screenshot-image.c:606
+#: src/gs-screenshot-image.c:363 src/gs-screenshot-image.c:404
+#: src/gs-screenshot-image.c:608
 msgid "Screenshot not found"
 msgstr "Ekran görüntüsü bulunamadı"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:414
 msgid "Failed to load image"
 msgstr "Resim yüklenemedi"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:634
+#: src/gs-screenshot-image.c:636
 msgid "Screenshot size not found"
 msgstr "Ekran görüntüsü boyutu bulunamadı"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:723
+#: src/gs-screenshot-image.c:725
 msgid "Could not create cache"
 msgstr "Önbellek oluşturulamadı"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:737
+#: src/gs-screenshot-image.c:739
 msgid "Screenshot not valid"
 msgstr "Ekran görüntüsü geçerli değil"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:775
+#: src/gs-screenshot-image.c:777
 msgid "Screenshot not available"
 msgstr "Ekran görüntüsü kullanılamaz"
 
@@ -4505,7 +4565,7 @@ msgstr "Ekran Görüntüsü"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:176
+#: src/gs-search-page.c:178
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -4531,98 +4591,98 @@ msgstr "Uygulama Bulunamadı"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1131 src/gs-shell.c:1136 src/gs-shell.c:1151
-#: src/gs-shell.c:1155
+#: src/gs-shell.c:1161 src/gs-shell.c:1166 src/gs-shell.c:1181
+#: src/gs-shell.c:1185
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1209 src/gs-shell.c:1261
+#: src/gs-shell.c:1239 src/gs-shell.c:1291
 msgid "Unable to download updates"
 msgstr "Güncellemeler indirilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1214
+#: src/gs-shell.c:1244
 msgid "Unable to download firmware updates"
 msgstr "Donanım yazılımı güncellemeleri indirilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1217
+#: src/gs-shell.c:1247
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "%s kaynağından donanım yazılımı güncellemeleri indirilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1222
+#: src/gs-shell.c:1252
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "%s kaynağından güncellemeler indirilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1229 src/gs-shell.c:1447
+#: src/gs-shell.c:1259 src/gs-shell.c:1477
 msgid "Unable to update: internet access required"
 msgstr "Güncellenemiyor: İnternet erişimi gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1232 src/gs-shell.c:1450
+#: src/gs-shell.c:1262 src/gs-shell.c:1480
 msgid "Unable to update: not enough disk space"
 msgstr "Güncellenemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1237
+#: src/gs-shell.c:1267
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "%s kaynağından güncellemeler indirilemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1243 src/gs-shell.c:1461
+#: src/gs-shell.c:1273 src/gs-shell.c:1491
 msgid "Unable to update: authentication required"
 msgstr "Güncellenemiyor: kimlik doğrulama gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1247 src/gs-shell.c:1472
+#: src/gs-shell.c:1277 src/gs-shell.c:1502
 msgid "Unable to update: invalid authentication"
 msgstr "Güncellenemiyor: kimlik doğrulama geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1251 src/gs-shell.c:1483
+#: src/gs-shell.c:1281 src/gs-shell.c:1513
 msgid "Unable to update: permission required"
 msgstr "Güncellenemiyor: izin gerekli"
 
-#: src/gs-shell.c:1252
+#: src/gs-shell.c:1282
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "Güncellemeler indirilemiyor: yazılım kurma izniniz yok"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1264
+#: src/gs-shell.c:1294
 msgid "Unable to get list of updates"
 msgstr "Güncellemelerin listesi alınamıyor"
 
-#: src/gs-shell.c:1299
+#: src/gs-shell.c:1329
 msgid "Unable to install: download failed"
 msgstr "Kurulamıyor: indirme başarısız"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1305
+#: src/gs-shell.c:1335
 #, c-format
 msgid "Unable to install %s: failed download from %s"
 msgstr "%s kurulamıyor: %s kaynağından indirilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1310
+#: src/gs-shell.c:1340
 #, c-format
 msgid "Unable to install %s: download failed"
 msgstr "%s kurulamıyor: indirme başarısız"
 
-#: src/gs-shell.c:1316
+#: src/gs-shell.c:1346
 msgid "Unable to install: missing runtime"
 msgstr "Kurulamıyor: çalışma zamanı eksik"
 
@@ -4630,89 +4690,89 @@ msgstr "Kurulamıyor: çalışma zamanı eksik"
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1322
+#: src/gs-shell.c:1352
 #, c-format
 msgid "Unable to install %s: runtime %s unavailable"
 msgstr "%s kurulamıyor: %s çalışma zamanı kullanılamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1325 src/gs-shell.c:1381 src/gs-shell.c:1383
+#: src/gs-shell.c:1355 src/gs-shell.c:1411 src/gs-shell.c:1413
 #, c-format
 msgid "Unable to install %s"
 msgstr "%s kurulamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1331
+#: src/gs-shell.c:1361
 msgid "Unable to install: internet access required"
 msgstr "Kurulamıyor: İnternet erişimi gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1334
+#: src/gs-shell.c:1364
 msgid "Unable to install: invalid app format"
 msgstr "Kurulamıyor: uygulamanın biçimi geçersiz"
 
-#: src/gs-shell.c:1337
+#: src/gs-shell.c:1367
 msgid "Unable to install: not enough disk space"
 msgstr "Kurulamıyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1340
+#: src/gs-shell.c:1370
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "%s kurulamıyor: yetersiz disk alanı"
 
-#: src/gs-shell.c:1344
+#: src/gs-shell.c:1374
 msgid "Unable to install: authentication required"
 msgstr "Kurulamıyor: kimlik doğrulama gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1346
+#: src/gs-shell.c:1376
 #, c-format
 msgid "Unable to install %s: authentication required"
 msgstr "%s kurulamıyor: kimlik doğrulama gerekli"
 
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1380
 msgid "Unable to install: invalid authentication"
 msgstr "Kurulamıyor: kimlik doğrulama geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1353
+#: src/gs-shell.c:1383
 #, c-format
 msgid "Unable to install %s: invalid authentication"
 msgstr "%s kurulamıyor: kimlik doğrulama geçersiz"
 
-#: src/gs-shell.c:1357
+#: src/gs-shell.c:1387
 msgid "Unable to install: permission required"
 msgstr "Kurulamıyor: izin gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1360
+#: src/gs-shell.c:1390
 #, c-format
 msgid "Unable to install %s: permission required"
 msgstr "%s kurulamıyor: izin gerekli"
 
-#: src/gs-shell.c:1364
+#: src/gs-shell.c:1394
 msgid "Unable to install: device must be plugged in"
 msgstr "Kurulamıyor: aygıt takılı olmalıdır"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1367
+#: src/gs-shell.c:1397
 #, c-format
 msgid "Unable to install %s: device must be plugged in"
 msgstr "%s kurulamıyor: aygıt takılı olmalıdır"
 
-#: src/gs-shell.c:1370
+#: src/gs-shell.c:1400
 msgid "Unable to install: low battery"
 msgstr "Kurulamıyor: düşük pil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1373
+#: src/gs-shell.c:1403
 #, c-format
 msgid "Unable to install %s: low battery"
 msgstr "%s kurulamıyor: düşük pil"
@@ -4721,14 +4781,14 @@ msgstr "%s kurulamıyor: düşük pil"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1426
+#: src/gs-shell.c:1456
 #, c-format
 msgid "Unable to update %s from %s: download failed"
 msgstr "%s, %s kaynağından güncellenemiyor: indirme başarısız"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1432
+#: src/gs-shell.c:1462
 #, c-format
 msgid "Unable to update %s: download failed"
 msgstr "%s güncellenemiyor: indirme başarısız"
@@ -4736,274 +4796,274 @@ msgstr "%s güncellenemiyor: indirme başarısız"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1439
+#: src/gs-shell.c:1469
 #, c-format
 msgid "Unable to install updates from %s: download failed"
 msgstr "%s kaynağından güncellemeler kurulamıyor: indirme başarısız"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1443
+#: src/gs-shell.c:1473
 msgid "Unable to update: download failed"
 msgstr "Güncellenemiyor: indirme başarısız"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1455
+#: src/gs-shell.c:1485
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "%s güncellenemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1466
+#: src/gs-shell.c:1496
 #, c-format
 msgid "Unable to update %s: authentication required"
 msgstr "%s güncellenemiyor: kimlik doğrulama gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1477
+#: src/gs-shell.c:1507
 #, c-format
 msgid "Unable to update %s: invalid authentication"
 msgstr "%s güncellenemiyor: kimlik doğrulama geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1488
+#: src/gs-shell.c:1518
 #, c-format
 msgid "Unable to update %s: permission required"
 msgstr "%s güncellenemiyor: izin gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1494
+#: src/gs-shell.c:1524
 msgid "Unable to update: device must be plugged in"
 msgstr "Güncellenemiyor: aygıt takılı olmalıdır"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1499
+#: src/gs-shell.c:1529
 #, c-format
 msgid "Unable to update %s: device must be plugged in"
 msgstr "%s güncellenemiyor: aygıt takılı olmalıdır"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1504
+#: src/gs-shell.c:1534
 msgid "Unable to update: low battery"
 msgstr "Güncellenemiyor: düşük pil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1509
+#: src/gs-shell.c:1539
 #, c-format
 msgid "Unable to update %s: low battery"
 msgstr "%s güncellenemiyor: düşük pil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1550
 #, c-format
 msgid "Unable to update %s"
 msgstr "%s güncellenemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1524
+#: src/gs-shell.c:1554
 msgid "Unable to update"
 msgstr "Güncellenemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1561 src/gs-shell.c:1634
+#: src/gs-shell.c:1591 src/gs-shell.c:1664
 msgid "Unable to upgrade"
 msgstr "Yükseltilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1565
+#: src/gs-shell.c:1595
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "%s, %s kaynağından yükseltilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1569
+#: src/gs-shell.c:1599
 msgid "Unable to upgrade: download failed"
 msgstr "Yükseltilemiyor: indirme başarısız"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1572
+#: src/gs-shell.c:1602
 #, c-format
 msgid "Unable to upgrade to %s: download failed"
 msgstr "%s yükseltilemiyor: indirme başarısız"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1578
+#: src/gs-shell.c:1608
 msgid "Unable to upgrade: internet access required"
 msgstr "Yükseltilemiyor: İnternet erişimi gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1581
+#: src/gs-shell.c:1611
 #, c-format
 msgid "Unable to upgrade to %s: internet access required"
 msgstr "%s yükseltilemiyor: İnternet erişimi gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1585
+#: src/gs-shell.c:1615
 msgid "Unable to upgrade: not enough disk space"
 msgstr "Yükseltilemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1588
+#: src/gs-shell.c:1618
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "%s yükseltilemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1593
+#: src/gs-shell.c:1623
 msgid "Unable to upgrade: authentication required"
 msgstr "Yükseltilemiyor: kimlik doğrulama gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1596
+#: src/gs-shell.c:1626
 #, c-format
 msgid "Unable to upgrade to %s: authentication required"
 msgstr "%s yükseltilemiyor: kimlik doğrulama gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1601
+#: src/gs-shell.c:1631
 msgid "Unable to upgrade: invalid authentication"
 msgstr "Yükseltilemiyor: kimlik doğrulama geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1604
+#: src/gs-shell.c:1634
 #, c-format
 msgid "Unable to upgrade to %s: invalid authentication"
 msgstr "%s yükseltilemiyor: kimlik doğrulama geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1609
+#: src/gs-shell.c:1639
 msgid "Unable to upgrade: permission required"
 msgstr "Yükseltilemiyor: izin gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1612
+#: src/gs-shell.c:1642
 #, c-format
 msgid "Unable to upgrade to %s: permission required"
 msgstr "%s yükseltilemiyor: izin gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1617
+#: src/gs-shell.c:1647
 msgid "Unable to upgrade: device must be plugged in"
 msgstr "Yükseltilemiyor: aygıt takılı olmalıdır"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1620
+#: src/gs-shell.c:1650
 #, c-format
 msgid "Unable to upgrade to %s: device must be plugged in"
 msgstr "%s yükseltilemiyor: aygıt takılı olmalıdır"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1624
+#: src/gs-shell.c:1654
 msgid "Unable to upgrade: low battery"
 msgstr "Yükseltilemiyor: düşük pil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1627
+#: src/gs-shell.c:1657
 #, c-format
 msgid "Unable to upgrade to %s: low battery"
 msgstr "%s yükseltilemiyor: düşük pil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1637
+#: src/gs-shell.c:1667
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "%s yükseltilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1671
+#: src/gs-shell.c:1701
 msgid "Unable to uninstall: authentication required"
 msgstr "Kaldırılamıyor: kimlik doğrulama gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1674
+#: src/gs-shell.c:1704
 #, c-format
 msgid "Unable to uninstall %s: authentication required"
 msgstr "%s kaldırılamıyor: kimlik doğrulama gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1679
+#: src/gs-shell.c:1709
 msgid "Unable to uninstall: invalid authentication"
 msgstr "Kaldırılamıyor: kimlik doğrulama geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1682
+#: src/gs-shell.c:1712
 #, c-format
 msgid "Unable to uninstall %s: invalid authentication"
 msgstr "%s kurulamıyor: kimlik doğrulama geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1687
+#: src/gs-shell.c:1717
 msgid "Unable to uninstall: permission required"
 msgstr "Kaldırılamıyor: izin gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1690
+#: src/gs-shell.c:1720
 #, c-format
 msgid "Unable to uninstall %s: permission required"
 msgstr "%s kaldırılamıyor: izin gerekli"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1695
+#: src/gs-shell.c:1725
 msgid "Unable to uninstall: device must be plugged in"
 msgstr "Kaldırılamıyor: aygıt takılı olmalıdır"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1698
+#: src/gs-shell.c:1728
 #, c-format
 msgid "Unable to uninstall %s: device must be plugged in"
 msgstr "%s kaldırılamıyor: aygıt takılı olmalıdır"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1702
+#: src/gs-shell.c:1732
 msgid "Unable to uninstall: low battery"
 msgstr "Kaldırılamıyor: düşük pil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1705
+#: src/gs-shell.c:1735
 #, c-format
 msgid "Unable to uninstall %s: low battery"
 msgstr "%s kaldırılamıyor: düşük pil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1716
+#: src/gs-shell.c:1746
 #, c-format
 msgid "Unable to uninstall %s"
 msgstr "%s kaldırılamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification, where the '%s' is
 #. replaced with the app name (e.g. "GIMP")
-#: src/gs-shell.c:1755
+#: src/gs-shell.c:1785
 #, c-format
 msgid "Unable to launch %s"
 msgstr "%s başlatılamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1760 src/gs-shell.c:1788 src/gs-shell.c:1832
-#: src/gs-shell.c:1876 src/gs-shell.c:1936
+#: src/gs-shell.c:1790 src/gs-shell.c:1818 src/gs-shell.c:1862
+#: src/gs-shell.c:1906 src/gs-shell.c:1970
 msgid "Sorry, something went wrong"
 msgstr "Üzgünüz, bir şeyler yanlış gitti"
 
@@ -5011,52 +5071,57 @@ msgstr "Üzgünüz, bir şeyler yanlış gitti"
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1768
+#: src/gs-shell.c:1798
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "%s başlatılamıyor: %s kurulmamış"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1778 src/gs-shell.c:1822 src/gs-shell.c:1866
-#: src/gs-shell.c:1916
+#: src/gs-shell.c:1808 src/gs-shell.c:1852 src/gs-shell.c:1896
+#: src/gs-shell.c:1950
 msgid "Not enough disk space for operation"
 msgstr "İşlem için yeterli disk alanı yok"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1814
+#: src/gs-shell.c:1844
 msgid "Unable to install: file type not supported"
 msgstr "Kurulamıyor: dosya türü desteklenmiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1818 src/gs-shell.c:1862
+#: src/gs-shell.c:1848 src/gs-shell.c:1892
 msgid "Unable to install: authentication failed"
 msgstr "Kurulamıyor: kimlik doğrulama başarısız"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1858
+#: src/gs-shell.c:1888
 msgid "Unable to install"
 msgstr "Kurulamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1909
+#: src/gs-shell.c:1939
 #, c-format
 msgid "Unable to contact %s"
 msgstr "%s ile iletişim kurulamıyor"
 
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1945
+msgid "Download failed"
+msgstr "İndirme başarısız"
+
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
-#: src/gs-shell.c:1920
+#: src/gs-shell.c:1954
 msgid "Restart Software to use new plugins"
 msgstr "Yeni eklentileri kullanmak için Yazılımlarʼı yeniden başlat"
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1924
+#: src/gs-shell.c:1958
 msgid "Device needs to be plugged in"
 msgstr "Aygıt takılı olmalıdır"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1927
+#: src/gs-shell.c:1961
 msgid "Battery level is too low"
 msgstr "Pil düzeyi çok düşük"
 
@@ -5196,17 +5261,21 @@ msgstr "_Ayrıntılar"
 msgid "_Examine"
 msgstr "İ_ncele"
 
+#: src/gs-toast.c:71
+msgid "_Show Review"
+msgstr "İncelemeyi _Göster"
+
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window.
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:107
+#: src/gs-update-dialog.c:110
 #, c-format
 msgid "Installed on %s"
 msgstr "%s tarihinde kuruldu"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:129
+#: src/gs-update-dialog.c:132
 msgid "Installed Updates"
 msgstr "Kurulan Güncellemeler"
 
@@ -5214,147 +5283,147 @@ msgstr "Kurulan Güncellemeler"
 msgid "No Updates Installed"
 msgstr "Güncelleme Kurulmadı"
 
-#: src/gs-update-monitor.c:217
+#: src/gs-update-monitor.c:223
 msgid "Updates Are Out of Date"
 msgstr "Güncellemelerinin Tarihi Geçmiş"
 
-#: src/gs-update-monitor.c:218
+#: src/gs-update-monitor.c:224
 msgid "Please check for available updates"
 msgstr "Kullanılabilir güncellemeleri denetleyin"
 
-#: src/gs-update-monitor.c:224
+#: src/gs-update-monitor.c:230
 msgid "Critical Updates Ready to Install"
 msgstr "Kritik Güncellemeler Kuruluma Hazır"
 
-#: src/gs-update-monitor.c:225
+#: src/gs-update-monitor.c:231
 msgid "Install critical updates as soon as possible"
 msgstr "Kritik güncellemeleri en kısa sürede kur"
 
-#: src/gs-update-monitor.c:228
+#: src/gs-update-monitor.c:234
 msgid "Critical Updates Available to Download"
 msgstr "Kritik Güncellemeler İndirilebilir"
 
-#: src/gs-update-monitor.c:229
+#: src/gs-update-monitor.c:235
 msgid "Download critical updates as soon as possible"
 msgstr "Kritik güncellemeleri en kısa sürede indir"
 
-#: src/gs-update-monitor.c:235
+#: src/gs-update-monitor.c:241
 msgid "Updates Ready to Install"
 msgstr "Güncellemeler Kuruluma Hazır"
 
-#: src/gs-update-monitor.c:236
+#: src/gs-update-monitor.c:242
 msgid "Software updates are ready and waiting"
 msgstr "Yazılım güncellemeleri hazır ve bekliyor"
 
-#: src/gs-update-monitor.c:242
+#: src/gs-update-monitor.c:248
 msgid "Updates Available to Download"
 msgstr "Güncellemeler İndirilebilir"
 
-#: src/gs-update-monitor.c:243
+#: src/gs-update-monitor.c:249
 msgid "Software updates can be downloaded"
 msgstr "Yazılım güncellemeleri indirilebilir"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:363
+#: src/gs-update-monitor.c:371
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
 msgstr[0] "%u Uygulama Güncellendi — Yeniden Başlatma Gerekiyor"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:369
+#: src/gs-update-monitor.c:377
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
 msgstr[0] "%u Uygulama Güncellendi"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:380
+#: src/gs-update-monitor.c:388
 #, c-format
 msgid "%s has been updated."
 msgstr "%s güncellendi."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:383
+#: src/gs-update-monitor.c:391
 msgid "Please restart the app."
 msgstr "Lütfen uygulamayı yeniden başlatın."
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:391
+#: src/gs-update-monitor.c:399
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s ve %s güncellendi."
 
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:397 src/gs-update-monitor.c:416
+#: src/gs-update-monitor.c:405 src/gs-update-monitor.c:424
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
 msgstr[0] "%u uygulama yeniden başlatma gerektiriyor."
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:409
+#: src/gs-update-monitor.c:417
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "%s, %s ve %s içerir."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:711
+#: src/gs-update-monitor.c:720
 msgid "System Has Reached End of Life"
 msgstr "Sistem Ömrünün Sonuna Ulaştı"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:713
+#: src/gs-update-monitor.c:722
 msgid "Upgrade to continue receiving updates"
 msgstr "Güncellemeleri almayı sürdürmek için yükselt"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:768
+#: src/gs-update-monitor.c:781
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "%s dağıtımının yeni sürümü kuruluma hazır"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:772
+#: src/gs-update-monitor.c:785
 msgid "Software Upgrade Available"
 msgstr "Yazılım Yükseltmesi Var"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1270
+#: src/gs-update-monitor.c:1312
 msgid "Software Updates Failed"
 msgstr "Yazılım Güncellemeleri Başarısız Oldu"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1272
+#: src/gs-update-monitor.c:1314
 msgid "Prepared updates were not installed"
 msgstr "Hazırlanan güncellemeler kurulamadı"
 
-#: src/gs-update-monitor.c:1273
+#: src/gs-update-monitor.c:1315
 msgid "Show Details"
 msgstr "Ayrıntıları Göster"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1318
+#: src/gs-update-monitor.c:1364
 msgid "System Upgrade Complete"
 msgstr "Sistem Yükseltmesi Tamamlandı"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1323
+#: src/gs-update-monitor.c:1369
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "%s %s’a Hoş Geldiniz!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1332
+#: src/gs-update-monitor.c:1378
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Yazılım Güncellemeleri Kuruldu"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1336
+#: src/gs-update-monitor.c:1382
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "Önemli işletim sistemi güncellemeleri kuruldu."
@@ -5364,30 +5433,30 @@ msgstr[0] "Önemli işletim sistemi güncellemeleri kuruldu."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1347
+#: src/gs-update-monitor.c:1393
 msgctxt "updates"
 msgid "Review"
 msgstr "Gözden Geçir"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1400
+#: src/gs-update-monitor.c:1447
 msgid "Failed To Update"
 msgstr "Güncellenemedi"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1405
+#: src/gs-update-monitor.c:1452
 msgid "The system was already up to date."
 msgstr "Sistem zaten güncel."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1410
+#: src/gs-update-monitor.c:1457
 msgid "The update was cancelled."
 msgstr "Güncelleme iptal edildi."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1415
+#: src/gs-update-monitor.c:1462
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5396,7 +5465,7 @@ msgstr ""
 "erişiminiz olduğuna emin olun ve yeniden deneyin."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1420
+#: src/gs-update-monitor.c:1467
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -5405,14 +5474,14 @@ msgstr ""
 "sağlayıcınızla iletişime geçin."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1425
+#: src/gs-update-monitor.c:1472
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Yeterince boş disk alanı yok. Lütfen biraz yer açın ve yeniden deneyin."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1429
+#: src/gs-update-monitor.c:1476
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -5426,34 +5495,26 @@ msgstr ""
 msgid "Last checked: %s"
 msgstr "Son denetim: %s"
 
-#: src/gs-updates-page.c:314
-msgid "Stop"
-msgstr "Durdur"
-
-#: src/gs-updates-page.c:323 src/gs-updates-page.c:335
-msgid "Check for Updates"
-msgstr "Güncellemeleri Denetle"
-
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:586
+#: src/gs-updates-page.c:598
 #, c-format
 msgid "%s %s has stopped receiving critical software updates"
 msgstr "%s %s kritik yazılım güncellemelerini almayı durdurdu"
 
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
-#: src/gs-updates-page.c:592
+#: src/gs-updates-page.c:604
 msgid "Your operating system has stopped receiving critical software updates"
 msgstr "İşletim sisteminiz kritik yazılım güncellemelerini almayı durdurdu"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:848
+#: src/gs-updates-page.c:850
 msgid "Charges May Apply"
 msgstr "Ücret Uygulanabilir"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:850
+#: src/gs-updates-page.c:852
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -5462,23 +5523,19 @@ msgstr ""
 "masrafa neden olabilir."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:854
+#: src/gs-updates-page.c:856
 msgid "Check _Anyway"
 msgstr "Yine de _Denetle"
 
-#: src/gs-updates-page.c:892
+#: src/gs-updates-page.c:903
 msgid "Software Upgrades Downloaded"
 msgstr "Yazılım Yükseltmeleri İndirildi"
 
-#: src/gs-updates-page.c:893
+#: src/gs-updates-page.c:904
 msgid "Upgrades are ready to be installed"
 msgstr "Yükseltmeler kurulmaya hazır"
 
-#: src/gs-updates-page.c:1228
-msgid "Check for updates"
-msgstr "Güncellemeleri denetle"
-
-#: src/gs-updates-page.c:1264
+#: src/gs-updates-page.c:1254
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Güncellemeler"
@@ -5502,11 +5559,11 @@ msgstr "Biraz uzun sürebilir"
 msgid "Up to Date"
 msgstr "Güncel"
 
-#: src/gs-updates-page.ui:180
+#: src/gs-updates-page.ui:179
 msgid "Use Mobile Data?"
 msgstr "Mobil Veri Kullanılsın Mı?"
 
-#: src/gs-updates-page.ui:181
+#: src/gs-updates-page.ui:180
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -5514,29 +5571,37 @@ msgstr ""
 "Mobil geniş bant kullanırken güncellemeleri denetlemek ek masrafa neden "
 "olabilir"
 
-#: src/gs-updates-page.ui:184
+#: src/gs-updates-page.ui:183
 msgid "_Check Anyway"
 msgstr "Yine de _Denetle"
 
-#: src/gs-updates-page.ui:203
+#: src/gs-updates-page.ui:202
 msgid "No Connection"
 msgstr "Bağlantı Yok"
 
-#: src/gs-updates-page.ui:204
+#: src/gs-updates-page.ui:203
 msgid "Go online to check for updates"
 msgstr "Güncellemeleri denetlemek için çevrim içi ol"
 
-#: src/gs-updates-page.ui:207
+#: src/gs-updates-page.ui:206
 msgid "_Network Settings"
 msgstr "_Ağ Ayarları"
 
-#: src/gs-updates-page.ui:227 src/gs-updates-page.ui:241
+#: src/gs-updates-page.ui:226 src/gs-updates-page.ui:240
 msgid "Error"
 msgstr "Hata"
 
-#: src/gs-updates-page.ui:242
+#: src/gs-updates-page.ui:241
 msgid "Updates are automatically managed"
 msgstr "Güncellemeler kendiliğinden yönetilir"
+
+#: src/gs-updates-page.ui:262 src/gs-updates-page.ui:265
+msgid "Check for Updates"
+msgstr "Güncellemeleri Denetle"
+
+#: src/gs-updates-page.ui:283 src/gs-updates-page.ui:286
+msgid "Stop"
+msgstr "Durdur"
 
 #: src/gs-updates-paused-banner.c:44
 msgid "Software Updates Paused"
@@ -5603,45 +5668,45 @@ msgstr "Oyun kipi etkin — yazılım güncellemeleri duraklatıldı"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:320
+#: src/gs-updates-section.c:333
 msgid "_Restart & Update…"
 msgstr "_Yeniden Başlat ve Güncelle…"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable apps
-#: src/gs-updates-section.c:326
+#: src/gs-updates-section.c:339
 msgid "U_pdate All"
 msgstr "Tümünü _Güncelle"
 
-#: src/gs-updates-section.c:403
+#: src/gs-updates-section.c:424
 msgid "Software Updates Downloaded"
 msgstr "Yazılım Güncellemeleri İndirildi"
 
-#: src/gs-updates-section.c:404
+#: src/gs-updates-section.c:425
 msgid "Updates are ready to be installed"
 msgstr "Güncellemeler kurulmaya hazır"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:495
+#: src/gs-updates-section.c:514
 msgid "Integrated Firmware"
 msgstr "Tümleşik Donanım Yazılımı"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:500
+#: src/gs-updates-section.c:519
 msgid "Requires Restart"
 msgstr "Yeniden Başlatma Gerektirir"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:505
+#: src/gs-updates-section.c:524
 msgid "App Updates"
 msgstr "Uygulama Güncellemeleri"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:510
+#: src/gs-updates-section.c:529
 msgid "Device Firmware"
 msgstr "Aygıt Donanım Yazılımı"
 
@@ -5736,7 +5801,7 @@ msgstr ""
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the first part of a system notification.
-#: plugins/dkms/gs-plugin-dkms.c:176
+#: plugins/dkms/gs-plugin-dkms.c:180
 #, c-format
 msgid "%s Ready"
 msgstr "%s Hazır"
@@ -5748,26 +5813,26 @@ msgstr "%s Hazır"
 #.
 #. The NVIDIA Linux Graphics Driver is ready to be enabled and staged for the next boot.
 #.
-#: plugins/dkms/gs-plugin-dkms.c:184
+#: plugins/dkms/gs-plugin-dkms.c:188
 #, c-format
 msgid "The %s is ready to be enabled and staged for the next boot."
 msgstr "%s etkinleştirilmeye hazır ve sonraki önyüklemeye planlandı."
 
-#: plugins/dkms/gs-plugin-dkms.c:189
+#: plugins/dkms/gs-plugin-dkms.c:193
 msgid "Enable"
 msgstr "Etkinleştir"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:69
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3170
+#: plugins/core/gs-plugin-generic-updates.c:81
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3295
 msgid "System Updates"
 msgstr "Sistem Güncellemeleri"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:74
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3175
+#: plugins/core/gs-plugin-generic-updates.c:86
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3300
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
@@ -5776,17 +5841,17 @@ msgstr ""
 "geliştirmeleri."
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
-#: plugins/eos-updater/gs-plugin-eos-updater.c:688
+#: plugins/eos-updater/gs-plugin-eos-updater.c:684
 #, c-format
 msgid "%s update with new features and fixes."
 msgstr "Yeni özellikler ve düzeltmeler içeren %s güncellemesi."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:1331
+#: plugins/eos-updater/gs-plugin-eos-updater.c:1337
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS güncelleme hizmeti güncelleme alamadı ve uygulayamadı."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:496
-#: plugins/epiphany/gs-plugin-epiphany.c:500
+#: plugins/epiphany/gs-plugin-epiphany.c:503
+#: plugins/epiphany/gs-plugin-epiphany.c:507
 msgid "Web App"
 msgstr "Web Uygulaması"
 
@@ -5799,8 +5864,8 @@ msgid "Run popular web applications in a browser"
 msgstr "Gözde web uygulamalarını tarayıcıda çalıştır"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:417
-#: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:95
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:416
+#: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:104
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -5828,135 +5893,135 @@ msgstr "Flatpak, Linux’taki masaüstü uygulamaları için çerçevedir"
 # Paths:
 # plugins/fwupd/gs-fwupd-app.c:141
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:344
+#: plugins/flatpak/gs-flatpak.c:368
 #, c-format
 msgid "System folder %s"
 msgstr "Sistem klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:345 plugins/flatpak/gs-flatpak.c:346
+#: plugins/flatpak/gs-flatpak.c:369 plugins/flatpak/gs-flatpak.c:370
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Ev alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:347
+#: plugins/flatpak/gs-flatpak.c:371
 msgid "Host system folders"
 msgstr "Ana makine sistem klasörleri"
 
-#: plugins/flatpak/gs-flatpak.c:348
+#: plugins/flatpak/gs-flatpak.c:372
 msgid "Host system configuration from /etc"
 msgstr "/etc dizininden ana makine sistem yapılandırması"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:373
 msgid "Desktop folder"
 msgstr "Masaüstü klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:373
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Masaüstü alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:374
 msgid "Documents folder"
 msgstr "Belgeler klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:374
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Belgeler alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:375
 msgid "Music folder"
 msgstr "Müzik klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:375
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Müzik alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:376
 msgid "Pictures folder"
 msgstr "Resimler klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:376
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Resimler alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:377
 msgid "Public Share folder"
 msgstr "Paylaşılanlar klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:377
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Paylaşılanlar alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:378
 msgid "Videos folder"
 msgstr "Videolar klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:378
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Videolar alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:355
+#: plugins/flatpak/gs-flatpak.c:379
 msgid "Templates folder"
 msgstr "Şablonlar klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:355
+#: plugins/flatpak/gs-flatpak.c:379
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Şablonlar alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:356
+#: plugins/flatpak/gs-flatpak.c:380
 msgid "User cache folder"
 msgstr "Kullanıcı ön bellek klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:356
+#: plugins/flatpak/gs-flatpak.c:380
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Kullanıcı ön bellek alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:357
+#: plugins/flatpak/gs-flatpak.c:381
 msgid "User configuration folder"
 msgstr "Kullanıcı yapılandırma klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:357
+#: plugins/flatpak/gs-flatpak.c:381
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Kullanıcı yapılandırma alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:358
+#: plugins/flatpak/gs-flatpak.c:382
 msgid "User data folder"
 msgstr "Kullanıcı veri klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:358
+#: plugins/flatpak/gs-flatpak.c:382
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Kullanıcı verisi alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:359
+#: plugins/flatpak/gs-flatpak.c:383
 msgid "User runtime folder"
 msgstr "Kullanıcı çalışma zamanı klasörü"
 
-#: plugins/flatpak/gs-flatpak.c:359
+#: plugins/flatpak/gs-flatpak.c:383
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Kullanıcı çalışma zamanı alt klasörü %s"
 
-#: plugins/flatpak/gs-flatpak.c:417
+#: plugins/flatpak/gs-flatpak.c:441
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Dosya sistemi erişimi %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1371
+#: plugins/flatpak/gs-flatpak.c:1455
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "%s için flatpak üst verisi alınıyor…"
 
-#: plugins/flatpak/gs-flatpak.c:3597
+#: plugins/flatpak/gs-flatpak.c:3695
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "‘%s’ eklentisi arıtılamadı: %s"
@@ -5969,21 +6034,21 @@ msgstr "Kullanıcı Kurulumu"
 msgid "System Installation"
 msgstr "Sistem Kurulumu"
 
-#: plugins/flatpak/gs-flatpak-utils.c:271
+#: plugins/flatpak/gs-flatpak-utils.c:273
 msgid "App ID"
 msgstr "Uygulama Kimliği"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1368
+#: plugins/flatpak/gs-plugin-flatpak.c:1510
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "‘%s’ eklentisi için kurulum eklenemedi: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1382
+#: plugins/flatpak/gs-plugin-flatpak.c:1524
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "‘%s’ eklentisi için kaldırma eklenemedi: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1971
+#: plugins/flatpak/gs-plugin-flatpak.c:2146
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5993,86 +6058,86 @@ msgstr ""
 "Süzgeci kaldırıp kurulumu yineleyin. Ayrıntılı hata: %s"
 
 #. TRANSLATORS: as in laptop battery power
-#: plugins/fwupd/gs-fwupd-app.c:66
+#: plugins/fwupd/gs-fwupd-app.c:70
 msgid "System power is too low to perform the update"
 msgstr "Sistem gücü yükseltme için çok düşük"
 
 #. TRANSLATORS: as in laptop battery power
-#: plugins/fwupd/gs-fwupd-app.c:70
+#: plugins/fwupd/gs-fwupd-app.c:74
 #, c-format
 msgid "System power is too low to perform the update (%u%%, requires %u%%)"
 msgstr "Sistem gücü yükseltme için çok düşük (%%%u, %%%u gerekir)"
 
 #. TRANSLATORS: for example, a Bluetooth mouse that is in powersave mode
-#: plugins/fwupd/gs-fwupd-app.c:76
+#: plugins/fwupd/gs-fwupd-app.c:80
 msgid "Device is unreachable, or out of wireless range"
 msgstr "Aygıta erişilemiyor ya da kablosuz kapsama alanı dışında"
 
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
-#: plugins/fwupd/gs-fwupd-app.c:82
+#: plugins/fwupd/gs-fwupd-app.c:86
 #, c-format
 msgid "Device battery power is too low"
 msgstr "Aygıt pil gücü çok düşük"
 
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
-#: plugins/fwupd/gs-fwupd-app.c:85
+#: plugins/fwupd/gs-fwupd-app.c:89
 #, c-format
 msgid "Device battery power is too low (%u%%, requires %u%%)"
 msgstr "Aygıt pil gücü çok düşük (%%%u, %%%u gerekir)"
 
 #. TRANSLATORS: usually this is when we're waiting for a reboot
-#: plugins/fwupd/gs-fwupd-app.c:91
+#: plugins/fwupd/gs-fwupd-app.c:95
 msgid "Device is waiting for the update to be applied"
 msgstr "Aygıt güncellemenin uygulanmasını bekliyor"
 
 #. TRANSLATORS: as in, wired mains power for a laptop
-#: plugins/fwupd/gs-fwupd-app.c:95
+#: plugins/fwupd/gs-fwupd-app.c:99
 msgid "Device requires AC power to be connected"
 msgstr "Aygıt, AC gücün bağlanmasını gerektiriyor"
 
 #. TRANSLATORS: lid means "laptop top cover"
-#: plugins/fwupd/gs-fwupd-app.c:99
+#: plugins/fwupd/gs-fwupd-app.c:103
 msgid "Device cannot be used while the lid is closed"
 msgstr "Dizüstü kapağı kapalıyken aygıt kullanılamaz"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:208
+#: plugins/fwupd/gs-fwupd-app.c:212
 #, c-format
 msgid "%s Device Update"
 msgstr "%s Aygıt Güncellemesi"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:213
+#: plugins/fwupd/gs-fwupd-app.c:217
 #, c-format
 msgid "%s System Update"
 msgstr "%s Sistem Güncellemesi"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:218
+#: plugins/fwupd/gs-fwupd-app.c:222
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "%s Gömülü Denetleyici Güncellemesi"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:227
 #, c-format
 msgid "%s ME Update"
 msgstr "%s ME Güncellemesi"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:232
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "%s Kurumsal ME Güncellemesi"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:237
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "%s Tüketici ME Güncellemesi"
@@ -6080,7 +6145,7 @@ msgstr "%s Tüketici ME Güncellemesi"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:239
+#: plugins/fwupd/gs-fwupd-app.c:243
 #, c-format
 msgid "%s Controller Update"
 msgstr "%s Denetleyici Güncellemesi"
@@ -6088,21 +6153,21 @@ msgstr "%s Denetleyici Güncellemesi"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:245
+#: plugins/fwupd/gs-fwupd-app.c:249
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "%s Thunderbolt Denetleyici Güncellemesi"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:250
+#: plugins/fwupd/gs-fwupd-app.c:254
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "%s MİB Mikrokod Güncellemesi"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:255
+#: plugins/fwupd/gs-fwupd-app.c:259
 #, c-format
 msgid "%s Configuration Update"
 msgstr "%s Yapılandırma Güncellemesi"
@@ -6121,121 +6186,121 @@ msgstr "%s Yapılandırma Güncellemesi"
 # Paths:
 # plugins/fwupd/gs-fwupd-app.c:141
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:259
+#: plugins/fwupd/gs-fwupd-app.c:263
 #, c-format
 msgid "%s Battery Update"
 msgstr "%s Pil Güncellemesi"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:264
+#: plugins/fwupd/gs-fwupd-app.c:268
 #, c-format
 msgid "%s Camera Update"
 msgstr "%s Kamera Güncellemesi"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:268
+#: plugins/fwupd/gs-fwupd-app.c:272
 #, c-format
 msgid "%s TPM Update"
 msgstr "%s TPM Güncellemesi"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:272
+#: plugins/fwupd/gs-fwupd-app.c:276
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "%s Dokunmatik Yüzey Güncellemesi"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:276
+#: plugins/fwupd/gs-fwupd-app.c:280
 #, c-format
 msgid "%s Mouse Update"
 msgstr "%s Fare Güncellemesi"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:280
+#: plugins/fwupd/gs-fwupd-app.c:284
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "%s Klavye Güncellemesi"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:284
+#: plugins/fwupd/gs-fwupd-app.c:288
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "%s Depolama Denetleyici Güncellemesi"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:289
+#: plugins/fwupd/gs-fwupd-app.c:293
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "%s Ağ Arayüzü Güncellemesi"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:294
+#: plugins/fwupd/gs-fwupd-app.c:298
 #, c-format
 msgid "%s Display Update"
 msgstr "%s Ekran Güncellemesi"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:303
 #, c-format
 msgid "%s BMC Update"
 msgstr "%s BMC Güncellemesi"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:308
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "%s USB Alıcı Güncellemesi"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:308
+#: plugins/fwupd/gs-fwupd-app.c:312
 #, c-format
 msgid "%s Drive Update"
 msgstr "%s Sürücü Güncellemesi"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:312
+#: plugins/fwupd/gs-fwupd-app.c:316
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr "%s Flaş Sürücü Güncellemesi"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:317
+#: plugins/fwupd/gs-fwupd-app.c:321
 #, c-format
 msgid "%s SSD Update"
 msgstr "%s SSD Güncellemesi"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:322
+#: plugins/fwupd/gs-fwupd-app.c:326
 #, c-format
 msgid "%s GPU Update"
 msgstr "%s GPU Güncellemesi"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:331
 #, c-format
 msgid "%s Dock Update"
 msgstr "%s Rıhtım Güncellemesi"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:336
 #, c-format
 msgid "%s USB Dock Update"
 msgstr "%s USB Rıhtım Güncellemesi"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:914
+#: plugins/fwupd/gs-plugin-fwupd.c:903
 msgid "Firmware"
 msgstr "Donanım Yazılımı"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1938
+#: plugins/fwupd/gs-plugin-fwupd.c:1946
 msgid "Firmware update could not be applied: "
 msgstr "Donanım yazılımı güncellemesi uygulanamadı: "
 
@@ -6289,35 +6354,77 @@ msgstr ""
 "kaldırılana veya güncellenene dek yazılım güncellemeleri devre dışı "
 "kalacaktır."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:1473
+#. Translators: the '%s' is replaced with the key ID, usually a few hex digits
+#: plugins/packagekit/gs-packagekit-task.c:219
+#, c-format
+msgid "Do you want to import key %s?"
+msgstr "%s anahtarını içe aktarmak istiyor musunuz?"
+
+#. Translators: the '%s' is replaced with the key ID, usually a few hex digits
+#: plugins/packagekit/gs-packagekit-task.c:226
+#, c-format
+msgid "Key %s"
+msgstr "%s Anahtarı"
+
+#. Translators: the '%s' is replaced with the key user name
+#: plugins/packagekit/gs-packagekit-task.c:240
+#, c-format
+msgid "Key user: %s"
+msgstr "Anahtar kullanıcısı: %s"
+
+#. Translators: the '%s' is replaced with the key fingerprint, a few hex digits
+#: plugins/packagekit/gs-packagekit-task.c:242
+#, c-format
+msgid "Fingerprint: %s"
+msgstr "Parmak izi: %s"
+
+#. Translators: the '%s' is replaced with the local path or a URI to the key
+#: plugins/packagekit/gs-packagekit-task.c:244
+#, c-format
+msgid "From: %s"
+msgstr "Kimden: %s"
+
+#: plugins/packagekit/gs-packagekit-task.c:250
+msgid "Import Key"
+msgstr "Anahtarı İçe Aktar"
+
+#: plugins/packagekit/gs-packagekit-task.c:251
+msgid "Do you want to import keys?"
+msgstr "Anahtarları içe aktarmak istiyor musunuz?"
+
+#: plugins/packagekit/gs-packagekit-task.c:253
+msgid "_Import Key"
+msgstr "Anahtarı İçe _Aktar"
+
+#: plugins/packagekit/gs-plugin-packagekit.c:1464
 msgid "Failed to install updates: "
 msgstr "Güncellemeler kurulamadı: "
 
-#: plugins/packagekit/gs-plugin-packagekit.c:1568
+#: plugins/packagekit/gs-plugin-packagekit.c:1558
 msgid "Packages"
 msgstr "Paketler"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1413
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1436
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1445
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1471
 msgid "Failed to wait on transaction end before download: "
 msgstr "İndirmeden önce işlem bitişi beklenemedi: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1443
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1456
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1478
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1491
 msgid "Failed to download updates: "
 msgstr "Güncellemeler indirilemedi: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1495
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1505
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1530
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1540
 msgid "Failed to trigger update: "
 msgstr "Güncelleme tetiklenemedi: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3270
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3395
 msgid "Operating System (OSTree)"
 msgstr "İşletim Sistemi (OSTree)"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:300
+#: plugins/snap/gs-plugin-snap.c:295
 msgid "Snap Store"
 msgstr "Snap Mağazası"
 
@@ -6330,16 +6437,17 @@ msgid "A snap is a universal Linux package"
 msgstr "Snap, bir evrensel Linux paketidir"
 
 #. TRANSLATORS: this is the system OS upgrade
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:766
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:785
 msgid "System"
 msgstr "Sistem"
 
 #. TRANSLATORS: this is the system component update
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:770
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:789
 msgid "System component"
 msgstr "Sistem bileşeni"
 
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1021
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1040
 #, c-format
 msgid "Removing sysupdate job '%s' failed with status %i"
 msgstr "'%s' sysupdate görevini kaldırma %i durumuyla başarısız oldu"
+
