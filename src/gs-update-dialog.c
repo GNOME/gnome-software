@@ -93,8 +93,25 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
-	/* set the header title using any one of the apps */
-	install_date = gs_app_get_install_date (gs_app_list_index (list, 0));
+	/* set the header title using the latest app install date */
+	install_date = 0;
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		guint64 app_inst_date = gs_app_get_install_date (app);
+		if (app_inst_date > install_date)
+			install_date = app_inst_date;
+
+		/* handle also "System Updates" */
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
+			GsAppList *related = gs_app_get_related (app);
+			for (guint j = 0; j < gs_app_list_length (related); j++) {
+				GsApp *rel_app = gs_app_list_index (related, j);
+				app_inst_date = gs_app_get_install_date (rel_app);
+				if (app_inst_date > install_date)
+					install_date = app_inst_date;
+			}
+		}
+	}
 	if (install_date > 0) {
 		g_autoptr(GDateTime) date = NULL;
 		g_autofree gchar *date_str = NULL;
