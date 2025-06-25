@@ -215,7 +215,12 @@ i18n.merge_file(
 
 if get_option('flatpak')
   i18n.merge_file(
-    input: 'gnome-software-local-file-flatpak.desktop.in',
+    input:
+     configure_file(
+       input : 'gnome-software-local-file-flatpak.desktop.in',
+       output : 'gnome-software-local-file-flatpak.desktop.tmp',
+       configuration : cdata
+     ),
     output: 'gnome-software-local-file-flatpak.desktop',
     type: 'desktop',
     po_dir: join_paths(meson.project_source_root(), 'po'),
@@ -226,7 +231,12 @@ endif
 
 if get_option('fwupd')
   i18n.merge_file(
-    input: 'gnome-software-local-file-fwupd.desktop.in',
+    input:
+     configure_file(
+       input : 'gnome-software-local-file-fwupd.desktop.in',
+       output : 'gnome-software-local-file-fwupd.desktop.tmp',
+       configuration : cdata
+     ),
     output: 'gnome-software-local-file-fwupd.desktop',
     type: 'desktop',
     po_dir: join_paths(meson.project_source_root(), 'po'),
@@ -237,7 +247,12 @@ endif
 
 if get_option('packagekit') or get_option('rpm_ostree')
   i18n.merge_file(
-    input: 'gnome-software-local-file-packagekit.desktop.in',
+    input:
+     configure_file(
+       input : 'gnome-software-local-file-packagekit.desktop.in',
+       output : 'gnome-software-local-file-packagekit.desktop.tmp',
+       configuration : cdata
+     ),
     output: 'gnome-software-local-file-packagekit.desktop',
     type: 'desktop',
     po_dir: join_paths(meson.project_source_root(), 'po'),
@@ -248,7 +263,12 @@ endif
 
 if get_option('snap')
   i18n.merge_file(
-    input: 'gnome-software-local-file-snap.desktop.in',
+    input:
+     configure_file(
+       input : 'gnome-software-local-file-snap.desktop.in',
+       output : 'gnome-software-local-file-snap.desktop.tmp',
+       configuration : cdata
+     ),
     output: 'gnome-software-local-file-snap.desktop',
     type: 'desktop',
     po_dir: join_paths(meson.project_source_root(), 'po'),
