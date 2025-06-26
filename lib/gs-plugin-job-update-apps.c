@@ -92,7 +92,10 @@ struct _GsPluginJobUpdateApps
 #endif
 };
 
-G_DEFINE_TYPE (GsPluginJobUpdateApps, gs_plugin_job_update_apps, GS_TYPE_PLUGIN_JOB)
+static void gs_plugin_job_update_apps_plugin_interaction_init (GsPluginInteractionInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (GsPluginJobUpdateApps, gs_plugin_job_update_apps, GS_TYPE_PLUGIN_JOB,
+	G_IMPLEMENT_INTERFACE (GS_TYPE_PLUGIN_INTERACTION, gs_plugin_job_update_apps_plugin_interaction_init))
 
 typedef enum {
 	PROP_APPS = 1,
@@ -192,25 +195,17 @@ gs_plugin_job_update_apps_get_interactive (GsPluginJob *job)
 }
 
 static void
-app_needs_user_action_cb (GsPlugin     *plugin,
-                          GsApp        *app,
-                          AsScreenshot *action_screenshot,
-                          gpointer      user_data)
+impl_plugin_interaction_app_needs_user (GsPluginInteraction *interaction,
+			                GsPlugin *plugin,
+                                        GsApp *app,
+                                        AsScreenshot *action_screenshot)
 {
-	GTask *task = G_TASK (user_data);
-	GsPluginJobUpdateApps *self = g_task_get_source_object (task);
+	GsPluginJobUpdateApps *self = GS_PLUGIN_JOB_UPDATE_APPS (interaction);
 
-	g_assert (g_main_context_is_owner (g_task_get_context (task)));
 	g_signal_emit (self, signals[SIGNAL_APP_NEEDS_USER_ACTION], 0, app, action_screenshot);
 }
 
-static void plugin_progress_cb (GsPlugin *plugin,
-                                guint     progress,
-                                gpointer  user_data);
 static gboolean progress_cb (gpointer user_data);
-static void plugin_event_cb (GsPlugin      *plugin,
-                             GsPluginEvent *event,
-                             void          *user_data);
 static void plugin_update_apps_cb (GObject      *source_object,
                                    GAsyncResult *result,
                                    gpointer      user_data);
@@ -282,12 +277,7 @@ gs_plugin_job_update_apps_run_async (GsPluginJob         *job,
 		plugin_class->update_apps_async (plugin,
 						 self->apps,
 						 self->flags,
-						 plugin_progress_cb,
-						 task,
-						 plugin_event_cb,
-						 task,
-						 app_needs_user_action_cb,
-						 task,
+						 GS_PLUGIN_INTERACTION (self),
 						 cancellable,
 						 plugin_update_apps_cb,
 						 g_object_ref (task));
@@ -307,14 +297,12 @@ gs_plugin_job_update_apps_run_async (GsPluginJob         *job,
 /* Called in the same thread as gs_plugin_job_update_apps_run_async(), to
  * report the progress for the given plugin. */
 static void
-plugin_progress_cb (GsPlugin *plugin,
-                    guint     progress,
-                    gpointer  user_data)
+impl_plugin_interaction_progress (GsPluginInteraction *interaction,
+                                  GsPlugin *plugin,
+                                  guint progress)
 {
-	GTask *task = G_TASK (user_data);
-	GsPluginJobUpdateApps *self = g_task_get_source_object (task);
+	GsPluginJobUpdateApps *self = GS_PLUGIN_JOB_UPDATE_APPS (interaction);
 
-	g_assert (g_main_context_is_owner (g_task_get_context (task)));
 	g_hash_table_replace (self->plugins_progress, plugin, GUINT_TO_POINTER (progress));
 }
 
@@ -364,12 +352,11 @@ progress_cb (gpointer user_data)
 }
 
 static void
-plugin_event_cb (GsPlugin      *plugin,
-                 GsPluginEvent *event,
-                 void          *user_data)
+impl_plugin_interaction_event (GsPluginInteraction *interaction,
+                               GsPlugin *plugin,
+                               GsPluginEvent *event)
 {
-	GTask *task = G_TASK (user_data);
-	GsPluginJob *plugin_job = g_task_get_source_object (task);
+	GsPluginJob *plugin_job = GS_PLUGIN_JOB (interaction);
 
 	gs_plugin_job_emit_event (plugin_job, plugin, event);
 }
@@ -471,6 +458,14 @@ gs_plugin_job_update_apps_run_finish (GsPluginJob   *self,
                                       GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+gs_plugin_job_update_apps_plugin_interaction_init (GsPluginInteractionInterface *iface)
+{
+	iface->event = impl_plugin_interaction_event;
+	iface->progress = impl_plugin_interaction_progress;
+	iface->app_needs_user = impl_plugin_interaction_app_needs_user;
 }
 
 static void

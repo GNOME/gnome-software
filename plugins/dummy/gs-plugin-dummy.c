@@ -1279,25 +1279,17 @@ static void update_apps_cb (GObject      *source_object,
                             gpointer      user_data);
 
 static void
-gs_plugin_dummy_update_apps_async (GsPlugin                           *plugin,
-                                   GsAppList                          *apps,
-                                   GsPluginUpdateAppsFlags             flags,
-                                   GsPluginProgressCallback            progress_callback,
-                                   gpointer                            progress_user_data,
-                                   GsPluginEventCallback               event_callback,
-                                   void                               *event_user_data,
-                                   GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                   gpointer                            app_needs_user_action_data,
-                                   GCancellable                       *cancellable,
-                                   GAsyncReadyCallback                 callback,
-                                   gpointer                            user_data)
+gs_plugin_dummy_update_apps_async (GsPlugin                *plugin,
+                                   GsAppList               *apps,
+                                   GsPluginUpdateAppsFlags  flags,
+                                   GsPluginInteraction     *interaction,
+                                   GCancellable            *cancellable,
+                                   GAsyncReadyCallback     callback,
+                                   gpointer                user_data)
 {
 	g_autoptr(GTask) task = NULL;
 
-	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
-						    progress_callback, progress_user_data,
-						    event_callback, event_user_data,
-						    app_needs_user_action_callback, app_needs_user_action_data,
+	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags, interaction,
 						    cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_update_apps_async);
 
@@ -1349,8 +1341,7 @@ update_apps_cb (GObject      *source_object,
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				if (data->event_callback != NULL)
-					data->event_callback (plugin, event, data->event_user_data);
+				gs_plugin_interaction_event (data->interaction, plugin, event);
 
 				g_clear_error (&local_error);
 				continue;
@@ -1367,11 +1358,9 @@ update_apps_cb (GObject      *source_object,
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
 			/* Simple progress reporting. */
-			if (data->progress_callback != NULL) {
-				data->progress_callback (GS_PLUGIN (self),
-							 100 * ((gdouble) (i + 1) / gs_app_list_length (data->apps)),
-							 data->progress_user_data);
-			}
+			gs_plugin_interaction_progress (data->interaction,
+							GS_PLUGIN (self),
+							100 * ((gdouble) (i + 1) / gs_app_list_length (data->apps)));
 		}
 
 		g_task_return_boolean (task, TRUE);

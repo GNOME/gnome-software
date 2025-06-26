@@ -627,15 +627,7 @@ gs_plugin_uninstall_apps_data_free (GsPluginUninstallAppsData *data)
  * gs_plugin_update_apps_data_new:
  * @apps: list of apps to update
  * @flags: update flags
- * @progress_callback: (nullable) (closure progress_user_data): function to call
- *   to notify of progress
- * @progress_user_data: data to pass to @progress_callback
- * @event_callback: (nullable) (closure event_user_data): function to call to
- *   notify of events
- * @event_user_data: data to pass to @event_callback
- * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
- *   function to call to ask the user for a decision
- * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
+ * @interaction: (nullable): a #GsPluginInteraction, or %NULL
  *
  * Context data for a call to #GsPluginClass.update_apps_async.
  *
@@ -645,22 +637,12 @@ gs_plugin_uninstall_apps_data_free (GsPluginUninstallAppsData *data)
 GsPluginUpdateAppsData *
 gs_plugin_update_apps_data_new (GsAppList                          *apps,
                                 GsPluginUpdateAppsFlags             flags,
-                                GsPluginProgressCallback            progress_callback,
-                                gpointer                            progress_user_data,
-                                GsPluginEventCallback               event_callback,
-                                void                               *event_user_data,
-                                GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                gpointer                            app_needs_user_action_data)
+                                GsPluginInteraction                *interaction)
 {
 	g_autoptr(GsPluginUpdateAppsData) data = g_new0 (GsPluginUpdateAppsData, 1);
 	data->apps = g_object_ref (apps);
 	data->flags = flags;
-	data->progress_callback = progress_callback;
-	data->progress_user_data = progress_user_data;
-	data->event_callback = event_callback;
-	data->event_user_data = event_user_data;
-	data->app_needs_user_action_callback = app_needs_user_action_callback;
-	data->app_needs_user_action_data = app_needs_user_action_data;
+	g_set_object (&data->interaction, interaction);
 
 	return g_steal_pointer (&data);
 }
@@ -670,15 +652,7 @@ gs_plugin_update_apps_data_new (GsAppList                          *apps,
  * @source_object: task source object
  * @apps: list of apps to update
  * @flags: update flags
- * @progress_callback: (nullable) (closure progress_user_data): function to call
- *   to notify of progress
- * @progress_user_data: data to pass to @progress_callback
- * @event_callback: (nullable) (closure event_user_data): function to call to
- *   notify of events
- * @event_user_data: data to pass to @event_callback
- * @app_needs_user_action_callback: (nullable) app_needs_user_action_data:
- *   function to call to ask the user for a decision
- * @app_needs_user_action_data: data to pass to @app_needs_user_action_callback
+ * @interaction: (nullable): a #GsPluginInteraction, or %NULL
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @callback: function to call once asynchronous operation is finished
  * @user_data: data to pass to @callback
@@ -697,12 +671,7 @@ GTask *
 gs_plugin_update_apps_data_new_task (gpointer                            source_object,
                                      GsAppList                          *apps,
                                      GsPluginUpdateAppsFlags             flags,
-                                     GsPluginProgressCallback            progress_callback,
-                                     gpointer                            progress_user_data,
-                                     GsPluginEventCallback               event_callback,
-                                     void                               *event_user_data,
-                                     GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                     gpointer                            app_needs_user_action_data,
+                                     GsPluginInteraction                *interaction,
                                      GCancellable                       *cancellable,
                                      GAsyncReadyCallback                 callback,
                                      gpointer                            user_data)
@@ -711,12 +680,7 @@ gs_plugin_update_apps_data_new_task (gpointer                            source_
 	g_task_set_task_data (task,
 			      gs_plugin_update_apps_data_new (apps,
 							      flags,
-							      progress_callback,
-							      progress_user_data,
-							      event_callback,
-							      event_user_data,
-							      app_needs_user_action_callback,
-							      app_needs_user_action_data),
+							      interaction),
 			      (GDestroyNotify) gs_plugin_update_apps_data_free);
 	return g_steal_pointer (&task);
 }
@@ -733,6 +697,7 @@ void
 gs_plugin_update_apps_data_free (GsPluginUpdateAppsData *data)
 {
 	g_clear_object (&data->apps);
+	g_clear_object (&data->interaction);
 	g_free (data);
 }
 

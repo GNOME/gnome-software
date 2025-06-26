@@ -195,31 +195,16 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginUninstallAppsData, gs_plugin_uninstall_ap
 typedef struct {
 	GsAppList *apps;  /* (owned) (not nullable) */
 	GsPluginUpdateAppsFlags flags;
-	GsPluginProgressCallback progress_callback;
-	gpointer progress_user_data;
-	GsPluginEventCallback event_callback;
-	void *event_user_data;
-	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
-	gpointer app_needs_user_action_data;
+	GsPluginInteraction *interaction; /* (owned) (nullable) */
 } GsPluginUpdateAppsData;
 
 GsPluginUpdateAppsData *gs_plugin_update_apps_data_new (GsAppList                          *apps,
                                                         GsPluginUpdateAppsFlags             flags,
-                                                        GsPluginProgressCallback            progress_callback,
-                                                        gpointer                            progress_user_data,
-                                                        GsPluginEventCallback               event_callback,
-                                                        void                               *event_user_data,
-                                                        GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                                        gpointer                            app_needs_user_action_data);
+                                                        GsPluginInteraction                *interaction);
 GTask *gs_plugin_update_apps_data_new_task (gpointer                            source_object,
                                             GsAppList                          *apps,
                                             GsPluginUpdateAppsFlags             flags,
-                                            GsPluginProgressCallback            progress_callback,
-                                            gpointer                            progress_user_data,
-                                            GsPluginEventCallback               event_callback,
-                                            void                               *event_user_data,
-                                            GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                            gpointer                            app_needs_user_action_data,
+                                            GsPluginInteraction                *interaction,
                                             GCancellable                       *cancellable,
                                             GAsyncReadyCallback                 callback,
                                             gpointer                            user_data);

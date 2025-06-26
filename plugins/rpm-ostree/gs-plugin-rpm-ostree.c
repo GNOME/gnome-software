@@ -217,8 +217,7 @@ gs_rpmostree_error_convert (GError **perror)
 typedef struct {
 	GsPlugin *plugin;  /* (owned) (not nullable) */
 	GsPluginEvent *event;  /* (owned) (not nullable) */
-	GsPluginEventCallback event_callback;
-	void *event_user_data;
+	GsPluginInteraction *interaction; /* (owned) (not nullable) */
 } EventCallbackData;
 
 static void
@@ -226,6 +225,7 @@ event_callback_data_free (EventCallbackData *data)
 {
 	g_clear_object (&data->plugin);
 	g_clear_object (&data->event);
+	g_clear_object (&data->interaction);
 	g_free (data);
 }
 
@@ -236,15 +236,14 @@ event_callback_idle_cb (void *user_data)
 {
 	EventCallbackData *data = user_data;
 
-	data->event_callback (data->plugin, data->event, data->event_user_data);
+	gs_plugin_interaction_event (data->interaction, data->plugin, data->event);
 	return G_SOURCE_REMOVE;
 }
 
 static void
 gs_rpm_ostree_task_return_error_with_gui (GsPluginRpmOstree *self,
 					  GTask *task,
-					  GsPluginEventCallback event_callback,
-					  void *event_user_data,
+					  GsPluginInteraction *interaction,
 					  GError *in_error,
 					  const gchar *error_prefix,
 					  gboolean interactive)
@@ -253,7 +252,7 @@ gs_rpm_ostree_task_return_error_with_gui (GsPluginRpmOstree *self,
 
 	g_prefix_error (&local_error, "%s", error_prefix);
 
-	if (event_callback != NULL &&
+	if (interaction != NULL &&
 	    local_error != NULL && local_error->domain != G_DBUS_ERROR &&
 	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY) &&
 	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
@@ -269,8 +268,7 @@ gs_rpm_ostree_task_return_error_with_gui (GsPluginRpmOstree *self,
 		event_data = g_new0 (EventCallbackData, 1);
 		event_data->plugin = GS_PLUGIN (g_object_ref (self));
 		event_data->event = g_steal_pointer (&event);
-		event_data->event_callback = event_callback;
-		event_data->event_user_data = event_user_data;
+		g_set_object (&event_data->interaction, interaction);
 		g_main_context_invoke_full (g_task_get_context (task), G_PRIORITY_DEFAULT,
 					    event_callback_idle_cb, g_steal_pointer (&event_data), (GDestroyNotify) event_callback_data_free);
 	}
@@ -1384,27 +1382,19 @@ static void update_apps_thread_cb (GTask        *task,
                                    GCancellable *cancellable);
 
 static void
-gs_plugin_rpm_ostree_update_apps_async (GsPlugin                           *plugin,
-                                        GsAppList                          *apps,
-                                        GsPluginUpdateAppsFlags             flags,
-                                        GsPluginProgressCallback            progress_callback,
-                                        gpointer                            progress_user_data,
-                                        GsPluginEventCallback               event_callback,
-                                        void                               *event_user_data,
-                                        GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                        gpointer                            app_needs_user_action_data,
-                                        GCancellable                       *cancellable,
-                                        GAsyncReadyCallback                 callback,
-                                        gpointer                            user_data)
+gs_plugin_rpm_ostree_update_apps_async (GsPlugin                *plugin,
+                                        GsAppList               *apps,
+                                        GsPluginUpdateAppsFlags  flags,
+                                        GsPluginInteraction     *interaction,
+                                        GCancellable            *cancellable,
+                                        GAsyncReadyCallback      callback,
+                                        gpointer                 user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 
-	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
-						    progress_callback, progress_user_data,
-						    event_callback, event_user_data,
-						    app_needs_user_action_callback, app_needs_user_action_data,
+	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags, interaction,
 						    cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_update_apps_async);
 
@@ -1442,7 +1432,7 @@ update_apps_thread_cb (GTask        *task,
 		gboolean done;
 
 		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-			gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
+			gs_rpm_ostree_task_return_error_with_gui (self, task, data->interaction, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
 			return;
 		}
 
@@ -1468,14 +1458,14 @@ update_apps_thread_cb (GTask        *task,
 				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 					g_clear_error (&local_error);
 					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-						gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
+						gs_rpm_ostree_task_return_error_with_gui (self, task, data->interaction, g_steal_pointer (&local_error), _("Failed to wait on transaction end before download: "), interactive);
 						return;
 					}
 					done = FALSE;
 					continue;
 				}
 				gs_rpmostree_error_convert (&local_error);
-				gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
+				gs_rpm_ostree_task_return_error_with_gui (self, task, data->interaction, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
 				return;
 			}
 		}
@@ -1488,7 +1478,7 @@ update_apps_thread_cb (GTask        *task,
 		                                                 &local_error)) {
 			gs_app_list_override_progress (data->apps, GS_APP_PROGRESS_UNKNOWN);
 			gs_rpmostree_error_convert (&local_error);
-			gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
+			gs_rpm_ostree_task_return_error_with_gui (self, task, data->interaction, g_steal_pointer (&local_error), _("Failed to download updates: "), interactive);
 			return;
 		}
 
@@ -1527,7 +1517,7 @@ update_apps_thread_cb (GTask        *task,
 		/* we don't currently put all updates in the OsUpdate proxy app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
 			if (!trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
-				gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
+				gs_rpm_ostree_task_return_error_with_gui (self, task, data->interaction, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
 				return;
 			}
 		}
@@ -1537,7 +1527,7 @@ update_apps_thread_cb (GTask        *task,
 			GsApp *app_tmp = gs_app_list_index (related, j);
 
 			if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, interactive, cancellable, &local_error)) {
-				gs_rpm_ostree_task_return_error_with_gui (self, task, data->event_callback, data->event_user_data, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
+				gs_rpm_ostree_task_return_error_with_gui (self, task, data->interaction, g_steal_pointer (&local_error), _("Failed to trigger update: "), interactive);
 				return;
 			}
 		}

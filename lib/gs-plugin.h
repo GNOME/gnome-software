@@ -18,6 +18,7 @@
 #include "gs-app-query.h"
 #include "gs-category.h"
 #include "gs-plugin-event.h"
+#include "gs-plugin-interaction.h"
 #include "gs-plugin-types.h"
 
 G_BEGIN_DECLS
@@ -278,12 +279,7 @@ struct _GsPluginClass
 	void			(*update_apps_async)		(GsPlugin			*plugin,
 								 GsAppList			*apps,
 								 GsPluginUpdateAppsFlags	 flags,
-								 GsPluginProgressCallback	 progress_callback,
-								 gpointer			 progress_user_data,
-								 GsPluginEventCallback		 event_callback,
-								 void				*event_user_data,
-								 GsPluginAppNeedsUserActionCallback	app_needs_user_action_callback,
-								 gpointer				app_needs_user_action_data,
+								 GsPluginInteraction            *interaction,
 								 GCancellable			*cancellable,
 								 GAsyncReadyCallback		 callback,
 								 gpointer			 user_data);

@@ -532,6 +532,50 @@ event_callback_invoke_take (GsPluginFlatpak       *plugin,
 				    event_callback_idle_cb, g_steal_pointer (&event_data), (GDestroyNotify) event_callback_data_free);
 }
 
+typedef struct {
+	GsPlugin *plugin;  /* (owned) (not nullable) */
+	GsPluginEvent *event;  /* (owned) (not nullable) */
+	GsPluginInteraction *interaction; /* (owned) (nullable) */
+} EventInteractionCallbackData;
+
+static void
+event_interaction_callback_data_free (EventInteractionCallbackData *data)
+{
+	g_clear_object (&data->plugin);
+	g_clear_object (&data->event);
+	g_clear_object (&data->interaction);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (EventInteractionCallbackData, event_interaction_callback_data_free)
+
+static gboolean
+event_interaction_callback_idle_cb (void *user_data)
+{
+	EventInteractionCallbackData *data = user_data;
+
+	gs_plugin_interaction_event (data->interaction, data->plugin, data->event);
+	return G_SOURCE_REMOVE;
+}
+
+static void
+interaction_event_invoke_take (GsPluginFlatpak       *plugin,
+                               GsPluginEvent         *event,  /* (transfer full) */
+                               GMainContext          *context,
+                               GsPluginInteraction   *interaction)
+{
+	g_autoptr(EventInteractionCallbackData) event_data = NULL;
+	g_autoptr(GsPluginEvent) event_owned = g_steal_pointer (&event);
+
+	event_data = g_new0 (EventInteractionCallbackData, 1);
+	event_data->plugin = GS_PLUGIN (g_object_ref (plugin));
+	event_data->event = g_steal_pointer (&event_owned);
+	g_set_object (&event_data->interaction, interaction);
+
+	g_main_context_invoke_full (context, G_PRIORITY_DEFAULT,
+				    event_interaction_callback_idle_cb, g_steal_pointer (&event_data), (GDestroyNotify) event_interaction_callback_data_free);
+}
+
 static void refresh_metadata_thread_cb (GTask        *task,
                                         gpointer      source_object,
                                         gpointer      task_data,
@@ -1191,27 +1235,19 @@ static void update_apps_thread_cb (GTask        *task,
                                    GCancellable *cancellable);
 
 static void
-gs_plugin_flatpak_update_apps_async (GsPlugin                           *plugin,
-                                     GsAppList                          *apps,
-                                     GsPluginUpdateAppsFlags             flags,
-                                     GsPluginProgressCallback            progress_callback,
-                                     gpointer                            progress_user_data,
-                                     GsPluginEventCallback               event_callback,
-                                     void                               *event_user_data,
-                                     GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                     gpointer                            app_needs_user_action_data,
-                                     GCancellable                       *cancellable,
-                                     GAsyncReadyCallback                 callback,
-                                     gpointer                            user_data)
+gs_plugin_flatpak_update_apps_async (GsPlugin                *plugin,
+                                     GsAppList               *apps,
+                                     GsPluginUpdateAppsFlags  flags,
+                                     GsPluginInteraction     *interaction,
+                                     GCancellable            *cancellable,
+                                     GAsyncReadyCallback      callback,
+                                     gpointer                 user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 
-	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
-						    progress_callback, progress_user_data,
-						    event_callback, event_user_data,
-						    app_needs_user_action_callback, app_needs_user_action_data,
+	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags, interaction,
 						    cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_update_apps_async);
 
@@ -1298,7 +1334,10 @@ update_apps_thread_cb (GTask        *task,
 		 * This approach is the same as what the `flatpak` CLI uses in
 		 * `flatpak-builtins-update.c` in flatpak.
 		 */
-		transaction = _build_transaction (self, flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, interactive, g_task_get_context (task), data->event_callback, data->event_user_data, cancellable, &local_error);
+		#warning TODO
+		#if 0
+		transaction = _build_transaction (self, flatpak, GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, interactive, g_task_get_context (task), data->interaction, cancellable, &local_error);
+		#endif
 		if (transaction == NULL) {
 			g_autoptr(GsPluginEvent) event = NULL;
 
@@ -1312,15 +1351,12 @@ update_apps_thread_cb (GTask        *task,
 			 * be created, which is unlikely. */
 			gs_flatpak_error_convert (&local_error);
 
-			if (data->event_callback != NULL) {
-				event = gs_plugin_event_new ("error", local_error,
-							     NULL);
-				if (interactive)
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
-							    data->event_callback, data->event_user_data);
-			}
+			event = gs_plugin_event_new ("error", local_error,
+						     NULL);
+			if (interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			interaction_event_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task), data->interaction);
 
 			g_clear_error (&local_error);
 
@@ -1361,16 +1397,13 @@ update_apps_thread_cb (GTask        *task,
 
 				gs_flatpak_error_convert (&local_error);
 
-				if (data->event_callback != NULL) {
-					event = gs_plugin_event_new ("error", local_error,
-								     "app", app,
-								     NULL);
-					if (interactive)
-						gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-					event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
-								    data->event_callback, data->event_user_data);
-				}
+				event = gs_plugin_event_new ("error", local_error,
+							     "app", app,
+							     NULL);
+				if (interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				interaction_event_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task), data->interaction);
 
 				g_clear_error (&local_error);
 				continue;
@@ -1384,6 +1417,7 @@ update_apps_thread_cb (GTask        *task,
 		 * up to `data->progress_callback`. */
 		if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
 			g_autoptr(GError) prune_error = NULL;
+			g_autoptr(GsPluginEvent) event = NULL;
 
 			/* Reset the state of all the apps in this transaction. */
 			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
@@ -1405,17 +1439,12 @@ update_apps_thread_cb (GTask        *task,
 
 			gs_flatpak_error_convert (&local_error);
 
-			if (data->event_callback != NULL) {
-				g_autoptr(GsPluginEvent) event = NULL;
-
-				event = gs_plugin_event_new ("error", local_error,
-							     NULL);
-				if (interactive)
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				event_callback_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task),
-							    data->event_callback, data->event_user_data);
-			}
+			event = gs_plugin_event_new ("error", local_error,
+						     NULL);
+			if (interactive)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			interaction_event_invoke_take (self, g_steal_pointer (&event), g_task_get_context (task), data->interaction);
 
 			g_clear_error (&local_error);
 
@@ -1431,12 +1460,15 @@ update_apps_thread_cb (GTask        *task,
 		/* Get any new state. Ignore failure and fall through to
 		 * refining the apps, since refreshing is not an entirely
 		 * necessary part of the update operation. */
+		#warning TODO
+		#if 0
 		if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, data->event_callback, data->event_user_data, cancellable, &local_error)) {
 			gs_flatpak_error_convert (&local_error);
 			g_warning ("Error refreshing flatpak data for ‘%s’ after update: %s",
 				   gs_flatpak_get_id (flatpak), local_error->message);
 			g_clear_error (&local_error);
 		}
+		#endif
 
 		/* Refine all the updated apps to make sure they’re up to date
 		 * in the UI. Ignore failure since it’s not an entirely
@@ -1446,16 +1478,19 @@ update_apps_thread_cb (GTask        *task,
 			g_autofree gchar *ref = NULL;
 
 			ref = gs_flatpak_app_get_ref_display (app);
+			#warning TODO
+			#if 0
 			if (!gs_flatpak_refine_app (flatpak, app,
 						    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RUNTIME,
 						    interactive, TRUE,
-						    data->event_callback, data->event_user_data,
+						    data->interaction,
 						    cancellable, &local_error)) {
 				gs_flatpak_error_convert (&local_error);
 				g_warning ("Error refining app ‘%s’ after update: %s", ref, local_error->message);
 				g_clear_error (&local_error);
 				continue;
 			}
+			#endif
 		}
 
 		gs_flatpak_set_busy (flatpak, FALSE);

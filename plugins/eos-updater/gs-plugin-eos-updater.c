@@ -1141,8 +1141,7 @@ typedef struct {
 	GCancellable *cancellable;  /* (nullable) (not owned) */
 	gulong cancelled_id;
 	gboolean interactive;
-	GsPluginEventCallback event_callback;
-	void *event_user_data;
+	GsPluginInteraction *interaction; /* (owned) (nullable) */
 
 	/* State. */
 	gboolean done;
@@ -1158,6 +1157,7 @@ static void
 upgrade_download_state_free (UpgradeDownloadState *data)
 {
 	g_clear_object (&data->app);
+	g_clear_object (&data->interaction);
 
 	if (data->cancellable != NULL && data->cancelled_id != 0) {
 		g_debug ("Disconnecting cancellable %p", data->cancellable);
@@ -1180,8 +1180,7 @@ static void
 gs_plugin_eos_updater_app_upgrade_download_async (GsPluginEosUpdater    *self,
                                                   GsApp                 *app,
                                                   gboolean               interactive,
-                                                  GsPluginEventCallback  event_callback,
-                                                  void                  *event_user_data,
+                                                  GsPluginInteraction   *interaction,
                                                   GCancellable          *cancellable,
                                                   GAsyncReadyCallback    callback,
                                                   gpointer               user_data)
@@ -1213,8 +1212,7 @@ gs_plugin_eos_updater_app_upgrade_download_async (GsPluginEosUpdater    *self,
 	data = data_owned = g_new0 (UpgradeDownloadState, 1);
 	data->app = g_object_ref (app);
 	data->interactive = interactive;
-	data->event_callback = event_callback;
-	data->event_user_data = event_user_data;
+	g_set_object (&data->interaction, interaction);
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) upgrade_download_state_free);
 
 	/* Set up cancellation. */
@@ -1343,8 +1341,7 @@ download_iterate_state_machine_cb (GObject      *source_object,
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				if (data->interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				if (data->event_callback != NULL)
-					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+				gs_plugin_interaction_event (data->interaction, GS_PLUGIN (self), event);
 
 				/* Error out. */
 				data->done = TRUE;
@@ -1424,8 +1421,7 @@ download_iterate_state_machine_cb (GObject      *source_object,
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				if (data->interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				if (data->event_callback != NULL)
-					data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+				gs_plugin_interaction_event (data->interaction, GS_PLUGIN (self), event);
 			}
 
 			/* Unconditionally call Poll() to get the updater out
@@ -1512,7 +1508,10 @@ gs_plugin_eos_updater_download_upgrade_async (GsPlugin                     *plug
 
 	g_debug ("%s", G_STRFUNC);
 
+	#warning TODO
+	#if 0
 	gs_plugin_eos_updater_app_upgrade_download_async (self, app, interactive, event_callback, event_user_data, cancellable, upgrade_download_cb, g_steal_pointer (&task));
+	#endif
 }
 
 static gboolean
@@ -1528,18 +1527,13 @@ gs_plugin_eos_updater_download_upgrade_finish (GsPlugin      *plugin,
  * It’s used to download the update if it’s been listed in the UI as a minor
  * update. The download process is the same. */
 static void
-gs_plugin_eos_updater_update_apps_async (GsPlugin                           *plugin,
-                                         GsAppList                          *apps,
-                                         GsPluginUpdateAppsFlags             flags,
-                                         GsPluginProgressCallback            progress_callback,
-                                         gpointer                            progress_user_data,
-                                         GsPluginEventCallback               event_callback,
-                                         void                               *event_user_data,
-                                         GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                         gpointer                            app_needs_user_action_data,
-                                         GCancellable                       *cancellable,
-                                         GAsyncReadyCallback                 callback,
-                                         gpointer                            user_data)
+gs_plugin_eos_updater_update_apps_async (GsPlugin                *plugin,
+                                         GsAppList               *apps,
+                                         GsPluginUpdateAppsFlags  flags,
+                                         GsPluginInteraction     *interaction,
+                                         GCancellable            *cancellable,
+                                         GAsyncReadyCallback      callback,
+                                         gpointer                 user_data)
 {
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
 	g_autoptr(GTask) task = NULL;
@@ -1580,7 +1574,7 @@ gs_plugin_eos_updater_update_apps_async (GsPlugin                           *plu
 		/* Download the update.
 		 * FIXME: Progress reporting */
 		gs_plugin_eos_updater_app_upgrade_download_async (self, app, interactive,
-								  event_callback, event_user_data,
+								  interaction,
 								  cancellable, upgrade_download_cb, g_steal_pointer (&task));
 	} else {
 		g_task_return_boolean (task, TRUE);

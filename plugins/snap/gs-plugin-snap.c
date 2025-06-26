@@ -2513,8 +2513,7 @@ gs_plugin_snap_uninstall_apps_finish (GsPlugin      *plugin,
 typedef struct {
 	/* Input data. */
 	guint n_apps;
-	GsPluginProgressCallback progress_callback;
-	gpointer progress_user_data;
+	GsPluginInteraction *interaction; /* (owned) (nullable) */
 
 	/* In-progress data. */
 	guint n_pending_ops;
@@ -2528,6 +2527,7 @@ update_apps_data_free (UpdateAppsData *data)
 	g_assert (data->saved_error == NULL);
 	g_assert (data->n_pending_ops == 0);
 
+	g_clear_object (&data->interaction);
 	g_free (data);
 }
 
@@ -2556,18 +2556,13 @@ static void finish_update_apps_op (GTask  *task,
                                    GError *error);
 
 static void
-gs_plugin_snap_update_apps_async (GsPlugin                           *plugin,
-                                  GsAppList                          *apps,
-                                  GsPluginUpdateAppsFlags             flags,
-                                  GsPluginProgressCallback            progress_callback,
-                                  gpointer                            progress_user_data,
-                                  GsPluginEventCallback               event_callback,
-                                  void                               *event_user_data,
-                                  GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                  gpointer                            app_needs_user_action_data,
-                                  GCancellable                       *cancellable,
-                                  GAsyncReadyCallback                 callback,
-                                  gpointer                            user_data)
+gs_plugin_snap_update_apps_async (GsPlugin                *plugin,
+                                  GsAppList               *apps,
+                                  GsPluginUpdateAppsFlags  flags,
+                                  GsPluginInteraction     *interaction,
+                                  GCancellable            *cancellable,
+                                  GAsyncReadyCallback      callback,
+                                  gpointer                 user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(GTask) task = NULL;
@@ -2580,8 +2575,7 @@ gs_plugin_snap_update_apps_async (GsPlugin                           *plugin,
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_snap_update_apps_async);
 	data = data_owned = g_new0 (UpdateAppsData, 1);
-	data->progress_callback = progress_callback;
-	data->progress_user_data = progress_user_data;
+	g_set_object (&data->interaction, interaction);
 	data->n_apps = gs_app_list_length (apps);
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) update_apps_data_free);
 
@@ -2654,11 +2648,8 @@ update_app_cb (GObject      *source_object,
 	}
 
 	/* Simple progress reporting. */
-	if (data->progress_callback != NULL) {
-		data->progress_callback (GS_PLUGIN (self),
-					 100 * ((gdouble) (app_data->index + 1) / data->n_apps),
-					 data->progress_user_data);
-	}
+	gs_plugin_interaction_progress (data->interaction, GS_PLUGIN (self),
+					100 * ((gdouble) (app_data->index + 1) / data->n_apps));
 
 	finish_update_apps_op (task, g_steal_pointer (&local_error));
 }

@@ -391,29 +391,20 @@ gs_plugin_systemd_sysupdate_refine_app_data_free (GsPluginSystemdSysupdateRefine
 
 typedef struct {
 	GQueue *queue; /* (owned) (not nullable) (element-type GsApp) */
-	GsPluginProgressCallback progress_callback;
-	gpointer progress_user_data;
-	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
-	gpointer app_needs_user_action_data;
+	GsPluginInteraction *interaction; /* (owned) (nullable) */
 	GCancellable *cancellable; /* (owned) (nullable) */
 	GsPluginUpdateAppsFlags flags;
 } GsPluginSystemdSysupdateUpdateAppsData;
 
 static GsPluginSystemdSysupdateUpdateAppsData *
-gs_plugin_systemd_sysupdate_update_apps_data_new (GQueue                             *queue,
-                                                  GsPluginProgressCallback            progress_callback,
-                                                  gpointer                            progress_user_data,
-                                                  GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                                  gpointer                            app_needs_user_action_data,
-                                                  GCancellable                       *cancellable,
-                                                  GsPluginUpdateAppsFlags             flags)
+gs_plugin_systemd_sysupdate_update_apps_data_new (GQueue                  *queue,
+                                                  GsPluginInteraction     *interaction,
+                                                  GCancellable            *cancellable,
+                                                  GsPluginUpdateAppsFlags  flags)
 {
 	GsPluginSystemdSysupdateUpdateAppsData *data = g_new0 (GsPluginSystemdSysupdateUpdateAppsData, 1);
 	data->queue = g_steal_pointer (&queue);
-	data->progress_callback = progress_callback;
-	data->progress_user_data = progress_user_data;
-	data->app_needs_user_action_callback = app_needs_user_action_callback;
-	data->app_needs_user_action_data = app_needs_user_action_data;
+	g_set_object (&data->interaction, interaction);
 	g_set_object (&data->cancellable, cancellable);
 	data->flags = flags;
 	return data;
@@ -426,10 +417,7 @@ gs_plugin_systemd_sysupdate_update_apps_data_free (GsPluginSystemdSysupdateUpdat
 		g_queue_free_full (data->queue, g_object_unref);
 		data->queue = NULL;
 	}
-	data->progress_callback = NULL;
-	data->progress_user_data = NULL;
-	data->app_needs_user_action_callback = NULL;
-	data->app_needs_user_action_data = NULL;
+	g_clear_object (&data->interaction);
 	g_clear_object (&data->cancellable);
 	data->flags = 0;
 	g_free (data);
@@ -654,16 +642,13 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
                                               gpointer      user_data);
 
 static void
-gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                           *plugin,
-                                              GsApp                              *app,
-                                              gboolean                            interactive,
-                                              GsPluginProgressCallback            progress_callback,
-                                              gpointer                            progress_user_data,
-                                              GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                              gpointer                            app_needs_user_action_data,
-                                              GCancellable                       *cancellable,
-                                              GAsyncReadyCallback                 callback,
-                                              gpointer                            user_data);
+gs_plugin_systemd_sysupdate_update_app_async (GsPlugin            *plugin,
+                                              GsApp               *app,
+                                              gboolean             interactive,
+                                              GsPluginInteraction *interaction,
+                                              GCancellable        *cancellable,
+                                              GAsyncReadyCallback  callback,
+                                              gpointer             user_data);
 static void
 gs_plugin_systemd_sysupdate_update_app_download_scheduler_cb (GObject      *source_object,
                                                               GAsyncResult *result,
@@ -2296,12 +2281,7 @@ static void
 gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                           *plugin,
                                                GsAppList                          *apps,
                                                GsPluginUpdateAppsFlags             flags,
-                                               GsPluginProgressCallback            progress_callback,
-                                               gpointer                            progress_user_data,
-                                               GsPluginEventCallback               event_callback,
-                                               void                               *event_user_data,
-                                               GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                               gpointer                            app_needs_user_action_data,
+                                               GsPluginInteraction                *interaction,
                                                GCancellable                       *cancellable,
                                                GAsyncReadyCallback                 callback,
                                                gpointer                            user_data)
@@ -2359,10 +2339,7 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 
 	/* put apps in queue to task data */
 	data = gs_plugin_systemd_sysupdate_update_apps_data_new (g_steal_pointer (&queue),
-	                                                         progress_callback,
-	                                                         progress_user_data,
-	                                                         app_needs_user_action_callback,
-	                                                         app_needs_user_action_data,
+	                                                         interaction,
 	                                                         cancellable,
 	                                                         flags);
 	g_task_set_task_data (task, data, (GDestroyNotify)gs_plugin_systemd_sysupdate_update_apps_data_free);
@@ -2408,10 +2385,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 	gs_plugin_systemd_sysupdate_update_app_async (GS_PLUGIN (self),
 	                                              app,
 	                                              data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE,
-	                                              data->progress_callback,
-	                                              data->progress_user_data,
-	                                              data->app_needs_user_action_callback,
-	                                              data->app_needs_user_action_data,
+	                                              data->interaction,
 	                                              data->cancellable,
 	                                              gs_plugin_systemd_sysupdate_update_apps_iter,
 	                                              g_steal_pointer (&task));
@@ -2443,16 +2417,13 @@ update_app_cancelled_cb (GCancellable *cancellable,
 }
 
 static void
-gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                           *plugin,
-                                              GsApp                              *app,
-                                              gboolean                            interactive,
-                                              GsPluginProgressCallback            progress_callback,
-                                              gpointer                            progress_user_data,
-                                              GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                              gpointer                            app_needs_user_action_data,
-                                              GCancellable                       *cancellable,
-                                              GAsyncReadyCallback                 callback,
-                                              gpointer                            user_data)
+gs_plugin_systemd_sysupdate_update_app_async (GsPlugin            *plugin,
+                                              GsApp               *app,
+                                              gboolean             interactive,
+                                              GsPluginInteraction *interaction,
+                                              GCancellable        *cancellable,
+                                              GAsyncReadyCallback  callback,
+                                              gpointer             user_data)
 {
 	/* Install the given system updates
 	 */
@@ -2617,6 +2588,8 @@ gs_plugin_systemd_sysupdate_install_apps_async (GsPlugin                        
 	if (flags & GS_PLUGIN_INSTALL_APPS_FLAGS_NO_APPLY)
 		update_flags |= GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY;
 
+	#warning TODO
+	#if 0
 	gs_plugin_systemd_sysupdate_update_apps_async (plugin,
 	                                               apps,
 	                                               update_flags,
@@ -2629,6 +2602,7 @@ gs_plugin_systemd_sysupdate_install_apps_async (GsPlugin                        
 	                                               cancellable,
 	                                               callback,
 	                                               user_data);
+	#endif
 }
 
 static gboolean
@@ -2698,9 +2672,7 @@ gs_plugin_systemd_sysupdate_trigger_upgrade_async (GsPlugin                    *
 
 	gs_plugin_systemd_sysupdate_update_apps_async (plugin, apps,
 	                                               GS_PLUGIN_UPDATE_APPS_FLAGS_NONE,
-	                                               NULL, NULL,
-	                                               NULL, NULL,
-	                                               NULL, NULL,
+	                                               NULL,
 	                                               cancellable,
 	                                               callback, user_data);
 }
