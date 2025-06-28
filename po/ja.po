@@ -11,15 +11,16 @@
 # sicklylife <translation@sicklylife.jp>, 2019-2020, 2022.
 # Yuki Okushi <yokushi@gnome.org>, 2021.
 # Umoxfo <ycco34vx@gmail.com>, 2025.
+# Kusano Takayuki <https://bsky.app/profile/tkusano.jp>, 2025.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-05-16 17:29+0000\n"
-"PO-Revision-Date: 2025-05-18 20:19+0900\n"
-"Last-Translator: Umoxfo <ycco34vx@gmail.com>\n"
-"Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
+"POT-Creation-Date: 2025-06-27 06:41+0000\n"
+"PO-Revision-Date: 2025-06-28 21:09+0900\n"
+"Last-Translator: Makoto Sakaguchi <ycco34vx@gmail.com>\n"
+"Language-Team: Japanese <https://l10n.gnome.org/teams/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -79,7 +80,7 @@ msgid "The update details"
 msgstr "アップデートの詳細"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2772
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2808
 #: src/gs-application.c:267
 msgid "The GNOME Project"
 msgstr "The GNOME Project"
@@ -843,7 +844,7 @@ msgstr "推奨年齢レーティング"
 msgid "_How to contribute missing information"
 msgstr "不足している情報を追加するには(_H)"
 
-#: lib/gs-app.c:6390
+#: lib/gs-app.c:6258
 msgid "Local file"
 msgstr "ローカルファイル"
 
@@ -852,13 +853,13 @@ msgstr "ローカルファイル"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6409 src/gs-safety-context-dialog.c:588
+#: lib/gs-app.c:6277 src/gs-safety-context-dialog.c:588
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6486 src/gs-safety-context-dialog.c:825
+#: lib/gs-app.c:6354 src/gs-safety-context-dialog.c:825
 #: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "パッケージ"
@@ -899,7 +900,7 @@ msgstr "ダウンロード中"
 #. * can be live-installed
 #. TRANSLATORS: update the fw
 #: src/gs-app-addon-row.ui:21 src/gs-common.c:279 src/gs-details-page.c:1056
-#: src/gs-details-page.c:1091 src/gs-details-page.ui:203 src/gs-page.c:410
+#: src/gs-details-page.c:1091 src/gs-details-page.ui:203 src/gs-page.c:412
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "インストール(_I)"
@@ -1036,7 +1037,7 @@ msgstr "追加の権限が必要です"
 msgid "Invalid ratings data received from server"
 msgstr "サーバーから無効な評価データを受信しました"
 
-#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2418
+#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2425
 msgid "Could not communicate with ratings server"
 msgstr "評価サーバーと通信できませんでした"
 
@@ -1186,10 +1187,13 @@ msgstr ""
 "sujiniku <sujinikusityuu@gmail.com>\n"
 "Takashi Oshie <>\n"
 "Yuki Okushi <yokushi@gnome.org>\n"
-"Umoxfo <ycco34vx@gmail.com>"
+"Umoxfo <ycco34vx@gmail.com>\n"
+"Japanese Translation Team https://l10n.gnome.org/teams/ja/\n"
+"Kusano Takayuki https://bsky.app/profile/tkusano.jp\n"
+"Makoto Sakaguchi <ycco34vx@gmail.com>"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:512
+#: src/gs-application.c:515
 msgid "Sorry! There are no details for that application."
 msgstr "申し訳ありません。そのアプリケーションの詳細はありません。"
 
@@ -1582,7 +1586,7 @@ msgid "Device cannot be used during update."
 msgstr "アップデート中はデバイスを使用できません。"
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:411 src/gs-shell-search-provider.c:270
+#: src/gs-app-row.c:411 src/gs-shell-search-provider.c:273
 #, c-format
 msgid "Source: %s"
 msgstr "ソース: %s"
@@ -1649,9 +1653,9 @@ msgstr "ログインが必要です"
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:272 src/gs-common.c:678
 #: src/gs-details-page.ui:291 src/gs-dkms-dialog.ui:28
-#: src/gs-dkms-dialog.ui:120 src/gs-page.c:408 src/gs-removal-dialog.ui:24
-#: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:174
-#: src/gs-repos-dialog.c:250 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
+#: src/gs-dkms-dialog.ui:120 src/gs-page.c:410 src/gs-removal-dialog.ui:24
+#: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:182
+#: src/gs-repos-dialog.c:265 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
 #: src/gs-review-row.c:263 src/gs-updates-page.c:854
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
@@ -1772,7 +1776,7 @@ msgstr "ソフトウェアリポジトリーを有効にしますか?"
 #. ask for confirmation
 #. TRANSLATORS: "Enable Third-Party Software Repository?" is
 #. * the confirmation dialog title
-#: src/gs-common.c:216 src/gs-repos-dialog.c:171
+#: src/gs-common.c:216 src/gs-repos-dialog.c:179
 msgid "Enable Third-Party Software Repository?"
 msgstr "サードパーティのソフトウェアリポジトリを有効にしますか?"
 
@@ -2473,58 +2477,58 @@ msgid "_Install…"
 msgstr "インストール…(_I)"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1315
+#: src/gs-details-page.c:1317
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s はアメリカ英語で表示されます"
 
-#: src/gs-details-page.c:1323
+#: src/gs-details-page.c:1325
 msgid "This app will appear in US English"
 msgstr "このアプリはアメリカ英語で表示されます"
 
-#: src/gs-details-page.c:1325
+#: src/gs-details-page.c:1327
 msgid "This software will appear in US English"
 msgstr "このソフトウェアはアメリカ英語で表示されます"
 
-#: src/gs-details-page.c:1360 src/gs-details-page.ui:36
+#: src/gs-details-page.c:1362 src/gs-details-page.ui:36
 msgid "Help _Translate"
 msgstr "翻訳を手伝う(_T)"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1425
+#: src/gs-details-page.c:1427
 #, c-format
 msgid "Other Apps by %s"
 msgstr "%s による他のアプリ"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1461
+#: src/gs-details-page.c:1463
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "開発者 %s は %s の所有権を証明しました"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1464
+#: src/gs-details-page.c:1466
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "開発者は %s の所有権を証明しました"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1829
+#: src/gs-details-page.c:1837
 msgid "You need internet access to write a review"
 msgstr "レビューを書くにはインターネット接続が必要です"
 
-#: src/gs-details-page.c:1932
+#: src/gs-details-page.c:1941
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr "このアプリはセキュリティ修正を含むアップデートが今後提供されません"
 
-#: src/gs-details-page.c:1933
+#: src/gs-details-page.c:1942
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "このアプリは既にお使いのディストリビューションによって提供されており、置き換"
 "えるべきではありません。"
 
-#: src/gs-details-page.c:1934
+#: src/gs-details-page.c:1943
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2532,12 +2536,12 @@ msgstr ""
 "このアプリはウェブサイト、コードリポジトリ、または課題トラッカーへのリンクを"
 "提供していません。"
 
-#: src/gs-details-page.c:1936
+#: src/gs-details-page.c:1945
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "このソフトウェアはセキュリティ修正を含むアップデートが今後提供されません"
 
-#: src/gs-details-page.c:1937
+#: src/gs-details-page.c:1946
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2545,7 +2549,7 @@ msgstr ""
 "このソフトウェアは既にお使いのディストリビューションによって提供されており、"
 "置き換えるべきではありません。"
 
-#: src/gs-details-page.c:1938
+#: src/gs-details-page.c:1947
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2553,7 +2557,7 @@ msgstr ""
 "このソフトウェアはウェブサイト、コードリポジトリ、または課題トラッカーへのリ"
 "ンクを提供していません。"
 
-#: src/gs-details-page.c:2029 src/gs-details-page.c:2046
+#: src/gs-details-page.c:2038 src/gs-details-page.c:2055
 #, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
@@ -2562,14 +2566,19 @@ msgstr ""
 "ソフトウェアは “%s” の情報を取得できなかったため、このアプリの詳細を表示でき"
 "ません。"
 
-#: src/gs-details-page.c:2415
+#: src/gs-details-page.c:2422
 msgid "Invalid review response received from server"
 msgstr "サーバーから無効なレビュー応答を受信しました"
 
-#: src/gs-details-page.c:2425
+#: src/gs-details-page.c:2432
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "“%s”のレビュー送信に失敗しました: %s"
+
+#. display a toast to the user
+#: src/gs-details-page.c:2446
+msgid "Review submitted successfully"
+msgstr "レビューの送信に成功しました"
 
 #: src/gs-details-page.ui:7
 msgid "Details page"
@@ -2981,21 +2990,21 @@ msgid_plural ""
 msgstr[0] ""
 "お探しの %s が見つかりませんでした。詳細については %s を参照してください。"
 
-#: src/gs-extras-page.c:640 src/gs-extras-page.c:697 src/gs-extras-page.c:737
+#: src/gs-extras-page.c:640 src/gs-extras-page.c:698 src/gs-extras-page.c:738
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "検索結果が見つかりませんでした: %s"
 
-#: src/gs-extras-page.c:954
+#: src/gs-extras-page.c:957
 #, c-format
 msgid "%s file format"
 msgstr "%s ファイル形式"
 
-#: src/gs-extras-page.c:1312
+#: src/gs-extras-page.c:1315
 msgid "Install _All"
 msgstr "すべてインストール(_A)"
 
-#: src/gs-extras-page.c:1342
+#: src/gs-extras-page.c:1345
 msgid "Unable to Find Requested Software"
 msgstr "要求されたソフトウェアが見つかりません"
 
@@ -3506,6 +3515,11 @@ msgstr "ページを読み込み中"
 msgid "Starting Up"
 msgstr "起動中"
 
+#. TRANSLATORS: only run app as non-root user
+#: src/gs-main.c:39
+msgid "Software should be run as a non-root user. Exiting…"
+msgstr "“ソフトウェア”は非 root ユーザーで実行する必要があります。終了します…"
+
 #: src/gs-origin-popover-row.c:105
 msgid "Unknown source"
 msgstr "不明なソース"
@@ -3548,14 +3562,14 @@ msgstr "ダウングレード"
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:735
+#: src/gs-overview-page.c:746
 msgid "selected external sources"
 msgstr "選択した外部ソース"
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:739
+#: src/gs-overview-page.c:750
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3570,34 +3584,34 @@ msgstr ""
 "ウェアリポジトリの設定」で有効にできます。"
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:743
+#: src/gs-overview-page.c:754
 msgid "Enable Third Party Software Repositories?"
 msgstr "サードパーティーのソフトウェアリポジトリを有効にしますか?"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:748
+#: src/gs-overview-page.c:759
 msgid "_Ignore"
 msgstr "無視(_I)"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:750 src/gs-repos-dialog.c:176
+#: src/gs-overview-page.c:761 src/gs-repos-dialog.c:184
 msgid "_Enable"
 msgstr "有効にする(_E)"
 
-#: src/gs-overview-page.c:953
+#: src/gs-overview-page.c:964
 msgid "Available for your operating system"
 msgstr "お使いのオペレーティングシステムで利用可能"
 
 #. Translators: the '%s' is replaced with the distribution name, constructing
 #. for example: "Available for Fedora Linux"
-#: src/gs-overview-page.c:957
+#: src/gs-overview-page.c:968
 #, c-format
 msgid "Available for %s"
 msgstr "%s で利用可能"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:1256
+#: src/gs-overview-page.c:1267
 msgid "Explore"
 msgstr "探索"
 
@@ -3619,7 +3633,7 @@ msgstr "その他のカテゴリ"
 msgid "No App Data Found"
 msgstr "アプリのデータが見つかりません"
 
-#: lib/gs-plugin-loader.c:2352
+#: lib/gs-plugin-loader.c:2283
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "不明"
@@ -3629,26 +3643,26 @@ msgstr "不明"
 msgid "_OK"
 msgstr "_OK"
 
-#: src/gs-page.c:263
+#: src/gs-page.c:265
 msgid "User declined installation"
 msgstr "ユーザーがインストールを拒否しました"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:403
+#: src/gs-page.c:405
 #, c-format
 msgid "Prepare %s"
 msgstr "%s を準備する"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:548
+#: src/gs-page.c:543
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "本当に %s リポジトリを削除してもよろしいですか?"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is a repository name.
-#: src/gs-page.c:552
+#: src/gs-page.c:547
 #, c-format
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
@@ -3669,8 +3683,8 @@ msgstr ""
 #. * name of a firmware
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:561 src/gs-page.c:572 src/gs-page.c:583 src/gs-page.c:594
-#: src/gs-page.c:605 src/gs-page.c:617
+#: src/gs-page.c:556 src/gs-page.c:567 src/gs-page.c:578 src/gs-page.c:589
+#: src/gs-page.c:600 src/gs-page.c:612
 #, c-format
 msgid "Uninstall %s?"
 msgstr "%s をアンインストールしますか?"
@@ -3678,21 +3692,21 @@ msgstr "%s をアンインストールしますか?"
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of an addon or an input method.
 #. Translators: the '%s' is replaced with the app name
-#: src/gs-page.c:565 src/gs-page.c:624
+#: src/gs-page.c:560 src/gs-page.c:619
 #, c-format
 msgid "It will not be possible to use %s after removal."
 msgstr "削除後は %s を使用できなくなります。"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
-#: src/gs-page.c:576
+#: src/gs-page.c:571
 #, c-format
 msgid ""
 "It will not be possible to use any apps which depend on %s after removal."
 msgstr "削除後は %s に依存するアプリは使用できなくなります。"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
-#: src/gs-page.c:586
+#: src/gs-page.c:581
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use "
@@ -3702,7 +3716,7 @@ msgstr ""
 "れます。"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
-#: src/gs-page.c:597
+#: src/gs-page.c:592
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media "
@@ -3712,7 +3726,7 @@ msgstr ""
 "できなくなる可能性があります。"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
-#: src/gs-page.c:608
+#: src/gs-page.c:603
 #, c-format
 msgid ""
 "Hardware which depends on %s may no longer function correctly after removal."
@@ -3721,7 +3735,7 @@ msgstr ""
 
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
-#: src/gs-page.c:632
+#: src/gs-page.c:627
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. App data and settings will "
@@ -3842,7 +3856,7 @@ msgid "Permanently deletes data to save disk space"
 msgstr "ディスク容量を節約するため、データを完全に削除する"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:243
+#: src/gs-repos-dialog.c:258
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
@@ -3851,61 +3865,61 @@ msgstr ""
 "す。"
 
 #. ask for confirmation
-#: src/gs-repos-dialog.c:247
+#: src/gs-repos-dialog.c:262
 msgid "Disable Repository?"
 msgstr "リポジトリを無効にしますか?"
 
-#: src/gs-repos-dialog.c:247
+#: src/gs-repos-dialog.c:262
 msgid "Remove Repository?"
 msgstr "リポジトリを削除しますか?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:254
+#: src/gs-repos-dialog.c:269
 msgid "_Disable"
 msgstr "無効(_D)"
 
 #. TRANSLATORS: this is button text to remove a repo
 #. TRANSLATORS: button text when
 #. * removing a review
-#: src/gs-repos-dialog.c:258 src/gs-review-row.c:266
+#: src/gs-repos-dialog.c:273 src/gs-review-row.c:266
 msgid "_Remove"
 msgstr "削除(_R)"
 
-#: src/gs-repos-dialog.c:605
+#: src/gs-repos-dialog.c:607
 msgid "Enable New Repositories"
 msgstr "新しいリポジトリを有効にする"
 
-#: src/gs-repos-dialog.c:606
+#: src/gs-repos-dialog.c:608
 msgid "Turn on new repositories when they are added"
 msgstr "新しいリポジトリが追加されたときに有効にする"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:613
+#: src/gs-repos-dialog.c:615
 msgid "more information"
 msgstr "詳細情報"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:618
+#: src/gs-repos-dialog.c:620
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "選択されたサードパーティからの追加リポジトリ — %s。"
 
-#: src/gs-repos-dialog.c:623
+#: src/gs-repos-dialog.c:625
 msgid "Fedora Third Party Repositories"
 msgstr "Fedora サードパーティリポジトリ"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:777
+#: src/gs-repos-dialog.c:776
 msgid "the operating system"
 msgstr "オペレーティングシステム"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:833
+#: src/gs-repos-dialog.c:832
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -3922,7 +3936,7 @@ msgstr "リポジトリがありません"
 #. TRANSLATORS: This string states how many apps have been
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of apps.
-#: src/gs-repo-row.c:182
+#: src/gs-repo-row.c:184
 #, c-format
 msgid "%u app installed"
 msgid_plural "%u apps installed"
@@ -3931,7 +3945,7 @@ msgstr[0] "%u 個のアプリがインストール済み"
 #. TRANSLATORS: This string states how many add-ons have been
 #. * installed from a particular repo, and is displayed on a row
 #. * describing that repo. The placeholder is the number of add-ons.
-#: src/gs-repo-row.c:190
+#: src/gs-repo-row.c:192
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -3943,7 +3957,7 @@ msgstr[0] "%u 個のアドオンがインストール済み"
 #. * that repo. The placeholder is the number of apps, and the translated
 #. * string will be substituted in for the first placeholder in the
 #. * string “%s and %s installed”.
-#: src/gs-repo-row.c:201
+#: src/gs-repo-row.c:203
 #, c-format
 msgid "%u app"
 msgid_plural "%u apps"
@@ -3955,7 +3969,7 @@ msgstr[0] "%u 個のアプリ"
 #. * that repo. The placeholder is the number of add-ons, and the translated
 #. * string will be substituted in for the second placeholder in the
 #. * string “%s and %s installed”.
-#: src/gs-repo-row.c:210
+#: src/gs-repo-row.c:212
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -3974,25 +3988,25 @@ msgstr[0] "%u 個のアドオン"
 #. *  - “2 apps and 1 add-on installed” - uses count 3
 #. *  - “4 apps and 5 add-ons installed” - uses count 9
 #.
-#: src/gs-repo-row.c:226
+#: src/gs-repo-row.c:228
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s と %sがインストール済み"
 
-#: src/gs-repo-row.c:242
+#: src/gs-repo-row.c:244
 msgid "Checking installed software…"
 msgstr "インストール済みのソフトウェアを確認中…"
 
 #. Translators: The first '%s' is replaced with installation kind, like in case of Flatpak 'User Installation',
 #. the second '%s' is replaced with a text like '10 apps installed'.
-#: src/gs-repo-row.c:250
+#: src/gs-repo-row.c:252
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
 msgstr "%s • %s"
 
-#: src/gs-repo-row.c:400
+#: src/gs-repo-row.c:410
 msgid "Remove"
 msgstr "削除"
 
@@ -4580,7 +4594,7 @@ msgstr "スクリーンショット"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:176
+#: src/gs-search-page.c:178
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -4606,70 +4620,70 @@ msgstr "アプリが見つかりません"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1135 src/gs-shell.c:1140 src/gs-shell.c:1155
-#: src/gs-shell.c:1159
+#: src/gs-shell.c:1161 src/gs-shell.c:1166 src/gs-shell.c:1181
+#: src/gs-shell.c:1185
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1213 src/gs-shell.c:1265
+#: src/gs-shell.c:1239 src/gs-shell.c:1291
 msgid "Unable to download updates"
 msgstr "アップデートをダウンロードできません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1218
+#: src/gs-shell.c:1244
 msgid "Unable to download firmware updates"
 msgstr "ファームウェアアップデートをダウンロードできません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1221
+#: src/gs-shell.c:1247
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "ファームウェアアップデートを %s からダウンロードできません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1226
+#: src/gs-shell.c:1252
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "アップデートを %s からダウンロードできません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1233 src/gs-shell.c:1451
+#: src/gs-shell.c:1259 src/gs-shell.c:1477
 msgid "Unable to update: internet access required"
 msgstr "アップデートできません: インターネット接続が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1236 src/gs-shell.c:1454
+#: src/gs-shell.c:1262 src/gs-shell.c:1480
 msgid "Unable to update: not enough disk space"
 msgstr "アップデートできません: ディスク容量が不足しています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1241
+#: src/gs-shell.c:1267
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
 "%s からアップデートをダウンロードできません: ディスク容量が不足しています"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1247 src/gs-shell.c:1465
+#: src/gs-shell.c:1273 src/gs-shell.c:1491
 msgid "Unable to update: authentication required"
 msgstr "アップデートできません: 認証が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1251 src/gs-shell.c:1476
+#: src/gs-shell.c:1277 src/gs-shell.c:1502
 msgid "Unable to update: invalid authentication"
 msgstr "アップデートできません: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1255 src/gs-shell.c:1487
+#: src/gs-shell.c:1281 src/gs-shell.c:1513
 msgid "Unable to update: permission required"
 msgstr "アップデートできません: 権限が必要です"
 
-#: src/gs-shell.c:1256
+#: src/gs-shell.c:1282
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -4677,30 +4691,30 @@ msgstr ""
 "りません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1268
+#: src/gs-shell.c:1294
 msgid "Unable to get list of updates"
 msgstr "アップデートの一覧を取得できません"
 
-#: src/gs-shell.c:1303
+#: src/gs-shell.c:1329
 msgid "Unable to install: download failed"
 msgstr "インストールできません: ダウンロードに失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1309
+#: src/gs-shell.c:1335
 #, c-format
 msgid "Unable to install %s: failed download from %s"
 msgstr "%s をインストールできません: %s からのダウンロードに失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1314
+#: src/gs-shell.c:1340
 #, c-format
 msgid "Unable to install %s: download failed"
 msgstr "%s をインストールできません: ダウンロードに失敗しました"
 
-#: src/gs-shell.c:1320
+#: src/gs-shell.c:1346
 msgid "Unable to install: missing runtime"
 msgstr "インストールできません: 必要なランタイムがありません"
 
@@ -4708,89 +4722,89 @@ msgstr "インストールできません: 必要なランタイムがありま�
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1326
+#: src/gs-shell.c:1352
 #, c-format
 msgid "Unable to install %s: runtime %s unavailable"
 msgstr "%s をインストールできません: ランタイム %s が利用できません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1329 src/gs-shell.c:1385 src/gs-shell.c:1387
+#: src/gs-shell.c:1355 src/gs-shell.c:1411 src/gs-shell.c:1413
 #, c-format
 msgid "Unable to install %s"
 msgstr "%s をインストールできません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1335
+#: src/gs-shell.c:1361
 msgid "Unable to install: internet access required"
 msgstr "インストールできません: インターネット接続が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1338
+#: src/gs-shell.c:1364
 msgid "Unable to install: invalid app format"
 msgstr "インストールできません: アプリフォーマットが無効です"
 
-#: src/gs-shell.c:1341
+#: src/gs-shell.c:1367
 msgid "Unable to install: not enough disk space"
 msgstr "インストールできません: ディスク容量が不足しています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1344
+#: src/gs-shell.c:1370
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "%s をインストールできません: ディスク容量が不足しています"
 
-#: src/gs-shell.c:1348
+#: src/gs-shell.c:1374
 msgid "Unable to install: authentication required"
 msgstr "インストールできません: 認証が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1376
 #, c-format
 msgid "Unable to install %s: authentication required"
 msgstr "%s をインストールできません: 認証が必要です"
 
-#: src/gs-shell.c:1354
+#: src/gs-shell.c:1380
 msgid "Unable to install: invalid authentication"
 msgstr "インストールできません: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1357
+#: src/gs-shell.c:1383
 #, c-format
 msgid "Unable to install %s: invalid authentication"
 msgstr "%s をインストールできません: 認証できませんでした"
 
-#: src/gs-shell.c:1361
+#: src/gs-shell.c:1387
 msgid "Unable to install: permission required"
 msgstr "インストールできません: 権限が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1364
+#: src/gs-shell.c:1390
 #, c-format
 msgid "Unable to install %s: permission required"
 msgstr "%s をインストールできません: 権限が必要です"
 
-#: src/gs-shell.c:1368
+#: src/gs-shell.c:1394
 msgid "Unable to install: device must be plugged in"
 msgstr "インストールできません: デバイスを電源に接続してください"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1371
+#: src/gs-shell.c:1397
 #, c-format
 msgid "Unable to install %s: device must be plugged in"
 msgstr "%s をインストールできません: デバイスを電源に接続してください"
 
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1400
 msgid "Unable to install: low battery"
 msgstr "インストールできません: バッテリー残量が少なくなっています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1377
+#: src/gs-shell.c:1403
 #, c-format
 msgid "Unable to install %s: low battery"
 msgstr "%s をインストールできません: バッテリー残量が少なくなっています"
@@ -4799,14 +4813,14 @@ msgstr "%s をインストールできません: バッテリー残量が少な�
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1430
+#: src/gs-shell.c:1456
 #, c-format
 msgid "Unable to update %s from %s: download failed"
 msgstr "%2$s から %1$s をアップデートできません: ダウンロードに失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1436
+#: src/gs-shell.c:1462
 #, c-format
 msgid "Unable to update %s: download failed"
 msgstr "%s をアップデートできません: ダウンロードに失敗しました"
@@ -4814,275 +4828,275 @@ msgstr "%s をアップデートできません: ダウンロードに失敗し�
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1443
+#: src/gs-shell.c:1469
 #, c-format
 msgid "Unable to install updates from %s: download failed"
 msgstr ""
 "%s からアップデートをインストールできません: ダウンロードに失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1447
+#: src/gs-shell.c:1473
 msgid "Unable to update: download failed"
 msgstr "アップデートできません: ダウンロードに失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1459
+#: src/gs-shell.c:1485
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "%s をアップデートできません: ディスク容量が不足しています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1470
+#: src/gs-shell.c:1496
 #, c-format
 msgid "Unable to update %s: authentication required"
 msgstr "%s をアップデートできません: 認証が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1481
+#: src/gs-shell.c:1507
 #, c-format
 msgid "Unable to update %s: invalid authentication"
 msgstr "%s をアップデートできません: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1492
+#: src/gs-shell.c:1518
 #, c-format
 msgid "Unable to update %s: permission required"
 msgstr "%s をアップデートできません: 権限が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1498
+#: src/gs-shell.c:1524
 msgid "Unable to update: device must be plugged in"
 msgstr "アップデートできません: デバイスを電源に接続してください"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1503
+#: src/gs-shell.c:1529
 #, c-format
 msgid "Unable to update %s: device must be plugged in"
 msgstr "%s をアップデートできません: デバイスを電源に接続してください"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1508
+#: src/gs-shell.c:1534
 msgid "Unable to update: low battery"
 msgstr "アップデートできません: バッテリー残量が少なくなっています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1513
+#: src/gs-shell.c:1539
 #, c-format
 msgid "Unable to update %s: low battery"
 msgstr "%s をアップデートできません: バッテリー残量が少なくなっています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1524
+#: src/gs-shell.c:1550
 #, c-format
 msgid "Unable to update %s"
 msgstr "%s をアップデートできません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1528
+#: src/gs-shell.c:1554
 msgid "Unable to update"
 msgstr "アップデートできません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1565 src/gs-shell.c:1638
+#: src/gs-shell.c:1591 src/gs-shell.c:1664
 msgid "Unable to upgrade"
 msgstr "アップグレードできません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1569
+#: src/gs-shell.c:1595
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "%2$s から %1$s にアップグレードできません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1573
+#: src/gs-shell.c:1599
 msgid "Unable to upgrade: download failed"
 msgstr "アップグレードできません: ダウンロードに失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1576
+#: src/gs-shell.c:1602
 #, c-format
 msgid "Unable to upgrade to %s: download failed"
 msgstr "%s へアップグレードできません: ダウンロードに失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1582
+#: src/gs-shell.c:1608
 msgid "Unable to upgrade: internet access required"
 msgstr "アップグレードできません: インターネット接続が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1585
+#: src/gs-shell.c:1611
 #, c-format
 msgid "Unable to upgrade to %s: internet access required"
 msgstr "%s へアップグレードできません: インターネット接続が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1589
+#: src/gs-shell.c:1615
 msgid "Unable to upgrade: not enough disk space"
 msgstr "アップグレードできません: ディスク容量が不足しています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1592
+#: src/gs-shell.c:1618
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "%s へアップグレードできません: ディスク容量が不足しています"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1597
+#: src/gs-shell.c:1623
 msgid "Unable to upgrade: authentication required"
 msgstr "アップグレードできません: 認証が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1600
+#: src/gs-shell.c:1626
 #, c-format
 msgid "Unable to upgrade to %s: authentication required"
 msgstr "%s へアップグレードできません: 認証が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1605
+#: src/gs-shell.c:1631
 msgid "Unable to upgrade: invalid authentication"
 msgstr "アップグレードできません: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1608
+#: src/gs-shell.c:1634
 #, c-format
 msgid "Unable to upgrade to %s: invalid authentication"
 msgstr "%s へアップグレードできません: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1613
+#: src/gs-shell.c:1639
 msgid "Unable to upgrade: permission required"
 msgstr "アップグレードできません: 権限が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1616
+#: src/gs-shell.c:1642
 #, c-format
 msgid "Unable to upgrade to %s: permission required"
 msgstr "%s へアップグレードできません: 権限が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1621
+#: src/gs-shell.c:1647
 msgid "Unable to upgrade: device must be plugged in"
 msgstr "アップグレードできません: デバイスを電源に接続してください"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1624
+#: src/gs-shell.c:1650
 #, c-format
 msgid "Unable to upgrade to %s: device must be plugged in"
 msgstr "%s へアップグレードできません: デバイスを電源に接続してください"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1628
+#: src/gs-shell.c:1654
 msgid "Unable to upgrade: low battery"
 msgstr "アップグレードできません: バッテリー残量が少なくなっています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1631
+#: src/gs-shell.c:1657
 #, c-format
 msgid "Unable to upgrade to %s: low battery"
 msgstr "%s へアップグレードできません: バッテリー残量が少なくなっています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1641
+#: src/gs-shell.c:1667
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "%s にアップグレードできません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1675
+#: src/gs-shell.c:1701
 msgid "Unable to uninstall: authentication required"
 msgstr "アンインストールできません: 認証が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1678
+#: src/gs-shell.c:1704
 #, c-format
 msgid "Unable to uninstall %s: authentication required"
 msgstr "%s をアンインストールできません: 認証が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1683
+#: src/gs-shell.c:1709
 msgid "Unable to uninstall: invalid authentication"
 msgstr "アンインストールできません: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1686
+#: src/gs-shell.c:1712
 #, c-format
 msgid "Unable to uninstall %s: invalid authentication"
 msgstr "%s をアンインストールできません: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1691
+#: src/gs-shell.c:1717
 msgid "Unable to uninstall: permission required"
 msgstr "アンインストールできません: 権限が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1694
+#: src/gs-shell.c:1720
 #, c-format
 msgid "Unable to uninstall %s: permission required"
 msgstr "%s をアンインストールできません: 権限が必要です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1699
+#: src/gs-shell.c:1725
 msgid "Unable to uninstall: device must be plugged in"
 msgstr "アンインストールできません: デバイスを電源に接続してください"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1702
+#: src/gs-shell.c:1728
 #, c-format
 msgid "Unable to uninstall %s: device must be plugged in"
 msgstr "%s をアンインストールできません: デバイスを電源に接続してください"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1706
+#: src/gs-shell.c:1732
 msgid "Unable to uninstall: low battery"
 msgstr "アンインストールできません: バッテリー残量が少なくなっています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1709
+#: src/gs-shell.c:1735
 #, c-format
 msgid "Unable to uninstall %s: low battery"
 msgstr "%s をアンインストールできません: バッテリー残量が少なくなっています"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1720
+#: src/gs-shell.c:1746
 #, c-format
 msgid "Unable to uninstall %s"
 msgstr "%s をアンインストールできません"
 
 #. TRANSLATORS: failure text for the in-app notification, where the '%s' is
 #. replaced with the app name (e.g. "GIMP")
-#: src/gs-shell.c:1759
+#: src/gs-shell.c:1785
 #, c-format
 msgid "Unable to launch %s"
 msgstr "%s を起動できません"
 
 #. TRANSLATORS: failure text for the in-app notification
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1764 src/gs-shell.c:1792 src/gs-shell.c:1836
-#: src/gs-shell.c:1880 src/gs-shell.c:1944
+#: src/gs-shell.c:1790 src/gs-shell.c:1818 src/gs-shell.c:1862
+#: src/gs-shell.c:1906 src/gs-shell.c:1970
 msgid "Sorry, something went wrong"
 msgstr "申し訳ありません、問題が発生しました"
 
@@ -5090,57 +5104,57 @@ msgstr "申し訳ありません、問題が発生しました"
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1772
+#: src/gs-shell.c:1798
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "%s を起動できません: %s はインストールされていません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1782 src/gs-shell.c:1826 src/gs-shell.c:1870
-#: src/gs-shell.c:1924
+#: src/gs-shell.c:1808 src/gs-shell.c:1852 src/gs-shell.c:1896
+#: src/gs-shell.c:1950
 msgid "Not enough disk space for operation"
 msgstr "操作に必要なディスク容量が不足しています"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1818
+#: src/gs-shell.c:1844
 msgid "Unable to install: file type not supported"
 msgstr "インストールできません: サポートされていないファイル形式です"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1822 src/gs-shell.c:1866
+#: src/gs-shell.c:1848 src/gs-shell.c:1892
 msgid "Unable to install: authentication failed"
 msgstr "インストールできません: 認証に失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1862
+#: src/gs-shell.c:1888
 msgid "Unable to install"
 msgstr "インストールできません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1913
+#: src/gs-shell.c:1939
 #, c-format
 msgid "Unable to contact %s"
 msgstr "%s に接続できません"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1919
+#: src/gs-shell.c:1945
 msgid "Download failed"
 msgstr "ダウンロードに失敗しました"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
-#: src/gs-shell.c:1928
+#: src/gs-shell.c:1954
 msgid "Restart Software to use new plugins"
 msgstr "新しいプラグインを使用するには“ソフトウェア”を再起動してください"
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1932
+#: src/gs-shell.c:1958
 msgid "Device needs to be plugged in"
 msgstr "デバイスを AC 電源に接続する必要があります"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1935
+#: src/gs-shell.c:1961
 msgid "Battery level is too low"
 msgstr "バッテリー残量が少なすぎます"
 
@@ -5280,17 +5294,21 @@ msgstr "詳細(_D)"
 msgid "_Examine"
 msgstr "検査(_E)"
 
+#: src/gs-toast.c:71
+msgid "_Show Review"
+msgstr "レビューを表示(_S)"
+
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window.
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:107
+#: src/gs-update-dialog.c:127
 #, c-format
 msgid "Installed on %s"
 msgstr "%s にインストール済み"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:129
+#: src/gs-update-dialog.c:149
 msgid "Installed Updates"
 msgstr "インストール済みのアップデート"
 
@@ -5298,147 +5316,147 @@ msgstr "インストール済みのアップデート"
 msgid "No Updates Installed"
 msgstr "インストール済みのアップデートはありません"
 
-#: src/gs-update-monitor.c:223
+#: src/gs-update-monitor.c:234
 msgid "Updates Are Out of Date"
 msgstr "アップデートが古くなっています"
 
-#: src/gs-update-monitor.c:224
+#: src/gs-update-monitor.c:235
 msgid "Please check for available updates"
 msgstr "利用可能なアップデートを確認してください"
 
-#: src/gs-update-monitor.c:230
+#: src/gs-update-monitor.c:241
 msgid "Critical Updates Ready to Install"
 msgstr "重要なアップデートのインストール準備完了"
 
-#: src/gs-update-monitor.c:231
+#: src/gs-update-monitor.c:242
 msgid "Install critical updates as soon as possible"
 msgstr "できるだけ早く重要なアップデートをインストールしてください"
 
-#: src/gs-update-monitor.c:234
+#: src/gs-update-monitor.c:245
 msgid "Critical Updates Available to Download"
 msgstr "ダウンロード可能な重要なアップデートがあります"
 
-#: src/gs-update-monitor.c:235
+#: src/gs-update-monitor.c:246
 msgid "Download critical updates as soon as possible"
 msgstr "できるだけ早く重要なアップデートをダウンロードしてください"
 
-#: src/gs-update-monitor.c:241
+#: src/gs-update-monitor.c:252
 msgid "Updates Ready to Install"
 msgstr "アップデートのインストール準備完了"
 
-#: src/gs-update-monitor.c:242
+#: src/gs-update-monitor.c:253
 msgid "Software updates are ready and waiting"
 msgstr "ソフトウェアアップデートの準備ができています"
 
-#: src/gs-update-monitor.c:248
+#: src/gs-update-monitor.c:258
 msgid "Updates Available to Download"
 msgstr "ダウンロード可能なアップデートがあります"
 
-#: src/gs-update-monitor.c:249
+#: src/gs-update-monitor.c:259
 msgid "Software updates can be downloaded"
 msgstr "ソフトウェアアップデートをダウンロードできます"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:371
+#: src/gs-update-monitor.c:381
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
 msgstr[0] "%u 個のアプリがアップデートされました — 再起動が必要です"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:377
+#: src/gs-update-monitor.c:387
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
 msgstr[0] "%u 個のアプリがアップデートされました"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:388
+#: src/gs-update-monitor.c:398
 #, c-format
 msgid "%s has been updated."
 msgstr "%s がアップデートされました。"
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:391
+#: src/gs-update-monitor.c:401
 msgid "Please restart the app."
 msgstr "アプリを再起動してください。"
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:399
+#: src/gs-update-monitor.c:409
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s と %s がアップデートされました。"
 
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:405 src/gs-update-monitor.c:424
+#: src/gs-update-monitor.c:415 src/gs-update-monitor.c:434
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
 msgstr[0] "%u 個のアプリは再起動が必要です。"
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:417
+#: src/gs-update-monitor.c:427
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "%s、%s、および %s を含みます。"
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:721
+#: src/gs-update-monitor.c:730
 msgid "System Has Reached End of Life"
 msgstr "システムのサポートは終了しました"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:723
+#: src/gs-update-monitor.c:732
 msgid "Upgrade to continue receiving updates"
 msgstr "アップデートを受け取り続けるにはアップグレードしてください"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:780
+#: src/gs-update-monitor.c:791
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "%s の新しいバージョンが利用可能です"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:784
+#: src/gs-update-monitor.c:795
 msgid "Software Upgrade Available"
 msgstr "ソフトウェアのアップグレードが利用可能です"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1309
+#: src/gs-update-monitor.c:1322
 msgid "Software Updates Failed"
 msgstr "ソフトウェアのアップデートに失敗しました"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1311
+#: src/gs-update-monitor.c:1324
 msgid "Prepared updates were not installed"
 msgstr "準備されたアップデートはインストールされませんでした"
 
-#: src/gs-update-monitor.c:1312
+#: src/gs-update-monitor.c:1325
 msgid "Show Details"
 msgstr "詳細を表示"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1359
+#: src/gs-update-monitor.c:1374
 msgid "System Upgrade Complete"
 msgstr "システムのアップグレードが完了しました"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1364
+#: src/gs-update-monitor.c:1379
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "%s %s へようこそ!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1373
+#: src/gs-update-monitor.c:1388
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "ソフトウェアアップデートをインストールしました"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1377
+#: src/gs-update-monitor.c:1392
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "重要なオペレーティングシステムアップデートをインストールしました。"
@@ -5448,30 +5466,30 @@ msgstr[0] "重要なオペレーティングシステムアップデートをイ
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1388
+#: src/gs-update-monitor.c:1403
 msgctxt "updates"
 msgid "Review"
 msgstr "確認"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1442
+#: src/gs-update-monitor.c:1457
 msgid "Failed To Update"
 msgstr "アップデートに失敗しました"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1447
+#: src/gs-update-monitor.c:1462
 msgid "The system was already up to date."
 msgstr "システムはすでに最新の状態です。"
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1452
+#: src/gs-update-monitor.c:1467
 msgid "The update was cancelled."
 msgstr "アップデートがキャンセルされました。"
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1457
+#: src/gs-update-monitor.c:1472
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5480,7 +5498,7 @@ msgstr ""
 "していることを確認して、もう一度お試しください。"
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1462
+#: src/gs-update-monitor.c:1477
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -5489,14 +5507,14 @@ msgstr ""
 "提供元にお問い合わせください。"
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1467
+#: src/gs-update-monitor.c:1482
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "ディスク容量が不足しています。空き容量を確保して、もう一度お試しください。"
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1471
+#: src/gs-update-monitor.c:1486
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -5506,7 +5524,7 @@ msgstr ""
 "元にお問い合わせください。"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:265
+#: src/gs-updates-page.c:261
 #, c-format
 msgid "Last checked: %s"
 msgstr "最終確認: %s"
@@ -5553,7 +5571,7 @@ msgstr "ソフトウェアのアップグレードがダウンロードされま
 msgid "Upgrades are ready to be installed"
 msgstr "アップグレードのインストール準備が完了しました"
 
-#: src/gs-updates-page.c:1260
+#: src/gs-updates-page.c:1254
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "アップデート"
@@ -5687,45 +5705,45 @@ msgstr "ゲームモードが有効です — ソフトウェアアップデー�
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:320
+#: src/gs-updates-section.c:333
 msgid "_Restart & Update…"
 msgstr "再起動してアップデート… (_R)"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable apps
-#: src/gs-updates-section.c:326
+#: src/gs-updates-section.c:339
 msgid "U_pdate All"
 msgstr "すべてアップデート(_P)"
 
-#: src/gs-updates-section.c:403
+#: src/gs-updates-section.c:424
 msgid "Software Updates Downloaded"
 msgstr "ソフトウェアアップデートがダウンロードされました"
 
-#: src/gs-updates-section.c:404
+#: src/gs-updates-section.c:425
 msgid "Updates are ready to be installed"
 msgstr "アップデートのインストール準備が完了しました"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:493
+#: src/gs-updates-section.c:514
 msgid "Integrated Firmware"
 msgstr "統合ファームウェア"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:498
+#: src/gs-updates-section.c:519
 msgid "Requires Restart"
 msgstr "再起動が必要"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:503
+#: src/gs-updates-section.c:524
 msgid "App Updates"
 msgstr "アプリのアップデート"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:508
+#: src/gs-updates-section.c:529
 msgid "Device Firmware"
 msgstr "デバイスファームウェア"
 
@@ -5818,7 +5836,7 @@ msgstr ""
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the first part of a system notification.
-#: plugins/dkms/gs-plugin-dkms.c:176
+#: plugins/dkms/gs-plugin-dkms.c:180
 #, c-format
 msgid "%s Ready"
 msgstr "%s の準備完了"
@@ -5830,26 +5848,26 @@ msgstr "%s の準備完了"
 #.
 #. The NVIDIA Linux Graphics Driver is ready to be enabled and staged for the next boot.
 #.
-#: plugins/dkms/gs-plugin-dkms.c:184
+#: plugins/dkms/gs-plugin-dkms.c:188
 #, c-format
 msgid "The %s is ready to be enabled and staged for the next boot."
 msgstr "%s は有効化され、次回起動時に適用される準備が整いました。"
 
-#: plugins/dkms/gs-plugin-dkms.c:189
+#: plugins/dkms/gs-plugin-dkms.c:193
 msgid "Enable"
 msgstr "有効"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:69
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3244
+#: plugins/core/gs-plugin-generic-updates.c:81
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3295
 msgid "System Updates"
 msgstr "システムアップデート"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:74
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3249
+#: plugins/core/gs-plugin-generic-updates.c:86
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3300
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
@@ -5858,17 +5876,17 @@ msgstr ""
 "デート。"
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
-#: plugins/eos-updater/gs-plugin-eos-updater.c:688
+#: plugins/eos-updater/gs-plugin-eos-updater.c:684
 #, c-format
 msgid "%s update with new features and fixes."
 msgstr "新機能と修正を含む %s のアップデート。"
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:1331
+#: plugins/eos-updater/gs-plugin-eos-updater.c:1337
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOSアップデートサービスはアップデートの取得および適用に失敗しました。"
 
-#: plugins/epiphany/gs-plugin-epiphany.c:493
-#: plugins/epiphany/gs-plugin-epiphany.c:497
+#: plugins/epiphany/gs-plugin-epiphany.c:503
+#: plugins/epiphany/gs-plugin-epiphany.c:507
 msgid "Web App"
 msgstr "Web アプリ"
 
@@ -5881,8 +5899,8 @@ msgid "Run popular web applications in a browser"
 msgstr "人気 Web アプリケーションをブラウザで実行します"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:417
-#: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:95
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:416
+#: plugins/opensuse-distro-upgrade/gs-plugin-opensuse-distro-upgrade.c:104
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr "最新の機能、パフォーマンス、および安定性の向上のためのアップグレード。"
@@ -6019,12 +6037,12 @@ msgid "Filesystem access to %s"
 msgstr "%s へのファイルシステムアクセス"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1464
+#: plugins/flatpak/gs-flatpak.c:1455
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "%s の Flatpak メタデータを取得中…"
 
-#: plugins/flatpak/gs-flatpak.c:3692
+#: plugins/flatpak/gs-flatpak.c:3695
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "アドオン ‘%s’ の絞り込みに失敗しました: %s"
@@ -6041,17 +6059,17 @@ msgstr "システムインストール"
 msgid "App ID"
 msgstr "アプリ ID"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1367
+#: plugins/flatpak/gs-plugin-flatpak.c:1510
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "アドオン ‘%s’ をインストール対象に追加できませんでした: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1381
+#: plugins/flatpak/gs-plugin-flatpak.c:1524
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "アドオン ‘%s’ をアンインストール対象に追加できませんでした: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1964
+#: plugins/flatpak/gs-plugin-flatpak.c:2146
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -6289,11 +6307,11 @@ msgstr "%s ドックのアップデート"
 msgid "%s USB Dock Update"
 msgstr "%s USB ドックのアップデート"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:919
+#: plugins/fwupd/gs-plugin-fwupd.c:903
 msgid "Firmware"
 msgstr "ファームウェア"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1943
+#: plugins/fwupd/gs-plugin-fwupd.c:1946
 msgid "Firmware update could not be applied: "
 msgstr "ファームウェアアップデートを適用できませんでした: "
 
@@ -6389,35 +6407,35 @@ msgstr "キーをインポートしますか?"
 msgid "_Import Key"
 msgstr "キーをインポート(_I)"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:1477
+#: plugins/packagekit/gs-plugin-packagekit.c:1464
 msgid "Failed to install updates: "
 msgstr "アップデートのインストールに失敗しました: "
 
-#: plugins/packagekit/gs-plugin-packagekit.c:1572
+#: plugins/packagekit/gs-plugin-packagekit.c:1558
 msgid "Packages"
 msgstr "パッケージ"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1415
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1441
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1445
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1471
 msgid "Failed to wait on transaction end before download: "
 msgstr "ダウンロード前にトランザクションの終了を待機できませんでした: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1448
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1461
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1478
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1491
 msgid "Failed to download updates: "
 msgstr "アップデートのダウンロードに失敗しました: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1500
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1510
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1530
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1540
 msgid "Failed to trigger update: "
 msgstr "アップデートの開始に失敗しました: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3344
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3395
 msgid "Operating System (OSTree)"
 msgstr "オペレーティングシステム (OSTree)"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:298
+#: plugins/snap/gs-plugin-snap.c:295
 msgid "Snap Store"
 msgstr "Snap ストア"
 
@@ -6430,16 +6448,16 @@ msgid "A snap is a universal Linux package"
 msgstr "Snap は汎用的な Linux パッケージです"
 
 #. TRANSLATORS: this is the system OS upgrade
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:779
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:785
 msgid "System"
 msgstr "システム"
 
 #. TRANSLATORS: this is the system component update
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:783
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:789
 msgid "System component"
 msgstr "システムコンポーネント"
 
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1034
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1040
 #, c-format
 msgid "Removing sysupdate job '%s' failed with status %i"
 msgstr "sysupdate ジョブ '%s' の削除に失敗しました (ステータス %i)"
