@@ -134,7 +134,7 @@ libxmlb = dependency('xmlb', version : '>= 0.3.4', fallback : ['libxmlb', 'libxm
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
 gmodule = dependency('gmodule-2.0')
 gtk = dependency('gtk4',
-  version : '>= 4.16.0',
+  version : '>= 4.17.5',
   fallback: ['gtk', 'gtk_dep'],
   default_options: [
       'build-demos=false',
@@ -151,7 +151,7 @@ json_glib = dependency('json-glib-1.0', version : '>= 1.6.0')
 libm = cc.find_library('m', required: false)
 libsoup = dependency('libsoup-3.0', version : '>= 3.0')
 libadwaita = dependency('libadwaita-1',
-  version: '>=1.6.0',
+  version: '>=1.8.alpha',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'examples=false',
