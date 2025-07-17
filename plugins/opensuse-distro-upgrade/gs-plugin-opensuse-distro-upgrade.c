@@ -590,7 +590,7 @@ gs_plugin_opensuse_distro_upgrade_init (GsPluginOpensuseDistroUpgrade *self)
 	/* Check if we are running openSUSE Leap. */
 	if (!gs_plugin_check_distro_id (plugin, "opensuse-leap")) {
 		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("Disabling itself as it's only supported in openSUSE Leap", gs_plugin_get_name (plugin));
+		g_debug ("Disabling \"%s\" as it's only supported in openSUSE Leap", gs_plugin_get_name (plugin));
 		return;
 	}
 
