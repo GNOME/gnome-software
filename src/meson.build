@@ -277,6 +277,14 @@ if get_option('snap')
   )
 endif
 
+configure_file(
+    input: 'gnome-software.service.in',
+    output: 'gnome-software.service',
+    configuration: cdata,
+    install: true,
+    install_dir: systemd_user_unit_dir,
+)
+
 install_data('org.gnome.Software-search-provider.ini',
              install_dir: 'share/gnome-shell/search-providers')
 
