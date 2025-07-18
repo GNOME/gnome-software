@@ -25,6 +25,7 @@
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-shell-search-provider.h"
+#include "gs-software-offline-updates-provider.h"
 
 #define CODE_COPYRIGHT_YEAR 2025
 
@@ -40,6 +41,7 @@ struct _GsApplication {
 	GsUpdateMonitor *update_monitor;
 	GsDbusHelper	*dbus_helper;
 	GsShellSearchProvider *search_provider;  /* (nullable) (owned) */
+	GsSoftwareOfflineUpdatesProvider *offline_updates_provider;  /* (nullable) (owned) */
 	GSettings       *settings;
 	GSimpleActionGroup	*action_map;
 	guint		 shell_loaded_handler_id;
@@ -165,7 +167,9 @@ gs_application_dbus_register (GApplication    *application,
 {
 	GsApplication *app = GS_APPLICATION (application);
 	app->search_provider = gs_shell_search_provider_new ();
-	return gs_shell_search_provider_register (app->search_provider, connection, error);
+	app->offline_updates_provider = gs_software_offline_updates_provider_new ();
+	return gs_shell_search_provider_register (app->search_provider, connection, error) &&
+	       gs_software_offline_updates_provider_register (app->offline_updates_provider, connection, error);
 }
 
 static void
@@ -177,6 +181,8 @@ gs_application_dbus_unregister (GApplication    *application,
 
 	if (app->search_provider != NULL)
 		gs_shell_search_provider_unregister (app->search_provider);
+	if (app->offline_updates_provider != NULL)
+		gs_software_offline_updates_provider_unregister (app->offline_updates_provider);
 }
 
 static void
@@ -1087,6 +1093,7 @@ gs_application_startup (GApplication *application)
 		gs_plugin_loader_add_location (app->plugin_loader, LOCALPLUGINDIR);
 
 	gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
+	gs_software_offline_updates_provider_setup (app->offline_updates_provider, app->plugin_loader);
 
 	app->dbus_helper = gs_dbus_helper_new (g_application_get_dbus_connection (application));
 
@@ -1231,6 +1238,7 @@ gs_application_dispose (GObject *object)
 	GsApplication *app = GS_APPLICATION (object);
 
 	g_clear_object (&app->search_provider);
+	g_clear_object (&app->offline_updates_provider);
 	g_clear_object (&app->plugin_loader);
 	g_clear_object (&app->update_monitor);
 	g_clear_object (&app->dbus_helper);
