@@ -343,4 +343,33 @@ GTask *		gs_plugin_url_to_app_data_new_task	(gpointer		     source_object,
 void		gs_plugin_url_to_app_data_free		(GsPluginUrlToAppData	    *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginUrlToAppData, gs_plugin_url_to_app_data_free)
 
+typedef struct {
+	GsPluginGetOfflineUpdateStateFlags flags;
+} GsPluginGetOfflineUpdateStateData;
+
+GsPluginGetOfflineUpdateStateData *
+		gs_plugin_get_offline_update_state_data_new	(GsPluginGetOfflineUpdateStateFlags flags);
+GTask *		gs_plugin_get_offline_update_state_data_new_task(gpointer			    source_object,
+								 GsPluginGetOfflineUpdateStateFlags flags,
+								 GCancellable			   *cancellable,
+								 GAsyncReadyCallback		    callback,
+								 gpointer			    user_data);
+void		gs_plugin_get_offline_update_state_data_free	(GsPluginGetOfflineUpdateStateData *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginGetOfflineUpdateStateData, gs_plugin_get_offline_update_state_data_free)
+
+typedef struct {
+	GsPluginSetOfflineUpdateActionFlags flags;
+} GsPluginSetOfflineUpdateActionData;
+
+GsPluginSetOfflineUpdateActionData *
+		gs_plugin_set_offline_update_action_data_new	(GsPluginSetOfflineUpdateActionFlags flags);
+GTask *		gs_plugin_set_offline_update_action_data_new_task
+								(gpointer			     source_object,
+								 GsPluginSetOfflineUpdateActionFlags flags,
+								 GCancellable			    *cancellable,
+								 GAsyncReadyCallback		     callback,
+								 gpointer			     user_data);
+void		gs_plugin_set_offline_update_action_data_free	(GsPluginSetOfflineUpdateActionData *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginSetOfflineUpdateActionData, gs_plugin_set_offline_update_action_data_free)
+
 G_END_DECLS

@@ -34,6 +34,7 @@
 #include <gs-plugin-job-cancel-offline-update.h>
 #include <gs-plugin-job-download-upgrade.h>
 #include <gs-plugin-job-file-to-app.h>
+#include <gs-plugin-job-get-offline-update-state.h>
 #include <gs-plugin-job-launch.h>
 #include <gs-plugin-job-list-apps.h>
 #include <gs-plugin-job-list-categories.h>
@@ -41,6 +42,7 @@
 #include <gs-plugin-job-manage-repository.h>
 #include <gs-plugin-job-refine.h>
 #include <gs-plugin-job-refresh-metadata.h>
+#include <gs-plugin-job-set-offline-update-action.h>
 #include <gs-plugin-job-trigger-upgrade.h>
 #include <gs-plugin-job-install-apps.h>
 #include <gs-plugin-job-uninstall-apps.h>
