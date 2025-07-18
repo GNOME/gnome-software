@@ -302,6 +302,55 @@ typedef enum {
 } GsPluginCancelOfflineUpdateFlags;
 
 /**
+ * GsPluginGetOfflineUpdateStateFlags:
+ * @GS_PLUGIN_GET_OFFLINE_UPDATE_STATE_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_GET_OFFLINE_UPDATE_STATE_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to get an offline update state.
+ *
+ * Since: 50
+ */
+typedef enum {
+	GS_PLUGIN_GET_OFFLINE_UPDATE_STATE_FLAGS_NONE		= 0,
+	GS_PLUGIN_GET_OFFLINE_UPDATE_STATE_FLAGS_INTERACTIVE	= 1 << 0,
+} GsPluginGetOfflineUpdateStateFlags;
+
+/**
+ * GsPluginOfflineUpdateState:
+ * @GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE: No offline update is scheduled.
+ * @GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED: There is scheduled an offline update.
+ *
+ * State of an offline update.
+ *
+ * Since: 50
+ */
+typedef enum {
+	GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE = 0,
+	GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED = 1,
+} GsPluginOfflineUpdateState;
+
+/**
+ * GsPluginSetOfflineUpdateActionFlags:
+ * @GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_INTERACTIVE: User initiated the job.
+ * @GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_REBOOT: Reboot after update.
+ * @GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_SHUTDOWN: Shutdown after update.
+ *
+ * Flags for an operation to set an offline update action.
+ * The @GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_REBOOT and
+ * the @GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_SHUTDOWN cannot
+ * be used at the same time. When none is set, reboot is assumed.
+ *
+ * Since: 50
+ */
+typedef enum {
+	GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_NONE		= 0,
+	GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_INTERACTIVE	= 1 << 0,
+	GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_REBOOT	= 1 << 1,
+	GS_PLUGIN_SET_OFFLINE_UPDATE_ACTION_FLAGS_SHUTDOWN	= 1 << 2,
+} GsPluginSetOfflineUpdateActionFlags;
+
+/**
  * GsPluginDownloadUpgradeFlags:
  * @GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_DOWNLOAD_UPGRADE_FLAGS_INTERACTIVE: User initiated the job.

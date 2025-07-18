@@ -127,6 +127,14 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @url_to_app_finish: (nullable): Finish method for
  *   @url_to_app_async. Must be implemented if
  *   @url_to_app_async is implemented. (Since: 47)
+ * @get_offline_update_state_async: (nullable): Gets state of an offline update. (Since: 50)
+ * @get_offline_update_state_finish: (nullable): Finish method for
+ *   @get_offline_update_state_async. Must be implemented if
+ *   @get_offline_update_state_async is implemented. (Since: 50)
+ * @set_offline_update_action_async: (nullable): Sets an action to do after offline update. (Since: 50)
+ * @set_offline_update_action_finish: (nullable): Finish method for
+ *   @set_offline_update_action_async. Must be implemented if
+ *   @set_offline_update_action_async is implemented. (Since: 50)
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -388,7 +396,28 @@ struct _GsPluginClass
 								 GAsyncResult			*result,
 								 GError				**error);
 
-	gpointer		 padding[23];
+	void			(*get_offline_update_state_async)(GsPlugin			*plugin,
+								 GsPluginGetOfflineUpdateStateFlags flags,
+								 GCancellable			*cancellable,
+								 GAsyncReadyCallback		 callback,
+								 gpointer			 user_data);
+	gboolean		(*get_offline_update_state_finish)
+								(GsPlugin			*plugin,
+								 GAsyncResult			*result,
+								 GsPluginOfflineUpdateState	*out_state,
+								 GError				**error);
+
+	void			(*set_offline_update_action_async)(GsPlugin			*plugin,
+								 GsPluginSetOfflineUpdateActionFlags flags,
+								 GCancellable			*cancellable,
+								 GAsyncReadyCallback		 callback,
+								 gpointer			 user_data);
+	gboolean		(*set_offline_update_action_finish)
+								(GsPlugin			*plugin,
+								 GAsyncResult			*result,
+								 GError				**error);
+
+	gpointer		 padding[19];
 };
 
 /* helpers */
