@@ -568,6 +568,7 @@ gs_appstream_refine_app_relation (GsApp           *app,
                                   GError         **error)
 {
 	g_autoptr(GPtrArray) relations = NULL;
+	g_autoptr(GPtrArray) old_relations = NULL;
 
 	/* Iterate over the children, which might be any combination of zero or
 	 * more <id/>, <modalias/>, <kernel/>, <memory/>, <firmware/>,
@@ -634,6 +635,20 @@ gs_appstream_refine_app_relation (GsApp           *app,
 		if (relations == NULL)
 			relations = g_ptr_array_new_with_free_func (g_object_unref);
 		g_ptr_array_add (relations, g_steal_pointer (&relation));
+	}
+
+	/* keep any other kind-s of the relation, this is overwriting only a single kind */
+	old_relations = gs_app_get_relations (app);
+	if (old_relations != NULL) {
+		if (relations == NULL) {
+			relations = g_steal_pointer (&old_relations);
+		} else {
+			for (guint i = 0; i < old_relations->len; i++) {
+				AsRelation *relation = g_ptr_array_index (old_relations, i);
+				if (as_relation_get_kind (relation) != kind)
+					g_ptr_array_add (relations, g_object_ref (relation));
+			}
+		}
 	}
 
 	gs_app_set_relations (app, relations);
