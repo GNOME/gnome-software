@@ -2650,7 +2650,10 @@ gs_appstream_load_appstream_file (XbBuilder *builder,
 
 	/* add source */
 	if (!xb_builder_source_load_file (source, file, XB_BUILDER_SOURCE_FLAG_NONE, cancellable, &local_error)) {
-		g_debug ("Failed to load appstream file '%s': %s", filename, local_error->message);
+		if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+			g_debug ("Skipping non-existent appstream path '%s'", filename);
+		else
+			g_debug ("Failed to load appstream file '%s': %s", filename, local_error->message);
 		return FALSE;
 	}
 
