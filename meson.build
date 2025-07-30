@@ -269,6 +269,13 @@ if get_option('hardcoded_proprietary_webapps')
   )
 endif
 
+systemd = dependency('systemd', required : false)
+systemd_user_unit_dir = systemd.get_variable(
+    'systemd_user_unit_dir',
+    pkgconfig_define : ['prefix', get_option('prefix')],
+    default_value: get_option('prefix') / 'lib' / 'systemd' / 'user'
+)
+
 gnome = import('gnome')
 i18n = import('i18n')
 

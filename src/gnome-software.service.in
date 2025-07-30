@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+[Unit]
+Description=GNOME Software
+PartOf=graphical-session.target
+
+# gnome-software takes a while to get initialized and populate
+# its stores of app metadata. If it's stuck crashing immediately
+# after this setup phase, there's no chance that it'll be crashing
+# fast enough for systemd to detect the problem by default
+StartLimitIntervalSec=3m
+StartLimitBurst=3
+
+[Service]
+Type=dbus
+BusName=org.gnome.Software
+ExecStart=@bindir@/gnome-software --gapplication-service
+Restart=on-failure
+Slice=app.slice

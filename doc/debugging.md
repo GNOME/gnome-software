@@ -54,11 +54,17 @@ passed to it to filter debug log output to certain message domains.
 Persistent debugging
 ---
 
-Verbose debug output may be made persistent by modifying the autostart
-configuration file for GNOME Software to add `--verbose` to it:
+Verbose debug output may be made persistent by modifying GNOME Software's systemd
+service to set an extra environment variable:
+
 ```
-cp /etc/xdg/autostart/org.gnome.Software.desktop ~/.config/autostart/
-sed -i '/^Exec=/ s/$/ --verbose/' ~/.config/autostart/org.gnome.Software.desktop
+mkdir -p ~/.config/systemd/user/gnome-software.service.d
+cat <<EOF > ~/.config/systemd/user/gnome-software.service.d/debug.conf
+[Service]
+Environment=GS_DEBUG=1
+EOF
+systemctl --user daemon-reload
+systemctl --user restart gnome-software.service
 ```
 
 Note that this will produce a lot of debug output which will consume a
