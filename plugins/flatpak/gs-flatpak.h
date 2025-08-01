@@ -21,6 +21,7 @@ G_DECLARE_FINAL_TYPE (GsFlatpak, gs_flatpak, GS, FLATPAK, GObject)
 typedef enum {
 	GS_FLATPAK_FLAG_NONE			= 0,
 	GS_FLATPAK_FLAG_IS_TEMPORARY		= 1 << 0,
+	GS_FLATPAK_FLAG_DISABLE_UPDATE		= 1 << 1,
 	GS_FLATPAK_FLAG_LAST  /*< skip >*/
 } GsFlatpakFlags;
 
