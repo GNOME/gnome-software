@@ -3,6 +3,7 @@
 [Unit]
 Description=GNOME Software
 PartOf=graphical-session.target
+After=graphical-session.target
 
 # gnome-software takes a while to get initialized and populate
 # its stores of app metadata. If it's stuck crashing immediately
