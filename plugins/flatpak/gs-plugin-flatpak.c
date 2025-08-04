@@ -218,9 +218,13 @@ gs_plugin_flatpak_add_installation (GsPluginFlatpak      *self,
                                     GError              **error)
 {
 	g_autoptr(GsFlatpak) flatpak = NULL;
+	GsFlatpakFlags flags = GS_FLATPAK_FLAG_NONE;
+
+	if (!flatpak_installation_get_is_user (installation) && !self->has_system_helper)
+		flags |= GS_FLATPAK_FLAG_DISABLE_UPDATE;
 
 	/* create and set up */
-	flatpak = gs_flatpak_new (GS_PLUGIN (self), installation, GS_FLATPAK_FLAG_NONE);
+	flatpak = gs_flatpak_new (GS_PLUGIN (self), installation, flags);
 	if (!gs_flatpak_setup (flatpak, cancellable, error))
 		return FALSE;
 	g_debug ("successfully set up %s", gs_flatpak_get_id (flatpak));
@@ -327,14 +331,12 @@ setup_thread_cb (GTask        *task,
 		g_autoptr(FlatpakInstallation) installation = NULL;
 
 		/* include the system installations */
-		if (self->has_system_helper) {
-			installations = flatpak_get_system_installations (cancellable,
-									  &error_local);
+		installations = flatpak_get_system_installations (cancellable,
+								  &error_local);
 
-			if (installations == NULL) {
-				gs_plugin_flatpak_report_warning (plugin, &error_local);
-				g_clear_error (&error_local);
-			}
+		if (installations == NULL) {
+			gs_plugin_flatpak_report_warning (plugin, &error_local);
+			g_clear_error (&error_local);
 		}
 
 		/* include the user installation */
@@ -576,6 +578,9 @@ refresh_metadata_thread_cb (GTask        *task,
 	for (guint i = 0; i < self->installations->len; i++) {
 		g_autoptr(GError) local_error = NULL;
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
+
+		if (!self->has_system_helper && gs_flatpak_get_scope (flatpak) == AS_COMPONENT_SCOPE_SYSTEM)
+			continue;
 
 		if (!gs_flatpak_refresh (flatpak, data->cache_age_secs, interactive, data->event_callback, data->event_user_data, cancellable, &local_error))
 			g_debug ("Failed to refresh metadata for '%s': %s", gs_flatpak_get_id (flatpak), local_error->message);

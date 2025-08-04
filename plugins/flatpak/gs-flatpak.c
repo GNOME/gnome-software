@@ -1451,6 +1451,11 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 	g_autoptr(GError) error_local = NULL;
 
+	if ((self->flags & GS_FLATPAK_FLAG_DISABLE_UPDATE) != 0 && !interactive) {
+		g_debug ("Not updating remote '%s', because disabled", remote_name);
+		return TRUE;
+	}
+
 	/* TRANSLATORS: status text when downloading new metadata */
 	str = g_strdup_printf (_("Getting flatpak metadata for %s…"), remote_name);
 	gs_app_set_summary_missing (app_dl, str);

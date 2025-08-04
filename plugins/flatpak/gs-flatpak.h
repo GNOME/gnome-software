@@ -18,9 +18,20 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsFlatpak, gs_flatpak, GS, FLATPAK, GObject)
 
+/**
+ * GsFlatpakFlags:
+ * @GS_FLATPAK_FLAG_NONE: No flags, default behaviour.
+ * @GS_FLATPAK_FLAG_IS_TEMPORARY: Flatpak installation is temporary.
+ *   Typically used when handling app URIs or bundles.
+ * @GS_FLATPAK_FLAG_DISABLE_UPDATE: Don’t try and update metadata for the installation.
+ *   Typically used if the system helper would be needed to update metadata, but it’s not available.
+ *
+ * Flags affecting the behaviour of a #GsFlatpak.
+ */
 typedef enum {
 	GS_FLATPAK_FLAG_NONE			= 0,
 	GS_FLATPAK_FLAG_IS_TEMPORARY		= 1 << 0,
+	GS_FLATPAK_FLAG_DISABLE_UPDATE		= 1 << 1,
 	GS_FLATPAK_FLAG_LAST  /*< skip >*/
 } GsFlatpakFlags;
 
