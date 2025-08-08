@@ -193,6 +193,22 @@
             ]
         },
         {
+            "name" : "bubblewrap",
+            "buildsystem" : "meson",
+            "config-opts" : [
+                "-Dman=disabled",
+                "-Dselinux=disabled",
+                "-Dtests=false"
+            ],
+            "sources" : [
+                {
+                    "type" : "archive",
+                    "url" : "https://github.com/projectatomic/bubblewrap/archive/refs/tags/v0.11.0.tar.gz",
+                    "sha256" : "cfeeb15fcc47d177d195f06fdf0847e93ee3aa6bf46f6ac0a141fa142759e2c3"
+                }
+            ]
+        },
+        {
             "name" : "flatpak",
             "buildsystem" : "meson",
             "config-opts" : [
@@ -205,6 +221,7 @@
                 "-Dman=disabled",
                 "-Dhttp_backend=curl",
                 "-Dsystemd=disabled",
+                "-Dsystem_bubblewrap=bwrap",
                 "-Dtests=false"
             ],
             "cleanup" : [
