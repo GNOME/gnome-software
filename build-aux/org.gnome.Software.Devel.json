@@ -37,7 +37,9 @@
     "build-options" : {
         "env" : {
             "MOUNT_FUSE_PATH" : "../tmp/",
-            "BASH_COMPLETIONSDIR" : "/app/share/bash-completion/completions"
+            "BASH_COMPLETIONSDIR" : "/app/share/bash-completion/completions",
+            "CC" : "ccache gcc",
+            "CXX" : "ccache g++"
         }
     },
     "modules": [
