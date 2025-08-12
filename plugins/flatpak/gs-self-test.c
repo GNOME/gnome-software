@@ -1538,6 +1538,9 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	plugin_job_refresh_metadata2 = gs_plugin_job_refresh_metadata_new (0,  /* force now */
 									   GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata2, NULL, &error);
+	/* not great, but the flatpak can miss some notification and the below test fails sometimes without it */
+	g_usleep (1.5 * G_USEC_PER_SEC);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
