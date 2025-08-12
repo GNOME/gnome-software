@@ -36,7 +36,10 @@
     ],
     "build-options" : {
         "env" : {
-            "MOUNT_FUSE_PATH" : "../tmp/"
+            "MOUNT_FUSE_PATH" : "../tmp/",
+            "BASH_COMPLETIONSDIR" : "/app/share/bash-completion/completions",
+            "CC" : "ccache gcc",
+            "CXX" : "ccache g++"
         }
     },
     "modules": [
@@ -93,19 +96,19 @@
                 {
                     "type": "git",
                     "url": "https://github.com/ximion/appstream.git",
-                    "tag": "v1.0.4",
-                    "commit": "ed3be6df027cbd5f9932f3569c5948e80ea19371"
+                    "tag": "v1.0.5",
+                    "commit": "8af1b8b61c5682751cec21c5b644cb1b8d20d5c6"
                 }
             ]
         },
         {
             "name": "intltool",
             "buildsystem": "autotools",
-            "sources": [
+            "sources" : [
                 {
-                    "type": "archive",
-                    "url": "https://download.gnome.org/sources/intltool/0.40/intltool-0.40.6.tar.bz2",
-                    "sha256": "4d1e5f8561f09c958e303d4faa885079a5e173a61d28437d0013ff5efc9e3b64"
+                    "type" : "archive",
+                    "url" : "https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz",
+                    "sha256" : "67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd"
                 }
             ]
         },
@@ -174,17 +177,33 @@
             ]
         },
         {
-            "name" : "libstemmer",
-            "buildsystem" : "cmake-ninja",
+            "name" : "bubblewrap",
+            "buildsystem" : "meson",
             "config-opts" : [
-                "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
-                "-DCMAKE_INSTALL_LIBDIR:PATH=/app/lib"
+                "-Dman=disabled",
+                "-Dselinux=disabled",
+                "-Dtests=false"
             ],
             "sources" : [
                 {
-                    "type" : "git",
-                    "url" : "https://github.com/zvelo/libstemmer",
-                    "branch" : "master"
+                    "type" : "archive",
+                    "url" : "https://github.com/projectatomic/bubblewrap/archive/refs/tags/v0.11.0.tar.gz",
+                    "sha256" : "cfeeb15fcc47d177d195f06fdf0847e93ee3aa6bf46f6ac0a141fa142759e2c3"
+                }
+            ]
+        },
+        {
+            "name" : "xdg-dbus-proxy",
+            "buildsystem" : "meson",
+            "config-opts" : [
+                "-Dman=disabled",
+                "-Dtests=false"
+            ],
+            "sources" : [
+                {
+                    "type" : "archive",
+                    "url" : "https://github.com/flatpak/xdg-dbus-proxy/archive/refs/tags/0.1.6.tar.gz",
+                    "sha256" : "ee9c1d665f4e3b025a83d522d478ff7930070f2817fc2cb446db0dca93c990b1"
                 }
             ]
         },
@@ -201,6 +220,8 @@
                 "-Dman=disabled",
                 "-Dhttp_backend=curl",
                 "-Dsystemd=disabled",
+                "-Dsystem_bubblewrap=bwrap",
+                "-Dsystem_dbus_proxy=xdg-dbus-proxy",
                 "-Dtests=false"
             ],
             "cleanup" : [
@@ -222,7 +243,7 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/flatpak/flatpak.git",
-                    "tag" : "1.15.6"
+                    "tag" : "1.16.1"
                 }
             ]
         },
