@@ -3287,6 +3287,7 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 		/* create new */
 		app = gs_app_new ("org.gnome.Software.RpmostreeUpdate");
 		gs_app_set_management_plugin (app, plugin);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_NORMAL,
