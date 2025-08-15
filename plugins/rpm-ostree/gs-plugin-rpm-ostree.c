@@ -905,6 +905,8 @@ app_from_modified_pkg_variant (GsPlugin *plugin,
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+		/* do not know update details */
+		gs_app_set_update_details_markup (app, NULL);
 
 		/* update or downgrade */
 		gs_app_add_source (app, name);
@@ -952,6 +954,8 @@ app_from_single_pkg_variant (GsPlugin *plugin,
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+		/* do not know update details */
+		gs_app_set_update_details_markup (app, NULL);
 
 		if (addition) {
 			/* addition */
