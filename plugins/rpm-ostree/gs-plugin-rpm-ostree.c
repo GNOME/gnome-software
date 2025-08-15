@@ -23,6 +23,7 @@
 
 #include "gs-plugin-private.h"
 #include "gs-plugin-rpm-ostree.h"
+#include "gs-rpm-ostree-utils.h"
 #include "gs-rpmostree-generated.h"
 
 /*
@@ -3253,9 +3254,6 @@ list_apps_for_update_sync (GsPluginRpmOstree *self,
 	return g_steal_pointer (&list);
 }
 
-static void sanitize_update_history_text (gchar *text,
-					  guint64 *out_latest_date);
-
 static GsAppList * /* (transfer full) */
 list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 				   gboolean interactive,
@@ -3284,19 +3282,13 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 		GsPlugin *plugin = GS_PLUGIN (self);
 		g_autoptr(GsApp) app = NULL;
 		g_autoptr(GIcon) ic = NULL;
-		guint64 latest_date = 0;
 
 		list = gs_app_list_new ();
-
-		sanitize_update_history_text (stdout_data, &latest_date);
 
 		/* create new */
 		app = gs_app_new ("org.gnome.Software.RpmostreeUpdate");
 		gs_app_set_management_plugin (app, plugin);
-		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-		if (latest_date != 0)
-			gs_app_set_install_date (app, latest_date);
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_NORMAL,
 				 /* TRANSLATORS: this is a group of updates that are not
@@ -3310,9 +3302,13 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 		gs_app_set_description (app,
 					GS_APP_QUALITY_NORMAL,
 					gs_app_get_summary (app));
-		gs_app_set_update_details_text (app, stdout_data);
 		ic = g_themed_icon_new ("system-component-os-updates");
 		gs_app_add_icon (app, ic);
+
+		gs_rpm_ostree_refine_app_from_changelogs (app, g_steal_pointer (&stdout_data));
+
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN)
+			gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 
 		gs_app_list_add (list, app);
 	}
@@ -3665,135 +3661,6 @@ gs_plugin_rpm_ostree_disable_repository_finish (GsPlugin      *plugin,
 					        GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
-}
-
-static const gchar *
-find_char_on_line (const gchar *txt,
-		   gchar chr,
-		   guint nth)
-{
-	g_assert (nth >= 1);
-	while (*txt != '\n' && *txt != '\0') {
-		if (*txt == chr) {
-			nth--;
-			if (nth == 0)
-				break;
-		}
-		txt++;
-	}
-	return (*txt == chr && nth == 0) ? txt : NULL;
-}
-
-static void
-sanitize_update_history_text (gchar *text,
-			      guint64 *out_latest_date)
-{
-	GDate latest_date, date;
-	gchar *read_pos = text, *write_pos = text;
-	gsize text_len = strlen (text);
-
-	g_date_clear (&latest_date, 1);
-	g_date_clear (&date, 1);
-
-	#define skip_after(_chr) G_STMT_START { \
-		while (*read_pos != '\0' && *read_pos != '\n' && *read_pos != (_chr)) { \
-			if (read_pos != write_pos) \
-				*write_pos = *read_pos; \
-			read_pos++; \
-			write_pos++; \
-		} \
-		if (*read_pos == (_chr)) { \
-			if (read_pos != write_pos) \
-				*write_pos = *read_pos; \
-			read_pos++; \
-			write_pos++; \
-		} \
-	} G_STMT_END
-	#define skip_whitespace() G_STMT_START { \
-		while (*read_pos != '\0' && *read_pos != '\n' && g_ascii_isspace (*read_pos)) { \
-			if (read_pos != write_pos) \
-				*write_pos = *read_pos; \
-			read_pos++; \
-			write_pos++; \
-		} \
-	} G_STMT_END
-
-	/* The first two lines begin with "ostree diff commit from/to:" - skip them. */
-	if (g_ascii_strncasecmp (read_pos, "ostree diff", strlen ("ostree diff")) == 0)
-		skip_after ('\n');
-	if (g_ascii_strncasecmp (read_pos, "ostree diff", strlen ("ostree diff")) == 0)
-		skip_after ('\n');
-	write_pos = text;
-
-	while (*read_pos != '\0') {
-		skip_whitespace ();
-
-		if (*read_pos == '*') {
-			const gchar *start, *end;
-
-			/* Extract date, from "* Thu Aug 14 2025 ...." */
-			start = find_char_on_line (read_pos, ' ', 2);
-			if (start != NULL) {
-				start++;
-				end = find_char_on_line (start, ' ', 3);
-				if (end != NULL) {
-					g_autofree gchar *str = g_strndup (start, end - start);
-					g_date_set_parse (&date, str);
-					if (g_date_valid (&date)) {
-						if (!g_date_valid (&latest_date) || g_date_compare (&latest_date, &date) < 0) {
-							latest_date = date;
-						}
-					}
-				}
-			}
-
-			/* Hide email addresses */
-			start = find_char_on_line (read_pos, '<', 1);
-			if (start != NULL) {
-				end = find_char_on_line (start, '>', 1);
-				if (end != NULL) {
-					while (read_pos < start) {
-						if (read_pos != write_pos)
-							*write_pos = *read_pos;
-						read_pos++;
-						write_pos++;
-					}
-					read_pos += end - read_pos;
-					if (*read_pos == '>' && g_ascii_isspace (read_pos[1]))
-						read_pos += 2;
-				}
-			}
-		}
-
-		skip_after ('\n');
-	}
-
-	#undef skip_until
-	#undef skip_whitespace
-
-	if (read_pos != write_pos)
-		*write_pos = '\0';
-
-	/* The logs can have thousands kilobytes of data, which is not good for GtkLabel,
-	   which has (together with Pango) a hard time to process it and show it (high CPU
-	   use for seconds or even minutes).
-
-	   Cut the log in 4KB, which is not so big and not so small part of the log.
-	   This will be extended to parse the output and split the texts by package in the future. */
-	if (write_pos - text + strlen ("…") > 4096) {
-		write_pos = g_utf8_offset_to_pointer (text, g_utf8_strlen (text, 4096));
-		*write_pos = '\0';
-		if (write_pos - text + strlen ("…") < text_len - 1)
-			strcat (write_pos, "…");
-	}
-
-	if (g_date_valid (&latest_date)) {
-		g_autoptr(GDateTime) date_time = g_date_time_new_utc (g_date_get_year (&latest_date),
-									g_date_get_month (&latest_date),
-									g_date_get_day (&latest_date),
-									0, 0, 0.0);
-		*out_latest_date = g_date_time_to_unix (date_time);
-	}
 }
 
 static void
