@@ -32,6 +32,14 @@
 
 #define ENABLE_REPOS_DIALOG_CONF_KEY "enable-repos-dialog"
 
+/* delay startup for start-as-a-service, say, by 5 minutes */
+#define DELAY_STARTUP_SECS (5 * 60)
+
+typedef enum {
+	STARTUP_STATE_WAITING,
+	STARTUP_STATE_RUNNING
+} StartupState;
+
 struct _GsApplication {
 	AdwApplication	 parent;
 	GCancellable	*cancellable;
@@ -51,6 +59,9 @@ struct _GsApplication {
 
 	/* Created/freed on demand */
 	GHashTable *withdraw_notifications; /* gchar *notification_id ~> GUINT_TO_POINTER (timeout_id) */
+
+	StartupState startup_state;
+	guint delayed_startup_id;
 };
 
 G_DEFINE_TYPE (GsApplication, gs_application, ADW_TYPE_APPLICATION);
@@ -998,6 +1009,31 @@ gs_application_settings_changed_cb (GApplication *self,
 	}
 }
 
+static gboolean
+gs_application_finish_startup (gpointer user_data)
+{
+	GsApplication *app = user_data;
+
+	g_return_val_if_fail (GS_IS_APPLICATION (app), G_SOURCE_REMOVE);
+
+	app->delayed_startup_id = 0;
+
+	if (app->startup_state != STARTUP_STATE_RUNNING) {
+		g_assert (app->update_monitor == NULL);
+
+		g_debug ("Finishing startup");
+
+		app->startup_state = STARTUP_STATE_RUNNING;
+		app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
+
+		/* Setup the shell only after the plugin loader finished its setup,
+		   thus all plugins are loaded and ready for the jobs. */
+		gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
+	}
+
+	return G_SOURCE_REMOVE;
+}
+
 static void
 wrapper_action_activated_cb (GSimpleAction *action,
 			     GVariant	   *parameter,
@@ -1007,6 +1043,11 @@ wrapper_action_activated_cb (GSimpleAction *action,
 	const gchar *action_name = g_action_get_name (G_ACTION (action));
 	GAction *real_action = g_action_map_lookup_action (G_ACTION_MAP (app->action_map),
 							   action_name);
+
+	if (app->delayed_startup_id != 0) {
+		g_source_remove (app->delayed_startup_id);
+		gs_application_finish_startup (app);
+	}
 
 	if (app->shell_loaded_handler_id != 0) {
 		GsActivationHelper *helper = gs_activation_helper_new (app,
@@ -1154,17 +1195,27 @@ startup_cb (GObject      *source_object,
 	/* show the priority of each plugin */
 	gs_plugin_loader_dump_state (plugin_loader);
 
-	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
-
-	/* Setup the shell only after the plugin loader finished its setup,
-	   thus all plugins are loaded and ready for the jobs. */
-	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
+	if ((g_application_get_flags (G_APPLICATION (app)) & G_APPLICATION_IS_SERVICE) == 0) {
+		gs_application_finish_startup (app);
+	} else if (app->startup_state != STARTUP_STATE_RUNNING && app->delayed_startup_id == 0) {
+		/* delay startup of the app when it is executed as a background service,
+		   to not use many resources right after the user logs in */
+		app->startup_state = STARTUP_STATE_WAITING;
+		app->delayed_startup_id = g_timeout_add_seconds (DELAY_STARTUP_SECS, gs_application_finish_startup, app);
+		g_debug ("Postponing startup by %d.%d mins", DELAY_STARTUP_SECS / 60, DELAY_STARTUP_SECS % 60);
+	}
 }
 
 static void
 gs_application_activate (GApplication *application)
 {
 	GsApplication *app = GS_APPLICATION (application);
+
+	if (app->delayed_startup_id != 0) {
+		g_source_remove (app->delayed_startup_id);
+		app->delayed_startup_id = 0;
+		gs_application_finish_startup (app);
+	}
 
 	if (app->shell_loaded_handler_id == 0)
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
@@ -1232,6 +1283,11 @@ static void
 gs_application_dispose (GObject *object)
 {
 	GsApplication *app = GS_APPLICATION (object);
+
+	if (app->delayed_startup_id != 0) {
+		g_source_remove (app->delayed_startup_id);
+		app->delayed_startup_id = 0;
+	}
 
 	g_clear_object (&app->search_provider);
 	g_clear_object (&app->plugin_loader);
