@@ -718,8 +718,11 @@ gs_odrs_provider_refine_ratings (GsOdrsProvider  *self,
 
 		/* copy into accumulator array */
 		for (guint j = 0; j < 6; j++)
-			ratings_raw[j] += found_rating->n_star_ratings[j];
+			ratings_raw[j] = found_rating->n_star_ratings[j];
 		cnt++;
+		/* use the first rating found; the ODRS server mixes the ratings
+		   for all compat ids on its own, no need to re-mix them again */
+		break;
 	}
 	if (cnt == 0)
 		return TRUE;
