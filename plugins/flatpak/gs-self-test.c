@@ -1534,10 +1534,14 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_true (unlink (repo_path) == 0);
 	g_assert_true (symlink (repodir2_fn, repo_path) == 0);
 
+	/* invalidate plugin cache now, do not wait on internal bits to do it on idle */
+	gs_plugin_cache_invalidate (plugin);
+
 	/* refresh the appstream metadata */
 	plugin_job_refresh_metadata2 = gs_plugin_job_refresh_metadata_new (0,  /* force now */
 									   GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_process (plugin_loader, plugin_job_refresh_metadata2, NULL, &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
 
