@@ -709,8 +709,17 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_printf (str, "reviews", "%u", priv->reviews->len);
 	if (priv->provided != NULL) {
 		guint total = 0;
-		for (i = 0; i < priv->provided->len; i++)
-			total += as_provided_get_items (AS_PROVIDED (g_ptr_array_index (priv->provided, i)))->len;
+		for (i = 0; i < priv->provided->len; i++) {
+			AsProvided *provided = AS_PROVIDED (g_ptr_array_index (priv->provided, i));
+			GPtrArray *items = as_provided_get_items (provided);
+			total += items->len;
+			if (as_provided_get_kind (provided) == AS_PROVIDED_KIND_ID) {
+				for (guint j = 0; j < items->len; j++) {
+					const gchar *id = g_ptr_array_index (items, j);
+					gs_app_kv_printf (str, "provided{id}", "'%s'", id);
+				}
+			}
+		}
 		gs_app_kv_printf (str, "provided", "%u", total);
 	}
 	if (priv->install_date != 0) {
