@@ -69,7 +69,8 @@ row_activated_cb (GtkListBox *list_box,
 	app = GS_APP (g_object_get_data (G_OBJECT (row), "app"));
 	g_assert (app != NULL);
 
-	g_signal_emit (page, signals[SIGNAL_APP_ACTIVATED], 0, app);
+	if (g_object_get_data (G_OBJECT (row), "app-with-details") != NULL)
+		g_signal_emit (page, signals[SIGNAL_APP_ACTIVATED], 0, app);
 }
 
 static gchar *
@@ -153,7 +154,10 @@ create_app_row (GsApp *app)
 		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), gs_app_get_version (app));
 	}
 
-	adw_action_row_add_suffix (ADW_ACTION_ROW (row), gtk_image_new_from_icon_name ("go-next-symbolic"));
+	if (!gs_app_get_update_details_set (app) || gs_app_get_update_details_markup (app) != NULL) {
+		g_object_set_data (G_OBJECT (row), "app-with-details", GINT_TO_POINTER (1));
+		adw_action_row_add_suffix (ADW_ACTION_ROW (row), gtk_image_new_from_icon_name ("go-next-symbolic"));
+	}
 
 	return row;
 }
