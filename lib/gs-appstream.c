@@ -3097,6 +3097,65 @@ gs_appstream_apply_merges_for_id (MergeData *md,
 	return FALSE;
 }
 
+static void
+gs_appstream_maybe_update_provides_id (XbBuilderNode *bn,
+				       XbNode *component)
+{
+	/* the `component` is generated from a .desktop file, while the `bn` is from the .metainfo.xml.
+	   The .desktop file does not know the real app ID, thus if it does not match the .metainfo.xml
+	   id, then add into the .metainfo.xml a reference to the .desktop file */
+
+	g_autoptr(GPtrArray) comp_children = xb_node_get_children (component);
+	for (guint i = 0; comp_children != NULL && i < comp_children->len; i++) {
+		XbNode *comp_child = g_ptr_array_index (comp_children, i);
+		if (g_strcmp0 (xb_node_get_element (comp_child), "id") == 0) {
+			const gchar *comp_id = xb_node_get_text (comp_child);
+			GPtrArray *bn_children = xb_builder_node_get_children (bn);
+			for (guint j = 0; bn_children && j < bn_children->len; j++) {
+				XbBuilderNode *bn_child = g_ptr_array_index (bn_children, j);
+				if (g_strcmp0 (xb_builder_node_get_element (bn_child), "id") == 0) {
+					if (g_strcmp0 (comp_id, xb_builder_node_get_text (bn_child)) != 0) {
+						XbBuilderNode *provides_node = NULL;
+						for (guint k = 0; k < bn_children->len; k++) {
+							bn_child = g_ptr_array_index (bn_children, k);
+							if (g_strcmp0 (xb_builder_node_get_element (bn_child), "provides") == 0) {
+								provides_node = bn_child;
+								break;
+							}
+						}
+						if (provides_node != NULL) {
+							gboolean found = FALSE;
+							GPtrArray *provides_children = xb_builder_node_get_children (provides_node);
+							for (guint k = 0; provides_children != NULL && !found && k < provides_children->len; k++) {
+								XbBuilderNode *provides_child = g_ptr_array_index (provides_children, k);
+								if (g_strcmp0 (xb_builder_node_get_element (provides_child), "id") == 0) {
+									found = g_strcmp0 (comp_id, xb_builder_node_get_text (provides_child)) == 0;
+								}
+							}
+							if (!found) {
+								g_autoptr(XbBuilderNode) new_id_node = NULL;
+								new_id_node = xb_builder_node_new ("id");
+								xb_builder_node_set_text (new_id_node, comp_id, -1);
+								xb_builder_node_add_child (provides_node, new_id_node);
+							}
+						} else {
+							g_autoptr(XbBuilderNode) new_provides_node = NULL;
+							g_autoptr(XbBuilderNode) new_id_node = NULL;
+							new_provides_node = xb_builder_node_new ("provides");
+							xb_builder_node_add_child (bn, new_provides_node);
+							new_id_node = xb_builder_node_new ("id");
+							xb_builder_node_set_text (new_id_node, comp_id, -1);
+							xb_builder_node_add_child (new_provides_node, new_id_node);
+						}
+					}
+					break;
+				}
+			}
+			break;
+		}
+	}
+}
+
 static gboolean
 gs_appstream_apply_merges_cb (XbBuilderFixup *self,
 			      XbBuilderNode *bn,
@@ -3165,8 +3224,10 @@ gs_appstream_apply_merges_cb (XbBuilderFixup *self,
 					for (GSList *link = sid->components; link != NULL; link = g_slist_next (link)) {
 						XbNode *node = link->data;
 						/* Add data from the corresponding .desktop file */
-						if (node != NULL)
+						if (node != NULL) {
 							gs_appstream_merge_component_children (bn, node, FALSE);
+							gs_appstream_maybe_update_provides_id (bn, node);
+						}
 					}
 				}
 			}
