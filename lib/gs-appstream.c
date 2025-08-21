@@ -1449,7 +1449,17 @@ gs_appstream_refine_app (GsPlugin *plugin,
 						g_autoptr(AsScreenshot) scr = as_screenshot_new ();
 						g_autoptr(XbNode) scr_child = NULL;
 						g_autoptr(XbNode) scr_next = NULL;
+						const gchar *attr_value;
 						gboolean any_added = FALSE;
+
+						attr_value = xb_node_get_attr (scrs_child, "type");
+						if (attr_value != NULL && *attr_value != '\0')
+							as_screenshot_set_kind (scr, as_screenshot_kind_from_string (attr_value));
+
+						attr_value = xb_node_get_attr (scrs_child, "environment");
+						if (attr_value != NULL && *attr_value != '\0')
+							as_screenshot_set_environment (scr, attr_value);
+
 						for (scr_child = xb_node_get_child (scrs_child); scr_child != NULL; g_object_unref (scr_child), scr_child = g_steal_pointer (&scr_next)) {
 							scr_next = xb_node_get_next (scr_child);
 							if (g_strcmp0 (xb_node_get_element (scr_child), "image") == 0) {
