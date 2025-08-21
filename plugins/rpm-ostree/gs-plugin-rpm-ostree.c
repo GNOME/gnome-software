@@ -3253,7 +3253,8 @@ list_apps_for_update_sync (GsPluginRpmOstree *self,
 	return g_steal_pointer (&list);
 }
 
-static void sanitize_update_history_text (gchar *text);
+static void sanitize_update_history_text (gchar *text,
+					  guint64 *out_latest_date);
 
 static GsAppList * /* (transfer full) */
 list_apps_historical_updates_sync (GsPluginRpmOstree *self,
@@ -3283,15 +3284,19 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 		GsPlugin *plugin = GS_PLUGIN (self);
 		g_autoptr(GsApp) app = NULL;
 		g_autoptr(GIcon) ic = NULL;
+		guint64 latest_date = 0;
 
 		list = gs_app_list_new ();
 
-		sanitize_update_history_text (stdout_data);
+		sanitize_update_history_text (stdout_data, &latest_date);
 
 		/* create new */
 		app = gs_app_new ("org.gnome.Software.RpmostreeUpdate");
 		gs_app_set_management_plugin (app, plugin);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		if (latest_date != 0)
+			gs_app_set_install_date (app, latest_date);
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_NORMAL,
 				 /* TRANSLATORS: this is a group of updates that are not
@@ -3664,18 +3669,31 @@ gs_plugin_rpm_ostree_disable_repository_finish (GsPlugin      *plugin,
 
 static const gchar *
 find_char_on_line (const gchar *txt,
-		   gchar chr)
+		   gchar chr,
+		   guint nth)
 {
-	while (*txt != '\n' && *txt != '\0' && *txt != chr)
+	g_assert (nth >= 1);
+	while (*txt != '\n' && *txt != '\0') {
+		if (*txt == chr) {
+			nth--;
+			if (nth == 0)
+				break;
+		}
 		txt++;
-	return *txt == chr ? txt : NULL;
+	}
+	return (*txt == chr && nth == 0) ? txt : NULL;
 }
 
 static void
-sanitize_update_history_text (gchar *text)
+sanitize_update_history_text (gchar *text,
+			      guint64 *out_latest_date)
 {
+	GDate latest_date, date;
 	gchar *read_pos = text, *write_pos = text;
 	gsize text_len = strlen (text);
+
+	g_date_clear (&latest_date, 1);
+	g_date_clear (&date, 1);
 
 	#define skip_after(_chr) G_STMT_START { \
 		while (*read_pos != '\0' && *read_pos != '\n' && *read_pos != (_chr)) { \
@@ -3710,13 +3728,29 @@ sanitize_update_history_text (gchar *text)
 	while (*read_pos != '\0') {
 		skip_whitespace ();
 
-		/* Hide email addresses */
 		if (*read_pos == '*') {
 			const gchar *start, *end;
 
-			start = find_char_on_line (read_pos, '<');
+			/* Extract date, from "* Thu Aug 14 2025 ...." */
+			start = find_char_on_line (read_pos, ' ', 2);
 			if (start != NULL) {
-				end = find_char_on_line (start, '>');
+				start++;
+				end = find_char_on_line (start, ' ', 3);
+				if (end != NULL) {
+					g_autofree gchar *str = g_strndup (start, end - start);
+					g_date_set_parse (&date, str);
+					if (g_date_valid (&date)) {
+						if (!g_date_valid (&latest_date) || g_date_compare (&latest_date, &date) < 0) {
+							latest_date = date;
+						}
+					}
+				}
+			}
+
+			/* Hide email addresses */
+			start = find_char_on_line (read_pos, '<', 1);
+			if (start != NULL) {
+				end = find_char_on_line (start, '>', 1);
 				if (end != NULL) {
 					while (read_pos < start) {
 						if (read_pos != write_pos)
@@ -3751,6 +3785,14 @@ sanitize_update_history_text (gchar *text)
 		*write_pos = '\0';
 		if (write_pos - text + strlen ("…") < text_len - 1)
 			strcat (write_pos, "…");
+	}
+
+	if (g_date_valid (&latest_date)) {
+		g_autoptr(GDateTime) date_time = g_date_time_new_utc (g_date_get_year (&latest_date),
+									g_date_get_month (&latest_date),
+									g_date_get_day (&latest_date),
+									0, 0, 0.0);
+		*out_latest_date = g_date_time_to_unix (date_time);
 	}
 }
 
