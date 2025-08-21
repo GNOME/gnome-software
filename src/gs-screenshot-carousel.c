@@ -86,6 +86,79 @@ gs_screenshot_carousel_img_clicked_cb (GtkWidget *ssimg,
 	adw_carousel_scroll_to (ADW_CAROUSEL (self->carousel), ssimg, TRUE);
 }
 
+static gboolean
+is_current_environment (const gchar *env,
+			const gchar *current_desktop)
+{
+	size_t len = current_desktop ? strlen (current_desktop) : 0;
+	if (current_desktop == NULL || *current_desktop == '\0')
+		return FALSE;
+	return g_str_has_prefix (env, current_desktop) && (env[len] == '\0' || env[len] == ':');
+}
+
+typedef struct {
+	GHashTable *indexes; /* AsScreenshot *~>gint, index in original array */
+	char *desktop;
+	gboolean is_dark;
+} SortData;
+
+/* Sort function to sort screenshots by environment (e.g. light/dark theme).
+ *
+ * Screenshots are sorted by:
+ *  - Darkness/Lightness: if the user has a dark theme, dark screenshots are ordered first, otherwise light ones are
+ *  - Then theme: screenshots whose environment matches the user’s desktop theme are then ordered first
+ *  - Then the screenshots’ original order in the metainfo file
+ */
+static gint
+_sort_by_environment_cb (gconstpointer aa,
+			 gconstpointer bb,
+			 gpointer user_data)
+{
+	AsScreenshot *screenshot1 = (AsScreenshot *) aa;
+	AsScreenshot *screenshot2 = (AsScreenshot *) bb;
+	SortData *sd = user_data;
+	const char *env1, *env2;
+	gboolean is_current_env1, is_current_env2;
+	gboolean is_dark1, is_dark2;
+
+	env1 = as_screenshot_get_environment (screenshot1);
+	env2 = as_screenshot_get_environment (screenshot2);
+
+	if (env1 == NULL || *env1 == '\0') {
+		is_current_env1 = FALSE;
+		is_dark1 = FALSE;
+	} else {
+		is_current_env1 = is_current_environment (env1, sd->desktop);
+		is_dark1 = g_str_has_suffix (env1, ":dark");
+	}
+	if (env2 == NULL || *env2 == '\0') {
+		is_current_env2 = FALSE;
+		is_dark2 = FALSE;
+	} else {
+		is_current_env2 = is_current_environment (env2, sd->desktop);
+		is_dark2 = g_str_has_suffix (env2, ":dark");
+	}
+
+	if (is_dark1 != is_dark2) {
+		gint multiplier = sd->is_dark ? 1 : -1;
+
+		if (is_dark1)
+			return -1 * multiplier;
+		else
+			return 1 * multiplier;
+	}
+
+	if (is_current_env1 != is_current_env2) {
+		if (is_current_env1)
+			return -1;
+		else
+			return 1;
+	}
+
+	return GPOINTER_TO_INT (g_hash_table_lookup (sd->indexes, screenshot1)) -
+	       GPOINTER_TO_INT (g_hash_table_lookup (sd->indexes, screenshot2));
+}
+
 /**
  * gs_screenshot_carousel_load_screenshots:
  * @self: a #GsScreenshotCarousel
@@ -107,8 +180,10 @@ void
 gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app, gboolean is_online, GCancellable *cancellable)
 {
 	GPtrArray *screenshots;
+	g_autoptr(GPtrArray) screenshots_sorted = NULL;
 	gboolean allow_fallback;
 	guint num_screenshots_loaded = 0;
+	gboolean has_environment = FALSE;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_CAROUSEL (self));
 	g_return_if_fail (GS_IS_APP (app));
@@ -134,6 +209,43 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 
 	/* reset screenshots */
 	gs_widget_remove_all (self->carousel, (GsRemoveFunc) adw_carousel_remove);
+
+	for (guint i = 0; !has_environment && i < screenshots->len; i++) {
+		AsScreenshot *ss = g_ptr_array_index (screenshots, i);
+		has_environment = as_screenshot_get_environment (ss) != NULL;
+	}
+
+	/* Sort by light/dark to match the user’s theme; see
+	 * https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-screenshots */
+	if (has_environment) {
+		g_autoptr(GHashTable) indexes = g_hash_table_new (g_direct_hash, g_direct_equal);
+		SortData sd = { NULL, };
+
+		screenshots_sorted = g_ptr_array_copy (screenshots, (GCopyFunc) (void *) g_object_ref, NULL);
+
+		for (guint i = 0; i < screenshots_sorted->len; i++) {
+			AsScreenshot *ss = g_ptr_array_index (screenshots_sorted, i);
+			g_hash_table_insert (indexes, ss, GINT_TO_POINTER ((gint) i));
+		}
+
+		sd.indexes = indexes;
+		sd.is_dark = adw_style_manager_get_dark (adw_style_manager_get_default ());
+		sd.desktop = g_strdup (g_getenv ("DESKTOP_SESSION"));
+		if (sd.desktop != NULL) {
+			for (guint i = 0; sd.desktop[i] != '\0'; i++) {
+				sd.desktop[i] = g_ascii_tolower (sd.desktop[i]);
+			}
+			/* cover "gnome-classic" */
+			if (g_str_has_prefix (sd.desktop, "gnome"))
+				sd.desktop[5] = '\0';
+		}
+
+		g_ptr_array_sort_values_with_data (screenshots_sorted, _sort_by_environment_cb, &sd);
+
+		screenshots = screenshots_sorted;
+
+		g_free (sd.desktop);
+	}
 
 	for (guint i = 0; i < screenshots->len && !g_cancellable_is_cancelled (cancellable); i++) {
 		AsScreenshot *ss = g_ptr_array_index (screenshots, i);
