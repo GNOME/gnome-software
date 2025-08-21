@@ -139,6 +139,7 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 		AsScreenshot *ss = g_ptr_array_index (screenshots, i);
 		GtkWidget *ssimg = gs_screenshot_image_new (self->session);
 		gtk_widget_set_can_focus (gtk_widget_get_first_child (ssimg), FALSE);
+		gtk_widget_set_tooltip_text (ssimg, as_screenshot_get_caption (ss));
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
 					      GS_IMAGE_NORMAL_WIDTH,
