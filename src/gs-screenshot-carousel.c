@@ -155,8 +155,8 @@ _sort_by_environment_cb (gconstpointer aa,
 			return 1;
 	}
 
-	return GPOINTER_TO_INT (g_hash_table_lookup (sd->indexes, screenshot1)) -
-	       GPOINTER_TO_INT (g_hash_table_lookup (sd->indexes, screenshot2));
+	return (int) GPOINTER_TO_UINT (g_hash_table_lookup (sd->indexes, screenshot1)) -
+	       (int) GPOINTER_TO_UINT (g_hash_table_lookup (sd->indexes, screenshot2));
 }
 
 /**
@@ -225,7 +225,7 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 
 		for (guint i = 0; i < screenshots_sorted->len; i++) {
 			AsScreenshot *ss = g_ptr_array_index (screenshots_sorted, i);
-			g_hash_table_insert (indexes, ss, GINT_TO_POINTER ((gint) i));
+			g_hash_table_insert (indexes, ss, GUINT_TO_POINTER (i));
 		}
 
 		sd.indexes = indexes;
