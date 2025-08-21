@@ -63,36 +63,21 @@ typedef enum {
 
 static guint obj_signals[SIGNAL_APP_CLICKED + 1] = { 0, };
 
-static GtkWidget *
-get_nth_page_widget (GsFeaturedCarousel *self,
-                     guint               page_number)
-{
-	GtkWidget *page = gtk_widget_get_first_child (GTK_WIDGET (self->carousel));
-	guint i = 0;
-
-	while (page && i++ < page_number)
-		page = gtk_widget_get_next_sibling (page);
-	return page;
-}
-
 static void
 show_relative_page (GsFeaturedCarousel *self,
                     gint                delta)
 {
 	gdouble current_page = adw_carousel_get_position (self->carousel);
 	guint n_pages = adw_carousel_get_n_pages (self->carousel);
-	gdouble new_page;
+	guint new_page;
 	GtkWidget *new_page_widget;
 	gboolean animate = TRUE;
 
 	if (n_pages == 0)
 		return;
 
-	/* FIXME: This would be simpler if AdwCarousel had a way to scroll to
-	 * a page by index, rather than by GtkWidget pointer.
-	 * See https://gitlab.gnome.org/GNOME/libhandy/-/issues/413 */
 	new_page = ((guint) current_page + delta + n_pages) % n_pages;
-	new_page_widget = get_nth_page_widget (self, new_page);
+	new_page_widget = adw_carousel_get_nth_page (self->carousel, new_page);
 	g_assert (new_page_widget != NULL);
 
 	/* Don’t animate if we’re wrapping from the last page back to the first
