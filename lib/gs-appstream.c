@@ -1469,6 +1469,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 								as_video_set_url (vid, xb_node_get_text (scr_child));
 								as_screenshot_add_video (scr, vid);
 								any_added = TRUE;
+							} else if (g_strcmp0 (xb_node_get_element (scr_child), "caption") == 0) {
+								const char *caption = xb_node_get_text (scr_child);
+								as_screenshot_set_caption (scr, caption, xb_node_get_attr (scr_child, "xml:lang"));
 							}
 						}
 						if (any_added)
