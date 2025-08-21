@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-08-16 11:35+0000\n"
-"PO-Revision-Date: 2025-08-16 21:56+0200\n"
+"POT-Creation-Date: 2025-08-21 13:34+0000\n"
+"PO-Revision-Date: 2025-08-21 17:02+0200\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -1499,7 +1499,7 @@ msgstr "Přejmenováno z %s"
 msgid "Stopped Receiving Updates"
 msgstr "Příjem aktualizací zastaven"
 
-#: src/gs-app-row.ui:58 src/gs-os-update-page.c:142
+#: src/gs-app-row.ui:58 src/gs-os-update-page.c:143
 msgid "Critical Update"
 msgstr "Kritická aktualizace"
 
@@ -1533,6 +1533,10 @@ msgstr "Překlady"
 #: src/gs-app-translation-dialog.ui:87
 msgid "_Translation Website"
 msgstr "_Stránka překladu"
+
+#: lib/gs-appstream.c:303
+msgid "Release notes"
+msgstr "Poznámky k vydání"
 
 #. TRANSLATORS: This is a description for entering user/password
 #: src/gs-basic-auth-dialog.c:88
@@ -3338,26 +3342,26 @@ msgstr "Uživatel"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:237
+#: src/gs-os-update-page.c:241
 msgid "Additions"
 msgstr "Přidávání"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:241
+#: src/gs-os-update-page.c:245
 msgid "Removals"
 msgstr "Odstraňování"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:245
+#: src/gs-os-update-page.c:249
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Aktualizace"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:249
+#: src/gs-os-update-page.c:253
 msgid "Downgrades"
 msgstr "Ponižování"
 
@@ -5585,13 +5589,13 @@ msgstr "Povolit"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:81 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3295
+#: plugins/core/gs-plugin-generic-updates.c:81 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3304
 msgid "System Updates"
 msgstr "Aktualizace systému"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:86 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3300
+#: plugins/core/gs-plugin-generic-updates.c:86 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3309
 msgid "General system updates, such as security or bug fixes, and performance improvements."
 msgstr "Obecné aktualizace systému, jako jsou bezpečnostní opravy, opravy chyb a vylepšení výkonu."
 
@@ -6122,19 +6126,19 @@ msgstr "Selhala instalace aktualizací: "
 msgid "Packages"
 msgstr "Balíčky"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1445 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1471
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1449 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1475
 msgid "Failed to wait on transaction end before download: "
 msgstr "Selhalo čekání na konec transakce před stažením: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1478 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1491
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1482 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1495
 msgid "Failed to download updates: "
 msgstr "Selhalo stažení aktualizací: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1530 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1540
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1534 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1544
 msgid "Failed to trigger update: "
 msgstr "Selhalo spuštění aktualizace: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3395
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3404
 msgid "Operating System (OSTree)"
 msgstr "Operační systém (OSTree)"
 
