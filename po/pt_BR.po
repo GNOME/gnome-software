@@ -12,32 +12,33 @@
 # Enrico Nicoletto <hiko@duck.com>, 2013-2016, 2018, 2021-2022.
 # Matheus Barbosa <mdpb.matheus@gmail.com>, 2022.
 # Leônidas Araújo <leorusvellt@hotmail.com>, 2022-2023.
-# Juliano de Souza Camargo <julianosc@pm.me>, 2024.
 # Rafael Fontenelle <rafaelff@gnome.org>, 2013-2024.
+# Juliano de Souza Camargo <julianosc@pm.me>, 2024-2025.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-11-02 08:47+0000\n"
-"PO-Revision-Date: 2024-11-20 22:07-0300\n"
-"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"POT-Creation-Date: 2025-08-10 19:24+0000\n"
+"PO-Revision-Date: 2025-08-27 14:55-0300\n"
+"Last-Translator: Juliano de Souza Camargo <julianosc@pm.me>\n"
 "Language-Team: Brazilian Portuguese <https://br.gnome.org/traducao>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Generator: Gtranslator 46.1\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 48.0\n"
 "X-Project-Style: gnome\n"
 "X-DL-Team: pt_BR\n"
 "X-DL-Module: gnome-software\n"
-"X-DL-Branch: main\n"
+"X-DL-Branch: gnome-47\n"
 "X-DL-Domain: po\n"
 "X-DL-State: Translating\n"
+"X-DL-Lang: pt_BR\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:27
-#: src/org.gnome.Software.desktop.in:3
+#: src/org.gnome.Software.desktop.in:2
 msgid "Software"
 msgstr "Programas"
 
@@ -88,7 +89,7 @@ msgid "The update details"
 msgstr "Os detalhes da atualização"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2645
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2705
 #: src/gs-application.c:263
 msgid "The GNOME Project"
 msgstr "O projeto GNOME"
@@ -427,17 +428,17 @@ msgstr "Falha ao validar o tipo de conteúdo: %s"
 msgid "Failed to move: %s"
 msgstr "Falha ao mover: %s"
 
+#: src/gnome-software-local-file-flatpak.desktop.in:2
+#: src/gnome-software-local-file-fwupd.desktop.in:2
+#: src/gnome-software-local-file-packagekit.desktop.in:2
+#: src/gnome-software-local-file-snap.desktop.in:2
+msgid "Software Install"
+msgstr "Instalação de programa"
+
 #: src/gnome-software-local-file-flatpak.desktop.in:3
 #: src/gnome-software-local-file-fwupd.desktop.in:3
 #: src/gnome-software-local-file-packagekit.desktop.in:3
 #: src/gnome-software-local-file-snap.desktop.in:3
-msgid "Software Install"
-msgstr "Instalação de programa"
-
-#: src/gnome-software-local-file-flatpak.desktop.in:4
-#: src/gnome-software-local-file-fwupd.desktop.in:4
-#: src/gnome-software-local-file-packagekit.desktop.in:4
-#: src/gnome-software-local-file-snap.desktop.in:4
 msgid "Install selected software on the system"
 msgstr "Instale programas selecionados no sistema"
 
@@ -926,7 +927,7 @@ msgstr "Baixando"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:307 src/gs-details-page.c:1061
+#: src/gs-app-addon-row.ui:66 src/gs-common.c:310 src/gs-details-page.c:1061
 #: src/gs-details-page.c:1096 src/gs-details-page.ui:243 src/gs-page.c:425
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
@@ -1092,7 +1093,7 @@ msgstr "Nenhum detalhe para este lançamento"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:66
+#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e de %B de %Y"
 
@@ -1664,12 +1665,12 @@ msgid "Login Required"
 msgstr "Autenticação necessária"
 
 #. TRANSLATORS: button text
-#: src/gs-basic-auth-dialog.ui:17 src/gs-common.c:300 src/gs-common.c:752
+#: src/gs-basic-auth-dialog.ui:17 src/gs-common.c:303 src/gs-common.c:755
 #: src/gs-details-page.ui:331 src/gs-dkms-dialog.ui:28
-#: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-page.c:708
+#: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-page.c:701
 #: src/gs-removal-dialog.ui:24 src/gs-repos-dialog.c:175
-#: src/gs-repos-dialog.c:251 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
-#: src/gs-review-row.c:263 src/gs-updates-page.c:852
+#: src/gs-repos-dialog.c:251 src/gs-review-dialog.ui:24 src/gs-review-row.c:236
+#: src/gs-review-row.c:260 src/gs-updates-page.c:852
 #: src/gs-upgrade-banner.ui:202
 msgid "_Cancel"
 msgstr "_Cancelar"
@@ -1765,7 +1766,7 @@ msgstr ""
 "As atualizações recentemente instaladas estão disponíveis para avaliação"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:103 src/gs-common.c:915
+#: src/gs-common.c:103 src/gs-common.c:920
 msgid "Restart"
 msgstr "Reiniciar"
 
@@ -1774,17 +1775,17 @@ msgid "Launch"
 msgstr "Executar"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:234
+#: src/gs-common.c:237
 msgid "Install Software?"
 msgstr "Instalar programa?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:236
+#: src/gs-common.c:239
 msgid "Install Third-Party Software?"
 msgstr "Instalar programa de terceiros?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:240
+#: src/gs-common.c:243
 msgid "Enable Software Repository?"
 msgstr "Ativar repositório de software?"
 
@@ -1792,7 +1793,7 @@ msgstr "Ativar repositório de software?"
 #. ask for confirmation
 #. TRANSLATORS: "Enable Third-Party Software Repository?" is
 #. * the confirmation dialog title
-#: src/gs-common.c:242 src/gs-repos-dialog.c:172
+#: src/gs-common.c:245 src/gs-repos-dialog.c:172
 msgid "Enable Third-Party Software Repository?"
 msgstr "Habilitar repositório de programas de terceiros?"
 
@@ -1800,7 +1801,7 @@ msgstr "Habilitar repositório de programas de terceiros?"
 #. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:254
+#: src/gs-common.c:257
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1813,127 +1814,127 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:264
+#: src/gs-common.c:267
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s é fornecido por “%s”."
 
-#: src/gs-common.c:273
+#: src/gs-common.c:276
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Esta repositório de programas deve estar habilitado para continuar a "
 "instalação."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:283
+#: src/gs-common.c:286
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "Pode ser ilegal instalar ou usar %s em alguns países."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:289
+#: src/gs-common.c:292
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "Pode ser ilegal instalar ou usar este codec em alguns países."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:303
+#: src/gs-common.c:306
 msgid "Don’t _Warn Again"
 msgstr "Não _avisar novamente"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:312
+#: src/gs-common.c:315
 msgid "Enable and _Install"
 msgstr "Habilitar e _instalar"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:519
+#: src/gs-common.c:522
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seguem os erros detalhados do gerenciador de pacotes:"
 
-#: src/gs-common.c:526 src/gs-common.c:663 src/gs-safety-context-dialog.ui:67
+#: src/gs-common.c:529 src/gs-common.c:666 src/gs-safety-context-dialog.ui:67
 #: src/gs-updates-paused-banner.c:77
 msgid "Details"
 msgstr "Detalhes"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:575 src/gs-updates-paused-banner.c:64
+#: src/gs-common.c:578 src/gs-updates-paused-banner.c:64
 msgid "_Close"
 msgstr "_Fechar"
 
 #. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:744
+#: src/gs-common.c:747
 msgid "_Accept"
 msgstr "_Aceitar"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:890
+#: src/gs-common.c:895
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Uma atualização foi instalada"
 msgstr[1] "Atualizações foram instaladas"
 
 #. TRANSLATORS: we've just uninstalled some apps
-#: src/gs-common.c:900
+#: src/gs-common.c:905
 msgid "An app has been uninstalled"
 msgid_plural "Apps have been uninstalled"
 msgstr[0] "Uma app foi desinstalada"
 msgstr[1] "Apps foram desinstaladas"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:906
+#: src/gs-common.c:911
 msgid "A restart is required for it to take effect"
 msgid_plural "A restart is required for them to take effect"
 msgstr[0] "Um reinício é necessário para que ele tenha efeito"
 msgstr[1] "Um reinício é necessário para que eles tenham efeito"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:913
+#: src/gs-common.c:918
 msgid "Not Now"
 msgstr "Agora não"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:1009
+#: src/gs-common.c:1014
 msgid "Just now"
 msgstr "Agora mesmo"
 
-#: src/gs-common.c:1011
+#: src/gs-common.c:1016
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d minuto atrás"
 msgstr[1] "%d minutos atrás"
 
-#: src/gs-common.c:1015
+#: src/gs-common.c:1020
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
 msgstr[0] "%d hora atrás"
 msgstr[1] "%d horas atrás"
 
-#: src/gs-common.c:1019
+#: src/gs-common.c:1024
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "%d dia atrás"
 msgstr[1] "%d dias atrás"
 
-#: src/gs-common.c:1023
+#: src/gs-common.c:1028
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "%d semana atrás"
 msgstr[1] "%d semanas atrás"
 
-#: src/gs-common.c:1027
+#: src/gs-common.c:1032
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "%d mês atrás"
 msgstr[1] "%d meses atrás"
 
-#: src/gs-common.c:1031
+#: src/gs-common.c:1036
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1944,7 +1945,7 @@ msgstr[1] "%d anos atrás"
 #. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1394
+#: src/gs-common.c:1399
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
@@ -2385,7 +2386,7 @@ msgstr "Pacotes adicionais necessários"
 msgid "Find in Software"
 msgstr "Localizar em Programas"
 
-#: src/gs-description-box.c:93 src/gs-description-box.c:342
+#: src/gs-description-box.c:93 src/gs-description-box.c:348
 msgid "_Show More"
 msgstr "_Mostrar mais"
 
@@ -2555,7 +2556,7 @@ msgstr "Página de detalhes"
 
 #: src/gs-details-page.ui:54
 msgid "Loading App Details"
-msgstr "Carregando detalhes do app"
+msgstr "Carregando detalhes do aplicativo"
 
 #: src/gs-details-page.ui:186
 msgid "Verified"
@@ -3714,26 +3715,26 @@ msgid "App Settings & Data"
 msgstr "Configurações e dados do aplicativo"
 
 #. Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'
-#: src/gs-page.c:667
+#: src/gs-page.c:664
 msgid "_Keep"
 msgstr "_Manter"
 
-#: src/gs-page.c:673
+#: src/gs-page.c:669
 msgid "Allows restoring app settings and content"
 msgstr "Permite restaurar configurações e conteúdos do app"
 
 #. Translators: this is part of section about deleting app's data
-#: src/gs-page.c:682
+#: src/gs-page.c:677
 msgid "_Delete"
 msgstr "_Remover"
 
-#: src/gs-page.c:688
+#: src/gs-page.c:682
 msgid "Permanently deletes data to save disk space"
 msgstr "Remove permanentemente dados para poupar espaço em disco"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
-#: src/gs-page.c:696
+#: src/gs-page.c:689
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. App data and settings will "
@@ -3744,7 +3745,7 @@ msgstr ""
 "no futuro."
 
 #. TRANSLATORS: this is button text to remove the app
-#: src/gs-page.c:710
+#: src/gs-page.c:703
 msgid "_Uninstall"
 msgstr "_Desinstalar"
 
@@ -3860,7 +3861,7 @@ msgstr "_Desabilitar"
 #. TRANSLATORS: this is button text to remove a repo
 #. TRANSLATORS: button text when
 #. * removing a review
-#: src/gs-repos-dialog.c:259 src/gs-review-row.c:266
+#: src/gs-repos-dialog.c:259 src/gs-review-row.c:263
 msgid "_Remove"
 msgstr "_Remover"
 
@@ -4110,20 +4111,20 @@ msgid "out of 5 stars"
 msgstr "de 5 estrelas"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:59
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Desconhecido"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:224
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Você pode relatar avaliações para comportamento abusivo, rude ou "
 "discriminatório."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:232
+#: src/gs-review-row.c:229
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -4134,25 +4135,25 @@ msgstr ""
 # Semelhante a denunciar um abuso do usuário que escreveu a avaliação
 #. TRANSLATORS: window title when reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:237
+#: src/gs-review-row.c:234
 msgid "Report Review?"
 msgstr "Relatar avaliação?"
 
 #. TRANSLATORS: button text when
 #. * * sending a review for moderation
-#: src/gs-review-row.c:242
+#: src/gs-review-row.c:239
 msgid "_Report"
 msgstr "_Relatar"
 
 # Semelhante a denunciar um abuso do usuário que escreveu a avaliação
 #. TRANSLATORS: window title when the user attempts to remove their
 #. * review
-#: src/gs-review-row.c:258
+#: src/gs-review-row.c:255
 msgid "Remove Review?"
 msgstr "Remover avaliação?"
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:261
+#: src/gs-review-row.c:258
 msgid "Removing a review cannot be undone."
 msgstr "Remover uma avaliação não pode ser desfeito."
 
@@ -5681,45 +5682,45 @@ msgstr "Modo jogo ativado - atualizações de programas em pausa"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:321
+#: src/gs-updates-section.c:320
 msgid "_Restart & Update…"
 msgstr "_Reiniciar e atualizar…"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable apps
-#: src/gs-updates-section.c:327
+#: src/gs-updates-section.c:326
 msgid "U_pdate All"
 msgstr "At_ualizar tudo"
 
-#: src/gs-updates-section.c:404
+#: src/gs-updates-section.c:403
 msgid "Software Updates Downloaded"
 msgstr "Atualizações de programas baixadas"
 
-#: src/gs-updates-section.c:405
+#: src/gs-updates-section.c:404
 msgid "Updates are ready to be installed"
 msgstr "Atualizações prontas para instalação"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:496
+#: src/gs-updates-section.c:495
 msgid "Integrated Firmware"
 msgstr "Firmware integrado"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:501
+#: src/gs-updates-section.c:500
 msgid "Requires Restart"
 msgstr "Requer reinício"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:506
+#: src/gs-updates-section.c:505
 msgid "App Updates"
 msgstr "Atualizações do aplicativo"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:511
+#: src/gs-updates-section.c:510
 msgid "Device Firmware"
 msgstr "Firmware de dispositivo"
 
@@ -5784,12 +5785,12 @@ msgstr "Falha ao remover o arquivo “%s”: %s"
 msgid "Failed to delete directory “%s”: %s"
 msgstr "Falha ao remover o diretório “%s”: %s"
 
-#: src/org.gnome.Software.desktop.in:4
+#: src/org.gnome.Software.desktop.in:3
 msgid "Add, remove or update software on this computer"
 msgstr "Adicione, remova ou atualize programas neste computador"
 
 #. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
-#: src/org.gnome.Software.desktop.in:12
+#: src/org.gnome.Software.desktop.in:11
 msgid ""
 "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
 "Software;App;Store;"
@@ -5823,14 +5824,14 @@ msgstr "Habilitar"
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
 #: plugins/core/gs-plugin-generic-updates.c:69
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3170
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3173
 msgid "System Updates"
 msgstr "Atualização do sistema"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
 #: plugins/core/gs-plugin-generic-updates.c:74
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3175
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3178
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
@@ -6276,7 +6277,7 @@ msgstr "Atualização da dock USB %s"
 msgid "Firmware"
 msgstr "Firmware"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1918
+#: plugins/fwupd/gs-plugin-fwupd.c:1938
 msgid "Firmware update could not be applied: "
 msgstr "Atualização de firmware não pôde ser aplicada: "
 
@@ -6339,21 +6340,21 @@ msgid "Packages"
 msgstr "Pacotes"
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1413
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1436
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1439
 msgid "Failed to wait on transaction end before download: "
 msgstr "Falhou em esperar o fim de em transação antes do download: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1443
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1456
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1446
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1459
 msgid "Failed to download updates: "
 msgstr "Não foi possível baixar as atualizações: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1495
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1505
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1498
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1508
 msgid "Failed to trigger update: "
 msgstr "Não foi possível instalar atualizações: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3270
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3273
 msgid "Operating System (OSTree)"
 msgstr "Sistema operacional (OSTree)"
 
