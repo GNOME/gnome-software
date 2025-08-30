@@ -296,6 +296,8 @@ perms_from_metadata (GKeyFile *keyfile)
 		flags |= GS_APP_PERMISSIONS_FLAGS_X11;
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "pulseaudio"))
 		flags |= GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES;
+	if (strv != NULL && g_strv_contains ((const char * const *) strv, "gpg-agent"))
+		flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 	g_strfreev (strv);
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "devices", NULL, NULL);
@@ -2744,8 +2746,9 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 	}
 	sockets = g_key_file_get_string_list (kf, "Context", "sockets", NULL, NULL);
 	if (sockets != NULL) {
-		/* X11 isn't secure enough */
-		if (g_strv_contains ((const gchar * const *) sockets, "x11"))
+		/* X11 isn't secure enough, neither is gpg-agent */
+		if (g_strv_contains ((const gchar * const *) sockets, "x11") ||
+		    g_strv_contains ((const char * const *) sockets, "gpg-agent"))
 			secure = FALSE;
 	}
 	filesystems = g_key_file_get_string_list (kf, "Context", "filesystems", NULL, NULL);
