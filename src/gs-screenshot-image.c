@@ -116,8 +116,11 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 								    FALSE, NULL);
 		}
 
+		/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2879 */
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 		if (pixbuf != NULL)
 			texture = gdk_texture_new_for_pixbuf (pixbuf);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 		/* show icon */
 		if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
@@ -245,9 +248,12 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 	if (pb == NULL)
 		return;
 
+	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2879 */
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	texture = gdk_texture_new_for_pixbuf (pb);
 	if (texture == NULL)
 		return;
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 	if (g_strcmp0 (ssimg->current_image, "video") == 0) {
 		ssimg->current_image = "image1";
