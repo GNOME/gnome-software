@@ -113,14 +113,6 @@ start_rotation_timer (GsFeaturedCarousel *self)
 }
 
 static void
-maybe_start_rotation_timer (GsFeaturedCarousel *self)
-{
-	if (self->apps != NULL && gs_app_list_length (self->apps) > 0 &&
-	    gtk_widget_get_mapped (GTK_WIDGET (self)))
-		start_rotation_timer (self);
-}
-
-static void
 stop_rotation_timer (GsFeaturedCarousel *self)
 {
 	if (self->rotation_timer_id != 0) {
@@ -130,11 +122,24 @@ stop_rotation_timer (GsFeaturedCarousel *self)
 }
 
 static void
+maybe_start_rotation_timer (GsFeaturedCarousel *self)
+{
+	if (!adw_get_enable_animations (GTK_WIDGET (self))) {
+		stop_rotation_timer (self);
+		return;
+	}
+
+	if (self->apps != NULL && gs_app_list_length (self->apps) > 0 &&
+	    gtk_widget_get_mapped (GTK_WIDGET (self)))
+		start_rotation_timer (self);
+}
+
+static void
 carousel_notify_position_cb (GsFeaturedCarousel *self)
 {
 	/* Reset the rotation timer in case it’s about to fire. */
 	stop_rotation_timer (self);
-	start_rotation_timer (self);
+	maybe_start_rotation_timer (self);
 }
 
 static void
