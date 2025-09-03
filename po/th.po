@@ -2,14 +2,14 @@
 # Copyright (C) 2013-2016 Free Software Foundation, Inc.
 # This file is distributed under the same license as the gnome-software package.
 # Akom Chotiphantawanon <knight2000@gmail.com>, 2013-2016.
-# Atirut Wattanamongkol <atirut.wattanamongkol@gmail.com>, 2024.
+# Atirut Wattanamongkol <atirut.wattanamongkol@gmail.com>, 2024-2025.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2024-11-02 08:47+0000\n"
-"PO-Revision-Date: 2024-11-06 18:51+0700\n"
+"POT-Creation-Date: 2025-08-27 18:02+0000\n"
+"PO-Revision-Date: 2025-09-03 14:42+0700\n"
 "Last-Translator: Atirut Wattanamongkol <atirut.wattanamongkol@gmail.com>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "Language: th\n"
@@ -17,9 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.7\n"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:27 src/org.gnome.Software.desktop.in:3
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35
+#: src/org.gnome.Software.desktop.in:2
 msgid "Software"
 msgstr "ซอฟต์แวร์"
 
@@ -28,22 +29,26 @@ msgid "Install and update apps"
 msgstr "ติดตั้งและอัปเดตแอปต่างๆ"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
-msgid "Software allows you to find and install new apps and system extensions and remove existing installed apps."
-msgstr "\"ซอฟต์แวร์\" ช่วยคุณหาและติดตั้งแอปและส่วนขยายของระบบเพิ่มเติม และถอดถอนแอปที่ติดตั้งแล้ว"
+msgid ""
+"Software allows you to find and install new apps and system extensions and remove existing installed "
+"apps."
+msgstr "\"ซอฟต์แวร์\" ช่วยคุณหาและติดตั้งแอปและส่วนขยายของระบบเพิ่มเติม และลบแอปที่ติดตั้งแล้ว"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:14
 msgid ""
-"Software showcases featured and popular apps with useful descriptions and multiple screenshots per app. Apps can be found either "
-"through browsing the list of categories or by searching. It also allows you to update your system using an offline update."
+"Software showcases featured and popular apps with useful descriptions and multiple screenshots per "
+"app. Apps can be found either through browsing the list of categories or by searching. It also allows "
+"you to update your system using an offline update."
 msgstr ""
-"\"ซอฟต์แวร์\" จัดแสดงแอปที่เด่นและยอดนิยม พร้อมคำบรรยายที่เป็นประโยชน์และภาพหน้าจอหลายภาพต่อแอป คุณสามารถหาแอปผ่านการท่องดูตามหมวดหมู่หรือด้วยการค้นหาก็ได้ "
-"นอกจากนี้ ยังให้คุณอัปเดตระบบของคุณโดยใช้การอัปเดตแบบออฟไลน์ได้"
+"\"ซอฟต์แวร์\" จัดแสดงแอปที่เด่นและยอดนิยม พร้อมคำบรรยายที่เป็นประโยชน์และภาพหน้าจอหลายภาพต่อแอป "
+"คุณสามารถหาแอปผ่านการท่องดูตามหมวดหมู่หรือด้วยการค้นหาก็ได้ นอกจากนี้ ยังให้คุณอัปเดตระบบของคุณโดยใช้การอัปเดตแบบออฟไลน์ได้"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:25
 msgid "Overview panel"
 msgstr "แผงภาพรวม"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:29 data/metainfo/org.gnome.Software.metainfo.xml.in:33
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:29
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:33
 msgid "Details panel"
 msgstr "แผงรายละเอียด"
 
@@ -51,7 +56,8 @@ msgstr "แผงรายละเอียด"
 msgid "Installed panel"
 msgstr "แผงรายการติดตั้งแล้ว"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:41 data/metainfo/org.gnome.Software.metainfo.xml.in:45
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:41
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:45
 msgid "Updates panel"
 msgstr "แผงรายการอัปเดต"
 
@@ -60,7 +66,7 @@ msgid "The update details"
 msgstr "รายละเอียดของการอัปเดต"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2645 src/gs-application.c:263
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2834 src/gs-application.c:263
 msgid "The GNOME Project"
 msgstr "โครงการ GNOME"
 
@@ -117,7 +123,9 @@ msgid "Whether to manage updates and upgrades in GNOME Software"
 msgstr "กำหนดว่าจะจัดการรายการอัปเดตและอัปเกรดใน \"ซอฟต์แวร์\" ของ GNOME หรือไม่"
 
 #: data/org.gnome.software.gschema.xml:11
-msgid "If disabled, GNOME Software will hide the updates panel, not perform any automatic updates actions or prompt for upgrades."
+msgid ""
+"If disabled, GNOME Software will hide the updates panel, not perform any automatic updates actions or "
+"prompt for upgrades."
 msgstr "ถ้าปิดใช้ \"ซอฟต์แวร์\" ของ GNOME จะซ่อนแผงรายการอัปเดต ไม่ดำเนินการอัปเดตอัตโนมัติหรือแจ้งให้อัปเกรด"
 
 #: data/org.gnome.software.gschema.xml:15
@@ -126,16 +134,19 @@ msgstr "ดาวน์โหลดและติดตั้งรายกา
 
 #: data/org.gnome.software.gschema.xml:16
 msgid ""
-"If enabled, GNOME Software automatically downloads software updates in the background, also installing ones that do not require a "
-"reboot."
-msgstr "ถ้าเปิดใช้ \"ซอฟต์แวร์\" ของ GNOME จะดาวน์โหลดรายการอัปเดตซอฟต์แวร์โดยอัตโนมัติในเบื้องหลัง และติดตั้งรายการอัปเดตที่ติดตั้งได้โดยไม่จำเป็นต้องบูตระบบใหม่"
+"If enabled, GNOME Software automatically downloads software updates in the background, also "
+"installing ones that do not require a reboot."
+msgstr ""
+"ถ้าเปิดใช้ \"ซอฟต์แวร์\" ของ GNOME จะดาวน์โหลดรายการอัปเดตซอฟต์แวร์โดยอัตโนมัติในเบื้องหลัง "
+"และติดตั้งรายการอัปเดตที่ติดตั้งได้โดยไม่จำเป็นต้องบูตระบบใหม่"
 
 #: data/org.gnome.software.gschema.xml:20
 msgid "Notify the user about software updated in the background"
 msgstr "แจ้งผู้ใช้เกี่ยวกับซอฟต์แวร์ที่อัปเดตในเบื้องหลัง"
 
 #: data/org.gnome.software.gschema.xml:21
-msgid "If enabled, GNOME Software notifies the user about updates that happened whilst the user was idle."
+msgid ""
+"If enabled, GNOME Software notifies the user about updates that happened whilst the user was idle."
 msgstr "ถ้าเปิดใช้ \"ซอฟต์แวร์\" ของ GNOME จะแจ้งผู้ใช้เกี่ยวกับการอัปเดตที่เกิดขึ้นในขณะที่ผู้ใช้ไม่ได้ใช้งาน"
 
 #: data/org.gnome.software.gschema.xml:25
@@ -144,11 +155,12 @@ msgstr "กำหนดว่าจะรีเฟรชโดยอัตโน
 
 #: data/org.gnome.software.gschema.xml:26
 msgid ""
-"If enabled, GNOME Software automatically refreshes in the background even when using a metered connection (eventually downloading "
-"some metadata, checking for updates, etc., which may incur in costs for the user)."
+"If enabled, GNOME Software automatically refreshes in the background even when using a metered "
+"connection (eventually downloading some metadata, checking for updates, etc., which may incur in "
+"costs for the user)."
 msgstr ""
-"ถ้าเปิดใช้ \"ซอฟต์แวร์\" ของ GNOME จะทำการรีเฟรชข้อมูลในเบื้องหลังโดยอัตโนมัติถึงแม้ว่าจะใช้การเชื่อมต่อแบบคิดปริมาณ (จะมีการดาวน์โหลดข้อมูลกำกับ ตรวจสอบการอัปเดต "
-"ฯลฯ ซึ่งอาจสร้างภาระค่าใช้จ่ายให้กับผู้ใช้)"
+"ถ้าเปิดใช้ \"ซอฟต์แวร์\" ของ GNOME จะทำการรีเฟรชข้อมูลในเบื้องหลังโดยอัตโนมัติถึงแม้ว่าจะใช้การเชื่อมต่อแบบคิดปริมาณ "
+"(จะมีการดาวน์โหลดข้อมูลกำกับ ตรวจสอบการอัปเดต ฯลฯ ซึ่งอาจสร้างภาระค่าใช้จ่ายให้กับผู้ใช้)"
 
 #: data/org.gnome.software.gschema.xml:30
 msgid "Whether it’s the very first run of GNOME Software"
@@ -167,7 +179,9 @@ msgid "Non-free applications show a warning dialog before install"
 msgstr "แสดงกล่องโต้ตอบคำเตือนก่อนติดตั้งแอปพลิเคชันไม่เสรี"
 
 #: data/org.gnome.software.gschema.xml:43
-msgid "When non-free applications are installed a warning dialog can be shown. This controls if that dialog is suppressed."
+msgid ""
+"When non-free applications are installed a warning dialog can be shown. This controls if that dialog "
+"is suppressed."
 msgstr "ให้แสดงกล่องโต้ตอบคำเตือนก่อนติดตั้งแอปพลิเคชันไม่เสรีได้ ตัวเลือกนี้จะควบคุมว่าจะระงับกล่องโต้ตอบดังกล่าวหรือไม่"
 
 #: data/org.gnome.software.gschema.xml:47
@@ -196,8 +210,9 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:68
 msgid ""
-"Choosing a larger value will mean less round-trips to the remote server but updates to the screenshots may take longer to show to the "
-"user. A value of 0 means to never check the server if the image already exists in the cache."
+"Choosing a larger value will mean less round-trips to the remote server but updates to the "
+"screenshots may take longer to show to the user. A value of 0 means to never check the server if the "
+"image already exists in the cache."
 msgstr ""
 
 #: data/org.gnome.software.gschema.xml:77
@@ -263,16 +278,18 @@ msgstr "รายชื่อ URL ที่ชี้ไปยังไฟล์ 
 
 #: data/org.gnome.software.gschema.xml:131
 msgid ""
-"Install the AppStream files to a system-wide location for all users. If false, files are installed in non-standard $XDG_DATA_HOME/"
-"swcatalog/xml directory"
+"Install the AppStream files to a system-wide location for all users. If false, files are installed in "
+"non-standard $XDG_DATA_HOME/swcatalog/xml directory"
 msgstr ""
-"ติดตั้งไฟล์ AppStream ลงในตำแหน่งที่ตั้งทั่วทั้งระบบให้กับผู้ใช้ทุกคน ถ้าเป็น false ไฟล์จะถูกติดตั้งลงในไดเรกทอรี $XDG_DATA_HOME/swcatalog/xml ซึ่งไม่เป็นมาตรฐาน"
+"ติดตั้งไฟล์ AppStream ลงในตำแหน่งที่ตั้งทั่วทั้งระบบให้กับผู้ใช้ทุกคน ถ้าเป็น false ไฟล์จะถูกติดตั้งลงในไดเรกทอรี $XDG_DATA_HOME/"
+"swcatalog/xml ซึ่งไม่เป็นมาตรฐาน"
 
 #: data/org.gnome.software.gschema.xml:135
 msgid ""
-"Priority order of packaging formats to prefer, with more important formats listed first. An empty array means the default order. "
-"Omitted formats are assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, snap. The formats can be optionally "
-"specified with an origin name, divided by a colon, for example 'flatpak:flathub'."
+"Priority order of packaging formats to prefer, with more important formats listed first. An empty "
+"array means the default order. Omitted formats are assumed to be listed last. Example packaging "
+"formats are: deb, flatpak, rpm, snap. The formats can be optionally specified with an origin name, "
+"divided by a colon, for example 'flatpak:flathub'."
 msgstr ""
 
 #: data/org.gnome.software.gschema.xml:139
@@ -327,13 +344,13 @@ msgstr "ตรวจสอบความเหมาะสมของประ
 msgid "Failed to move: %s"
 msgstr "ย้ายไม่สำเร็จ: %s"
 
-#: src/gnome-software-local-file-flatpak.desktop.in:3 src/gnome-software-local-file-fwupd.desktop.in:3
-#: src/gnome-software-local-file-packagekit.desktop.in:3 src/gnome-software-local-file-snap.desktop.in:3
+#: src/gnome-software-local-file-flatpak.desktop.in:2 src/gnome-software-local-file-fwupd.desktop.in:2
+#: src/gnome-software-local-file-packagekit.desktop.in:2 src/gnome-software-local-file-snap.desktop.in:2
 msgid "Software Install"
 msgstr "ติดตั้งซอฟต์แวร์"
 
-#: src/gnome-software-local-file-flatpak.desktop.in:4 src/gnome-software-local-file-fwupd.desktop.in:4
-#: src/gnome-software-local-file-packagekit.desktop.in:4 src/gnome-software-local-file-snap.desktop.in:4
+#: src/gnome-software-local-file-flatpak.desktop.in:3 src/gnome-software-local-file-fwupd.desktop.in:3
+#: src/gnome-software-local-file-packagekit.desktop.in:3 src/gnome-software-local-file-snap.desktop.in:3
 msgid "Install selected software on the system"
 msgstr "ติดตั้งซอฟต์แวร์ที่เลือกลงในระบบ"
 
@@ -682,7 +699,8 @@ msgstr "ทุกวัย"
 #. Translators: This is shown in a bubble if the storage
 #. * size of an app is not known. The bubble is small,
 #. * so the string should be as short as possible.
-#: src/gs-age-rating-context-dialog.c:949 src/gs-app-context-bar.c:206 src/gs-storage-context-dialog.c:89
+#: src/gs-age-rating-context-dialog.c:949 src/gs-app-context-bar.c:206
+#: src/gs-storage-context-dialog.c:89
 msgid "?"
 msgstr "?"
 
@@ -749,11 +767,12 @@ msgstr "%s เหมาะสำหรับ %s"
 msgid "Age Rating"
 msgstr "การจัดระดับอายุ"
 
-#: src/gs-age-rating-context-dialog.ui:61 src/gs-hardware-support-context-dialog.ui:63 src/gs-safety-context-dialog.ui:126
+#: src/gs-age-rating-context-dialog.ui:61 src/gs-hardware-support-context-dialog.ui:63
+#: src/gs-safety-context-dialog.ui:130
 msgid "_How to contribute missing information"
 msgstr "_วิธีการร่วมให้ข้อมูลที่ยังขาดไป"
 
-#: lib/gs-app.c:6365
+#: lib/gs-app.c:6390
 msgid "Local file"
 msgstr "ไฟล์ในเครื่อง"
 
@@ -762,41 +781,41 @@ msgstr "ไฟล์ในเครื่อง"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6384 src/gs-safety-context-dialog.c:536
+#: lib/gs-app.c:6409 src/gs-safety-context-dialog.c:535
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6461 src/gs-safety-context-dialog.c:773 src/gs-safety-context-dialog.ui:90
+#: lib/gs-app.c:6486 src/gs-safety-context-dialog.c:772 src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "แพคเกจ"
 
-#: src/gs-app-addon-row.c:95 src/gs-app-row.c:528
+#: src/gs-app-addon-row.c:93 src/gs-app-row.c:528
 msgid "Pending"
 msgstr "รออยู่"
 
-#: src/gs-app-addon-row.c:99 src/gs-app-row.c:532 src/gs-details-page.c:408
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:532 src/gs-details-page.c:394
 msgid "Pending install"
 msgstr "รอติดตั้ง"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.c:536 src/gs-details-page.c:415
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:536 src/gs-details-page.c:401
 msgid "Pending remove"
-msgstr "รอถอดถอน"
+msgstr "รอลบ"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:215 src/gs-details-page.c:396
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:215 src/gs-details-page.c:382
 msgid "Installing"
 msgstr "กำลังติดตั้ง"
 
-#: src/gs-app-addon-row.c:111
+#: src/gs-app-addon-row.c:109
 msgid "Removing"
-msgstr "กำลังถอดถอน"
+msgstr "กำลังลบ"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an app being downloaded
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:229 src/gs-details-page.c:401 src/gs-details-page.ui:356
+#: src/gs-app-addon-row.c:113 src/gs-app-row.c:229 src/gs-details-page.c:387 src/gs-details-page.ui:316
 msgid "Downloading"
 msgstr "กำลังดาวน์โหลด"
 
@@ -806,12 +825,12 @@ msgstr "กำลังดาวน์โหลด"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:66 src/gs-common.c:307 src/gs-details-page.c:1061 src/gs-details-page.c:1096 src/gs-details-page.ui:243
-#: src/gs-page.c:425 plugins/packagekit/gs-packagekit-task.c:149
+#: src/gs-app-addon-row.ui:21 src/gs-common.c:279 src/gs-details-page.c:1056 src/gs-details-page.c:1091
+#: src/gs-details-page.ui:203 src/gs-page.c:425 plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_ติดตั้ง"
 
-#: src/gs-app-addon-row.ui:73 src/gs-details-page.c:1181
+#: src/gs-app-addon-row.ui:29 src/gs-details-page.c:1176
 msgid "_Uninstall…"
 msgstr "_ถอนการติดตั้ง…"
 
@@ -839,7 +858,8 @@ msgstr "บริการวาระ"
 msgid "Can access D-Bus services on the session bus"
 msgstr "สามารถเข้าถึงบริการ D-Bus บนบัสวาระได้"
 
-#: src/gs-app-details-page.c:63 src/gs-app-details-page.c:64 src/gs-app-details-page.c:65 src/gs-app-details-page.c:66
+#: src/gs-app-details-page.c:63 src/gs-app-details-page.c:64 src/gs-app-details-page.c:65
+#: src/gs-app-details-page.c:66
 msgid "Devices"
 msgstr "อุปกรณ์"
 
@@ -849,15 +869,15 @@ msgstr "สามารถเข้าถึงอุปกรณ์ต่าง
 
 #. Translators: This indicates an app can access input devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:339 src/gs-safety-context-dialog.c:228
+#: src/gs-app-details-page.c:64 src/gs-app-context-bar.c:338 src/gs-safety-context-dialog.c:227
 msgid "Can access input devices"
 msgstr "สามารถเข้าถึงอุปกรณ์อินพุต"
 
-#. Translators: This indicates an app can access input devices.
+#. Translators: This indicates an app can access audio devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:346
-msgid "Can access microphones"
-msgstr "สามารถเข้าถึงไมโครโฟน"
+#: src/gs-app-details-page.c:65 src/gs-app-context-bar.c:345
+msgid "Can access microphones and play audio"
+msgstr "สามารถเข้าถึงไมโครโฟนและเล่นเสียง"
 
 #: src/gs-app-details-page.c:66
 msgid "Can access system device files"
@@ -869,7 +889,7 @@ msgstr "เนื้อหาหน้าจอ"
 
 #. Translators: This indicates an app can access the screen/display contents.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:360
+#: src/gs-app-details-page.c:67 src/gs-app-context-bar.c:359
 msgid "Can access screen contents"
 msgstr "สามารถเข้าถึงเนื้อหาหน้าจอ"
 
@@ -877,11 +897,13 @@ msgstr "สามารถเข้าถึงเนื้อหาหน้า
 msgid "Home folder"
 msgstr "โฟลเดอร์บ้าน"
 
-#: src/gs-app-details-page.c:68 src/gs-app-details-page.c:70 src/gs-app-details-page.c:73 src/gs-app-details-page.c:146
+#: src/gs-app-details-page.c:68 src/gs-app-details-page.c:70 src/gs-app-details-page.c:73
+#: src/gs-app-details-page.c:144
 msgid "Can view, edit and create files"
 msgstr "สามารถดู แก้ไข และสร้างไฟล์"
 
-#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71 src/gs-app-details-page.c:74 src/gs-app-details-page.c:141
+#: src/gs-app-details-page.c:69 src/gs-app-details-page.c:71 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:139
 msgid "Can view files"
 msgstr "สามารถดูไฟล์"
 
@@ -920,34 +942,42 @@ msgstr "สามารถหลบเลี่ยงแซนด์บอกซ
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:216
+#: src/gs-app-details-page.c:210
 msgid "No update description available."
 msgstr "ไม่มีรายละเอียดการอัปเดต"
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:239
+#: src/gs-app-details-page.c:234
 msgid "Update Details"
 msgstr "รายละเอียดการอัปเดต"
 
-#: src/gs-app-details-page.ui:27 src/gs-app-row.c:592
+#: src/gs-app-details-page.ui:27 src/gs-app-row.c:591
 msgid "Requires additional permissions"
 msgstr "ต้องการสิทธิ์เพิ่มเติม"
 
+#: src/gs-app-reviews-dialog.c:129
+msgid "Invalid ratings data received from server"
+msgstr ""
+
+#: src/gs-app-reviews-dialog.c:132 src/gs-details-page.c:2414
+msgid "Could not communicate with ratings server"
+msgstr ""
+
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1085
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:1045
 msgid "Reviews"
 msgstr "บทวิจารณ์"
 
-#: src/gs-app-reviews-dialog.ui:21
+#: src/gs-app-reviews-dialog.ui:23
 msgid "No reviews were found for this app."
 msgstr "ไม่พบบทวิจารณ์ใดสำหรับแอปนี้"
 
-#: src/gs-app-reviews-dialog.ui:23
+#: src/gs-app-reviews-dialog.ui:25
 msgid "No Reviews"
 msgstr "ไม่มีบทวิจารณ์"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:552
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:512
 msgid "Version History"
 msgstr "ประวัติรุ่น"
 
@@ -967,7 +997,7 @@ msgstr "ไม่มีรายละเอียดสำหรับรุ่
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:66
+#: src/gs-app-version-history-row.c:158 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e %B %Ey"
 
@@ -975,8 +1005,8 @@ msgstr "%e %B %Ey"
 #: src/gs-application.c:124
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
-"โหมดเริ่มทำงาน: เป็นค่า ‘updates’ (รายการอัปเดต), ‘updated’ (รายการอัปเดตแล้ว), ‘installed’ (รายการติดตั้งแล้ว) หรือ ‘overview’ (ภาพรวม) "
-"อย่างใดอย่างหนึ่ง"
+"โหมดเริ่มทำงาน: เป็นค่า ‘updates’ (รายการอัปเดต), ‘updated’ (รายการอัปเดตแล้ว), ‘installed’ (รายการติดตั้งแล้ว) "
+"หรือ ‘overview’ (ภาพรวม) อย่างใดอย่างหนึ่ง"
 
 #: src/gs-application.c:124
 msgid "MODE"
@@ -1129,98 +1159,98 @@ msgstr "ไม่ทราบขนาด"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:294
+#: src/gs-app-context-bar.c:293
 msgid "No permissions"
 msgstr "ไม่มีการขอสิทธิ์"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:311
+#: src/gs-app-context-bar.c:310
 msgid "Has network access"
 msgstr "มีการเข้าถึงเครือข่าย"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:318
+#: src/gs-app-context-bar.c:317
 msgid "Uses system services"
 msgstr "ใช้บริการระบบ"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:325
+#: src/gs-app-context-bar.c:324
 msgid "Uses session services"
 msgstr "ใช้บริการวาระ"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:332
+#: src/gs-app-context-bar.c:331
 msgid "Can access hardware devices"
 msgstr "สามารถเข้าถึงอุปกรณ์ฮาร์ดแวร์"
 
 #. Translators: This indicates an app can access system devices such as /dev/shm.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:353
+#: src/gs-app-context-bar.c:352
 msgid "Can access system devices"
 msgstr "สามารถเข้าถึงอุปกรณ์ระบบ"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:372
+#: src/gs-app-context-bar.c:371
 msgid "Can read/write all your data"
 msgstr "สามารถอ่าน/เขียนข้อมูลทั้งหมดของคุณ"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:384
+#: src/gs-app-context-bar.c:383
 msgid "Can read all your data"
 msgstr "สามารถอ่านข้อมูลทั้งหมดของคุณ"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:391
+#: src/gs-app-context-bar.c:390
 msgid "Can read/write your downloads"
 msgstr "สามารถอ่าน/เขียนรายการดาวน์โหลดของคุณ"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:398
+#: src/gs-app-context-bar.c:397
 msgid "Can read your downloads"
 msgstr "สามารถอ่านรายการดาวน์โหลดของคุณ"
 
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:405
+#: src/gs-app-context-bar.c:404
 msgid "Can access some specific files"
 msgstr "สามารถเข้าถึงไฟล์บางไฟล์ได้"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:412 src/gs-safety-context-dialog.c:276
+#: src/gs-app-context-bar.c:411 src/gs-safety-context-dialog.c:275
 msgid "Can access and change user settings"
 msgstr "สามารถเข้าถึงและเปลี่ยนการตั้งค่าผู้ใช้"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:419 src/gs-safety-context-dialog.c:260
+#: src/gs-app-context-bar.c:418 src/gs-safety-context-dialog.c:259
 msgid "Uses a legacy windowing system"
 msgstr "ใช้ระบบหน้าต่างแบบดั้งเดิม"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:426 src/gs-safety-context-dialog.c:268
+#: src/gs-app-context-bar.c:425 src/gs-safety-context-dialog.c:267
 msgid "Can acquire arbitrary permissions"
 msgstr "สามารถเข้าถือสิทธิ์แบบไม่เฉพาะเจาะจง"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:438
+#: src/gs-app-context-bar.c:437
 msgid "Software developer is verified"
 msgstr "ผู้พัฒนาซอฟต์แวร์ผ่านการตรวจสอบแล้ว"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:456 src/gs-safety-context-dialog.c:144
+#: src/gs-app-context-bar.c:455 src/gs-safety-context-dialog.c:144
 msgid "Reviewed by OS distributor"
 msgstr "ตรวจสอบโดยผู้จัดจำหน่ายระบบปฏิบัติการแล้ว"
 
@@ -1229,7 +1259,7 @@ msgstr "ตรวจสอบโดยผู้จัดจำหน่ายร
 #. * It’s used in a context tile, so should be short.
 #. * The '%s' is replaced by the distribution name.
 #. Translators: The '%s' is replaced by the distribution name.
-#: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:147
+#: src/gs-app-context-bar.c:461 src/gs-safety-context-dialog.c:147
 #, c-format
 msgid "Reviewed by %s"
 msgstr "ตรวจสอบโดย %s"
@@ -1237,37 +1267,37 @@ msgstr "ตรวจสอบโดย %s"
 #. Translators: This indicates that an app has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:478 src/gs-safety-context-dialog.c:161
+#: src/gs-app-context-bar.c:477 src/gs-safety-context-dialog.c:161
 msgid "Provided by a third party"
 msgstr "ให้บริการโดยบุคคลที่สาม"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:488
+#: src/gs-app-context-bar.c:487
 msgid "Software no longer supported"
 msgstr "ซอฟต์แวร์ไม่มีการสนับสนุนแล้ว"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:500
+#: src/gs-app-context-bar.c:499
 msgid "Auditable code"
 msgstr "โค้ดตรวจสอบได้"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:505
 msgid "Unknown license"
 msgstr "ไม่ทราบสัญญาอนุญาต"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:513
+#: src/gs-app-context-bar.c:512
 msgid "Proprietary code"
 msgstr "โค้ดกรรมสิทธิ์"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:520
+#: src/gs-app-context-bar.c:519
 msgid "Special license"
 msgstr "สัญญาอนุญาตพิเศษ"
 
@@ -1285,112 +1315,116 @@ msgstr "สัญญาอนุญาตพิเศษ"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/
-#: src/gs-app-context-bar.c:534 src/gs-app-context-bar.c:817
+#: src/gs-app-context-bar.c:533 src/gs-app-context-bar.c:816
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:542
+#: src/gs-app-context-bar.c:541
 msgid "Privileged"
 msgstr "สิทธิพิเศษ"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:549
+#: src/gs-app-context-bar.c:548
 msgid "Safe"
 msgstr "ปลอดภัย"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:556
+#: src/gs-app-context-bar.c:555
 msgid "Probably Safe"
 msgstr "น่าจะปลอดภัย"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:563
+#: src/gs-app-context-bar.c:562
 msgid "Potentially Unsafe"
 msgstr "อาจจะไม่ปลอดภัย"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:570
+#: src/gs-app-context-bar.c:569
 msgid "Unsafe"
 msgstr "ไม่ปลอดภัย"
 
-#: src/gs-app-context-bar.c:648 src/gs-app-context-bar.c:680 src/gs-hardware-support-context-dialog.c:615
+#: src/gs-app-context-bar.c:647 src/gs-app-context-bar.c:679
+#: src/gs-hardware-support-context-dialog.c:615
 msgid "Mobile Only"
 msgstr "มือถือเท่านั้น"
 
-#: src/gs-app-context-bar.c:649
+#: src/gs-app-context-bar.c:648
 msgid "Only works on a small screen"
 msgstr "ใช้งานได้บนหน้าจอขนาดเล็กเท่านั้น"
 
-#: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:687 src/gs-app-context-bar.c:694 src/gs-app-context-bar.c:744
-#: src/gs-app-context-bar.c:749 src/gs-hardware-support-context-dialog.c:595
+#: src/gs-app-context-bar.c:653 src/gs-app-context-bar.c:686 src/gs-app-context-bar.c:693
+#: src/gs-app-context-bar.c:743 src/gs-app-context-bar.c:748
+#: src/gs-hardware-support-context-dialog.c:595
 msgid "Desktop Only"
 msgstr "คอมพิวเตอร์ตั้งโต๊ะเท่านั้น"
 
-#: src/gs-app-context-bar.c:655
+#: src/gs-app-context-bar.c:654
 msgid "Only works on a large screen"
 msgstr "ใช้งานได้เฉพาะบนหน้าจอขนาดใหญ่เท่านั้น"
 
-#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:633
+#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:633
 msgid "Screen Size Mismatch"
 msgstr "ขนาดหน้าจอไม่ตรงกัน"
 
-#: src/gs-app-context-bar.c:660 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:659 src/gs-hardware-support-context-dialog.c:634
 msgid "Doesn’t support your current screen size"
 msgstr "ไม่รองรับขนาดหน้าจอปัจจุบันของคุณ"
 
-#: src/gs-app-context-bar.c:681 src/gs-hardware-support-context-dialog.c:686 src/gs-hardware-support-context-dialog.c:692
+#: src/gs-app-context-bar.c:680 src/gs-hardware-support-context-dialog.c:686
+#: src/gs-hardware-support-context-dialog.c:692
 msgid "Requires a touchscreen"
 msgstr "ต้องใช้หน้าจอสัมผัส"
 
-#: src/gs-app-context-bar.c:688 src/gs-hardware-support-context-dialog.c:646 src/gs-hardware-support-context-dialog.c:652
+#: src/gs-app-context-bar.c:687 src/gs-hardware-support-context-dialog.c:646
+#: src/gs-hardware-support-context-dialog.c:652
 msgid "Requires a keyboard"
 msgstr "ต้องใช้แป้นพิมพ์"
 
-#: src/gs-app-context-bar.c:695
+#: src/gs-app-context-bar.c:694
 msgid "Requires a mouse"
 msgstr "ต้องใช้เมาส์"
 
-#: src/gs-app-context-bar.c:706
+#: src/gs-app-context-bar.c:705
 msgid "Gamepad Needed"
 msgstr "ต้องใช้เกมแพด"
 
-#: src/gs-app-context-bar.c:707
+#: src/gs-app-context-bar.c:706
 msgid "Requires a gamepad to play"
 msgstr "ต้องใช้เกมแพดในการเล่น"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:731
+#: src/gs-app-context-bar.c:730
 msgid "Adaptive"
 msgstr "ปรับตัวได้"
 
-#: src/gs-app-context-bar.c:732
+#: src/gs-app-context-bar.c:731
 msgid "Works on phones, tablets and desktops"
 msgstr "ใช้งานได้บนโทรศัพท์ แท็บเล็ต และคอมพิวเตอร์ตั้งโต๊ะ"
 
-#: src/gs-app-context-bar.c:745
+#: src/gs-app-context-bar.c:744
 msgid "Probably requires a keyboard or mouse"
 msgstr "อาจต้องใช้แป้นพิมพ์หรือเมาส์"
 
-#: src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:749
 msgid "Works on desktops and laptops"
 msgstr "ใช้งานได้บนคอมพิวเตอร์ตั้งโต๊ะและแล็ปท็อป"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:792
+#: src/gs-app-context-bar.c:791
 msgid "Contains no age-inappropriate content"
 msgstr "ไม่มีเนื้อหาที่ไม่เหมาะสมกับวัย"
 
-#: src/gs-app-context-bar.c:840
+#: src/gs-app-context-bar.c:839
 msgid "No age rating information available"
 msgstr "ไม่มีข้อมูลการจัดระดับอายุ"
 
@@ -1442,7 +1476,7 @@ msgstr "ถอนการติดตั้ง…"
 msgid "Uninstalling"
 msgstr "กำลังถอนการติดตั้ง"
 
-#: src/gs-app-row.c:323 src/gs-app-row.ui:60 src/gs-os-update-page.c:153 src/gs-os-update-page.c:156 src/gs-os-update-page.c:183
+#: src/gs-app-row.c:323 src/gs-app-row.ui:60
 msgid "Critical update"
 msgstr "รายการอัปเดตสำคัญ"
 
@@ -1459,17 +1493,17 @@ msgid "Source: %s"
 msgstr "แหล่งที่มา: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:599
+#: src/gs-app-row.c:598
 #, c-format
 msgid "Renamed from %s"
 msgstr "เปลี่ยนชื่อจาก %s แล้ว"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:636 src/gs-details-page.ui:575
+#: src/gs-app-row.c:635 src/gs-details-page.ui:535
 msgid "Stopped Receiving Updates"
 msgstr "หยุดรับรายการอัปเดตแล้ว"
 
-#: src/gs-app-row.ui:58
+#: src/gs-app-row.ui:58 src/gs-os-update-page.c:142
 msgid "Critical Update"
 msgstr "รายการอัปเดตสำคัญ"
 
@@ -1490,7 +1524,8 @@ msgstr "ช่วยแปล %s"
 msgid ""
 "%s is designed, developed, and translated by an international community of contributors.\n"
 "\n"
-"This means that while it’s not yet available in your language, you can get involved and help translate it yourself."
+"This means that while it’s not yet available in your language, you can get involved and help "
+"translate it yourself."
 msgstr ""
 "%s ถูกออกแบบ พัฒนา และแปลโดยชุมชนผู้มีส่วนร่วมนานาชาติ\n"
 "\n"
@@ -1505,36 +1540,40 @@ msgid "_Translation Website"
 msgstr "เว็บไซต์สำหรับการแ_ปล"
 
 #. TRANSLATORS: This is a description for entering user/password
-#: src/gs-basic-auth-dialog.c:82
+#: src/gs-basic-auth-dialog.c:88
 #, c-format
 msgid "Login required remote %s (realm %s)"
 msgstr "ต้องเข้าสู่ระบบระยะไกล %s (realm %s)"
 
-#: src/gs-basic-auth-dialog.ui:8
+#: src/gs-basic-auth-dialog.ui:6
 msgid "Login Required"
 msgstr "ต้องเข้าสู่ระบบ"
 
 #. TRANSLATORS: button text
-#: src/gs-basic-auth-dialog.ui:17 src/gs-common.c:300 src/gs-common.c:752 src/gs-details-page.ui:331 src/gs-dkms-dialog.ui:28
-#: src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-page.c:708 src/gs-removal-dialog.ui:24 src/gs-repos-dialog.c:175
-#: src/gs-repos-dialog.c:251 src/gs-review-dialog.ui:24 src/gs-review-row.c:239 src/gs-review-row.c:263 src/gs-updates-page.c:852
-#: src/gs-upgrade-banner.ui:202
+#: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:272 src/gs-common.c:678 src/gs-details-page.ui:291
+#: src/gs-dkms-dialog.ui:28 src/gs-dkms-dialog.ui:120 src/gs-page.c:423 src/gs-removal-dialog.ui:24
+#: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:174 src/gs-repos-dialog.c:250
+#: src/gs-review-dialog.ui:24 src/gs-review-row.c:235 src/gs-review-row.c:259 src/gs-updates-page.c:852
+#: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
 msgstr "_ยกเลิก"
 
-#: src/gs-basic-auth-dialog.ui:29
+#: src/gs-basic-auth-dialog.ui:27
 msgid "_Login"
 msgstr "เ_ข้าสู่ระบบ"
 
-#. Translators: Placeholder text for a login entry.
-#. Translators: It's an origin scope, 'User' or 'System' installation
-#: src/gs-basic-auth-dialog.ui:65 src/gs-origin-popover-row.ui:131
-msgid "User"
+#. Translators: Title for a login entry.
+#: src/gs-basic-auth-dialog.ui:45
+#, fuzzy
+#| msgid "User"
+msgid "_User"
 msgstr "ผู้ใช้"
 
-#. Translators: Placeholder text for a login entry.
-#: src/gs-basic-auth-dialog.ui:78
-msgid "Password"
+#. Translators: Title for a login entry.
+#: src/gs-basic-auth-dialog.ui:54
+#, fuzzy
+#| msgid "Password"
+msgid "_Password"
 msgstr "รหัสผ่าน"
 
 #. TRANSLATORS: this is where all apps that don't
@@ -1611,7 +1650,7 @@ msgid "Recently installed updates are available to review"
 msgstr "มีรายการอัปเดตที่ติดตั้งไปเมื่อสักครู่ให้ตรวจดู"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:103 src/gs-common.c:915
+#: src/gs-common.c:103 src/gs-common.c:846
 msgid "Restart"
 msgstr "รีสตาร์ท"
 
@@ -1620,17 +1659,17 @@ msgid "Launch"
 msgstr "เรียกใช้งาน"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:234
+#: src/gs-common.c:208
 msgid "Install Software?"
 msgstr "ติดตั้งซอฟต์แวร์หรือไม่?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:236
+#: src/gs-common.c:210
 msgid "Install Third-Party Software?"
 msgstr "ติดตั้งซอฟต์แวร์ของบุคคลที่สามหรือไม่?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:240
+#: src/gs-common.c:214
 msgid "Enable Software Repository?"
 msgstr "เปิดใช้คลังซอฟต์แวร์หรือไม่?"
 
@@ -1638,7 +1677,7 @@ msgstr "เปิดใช้คลังซอฟต์แวร์หรือ
 #. ask for confirmation
 #. TRANSLATORS: "Enable Third-Party Software Repository?" is
 #. * the confirmation dialog title
-#: src/gs-common.c:242 src/gs-repos-dialog.c:172
+#: src/gs-common.c:216 src/gs-repos-dialog.c:171
 msgid "Enable Third-Party Software Repository?"
 msgstr "เปิดใช้คลังซอฟต์แวร์ของบุคคลที่สามหรือไม่?"
 
@@ -1646,136 +1685,155 @@ msgstr "เปิดใช้คลังซอฟต์แวร์ของบ
 #. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:254
+#: src/gs-common.c:228
 #, c-format
 msgid ""
-"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-source_software\">free and open source software</a>, and is provided "
-"by “%s”."
-msgstr "%s ไม่ใช่<a href=\"https://th.wikipedia.org/wiki/ซอฟต์แวร์เสรีและโอเพนซอร์ส\">ซอฟต์แวร์เสรีและโอเพนซอร์ส</a> และจัดเตรียมโดย “%s”"
+"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-source_software\">free and open "
+"source software</a>, and is provided by “%s”."
+msgstr ""
+"%s ไม่ใช่<a href=\"https://th.wikipedia.org/wiki/ซอฟต์แวร์เสรีและโอเพนซอร์ส\">ซอฟต์แวร์เสรีและโอเพนซอร์ส</a> "
+"และจัดเตรียมโดย “%s”"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:264
+#: src/gs-common.c:238
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s จัดเตรียมโดย “%s”"
 
-#: src/gs-common.c:273
+#: src/gs-common.c:247
 msgid "This software repository must be enabled to continue installation."
 msgstr "คลังซอฟต์แวร์นี้ต้องเปิดใช้ก่อนที่จะติดตั้งต่อไป"
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:283
+#: src/gs-common.c:257
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "อาจจะผิดกฎหมายที่จะติดตั้งหรือใช้ %s ในบางประเทศ"
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:289
+#: src/gs-common.c:263
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "อาจจะผิดกฎหมายที่จะติดตั้งหรือใช้ตัวอ่าน-ลงรหัสนี้ในบางประเทศ"
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:303
+#: src/gs-common.c:275
 msgid "Don’t _Warn Again"
 msgstr "ไ_ม่ต้องเตือนอีก"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:312
+#: src/gs-common.c:284
 msgid "Enable and _Install"
 msgstr "เปิดใช้แล้ว_ติดตั้ง"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:519
+#: src/gs-common.c:495
 msgid "Detailed errors from the package manager follow:"
 msgstr "ข้อผิดพลาดโดยละเอียดจากโปรแกรมจัดการแพคเกจมีดังต่อไปนี้:"
 
-#: src/gs-common.c:526 src/gs-common.c:663 src/gs-safety-context-dialog.ui:67 src/gs-updates-paused-banner.c:77
+#: src/gs-common.c:500 src/gs-safety-context-dialog.ui:67 src/gs-updates-paused-banner.c:77
+#: src/gs-utils-error-dialog-simple.ui:31
 msgid "Details"
 msgstr "รายละเอียด"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:575 src/gs-updates-paused-banner.c:64
+#: src/gs-common.c:558 src/gs-updates-paused-banner.c:64
 msgid "_Close"
 msgstr "_ปิด"
 
+#: src/gs-common.c:590
+msgid "Details copied to clipboard"
+msgstr ""
+
 #. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:744
+#: src/gs-common.c:670
 msgid "_Accept"
 msgstr "_ยอมรับ"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:890
+#: src/gs-common.c:821
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "ติดตั้งรายการอัปเดตแล้ว"
 
 #. TRANSLATORS: we've just uninstalled some apps
-#: src/gs-common.c:900
+#: src/gs-common.c:831
 msgid "An app has been uninstalled"
 msgid_plural "Apps have been uninstalled"
 msgstr[0] "ถอนการติดตั้งแอปแล้ว"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:906
+#: src/gs-common.c:837
 msgid "A restart is required for it to take effect"
 msgid_plural "A restart is required for them to take effect"
 msgstr[0] "ต้องรีสตาร์ทเพื่อให้มีผล"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:913
+#: src/gs-common.c:844
 msgid "Not Now"
 msgstr "ยังไม่ทำตอนนี้"
 
-#. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:1009
-msgid "Just now"
-msgstr "เมื่อสักครู่"
+#. TRANSLATORS: something happened less than a day ago
+#: src/gs-common.c:939
+msgid "Today"
+msgstr ""
 
-#: src/gs-common.c:1011
-#, c-format
-msgid "%d minute ago"
-msgid_plural "%d minutes ago"
-msgstr[0] "%d นาทีก่อน"
+#. TRANSLATORS: something happened more than a day ago but less than 2 days ago
+#: src/gs-common.c:942
+#, fuzzy
+#| msgid "Yesterday, %R"
+msgid "Yesterday"
+msgstr "เมื่อวาน %R น."
 
-#: src/gs-common.c:1015
-#, c-format
-msgid "%d hour ago"
-msgid_plural "%d hours ago"
-msgstr[0] "%d ชั่วโมงก่อน"
-
-#: src/gs-common.c:1019
+#: src/gs-common.c:944
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "%d วันก่อน"
 
-#: src/gs-common.c:1023
+#: src/gs-common.c:948
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "%d สัปดาห์ก่อน"
 
-#: src/gs-common.c:1027
+#: src/gs-common.c:952
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "%d เดือนก่อน"
 
-#: src/gs-common.c:1031
+#: src/gs-common.c:956
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
 msgstr[0] "%d ปีก่อน"
 
+#. TRANSLATORS: something happened less than 5 minutes ago
+#: src/gs-common.c:1013
+msgid "Just now"
+msgstr "เมื่อสักครู่"
+
+#: src/gs-common.c:1015
+#, c-format
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d นาทีก่อน"
+
+#: src/gs-common.c:1017
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d ชั่วโมงก่อน"
+
 #. Translators: This is to construct a disk size string consisting of the value and its unit, while
 #. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1394
+#: src/gs-common.c:1380
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
@@ -2216,7 +2274,7 @@ msgstr "ต้องการแพคเกจเพิ่มเติม"
 msgid "Find in Software"
 msgstr "หาใน “ซอฟต์แวร์”"
 
-#: src/gs-description-box.c:93 src/gs-description-box.c:342
+#: src/gs-description-box.c:93 src/gs-description-box.c:348
 msgid "_Show More"
 msgstr "แ_สดงเพิ่มเติม"
 
@@ -2224,56 +2282,56 @@ msgstr "แ_สดงเพิ่มเติม"
 msgid "_Show Less"
 msgstr "แ_สดงน้อยลง"
 
-#: src/gs-details-page.c:391
+#: src/gs-details-page.c:377
 msgid "Removing…"
-msgstr "กำลังถอดถอน…"
+msgstr "กำลังลบ…"
 
-#: src/gs-details-page.c:406
+#: src/gs-details-page.c:392
 msgid "Requires restart to finish install"
 msgstr "ต้องรีสตาร์ทเพื่อติดตั้งให้เสร็จ"
 
-#: src/gs-details-page.c:413
+#: src/gs-details-page.c:399
 msgid "Requires restart to finish remove"
-msgstr "ต้องรีสตาร์ทเพื่อถอดถอนให้เสร็จ"
+msgstr "ต้องรีสตาร์ทเพื่อลบให้เสร็จ"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:429
+#: src/gs-details-page.c:415
 msgid "Pending installation…"
 msgstr "กำลังรอติดตั้ง…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:435
+#: src/gs-details-page.c:421
 msgid "Pending update…"
 msgstr "กำลังรออัปเดต…"
 
 #. Translators: This string is shown when downloading an app before install.
-#: src/gs-details-page.c:450 src/gs-upgrade-banner.c:180
+#: src/gs-details-page.c:436 src/gs-upgrade-banner.c:180
 msgid "Downloading…"
 msgstr "กำลังดาวน์โหลด…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:453
+#: src/gs-details-page.c:439
 msgid "Preparing…"
 msgstr "กำลังเตรียม…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:456
+#: src/gs-details-page.c:442
 msgid "Uninstalling…"
 msgstr "กำลังถอนการติดตั้ง…"
 
 #. Translators: the "%s" is replaced with an app name
-#: src/gs-details-page.c:583
+#: src/gs-details-page.c:569
 #, c-format
 msgid "%s is not installed, but it still has data present."
 msgstr "ไม่ได้ติดตั้ง %s แต่ยังคงมีข้อมูลอยู่"
 
-#: src/gs-details-page.c:1078 src/gs-toast.c:65
+#: src/gs-details-page.c:1073 src/gs-toast.c:65
 msgid "_Restart"
 msgstr "_รีสตาร์ท"
 
-#: src/gs-details-page.c:1084
+#: src/gs-details-page.c:1079
 msgid "_Enable…"
 msgstr "เ_ปิดใช้"
 
@@ -2281,81 +2339,85 @@ msgstr "เ_ปิดใช้"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:1110
+#: src/gs-details-page.c:1105
 msgid "_Install…"
 msgstr "_ติดตั้ง…"
 
 #. Translators: %s is the user-visible app name
-#: src/gs-details-page.c:1326
+#: src/gs-details-page.c:1315
 #, c-format
 msgid "%s will appear in US English"
 msgstr "%s จะปรากฏเป็นภาษาอังกฤษแบบสหรัฐ"
 
-#: src/gs-details-page.c:1334
+#: src/gs-details-page.c:1323
 msgid "This app will appear in US English"
 msgstr "แอปนี้จะปรากฏเป็นภาษาอังกฤษแบบสหรัฐ"
 
-#: src/gs-details-page.c:1336
+#: src/gs-details-page.c:1325
 msgid "This software will appear in US English"
 msgstr "ซอฟต์แวร์นี้จะปรากฏเป็นภาษาอังกฤษแบบสหรัฐ"
 
-#: src/gs-details-page.c:1371 src/gs-details-page.ui:76
+#: src/gs-details-page.c:1360 src/gs-details-page.ui:36
 msgid "Help _Translate"
 msgstr "ช่วยแ_ปล"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1436
+#: src/gs-details-page.c:1425
 #, c-format
 msgid "Other Apps by %s"
 msgstr "แอปอื่นๆ โดย %s"
 
 #. Translators: the first %s is replaced with the developer name, the second %s is replaced with the app id
-#: src/gs-details-page.c:1472
+#: src/gs-details-page.c:1461
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
 msgstr "ผู้พัฒนา %s ได้พิสูจน์ความเป็นเจ้าของ %s แล้ว"
 
 #. Translators: the %s is replaced with the app id
-#: src/gs-details-page.c:1475
+#: src/gs-details-page.c:1464
 #, c-format
 msgid "Developer has proven the ownership of %s"
 msgstr "ผู้พัฒนาได้พิสูจน์ความเป็นเจ้าของ %s แล้ว"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1838
+#: src/gs-details-page.c:1827
 msgid "You need internet access to write a review"
 msgstr "คุณต้องมีการเข้าถึงอินเทอร์เน็ตเพื่อเขียนบทวิจารณ์"
 
-#: src/gs-details-page.c:1939
+#: src/gs-details-page.c:1930
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr "แอปนี้ไม่ได้รับการอัปเดตอีกต่อไปแล้ว รวมถึงการแก้ไขด้านความปลอดภัย"
 
-#: src/gs-details-page.c:1940
+#: src/gs-details-page.c:1931
 msgid "This app is already provided by your distribution and should not be replaced."
 msgstr "แอปนี้ได้รับการจัดเตรียมไว้แล้วโดยผู้จัดจำหน่ายระบบของคุณและไม่ควรถูกแทนที่"
 
-#: src/gs-details-page.c:1941
+#: src/gs-details-page.c:1932
 msgid "This app doesn’t provide any links to a website, code repository or issue tracker."
 msgstr "แอปนี้ไม่มีลิงก์ไปยังเว็บไซต์ ที่เก็บโค้ด หรือเครื่องมือติดตามปัญหา"
 
-#: src/gs-details-page.c:1943
+#: src/gs-details-page.c:1934
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr "ซอฟต์แวร์นี้ไม่ได้รับการอัปเดตอีกต่อไปแล้ว รวมถึงการแก้ไขด้านความปลอดภัย"
 
-#: src/gs-details-page.c:1944
+#: src/gs-details-page.c:1935
 msgid "This software is already provided by your distribution and should not be replaced."
 msgstr "ซอฟต์แวร์นี้จัดเตรียมโดยชุดจัดแจกของคุณอยู่แล้ว และไม่ควรแทนที่"
 
-#: src/gs-details-page.c:1945
+#: src/gs-details-page.c:1936
 msgid "This software doesn’t provide any links to a website, code repository or issue tracker."
 msgstr "ซอฟต์แวร์นี้ไม่มีลิงก์ไปยังเว็บไซต์ ที่เก็บโค้ด หรือเครื่องมือติดตามปัญหา"
 
-#: src/gs-details-page.c:2035 src/gs-details-page.c:2052
+#: src/gs-details-page.c:2026 src/gs-details-page.c:2043
 #, c-format
 msgid "Software failed to retrieve information for “%s” and is unable to show the details for this app."
 msgstr ""
 
-#: src/gs-details-page.c:2407
+#: src/gs-details-page.c:2411
+msgid "Invalid review response received from server"
+msgstr ""
+
+#: src/gs-details-page.c:2421
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "ไม่สามารถส่งบทวิจารณ์สำหรับ “%s” ได้: %s"
@@ -2364,130 +2426,131 @@ msgstr "ไม่สามารถส่งบทวิจารณ์สำห
 msgid "Details page"
 msgstr "หน้ารายละเอียด"
 
-#: src/gs-details-page.ui:54
+#: src/gs-details-page.ui:22
 msgid "Loading App Details"
 msgstr "กำลังโหลดรายละเอียดแอป"
 
-#: src/gs-details-page.ui:186
+#: src/gs-details-page.ui:146
 msgid "Verified"
 msgstr "ตรวจสอบแล้ว"
 
 #. TRANSLATORS: A label for a button to execute the selected app.
-#: src/gs-details-page.ui:260
+#: src/gs-details-page.ui:220
 msgid "_Open"
 msgstr "เ_ปิด"
 
-#: src/gs-details-page.ui:276 plugins/packagekit/gs-packagekit-task.c:159
+#: src/gs-details-page.ui:236 plugins/packagekit/gs-packagekit-task.c:159
 msgid "_Update"
 msgstr "ป_รับรุ่น"
 
 #. TRANSLATORS: button text in the header when an app can be erased
-#: src/gs-details-page.ui:294 src/gs-details-page.ui:304
+#: src/gs-details-page.ui:254 src/gs-details-page.ui:264
 msgid "Uninstall"
 msgstr "ถอนการติดตั้ง"
 
-#: src/gs-details-page.ui:493 src/gs-installed-page.ui:136
+#: src/gs-details-page.ui:453 src/gs-installed-page.ui:126
 msgid "Add-ons"
 msgstr "ส่วนเสริม"
 
-#: src/gs-details-page.ui:646
+#: src/gs-details-page.ui:606
 msgid "This app can only be used when there is an active internet connection."
 msgstr "แอปนี้สามารถใช้งานได้เฉพาะเมื่อมีการเชื่อมต่ออินเตอร์เน็ตเท่านั้น"
 
-#: src/gs-details-page.ui:669
+#: src/gs-details-page.ui:629
 msgid "Software Repository Included"
 msgstr "มีคลังซอฟต์แวร์"
 
-#: src/gs-details-page.ui:679
-msgid "This app includes a software repository which provides updates, as well as access to other software."
+#: src/gs-details-page.ui:639
+msgid ""
+"This app includes a software repository which provides updates, as well as access to other software."
 msgstr "แอปนี้รวมคลังซอฟต์แวร์ซึ่งให้การอัปเดต รวมถึงการเข้าถึงซอฟต์แวร์อื่นๆ"
 
-#: src/gs-details-page.ui:707
+#: src/gs-details-page.ui:667
 msgid "No Software Repository Included"
 msgstr "ไม่มีคลังซอฟต์แวร์"
 
-#: src/gs-details-page.ui:717
+#: src/gs-details-page.ui:677
 msgid "This app does not include a software repository. It will not be updated with new versions."
 msgstr "แอปนี้ไม่มีคลังซอฟต์แวร์ ดังนั้นจะไม่ได้รับการอัปเดตเป็นรุ่นใหม่"
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:776
+#: src/gs-details-page.ui:736
 msgid "Software Repository Identified"
 msgstr "ตรวจพบคลังซอฟต์แวร์"
 
-#: src/gs-details-page.ui:786
+#: src/gs-details-page.ui:746
 msgid "Adding this software repository will give you access to additional software and upgrades."
 msgstr "การเพิ่มคลังซอฟต์แวร์นี้จะทำให้คุณสามารถเข้าถึงซอฟต์แวร์และการอัปเกรดเพิ่มเติมได้"
 
-#: src/gs-details-page.ui:793
+#: src/gs-details-page.ui:753
 msgid "Only use software repositories that you trust."
 msgstr "ใช้เฉพาะคลังซอฟต์แวร์ที่คุณเชื่อถือเท่านั้น"
 
-#: src/gs-details-page.ui:834
+#: src/gs-details-page.ui:794
 msgid "Clear app data"
 msgstr "ล้างข้อมูลแอป"
 
-#: src/gs-details-page.ui:851
+#: src/gs-details-page.ui:811
 msgid "D_elete Data"
 msgstr "_ลบข้อมูล"
 
-#: src/gs-details-page.ui:927
+#: src/gs-details-page.ui:887
 msgid "No Metadata"
 msgstr "ไม่มีข้อมูลกำกับ"
 
-#: src/gs-details-page.ui:964
+#: src/gs-details-page.ui:924
 msgid "Project _Website"
 msgstr "เ_ว็บไซต์โครงการ"
 
-#: src/gs-details-page.ui:980
+#: src/gs-details-page.ui:940
 msgid "_Donate"
 msgstr "_บริจาค"
 
-#: src/gs-details-page.ui:996
+#: src/gs-details-page.ui:956
 msgid "Contribute _Translations"
 msgstr "มีส่วนร่วมแ_ปล"
 
-#: src/gs-details-page.ui:1012
+#: src/gs-details-page.ui:972
 msgid "_Report an Issue"
 msgstr "_รายงานปัญหา"
 
-#: src/gs-details-page.ui:1028
+#: src/gs-details-page.ui:988
 msgid "_Help"
 msgstr "วิ_ธีใช้"
 
 #. Translators: This is a verb, used on a button to ‘contact the developer’
-#: src/gs-details-page.ui:1044
+#: src/gs-details-page.ui:1004
 msgctxt "verb"
 msgid "_Contact"
 msgstr "_ติดต่อ"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1125
+#: src/gs-details-page.ui:1085
 msgid "Write R_eview"
 msgstr "เ_ขียนบทวิจารณ์"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:1142
+#: src/gs-details-page.ui:1102
 msgid "All Reviews"
 msgstr "บทวิจารณ์ทั้งหมด"
 
-#: src/gs-details-page.ui:1214
+#: src/gs-details-page.ui:1174
 msgid "Unable to Show App Details"
 msgstr "ไม่สามารถแสดงรายละเอียดแอปได้"
 
-#: src/gs-dkms-dialog.c:67
+#: src/gs-dkms-dialog.c:66
 msgid "Failed to prepare reboot"
 msgstr "การเตรียมการรีบูตล้มเหลว"
 
-#: src/gs-dkms-dialog.c:93
+#: src/gs-dkms-dialog.c:92
 msgid "Unknown error"
 msgstr "ข้อผิดพลาดไม่ทราบสาเหตุ"
 
-#: src/gs-dkms-dialog.c:99
+#: src/gs-dkms-dialog.c:98
 msgid "The key was not found"
 msgstr "ไม่พบคีย์"
 
-#: src/gs-dkms-dialog.c:102
+#: src/gs-dkms-dialog.c:101
 msgid "The key is not enrolled"
 msgstr ""
 
@@ -2503,8 +2566,9 @@ msgstr "ถัดไป"
 
 #: src/gs-dkms-dialog.ui:55
 msgid ""
-"This device has Secure Boot enabled. To allow new drivers to be enabled, a new machine owner key (MOK) must be enrolled. The process "
-"requires a password to be entered later in the process. Please note down the following password associated with the key:"
+"This device has Secure Boot enabled. To allow new drivers to be enabled, a new machine owner key "
+"(MOK) must be enrolled. The process requires a password to be entered later in the process. Please "
+"note down the following password associated with the key:"
 msgstr ""
 
 #: src/gs-dkms-dialog.ui:83
@@ -2521,7 +2585,9 @@ msgid "Setup Instructions: Please Read Carefully"
 msgstr ""
 
 #: src/gs-dkms-dialog.ui:166
-msgid "After restart, a device setup screen will be shown. To enable new drivers, proceed through the setup steps:"
+msgid ""
+"After restart, a device setup screen will be shown. To enable new drivers, proceed through the setup "
+"steps:"
 msgstr ""
 
 #: src/gs-dkms-dialog.ui:179
@@ -2538,32 +2604,35 @@ msgstr "ผลกระทบต่อความปลอดภัย"
 
 #: src/gs-dkms-dialog.ui:230
 msgid ""
-"After successful key enrollment, be aware that any future updates to the module or any other module will be implicitly trusted. All "
-"future updates will happen transparently with no interaction and or authorization."
+"After successful key enrollment, be aware that any future updates to the module or any other module "
+"will be implicitly trusted. All future updates will happen transparently with no interaction and or "
+"authorization."
 msgstr ""
 
 #: src/gs-dkms-dialog.ui:244
-msgid "Further guidance can be found on the <a href=\"https://docs.fedoraproject.org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
+msgid ""
+"Further guidance can be found on the <a href=\"https://docs.fedoraproject.org/en-US/quick-docs/mok-"
+"enrollment/\">docs page</a>."
 msgstr ""
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:272
+#: lib/gs-external-appstream-utils.c:293
 msgid "Downloading extra metadata files…"
 msgstr "กำลังดาวน์โหลดไฟล์ข้อมูลกำกับเพิ่มเติม…"
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:143
+#: src/gs-extras-page.c:142
 msgid " and "
 msgstr " และ "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:146
+#: src/gs-extras-page.c:145
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: App window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:172
+#: src/gs-extras-page.c:171
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -2571,157 +2640,164 @@ msgstr[0] "แบบอักษรที่มีสำหรับอักษ
 
 #. TRANSLATORS: App window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:180
+#: src/gs-extras-page.c:179
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
 msgstr[0] "ซอฟต์แวร์ที่มีสำหรับ %s"
 
-#: src/gs-extras-page.c:241
+#: src/gs-extras-page.c:225
 msgid "Requested software not found"
 msgstr "ไม่พบซอฟต์แวร์ที่ร้องขอ"
 
-#: src/gs-extras-page.c:243
+#: src/gs-extras-page.c:227
 msgid "Failed to find requested software"
 msgstr "ไม่สามารถหาซอฟต์แวร์ที่ร้องขอ"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:425
+#: src/gs-extras-page.c:409
 #, c-format
 msgid "%s not found"
 msgstr "ไม่พบ %s"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:429
+#: src/gs-extras-page.c:413
 msgid "on the website"
 msgstr "ที่เว็บไซต์"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:436
+#: src/gs-extras-page.c:420
 #, c-format
 msgid "No apps are available that provide the file %s."
 msgstr "ไม่มีแอปที่จัดเตรียมไฟล์ %s"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:440 src/gs-extras-page.c:451 src/gs-extras-page.c:462
+#: src/gs-extras-page.c:424 src/gs-extras-page.c:435 src/gs-extras-page.c:446
 #, c-format
 msgid "Information about %s, as well as options for how to get missing apps might be found %s."
 msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับแอปที่ขาดได้ %s"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:447 src/gs-extras-page.c:469
+#: src/gs-extras-page.c:431 src/gs-extras-page.c:453
 #, c-format
 msgid "No apps are available for %s support."
 msgstr "ไม่มีแอปสำหรับรองรับ %s"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:458
+#: src/gs-extras-page.c:442
 #, c-format
 msgid "%s is not available."
 msgstr "ไม่มี %s"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:473
+#: src/gs-extras-page.c:457
 #, c-format
-msgid "Information about %s, as well as options for how to get an app that can support this format might be found %s."
+msgid ""
+"Information about %s, as well as options for how to get an app that can support this format might be "
+"found %s."
 msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับแอปที่สามารถรองรับฟอร์แมตนี้ได้ %s"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:480
+#: src/gs-extras-page.c:464
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "ไม่มีแบบอักษรสำหรับรองรับอักษร %s"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:484
+#: src/gs-extras-page.c:468
 #, c-format
 msgid "Information about %s, as well as options for how to get additional fonts might be found %s."
 msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับแบบอักษรเพิ่มเติมได้ %s"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:491
+#: src/gs-extras-page.c:475
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "ไม่มีส่วนเสริมของตัวอ่าน-ลงรหัสสำหรับรูปแบบ %s"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:495
+#: src/gs-extras-page.c:479
 #, c-format
-msgid "Information about %s, as well as options for how to get a codec that can play this format might be found %s."
+msgid ""
+"Information about %s, as well as options for how to get a codec that can play this format might be "
+"found %s."
 msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับตัวอ่าน-ลงรหัสที่สามารถเล่นฟอร์แมตนี้ได้ %s"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:502
+#: src/gs-extras-page.c:486
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "ไม่มีทรัพยากรพลาสมาสำหรับรองรับ %s"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:506
+#: src/gs-extras-page.c:490
 #, c-format
-msgid "Information about %s, as well as options for how to get additional Plasma resources might be found %s."
+msgid ""
+"Information about %s, as well as options for how to get additional Plasma resources might be found %s."
 msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับทรัพยากรพลาสมาเพิ่มเติมได้ %s"
 
 #. TRANSLATORS: this is when we know about an app or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:513
+#: src/gs-extras-page.c:497
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "ไม่มีไดรเวอร์เครื่องพิมพ์สำหรับ %s"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:517
+#: src/gs-extras-page.c:501
 #, c-format
-msgid "Information about %s, as well as options for how to get a driver that supports this printer might be found %s."
+msgid ""
+"Information about %s, as well as options for how to get a driver that supports this printer might be "
+"found %s."
 msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับไดรเวอร์ที่รองรับเครื่องพิมพ์นี้ได้ %s"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:563
+#: src/gs-extras-page.c:547
 msgid "the documentation"
 msgstr "เอกสารคู่มือ"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the app name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:569
+#: src/gs-extras-page.c:553
 #, c-format
 msgid "Unable to find the %s requested by %s. Please see %s for more information."
 msgid_plural "Unable to find the %s requested by %s. Please see %s for more information."
 msgstr[0] "ไม่พบ %s ตามที่ร้องขอโดย %s กรุณาอ่านข้อมูลเพิ่มเติมที่%s"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:578
+#: src/gs-extras-page.c:562
 #, c-format
 msgid "Unable to find the %s you were searching for. Please see %s for more information."
 msgid_plural "Unable to find the %s you were searching for. Please see %s for more information."
 msgstr[0] "ไม่พบ %s ตามที่คุณค้นหา กรุณาอ่านข้อมูลเพิ่มเติมที่%s"
 
-#: src/gs-extras-page.c:656 src/gs-extras-page.c:713 src/gs-extras-page.c:753
+#: src/gs-extras-page.c:640 src/gs-extras-page.c:697 src/gs-extras-page.c:737
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "ไม่พบผลการค้นหาใดๆ: %s"
 
-#: src/gs-extras-page.c:970
+#: src/gs-extras-page.c:954
 #, c-format
 msgid "%s file format"
 msgstr "ฟอร์แมตไฟล์ %s"
 
-#: src/gs-extras-page.c:1328
+#: src/gs-extras-page.c:1312
 msgid "Install _All"
 msgstr "ติดตั้งทั้ง_หมด"
 
-#: src/gs-extras-page.c:1358
+#: src/gs-extras-page.c:1342
 msgid "Unable to Find Requested Software"
 msgstr "ไม่สามารถหาซอฟต์แวร์ที่ร้องขอ"
 
@@ -2729,11 +2805,11 @@ msgstr "ไม่สามารถหาซอฟต์แวร์ที่ร
 msgid "Codecs page"
 msgstr "หน้าของตัวอ่าน-ลงรหัส"
 
-#: src/gs-extras-page.ui:88
+#: src/gs-extras-page.ui:81
 msgid "No Results Found"
 msgstr "ไม่พบผลลัพธ์"
 
-#: src/gs-extras-page.ui:100
+#: src/gs-extras-page.ui:93
 msgid "Unable To Perform Search"
 msgstr ""
 
@@ -2990,7 +3066,7 @@ msgid "Open Keyboard Shortcuts"
 msgstr "เปิดปุ่มลัดแป้นพิมพ์"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
-#: src/gs-installed-page.c:823
+#: src/gs-installed-page.c:820
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "ติดตั้งแล้ว"
@@ -2999,21 +3075,21 @@ msgstr "ติดตั้งแล้ว"
 msgid "Installed page"
 msgstr "หน้ารายการติดตั้งแล้ว"
 
-#: src/gs-installed-page.ui:56
+#: src/gs-installed-page.ui:46
 msgid "In Progress"
 msgstr "ดำเนินอยู่"
 
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
-#: src/gs-installed-page.ui:76 plugins/flatpak/gs-flatpak-utils.c:107
+#: src/gs-installed-page.ui:66 plugins/flatpak/gs-flatpak-utils.c:107
 msgid "Apps"
 msgstr "แอป"
 
-#: src/gs-installed-page.ui:96
+#: src/gs-installed-page.ui:86
 msgid "Web Apps"
 msgstr "เว็บแอป"
 
-#: src/gs-installed-page.ui:116
+#: src/gs-installed-page.ui:106
 msgid "System Apps"
 msgstr "แอประบบ"
 
@@ -3029,7 +3105,8 @@ msgstr "_มีส่วนร่วม"
 #: src/gs-license-tile.c:121
 #, c-format
 msgid ""
-"This app is developed in the open by an international community, and released under the <a href=\"%s\">%s license</a>.\n"
+"This app is developed in the open by an international community, and released under the <a "
+"href=\"%s\">%s license</a>.\n"
 "\n"
 "You can participate and help make it even better."
 msgstr ""
@@ -3053,7 +3130,8 @@ msgstr ""
 #: src/gs-license-tile.c:135
 #, c-format
 msgid ""
-"This software is developed in the open by an international community, and released under the <a href=\"%s\">%s license</a>.\n"
+"This software is developed in the open by an international community, and released under the <a "
+"href=\"%s\">%s license</a>.\n"
 "\n"
 "You can participate and help make it even better."
 msgstr ""
@@ -3065,7 +3143,8 @@ msgstr ""
 #: src/gs-license-tile.c:142
 #, c-format
 msgid ""
-"This software is developed in the open by an international community, and released under the %s license.\n"
+"This software is developed in the open by an international community, and released under the %s "
+"license.\n"
 "\n"
 "You can participate and help make it even better."
 msgstr ""
@@ -3074,7 +3153,7 @@ msgstr ""
 "คุณสามารถมีส่วนร่วมและช่วยทำให้ซอฟต์แวร์นี้ดีขึ้นได้"
 
 #. Translators: This indicates an app does not specify which license it's developed under.
-#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:410
+#: src/gs-license-tile.c:148 src/gs-safety-context-dialog.c:409
 msgid "Unknown License"
 msgstr "ไม่ทราบสัญญาอนุญาต"
 
@@ -3084,46 +3163,49 @@ msgstr "เ_รียนรู้เพิ่มเติม"
 
 #: src/gs-license-tile.c:157
 msgid ""
-"This app does not specify what license it is developed under, and may be proprietary. It may be insecure in ways that are hard to "
-"detect, and it may change without oversight.\n"
+"This app does not specify what license it is developed under, and may be proprietary. It may be "
+"insecure in ways that are hard to detect, and it may change without oversight.\n"
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
-"แอปนี้ไม่ได้ระบุว่าพัฒนาภายใต้สัญญาอนุญาตใด และอาจเป็นกรรมสิทธิ์ แอปอาจไม่ปลอดภัยในลักษณะที่ยากต่อการตรวจจับ และอาจเปลี่ยนแปลงได้โดยไม่มีการควบคุมดูแล\n"
+"แอปนี้ไม่ได้ระบุว่าพัฒนาภายใต้สัญญาอนุญาตใด และอาจเป็นกรรมสิทธิ์ แอปอาจไม่ปลอดภัยในลักษณะที่ยากต่อการตรวจจับ "
+"และอาจเปลี่ยนแปลงได้โดยไม่มีการควบคุมดูแล\n"
 "\n"
 "คุณอาจมีส่วนสนับสนุนแอปนี้หรือไม่ก็ได้"
 
 #: src/gs-license-tile.c:161
 msgid ""
-"This software does not specify what license it is developed under, and may be proprietary. It may be insecure in ways that are hard "
-"to detect, and it may change without oversight.\n"
+"This software does not specify what license it is developed under, and may be proprietary. It may be "
+"insecure in ways that are hard to detect, and it may change without oversight.\n"
 "\n"
 "You may or may not be able to contribute to this software."
 msgstr ""
-"ซอฟต์แวร์นี้ไม่ได้ระบุว่าพัฒนาภายใต้สัญญาอนุญาตใด และอาจเป็นกรรมสิทธิ์ ซอฟต์แวร์อาจไม่ปลอดภัยในลักษณะที่ยากต่อการตรวจจับ และอาจเปลี่ยนแปลงได้โดยไม่มีการควบคุมดูแล\n"
+"ซอฟต์แวร์นี้ไม่ได้ระบุว่าพัฒนาภายใต้สัญญาอนุญาตใด และอาจเป็นกรรมสิทธิ์ ซอฟต์แวร์อาจไม่ปลอดภัยในลักษณะที่ยากต่อการตรวจจับ "
+"และอาจเปลี่ยนแปลงได้โดยไม่มีการควบคุมดูแล\n"
 "\n"
 "คุณอาจมีส่วนสนับสนุนซอฟต์แวร์นี้หรือไม่ก็ได้"
 
 #. Translators: This is used for "License    Proprietary"
-#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:575
+#: src/gs-license-tile.c:166 src/gs-safety-context-dialog.c:574
 msgid "Proprietary"
 msgstr "กรรมสิทธิ์"
 
 #: src/gs-license-tile.c:175
 msgid ""
-"This app is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, "
-"and it may change without oversight.\n"
+"This app is not developed in the open, so only its developers know how it works. It may be insecure "
+"in ways that are hard to detect, and it may change without oversight.\n"
 "\n"
 "You may not be able to contribute to this app."
 msgstr ""
-"แอปนี้ไม่ได้รับการพัฒนาแบบเปิด ดังนั้นเฉพาะนักพัฒนาเท่านั้นที่รู้ว่าแอปนี้ทำงานอย่างไร แอปอาจไม่ปลอดภัยในลักษณะที่ตรวจจับได้ยาก และอาจเปลี่ยนแปลงได้เองโดยไม่มีใครดูแล\n"
+"แอปนี้ไม่ได้รับการพัฒนาแบบเปิด ดังนั้นเฉพาะนักพัฒนาเท่านั้นที่รู้ว่าแอปนี้ทำงานอย่างไร แอปอาจไม่ปลอดภัยในลักษณะที่ตรวจจับได้ยาก "
+"และอาจเปลี่ยนแปลงได้เองโดยไม่มีใครดูแล\n"
 "\n"
 "คุณอาจไม่สามารถมีส่วนสนับสนุนแอปนี้ได้"
 
 #: src/gs-license-tile.c:179
 msgid ""
-"This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to "
-"detect, and it may change without oversight.\n"
+"This software is not developed in the open, so only its developers know how it works. It may be "
+"insecure in ways that are hard to detect, and it may change without oversight.\n"
 "\n"
 "You may not be able to contribute to this software."
 msgstr ""
@@ -3133,7 +3215,7 @@ msgstr ""
 "คุณอาจไม่สามารถมีส่วนสนับสนุนซอฟต์แวร์นี้ได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:447
+#: src/gs-license-tile.c:190 src/gs-safety-context-dialog.c:446
 msgid "Special License"
 msgstr "สัญญาอนุญาตพิเศษ"
 
@@ -3207,42 +3289,47 @@ msgstr "ไม่ทราบแหล่ง"
 msgid "Beta"
 msgstr "เบตา"
 
+#. Translators: It's an origin scope, 'User' or 'System' installation
+#: src/gs-origin-popover-row.ui:131
+msgid "User"
+msgstr "ผู้ใช้"
+
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:284
+#: src/gs-os-update-page.c:237
 msgid "Additions"
 msgstr "เพิ่มเติม"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:288
+#: src/gs-os-update-page.c:241
 msgid "Removals"
-msgstr "ถอดถอน"
+msgstr "ลบออก"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-os-update-page.c:292
+#: src/gs-os-update-page.c:245
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "อัปเดต"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:296
+#: src/gs-os-update-page.c:249
 msgid "Downgrades"
 msgstr "ดาวน์เกรด"
 
 #. Translators: This is a clickable link on the third party repositories message dialog. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:733
+#: src/gs-overview-page.c:735
 msgid "selected external sources"
 msgstr ""
 
 #. Translators: This is the third party repositories message dialog.
 #. The %s is replaced with "selected external sources" link.
 #. Repositories Preferences is an item from Software's main menu.
-#: src/gs-overview-page.c:737
+#: src/gs-overview-page.c:739
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is included.\n"
@@ -3254,34 +3341,34 @@ msgstr ""
 "คุณสามารถเปิดใช้งานแเหล่านี้ได้ในภายหลังในการตั้งค่าที่เก็บข้อมูลซอฟต์แวร์"
 
 #. TRANSLATORS: Heading asking whether to turn third party software repositories on of off.
-#: src/gs-overview-page.c:741
+#: src/gs-overview-page.c:743
 msgid "Enable Third Party Software Repositories?"
 msgstr "เปิดใช้คลังซอฟต์แวร์ของบุคคลที่สามหรือไม่?"
 
 #. TRANSLATORS: button to keep the third party software repositories off
-#: src/gs-overview-page.c:746
+#: src/gs-overview-page.c:748
 msgid "_Ignore"
 msgstr "เ_พิกเฉย"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:748 src/gs-repos-dialog.c:177
+#: src/gs-overview-page.c:750 src/gs-repos-dialog.c:176
 msgid "_Enable"
 msgstr "เ_ปิดใช้"
 
-#: src/gs-overview-page.c:951
+#: src/gs-overview-page.c:953
 msgid "Available for your operating system"
 msgstr "มีให้ใช้สำหรับระบบปฏิบัติการของคุณ"
 
 #. Translators: the '%s' is replaced with the distribution name, constructing
 #. for example: "Available for Fedora Linux"
-#: src/gs-overview-page.c:955
+#: src/gs-overview-page.c:957
 #, c-format
 msgid "Available for %s"
 msgstr "มีให้ใช้สำหรับ %s"
 
 #. Translators: This is the title of the main page of the UI.
-#: src/gs-overview-page.c:1252
+#: src/gs-overview-page.c:1256
 msgid "Explore"
 msgstr "สำรวจ"
 
@@ -3303,7 +3390,7 @@ msgstr "หมวดอื่นๆ"
 msgid "No App Data Found"
 msgstr "ไม่พบข้อมูลแอป"
 
-#: lib/gs-plugin-loader.c:2744
+#: lib/gs-plugin-loader.c:2754
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "ไม่ทราบ"
@@ -3326,15 +3413,17 @@ msgstr "เตรียม %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:563
+#: src/gs-page.c:566
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
-msgstr "คุณแน่ใจหรือไม่ว่าต้องการถอดถอนคลังซอฟต์แวร์ %s?"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการลบคลังซอฟต์แวร์ %s?"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is a repository name.
-#: src/gs-page.c:567
+#: src/gs-page.c:570
 #, c-format
-msgid "All apps from %s will be uninstalled, and you will have to re-install the repository to use them again."
+msgid ""
+"All apps from %s will be uninstalled, and you will have to re-install the repository to use them "
+"again."
 msgstr "ทุกแอปจาก %s จะถูกถอนการติดตั้ง และคุณจะต้องติดตั้งคลังซอฟต์แวร์ดังกล่าวใหม่หากต้องการใช้งานอีกครั้ง"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is the
@@ -3349,7 +3438,8 @@ msgstr "ทุกแอปจาก %s จะถูกถอนการติ�
 #. * name of a firmware
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:576 src/gs-page.c:587 src/gs-page.c:598 src/gs-page.c:609 src/gs-page.c:620 src/gs-page.c:632
+#: src/gs-page.c:579 src/gs-page.c:590 src/gs-page.c:601 src/gs-page.c:612 src/gs-page.c:623
+#: src/gs-page.c:635
 #, c-format
 msgid "Uninstall %s?"
 msgstr "ถอนการติดตั้ง %s หรือไม่?"
@@ -3357,70 +3447,49 @@ msgstr "ถอนการติดตั้ง %s หรือไม่?"
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of an addon or an input method.
 #. Translators: the '%s' is replaced with the app name
-#: src/gs-page.c:580 src/gs-page.c:644
+#: src/gs-page.c:583 src/gs-page.c:642
 #, c-format
 msgid "It will not be possible to use %s after removal."
-msgstr "คุณจะไม่สามารถใช้งาน %s ได้หลังจากที่ถอดถอนออกไป"
+msgstr "คุณจะไม่สามารถใช้ %s ได้หลังจากที่ลบออก"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
-#: src/gs-page.c:591
+#: src/gs-page.c:594
 #, c-format
 msgid "It will not be possible to use any apps which depend on %s after removal."
-msgstr "จะไม่สามารถใช้แอปใดๆ ที่ต้องใช้ %s ได้หลังจากการลบออก"
+msgstr "คุณจะไม่สามารถใช้แอปใด ๆ ที่ต้องใช้ %s ได้หลังจากที่ลบออก"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
-#: src/gs-page.c:601
+#: src/gs-page.c:604
 #, c-format
-msgid "It will not be possible to use %s after removal, and any documents which use it will appear in a different font."
-msgstr "จะไม่สามารถใช้ %s ได้หลังจากลบออก และเอกสารใด ๆ ที่ใช้จะปรากฏด้วยแบบอักษรที่แตกต่างกัน"
+msgid ""
+"It will not be possible to use %s after removal, and any documents which use it will appear in a "
+"different font."
+msgstr "คุณจะไม่สามารถใช้ %s ได้หลังจากลบออก และเอกสารใด ๆ ที่ใช้จะปรากฏด้วยแบบอักษรที่แตกต่างกัน"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
-#: src/gs-page.c:612
+#: src/gs-page.c:615
 #, c-format
-msgid "It will not be possible to use %s after removal. This may mean some media files will no longer be playable."
-msgstr "จะไม่สามารถใช้ %s ได้หลังจากลบออก ซึ่งอาจหมายความว่าไฟล์สื่อบางไฟล์จะไม่สามารถเล่นได้อีกต่อไป"
+msgid ""
+"It will not be possible to use %s after removal. This may mean some media files will no longer be "
+"playable."
+msgstr "คุณจะไม่สามารถใช้ %s ได้หลังจากที่ลบออก ซึ่งอาจหมายความว่าไฟล์สื่อบางไฟล์จะไม่สามารถเล่นได้อีกต่อไป"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
-#: src/gs-page.c:623
+#: src/gs-page.c:626
 #, c-format
 msgid "Hardware which depends on %s may no longer function correctly after removal."
 msgstr ""
 
-#: src/gs-page.c:641
-msgid "App Settings & Data"
-msgstr "การตั้งค่าและข้อมูลแอป"
-
-#. Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'
-#: src/gs-page.c:667
-msgid "_Keep"
-msgstr "เ_ก็บไว้"
-
-#: src/gs-page.c:673
-msgid "Allows restoring app settings and content"
-msgstr "ให้เรียกคืนการตั้งค่าและเนื้อหาของแอปได้"
-
-#. Translators: this is part of section about deleting app's data
-#: src/gs-page.c:682
-msgid "_Delete"
-msgstr "_ลบ"
-
-#: src/gs-page.c:688
-msgid "Permanently deletes data to save disk space"
-msgstr "ลบข้อมูลถาวรเพื่อประหยัดเนื้อที่ดิสก์"
-
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
-#: src/gs-page.c:696
+#: src/gs-page.c:650
 #, c-format
 msgid ""
-"It will not be possible to use %s after removal. App data and settings will be kept on disk, to allow restoring the app in the future."
-msgstr "คุณจะไม่สามารถใช้งาน %s ได้หลังจากที่ถอดถอนออกไป ข้อมูลและการตั้งค่าของแอปจะยังเก็บอยู่ในดิสก์ เพื่อให้สามารถเรียกคืนตัวแอปในอนาคตได้"
-
-#. TRANSLATORS: this is button text to remove the app
-#: src/gs-page.c:710
-msgid "_Uninstall"
-msgstr "_ถอนการติดตั้ง"
+"It will not be possible to use %s after removal. App data and settings will be kept on disk, to allow "
+"restoring the app in the future."
+msgstr ""
+"คุณจะไม่สามารถใช้ %s ได้หลังจากที่ลบออก ข้อมูลและการตั้งค่าของแอปจะยังเก็บอยู่ในดิสก์ เพื่อให้สามารถเรียกคืนตัวแอปในอนาคตได้"
 
 #: src/gs-prefs-dialog.ui:6
 msgid "Preferences"
@@ -3430,14 +3499,14 @@ msgstr "ปรับแต่ง"
 msgid "Software Updates"
 msgstr "การอัปเดตซอฟต์แวร์"
 
-#: src/gs-prefs-dialog.ui:15 src/gs-safety-context-dialog.ui:104
+#: src/gs-prefs-dialog.ui:15 src/gs-safety-context-dialog.ui:108
 msgid "More Information"
 msgstr "ข้อมูลเพิ่มเติม"
 
 #: src/gs-prefs-dialog.ui:26
 msgid ""
-"Checking for and downloading updates uses data and power. Automatic update features are therefore paused when on metered network "
-"connections and when power saver is on."
+"Checking for and downloading updates uses data and power. Automatic update features are therefore "
+"paused when on metered network connections and when power saver is on."
 msgstr ""
 
 #: src/gs-prefs-dialog.ui:42
@@ -3474,22 +3543,22 @@ msgstr "แสดงเฉพาะซอฟต์แวร์เสรีเท
 
 #: src/gs-prefs-dialog.ui:90
 msgid "Hide proprietary software when browsing and searching"
-msgstr ""
+msgstr "ซ่อนซอฟต์แวร์ที่เป็นกรรมสิทธิ์เมื่อเรียกดูและค้นหา"
 
 #: src/gs-prefs-dialog.ui:97
 msgid "Only Show _Verified Developers"
-msgstr ""
+msgstr "แสดงเฉพาะผู้พัฒนาที่ได้รับการ_ยืนยันแล้วเท่านั้น"
 
 #: src/gs-prefs-dialog.ui:98
 msgid "Show only apps from developers whose identity has been verified"
-msgstr ""
+msgstr "แสดงเฉพาะแอปจากนักพัฒนาที่ผ่านการยืนยันตัวตนแล้ว"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
 #: src/gs-removal-dialog.c:96
 #, c-format
 msgid "Installed software is incompatible with %s, and will be automatically removed during upgrade."
-msgstr ""
+msgstr "ซอฟต์แวร์ที่ติดตั้งเข้ากันไม่ได้กับ %s และจะถูกลบออกโดยอัตโนมัติในระหว่างการอัปเกรด"
 
 #: src/gs-removal-dialog.ui:6
 msgid "Incompatible Software"
@@ -3499,68 +3568,96 @@ msgstr "ซอฟต์แวร์ที่ไม่เข้ากัน"
 msgid "_Upgrade"
 msgstr ""
 
+#: src/gs-remove-app-dialog.ui:15
+msgid "_Uninstall"
+msgstr "_ถอนการติดตั้ง"
+
+#: src/gs-remove-app-dialog.ui:19
+#, fuzzy
+#| msgid "App Settings & Data"
+msgid "App Settings &amp; Data"
+msgstr "การตั้งค่าและข้อมูลแอป"
+
+#. Translators: this is part of section about deleting app's data, where the 'keep' means 'keep the data'
+#: src/gs-remove-app-dialog.ui:22
+msgid "_Keep"
+msgstr "เ_ก็บไว้"
+
+#: src/gs-remove-app-dialog.ui:23
+msgid "Allows restoring app settings and content"
+msgstr "ให้เรียกคืนการตั้งค่าและเนื้อหาของแอปได้"
+
+#. Translators: this is part of section about deleting app's data
+#: src/gs-remove-app-dialog.ui:37
+msgid "_Delete"
+msgstr "_ลบ"
+
+#: src/gs-remove-app-dialog.ui:38
+msgid "Permanently deletes data to save disk space"
+msgstr "ลบข้อมูลถาวรเพื่อประหยัดเนื้อที่ดิสก์"
+
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:244
+#: src/gs-repos-dialog.c:243
 #, c-format
 msgid "Software that has been installed from “%s” will cease to receive updates."
 msgstr ""
 
 #. ask for confirmation
-#: src/gs-repos-dialog.c:248
+#: src/gs-repos-dialog.c:247
 msgid "Disable Repository?"
 msgstr "ต้องการปิดใช้คลังซอฟต์แวร์หรือไม่?"
 
-#: src/gs-repos-dialog.c:248
+#: src/gs-repos-dialog.c:247
 msgid "Remove Repository?"
-msgstr "ต้องการถอดถอนคลังซอฟต์แวร์หรือไม่?"
+msgstr "ต้องการลบคลังซอฟต์แวร์หรือไม่?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:255
+#: src/gs-repos-dialog.c:254
 msgid "_Disable"
 msgstr "_ปิดใช้"
 
 #. TRANSLATORS: this is button text to remove a repo
 #. TRANSLATORS: button text when
 #. * removing a review
-#: src/gs-repos-dialog.c:259 src/gs-review-row.c:266
+#: src/gs-repos-dialog.c:258 src/gs-review-row.c:262
 msgid "_Remove"
-msgstr "_ถอดถอน"
+msgstr "_ลบ"
 
-#: src/gs-repos-dialog.c:611
+#: src/gs-repos-dialog.c:605
 msgid "Enable New Repositories"
 msgstr "เปิดใช้งานคลังซอฟต์แวร์ใหม่"
 
-#: src/gs-repos-dialog.c:612
+#: src/gs-repos-dialog.c:606
 msgid "Turn on new repositories when they are added"
 msgstr "เปิดใช้งานคลังซอฟต์แวร์ใหม่เมื่อมีการเพิ่ม"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:619
+#: src/gs-repos-dialog.c:613
 msgid "more information"
 msgstr "ข้อมูลเพิ่มเติม"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:624
+#: src/gs-repos-dialog.c:618
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "คลังซอฟต์แวร์เพิ่มเติมจากบุคคลที่สามที่เลือก — %s"
 
-#: src/gs-repos-dialog.c:629
+#: src/gs-repos-dialog.c:623
 msgid "Fedora Third Party Repositories"
 msgstr "คลังซอฟต์แวร์บุคคลที่สามจาก Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:783
+#: src/gs-repos-dialog.c:777
 msgid "the operating system"
 msgstr "ระบบปฏิบัติการ"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:839
+#: src/gs-repos-dialog.c:833
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "คลังซอฟต์แวร์เหล่านี้เสริมของซอฟต์แวร์เริ่มต้นที่จัดทำโดย %s"
@@ -3569,7 +3666,7 @@ msgstr "คลังซอฟต์แวร์เหล่านี้เสร
 msgid "Software Repositories"
 msgstr "คลังซอฟต์แวร์"
 
-#: src/gs-repos-dialog.ui:46
+#: src/gs-repos-dialog.ui:39
 msgid "No Repositories"
 msgstr "ไม่มีคลังซอฟต์แวร์"
 
@@ -3648,71 +3745,71 @@ msgstr "%s • %s"
 
 #: src/gs-repo-row.c:400
 msgid "Remove"
-msgstr "ถอดถอน"
+msgstr "ลบ"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad app
-#: src/gs-review-dialog.c:88
+#: src/gs-review-dialog.c:92
 msgid "Hate it"
 msgstr "เกลียด"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great app
-#: src/gs-review-dialog.c:92
+#: src/gs-review-dialog.c:96
 msgid "Don’t like it"
 msgstr "ไม่ชอบ"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good app
-#: src/gs-review-dialog.c:96
+#: src/gs-review-dialog.c:100
 msgid "It’s OK"
 msgstr "ใช้ได้"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good app
-#: src/gs-review-dialog.c:100
+#: src/gs-review-dialog.c:104
 msgid "Like it"
 msgstr "ชอบ"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome app
-#: src/gs-review-dialog.c:104
+#: src/gs-review-dialog.c:108
 msgid "Love it"
 msgstr "โปรดปราน"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		No star has been clicked yet
-#: src/gs-review-dialog.c:108
+#: src/gs-review-dialog.c:112
 msgid "Select a Star to Leave a Rating"
 msgstr "เลือกดาวเพื่อให้คะแนน"
 
 #. TRANSLATORS: the review can't just be copied and pasted
-#: src/gs-review-dialog.c:126
+#: src/gs-review-dialog.c:130
 msgid "Please take more time writing the review"
 msgstr "กรุณาใช้เวลาเขียนบทวิจารณ์มากกว่านี้"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:129
+#: src/gs-review-dialog.c:133
 msgid "Please choose a star rating"
 msgstr "กรุณาเลือกคะแนนดาว"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:132
+#: src/gs-review-dialog.c:136
 msgid "The summary is too short"
 msgstr "สรุปสั้นเกินไป"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:135
+#: src/gs-review-dialog.c:139
 msgid "The summary is too long"
 msgstr "สรุปยาวเกินไป"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:138
+#: src/gs-review-dialog.c:142
 msgid "The description is too short"
 msgstr "คำบรรยายสั้นเกินไป"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:141
+#: src/gs-review-dialog.c:145
 msgid "The description is too long"
 msgstr "คำบรรยายยาวเกินไป"
 
@@ -3728,26 +3825,28 @@ msgstr "_ส่ง"
 
 #: src/gs-review-dialog.ui:42
 msgid ""
-"Please provide a rating, summary and review text. Reviews should not be used to report problems: instead, contact the developer or "
-"your support provider."
-msgstr "โปรดให้คะแนน สรุป และข้อความวิจารณ์ ไม่ควรใช้บทวิจารณ์เพื่อรายงานปัญหา แต่ให้ติดต่อผู้พัฒนาหรือผู้ให้บริการสนับสนุนของคุณแทน"
+"Please provide a rating, summary and review text. Reviews should not be used to report problems: "
+"instead, contact the developer or your support provider."
+msgstr ""
+"โปรดให้คะแนน สรุป และข้อความวิจารณ์ ไม่ควรใช้บทวิจารณ์เพื่อรายงานปัญหา แต่ให้ติดต่อผู้พัฒนาหรือผู้ให้บริการสนับสนุนของคุณแทน"
 
 #: src/gs-review-dialog.ui:76
 msgid "Review Summary"
 msgstr "สรุปบทวิจารณ์"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:108
+#: src/gs-review-dialog.ui:110
 msgctxt "app review"
 msgid "Write a short review"
 msgstr "เขียนบทวิจารณ์สั้นๆ"
 
-#: src/gs-review-dialog.ui:150
+#: src/gs-review-dialog.ui:152
 msgid ""
-"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy\">privacy policy</a>. The full name attached to your account "
-"will be shown publicly."
+"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy\">privacy policy</a>. The full "
+"name attached to your account will be shown publicly."
 msgstr ""
-"ดูว่าข้อมูลที่อะไรที่จะส่งใน<a href=\"https://odrs.gnome.org/privacy\">นโยบายความเป็นส่วนตัวของเรา</a> ชื่อนามสกุลที่แนบกับบัญชีของคุณจะปรากฏต่อสาธารณะ"
+"ดูว่าข้อมูลที่อะไรที่จะส่งใน<a href=\"https://odrs.gnome.org/privacy\">นโยบายความเป็นส่วนตัวของเรา</a> "
+"ชื่อนามสกุลที่แนบกับบัญชีของคุณจะปรากฏต่อสาธารณะ"
 
 #: src/gs-review-histogram.c:72
 #, c-format
@@ -3760,41 +3859,41 @@ msgid "out of 5 stars"
 msgstr "จาก 5 ดาว"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:59
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "ไม่ทราบ"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr "คุณสามารถรายงานบทวิจารณ์ที่ไม่เหมาะสม หยาบคาย หรือมีพฤติกรรมเหยียดผู้อื่นได้"
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:232
+#: src/gs-review-row.c:228
 msgid "Once reported, a review will be hidden until it has been checked by an administrator."
 msgstr "บทวิจารณ์ที่ถูกรายงานจะถูกซ่อนไว้ จนกว่าจะได้รับการตรวจสอบโดยผู้ดูแลระบบ"
 
 #. TRANSLATORS: window title when reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:237
+#: src/gs-review-row.c:233
 msgid "Report Review?"
 msgstr "รายงานบทวิจารณ์หรือไม่?"
 
 #. TRANSLATORS: button text when
 #. * * sending a review for moderation
-#: src/gs-review-row.c:242
+#: src/gs-review-row.c:238
 msgid "_Report"
 msgstr "_รายงาน"
 
 #. TRANSLATORS: window title when the user attempts to remove their
 #. * review
-#: src/gs-review-row.c:258
+#: src/gs-review-row.c:254
 msgid "Remove Review?"
 msgstr "ลบบทวิจารณ์หรือไม่?"
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:261
+#: src/gs-review-row.c:257
 msgid "Removing a review cannot be undone."
 msgstr ""
 
@@ -3823,281 +3922,286 @@ msgid "Check that you trust the vendor, as the app isn’t sandboxed"
 msgstr "ตรวจสอบว่าคุณเชื่อถือผู้จำหน่ายได้หรือไม่ เนื่องจากแอปไม่ได้ถูกแซนด์บ็อกซ์"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:177
+#: src/gs-safety-context-dialog.c:176
 msgid "No Permissions"
 msgstr "ไม่มีการขอสิทธิ์"
 
-#: src/gs-safety-context-dialog.c:178
+#: src/gs-safety-context-dialog.c:177
 msgid "App is fully sandboxed"
 msgstr "แอปถูกแซนด์บ็อกซ์อย่างสมบูรณ์"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:189
+#: src/gs-safety-context-dialog.c:188
 msgid "Network Access"
 msgstr "การเข้าถึงเครือข่าย"
 
-#: src/gs-safety-context-dialog.c:190
+#: src/gs-safety-context-dialog.c:189
 msgid "Can access the internet"
 msgstr "สามารถเข้าถึงอินเตอร์เน็ตได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:193
+#: src/gs-safety-context-dialog.c:192
 msgid "No Network Access"
 msgstr "ไม่มีการเข้าถึงเครือข่าย"
 
-#: src/gs-safety-context-dialog.c:194
+#: src/gs-safety-context-dialog.c:193
 msgid "Cannot access the internet"
 msgstr "ไม่สามารถเข้าถึงอินเตอร์เน็ตได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:200
+#: src/gs-safety-context-dialog.c:199
 msgid "Uses System Services"
 msgstr "การใช้บริการของระบบ"
 
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:200
 msgid "Can request data from system services"
 msgstr "สามารถขอข้อมูลจากการบริการของระบบได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:208
+#: src/gs-safety-context-dialog.c:207
 msgid "Uses Session Services"
 msgstr "ใช้บริการของเซสชั่น"
 
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:208
 msgid "Can request data from session services"
 msgstr "สามารถขอข้อมูลจากบริการของเซสชั่นได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:216
+#: src/gs-safety-context-dialog.c:215
 msgid "User Device Access"
 msgstr "การเข้าถึงอุปกรณ์ของผู้ใช้"
 
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:216
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "สามารถเข้าถึงอุปกรณ์ต่างๆ เช่น เว็บแคม หรือตัวควบคุมเกมได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:220
+#: src/gs-safety-context-dialog.c:219
 msgid "No User Device Access"
 msgstr "ไม่มีการเข้าถึงอุปกรณ์ของผู้ใช้"
 
-#: src/gs-safety-context-dialog.c:221
+#: src/gs-safety-context-dialog.c:220
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "ไม่สามารถเข้าถึงอุปกรณ์ต่างๆ เช่น เว็บแคม หรือตัวควบคุมเกมได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:227
+#: src/gs-safety-context-dialog.c:226
 msgid "Input Device Access"
 msgstr "การเข้าถึงอุปกรณ์ป้อนข้อมูล"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:235
-msgid "Microphone Access"
+#: src/gs-safety-context-dialog.c:234
+#, fuzzy
+#| msgid "Microphone Access"
+msgid "Microphone Access and Audio Playback"
 msgstr "การเข้าถึงไมโครโฟน"
 
-#: src/gs-safety-context-dialog.c:236
-msgid "Can listen using microphones without asking permission"
+#: src/gs-safety-context-dialog.c:235
+#, fuzzy
+#| msgid "Can listen using microphones without asking permission"
+msgid "Can listen using microphones and play audio without asking permission"
 msgstr "สามารถฟังโดยใช้ไมโครโฟนได้โดยไม่ต้องขออนุญาต"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:243
+#: src/gs-safety-context-dialog.c:242
 msgid "System Device Access"
 msgstr "การเข้าถึงอุปกรณ์ระบบ"
 
-#: src/gs-safety-context-dialog.c:244
+#: src/gs-safety-context-dialog.c:243
 msgid "Can access system devices which require elevated permissions"
 msgstr "สามารถเข้าถึงอุปกรณ์ระบบที่ต้องมีสิทธิ์ระดับสูงได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:251
+#: src/gs-safety-context-dialog.c:250
 msgid "Screen Contents Access"
 msgstr "การเข้าถึงเนื้อหาบนหน้าจอ"
 
-#: src/gs-safety-context-dialog.c:252
+#: src/gs-safety-context-dialog.c:251
 msgid "Can access the contents of the screen or other windows"
 msgstr "สามารถเข้าถึงเนื้อหาของหน้าจอหรือหน้าต่างอื่นๆได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:259
+#: src/gs-safety-context-dialog.c:258
 msgid "Legacy Windowing System"
 msgstr "ระบบหน้าต่างแบบเก่า"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:266
 msgid "Arbitrary Permissions"
 msgstr "สิทธิ์โดยพลการ"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:275
+#: src/gs-safety-context-dialog.c:274
 msgid "User Settings"
 msgstr "การตั้งค่าของผู้ใช้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:287
+#: src/gs-safety-context-dialog.c:286
 msgid "Full File System Read/Write Access"
 msgstr "การเข้าถึงอ่าน/เขียนระบบไฟล์แบบเต็มที่"
 
-#: src/gs-safety-context-dialog.c:288
+#: src/gs-safety-context-dialog.c:287
 msgid "Can read and write all data on the file system"
 msgstr "สามารถอ่านและเขียนข้อมูลทั้งหมดบนระบบไฟล์ได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:296
+#: src/gs-safety-context-dialog.c:295
 msgid "Home Folder Read/Write Access"
 msgstr "การเข้าถึงอ่าน/เขียนโฟลเดอร์บ้าน"
 
-#: src/gs-safety-context-dialog.c:297
+#: src/gs-safety-context-dialog.c:296
 msgid "Can read and write all data in your home directory"
 msgstr "สามารถอ่านและเขียนข้อมูลทั้งหมดในไดเรกทอรีบ้านของคุณได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:304
 msgid "Full File System Read Access"
 msgstr "การเข้าถึงอ่านระบบไฟล์แบบเต็มที่"
 
-#: src/gs-safety-context-dialog.c:306
+#: src/gs-safety-context-dialog.c:305
 msgid "Can read all data on the file system"
 msgstr "สามารถอ่านข้อมูลทั้งหมดบนระบบไฟล์ได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:315
+#: src/gs-safety-context-dialog.c:314
 msgid "Home Folder Read Access"
 msgstr "การเข้าถึงอ่านโฟลเดอร์บ้าน"
 
-#: src/gs-safety-context-dialog.c:316
+#: src/gs-safety-context-dialog.c:315
 msgid "Can read all data in your home directory"
 msgstr "สามารถอ่านข้อมูลทั้งหมดในไดเรกทอรีบ้านของคุณได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:324
 msgid "Download Folder Read/Write Access"
 msgstr "การเข้าถึงอ่าน/เขียนโฟลเดอร์ดาวน์โหลด"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:325
 msgid "Can read and write all data in your downloads directory"
 msgstr "สามารถอ่านและเขียนข้อมูลทั้งหมดในไดเรกทอรีดาวน์โหลดของคุณได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:337
+#: src/gs-safety-context-dialog.c:336
 msgid "Download Folder Read Access"
 msgstr "การเข้าถึงอ่านโฟลเดอร์ดาวน์โหลด"
 
-#: src/gs-safety-context-dialog.c:338
+#: src/gs-safety-context-dialog.c:337
 msgid "Can read all data in your downloads directory"
 msgstr "สามารถอ่านข้อมูลทั้งหมดในไดเรกทอรีดาวน์โหลดของคุณได้"
 
-#: src/gs-safety-context-dialog.c:348
+#: src/gs-safety-context-dialog.c:347
 msgid "Can read and write all data in the directory"
 msgstr "สามารถอ่านและเขียนข้อมูลทั้งหมดในไดเรกทอรีได้"
 
-#: src/gs-safety-context-dialog.c:359
+#: src/gs-safety-context-dialog.c:358
 msgid "Can read all data in the directory"
 msgstr "สามารถอ่านข้อมูลทั้งหมดในไดเรกทอรีได้"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:375
+#: src/gs-safety-context-dialog.c:374
 msgid "No File System Access"
 msgstr "ไม่มีการเข้าถึงระบบไฟล์"
 
-#: src/gs-safety-context-dialog.c:376
+#: src/gs-safety-context-dialog.c:375
 msgid "Cannot access the file system at all"
 msgstr "ไม่สามารถเข้าถึงระบบไฟล์ได้"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:386
+#: src/gs-safety-context-dialog.c:385
 msgid "App developer is verified"
 msgstr "ผู้พัฒนาแอปได้รับการตรวจสอบแล้ว"
 
-#: src/gs-safety-context-dialog.c:387
+#: src/gs-safety-context-dialog.c:386
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "ผู้พัฒนาแอปนี้ได้รับการยืนยันแล้วว่าเป็นบุคคลที่อ้าง"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:398
+#: src/gs-safety-context-dialog.c:397
 msgid "Insecure Dependencies"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:399
+#: src/gs-safety-context-dialog.c:398
 msgid "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
 
-#: src/gs-safety-context-dialog.c:412
+#: src/gs-safety-context-dialog.c:411
 msgid "This app does not specify what license it is developed under, and may be proprietary"
 msgstr "แอปนี้ไม่ได้ระบุว่าได้รับการพัฒนาภายใต้ใบอนุญาตใดและอาจเป็นกรรมสิทธิ์"
 
-#: src/gs-safety-context-dialog.c:413
+#: src/gs-safety-context-dialog.c:412
 msgid "This software does not specify what license it is developed under, and may be proprietary"
 msgstr "ซอฟต์แวร์นี้ไม่ได้ระบุว่าได้รับการพัฒนาภายใต้ใบอนุญาตใดและอาจเป็นกรรมสิทธิ์"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:426
+#: src/gs-safety-context-dialog.c:425
 msgid "Proprietary Code"
 msgstr "โค้ดกรรมสิทธิ์"
 
-#: src/gs-safety-context-dialog.c:427
+#: src/gs-safety-context-dialog.c:426
 msgid "The source code is not public, so it cannot be independently audited and might be unsafe"
 msgstr "ซอร์สโค้ดไม่ได้เปิดเผยต่อสาธารณะ ดังนั้นจึงไม่สามารถตรวจสอบได้โดยอิสระ และอาจไม่ปลอดภัย"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:435
+#: src/gs-safety-context-dialog.c:434
 #, c-format
 msgid "This app is developed under the special license “%s”"
 msgstr "แอปนี้ได้รับการพัฒนาภายใต้ใบอนุญาตพิเศษ “%s”"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-safety-context-dialog.c:438
+#: src/gs-safety-context-dialog.c:437
 #, c-format
 msgid "This software is developed under the special license “%s”"
 msgstr "ซอฟต์แวร์นี้ได้รับการพัฒนาภายใต้ใบอนุญาตพิเศษ “%s”"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:451
+#: src/gs-safety-context-dialog.c:450
 msgid "Auditable Code"
 msgstr "โค้ดตรวจสอบได้"
 
-#: src/gs-safety-context-dialog.c:452
-msgid "The source code is public and can be independently audited, which makes the app more likely to be safe"
+#: src/gs-safety-context-dialog.c:451
+msgid ""
+"The source code is public and can be independently audited, which makes the app more likely to be safe"
 msgstr "ซอร์สโค้ดเป็นสาธารณะและสามารถตรวจสอบได้โดยอิสระ ซึ่งทำให้แอปมีแนวโน้มที่จะปลอดภัยมากขึ้น"
 
 #. Translators: The app is considered privileged, aka provided by the distribution.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:461
+#: src/gs-safety-context-dialog.c:460
 #, c-format
 msgid "%s is privileged"
 msgstr "%s มีสิทธิพิเศษ"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:468
+#: src/gs-safety-context-dialog.c:467
 #, c-format
 msgid "%s is safe"
 msgstr "%s ปลอดภัย"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:475
+#: src/gs-safety-context-dialog.c:474
 #, c-format
 msgid "%s is probably safe"
 msgstr "%s น่าจะปลอดภัย"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:482
+#: src/gs-safety-context-dialog.c:481
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s อาจจะไม่ปลอดภัย"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:489
+#: src/gs-safety-context-dialog.c:488
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s ไม่ปลอดภัย"
 
 #. Translators: This is used for "License    Unknown"
-#: src/gs-safety-context-dialog.c:572
+#: src/gs-safety-context-dialog.c:571
 msgctxt "Unknown license"
 msgid "Unknown"
 msgstr "ไม่ทราบ"
@@ -4112,18 +4216,18 @@ msgid "License"
 msgstr "สัญญาอนุญาต"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:80
+#: src/gs-safety-context-dialog.ui:81
 msgid "Source"
 msgstr "แหล่งที่มา"
 
-#: src/gs-safety-context-dialog.ui:100
+#: src/gs-safety-context-dialog.ui:103
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:148
+#: src/gs-safety-context-dialog.ui:152
 msgid ""
-"This app uses an outdated version of the software platform (SDK) and might contain bugs or security vulnerabilities which will not be "
-"fixed."
+"This app uses an outdated version of the software platform (SDK) and might contain bugs or security "
+"vulnerabilities which will not be fixed."
 msgstr "แอปนี้ใช้แพลตฟอร์มซอฟต์แวร์ (SDK) เวอร์ชันเก่าและอาจมีข้อบกพร่องหรือช่องโหว่ด้านความปลอดภัยที่ไม่ได้รับการแก้ไข"
 
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
@@ -4143,35 +4247,35 @@ msgstr "ไม่มีภาพหน้าจอ"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:369 src/gs-screenshot-image.c:426 src/gs-screenshot-image.c:646
+#: src/gs-screenshot-image.c:363 src/gs-screenshot-image.c:404 src/gs-screenshot-image.c:608
 msgid "Screenshot not found"
 msgstr "ไม่พบภาพหน้าจอ"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:447
+#: src/gs-screenshot-image.c:414
 msgid "Failed to load image"
 msgstr "โหลดภาพไม่สำเร็จ"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:674
+#: src/gs-screenshot-image.c:636
 msgid "Screenshot size not found"
 msgstr "ไม่พบขนาดภาพหน้าจอ"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:763
+#: src/gs-screenshot-image.c:725
 msgid "Could not create cache"
 msgstr "ไม่สามารถสร้างแคชได้"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:777
+#: src/gs-screenshot-image.c:739
 msgid "Screenshot not valid"
 msgstr "ภาพหน้าจอไม่ถูกต้อง"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:827
+#: src/gs-screenshot-image.c:777
 msgid "Screenshot not available"
 msgstr "ไม่มีภาพหน้าจอ"
 
@@ -4181,7 +4285,7 @@ msgstr "ภาพหน้าจอ"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:179
+#: src/gs-search-page.c:176
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -4195,7 +4299,7 @@ msgstr "หน้าค้นหา"
 msgid "Search for Apps"
 msgstr "ค้นหาแอป"
 
-#: src/gs-search-page.ui:47
+#: src/gs-search-page.ui:39
 msgid "No App Found"
 msgstr "ไม่พบแอป"
 
@@ -4207,96 +4311,96 @@ msgstr "ไม่พบแอป"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1183 src/gs-shell.c:1188 src/gs-shell.c:1203 src/gs-shell.c:1207
+#: src/gs-shell.c:1155 src/gs-shell.c:1160 src/gs-shell.c:1175 src/gs-shell.c:1179
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1261 src/gs-shell.c:1313
+#: src/gs-shell.c:1233 src/gs-shell.c:1285
 msgid "Unable to download updates"
 msgstr "ไม่สามารถดาวน์โหลดรายการอัปเดต"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1266
+#: src/gs-shell.c:1238
 msgid "Unable to download firmware updates"
 msgstr "ไม่สามารถดาวน์โหลดรายการอัปเดตเฟิร์มแวร์"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1269
+#: src/gs-shell.c:1241
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "ไม่สามารถดาวน์โหลดรายการอัปเดตเฟิร์มแวร์จาก %s ได้"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1274
+#: src/gs-shell.c:1246
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "ไม่สามารถดาวน์โหลดรายการอัปเดตจาก %s ได้"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1281 src/gs-shell.c:1499
+#: src/gs-shell.c:1253 src/gs-shell.c:1471
 msgid "Unable to update: internet access required"
 msgstr "ไม่สามารถอัปเดต: ต้องใช้การเชื่อมต่ออินเทอร์เน็ต"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1284 src/gs-shell.c:1502
+#: src/gs-shell.c:1256 src/gs-shell.c:1474
 msgid "Unable to update: not enough disk space"
 msgstr "ไม่สามารถอัปเดต: พื้นที่ว่างดิสก์ไม่เพียงพอ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1289
+#: src/gs-shell.c:1261
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "ไม่สามารถดาวน์โหลดรายการอัปเดตจาก %s ได้: พื้นที่ว่างดิสก์ไม่เพียงพอ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1295 src/gs-shell.c:1513
+#: src/gs-shell.c:1267 src/gs-shell.c:1485
 msgid "Unable to update: authentication required"
 msgstr "ไม่สามารถอัปเดต: ต้องยืนยันตัวตน"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1299 src/gs-shell.c:1524
+#: src/gs-shell.c:1271 src/gs-shell.c:1496
 msgid "Unable to update: invalid authentication"
 msgstr "ไม่สามารถอัปเดต: การยืนยันตัวตนไม่ถูกต้อง"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1303 src/gs-shell.c:1535
+#: src/gs-shell.c:1275 src/gs-shell.c:1507
 msgid "Unable to update: permission required"
 msgstr "ไม่สามารถอัปเดต: ต้องมีสิทธิ์"
 
-#: src/gs-shell.c:1304
+#: src/gs-shell.c:1276
 msgid "Unable to download updates: you do not have permission to install software"
 msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1316
+#: src/gs-shell.c:1288
 msgid "Unable to get list of updates"
 msgstr "ไม่สามารถรับรายชื่อการอัปเดต"
 
-#: src/gs-shell.c:1351
+#: src/gs-shell.c:1323
 msgid "Unable to install: download failed"
 msgstr "ไม่สามารถติดตั้ง: ดาวน์โหลดล้มเหลว"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1357
+#: src/gs-shell.c:1329
 #, c-format
 msgid "Unable to install %s: failed download from %s"
 msgstr "ไม่สามารถติดตั้ง %s ได้: การดาวน์โหลดจาก %s ล้มเหลว"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1362
+#: src/gs-shell.c:1334
 #, c-format
 msgid "Unable to install %s: download failed"
 msgstr "ไม่สามารถติดตั้ง %s ได้: การดาวน์โหลดล้มเหลว"
 
-#: src/gs-shell.c:1368
+#: src/gs-shell.c:1340
 msgid "Unable to install: missing runtime"
 msgstr "ไม่สามารถติดตั้ง: รันไทม์ขาดไป"
 
@@ -4304,89 +4408,89 @@ msgstr "ไม่สามารถติดตั้ง: รันไทม์�
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1346
 #, c-format
 msgid "Unable to install %s: runtime %s unavailable"
 msgstr "ไม่สามารถติดตั้ง %s ได้: รันไทม์ %s ไม่พร้อมใช้งาน"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1377 src/gs-shell.c:1433 src/gs-shell.c:1435
+#: src/gs-shell.c:1349 src/gs-shell.c:1405 src/gs-shell.c:1407
 #, c-format
 msgid "Unable to install %s"
 msgstr "ไม่สามารถติดตั้ง %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1383
+#: src/gs-shell.c:1355
 msgid "Unable to install: internet access required"
 msgstr "ไม่สามารถติดตั้ง: ต้องใช้การเชื่อมต่ออินเทอร์เน็ต"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1386
+#: src/gs-shell.c:1358
 msgid "Unable to install: invalid app format"
 msgstr "ไม่สามารถติดตั้ง: รูปแบบของแอปไม่ถูกต้อง"
 
-#: src/gs-shell.c:1389
+#: src/gs-shell.c:1361
 msgid "Unable to install: not enough disk space"
 msgstr "ไม่สามารถติดตั้ง: พื้นที่ว่างดิสก์ไม่เพียงพอ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1392
+#: src/gs-shell.c:1364
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "ไม่สามารถติดตั้ง %s ได้: พื้นที่ดิสก์ไม่เพียงพอ"
 
-#: src/gs-shell.c:1396
+#: src/gs-shell.c:1368
 msgid "Unable to install: authentication required"
 msgstr "ไม่สามารถติดตั้ง: ต้องยืนยันตัวตน"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1398
+#: src/gs-shell.c:1370
 #, c-format
 msgid "Unable to install %s: authentication required"
 msgstr "ไม่สามารถติดตั้ง %s ได้: ต้องยืนยันตัวตน"
 
-#: src/gs-shell.c:1402
+#: src/gs-shell.c:1374
 msgid "Unable to install: invalid authentication"
 msgstr "ไม่สามารถติดตั้ง: การยืนยันตัวตนไม่ถูกต้อง"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1405
+#: src/gs-shell.c:1377
 #, c-format
 msgid "Unable to install %s: invalid authentication"
 msgstr "ไม่สามารถติดตั้ง %s ได้: การยืนยันตัวตนไม่ถูกต้อง"
 
-#: src/gs-shell.c:1409
+#: src/gs-shell.c:1381
 msgid "Unable to install: permission required"
 msgstr "ไม่สามารถติดตั้ง: ต้องมีสิทธิ์"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1412
+#: src/gs-shell.c:1384
 #, c-format
 msgid "Unable to install %s: permission required"
 msgstr "ไม่สามารถติดตั้ง %s ได้: ต้องใช้การเชื่อมต่ออินเทอร์เน็ต"
 
-#: src/gs-shell.c:1416
+#: src/gs-shell.c:1388
 msgid "Unable to install: device must be plugged in"
 msgstr "ไม่สามารถติดตั้ง: ต้องเสียบปลั๊กไฟอุปกรณ์"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1419
+#: src/gs-shell.c:1391
 #, c-format
 msgid "Unable to install %s: device must be plugged in"
 msgstr "ไม่สามารถติดตั้ง %s ได้: ต้องเสียบปลั๊กไฟอุปกรณ์"
 
-#: src/gs-shell.c:1422
+#: src/gs-shell.c:1394
 msgid "Unable to install: low battery"
 msgstr "ไม่สามารถติดตั้ง: แบตเตอรี่เหลือน้อย"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1425
+#: src/gs-shell.c:1397
 #, c-format
 msgid "Unable to install %s: low battery"
 msgstr "ไม่สามารถติดตั้ง %s ได้: แบตเตอรี่เหลือน้อย"
@@ -4395,14 +4499,14 @@ msgstr "ไม่สามารถติดตั้ง %s ได้: แบต
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1478
+#: src/gs-shell.c:1450
 #, c-format
 msgid "Unable to update %s from %s: download failed"
 msgstr "ไม่สามารถอัปเดต %s จาก %s ได้: ดาวน์โหลดล้มเหลว"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1484
+#: src/gs-shell.c:1456
 #, c-format
 msgid "Unable to update %s: download failed"
 msgstr "ไม่สามารถอัปเดต %s ได้: การดาวน์โหลดล้มเหลว"
@@ -4410,273 +4514,276 @@ msgstr "ไม่สามารถอัปเดต %s ได้: การด
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1491
+#: src/gs-shell.c:1463
 #, c-format
 msgid "Unable to install updates from %s: download failed"
 msgstr "ไม่สามารถติดตั้งอัปเดตจาก %s ได้: ดาวน์โหลดล้มเหลว"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1495
+#: src/gs-shell.c:1467
 msgid "Unable to update: download failed"
 msgstr "ไม่สามารถอัปเดต: ดาวน์โหลดล้มเหลว"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1507
+#: src/gs-shell.c:1479
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "ไม่สามารถอัปเดต %s ได้: พื้นที่ว่างดิสก์ไม่เพียงพอ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1518
+#: src/gs-shell.c:1490
 #, c-format
 msgid "Unable to update %s: authentication required"
 msgstr "ไม่สามารถอัปเดต %s ได้: ต้องยืนยันตัวตน"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1529
+#: src/gs-shell.c:1501
 #, c-format
 msgid "Unable to update %s: invalid authentication"
 msgstr "ไม่สามารถอัปเดต %s ได้: การยืนยันตัวตนไม่ถูกต้อง"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1540
+#: src/gs-shell.c:1512
 #, c-format
 msgid "Unable to update %s: permission required"
 msgstr "ไม่สามารถอัปเดต %s ได้: ต้องมีสิทธิ์"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1546
+#: src/gs-shell.c:1518
 msgid "Unable to update: device must be plugged in"
 msgstr "ไม่สามารถอัปเดต: ต้องเสียบปลั๊กไฟอุปกรณ์"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1551
+#: src/gs-shell.c:1523
 #, c-format
 msgid "Unable to update %s: device must be plugged in"
 msgstr "ไม่สามารถอัปเดต %s ได้: ต้องเสียบปลั๊กไฟอุปกรณ์"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1556
+#: src/gs-shell.c:1528
 msgid "Unable to update: low battery"
 msgstr "ไม่สามารถอัปเดต: แบตเตอรี่เหลือน้อย"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1561
+#: src/gs-shell.c:1533
 #, c-format
 msgid "Unable to update %s: low battery"
 msgstr "ไม่สามารถอัปเดต %s ได้: แบตเตอรี่เหลือน้อย"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1572
+#: src/gs-shell.c:1544
 #, c-format
 msgid "Unable to update %s"
 msgstr "ไม่สามารถอัปเดต %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1576
+#: src/gs-shell.c:1548
 msgid "Unable to update"
 msgstr "ไม่สามารถอัปเดต %s ได้"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1613 src/gs-shell.c:1686
+#: src/gs-shell.c:1585 src/gs-shell.c:1658
 msgid "Unable to upgrade"
 msgstr "ไม่สามารถอัปเกรด"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1617
+#: src/gs-shell.c:1589
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "ไม่สามารถอัปเกรด %s จาก %s ได้"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1621
+#: src/gs-shell.c:1593
 msgid "Unable to upgrade: download failed"
 msgstr "ไม่สามารถอัปเกรด: ดาวน์โหลดล้มเหลว"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1624
+#: src/gs-shell.c:1596
 #, c-format
 msgid "Unable to upgrade to %s: download failed"
 msgstr "ไม่สามารถอัปเกรด %s ได้: ดาวน์โหลดล้มเหลว"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1630
+#: src/gs-shell.c:1602
 msgid "Unable to upgrade: internet access required"
 msgstr "ไม่สามารถอัปเกรด: ต้องใช้การเชื่อมต่ออินเทอร์เน็ต"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1633
+#: src/gs-shell.c:1605
 #, c-format
 msgid "Unable to upgrade to %s: internet access required"
 msgstr "ไม่สามารถอัปเกรด %s ได้: ต้องใช้การเชื่อมต่ออินเทอร์เน็ต"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1637
+#: src/gs-shell.c:1609
 msgid "Unable to upgrade: not enough disk space"
 msgstr "ไม่สามารถอัปเกรด: พื้นที่ว่างดิสก์ไม่เพียงพอ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1640
+#: src/gs-shell.c:1612
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "ไม่สามารถอัปเกรด %s ได้: พื้นที่ว่างดิสก์ไม่เพียงพอ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1645
+#: src/gs-shell.c:1617
 msgid "Unable to upgrade: authentication required"
 msgstr "ไม่สามารถอัปเกรด: ต้องยืนยันตัวตน"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1648
+#: src/gs-shell.c:1620
 #, c-format
 msgid "Unable to upgrade to %s: authentication required"
 msgstr "ไม่สามารถอัปเกรด %s ได้: ต้องยืนยันตัวตน"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1653
+#: src/gs-shell.c:1625
 msgid "Unable to upgrade: invalid authentication"
 msgstr "ไม่สามารถอัปเกรด: การยืนยันตัวตนไม่ถูกต้อง"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1656
+#: src/gs-shell.c:1628
 #, c-format
 msgid "Unable to upgrade to %s: invalid authentication"
 msgstr "ไม่สามารถอัปเกรด %s ได้: การยืนยันตัวตนไม่ถูกต้อง"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1661
+#: src/gs-shell.c:1633
 msgid "Unable to upgrade: permission required"
 msgstr "ไม่สามารถอัปเกรด: ต้องมีสิทธิ์"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1664
+#: src/gs-shell.c:1636
 #, c-format
 msgid "Unable to upgrade to %s: permission required"
 msgstr "ไม่สามารถอัปเกรด %s ได้: ต้องมีสิทธิ์"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1669
+#: src/gs-shell.c:1641
 msgid "Unable to upgrade: device must be plugged in"
 msgstr "ไม่สามารถอัปเกรด: ต้องเสียบปลั๊กไฟอุปกรณ์"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1672
+#: src/gs-shell.c:1644
 #, c-format
 msgid "Unable to upgrade to %s: device must be plugged in"
 msgstr "ไม่สามารถอัปเกรด %s ได้: ต้องเสียบปลั๊กไฟอุปกรณ์"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1676
+#: src/gs-shell.c:1648
 msgid "Unable to upgrade: low battery"
 msgstr "ไม่สามารถอัปเกรด: แบตเตอรี่เหลือน้อย"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1679
+#: src/gs-shell.c:1651
 #, c-format
 msgid "Unable to upgrade to %s: low battery"
 msgstr "ไม่สามารถอัปเกรด %s ได้: แบตเตอรี่เหลือน้อย"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1689
+#: src/gs-shell.c:1661
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "ไม่สามารถอัปเกรด %s ได้"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1723
+#: src/gs-shell.c:1695
 msgid "Unable to uninstall: authentication required"
 msgstr "ไม่สามารถถอนการติดตั้ง: ต้องยืนยันตัวตน"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1726
+#: src/gs-shell.c:1698
 #, c-format
 msgid "Unable to uninstall %s: authentication required"
 msgstr "ไม่สามารถถอนการติดตั้ง %s ได้: ต้องยืนยันตัวตน"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1731
+#: src/gs-shell.c:1703
 msgid "Unable to uninstall: invalid authentication"
 msgstr "ไม่สามารถถอนการติดตั้งได้: การยืนยันตัวตนไม่ถูกต้อง"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1734
+#: src/gs-shell.c:1706
 #, c-format
 msgid "Unable to uninstall %s: invalid authentication"
 msgstr "ไม่สามารถถอนการติดตั้ง %s ได้: การยืนยันตัวตนไม่ถูกต้อง"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1739
+#: src/gs-shell.c:1711
 msgid "Unable to uninstall: permission required"
 msgstr "ไม่สามารถถอนการติดตั้ง: ต้องมีสิทธิ์"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1742
+#: src/gs-shell.c:1714
 #, c-format
 msgid "Unable to uninstall %s: permission required"
 msgstr "ไม่สามารถถอนการติดตั้ง %s ได้: ต้องมีสิทธิ์"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1747
+#: src/gs-shell.c:1719
 msgid "Unable to uninstall: device must be plugged in"
 msgstr "ไม่สามารถถอนการติดตั้ง: ต้องเสียบปลั๊กไฟอุปกรณ์"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1750
+#: src/gs-shell.c:1722
 #, c-format
 msgid "Unable to uninstall %s: device must be plugged in"
 msgstr "ไม่สามารถถอนการติดตั้ง %s ได้: ต้องเสียบปลั๊กไฟอุปกรณ์"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1754
+#: src/gs-shell.c:1726
 msgid "Unable to uninstall: low battery"
 msgstr "ไม่สามารถถอนการติดตั้ง: แบตเตอรี่เหลือน้อย"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1757
+#: src/gs-shell.c:1729
 #, c-format
 msgid "Unable to uninstall %s: low battery"
 msgstr "ไม่สามารถถอนการติดตั้ง %s ได้: แบตเตอรี่เหลือน้อย"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1768
+#: src/gs-shell.c:1740
 #, c-format
 msgid "Unable to uninstall %s"
 msgstr "ไม่สามารถถอนการติดตั้ง %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the '%s' is
 #. replaced with the app name (e.g. "GIMP")
-#: src/gs-shell.c:1807
+#: src/gs-shell.c:1779
 #, c-format
 msgid "Unable to launch %s"
 msgstr "ไม่สามารถเรียกใช้ %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1812 src/gs-shell.c:1840 src/gs-shell.c:1884 src/gs-shell.c:1928 src/gs-shell.c:1988
+#. TRANSLATORS: failure text for the in-app notification
+#. TRANSLATORS: we failed to get a proper error code
+#: src/gs-shell.c:1784 src/gs-shell.c:1812 src/gs-shell.c:1856 src/gs-shell.c:1900 src/gs-shell.c:1939
+#: src/gs-shell.c:1964
 msgid "Sorry, something went wrong"
 msgstr "ขออภัย มีบางอย่างผิดพลาด"
 
@@ -4684,101 +4791,100 @@ msgstr "ขออภัย มีบางอย่างผิดพลาด"
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1820
+#: src/gs-shell.c:1792
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "ไม่สามารถเรียกใช้งาน %s ได้: ไม่ได้ติดตั้ง %s ไว้"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1830 src/gs-shell.c:1874 src/gs-shell.c:1918 src/gs-shell.c:1968
+#: src/gs-shell.c:1802 src/gs-shell.c:1846 src/gs-shell.c:1890 src/gs-shell.c:1944
 msgid "Not enough disk space for operation"
 msgstr "เนื้อที่ว่างในดิสก์ไม่เพียงพอสำหรับการทำงาน"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1866
+#: src/gs-shell.c:1838
 msgid "Unable to install: file type not supported"
 msgstr "ไม่สามารถติดตั้ง: ไม่รองรับชนิดไฟล์"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1870 src/gs-shell.c:1914
+#: src/gs-shell.c:1842 src/gs-shell.c:1886
 msgid "Unable to install: authentication failed"
 msgstr "ไม่สามารถติดตั้ง: ยืนยันตัวตนล้มเหลว"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1910
+#: src/gs-shell.c:1882
 msgid "Unable to install"
 msgstr "ไม่สามารถติดตั้ง"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1961
+#: src/gs-shell.c:1933
 #, c-format
 msgid "Unable to contact %s"
 msgstr "ไม่สามารถติดต่อ %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'.
-#: src/gs-shell.c:1972
+#: src/gs-shell.c:1948
 msgid "Restart Software to use new plugins"
 msgstr "เริ่ม “ซอฟต์แวร์” ใหม่เพื่อใช้ปลั๊กอินตัวใหม่"
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1976
+#: src/gs-shell.c:1952
 msgid "Device needs to be plugged in"
 msgstr "ต้องเสียบปลั๊กอุปกรณ์"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1979
+#: src/gs-shell.c:1955
 msgid "Battery level is too low"
 msgstr "ระดับแบตเตอรี่ต่ำเกินไป"
 
-#. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-shell.c:2154
-msgid "About Software"
-msgstr "เกี่ยวกับ “ซอฟต์แวร์”"
-
-#: src/gs-shell.ui:7
+#: src/gs-shell.ui:8
 msgid "_Software Repositories"
 msgstr "_คลังซอฟต์แวร์"
 
-#: src/gs-shell.ui:12
-msgid "_Keyboard Shortcuts"
-msgstr "ปุ่_มลัดแป้นพิมพ์"
-
-#: src/gs-shell.ui:16
+#: src/gs-shell.ui:15
 msgid "_Preferences"
 msgstr "_ปรับแต่ง"
 
-#: src/gs-shell.ui:134 src/gs-shell.ui:136
+#: src/gs-shell.ui:19
+msgid "_Keyboard Shortcuts"
+msgstr "ปุ่_มลัดแป้นพิมพ์"
+
+#: src/gs-shell.ui:23
+msgid "_About Software"
+msgstr "เ_กี่ยวกับ “ซอฟต์แวร์”"
+
+#: src/gs-shell.ui:142 src/gs-shell.ui:144
 msgid "Search"
 msgstr "ค้นหา"
 
-#: src/gs-shell.ui:150 src/gs-shell.ui:152
+#: src/gs-shell.ui:158 src/gs-shell.ui:160
 msgid "Main Menu"
 msgstr "เมนูหลัก"
 
-#: src/gs-shell.ui:179
+#: src/gs-shell.ui:187
 msgid "Search apps"
 msgstr "ค้นหาแอป"
 
 #. Translators: A label for a button to show all available software.
-#: src/gs-shell.ui:203
+#: src/gs-shell.ui:213
 msgid "_Explore"
 msgstr "สำ_รวจ"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-shell.ui:217
+#: src/gs-shell.ui:227
 msgctxt "List of installed apps"
 msgid "_Installed"
 msgstr "_ติดตั้งแล้ว"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-shell.ui:239
+#: src/gs-shell.ui:249
 msgctxt "Header bar button for list of apps to be updated"
 msgid "_Updates"
 msgstr "_อัปเดต"
 
-#: src/gs-shell.ui:275 src/gs-shell.ui:346
+#: src/gs-shell.ui:287 src/gs-shell.ui:358
 msgid "Go back"
 msgstr "กลับไป"
 
@@ -4834,7 +4940,7 @@ msgstr "ไม่ทราบ"
 #. TRANSLATORS: "<a href='#'>" and "</a>" should not be touched.
 #: src/gs-storage-context-dialog.c:262
 msgid "Cached data can be cleared from the <a href='#'>_app settings</a>"
-msgstr ""
+msgstr "สามารถล้างข้อมูลแคชได้จาก<a href='#'>_การตั้งค่าแอป</a>"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:6
@@ -4859,7 +4965,7 @@ msgstr "%s (กำลังดาวน์โหลด)"
 #: src/gs-summary-tile.c:154
 #, c-format
 msgid "%s (Removing)"
-msgstr "%s (กำลังถอดถอน)"
+msgstr "%s (กำลังลบ)"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
@@ -4873,161 +4979,161 @@ msgstr "_ตรวจสอบ"
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:109
+#: src/gs-update-dialog.c:107
 #, c-format
 msgid "Installed on %s"
 msgstr "ติดตั้งเมื่อ %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:131
+#: src/gs-update-dialog.c:129
 msgid "Installed Updates"
 msgstr "รายการอัปเดตที่ติดตั้งแล้ว"
 
-#: src/gs-update-dialog.ui:66
+#: src/gs-update-dialog.ui:59
 msgid "No Updates Installed"
 msgstr "ไม่มีรายการอัปเดตที่ติดตั้งแล้ว"
 
-#: src/gs-update-monitor.c:215
+#: src/gs-update-monitor.c:229
 msgid "Updates Are Out of Date"
 msgstr "รายการอัปเดตล้าสมัย"
 
-#: src/gs-update-monitor.c:216
+#: src/gs-update-monitor.c:230
 msgid "Please check for available updates"
 msgstr "โปรดทำการตรวจหารายการอัปเดต"
 
-#: src/gs-update-monitor.c:222
+#: src/gs-update-monitor.c:236
 msgid "Critical Updates Ready to Install"
 msgstr "รายการอัปเดตที่สำคัญพร้อมติดตั้ง"
 
-#: src/gs-update-monitor.c:223
+#: src/gs-update-monitor.c:237
 msgid "Install critical updates as soon as possible"
 msgstr "ติดตั้งรายการอัปเดตที่สำคัญโดยเร็วที่สุด"
 
-#: src/gs-update-monitor.c:226
+#: src/gs-update-monitor.c:240
 msgid "Critical Updates Available to Download"
 msgstr "รายการอัปเดตซอฟต์แวร์ที่สำคัญพร้อมให้ดาวน์โหลด"
 
-#: src/gs-update-monitor.c:227
+#: src/gs-update-monitor.c:241
 msgid "Download critical updates as soon as possible"
 msgstr "ดาวน์โหลดรายการอัปเดตที่สำคัญโดยเร็วที่สุด"
 
-#: src/gs-update-monitor.c:233
+#: src/gs-update-monitor.c:247
 msgid "Updates Ready to Install"
 msgstr "อัปเดตพร้อมติดตั้งแล้ว"
 
-#: src/gs-update-monitor.c:234
+#: src/gs-update-monitor.c:248
 msgid "Software updates are ready and waiting"
 msgstr "รายการอัปเดตซอฟต์แวร์รออยู่และพร้อมสำหรับติดตั้งแล้ว"
 
-#: src/gs-update-monitor.c:240
+#: src/gs-update-monitor.c:253
 msgid "Updates Available to Download"
 msgstr "รายการอัปเดตพร้อมให้ดาวน์โหลด"
 
-#: src/gs-update-monitor.c:241
+#: src/gs-update-monitor.c:254
 msgid "Software updates can be downloaded"
 msgstr "สามารถดาวน์โหลดอัปเดตซอฟต์แวร์ได้"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:357
+#: src/gs-update-monitor.c:374
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
 msgstr[0] "อัปเดตแล้ว %u แอป — ต้องรีสตาร์ท"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:363
+#: src/gs-update-monitor.c:380
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
 msgstr[0] "อัปเดตแล้ว %u แอป"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:374
+#: src/gs-update-monitor.c:391
 #, c-format
 msgid "%s has been updated."
 msgstr "อัปเดต %s แล้ว"
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:377
+#: src/gs-update-monitor.c:394
 msgid "Please restart the app."
 msgstr "โปรดเริ่มแอปใหม่"
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:385
+#: src/gs-update-monitor.c:402
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "อัปเดต %s และ %s แล้ว"
 
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:391 src/gs-update-monitor.c:410
+#: src/gs-update-monitor.c:408 src/gs-update-monitor.c:427
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
 msgstr[0] "ต้องเริ่มใหม่ %u แอป"
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:403
+#: src/gs-update-monitor.c:420
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "รวมถึง %s, %s และ %s"
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:703
+#: src/gs-update-monitor.c:722
 msgid "System Has Reached End of Life"
 msgstr "ระบบถึงจุดสิ้นสุดอายุการใช้งานแล้ว"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:705
+#: src/gs-update-monitor.c:724
 msgid "Upgrade to continue receiving updates"
 msgstr "อัปเกรดเพื่อรับการอัปเดตต่อไป"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:760
+#: src/gs-update-monitor.c:779
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "%s รุ่นใหม่พร้อมให้ติดตั้งแล้ว"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:764
+#: src/gs-update-monitor.c:783
 msgid "Software Upgrade Available"
 msgstr "มีการอัปเดตซอฟต์แวร์"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1211
+#: src/gs-update-monitor.c:1281
 msgid "Software Updates Failed"
 msgstr "อัปเดตซอฟต์แวร์ไม่สำเร็จ"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1213
+#: src/gs-update-monitor.c:1283
 msgid "Prepared updates were not installed"
 msgstr "อัปเดตที่เตรียมไว้ไม่ได้รับการติดตั้ง"
 
-#: src/gs-update-monitor.c:1214
+#: src/gs-update-monitor.c:1284
 msgid "Show Details"
 msgstr "แสดงรายละเอียด"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1259
+#: src/gs-update-monitor.c:1329
 msgid "System Upgrade Complete"
 msgstr "อัปเกรดระบบสำเร็จ"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1264
+#: src/gs-update-monitor.c:1334
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "ยินดีต้อนรับสู่ %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1273
+#: src/gs-update-monitor.c:1343
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "ติดตั้งรายการอัปเดตซอฟต์แวร์แล้ว"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1277
+#: src/gs-update-monitor.c:1347
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "ติดตั้งรายการอัปเดตที่สำคัญของระบบปฏิบัติการสำเร็จแล้ว"
@@ -5037,61 +5143,65 @@ msgstr[0] "ติดตั้งรายการอัปเดตที่ส
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1288
+#: src/gs-update-monitor.c:1358
 msgctxt "updates"
 msgid "Review"
 msgstr "ทวนดู"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1341
+#: src/gs-update-monitor.c:1411
 msgid "Failed To Update"
 msgstr "อัปเดตไม่สำเร็จ"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1346
+#: src/gs-update-monitor.c:1416
 msgid "The system was already up to date."
 msgstr "ระบบเป็นรุ่นใหม่ล่าสุดแล้ว"
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1351
+#: src/gs-update-monitor.c:1421
 msgid "The update was cancelled."
 msgstr "การอัปเดตถูกยกเลิก"
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1356
-msgid "Internet access was required but wasn’t available. Please make sure that you have internet access and try again."
+#: src/gs-update-monitor.c:1426
+msgid ""
+"Internet access was required but wasn’t available. Please make sure that you have internet access and "
+"try again."
 msgstr "ต้องใช้การเชื่อมต่ออินเทอร์เน็ต แต่ไม่สามารถใช้ได้ กรุณาตรวจสอบให้แน่ใจว่าคุณมีการเข้าถึงอินเทอร์เน็ตแล้วลองใหม่"
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1361
-msgid "There were security issues with the update. Please consult your software provider for more details."
+#: src/gs-update-monitor.c:1431
+msgid ""
+"There were security issues with the update. Please consult your software provider for more details."
 msgstr "มีปัญหาด้านความปลอดภัยในอัปเดต กรุณาสอบถามรายละเอียดเพิ่มเติมจากผู้ให้บริการซอฟต์แวร์ของคุณ"
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1366
+#: src/gs-update-monitor.c:1436
 msgid "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "เนื้อที่ว่างในดิสก์ไม่เพียงพอ กรุณาคืนเนื้อที่ว่างแล้วลองใหม่"
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1370
+#: src/gs-update-monitor.c:1440
 msgid ""
-"We’re sorry: the update failed to install. Please wait for another update and try again. If the problem persists, contact your "
-"software provider."
-msgstr "ขออภัย: ติดตั้งแพคเกจอัปเดตไม่สำเร็จ กรุณารอการอัปเดตครั้งถัดไปแล้วลองใหม่ ถ้าปัญหายังคงอยู่ กรุณาติดต่อผู้ให้บริการซอฟต์แวร์ของคุณ"
+"We’re sorry: the update failed to install. Please wait for another update and try again. If the "
+"problem persists, contact your software provider."
+msgstr ""
+"ขออภัย: ติดตั้งแพคเกจอัปเดตไม่สำเร็จ กรุณารอการอัปเดตครั้งถัดไปแล้วลองใหม่ ถ้าปัญหายังคงอยู่ กรุณาติดต่อผู้ให้บริการซอฟต์แวร์ของคุณ"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:256
+#: src/gs-updates-page.c:261
 #, c-format
 msgid "Last checked: %s"
 msgstr "ตรวจสอบล่าสุด: %s"
 
-#: src/gs-updates-page.c:313
+#: src/gs-updates-page.c:314
 msgid "Stop"
 msgstr "หยุด"
 
-#: src/gs-updates-page.c:322 src/gs-updates-page.c:334
+#: src/gs-updates-page.c:323 src/gs-updates-page.c:335
 msgid "Check for Updates"
 msgstr "ตรวจสอบการอัปเดต"
 
@@ -5131,11 +5241,11 @@ msgstr "ดาวน์โหลดการอัปเดตซอฟต์แ
 msgid "Upgrades are ready to be installed"
 msgstr "อัปเดตพร้อมติดตั้งแล้ว"
 
-#: src/gs-updates-page.c:1220
+#: src/gs-updates-page.c:1228
 msgid "Check for updates"
 msgstr "ตรวจสอบการอัปเดต"
 
-#: src/gs-updates-page.c:1256
+#: src/gs-updates-page.c:1264
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "รายการอัปเดต"
@@ -5145,49 +5255,49 @@ msgid "Updates page"
 msgstr "หน้ารายการอัปเดต"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:59
+#: src/gs-updates-page.ui:28
 msgid "Loading Updates"
 msgstr "กำลังโหลดรายการอัปเดตใหม่…"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:72
+#: src/gs-updates-page.ui:29
 msgid "This could take a while"
 msgstr "อาจใช้เวลาสักครู่"
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:192
+#: src/gs-updates-page.ui:141
 msgid "Up to Date"
 msgstr "เป็นรุ่นล่าสุดแล้ว"
 
-#: src/gs-updates-page.ui:231
+#: src/gs-updates-page.ui:179
 msgid "Use Mobile Data?"
 msgstr "ใช้ข้อมูลมือถือหรือไม่?"
 
-#: src/gs-updates-page.ui:232
+#: src/gs-updates-page.ui:180
 msgid "Checking for updates when using mobile broadband could cause you to incur charges"
 msgstr "การตรวจสอบการอัปเดตขณะใช้บรอดแบนด์มือถืออาจทำให้คุณเสียค่าบริการ"
 
-#: src/gs-updates-page.ui:235
+#: src/gs-updates-page.ui:183
 msgid "_Check Anyway"
 msgstr "_ตรวจสอบต่อไป"
 
-#: src/gs-updates-page.ui:254
+#: src/gs-updates-page.ui:202
 msgid "No Connection"
 msgstr "ไม่มีการเชื่อมต่อ"
 
-#: src/gs-updates-page.ui:255
+#: src/gs-updates-page.ui:203
 msgid "Go online to check for updates"
 msgstr "เชื่อมต่ออินเทอร์เน็ตเพื่อตรวจสอบการอัปเดต"
 
-#: src/gs-updates-page.ui:258
+#: src/gs-updates-page.ui:206
 msgid "_Network Settings"
 msgstr "ตั้งค่าเ_ครือข่าย"
 
-#: src/gs-updates-page.ui:278 src/gs-updates-page.ui:292
+#: src/gs-updates-page.ui:226 src/gs-updates-page.ui:240
 msgid "Error"
 msgstr "ข้อผิดพลาด"
 
-#: src/gs-updates-page.ui:293
+#: src/gs-updates-page.ui:241
 msgid "Updates are automatically managed"
 msgstr "การอัปเดตมีการจัดการโดยอัตโนมัติ"
 
@@ -5253,45 +5363,45 @@ msgstr "โหมดเล่นเกมเปิดใช้งานอยู
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:321
+#: src/gs-updates-section.c:320
 msgid "_Restart & Update…"
 msgstr "_รีสตาร์ทและอัปเดต…"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable apps
-#: src/gs-updates-section.c:327
+#: src/gs-updates-section.c:326
 msgid "U_pdate All"
 msgstr "_อัปเดตทั้งหมด"
 
-#: src/gs-updates-section.c:404
+#: src/gs-updates-section.c:403
 msgid "Software Updates Downloaded"
 msgstr "ดาวน์โหลดรายการอัปเดตซอฟต์แวร์แล้ว"
 
-#: src/gs-updates-section.c:405
+#: src/gs-updates-section.c:404
 msgid "Updates are ready to be installed"
 msgstr "อัปเดตพร้อมติดตั้งแล้ว"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:496
+#: src/gs-updates-section.c:495
 msgid "Integrated Firmware"
 msgstr ""
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:501
+#: src/gs-updates-section.c:500
 msgid "Requires Restart"
 msgstr "ต้องรีสตาร์ท"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:506
+#: src/gs-updates-section.c:505
 msgid "App Updates"
 msgstr "อัปเดตแอป"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:511
+#: src/gs-updates-section.c:510
 msgid "Device Firmware"
 msgstr "เฟิร์มแวร์อุปกรณ์"
 
@@ -5337,13 +5447,31 @@ msgstr "ดาวน์โหลดไปแล้ว %u%%"
 msgid "A major upgrade, with new features and added polish."
 msgstr "การอัปเกรดใหญ่ พร้อมความสามารถใหม่และการปรับปรุงเพิ่มเติม"
 
-#: src/gs-upgrade-banner.ui:188
+#: src/gs-upgrade-banner.ui:153
+#, fuzzy
+#| msgid "Cancel"
+msgid "Cancel Upgrade"
+msgstr "ยกเลิก"
+
+#: src/gs-upgrade-banner.ui:184
 msgid "_Restart & Upgrade…"
 msgstr "_รีสตาร์ทและอัปเกรด…"
 
-#: src/gs-upgrade-banner.ui:216
+#: src/gs-upgrade-banner.ui:212
 msgid "Remember to back up data and files before upgrading."
 msgstr "อย่าลืมสำรองข้อมูลและไฟล์ต่างๆ ก่อนการอัปเกรด"
+
+#: src/gs-utils-error-dialog-simple.ui:4
+#, fuzzy
+#| msgid "Show Details"
+msgid "Error Details"
+msgstr "แสดงรายละเอียด"
+
+#: src/gs-utils-error-dialog-simple.ui:34
+#, fuzzy
+#| msgid "Show Details"
+msgid "Copy Details"
+msgstr "แสดงรายละเอียด"
 
 #: lib/gs-utils.c:581 lib/gs-utils.c:612
 #, c-format
@@ -5355,14 +5483,14 @@ msgstr "ไม่สามารถลบไฟล์ “%s”: %s"
 msgid "Failed to delete directory “%s”: %s"
 msgstr "ไม่สามารถลบไดเรกทอรี “%s”: %s"
 
-#: src/org.gnome.Software.desktop.in:4
+#: src/org.gnome.Software.desktop.in:3
 msgid "Add, remove or update software on this computer"
 msgstr "เพิ่ม ลบ หรืออัปเดตซอฟต์แวร์ในคอมพิวเตอร์นี้"
 
 #. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
-#: src/org.gnome.Software.desktop.in:12
+#: src/org.gnome.Software.desktop.in:11
 msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
-msgstr "อัปเดต;อัปเกรด;แหล่งซอฟต์แวร์;คลังซอฟต์แวร์;ปรับแต่ง;ติดตั้ง;ถอดถอน;โปรแกรม;ซอฟต์แวร์;แอป;ร้าน;"
+msgstr "อัปเดต;อัปเกรด;แหล่งซอฟต์แวร์;คลังซอฟต์แวร์;ปรับแต่ง;ติดตั้ง;ถอนการติดตั้ง;โปรแกรม;ซอฟต์แวร์;แอป;ร้าน;"
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the first part of a system notification.
@@ -5389,13 +5517,13 @@ msgstr "เปิดใช้"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:69 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3170
+#: plugins/core/gs-plugin-generic-updates.c:69 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3173
 msgid "System Updates"
 msgstr "อัปเดตของระบบ"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:74 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3175
+#: plugins/core/gs-plugin-generic-updates.c:74 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3178
 msgid "General system updates, such as security or bug fixes, and performance improvements."
 msgstr "การอัปเดตระบบทั่วไป เช่น การแก้ไขความปลอดภัยหรือจุดบกพร่อง และการปรับปรุงประสิทธิภาพ"
 
@@ -5436,135 +5564,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr ""
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:342
+#: plugins/flatpak/gs-flatpak.c:361
 #, c-format
 msgid "System folder %s"
 msgstr "โฟลเดอร์ระบบ %s"
 
-#: plugins/flatpak/gs-flatpak.c:343 plugins/flatpak/gs-flatpak.c:344
+#: plugins/flatpak/gs-flatpak.c:362 plugins/flatpak/gs-flatpak.c:363
 #, c-format
 msgid "Home subfolder %s"
 msgstr "โฟลเดอร์ย่อยบ้าน %s"
 
-#: plugins/flatpak/gs-flatpak.c:345
+#: plugins/flatpak/gs-flatpak.c:364
 msgid "Host system folders"
 msgstr "โฟลเดอร์ระบบของโฮสต์"
 
-#: plugins/flatpak/gs-flatpak.c:346
+#: plugins/flatpak/gs-flatpak.c:365
 msgid "Host system configuration from /etc"
 msgstr "การกำหนดค่าของระบบโฮสต์จาก /etc"
 
-#: plugins/flatpak/gs-flatpak.c:347
+#: plugins/flatpak/gs-flatpak.c:366
 msgid "Desktop folder"
 msgstr "โฟลเดอร์เดสก์ท็อป"
 
-#: plugins/flatpak/gs-flatpak.c:347
+#: plugins/flatpak/gs-flatpak.c:366
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "โฟลเดอร์เดสก์ท็อปย่อย %s"
 
-#: plugins/flatpak/gs-flatpak.c:348
+#: plugins/flatpak/gs-flatpak.c:367
 msgid "Documents folder"
 msgstr "โฟลเดอร์เอกสาร"
 
-#: plugins/flatpak/gs-flatpak.c:348
+#: plugins/flatpak/gs-flatpak.c:367
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "โฟลเดอร์เอกสารย่อย %s"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:368
 msgid "Music folder"
 msgstr "โฟลเดอร์เพลง"
 
-#: plugins/flatpak/gs-flatpak.c:349
+#: plugins/flatpak/gs-flatpak.c:368
 #, c-format
 msgid "Music subfolder %s"
 msgstr "โฟลเดอร์เพลงย่อย %s"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:369
 msgid "Pictures folder"
 msgstr "โฟลเดอร์รูปภาพ"
 
-#: plugins/flatpak/gs-flatpak.c:350
+#: plugins/flatpak/gs-flatpak.c:369
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "โฟลเดอร์รูปภาพย่อย %s"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:370
 msgid "Public Share folder"
 msgstr "โฟลเดอร์แชร์สาธารณะ"
 
-#: plugins/flatpak/gs-flatpak.c:351
+#: plugins/flatpak/gs-flatpak.c:370
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "โฟลเดอร์แชร์สาธารณะย่อย %s"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:371
 msgid "Videos folder"
 msgstr "โฟลเดอร์วิดีโอ"
 
-#: plugins/flatpak/gs-flatpak.c:352
+#: plugins/flatpak/gs-flatpak.c:371
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "โฟลเดอร์วิดีโอย่อย %s"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:372
 msgid "Templates folder"
 msgstr "โฟลเดอร์เทมเพลต"
 
-#: plugins/flatpak/gs-flatpak.c:353
+#: plugins/flatpak/gs-flatpak.c:372
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "โฟลเดอร์เทมเพลตย่อย %s"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:373
 msgid "User cache folder"
 msgstr "โฟลเดอร์แคชของผู้ใช้"
 
-#: plugins/flatpak/gs-flatpak.c:354
+#: plugins/flatpak/gs-flatpak.c:373
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "โฟลเดอร์แคชย่อยของผู้ใช้ %s"
 
-#: plugins/flatpak/gs-flatpak.c:355
+#: plugins/flatpak/gs-flatpak.c:374
 msgid "User configuration folder"
 msgstr "โฟลเดอร์การกำหนดค่าของผู้ใช้"
 
-#: plugins/flatpak/gs-flatpak.c:355
+#: plugins/flatpak/gs-flatpak.c:374
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "โฟลเดอร์การกำหนดค่าย่อยของผู้ใช้ %s"
 
-#: plugins/flatpak/gs-flatpak.c:356
+#: plugins/flatpak/gs-flatpak.c:375
 msgid "User data folder"
 msgstr "โฟลเดอร์ข้อมูลของผู้ใช้"
 
-#: plugins/flatpak/gs-flatpak.c:356
+#: plugins/flatpak/gs-flatpak.c:375
 #, c-format
 msgid "User data subfolder %s"
 msgstr "โฟลเดอร์ข้อมูลของย่อยผู้ใช้ %s"
 
-#: plugins/flatpak/gs-flatpak.c:357
+#: plugins/flatpak/gs-flatpak.c:376
 msgid "User runtime folder"
 msgstr "โฟลเดอร์รันไทม์ของผู้ใช้"
 
-#: plugins/flatpak/gs-flatpak.c:357
+#: plugins/flatpak/gs-flatpak.c:376
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "โฟลเดอร์รันไทม์ย่อยของผู้ใช้ %s"
 
-#: plugins/flatpak/gs-flatpak.c:415
+#: plugins/flatpak/gs-flatpak.c:434
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "การเข้าถึงระบบไฟล์ %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1374
+#: plugins/flatpak/gs-flatpak.c:1387
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr ""
 
-#: plugins/flatpak/gs-flatpak.c:3590
+#: plugins/flatpak/gs-flatpak.c:3613
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr ""
@@ -5577,107 +5705,109 @@ msgstr "การติดตั้งของผู้ใช้"
 msgid "System Installation"
 msgstr "การติดตั้งของระบบ"
 
-#: plugins/flatpak/gs-flatpak-utils.c:271
+#: plugins/flatpak/gs-flatpak-utils.c:273
 msgid "App ID"
 msgstr "ID ของแอป"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1353
+#: plugins/flatpak/gs-plugin-flatpak.c:1368
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr ""
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1367
+#: plugins/flatpak/gs-plugin-flatpak.c:1382
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr ""
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1956
+#: plugins/flatpak/gs-plugin-flatpak.c:1963
 #, c-format
 msgid ""
-"Remote “%s” doesn't allow install of “%s”, possibly due to its filter. Remove the filter and repeat the install. Detailed error: %s"
-msgstr "รีโมต “%s” ไม่อนุญาตให้ติดตั้ง “%s” โดยอาจเป็นเพราะตัวกรองของรีโมต ลบตัวกรองออกแล้วติดตั้งใหม่ ข้อผิดพลาดโดยละเอียด: %s"
+"Remote “%s” doesn't allow install of “%s”, possibly due to its filter. Remove the filter and repeat "
+"the install. Detailed error: %s"
+msgstr ""
+"รีโมต “%s” ไม่อนุญาตให้ติดตั้ง “%s” โดยอาจเป็นเพราะตัวกรองของรีโมต ลบตัวกรองออกแล้วติดตั้งใหม่ ข้อผิดพลาดโดยละเอียด: %s"
 
 #. TRANSLATORS: as in laptop battery power
-#: plugins/fwupd/gs-fwupd-app.c:66
+#: plugins/fwupd/gs-fwupd-app.c:70
 msgid "System power is too low to perform the update"
 msgstr "พลังงานของระบบต่ำเกินไปที่จะดำเนินการอัปเดต"
 
 #. TRANSLATORS: as in laptop battery power
-#: plugins/fwupd/gs-fwupd-app.c:70
+#: plugins/fwupd/gs-fwupd-app.c:74
 #, c-format
 msgid "System power is too low to perform the update (%u%%, requires %u%%)"
 msgstr "พลังงานของระบบต่ำเกินไปที่จะดำเนินการอัปเดต (%u%% ต้องใช้ %u%%)"
 
 #. TRANSLATORS: for example, a Bluetooth mouse that is in powersave mode
-#: plugins/fwupd/gs-fwupd-app.c:76
+#: plugins/fwupd/gs-fwupd-app.c:80
 msgid "Device is unreachable, or out of wireless range"
 msgstr "ไม่สามารถเข้าถึงอุปกรณ์ได้หรืออยู่นอกระยะไร้สาย"
 
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
-#: plugins/fwupd/gs-fwupd-app.c:82
+#: plugins/fwupd/gs-fwupd-app.c:86
 #, c-format
 msgid "Device battery power is too low"
 msgstr "พลังงานแบตเตอรี่ของอุปกรณ์ต่ำเกินไป"
 
 #. TRANSLATORS: for example the batteries *inside* the Bluetooth mouse
-#: plugins/fwupd/gs-fwupd-app.c:85
+#: plugins/fwupd/gs-fwupd-app.c:89
 #, c-format
 msgid "Device battery power is too low (%u%%, requires %u%%)"
 msgstr "พลังงานแบตเตอรี่ของอุปกรณ์ต่ำเกินไป (%u%% ต้องใช้ %u%%)"
 
 #. TRANSLATORS: usually this is when we're waiting for a reboot
-#: plugins/fwupd/gs-fwupd-app.c:91
+#: plugins/fwupd/gs-fwupd-app.c:95
 msgid "Device is waiting for the update to be applied"
 msgstr "อุปกรณ์กำลังรอการนำอัปเดตมาใช้"
 
 #. TRANSLATORS: as in, wired mains power for a laptop
-#: plugins/fwupd/gs-fwupd-app.c:95
+#: plugins/fwupd/gs-fwupd-app.c:99
 msgid "Device requires AC power to be connected"
 msgstr "อุปกรณ์ต้องเชื่อมต่อไฟฟ้า AC"
 
 #. TRANSLATORS: lid means "laptop top cover"
-#: plugins/fwupd/gs-fwupd-app.c:99
+#: plugins/fwupd/gs-fwupd-app.c:103
 msgid "Device cannot be used while the lid is closed"
 msgstr "ไม่สามารถใช้งานอุปกรณ์ได้ในขณะที่ฝาปิดอยู่"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:208
+#: plugins/fwupd/gs-fwupd-app.c:212
 #, c-format
 msgid "%s Device Update"
 msgstr "อัปเดตอุปกรณ์ %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:213
+#: plugins/fwupd/gs-fwupd-app.c:217
 #, c-format
 msgid "%s System Update"
 msgstr "อัปเดตระบบ %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:218
+#: plugins/fwupd/gs-fwupd-app.c:222
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "อัปเดตตัวควบคุมแบบฝังตัว %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:223
+#: plugins/fwupd/gs-fwupd-app.c:227
 #, c-format
 msgid "%s ME Update"
 msgstr "อัปเดต ME %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:228
+#: plugins/fwupd/gs-fwupd-app.c:232
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "อัปเดต ME ระดับองค์กร %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:233
+#: plugins/fwupd/gs-fwupd-app.c:237
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "อัปเดต ME ระดับผู้บริโภค %s"
@@ -5685,7 +5815,7 @@ msgstr "อัปเดต ME ระดับผู้บริโภค %s"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:239
+#: plugins/fwupd/gs-fwupd-app.c:243
 #, c-format
 msgid "%s Controller Update"
 msgstr "อัปเดตตัวควบคุม %s"
@@ -5693,141 +5823,141 @@ msgstr "อัปเดตตัวควบคุม %s"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:245
+#: plugins/fwupd/gs-fwupd-app.c:249
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "อัปเดตตัวควบคุม Thunderbolt %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:250
+#: plugins/fwupd/gs-fwupd-app.c:254
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "อัปเดตไมโครโค้ด CPU %s"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:255
+#: plugins/fwupd/gs-fwupd-app.c:259
 #, c-format
 msgid "%s Configuration Update"
 msgstr "อัปเดตการกำหนดค่า %s"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:259
+#: plugins/fwupd/gs-fwupd-app.c:263
 #, c-format
 msgid "%s Battery Update"
 msgstr "อัปเดตแบตเตอรี่ %s"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:264
+#: plugins/fwupd/gs-fwupd-app.c:268
 #, c-format
 msgid "%s Camera Update"
 msgstr "อัปเดตกล้อง %s"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:268
+#: plugins/fwupd/gs-fwupd-app.c:272
 #, c-format
 msgid "%s TPM Update"
 msgstr "อัปเดต TPM %s"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:272
+#: plugins/fwupd/gs-fwupd-app.c:276
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "อัปเดตทัชแพด %s"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:276
+#: plugins/fwupd/gs-fwupd-app.c:280
 #, c-format
 msgid "%s Mouse Update"
 msgstr "อัปเดตเมาส์ %s"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:280
+#: plugins/fwupd/gs-fwupd-app.c:284
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "อัปเดตแป้นพิมพ์ %s"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
-#: plugins/fwupd/gs-fwupd-app.c:284
+#: plugins/fwupd/gs-fwupd-app.c:288
 #, c-format
 msgid "%s Storage Controller Update"
 msgstr "อัปเดตตัวควบคุมการจัดเก็บข้อมูล %s"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
-#: plugins/fwupd/gs-fwupd-app.c:289
+#: plugins/fwupd/gs-fwupd-app.c:293
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "อัปเดตอินเทอร์เฟซเครือข่าย %s"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
-#: plugins/fwupd/gs-fwupd-app.c:294
+#: plugins/fwupd/gs-fwupd-app.c:298
 #, c-format
 msgid "%s Display Update"
 msgstr "อัปเดตระบบแสดงผล %s"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
-#: plugins/fwupd/gs-fwupd-app.c:299
+#: plugins/fwupd/gs-fwupd-app.c:303
 #, c-format
 msgid "%s BMC Update"
 msgstr "อัปเดต BMC %ss"
 
 #. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
 #. * device that stays in the USB port so the wireless peripheral works
-#: plugins/fwupd/gs-fwupd-app.c:304
+#: plugins/fwupd/gs-fwupd-app.c:308
 #, c-format
 msgid "%s USB Receiver Update"
 msgstr "อัปเดตตัวรับ USB %s"
 
 #. TRANSLATORS: drive refers to a storage device, e.g. SATA disk
-#: plugins/fwupd/gs-fwupd-app.c:308
+#: plugins/fwupd/gs-fwupd-app.c:312
 #, c-format
 msgid "%s Drive Update"
 msgstr "อัปเดตไดรฟ์ %s"
 
 #. TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC
-#: plugins/fwupd/gs-fwupd-app.c:312
+#: plugins/fwupd/gs-fwupd-app.c:316
 #, c-format
 msgid "%s Flash Drive Update"
 msgstr "อัปเดตแฟลชไดรฟ์ %s"
 
 #. TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
 #. * SATA or NVMe disk
-#: plugins/fwupd/gs-fwupd-app.c:317
+#: plugins/fwupd/gs-fwupd-app.c:321
 #, c-format
 msgid "%s SSD Update"
 msgstr "อัปเดต SSD %s"
 
 #. TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
 #. * the "video card"
-#: plugins/fwupd/gs-fwupd-app.c:322
+#: plugins/fwupd/gs-fwupd-app.c:326
 #, c-format
 msgid "%s GPU Update"
 msgstr "อัปเดต GPU %s"
 
 #. TRANSLATORS: Dock refers to the port replicator hardware laptops are
 #. * cradled in, or lowered onto
-#: plugins/fwupd/gs-fwupd-app.c:327
+#: plugins/fwupd/gs-fwupd-app.c:331
 #, c-format
 msgid "%s Dock Update"
 msgstr "อัปเดตด็อค %s"
 
 #. TRANSLATORS: Dock refers to the port replicator device connected
 #. * by plugging in a USB cable -- which may or may not also provide power
-#: plugins/fwupd/gs-fwupd-app.c:332
+#: plugins/fwupd/gs-fwupd-app.c:336
 #, c-format
 msgid "%s USB Dock Update"
 msgstr "อัปเดตด็อค USB %s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:914
+#: plugins/fwupd/gs-plugin-fwupd.c:921
 msgid "Firmware"
 msgstr "เฟิร์มแวร์"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1918
+#: plugins/fwupd/gs-plugin-fwupd.c:1945
 msgid "Firmware update could not be applied: "
 msgstr "ไม่สามารถนำการอัปเดตเฟิร์มแวร์ไปใช้ได้:"
 
@@ -5845,8 +5975,8 @@ msgstr "ติดตั้งซอฟต์แวร์ที่ไม่ได
 
 #: plugins/packagekit/gs-packagekit-task.c:148
 msgid ""
-"Software that is to be installed is not signed. It will not be possible to verify the origin of updates to this software, or whether "
-"updates have been tampered with."
+"Software that is to be installed is not signed. It will not be possible to verify the origin of "
+"updates to this software, or whether updates have been tampered with."
 msgstr ""
 "ซอฟต์แวร์ที่กำลังจะติดตั้งนั้นไม่ได้มีการลงลายเซ็นไว้ ทำให้ไม่สามารถตรวจสอบที่มาของรายการอัปเดตสำหรับซอฟต์แวร์นี้ "
 "หรือตรวจสอบได้ว่ามีบางสิ่งที่เป็นอันตรายในรายการอัปเดตหรือไม่"
@@ -5857,8 +5987,8 @@ msgstr "ดาวน์โหลดซอฟต์แวร์ที่ไม่
 
 #: plugins/packagekit/gs-packagekit-task.c:153
 msgid ""
-"Unsigned updates are available. Without a signature, it is not possible to verify the origin of the update, or whether it has been "
-"tampered with."
+"Unsigned updates are available. Without a signature, it is not possible to verify the origin of the "
+"update, or whether it has been tampered with."
 msgstr ""
 "มีรายการอัปเดตที่ไม่ได้ลงลายเซ็นไว้ให้ติดตั้งได้ แต่เนื่องจากไม่มีลายเซ็นรับรอง จึงทำให้ไม่สามารถตรวจสอบที่มาของรายการอัปเดตได้ "
 "หรือตรวจสอบได้ว่ามีบางสิ่งที่เป็นอันตรายในรายการอัปเดตหรือไม่"
@@ -5869,11 +5999,13 @@ msgstr "อัปเดตซอฟต์แวร์ที่ไม่ได้
 
 #: plugins/packagekit/gs-packagekit-task.c:158
 msgid ""
-"Unsigned updates are available. Without a signature, it is not possible to verify the origin of the update, or whether it has been "
-"tampered with. Software updates will be disabled until unsigned updates are either removed or updated."
+"Unsigned updates are available. Without a signature, it is not possible to verify the origin of the "
+"update, or whether it has been tampered with. Software updates will be disabled until unsigned "
+"updates are either removed or updated."
 msgstr ""
 "มีรายการอัปเดตที่ไม่ได้ลงลายเซ็นไว้ให้ติดตั้งได้ แต่เนื่องจากไม่มีลายเซ็นรับรอง จึงทำให้ไม่สามารถตรวจสอบที่มาของรายการอัปเดตได้ "
-"หรือตรวจสอบได้ว่ามีบางสิ่งที่เป็นอันตรายในรายการอัปเดตหรือไม่ การอัปเดตซอฟต์แวร์จะถูกปิดใช้จนกว่ารายการอัปเดตที่ไม่ได้ลงลายเซ็นเหล่านั้นจะถูกถอดออกไปหรือถูกปรับปรุงใหม่"
+"หรือตรวจสอบได้ว่ามีบางสิ่งที่เป็นอันตรายในรายการอัปเดตหรือไม่ "
+"การอัปเดตซอฟต์แวร์จะถูกปิดใช้จนกว่ารายการอัปเดตที่ไม่ได้ลงลายเซ็นเหล่านั้นจะถูกถอดออกไปหรือถูกปรับปรุงใหม่"
 
 #: plugins/packagekit/gs-plugin-packagekit.c:1473
 msgid "Failed to install updates: "
@@ -5883,19 +6015,19 @@ msgstr "ติดตั้งรายการอัปเดตไม่สำ
 msgid "Packages"
 msgstr "แพคเกจ"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1413 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1436
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1413 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1439
 msgid "Failed to wait on transaction end before download: "
 msgstr ""
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1443 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1456
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1446 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1459
 msgid "Failed to download updates: "
 msgstr "ไม่สามารถดาวน์โหลดรายการอัปเดตได้: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1495 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1505
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1498 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1508
 msgid "Failed to trigger update: "
 msgstr "ไม่สามารถเริ่มการอัพเดตได้: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3270
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3273
 msgid "Operating System (OSTree)"
 msgstr "ระบบปฏิบัติการ (OSTree)"
 
@@ -5911,6 +6043,23 @@ msgstr "การรองรับ Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "snap เป็นแพคเกจ Linux แบบสากล"
+
+#. TRANSLATORS: this is the system OS upgrade
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:774
+msgid "System"
+msgstr "ระบบ"
+
+#. TRANSLATORS: this is the system component update
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:778
+#, fuzzy
+#| msgid "System Upgrade Complete"
+msgid "System component"
+msgstr "อัปเกรดระบบสำเร็จ"
+
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1029
+#, c-format
+msgid "Removing sysupdate job '%s' failed with status %i"
+msgstr ""
 
 #~ msgid "A nice way to manage the software on your system."
 #~ msgstr "วิธีที่ดีในการจัดการซอฟต์แวร์ในระบบของคุณ"
@@ -5991,7 +6140,9 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgid "Downloading upgrade information…"
 #~ msgstr "กำลังดาวน์โหลดข้อมูลการอัปเกรด…"
 
-#~ msgid "What did you like about this app? Leaving your feedback along with your reasons for leaving a review is helpful for others."
+#~ msgid ""
+#~ "What did you like about this app? Leaving your feedback along with your reasons for leaving a "
+#~ "review is helpful for others."
 #~ msgstr "คุณชอบอะไรเกี่ยวกับแอปนี้บ้าง? การเขียนความคิดเห็นของคุณพร้อมระบุเหตุผลของบทวิจารณ์เป็นสิ่งที่จะมีประโยชน์ต่อผู้อื่น"
 
 #~ msgid "An important software update is ready to be installed."
@@ -6035,7 +6186,8 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgid "The list of extra sources that have been previously enabled"
 #~ msgstr "รายชื่อของแหล่งเพิ่มเติมที่ได้เปิดใช้ก่อนหน้า"
 
-#~ msgid "The list of sources that have been previously enabled when installing third-party applications."
+#~ msgid ""
+#~ "The list of sources that have been previously enabled when installing third-party applications."
 #~ msgstr "รายชื่อของแหล่งซอฟต์แวร์ที่ได้เปิดใช้ก่อนหน้านี้ขณะติดตั้งโปรแกรมบุคคลที่สาม"
 
 #~ msgid "Add to Application Folder"
@@ -6078,9 +6230,11 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgstr "ยินดีต้อนรับ"
 
 #~ msgid ""
-#~ "Software lets you install all the software you need, all from one place. See our recommendations, browse the categories, or search "
-#~ "for the applications you want."
-#~ msgstr "\"ซอฟต์แวร์\" ช่วยคุณติดตั้งซอฟต์แวร์ใดๆ ที่คุณต้องการได้โดยสั่งจากที่นี่ที่เดียว คุณสามารถดูซอฟต์แวร์แนะนำ ท่องดูหมวดต่างๆ หรือค้นหาโปรแกรมที่คุณต้องการได้"
+#~ "Software lets you install all the software you need, all from one place. See our recommendations, "
+#~ "browse the categories, or search for the applications you want."
+#~ msgstr ""
+#~ "\"ซอฟต์แวร์\" ช่วยคุณติดตั้งซอฟต์แวร์ใดๆ ที่คุณต้องการได้โดยสั่งจากที่นี่ที่เดียว คุณสามารถดูซอฟต์แวร์แนะนำ ท่องดูหมวดต่างๆ "
+#~ "หรือค้นหาโปรแกรมที่คุณต้องการได้"
 
 #~ msgid "_Let’s Go Shopping"
 #~ msgstr "ไ_ปช็อปกันเลย"
@@ -6104,7 +6258,9 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgstr "อัปเดตแล้ว"
 
 #, c-format
-#~ msgid "Information about %s, as well as options for how to get a codec that can play this format can be found on the website."
+#~ msgid ""
+#~ "Information about %s, as well as options for how to get a codec that can play this format can be "
+#~ "found on the website."
 #~ msgstr "ข้อมูลเกี่ยวกับ %s และตัวเลือกสำหรับวิธีการรับตัวอ่าน-ลงรหัสที่สามารถเล่นรูปแบบนี้ มีอยู่ในในเว็บไซต์"
 
 #~ msgid "Post Review"
@@ -6126,7 +6282,9 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgid "Total"
 #~ msgstr "ทั้งหมด"
 
-#~ msgid "Extensions are used at your own risk. If you have any system problems, it is recommended to disable them."
+#~ msgid ""
+#~ "Extensions are used at your own risk. If you have any system problems, it is recommended to "
+#~ "disable them."
 #~ msgstr "คุณต้องรับความเสียงเองเมื่อใช้ส่วนขยายต่างๆ ถ้าคุณมีปัญหาใดๆ กับระบบ ขอแนะนำให้ปิดส่วนขยายต่างๆ"
 
 #~ msgid "Extension Settings"
@@ -6232,9 +6390,6 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgid "%l:%M %p"
 #~ msgstr "%l:%M %p"
 
-#~ msgid "Yesterday, %R"
-#~ msgstr "เมื่อวาน %R น."
-
 #~ msgid "Yesterday, %l:%M %p"
 #~ msgstr "เมื่อวาน %l:%M %p"
 
@@ -6271,7 +6426,9 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgstr "ลบแหล่ง"
 
 #, c-format
-#~ msgid "Software sources can be downloaded from the internet. They give you access to additional software that is not provided by %s."
+#~ msgid ""
+#~ "Software sources can be downloaded from the internet. They give you access to additional software "
+#~ "that is not provided by %s."
 #~ msgstr "แหล่งซอฟต์แวร์สามารถดาวน์โหลดได้จากอินเทอร์เน็ต ซึ่งช่วยให้คุณเข้าถึงซอฟต์แวร์เพิ่มเติมที่ไม่ได้จัดเตรียมไว้โดย %s"
 
 #~ msgid "Software sources give you access to additional software."
@@ -6747,9 +6904,6 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgid "Sports"
 #~ msgstr "กีฬา"
 
-#~ msgid "System"
-#~ msgstr "ระบบ"
-
 #~ msgctxt "Menu subcategory of System"
 #~ msgid "Emulator"
 #~ msgstr "โปรแกรมเลียนแบบ"
@@ -6847,7 +7001,8 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgstr "การอัปเดตครั้งก่อนยังไม่แล้วเสร็จ"
 
 #~ msgid ""
-#~ "The update couldn’t be installed; this is often a problem with the update itself. Please wait for another update and try again."
+#~ "The update couldn’t be installed; this is often a problem with the update itself. Please wait for "
+#~ "another update and try again."
 #~ msgstr "แพกเกจอัปเดตไม่สามารถติดตั้งได้ ซึ่งมักจะเกิดจากปัญหาของตัวแพกเกจอัปเดตเอง กรุณารอการอัปเดตครั้งถัดไปแล้วลองใหม่"
 
 #~ msgid "Internet Only Application"
@@ -6965,12 +7120,14 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgstr "วัตถุประสงค์:"
 
 #~ msgid ""
-#~ "<li>View installed applications</li> <li>Remove installed applications</li> <li>View available application updates</li> "
-#~ "<li>Install available updates</li> <li>Find new applications</li> <li>Install new applications</li> <li>Find an application to "
-#~ "handle a specific type of file</li> <li>Installed apps and updates should be available when offline</li>"
+#~ "<li>View installed applications</li> <li>Remove installed applications</li> <li>View available "
+#~ "application updates</li> <li>Install available updates</li> <li>Find new applications</li> "
+#~ "<li>Install new applications</li> <li>Find an application to handle a specific type of file</li> "
+#~ "<li>Installed apps and updates should be available when offline</li>"
 #~ msgstr ""
-#~ "<li>ดูโปรแกรมที่ติดตั้งแล้ว</li> <li>ถอดถอนโปรแกรมที่ติดตั้งแล้ว</li> <li>ดูโปรแกรมที่สามารถอัปเดตได้</li> <li>ติดตั้งการอัปเดตที่มีให้</li> "
-#~ "<li>หาโปรแกรมใหม่</li> <li>ติดตั้งโปรแกรมใหม่</li> <li>หาโปรแกรมที่จะจัดการชนิดเฉพาะของแฟ้ม</li> <li>ติดตั้งโปรแกรมและอัปเดตที่มีให้เมื่อออฟไลน์</li>"
+#~ "<li>ดูโปรแกรมที่ติดตั้งแล้ว</li> <li>ถอดถอนโปรแกรมที่ติดตั้งแล้ว</li> <li>ดูโปรแกรมที่สามารถอัปเดตได้</li> "
+#~ "<li>ติดตั้งการอัปเดตที่มีให้</li> <li>หาโปรแกรมใหม่</li> <li>ติดตั้งโปรแกรมใหม่</li> "
+#~ "<li>หาโปรแกรมที่จะจัดการชนิดเฉพาะของแฟ้ม</li> <li>ติดตั้งโปรแกรมและอัปเดตที่มีให้เมื่อออฟไลน์</li>"
 
 #~ msgid "New"
 #~ msgstr "ใหม่"
@@ -6981,8 +7138,11 @@ msgstr "snap เป็นแพคเกจ Linux แบบสากล"
 #~ msgid "Popular"
 #~ msgstr "นิยม"
 
-#~ msgid "Shotwell is a digital photo organiser that runs on Linux. It is the default photo manager in Ubuntu and Fedora."
-#~ msgstr "Shotwell เป็นโปรแกรมจัดการภาพถ่ายดิจิทัลที่ทำงานบนลินุกซ์ และเป็นโปรแกรมจัดการภาพถ่ายมาตรฐานของอูบุนตูและฟีดอรา"
+#~ msgid ""
+#~ "Shotwell is a digital photo organiser that runs on Linux. It is the default photo manager in "
+#~ "Ubuntu and Fedora."
+#~ msgstr ""
+#~ "Shotwell เป็นโปรแกรมจัดการภาพถ่ายดิจิทัลที่ทำงานบนลินุกซ์ และเป็นโปรแกรมจัดการภาพถ่ายมาตรฐานของอูบุนตูและฟีดอรา"
 
 #~ msgid "More  ▾"
 #~ msgstr "เพิ่มเติม  ▾"
