@@ -172,7 +172,8 @@ gs_packagekit_task_untrusted_question (PkTask *task,
 	gs_packagekit_task_schedule_question (gs_task, request, title, msg, details, accept_label);
 }
 
-/* disable for now, but keep it in the code in case it would be reconsidered in the future (also due to translatable strings) */
+/* disable for now, but keep it in the code in case it would be reconsidered in the future (also due to translatable strings)
+ * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2874 */
 /* #define WITH_KEY_QUESTION 1 */
 #ifdef WITH_KEY_QUESTION
 
