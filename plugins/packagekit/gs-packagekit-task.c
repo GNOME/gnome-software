@@ -172,6 +172,11 @@ gs_packagekit_task_untrusted_question (PkTask *task,
 	gs_packagekit_task_schedule_question (gs_task, request, title, msg, details, accept_label);
 }
 
+/* disable for now, but keep it in the code in case it would be reconsidered in the future (also due to translatable strings)
+ * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2874 */
+/* #define WITH_KEY_QUESTION 1 */
+#ifdef WITH_KEY_QUESTION
+
 /* This may be called in a PackageKit worker thread. */
 static void
 gs_packagekit_task_key_question (PkTask *task,
@@ -253,6 +258,8 @@ gs_packagekit_task_key_question (PkTask *task,
 					      _("_Import Key"));
 }
 
+#endif
+
 static void
 gs_packagekit_task_finalize (GObject *object)
 {
@@ -273,7 +280,9 @@ gs_packagekit_task_class_init (GsPackagekitTaskClass *klass)
 
 	task_class = PK_TASK_CLASS (klass);
 	task_class->untrusted_question = gs_packagekit_task_untrusted_question;
+#ifdef WITH_KEY_QUESTION
 	task_class->key_question = gs_packagekit_task_key_question;
+#endif
 
 	object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_packagekit_task_finalize;
