@@ -43,6 +43,7 @@ struct _GsFeaturedCarousel
 
 	GsAppList	*apps;  /* (nullable) (owned) */
 	guint		 rotation_timer_id;
+	unsigned long	 settings_notify_id;
 
 	AdwCarousel	*carousel;
 	GtkButton	*next_button;
@@ -113,14 +114,6 @@ start_rotation_timer (GsFeaturedCarousel *self)
 }
 
 static void
-maybe_start_rotation_timer (GsFeaturedCarousel *self)
-{
-	if (self->apps != NULL && gs_app_list_length (self->apps) > 0 &&
-	    gtk_widget_get_mapped (GTK_WIDGET (self)))
-		start_rotation_timer (self);
-}
-
-static void
 stop_rotation_timer (GsFeaturedCarousel *self)
 {
 	if (self->rotation_timer_id != 0) {
@@ -130,11 +123,35 @@ stop_rotation_timer (GsFeaturedCarousel *self)
 }
 
 static void
+maybe_start_rotation_timer (GsFeaturedCarousel *self)
+{
+	if (!adw_get_enable_animations (GTK_WIDGET (self))) {
+		stop_rotation_timer (self);
+		return;
+	}
+
+	if (self->apps != NULL && gs_app_list_length (self->apps) > 0 &&
+	    gtk_widget_get_mapped (GTK_WIDGET (self)))
+		start_rotation_timer (self);
+}
+
+static void
 carousel_notify_position_cb (GsFeaturedCarousel *self)
 {
 	/* Reset the rotation timer in case it’s about to fire. */
 	stop_rotation_timer (self);
-	start_rotation_timer (self);
+	maybe_start_rotation_timer (self);
+}
+
+static void
+carousel_notify_settings_cb (GObject    *object,
+                             GParamSpec *pspec,
+                             void       *user_data)
+{
+	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (user_data);
+
+	/* this will also stop the timer if animations are disabled */
+	maybe_start_rotation_timer (self);
 }
 
 static void
@@ -169,11 +186,19 @@ tile_clicked_cb (GsFeatureTile *tile,
 static void
 gs_featured_carousel_init (GsFeaturedCarousel *self)
 {
+	GtkSettings *settings;
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	/* Disable scrolling through the carousel, as it’s typically used
 	 * in app pages which are themselves scrollable. */
 	adw_carousel_set_allow_scroll_wheel (self->carousel, FALSE);
+
+	/* Connect to settings notifications so we can enable/disable animations */
+	settings = gtk_widget_get_settings (GTK_WIDGET (self));
+	self->settings_notify_id = g_signal_connect (settings, "notify::gtk-enable-animations",
+						     G_CALLBACK (carousel_notify_settings_cb),
+						     self);
 }
 
 static void
@@ -218,6 +243,7 @@ gs_featured_carousel_dispose (GObject *object)
 	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (object);
 
 	stop_rotation_timer (self);
+	g_clear_signal_handler (&self->settings_notify_id, gtk_widget_get_settings (GTK_WIDGET (self)));
 	g_clear_object (&self->apps);
 
 	G_OBJECT_CLASS (gs_featured_carousel_parent_class)->dispose (object);
