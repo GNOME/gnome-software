@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-08-29 06:51+0000\n"
-"PO-Revision-Date: 2025-08-30 08:23+0300\n"
+"POT-Creation-Date: 2025-09-07 04:44+0000\n"
+"PO-Revision-Date: 2025-09-08 14:40+0300\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew\n"
 "Language: he\n"
@@ -1194,19 +1194,19 @@ msgstr "יש גישה לרשת"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:317
 msgid "Uses non-portal system services"
-msgstr ""
+msgstr "משתמש בשירותים מחוץ לשער (portal)"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:324
 msgid "Uses non-portal session services"
-msgstr ""
+msgstr "משתמש בשירותים מחוץ לשער (portal)"
 
 #. Translators: This indicates an app can access session or system bus services unknown to the Software.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:331
 msgid "Can access some specific non-portal services"
-msgstr ""
+msgstr "יכול לגשת לכמה שירותים מסוימים מחוץ לשער (portal)"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
@@ -1913,15 +1913,15 @@ msgstr "להשתמש בשירות %s"
 
 #: src/gs-common.c:1523
 msgid "Can see the non-portal service"
-msgstr ""
+msgstr "יכול לראות את השירות מחוץ לשער (portal)"
 
 #: src/gs-common.c:1525
 msgid "Can talk to the non-portal service"
-msgstr ""
+msgstr "יכול לתקשר עם השירות מחוץ לשער (portal)"
 
 #: src/gs-common.c:1527
 msgid "Can own the non-portal service"
-msgstr ""
+msgstr "יכול לקחת בעלות על שירות מחוץ לשער (portal)"
 
 #: lib/gs-desktop-data.c:16
 msgctxt "Menu of Graphics & Photography"
@@ -4239,7 +4239,7 @@ msgstr "משתמש בשירותי מערכת"
 
 #: src/gs-safety-context-dialog.c:391
 msgid "Can request data from non-portal system services"
-msgstr ""
+msgstr "יכול לבקש נתונים משירותי מערכת מחוץ לשער (portal)"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:398
@@ -4248,7 +4248,7 @@ msgstr "משתמש בשירותי הפעלה"
 
 #: src/gs-safety-context-dialog.c:399
 msgid "Can request data from non-portal session services"
-msgstr ""
+msgstr "יכול לבקש נתונים משירותי הפעלה מחוץ לשער (portal)"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:427
@@ -4257,7 +4257,7 @@ msgstr "אין גישה לשירות"
 
 #: src/gs-safety-context-dialog.c:428
 msgid "Cannot access non-portal session or system services at all"
-msgstr ""
+msgstr "לא יכול לגשת להפעלה מחוץ לשער (portal) או לשירותי מערכת כלל"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
@@ -4403,35 +4403,35 @@ msgstr "אין צילומי מסך"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:363 src/gs-screenshot-image.c:404 src/gs-screenshot-image.c:608
+#: src/gs-screenshot-image.c:369 src/gs-screenshot-image.c:410 src/gs-screenshot-image.c:614
 msgid "Screenshot not found"
 msgstr "לא נמצא צילום מסך"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:414
+#: src/gs-screenshot-image.c:420
 msgid "Failed to load image"
 msgstr "טעינת התמונה נכשלה"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:636
+#: src/gs-screenshot-image.c:642
 msgid "Screenshot size not found"
 msgstr "גודל צילום מסך לא נמצא"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:725
+#: src/gs-screenshot-image.c:731
 msgid "Could not create cache"
 msgstr "לא ניתן ליצור מטמון"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:739
+#: src/gs-screenshot-image.c:745
 msgid "Screenshot not valid"
 msgstr "צילום מסך לא תקף"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:777
+#: src/gs-screenshot-image.c:783
 msgid "Screenshot not available"
 msgstr "אין צילום מסך"
 
@@ -5740,135 +5740,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "‏Flatpak זוהי מסגרת עבור יישומים שולחניים על לינוקס"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:368
+#: plugins/flatpak/gs-flatpak.c:370
 #, c-format
 msgid "System folder %s"
 msgstr "תיקיית מערכת %s"
 
-#: plugins/flatpak/gs-flatpak.c:369 plugins/flatpak/gs-flatpak.c:370
+#: plugins/flatpak/gs-flatpak.c:371 plugins/flatpak/gs-flatpak.c:372
 #, c-format
 msgid "Home subfolder %s"
 msgstr "תת־תיקיית הבית %s"
 
-#: plugins/flatpak/gs-flatpak.c:371
+#: plugins/flatpak/gs-flatpak.c:373
 msgid "Host system folders"
 msgstr "תיקיות מערכת אירוח"
 
-#: plugins/flatpak/gs-flatpak.c:372
+#: plugins/flatpak/gs-flatpak.c:374
 msgid "Host system configuration from /etc"
 msgstr "הגדרות מערכת מארחת מ־‎/etc"
 
-#: plugins/flatpak/gs-flatpak.c:373
+#: plugins/flatpak/gs-flatpak.c:375
 msgid "Desktop folder"
 msgstr "תיקיית שולחן עבודה"
 
-#: plugins/flatpak/gs-flatpak.c:373
+#: plugins/flatpak/gs-flatpak.c:375
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "תת־תיקיית שולחן עבודה %s"
 
-#: plugins/flatpak/gs-flatpak.c:374
+#: plugins/flatpak/gs-flatpak.c:376
 msgid "Documents folder"
 msgstr "תיקיית מסמכים"
 
-#: plugins/flatpak/gs-flatpak.c:374
+#: plugins/flatpak/gs-flatpak.c:376
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "תת־תיקיית מסמכים %s"
 
-#: plugins/flatpak/gs-flatpak.c:375
+#: plugins/flatpak/gs-flatpak.c:377
 msgid "Music folder"
 msgstr "תיקיית מוזיקה"
 
-#: plugins/flatpak/gs-flatpak.c:375
+#: plugins/flatpak/gs-flatpak.c:377
 #, c-format
 msgid "Music subfolder %s"
 msgstr "תת־תיקיית מוזיקה %s"
 
-#: plugins/flatpak/gs-flatpak.c:376
+#: plugins/flatpak/gs-flatpak.c:378
 msgid "Pictures folder"
 msgstr "תיקיית תמונות"
 
-#: plugins/flatpak/gs-flatpak.c:376
+#: plugins/flatpak/gs-flatpak.c:378
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "תת־תיקיית תמונות %s"
 
-#: plugins/flatpak/gs-flatpak.c:377
+#: plugins/flatpak/gs-flatpak.c:379
 msgid "Public Share folder"
 msgstr "תיקיית שיתוף ציבורית"
 
-#: plugins/flatpak/gs-flatpak.c:377
+#: plugins/flatpak/gs-flatpak.c:379
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "תת־תיקיית שיתוף ציבורית %s"
 
-#: plugins/flatpak/gs-flatpak.c:378
+#: plugins/flatpak/gs-flatpak.c:380
 msgid "Videos folder"
 msgstr "תיקיית וידאו"
 
-#: plugins/flatpak/gs-flatpak.c:378
+#: plugins/flatpak/gs-flatpak.c:380
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "תת־תיקיית וידאו %s"
 
-#: plugins/flatpak/gs-flatpak.c:379
+#: plugins/flatpak/gs-flatpak.c:381
 msgid "Templates folder"
 msgstr "תיקיית תבניות"
 
-#: plugins/flatpak/gs-flatpak.c:379
+#: plugins/flatpak/gs-flatpak.c:381
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "תת־תיקיית תבניות %s"
 
-#: plugins/flatpak/gs-flatpak.c:380
+#: plugins/flatpak/gs-flatpak.c:382
 msgid "User cache folder"
 msgstr "תיקיית מטמון משתמש"
 
-#: plugins/flatpak/gs-flatpak.c:380
+#: plugins/flatpak/gs-flatpak.c:382
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "תת־תיקיית מטמון משתמש %s"
 
-#: plugins/flatpak/gs-flatpak.c:381
+#: plugins/flatpak/gs-flatpak.c:383
 msgid "User configuration folder"
 msgstr "תיקיית הגדרות משתמש"
 
-#: plugins/flatpak/gs-flatpak.c:381
+#: plugins/flatpak/gs-flatpak.c:383
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "תת־תיקיית הגדרות משתמש %s"
 
-#: plugins/flatpak/gs-flatpak.c:382
+#: plugins/flatpak/gs-flatpak.c:384
 msgid "User data folder"
 msgstr "תיקיית נתוני משתמש"
 
-#: plugins/flatpak/gs-flatpak.c:382
+#: plugins/flatpak/gs-flatpak.c:384
 #, c-format
 msgid "User data subfolder %s"
 msgstr "תת־תיקיית נתוני משתמש %s"
 
-#: plugins/flatpak/gs-flatpak.c:383
+#: plugins/flatpak/gs-flatpak.c:385
 msgid "User runtime folder"
 msgstr "תיקיית זמן ריצת משתמש"
 
-#: plugins/flatpak/gs-flatpak.c:383
+#: plugins/flatpak/gs-flatpak.c:385
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "תת־תיקיית זמן ריצת משתמש %s"
 
-#: plugins/flatpak/gs-flatpak.c:441
+#: plugins/flatpak/gs-flatpak.c:443
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "גישה למערכת הקבצים אל %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1460
+#: plugins/flatpak/gs-flatpak.c:1462
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "מקבל מידע Flatpak עבור %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3700
+#: plugins/flatpak/gs-flatpak.c:3703
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "כוונון התוסף ‚%s’ נכשל: %s"
@@ -6182,44 +6182,44 @@ msgstr ""
 "עדכוני תכנה הושבתו עד שעדכוני תכנה חתומים מוסרים או מעודכנים."
 
 #. Translators: the '%s' is replaced with the key ID, usually a few hex digits
-#: plugins/packagekit/gs-packagekit-task.c:219
+#: plugins/packagekit/gs-packagekit-task.c:224
 #, c-format
 msgid "Do you want to import key %s?"
 msgstr "לייבא את המפתח %s?"
 
 #. Translators: the '%s' is replaced with the key ID, usually a few hex digits
-#: plugins/packagekit/gs-packagekit-task.c:226
+#: plugins/packagekit/gs-packagekit-task.c:231
 #, c-format
 msgid "Key %s"
 msgstr "מפתח %s"
 
 #. Translators: the '%s' is replaced with the key user name
-#: plugins/packagekit/gs-packagekit-task.c:240
+#: plugins/packagekit/gs-packagekit-task.c:245
 #, c-format
 msgid "Key user: %s"
 msgstr "משתמש מפתח: %s"
 
 #. Translators: the '%s' is replaced with the key fingerprint, a few hex digits
-#: plugins/packagekit/gs-packagekit-task.c:242
+#: plugins/packagekit/gs-packagekit-task.c:247
 #, c-format
 msgid "Fingerprint: %s"
 msgstr "טביעת אצבע: %s"
 
 #. Translators: the '%s' is replaced with the local path or a URI to the key
-#: plugins/packagekit/gs-packagekit-task.c:244
+#: plugins/packagekit/gs-packagekit-task.c:249
 #, c-format
 msgid "From: %s"
 msgstr "מאת: %s"
 
-#: plugins/packagekit/gs-packagekit-task.c:250
+#: plugins/packagekit/gs-packagekit-task.c:255
 msgid "Import Key"
 msgstr "ייבוא מפתח"
 
-#: plugins/packagekit/gs-packagekit-task.c:251
+#: plugins/packagekit/gs-packagekit-task.c:256
 msgid "Do you want to import keys?"
 msgstr "לייבא מפתחות?"
 
-#: plugins/packagekit/gs-packagekit-task.c:253
+#: plugins/packagekit/gs-packagekit-task.c:258
 msgid "_Import Key"
 msgstr "יי_בוא מפתח"
 
