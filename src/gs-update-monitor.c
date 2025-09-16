@@ -1412,8 +1412,6 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_settings_set (monitor->settings,
 			"install-timestamp", "x", latest_install_date);
 	g_signal_handler_unblock (monitor->settings, monitor->settings_changed_handler);
-
-	reset_update_notification_timestamp (monitor);
 }
 
 static gboolean
