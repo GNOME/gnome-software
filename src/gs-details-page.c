@@ -2074,9 +2074,18 @@ gs_details_page_file_to_app_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &file_to_app_job, &error)) {
-		g_warning ("failed to convert file to GsApp: %s", error->message);
-		/* go back to the overview */
-		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
+		g_autofree gchar *str = NULL;
+		const char *file_path = g_file_peek_path (gs_plugin_job_file_to_app_get_file (file_to_app_job));
+
+		g_debug ("failed to convert file ‘%s’ to GsApp: %s", file_path, error->message);
+
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED))
+			str = g_strdup_printf (_("Software could not load the file ‘%s’, as it’s not in a format supported by this system."), file_path);
+		else
+			str = g_strdup_printf (_("Software could not load the file ‘%s’."), file_path);
+
+		adw_status_page_set_description (ADW_STATUS_PAGE (self->page_failed), str);
+		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 	} else {
 		GsApp *app = gs_app_list_index (gs_plugin_job_file_to_app_get_result_list (file_to_app_job), 0);
 		g_set_object (&self->app_local_file, app);
@@ -2096,9 +2105,18 @@ gs_details_page_url_to_app_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &url_to_app_job, &error)) {
-		g_warning ("failed to convert URL to GsApp: %s", error->message);
-		/* go back to the overview */
-		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
+		g_autofree gchar *str = NULL;
+		const char *url = gs_plugin_job_url_to_app_get_url (url_to_app_job);
+
+		g_debug ("failed to convert URL ‘%s’ to GsApp: %s", url, error->message);
+
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED))
+			str = g_strdup_printf (_("Software could not load the URL ‘%s’, as it’s not in a format supported by this system."), url);
+		else
+			str = g_strdup_printf (_("Software could not load the URL ‘%s’."), url);
+
+		adw_status_page_set_description (ADW_STATUS_PAGE (self->page_failed), str);
+		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 	} else {
 		GsApp *app = gs_app_list_index (gs_plugin_job_url_to_app_get_result_list (url_to_app_job), 0);
 		g_set_object (&self->app_local_file, app);
