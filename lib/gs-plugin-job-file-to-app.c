@@ -468,6 +468,23 @@ gs_plugin_job_file_to_app_new (GFile                      *file,
 }
 
 /**
+ * gs_plugin_job_file_to_app_get_file:
+ * @self: a #GsPluginJobFileToApp
+ *
+ * Get the file from #GsPluginJobFileToApp:file.
+ *
+ * Returns: (not nullable) (transfer none): the file the job is running on
+ * Since: 50
+ */
+GFile *
+gs_plugin_job_file_to_app_get_file (GsPluginJobFileToApp *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_FILE_TO_APP (self), NULL);
+
+	return self->file;
+}
+
+/**
  * gs_plugin_job_file_to_app_get_result_list:
  * @self: a #GsPluginJobFileToApp
  *

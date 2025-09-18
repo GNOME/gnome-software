@@ -23,6 +23,8 @@ G_DECLARE_FINAL_TYPE (GsPluginJobFileToApp, gs_plugin_job_file_to_app, GS, PLUGI
 GsPluginJob	*gs_plugin_job_file_to_app_new	(GFile			*file,
 						 GsPluginFileToAppFlags	 flags,
 						 GsPluginRefineRequireFlags require_flags);
+GFile		*gs_plugin_job_file_to_app_get_file
+						(GsPluginJobFileToApp	 *self);
 GsAppList	*gs_plugin_job_file_to_app_get_result_list
 						(GsPluginJobFileToApp	 *self);
 
