@@ -72,10 +72,12 @@ static guint signals[LAST_SIGNAL];
 static const char *
 get_version (void)
 {
-	if (g_strcmp0 (BUILD_TYPE, "release") == 0)
-		return VERSION;
-	else
+	if (g_strcmp0 (BUILD_TYPE, "custom") == 0 ||
+	    g_strcmp0 (BUILD_TYPE, "debug") == 0 ||
+	    g_strcmp0 (BUILD_TYPE, "debugoptimized") == 0)
 		return GS_BUILD_IDENTIFIER;
+	else
+		return VERSION;
 }
 
 typedef struct {
