@@ -853,6 +853,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 
 			query = gs_app_query_new ("provides-tag", search_data->search,
 						  "provides-type", search_data->search_provides_type,
+						  "refine-flags", GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 						  "refine-require-flags", require_flags,
 						  "license-type", gs_page_get_query_license_type (GS_PAGE (self)),
 						  "developer-verified-type", gs_page_get_query_developer_verified_type (GS_PAGE (self)),
