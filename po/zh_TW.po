@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-09-30 23:33+0000\n"
-"PO-Revision-Date: 2025-10-03 13:42+0800\n"
+"POT-Creation-Date: 2025-10-03 05:44+0000\n"
+"PO-Revision-Date: 2025-10-05 22:11+0800\n"
 "Last-Translator: Cheng-Chia Tseng <zerngjia@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <http://darkbear.mercusysddns.com/projects/gnome-44/gnome-"
 "software-main-zh_tw/zh_Hant/>\n"
@@ -1181,26 +1181,20 @@ msgstr "可以取用網路"
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:317
-#, fuzzy
-#| msgid "Uses system services"
 msgid "Uses non-portal system services"
-msgstr "使用系統服務"
+msgstr "使用非入口系統服務"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:324
-#, fuzzy
-#| msgid "Uses session services"
 msgid "Uses non-portal session services"
-msgstr "使用作業階段服務"
+msgstr "使用非入口作業階段服務"
 
 #. Translators: This indicates an app can access session or system bus services unknown to the Software.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:331
-#, fuzzy
-#| msgid "Can access some specific files"
 msgid "Can access some specific non-portal services"
-msgstr "可以取用一些特定檔案"
+msgstr "可以取用一些特定非入口服務"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
@@ -1878,15 +1872,15 @@ msgstr "使用 %s 服務"
 
 #: src/gs-common.c:1523
 msgid "Can see the non-portal service"
-msgstr ""
+msgstr "可以查看非入口服務"
 
 #: src/gs-common.c:1525
 msgid "Can talk to the non-portal service"
-msgstr ""
+msgstr "可以與非入口服務對談"
 
 #: src/gs-common.c:1527
 msgid "Can own the non-portal service"
-msgstr ""
+msgstr "可以擁有非入口服務"
 
 #: lib/gs-desktop-data.c:16
 msgctxt "Menu of Graphics & Photography"
@@ -3347,7 +3341,7 @@ msgstr "正在啟動"
 #. TRANSLATORS: only run app as non-root user
 #: src/gs-main.c:39
 msgid "Software should be run as a non-root user. Exiting…"
-msgstr ""
+msgstr "《軟體》應只以非 root 使用者身份執行。離開中…"
 
 #: src/gs-origin-popover-row.c:105
 msgid "Unknown source"
@@ -3519,7 +3513,7 @@ msgstr "解除安裝 %s？"
 #: src/gs-page.c:560 src/gs-page.c:619
 #, c-format
 msgid "It will not be possible to use %s after removal."
-msgstr "在移除之後，不再能使用 %s。"
+msgstr "在移除之後，不能再使用 %s。"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
@@ -3534,7 +3528,7 @@ msgstr "在移除之後，任何依賴 %s 的程式都無法再使用。"
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use it will appear in a "
 "different font."
-msgstr "在移除之後，不再能使用 %s，且任何使用到它的文件都會改用不同字型顯示。"
+msgstr "在移除之後，不能再使用 %s，且任何使用到它的文件都會改用不同字型顯示。"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
 #: src/gs-page.c:592
@@ -3542,13 +3536,13 @@ msgstr "在移除之後，不再能使用 %s，且任何使用到它的文件都
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media files will no longer be "
 "playable."
-msgstr "在移除之後，不再能使用 %s。這代表有些媒體檔案可能不再能播放。"
+msgstr "在移除之後，不能再使用 %s。這代表有些媒體檔案可能不能再播放。"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
 #: src/gs-page.c:603
 #, c-format
 msgid "Hardware which depends on %s may no longer function correctly after removal."
-msgstr "在移除之後，依賴 %s 的硬體可能不再能正常作用。"
+msgstr "在移除之後，依賴 %s 的硬體可能不能再正常作用。"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
@@ -3557,7 +3551,7 @@ msgstr "在移除之後，依賴 %s 的硬體可能不再能正常作用。"
 msgid ""
 "It will not be possible to use %s after removal. App data and settings will be kept on disk, to "
 "allow restoring the app in the future."
-msgstr "在移除之後，不再能使用 %s。程式資料與設定會保留在磁碟上，允許程式在未來得以還原。"
+msgstr "在移除之後，不能再使用 %s。程式資料與設定會保留在磁碟上，允許程式在未來得以還原。"
 
 #: src/gs-prefs-dialog.ui:6
 msgid "Preferences"
@@ -4161,10 +4155,8 @@ msgid "Uses System Services"
 msgstr "使用系統服務"
 
 #: src/gs-safety-context-dialog.c:391
-#, fuzzy
-#| msgid "Can request data from system services"
 msgid "Can request data from non-portal system services"
-msgstr "可以請求系統服務的資料"
+msgstr "可以請求非入口系統服務的資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:398
@@ -4172,10 +4164,8 @@ msgid "Uses Session Services"
 msgstr "使用作業階段服務"
 
 #: src/gs-safety-context-dialog.c:399
-#, fuzzy
-#| msgid "Can request data from session services"
 msgid "Can request data from non-portal session services"
-msgstr "可以請求作業階段服務的資料"
+msgstr "可以請求非入口作業階段服務的資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:427
@@ -4183,10 +4173,8 @@ msgid "No Service Access"
 msgstr "沒有服務取用權"
 
 #: src/gs-safety-context-dialog.c:428
-#, fuzzy
-#| msgid "Cannot access the file system at all"
 msgid "Cannot access non-portal session or system services at all"
-msgstr "無法取用檔案系統"
+msgstr "完全無法取用非入口作業階段或系統服務"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
