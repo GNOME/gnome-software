@@ -1336,6 +1336,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 					if (version == NULL)
 						continue;
 
+					description = gs_appstream_format_release_text (rels_child);
+
 					if (version_history != NULL) {
 						g_autoptr(AsRelease) release = NULL;
 						guint64 timestamp;
@@ -1343,7 +1345,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 						timestamp = xb_node_get_attr_as_uint (rels_child, "timestamp");
 						date_str = xb_node_get_attr (rels_child, "date");
-						description = gs_appstream_format_release_text (rels_child);
 
 						release = as_release_new ();
 						as_release_set_version (release, version);
