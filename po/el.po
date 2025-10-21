@@ -6512,50 +6512,45 @@ msgstr ""
 
 #. Translators: the '%s' is replaced with the key ID, usually a few hex digits
 #: plugins/packagekit/gs-packagekit-task.c:224
-#, fuzzy, c-format
-#| msgid "Do you want to enable it?"
+#, c-format
 msgid "Do you want to import key %s?"
-msgstr "Είστε σίγουροι ότι θέλετε να το ενεργοποιήσετε;"
+msgstr "Θέλετε να εισαγάγετε το κλειδί %s;"
 
 #. Translators: the '%s' is replaced with the key ID, usually a few hex digits
 #: plugins/packagekit/gs-packagekit-task.c:231
 #, c-format
 msgid "Key %s"
-msgstr ""
+msgstr "Κλειδί %s"
 
 #. Translators: the '%s' is replaced with the key user name
 #: plugins/packagekit/gs-packagekit-task.c:245
 #, c-format
 msgid "Key user: %s"
-msgstr ""
+msgstr "Χρήστης κλειδιού: %s"
 
 #. Translators: the '%s' is replaced with the key fingerprint, a few hex digits
 #: plugins/packagekit/gs-packagekit-task.c:247
 #, c-format
 msgid "Fingerprint: %s"
-msgstr ""
+msgstr "Αποτύπωμα: %s"
 
 #. Translators: the '%s' is replaced with the local path or a URI to the key
 #: plugins/packagekit/gs-packagekit-task.c:249
 #, c-format
 msgid "From: %s"
-msgstr ""
+msgstr "Από: %s"
 
 #: plugins/packagekit/gs-packagekit-task.c:255
-#, fuzzy
-#| msgid "Import from file"
 msgid "Import Key"
-msgstr "Εισαγωγή από αρχείο"
+msgstr "Εισαγωγή κλειδιού"
 
 #: plugins/packagekit/gs-packagekit-task.c:256
-#, fuzzy
-#| msgid "Do you want to enable it?"
 msgid "Do you want to import keys?"
-msgstr "Είστε σίγουροι ότι θέλετε να το ενεργοποιήσετε;"
+msgstr "Θέλετε να εισαγάγετε τα κλειδιά;"
 
 #: plugins/packagekit/gs-packagekit-task.c:258
 msgid "_Import Key"
-msgstr ""
+msgstr "_Εισαγωγή κλειδιού"
 
 #: plugins/packagekit/gs-plugin-packagekit.c:1464
 msgid "Failed to install updates: "
@@ -6568,21 +6563,17 @@ msgstr "Πακέτα"
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1449
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1475
 msgid "Failed to wait on transaction end before download: "
-msgstr ""
+msgstr "Αποτυχία αναμονής για το τέλος συναλλαγής πριν τη λήψη: "
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1482
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1495
-#, fuzzy
-#| msgid "Unable to download updates"
 msgid "Failed to download updates: "
-msgstr "Αδύνατη η λήψη ενημερώσεων"
+msgstr "Αποτυχία λήψης ενημερώσεων: "
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1534
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1544
-#, fuzzy
-#| msgid "Failed to install updates: "
 msgid "Failed to trigger update: "
-msgstr "Αποτυχία εγκατάστασης ενημερώσεων: "
+msgstr "Αποτυχία ενεργοποίησης ενημέρωσης: "
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3404
 msgid "Operating System (OSTree)"
@@ -6603,22 +6594,19 @@ msgstr "Το snap είναι ένα καθολικό πακέτο του Linux"
 
 #. TRANSLATORS: this is the system OS upgrade
 #: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:785
-#, fuzzy
 #| msgid "system"
 msgid "System"
-msgstr "σύστημα"
+msgstr "Σύστημα"
 
 #. TRANSLATORS: this is the system component update
 #: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:789
-#, fuzzy
-#| msgid "System Upgrade Complete"
 msgid "System component"
-msgstr "Η αναβάθμιση του συστήματος ολοκληρώθηκε"
+msgstr "Συστατικό συστήματος"
 
 #: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1040
 #, c-format
 msgid "Removing sysupdate job '%s' failed with status %i"
-msgstr ""
+msgstr "Η κατάργηση της εργασίας sysupdate '%s' απέτυχε με κατάσταση %i"
 
 #, c-format
 #~ msgid "New in Version %s"
@@ -8255,40 +8243,20 @@ msgstr ""
 #~ msgid "Removal of %s failed."
 #~ msgstr "Απέτυχε η αφαίρεση του %s."
 
-#, fuzzy
-#~| msgid "Removal of %s failed."
 #~ msgid "Upgrade to %s failed."
-#~ msgstr "Απέτυχε η αφαίρεση του %s."
+#~ msgstr "Η αναβάθμιση στο %s απέτυχε."
 
-#, fuzzy
-#~| msgid "Network access was required but not available."
-#~ msgid "Internet access was required but wasn’t available."
-#~ msgstr "Απαιτείται πρόσβαση στο δίκτυο αλλά δεν είναι διαθέσιμη."
+#~ msgid "Internet access was required but wasn't available."
+#~ msgstr "Απαιτείτο πρόσβαση στο διαδίκτυο αλλά δεν ήταν διαθέσιμη."
 
-#, fuzzy
-#~| msgid ""
-#~| "Internet access was required but wasn’t available. Please make sure that "
-#~| "you have internet access and try again."
 #~ msgid "Please make sure that you have internet access and try again."
-#~ msgstr ""
-#~ "Ζητήθηκε πρόσβαση διαδικτύου, αλλά δεν ήταν διαθέσιμη. Παρακαλούμε, "
-#~ "βεβαιωθείτε ότι έχετε πρόσβαση διαδικτύου και ξαναδοκιμάστε."
+#~ msgstr "Παρακαλούμε βεβαιωθείτε ότι έχετε πρόσβαση στο διαδίκτυο και δοκιμάστε ξανά."
 
-#, fuzzy
-#~| msgid ""
-#~| "There wasn’t enough disk space. Please free up some space and try again."
-#~ msgid "There wasn’t enough disk space."
-#~ msgstr ""
-#~ "Δεν υπήρξε αρκετός χώρος στον δίσκο. Παρακαλούμε, ελευθερώστε κάποιο χώρο "
-#~ "και ξαναπροσπαθήστε."
+#~ msgid "There wasn't enough disk space."
+#~ msgstr "Δεν υπήρχε επαρκής χώρος στον δίσκο."
 
-#, fuzzy
-#~| msgid ""
-#~| "There wasn’t enough disk space. Please free up some space and try again."
 #~ msgid "Please free up some space and try again."
-#~ msgstr ""
-#~ "Δεν υπήρξε αρκετός χώρος στον δίσκο. Παρακαλούμε, ελευθερώστε κάποιο χώρο "
-#~ "και ξαναπροσπαθήστε."
+#~ msgstr "Παρακαλούμε ελευθερώστε κάποιο χώρο και δοκιμάστε ξανά."
 
 #~ msgid " or "
 #~ msgstr " ή "
