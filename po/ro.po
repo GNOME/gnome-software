@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-09-05 13:44+0000\n"
-"PO-Revision-Date: 2025-09-05 15:55+0200\n"
+"POT-Creation-Date: 2025-10-23 16:56+0000\n"
+"PO-Revision-Date: 2025-10-25 18:44+0200\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -76,8 +76,8 @@ msgid "The update details"
 msgstr "Detaliile actualizărilor"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2850
-#: src/gs-application.c:267
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2905
+#: src/gs-application.c:269
 msgid "The GNOME Project"
 msgstr "Proiectul GNOME"
 
@@ -150,7 +150,7 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:15
 msgid "Automatically download and install updates"
-msgstr "Descarcă și instalează actualizări automat"
+msgstr "Descarcă și instalează automat actualizările"
 
 #: data/org.gnome.software.gschema.xml:16
 msgid ""
@@ -171,11 +171,11 @@ msgid ""
 "whilst the user was idle."
 msgstr ""
 "Dacă opțiunea este activată, Aplicații GNOME va notifica utilizatorul despre "
-"actualizările care s-au petrecut în timp ce utilizatorul era inactiv."
+"actualizările efectuate în timp ce utilizatorul era inactiv."
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
-msgstr "Dacă să se actualizeze automat cu o conexiune contorizată"
+msgstr "Dacă să se actualizeze automat cu o conexiune limitată"
 
 #: data/org.gnome.software.gschema.xml:26
 msgid ""
@@ -184,9 +184,9 @@ msgid ""
 "checking for updates, etc., which may incur in costs for the user)."
 msgstr ""
 "Dacă opțiunea este activată, Aplicații GNOME se actualizează automat în "
-"ascuns chiar dacă este în uz o conexiune contorizată (descărcând eventual "
-"unele metadate, căutând actualizări etc., ceea ce poate genera costuri "
-"pentru utilizator)."
+"ascuns chiar dacă este în uz o conexiune cu trafic internet limitat "
+"(descărcând eventual unele metadate, căutând actualizări etc., ceea ce poate "
+"genera costuri pentru utilizator)."
 
 #: data/org.gnome.software.gschema.xml:30
 msgid "Whether it’s the very first run of GNOME Software"
@@ -198,7 +198,9 @@ msgstr "Arată steluțe de evaluare lângă aplicații"
 
 #: data/org.gnome.software.gschema.xml:38
 msgid "Filter applications based on the default branch set for the remote"
-msgstr "Filtrează aplicații pe baza unui set de ramuri de la distanță"
+msgstr ""
+"Filtrează aplicațiile în funcție de ramura prestabilită pentru depozitul de "
+"aplicații"
 
 #: data/org.gnome.software.gschema.xml:42
 msgid "Non-free applications show a warning dialog before install"
@@ -210,8 +212,9 @@ msgid ""
 "When non-free applications are installed a warning dialog can be shown. This "
 "controls if that dialog is suppressed."
 msgstr ""
-"Când sunt instalate aplicații nelibere, poate fi afișat un dialog de "
-"avertizare. Aceasta controlează dacă acel dialog este eliminat."
+"Când se instalează aplicații nelibere, apare de obicei un mesaj de "
+"avertizare. Această opţiune permite să se decidă dacă mesajul respectiv "
+"apare sau nu."
 
 #: data/org.gnome.software.gschema.xml:47
 msgid "The last update check timestamp"
@@ -1092,57 +1095,57 @@ msgid "Installed"
 msgstr "Instalat"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Mod de pornire: fie „updates” (actualizări), „updated” (actualizat), "
 "„installed” (instalat) sau „overview” (prezentare generală)"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "MODE"
 msgstr "MOD"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "Search for applications"
 msgstr "Caută aplicații"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "SEARCH"
 msgstr "CAUTĂ"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:132
 msgid "Show application details (using application ID)"
 msgstr "Arată detaliile aplicației (folosind ID-ul aplicației)"
 
-#: src/gs-application.c:130 src/gs-application.c:134 src/gs-application.c:136
+#: src/gs-application.c:132 src/gs-application.c:136 src/gs-application.c:138
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "Show application details (using package name)"
 msgstr "Arată detaliile aplicației (folosind numele pachetului)"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "PKGNAME"
 msgstr "NUME PACHET"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:136
 msgid "Install the application (using application ID)"
 msgstr "Instalează aplicația (folosind ID-ul aplicației)"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:138
 msgid "Uninstall the application (using application ID)"
 msgstr "Dezinstalează aplicația (utilizând ID-ul aplicației)"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:140
 msgid "Open a local package file"
 msgstr "Deschide un pachet local"
 
-#: src/gs-application.c:138 src/gs-application.c:143
+#: src/gs-application.c:140 src/gs-application.c:145
 msgid "FILENAME"
 msgstr "NUME FIȘIER"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:142
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -1150,15 +1153,15 @@ msgstr ""
 "Tipul de interacție așteptat de la această acțiune: fie „none”, „notifiy”, "
 "sau „full”"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:143
 msgid "INTERACTION"
 msgstr "INTERACȚIUNE"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:145
 msgid "Show a local metainfo or appdata file"
 msgstr "Arată un fișier local metainfo sau appdata"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:147
 msgid ""
 "Enable verbose debugging output (from the running instance, if already "
 "running)"
@@ -1166,32 +1169,32 @@ msgstr ""
 "Activează ieșirea de depanare detaliată (din instanța care rulează, dacă "
 "deja rulează)"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:149
 msgid "Installs any pending updates in the background"
 msgstr "Instalează orice actualizări apărute în fundal"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:151
 msgid "Show preferences"
 msgstr "Arată preferințele"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:153
 msgid "Quit the running instance"
 msgstr "Ieși din instanța în curs"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:155
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferă surse de fișiere locale pentru AppStream"
 
-#: src/gs-application.c:155
+#: src/gs-application.c:157
 msgid "Show version number"
 msgstr "Arată numărul versiunii"
 
-#: src/gs-application.c:262
+#: src/gs-application.c:264
 #, c-format
 msgid "Copyright © 2016–%d GNOME Software contributors"
 msgstr "Drepturi de autor © 2016–%d Contribuitorii Software GNOME"
 
-#: src/gs-application.c:276
+#: src/gs-application.c:278
 msgid "translator-credits"
 msgstr ""
 "Bogdan Mințoi <mintoi [dot ] bogdan [at] gmail [dot] com>, 2014\n"
@@ -1202,7 +1205,7 @@ msgstr ""
 "Antonio Marin <gnmer [dot] 6qxyg [at] slmail [dot] me>, 2025"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:515
+#: src/gs-application.c:517
 msgid "Sorry! There are no details for that application."
 msgstr "Nu există detalii pentru aplicația aceea."
 
@@ -3047,16 +3050,16 @@ msgstr[2] ""
 msgid "Failed to find any search results: %s"
 msgstr "Nu s-au putut găsi rezultatele căutării: %s"
 
-#: src/gs-extras-page.c:957
+#: src/gs-extras-page.c:958
 #, c-format
 msgid "%s file format"
 msgstr "format fișier %s"
 
-#: src/gs-extras-page.c:1315
+#: src/gs-extras-page.c:1316
 msgid "Install _All"
 msgstr "Instalează to_ate"
 
-#: src/gs-extras-page.c:1345
+#: src/gs-extras-page.c:1346
 msgid "Unable to Find Requested Software"
 msgstr "Aplicația căutată nu a putut fi găsită"
 
@@ -5558,24 +5561,24 @@ msgid "Review"
 msgstr "Recenzează"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1459
+#: src/gs-update-monitor.c:1457
 msgid "Failed To Update"
 msgstr "Actualizarea a eșuat"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1464
+#: src/gs-update-monitor.c:1462
 msgid "The system was already up to date."
 msgstr "Sistemul a fost deja actualizat."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1469
+#: src/gs-update-monitor.c:1467
 msgid "The update was cancelled."
 msgstr "Actualizarea a fost anulată."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1474
+#: src/gs-update-monitor.c:1472
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5584,7 +5587,7 @@ msgstr ""
 "aveți acces la internet și încercați din nou."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1479
+#: src/gs-update-monitor.c:1477
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -5593,14 +5596,14 @@ msgstr ""
 "furnizorul dumneavoastră de aplicații pentru mai multe detalii."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1484
+#: src/gs-update-monitor.c:1482
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Insuficient spațiu disponibil pe disc. Eliberați spațiu și încercați din nou."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1488
+#: src/gs-update-monitor.c:1486
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
