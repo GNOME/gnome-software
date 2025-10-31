@@ -1408,32 +1408,51 @@ gs_show_uri (GtkWindow *parent,
 /**
  * gs_utils_get_app_data_dir:
  * @app: a #GsApp
+ * @out_data_dir: (out callee-allocates) (transfer full) (optional) (nullable): return
+ *   location for the app’s data directory; `NULL` if not known or nonexistent
  *
- * Returns @app's data directory, if known. It also checks
- * whether the directory exists and returns %NULL, when not.
+ * Gets the path to @app’s data directory, if known and existent.
  *
- * Returns: (nullable) (transfer full): existing @app's data directory,
- *    or #NULL, when not known or does not exist
+ * If the directory is known but does not exist (for example, for sandboxed apps
+ * where the data directory is guaranteed to be in a known location),
+ * %GS_APP_DATA_DIR_STATE_NONEXISTENT is returned (and @out_data_dir is set to
+ * `NULL`).
  *
- * Since: 45
+ * For other apps, %GS_APP_DATA_DIR_STATE_UNKNOWN is returned (and @out_data_dir
+ * is set to `NULL`).
+ *
+ * Returns: state of the app’s data directory
+ * Since: 49
  **/
-gchar *
-gs_utils_get_app_data_dir (GsApp *app)
+GsAppDataDirState
+gs_utils_get_app_data_dir (GsApp  *app,
+                           char  **out_data_dir)
 {
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	GsAppDataDirState state;
+	g_autofree char *data_dir = NULL;
 
-	if (gs_app_get_id (app) == NULL)
-		return NULL;
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_DATA_DIR_STATE_UNKNOWN);
 
-	/* do this only for Flatpak for now */
-	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
-		g_autofree gchar *data_dir = g_build_filename (g_get_home_dir (), ".var", "app", gs_app_get_id (app), NULL);
-		if (g_file_test (data_dir, G_FILE_TEST_EXISTS))
-			return g_steal_pointer (&data_dir);
-		return NULL;
+	if (gs_app_get_id (app) == NULL) {
+		state = GS_APP_DATA_DIR_STATE_UNKNOWN;
+		data_dir = NULL;
+	} else if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
+		/* We only support flatpak for now */
+		data_dir = g_build_filename (g_get_home_dir (), ".var", "app", gs_app_get_id (app), NULL);
+		if (g_file_test (data_dir, G_FILE_TEST_EXISTS)) {
+			state = GS_APP_DATA_DIR_STATE_EXISTS;
+		} else {
+			state = GS_APP_DATA_DIR_STATE_NONEXISTENT;
+			g_clear_pointer (&data_dir, g_free);
+		}
+	} else {
+		state = GS_APP_DATA_DIR_STATE_UNKNOWN;
 	}
 
-	return NULL;
+	if (out_data_dir != NULL)
+		*out_data_dir = g_steal_pointer (&data_dir);
+
+	return state;
 }
 
 /**
@@ -1460,7 +1479,7 @@ gs_utils_remove_app_data_dir (GsApp *app,
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
 
-	dir = gs_utils_get_app_data_dir (app);
+	gs_utils_get_app_data_dir (app, &dir);
 	if (dir == NULL)
 		return FALSE;
 

@@ -605,7 +605,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					   gs_app_get_name (app));
 		break;
 	default:
-		app_data_dir = gs_utils_get_app_data_dir (app);
+		gs_utils_get_app_data_dir (app, &app_data_dir);
 
 		/* TRANSLATORS: this is a prompt message, and '%s' is an
 		 * app summary, e.g. 'GNOME Clocks' */

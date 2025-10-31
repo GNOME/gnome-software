@@ -73,7 +73,29 @@ gchar		*gs_utils_format_size		(guint64 size_bytes,
 						 gboolean *out_is_markup);
 void		 gs_show_uri			(GtkWindow *parent,
 						 const char *uri);
-gchar		*gs_utils_get_app_data_dir	(GsApp *app);
+
+/**
+ * GsAppDataDirState:
+ * @GS_APP_DATA_DIR_STATE_UNKNOWN: App data dir is unknown, probably because
+ *   the app isn’t sandboxed so could store data anywhere in the file system.
+ * @GS_APP_DATA_DIR_STATE_EXISTS: App data dir is known and exists.
+ * @GS_APP_DATA_DIR_STATE_NONEXISTENT: App data dir is known and does not exist.
+ *
+ * State of an app’s data directory.
+ *
+ * This is used by gs_utils_get_app_data_dir() to indicate whether an app’s data
+ * directory exists and/or is known to be sandboxed.
+ *
+ * Since: 49
+ */
+typedef enum {
+	GS_APP_DATA_DIR_STATE_UNKNOWN = 0,
+	GS_APP_DATA_DIR_STATE_EXISTS,
+	GS_APP_DATA_DIR_STATE_NONEXISTENT,
+} GsAppDataDirState;
+
+GsAppDataDirState gs_utils_get_app_data_dir	(GsApp *app,
+						 char **out_data_dir);
 gboolean	 gs_utils_remove_app_data_dir	(GsApp *app,
 						 GsPluginLoader *plugin_loader);
 
