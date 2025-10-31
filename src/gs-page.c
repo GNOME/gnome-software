@@ -499,6 +499,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	g_autofree gchar *message = NULL;
 	g_autofree gchar *title = NULL;
 	g_autofree gchar *app_data_dir = NULL;
+	GsAppDataDirState data_dir_state;
 
 	g_return_if_fail (GS_IS_PAGE (page));
 	g_return_if_fail (GS_IS_APP (app));
@@ -605,13 +606,13 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					   gs_app_get_name (app));
 		break;
 	default:
-		gs_utils_get_app_data_dir (app, &app_data_dir);
+		data_dir_state = gs_utils_get_app_data_dir (app, &app_data_dir);
 
 		/* TRANSLATORS: this is a prompt message, and '%s' is an
 		 * app summary, e.g. 'GNOME Clocks' */
 		title = g_strdup_printf (_("Uninstall %s?"),
 					 gs_app_get_name (app));
-		if (app_data_dir != NULL) {
+		if (data_dir_state == GS_APP_DATA_DIR_STATE_EXISTS) {
 			GtkCheckButton *check_delete;
 			check_delete = GTK_CHECK_BUTTON (gtk_builder_get_object (builder, "check_delete"));
 
@@ -621,6 +622,10 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 			g_signal_connect (check_delete, "toggled",
 					  G_CALLBACK (check_delete_toggled_cb), &(helper->remove_app_data_dir));
+		} else if (data_dir_state == GS_APP_DATA_DIR_STATE_NONEXISTENT) {
+			/* Translators: the '%s' is replaced with the app name */
+			message = g_strdup_printf (_("It will not be possible to use %s after removal."),
+						   gs_app_get_name (app));
 		} else {
 			/* TRANSLATORS: Longer dialog text. The placeholder is
 			 * the name of an app. */
