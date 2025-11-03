@@ -28,7 +28,7 @@ G_DEFINE_TYPE (GsPackagekitHelper, gs_packagekit_helper, G_TYPE_OBJECT)
 void
 gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer user_data)
 {
-	GsPackagekitHelper *self = (GsPackagekitHelper *) user_data;
+	GsPackagekitHelper *self = GS_PACKAGEKIT_HELPER (user_data);
 	GsPlugin *plugin = gs_packagekit_helper_get_plugin (self);
 	const gchar *package_id = pk_progress_get_package_id (progress);
 	GsApp *app = NULL;
@@ -106,12 +106,18 @@ gs_packagekit_helper_add_app (GsPackagekitHelper *self, GsApp *app)
 void
 gs_packagekit_helper_set_progress_app (GsPackagekitHelper *self, GsApp *progress_app)
 {
+	g_return_if_fail (GS_IS_PACKAGEKIT_HELPER (self));
+	g_return_if_fail (progress_app == NULL || GS_IS_APP (progress_app));
+
 	g_set_object (&self->progress_app, progress_app);
 }
 
 void
 gs_packagekit_helper_set_progress_list (GsPackagekitHelper *self, GsAppList *progress_list)
 {
+	g_return_if_fail (GS_IS_PACKAGEKIT_HELPER (self));
+	g_return_if_fail (progress_list == NULL || GS_IS_APP_LIST (progress_list));
+
 	g_set_object (&self->progress_list, progress_list);
 }
 
@@ -132,6 +138,8 @@ void
 gs_packagekit_helper_set_allow_emit_updates_changed (GsPackagekitHelper *self,
 						     gboolean allow_emit_updates_changed)
 {
+	g_return_if_fail (GS_IS_PACKAGEKIT_HELPER (self));
+
 	self->allow_emit_updates_changed = allow_emit_updates_changed;
 }
 
@@ -139,6 +147,7 @@ GsPlugin *
 gs_packagekit_helper_get_plugin (GsPackagekitHelper *self)
 {
 	g_return_val_if_fail (GS_IS_PACKAGEKIT_HELPER (self), NULL);
+
 	return self->plugin;
 }
 
@@ -186,6 +195,9 @@ GsPackagekitHelper *
 gs_packagekit_helper_new (GsPlugin *plugin)
 {
 	GsPackagekitHelper *self;
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+
 	self = g_object_new (GS_TYPE_PACKAGEKIT_HELPER, NULL);
 	self->plugin = g_object_ref (plugin);
 	return GS_PACKAGEKIT_HELPER (self);
