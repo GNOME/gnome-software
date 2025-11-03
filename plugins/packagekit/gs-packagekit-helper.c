@@ -156,17 +156,14 @@ gs_packagekit_helper_get_app_by_id (GsPackagekitHelper *self, const gchar *packa
 {
 	g_return_val_if_fail (GS_IS_PACKAGEKIT_HELPER (self), NULL);
 	g_return_val_if_fail (package_id != NULL, NULL);
+
 	return g_hash_table_lookup (self->apps, package_id);
 }
 
 static void
 gs_packagekit_helper_finalize (GObject *object)
 {
-	GsPackagekitHelper *self;
-
-	g_return_if_fail (GS_IS_PACKAGEKIT_HELPER (object));
-
-	self = GS_PACKAGEKIT_HELPER (object);
+	GsPackagekitHelper *self = GS_PACKAGEKIT_HELPER (object);
 
 	g_object_unref (self->plugin);
 	g_clear_object (&self->progress_app);
