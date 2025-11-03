@@ -16,10 +16,13 @@
 
 struct _GsPackagekitHelper {
 	GObject			 parent_instance;
-	GHashTable		*apps;
-	GsApp			*progress_app;
-	GsAppList		*progress_list;
-	GsPlugin		*plugin;
+
+	/* Map of source/package ID to `GsApp` instance: */
+	GHashTable		*apps;  /* (not nullable) (owned) (element-type utf8 GsApp) */
+
+	GsApp			*progress_app;  /* (owned) (nullable) */
+	GsAppList		*progress_list;  /* (owned) (nullable) */
+	GsPlugin		*plugin;  /* (owned) (not nullable) */
 	gboolean		 allow_emit_updates_changed;
 };
 
