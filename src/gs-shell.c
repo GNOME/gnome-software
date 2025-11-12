@@ -1323,7 +1323,13 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	g_autofree gchar *str_app = NULL;
 	g_autofree gchar *str_origin = NULL;
 
-	str_app = gs_shell_get_title_from_app (app);
+	if (app != NULL) {
+		str_app = gs_shell_get_title_from_app (app);
+	} else {
+		/* Translators: this is part of "Unable to install application" text,
+		   as a fallback when the actual application is not known */
+		str_app = g_strdup (_("application"));
+	}
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		toast_text = _("Unable to install: download failed");
@@ -1694,7 +1700,13 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	g_autofree gchar *tmp_toast_text = NULL;
 	g_autofree gchar *str_app = NULL;
 
-	str_app = gs_shell_get_title_from_app (app);
+	if (app != NULL) {
+		str_app = gs_shell_get_title_from_app (app);
+	} else {
+		/* Translators: this is part of "Unable to uninstall application" text,
+		   as a fallback when the actual application is not known */
+		str_app = g_strdup (_("application"));
+	}
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification */
