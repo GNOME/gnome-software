@@ -712,6 +712,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 						     "no packages to install");
 
 				event = gs_plugin_event_new ("error", local_error,
+							     "app", app,
 							     NULL);
 				if (interactive)
 					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -867,15 +868,19 @@ install_apps_remote_cb (GObject      *source_object,
 
 	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
 		g_autoptr(GsPluginEvent) event = NULL;
+		GsApp *first_app = NULL;
 
 		for (guint i = 0; i < gs_app_list_length (data->remote_apps_to_install); i++) {
 			GsApp *app = gs_app_list_index (data->remote_apps_to_install, i);
+			if (first_app == NULL)
+				first_app = app;
 			gs_app_set_state_recover (app);
 		}
 
 		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 
 		event = gs_plugin_event_new ("error", local_error,
+					     "app", first_app,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -918,15 +923,19 @@ install_apps_local_cb (GObject      *source_object,
 
 	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
 		g_autoptr(GsPluginEvent) event = NULL;
+		GsApp *first_app = NULL;
 
 		for (guint i = 0; i < gs_app_list_length (data->local_apps_to_install); i++) {
 			GsApp *app = gs_app_list_index (data->local_apps_to_install, i);
+			if (first_app == NULL)
+				first_app = app;
 			gs_app_set_state_recover (app);
 		}
 
 		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 
 		event = gs_plugin_event_new ("error", local_error,
+					     "app", first_app,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
@@ -1182,15 +1191,19 @@ uninstall_apps_remove_cb (GObject      *source_object,
 
 	if (!gs_plugin_packagekit_results_valid (results, cancellable, &local_error)) {
 		g_autoptr(GsPluginEvent) event = NULL;
+		GsApp *first_app = NULL;
 
 		for (guint i = 0; i < gs_app_list_length (data->apps_to_uninstall); i++) {
 			GsApp *app = gs_app_list_index (data->apps_to_uninstall, i);
+			if (first_app == NULL)
+				first_app = app;
 			gs_app_set_state_recover (app);
 		}
 
 		gs_plugin_packagekit_error_convert (&local_error, cancellable);
 
 		event = gs_plugin_event_new ("error", local_error,
+					     "app", first_app,
 					     NULL);
 		if (interactive)
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
