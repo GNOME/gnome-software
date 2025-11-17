@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-09-17 21:44+0000\n"
-"PO-Revision-Date: 2025-09-17 23:47+0200\n"
+"POT-Creation-Date: 2025-11-03 14:27+0000\n"
+"PO-Revision-Date: 2025-11-10 17:08+0100\n"
 "Last-Translator: Francesc Busquets <francesc@gmail.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "Language: ca\n"
@@ -68,7 +68,7 @@ msgid "The update details"
 msgstr "Detalls de l'actualització"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2883 src/gs-application.c:267
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2905 src/gs-application.c:269
 msgid "The GNOME Project"
 msgstr "El projecte GNOME"
 
@@ -1000,96 +1000,96 @@ msgid "Installed"
 msgstr "Instal·lat"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr "Mode d'inici: sigui «updates» (actualitzacions), «updated» (actualitzat), «installed» (instal·lat) o «overview» (resum)"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "MODE"
 msgstr "MODE"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "Search for applications"
 msgstr "Cerca aplicacions"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "SEARCH"
 msgstr "CERCA"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:132
 msgid "Show application details (using application ID)"
 msgstr "Mostra els detalls de l'aplicació (utilitzant l'ID d'aplicació)"
 
-#: src/gs-application.c:130 src/gs-application.c:134 src/gs-application.c:136
+#: src/gs-application.c:132 src/gs-application.c:136 src/gs-application.c:138
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "Show application details (using package name)"
 msgstr "Mostra els detalls de l'aplicació (utilitzant el nom de paquet)"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "PKGNAME"
 msgstr "PKGNAME"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:136
 msgid "Install the application (using application ID)"
 msgstr "Instal·la l'aplicació (utilitzant l'ID d'aplicació)"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:138
 msgid "Uninstall the application (using application ID)"
 msgstr "Desinstal·la l'aplicació (utilitzant l'ID d'aplicació)"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:140
 msgid "Open a local package file"
 msgstr "Obre un fitxer de paquet local"
 
-#: src/gs-application.c:138 src/gs-application.c:143
+#: src/gs-application.c:140 src/gs-application.c:145
 msgid "FILENAME"
 msgstr "NOM DE FITXER"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:142
 msgid "The kind of interaction expected for this action: either ‘none’, ‘notify’, or ‘full’"
 msgstr "El tipus d'interacció que s'espera per a aquesta acció: ‘none’, ‘notify’, o ‘full’"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:143
 msgid "INTERACTION"
 msgstr "INTERACCIÓ"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:145
 msgid "Show a local metainfo or appdata file"
 msgstr "Mostra un fitxer local de metainfo o appdata"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:147
 msgid "Enable verbose debugging output (from the running instance, if already running)"
 msgstr "Activa la sortida de depuració detallada (des de la instància en execució, si ja s'està executant)"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:149
 msgid "Installs any pending updates in the background"
 msgstr "Instal·la les actualitzacions pendents en segon pla"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:151
 msgid "Show preferences"
 msgstr "Mostra les preferències"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:153
 msgid "Quit the running instance"
 msgstr "Surt de la instància en execució"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:155
 msgid "Prefer local file sources to AppStream"
 msgstr "Prefereix fonts de fitxer locals abans que de l'AppStream"
 
-#: src/gs-application.c:155
+#: src/gs-application.c:157
 msgid "Show version number"
 msgstr "Mostra el número de versió"
 
-#: src/gs-application.c:262
+#: src/gs-application.c:264
 #, c-format
 msgid "Copyright © 2016–%d GNOME Software contributors"
 msgstr "Copyright © 2016-%d Contribuïdors de Programari del GNOME"
 
-#: src/gs-application.c:276
+#: src/gs-application.c:278
 msgid "translator-credits"
 msgstr ""
 "Jordi Mas i Hernàndez <jmas@softcatala.org>, 2013-2024\n"
@@ -1098,7 +1098,7 @@ msgstr ""
 "Victor Dargallo <victordargallo@disroot.org>"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:515
+#: src/gs-application.c:517
 msgid "Sorry! There are no details for that application."
 msgstr "No hi ha detalls per a aquesta aplicació."
 
@@ -1256,7 +1256,7 @@ msgstr "El desenvolupador de l'aplicació està verificat"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:462 src/gs-safety-context-dialog.c:144
 msgid "Reviewed by OS distributor"
-msgstr "Revisat per un distribuïdor de SO"
+msgstr "Revisat per un distribuïdor del SO"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
@@ -1297,7 +1297,7 @@ msgstr "Llicència desconeguda"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:519
 msgid "Proprietary code"
-msgstr "Codi propietari"
+msgstr "Codi privatiu"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
@@ -1327,31 +1327,31 @@ msgstr "; "
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:548
 msgid "Privileged"
-msgstr "Privilegiat"
+msgstr "Privilegiada"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:555
 msgid "Safe"
-msgstr "Segur"
+msgstr "Segura"
 
 #. Translators: The app is considered probably safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:562
 msgid "Probably Safe"
-msgstr "Probablement segur"
+msgstr "Probablement segura"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:569
 msgid "Potentially Unsafe"
-msgstr "Potencialment insegur"
+msgstr "Potencialment insegura"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:576
 msgid "Unsafe"
-msgstr "Insegur"
+msgstr "Insegura"
 
 #: src/gs-app-context-bar.c:654 src/gs-app-context-bar.c:686 src/gs-hardware-support-context-dialog.c:615
 msgid "Mobile Only"
@@ -2833,16 +2833,16 @@ msgstr[1] "No s'han pogut trobar %s que cercàveu. Per a més informació consul
 msgid "Failed to find any search results: %s"
 msgstr "No s'ha pogut trobar cap resultat de cerca: %s"
 
-#: src/gs-extras-page.c:957
+#: src/gs-extras-page.c:958
 #, c-format
 msgid "%s file format"
 msgstr "Format de fitxer %s"
 
-#: src/gs-extras-page.c:1315
+#: src/gs-extras-page.c:1316
 msgid "Install _All"
 msgstr "Instal·la-ho _Tot"
 
-#: src/gs-extras-page.c:1345
+#: src/gs-extras-page.c:1346
 msgid "Unable to Find Requested Software"
 msgstr "No s'ha pogut trobar el programari demanat"
 
