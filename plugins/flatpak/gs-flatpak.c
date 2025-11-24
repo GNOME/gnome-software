@@ -3748,16 +3748,19 @@ gboolean
 gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 			    GsAppList *list, GsPluginRefineRequireFlags require_flags,
 			    gboolean interactive,
+			    XbSilo **inout_silo,
+			    gchar **inout_silo_filename,
+			    GHashTable **inout_installed_by_desktopid,
 			    GHashTable **inout_components_by_id,
 			    GHashTable **inout_components_by_bundle,
 			    GCancellable *cancellable, GError **error)
 {
 	const gchar *id;
 	GPtrArray* components = NULL;
+	XbSilo *silo;
+	GHashTable *silo_installed_by_desktopid;
+	const gchar *silo_filename;
 	g_autoptr(GError) error_local = NULL;
-	g_autoptr(XbSilo) silo = NULL;
-	g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
-	g_autofree gchar *silo_filename = NULL;
 
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcard, "Flatpak (refine wildcard)", NULL);
 
@@ -3766,9 +3769,14 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 	if (id == NULL)
 		return TRUE;
 
-	silo = gs_flatpak_ref_silo (self, interactive, &silo_filename, &silo_installed_by_desktopid, cancellable, error);
-	if (silo == NULL)
+	if (*inout_silo == NULL)
+		*inout_silo = gs_flatpak_ref_silo (self, interactive, inout_silo_filename, inout_installed_by_desktopid, cancellable, error);
+	if (*inout_silo == NULL)
 		return FALSE;
+
+	silo = *inout_silo;
+	silo_filename = *inout_silo_filename;
+	silo_installed_by_desktopid = *inout_installed_by_desktopid;
 
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardQuerySilo, "Flatpak (query silo)", NULL);
 

@@ -667,12 +667,29 @@ gs_plugin_flatpak_refine_app (GsPluginFlatpak             *self,
 	return gs_flatpak_refine_app (flatpak, app, require_flags, interactive, FALSE, event_callback, event_user_data, cancellable, error);
 }
 
+typedef struct {
+	XbSilo *silo;
+	gchar *silo_filename;
+	GHashTable *installed_by_desktopid;
+	GHashTable *components_by_id;
+	GHashTable *components_by_bundle;
+} RefineInstallationData;
+
 static void
-unref_nonnull_hash_table (gpointer ptr)
+refine_installation_data_free (gpointer ptr)
 {
-	GHashTable *hash_table = ptr;
-	if (hash_table != NULL)
-		g_hash_table_unref (hash_table);
+	RefineInstallationData *data = ptr;
+
+	if (data == NULL)
+		return;
+
+	g_clear_pointer (&data->silo_filename, g_free);
+	g_clear_pointer (&data->installed_by_desktopid, g_hash_table_unref);
+	g_clear_pointer (&data->components_by_id, g_hash_table_unref);
+	g_clear_pointer (&data->components_by_bundle, g_hash_table_unref);
+	/* free the silo as the last, just in case, because the data from it is in the above hash tables */
+	g_clear_object (&data->silo);
+	g_free (data);
 }
 
 static gboolean
@@ -761,8 +778,7 @@ refine_thread_cb (GTask        *task,
 	gboolean interactive = (data->job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
 	GsPluginEventCallback event_callback = data->event_callback;
 	void *event_user_data = data->event_user_data;
-	g_autoptr(GPtrArray) array_components_by_id = NULL; /* (element-type GHashTable) */
-	g_autoptr(GPtrArray) array_components_by_bundle = NULL; /* (element-type GHashTable) */
+	g_autoptr(GPtrArray) installation_data = NULL; /* (element-type RefineInstallationData) */
 	g_autoptr(GsAppList) app_list = NULL;
 	g_autoptr(GError) local_error = NULL;
 
@@ -783,10 +799,9 @@ refine_thread_cb (GTask        *task,
 	 * (e.g. inserting an app in the list on every call results in
 	 * an infinite loop) */
 	app_list = gs_app_list_copy (list);
-	array_components_by_id = g_ptr_array_new_full (self->installations->len, unref_nonnull_hash_table);
-	g_ptr_array_set_size (array_components_by_id, self->installations->len);
-	array_components_by_bundle = g_ptr_array_new_full (self->installations->len, unref_nonnull_hash_table);
-	g_ptr_array_set_size (array_components_by_bundle, self->installations->len);
+
+	installation_data = g_ptr_array_new_full (self->installations->len, refine_installation_data_free);
+	g_ptr_array_set_size (installation_data, self->installations->len);
 
 	for (guint j = 0; j < gs_app_list_length (app_list); j++) {
 		GsApp *app = gs_app_list_index (app_list, j);
@@ -796,16 +811,20 @@ refine_thread_cb (GTask        *task,
 
 		for (guint i = 0; i < self->installations->len; i++) {
 			GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-			GHashTable *components_by_id = array_components_by_id->pdata[i];
-			GHashTable *components_by_bundle = array_components_by_bundle->pdata[i];
+			RefineInstallationData *inst_data = g_ptr_array_index (installation_data, i);
 
-			if (!gs_flatpak_refine_wildcard (flatpak, app, list, require_flags, interactive, &components_by_id, &components_by_bundle,
+			if (inst_data == NULL) {
+				inst_data = g_new0 (RefineInstallationData, 1);
+				installation_data->pdata[i] = inst_data;
+			}
+
+			if (!gs_flatpak_refine_wildcard (flatpak, app, list, require_flags, interactive, &inst_data->silo,
+							 &inst_data->silo_filename, &inst_data->installed_by_desktopid,
+							 &inst_data->components_by_id, &inst_data->components_by_bundle,
 							 cancellable, &local_error)) {
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
 			}
-			array_components_by_id->pdata[i] = components_by_id;
-			array_components_by_bundle->pdata[i] = components_by_bundle;
 		}
 	}
 
