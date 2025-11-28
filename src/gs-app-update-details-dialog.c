@@ -38,16 +38,6 @@ static GParamSpec *obj_props[PROP_APP + 1]  = { NULL, };
 static void gs_app_update_details_dialog_show_update_details (GsAppUpdateDetailsDialog *dialog, GsApp *app);
 
 static void
-unset_focus (GtkWidget *widget)
-{
-	GtkWidget *focus;
-
-	focus = adw_dialog_get_focus (ADW_DIALOG (widget));
-	if (GTK_IS_LABEL (focus))
-		gtk_label_select_region (GTK_LABEL (focus), 0, 0);
-}
-
-static void
 app_activated_cb (GtkWidget *widget, GsApp *app, GsAppUpdateDetailsDialog *page)
 {
 	gs_app_update_details_dialog_show_update_details (page, app);
@@ -63,10 +53,6 @@ gs_app_update_details_dialog_show_update_details (GsAppUpdateDetailsDialog *dial
 	/* debug */
 	str = gs_app_to_string (app);
 	g_debug ("%s", str);
-
-	/* workaround a gtk+ issue where the dialog comes up with a label selected,
-	 * https://bugzilla.gnome.org/show_bug.cgi?id=734033 */
-	unset_focus (GTK_WIDGET (dialog));
 
 	/* set update description */
 	kind = gs_app_get_kind (app);
@@ -161,8 +147,6 @@ gs_app_update_details_dialog_init (GsAppUpdateDetailsDialog *dialog)
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	dialog->cancellable = g_cancellable_new ();
-
-	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
 }
 
 static void

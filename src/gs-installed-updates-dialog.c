@@ -168,16 +168,6 @@ gs_installed_updates_dialog_unmap (GtkWidget *widget)
 }
 
 static void
-unset_focus (GtkWidget *widget)
-{
-	GtkWidget *focus;
-
-	focus = adw_dialog_get_focus (ADW_DIALOG (widget));
-	if (GTK_IS_LABEL (focus))
-		gtk_label_select_region (GTK_LABEL (focus), 0, 0);
-}
-
-static void
 app_activated_cb (GtkWidget *widget, GsApp *app, GsInstalledUpdatesDialog *page)
 {
 	gs_installed_updates_dialog_show_update_details (page, app);
@@ -193,10 +183,6 @@ gs_installed_updates_dialog_show_update_details (GsInstalledUpdatesDialog *dialo
 	/* debug */
 	str = gs_app_to_string (app);
 	g_debug ("%s", str);
-
-	/* workaround a gtk+ issue where the dialog comes up with a label selected,
-	 * https://bugzilla.gnome.org/show_bug.cgi?id=734033 */
-	unset_focus (GTK_WIDGET (dialog));
 
 	/* set update description */
 	kind = gs_app_get_kind (app);
@@ -284,8 +270,6 @@ gs_installed_updates_dialog_init (GsInstalledUpdatesDialog *dialog)
 
 	g_signal_connect (dialog->list_box_installed_updates, "show-update",
 			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
-
-	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
 }
 
 static void
