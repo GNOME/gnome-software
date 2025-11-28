@@ -24,6 +24,7 @@
 #include "gs-basic-auth-dialog.h"
 #include "gs-details-page.h"
 #include "gs-installed-page.h"
+#include "gs-installed-updates-dialog.h"
 #include "gs-loading-page.h"
 #include "gs-search-page.h"
 #include "gs-overview-page.h"
@@ -34,7 +35,6 @@
 #include "gs-repos-dialog.h"
 #include "gs-prefs-dialog.h"
 #include "gs-toast.h"
-#include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
 
@@ -2308,7 +2308,7 @@ gs_shell_show_installed_updates (GsShell *shell)
 {
 	GtkWidget *dialog;
 
-	dialog = gs_update_dialog_new (shell->plugin_loader);
+	dialog = gs_installed_updates_dialog_new (shell->plugin_loader);
 
 	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (shell));
 }
