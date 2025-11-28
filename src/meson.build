@@ -29,6 +29,7 @@ gnome_software_sources = [
   'gs-age-rating-context-dialog.c',
   'gs-app-addon-row.c',
   'gs-app-reviews-dialog.c',
+  'gs-app-update-details-dialog.c',
   'gs-app-version-history-dialog.c',
   'gs-app-version-history-row.c',
   'gs-application.c',

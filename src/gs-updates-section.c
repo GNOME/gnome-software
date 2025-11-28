@@ -14,8 +14,8 @@
 
 #include "gs-app-list-private.h"
 #include "gs-app-row.h"
+#include "gs-app-update-details-dialog.h"
 #include "gs-application.h"
-#include "gs-installed-updates-dialog.h"
 #include "gs-page.h"
 #include "gs-common.h"
 #include "gs-progress-button.h"
@@ -544,7 +544,7 @@ _app_row_activated_cb (GsUpdatesSection *self, GtkListBoxRow *row)
 	str = gs_app_to_string (app);
 	g_debug ("%s", str);
 
-	dialog = gs_installed_updates_dialog_new_for_app (self->plugin_loader, app);
+	dialog = gs_app_update_details_dialog_new (self->plugin_loader, app);
 	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (gs_page_get_shell (self->page)));
 }
 
