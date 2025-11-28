@@ -228,7 +228,9 @@ gs_installed_updates_dialog_set_property (GObject      *object,
 
 	switch ((GsInstalledUpdatesDialogProperty) prop_id) {
 	case PROP_PLUGIN_LOADER:
-		dialog->plugin_loader = g_object_ref (g_value_get_object (value));
+		/* Construct only: */
+		g_assert (dialog->plugin_loader == NULL);
+		dialog->plugin_loader = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -241,7 +243,7 @@ gs_installed_updates_dialog_constructed (GObject *object)
 {
 	GsInstalledUpdatesDialog *dialog = GS_INSTALLED_UPDATES_DIALOG (object);
 
-	g_assert (dialog->plugin_loader);
+	g_assert (dialog->plugin_loader != NULL);
 
 	G_OBJECT_CLASS (gs_installed_updates_dialog_parent_class)->constructed (object);
 }
