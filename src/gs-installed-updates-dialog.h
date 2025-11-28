@@ -21,7 +21,5 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsInstalledUpdatesDialog, gs_installed_updates_dialog, GS, INSTALLED_UPDATES_DIALOG, AdwDialog)
 
 GtkWidget	*gs_installed_updates_dialog_new				(GsPluginLoader		*plugin_loader);
-GtkWidget	*gs_installed_updates_dialog_new_for_app			(GsPluginLoader		*plugin_loader,
-										 GsApp			*app);
 
 G_END_DECLS
