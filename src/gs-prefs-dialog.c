@@ -131,12 +131,12 @@ gs_prefs_dialog_class_init (GsPrefsDialogClass *klass)
     	gtk_widget_class_bind_template_callback (widget_class, popover_show_cb);
 }
 
-GtkWidget *
+GsPrefsDialog *
 gs_prefs_dialog_new (GsPluginLoader *plugin_loader)
 {
 	GsPrefsDialog *dialog;
 	dialog = g_object_new (GS_TYPE_PREFS_DIALOG,
 			       NULL);
 	dialog->plugin_loader = g_object_ref (plugin_loader);
-	return GTK_WIDGET (dialog);
+	return dialog;
 }

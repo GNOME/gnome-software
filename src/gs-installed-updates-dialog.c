@@ -312,10 +312,10 @@ gs_installed_updates_dialog_class_init (GsInstalledUpdatesDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledUpdatesDialog, default_page);
 }
 
-GtkWidget *
+GsInstalledUpdatesDialog *
 gs_installed_updates_dialog_new (GsPluginLoader *plugin_loader)
 {
-	return GTK_WIDGET (g_object_new (GS_TYPE_INSTALLED_UPDATES_DIALOG,
-					 "plugin-loader", plugin_loader,
-					 NULL));
+	return g_object_new (GS_TYPE_INSTALLED_UPDATES_DIALOG,
+			     "plugin-loader", plugin_loader,
+			     NULL);
 }
