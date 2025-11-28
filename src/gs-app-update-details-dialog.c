@@ -13,9 +13,7 @@
 
 #include "gs-app-details-page.h"
 #include "gs-app-update-details-dialog.h"
-#include "gs-app-row.h"
 #include "gs-os-update-page.h"
-#include "gs-update-list.h"
 #include "gs-common.h"
 
 struct _GsAppUpdateDetailsDialog
@@ -26,12 +24,6 @@ struct _GsAppUpdateDetailsDialog
 	GsPluginLoader	*plugin_loader;
 	GsApp		*app;
 	GtkWidget	*navigation_view;
-	GtkWidget	*list_box_installed_updates;
-	GtkWidget	*spinner;
-	GtkWidget	*stack;
-	AdwWindowTitle	*window_title;
-	AdwNavigationPage	*default_page;
-	gboolean	 showing_installed_updates;
 };
 
 G_DEFINE_TYPE (GsAppUpdateDetailsDialog, gs_app_update_details_dialog, ADW_TYPE_DIALOG)
@@ -43,125 +35,7 @@ typedef enum {
 
 static GParamSpec *obj_props[PROP_APP + 1]  = { NULL, };
 
-static void gs_app_update_details_dialog_show_installed_updates (GsAppUpdateDetailsDialog *dialog);
 static void gs_app_update_details_dialog_show_update_details (GsAppUpdateDetailsDialog *dialog, GsApp *app);
-
-static void
-installed_updates_row_activated_cb (GsUpdateList *update_list,
-				    GsApp *app,
-				    GsAppUpdateDetailsDialog *dialog)
-{
-	gs_app_update_details_dialog_show_update_details (dialog, app);
-}
-
-static void
-get_installed_updates_cb (GsPluginLoader *plugin_loader,
-                          GAsyncResult *res,
-                          GsAppUpdateDetailsDialog *dialog)
-{
-	guint i;
-	guint64 install_date;
-	g_autoptr(GsPluginJobListApps) list_apps_job = NULL;
-	GsAppList *list;
-	g_autoptr(GError) error = NULL;
-
-	/* get the results */
-	gs_plugin_loader_job_process_finish (plugin_loader, res, (GsPluginJob **) &list_apps_job, &error);
-
-	/* if we're in teardown, short-circuit and return immediately without
-	 * dereferencing priv variables */
-	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
-	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) ||
-	    dialog->spinner == NULL) {
-		g_debug ("get installed updates cancelled");
-		return;
-	}
-
-	/* error */
-	if (error != NULL) {
-		g_warning ("failed to get installed updates: %s", error->message);
-		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
-		return;
-	}
-
-	list = gs_plugin_job_list_apps_get_result_list (list_apps_job);
-
-	/* no results */
-	if (gs_app_list_length (list) == 0) {
-		g_debug ("no installed updates to show");
-		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
-		return;
-	}
-
-	/* set the header title using the latest app install date */
-	install_date = 0;
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		guint64 app_inst_date = gs_app_get_install_date (app);
-		if (app_inst_date > install_date)
-			install_date = app_inst_date;
-
-		/* handle also "System Updates" */
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
-			GsAppList *related = gs_app_get_related (app);
-			for (guint j = 0; j < gs_app_list_length (related); j++) {
-				GsApp *rel_app = gs_app_list_index (related, j);
-				app_inst_date = gs_app_get_install_date (rel_app);
-				if (app_inst_date > install_date)
-					install_date = app_inst_date;
-			}
-		}
-	}
-	if (install_date > 0) {
-		g_autoptr(GDateTime) date = NULL;
-		g_autofree gchar *date_str = NULL;
-		g_autofree gchar *subtitle = NULL;
-
-		date = g_date_time_new_from_unix_utc ((gint64) install_date);
-		date_str = g_date_time_format (date, "%x");
-
-		/* TRANSLATORS: this is the subtitle of the installed updates dialog window.
-		   %s will be replaced by the date when the updates were installed.
-		   The date format is defined by the locale's preferred date representation
-		   ("%x" in strftime.) */
-		subtitle = g_strdup_printf (_("Installed on %s"), date_str);
-		adw_window_title_set_subtitle (dialog->window_title, subtitle);
-	}
-
-	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "installed-updates-list");
-
-	gs_update_list_remove_all (GS_UPDATE_LIST (dialog->list_box_installed_updates));
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		gs_update_list_add_app (GS_UPDATE_LIST (dialog->list_box_installed_updates),
-					gs_app_list_index (list, i));
-	}
-}
-
-static void
-gs_app_update_details_dialog_show_installed_updates (GsAppUpdateDetailsDialog *dialog)
-{
-	g_autoptr(GsAppQuery) query = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	dialog->showing_installed_updates = TRUE;
-
-	/* TRANSLATORS: this is the title of the installed updates dialog window */
-	adw_navigation_page_set_title (dialog->default_page, _("Installed Updates"));
-
-	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
-
-	query = gs_app_query_new ("is-historical-update", GS_APP_QUERY_TRISTATE_TRUE,
-				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING,
-				  "refine-require-flags", GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_SEVERITY |
-							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
-							  GS_PLUGIN_REFINE_REQUIRE_FLAGS_VERSION,
-				  NULL);
-	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
-	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-	                                    dialog->cancellable,
-	                                    (GAsyncReadyCallback) get_installed_updates_cb,
-	                                    dialog);
-}
 
 static void
 unset_focus (GtkWidget *widget)
@@ -259,15 +133,10 @@ gs_app_update_details_dialog_constructed (GObject *object)
 {
 	GsAppUpdateDetailsDialog *dialog = GS_APP_UPDATE_DETAILS_DIALOG (object);
 
-	g_assert (dialog->plugin_loader);
+	g_assert (dialog->plugin_loader != NULL);
+	g_assert (dialog->app != NULL);
 
-	if (dialog->app) {
-		adw_navigation_view_replace (ADW_NAVIGATION_VIEW (dialog->navigation_view), NULL, 0);
-
-		gs_app_update_details_dialog_show_update_details (dialog, dialog->app);
-	} else {
-		gs_app_update_details_dialog_show_installed_updates (dialog);
-	}
+	gs_app_update_details_dialog_show_update_details (dialog, dialog->app);
 
 	G_OBJECT_CLASS (gs_app_update_details_dialog_parent_class)->constructed (object);
 }
@@ -289,14 +158,9 @@ gs_app_update_details_dialog_dispose (GObject *object)
 static void
 gs_app_update_details_dialog_init (GsAppUpdateDetailsDialog *dialog)
 {
-	g_type_ensure (GS_TYPE_UPDATE_LIST);
-
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	dialog->cancellable = g_cancellable_new ();
-
-	g_signal_connect (dialog->list_box_installed_updates, "show-update",
-			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
 
 	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
 }
@@ -325,11 +189,9 @@ gs_app_update_details_dialog_class_init (GsAppUpdateDetailsDialogClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
-	 * GsAppUpdateDetailsDialog:app: (nullable)
+	 * GsAppUpdateDetailsDialog:app: (not nullable)
 	 *
 	 * The app whose details to display.
-	 *
-	 * If none is set, the intalled updates will be displayed.
 	 *
 	 * Since: 50
 	 */
@@ -343,11 +205,6 @@ gs_app_update_details_dialog_class_init (GsAppUpdateDetailsDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-update-details-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsAppUpdateDetailsDialog, navigation_view);
-	gtk_widget_class_bind_template_child (widget_class, GsAppUpdateDetailsDialog, list_box_installed_updates);
-	gtk_widget_class_bind_template_child (widget_class, GsAppUpdateDetailsDialog, spinner);
-	gtk_widget_class_bind_template_child (widget_class, GsAppUpdateDetailsDialog, stack);
-	gtk_widget_class_bind_template_child (widget_class, GsAppUpdateDetailsDialog, window_title);
-	gtk_widget_class_bind_template_child (widget_class, GsAppUpdateDetailsDialog, default_page);
 }
 
 GtkWidget *
