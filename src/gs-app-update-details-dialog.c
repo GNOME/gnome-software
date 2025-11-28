@@ -101,12 +101,14 @@ gs_app_update_details_dialog_set_property (GObject      *object,
 
 	switch ((GsAppUpdateDetailsDialogProperty) prop_id) {
 	case PROP_PLUGIN_LOADER:
-		dialog->plugin_loader = g_object_ref (g_value_get_object (value));
+		/* Construct only: */
+		g_assert (dialog->plugin_loader == NULL);
+		dialog->plugin_loader = g_value_dup_object (value);
 		break;
 	case PROP_APP:
-		dialog->app = g_value_get_object (value);
-		if (dialog->app != NULL)
-			g_object_ref (dialog->app);
+		/* Construct only: */
+		g_assert (dialog->app == NULL);
+		dialog->app = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
