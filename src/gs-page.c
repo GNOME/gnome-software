@@ -624,7 +624,8 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					  G_CALLBACK (check_delete_toggled_cb), &(helper->remove_app_data_dir));
 		} else if (data_dir_state == GS_APP_DATA_DIR_STATE_NONEXISTENT) {
 			/* Translators: the '%s' is replaced with the app name */
-			message = g_strdup_printf (_("It will not be possible to use %s after removal."),
+			message = g_strdup_printf (_("It will not be possible to use %s after removal. "
+						     "It has not saved any app data or settings to disk."),
 						   gs_app_get_name (app));
 		} else {
 			/* TRANSLATORS: Longer dialog text. The placeholder is
