@@ -537,7 +537,7 @@ gs_details_page_refresh_app_data_info (GsDetailsPage *self)
 		return;
 	}
 
-	dir = gs_utils_get_app_data_dir (self->app);
+	gs_utils_get_app_data_dir (self->app, &dir);
 	if (dir == NULL) {
 		gtk_widget_set_visible (self->infobar_app_data, FALSE);
 		return;
