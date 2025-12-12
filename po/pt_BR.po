@@ -20,22 +20,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-09-08 11:41+0000\n"
-"PO-Revision-Date: 2025-09-08 09:14-0300\n"
+"POT-Creation-Date: 2025-12-10 18:06+0000\n"
+"PO-Revision-Date: 2025-12-12 18:47-0400\n"
 "Last-Translator: Juliano de Souza Camargo <julianosc@pm.me>\n"
-"Language-Team: Brazilian Portuguese <https://br.gnome.org/traducao>\n"
+"Language-Team: Brazilian Portuguese <https://br.gnome.org/traducao/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Gtranslator 48.0\n"
+"X-Generator: Gtranslator 49.0\n"
 "X-Project-Style: gnome\n"
 "X-DL-Team: pt_BR\n"
 "X-DL-Module: gnome-software\n"
 "X-DL-Branch: main\n"
 "X-DL-Domain: po\n"
 "X-DL-State: Translating\n"
+"X-DL-VCS-Web: https://gitlab.gnome.org/GNOME/gnome-software/\n"
+"X-DL-Lang: pt_BR\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35
 #: src/org.gnome.Software.desktop.in:2
@@ -89,8 +91,8 @@ msgid "The update details"
 msgstr "Os detalhes da atualização"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2850
-#: src/gs-application.c:267
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2923
+#: src/gs-application.c:269
 msgid "The GNOME Project"
 msgstr "O projeto GNOME"
 
@@ -892,15 +894,15 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "Pacote"
 
-#: src/gs-app-addon-row.c:93 src/gs-app-row.c:528
+#: src/gs-app-addon-row.c:93 src/gs-app-row.c:529
 msgid "Pending"
 msgstr "Pendente"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:532 src/gs-details-page.c:393
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:533 src/gs-details-page.c:393
 msgid "Pending install"
 msgstr "Instalação pendente"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:536 src/gs-details-page.c:400
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:537 src/gs-details-page.c:400
 msgid "Pending remove"
 msgstr "Remoção pendente"
 
@@ -1057,7 +1059,7 @@ msgstr "Não foi disponibilizada a descrição da atualização."
 msgid "Update Details"
 msgstr "Detalhes da atualização"
 
-#: src/gs-app-details-page.ui:27 src/gs-app-row.c:591
+#: src/gs-app-details-page.ui:27 src/gs-app-row.c:592
 msgid "Requires additional permissions"
 msgstr "Requer permissões adicionais"
 
@@ -1106,73 +1108,73 @@ msgid "Installed"
 msgstr "Instalado"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modo de inicialização, podendo ser “updates” (para atualizações), “updated” "
 "(para atualizados), “installed” (para instalados) ou “overview” (para visão "
 "geral)"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "MODE"
 msgstr "MODO"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "Search for applications"
 msgstr "Pesquisa por aplicativos"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "SEARCH"
 msgstr "PESQUISA"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:132
 msgid "Show application details (using application ID)"
 msgstr "Mostra detalhes do aplicativo (usando o ID do aplicativo)"
 
-#: src/gs-application.c:130 src/gs-application.c:134 src/gs-application.c:136
+#: src/gs-application.c:132 src/gs-application.c:136 src/gs-application.c:138
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "Show application details (using package name)"
 msgstr "Mostra detalhes do aplicativo (usando o nome do pacote)"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "PKGNAME"
 msgstr "NOMEPACOTE"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:136
 msgid "Install the application (using application ID)"
 msgstr "Instala o aplicativo (usando o ID do aplicativo)"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:138
 msgid "Uninstall the application (using application ID)"
 msgstr "Desinstala o aplicativo (usando o ID do aplicativo)"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:140
 msgid "Open a local package file"
 msgstr "Abre um arquivo de pacote local"
 
-#: src/gs-application.c:138 src/gs-application.c:143
+#: src/gs-application.c:140 src/gs-application.c:145
 msgid "FILENAME"
 msgstr "NOMEDOARQUIVO"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:142
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
 "O tipo de interação para essa ação: pode ser ‘none’, ‘notify’ ou ‘full’"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:143
 msgid "INTERACTION"
 msgstr "INTERAÇÃO"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:145
 msgid "Show a local metainfo or appdata file"
 msgstr "Mostra um arquivo metainfo ou appdata local"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:147
 msgid ""
 "Enable verbose debugging output (from the running instance, if already "
 "running)"
@@ -1180,32 +1182,32 @@ msgstr ""
 "Ativar a verbose de depuração da saída (de uma instância atual, se já "
 "execução)"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:149
 msgid "Installs any pending updates in the background"
 msgstr "Instala quaisquer atualizações pendentes em segundo plano"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:151
 msgid "Show preferences"
 msgstr "Mostra preferências"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:153
 msgid "Quit the running instance"
 msgstr "Sai da instância atual"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:155
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferência a fontes locais de arquivos ao AppStream"
 
-#: src/gs-application.c:155
+#: src/gs-application.c:157
 msgid "Show version number"
 msgstr "Mostra o número da versão"
 
-#: src/gs-application.c:262
+#: src/gs-application.c:264
 #, c-format
 msgid "Copyright © 2016–%d GNOME Software contributors"
 msgstr "Copyright © 2016–%d contribuidores do Programas do GNOME"
 
-#: src/gs-application.c:276
+#: src/gs-application.c:278
 msgid "translator-credits"
 msgstr ""
 "Rafael Fontenelle <rafaelff@gnome.org>\n"
@@ -1219,7 +1221,7 @@ msgstr ""
 "Juliano de Souza Camargo <julianosc@pm.me>"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:515
+#: src/gs-application.c:517
 msgid "Sorry! There are no details for that application."
 msgstr "Sinto muito! Não há detalhes para esse aplicativo."
 
@@ -1608,24 +1610,24 @@ msgstr "Atualização crítica"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:401
+#: src/gs-app-row.c:402
 msgid "Device cannot be used during update."
 msgstr "O dispositivo não pode ser utilizado durante a atualização."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:411 src/gs-shell-search-provider.c:273
+#: src/gs-app-row.c:412 src/gs-shell-search-provider.c:273
 #, c-format
 msgid "Source: %s"
 msgstr "Fonte: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:598
+#: src/gs-app-row.c:599
 #, c-format
 msgid "Renamed from %s"
 msgstr "Renomeado de %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:635 src/gs-details-page.ui:535
+#: src/gs-app-row.c:636 src/gs-details-page.ui:535
 msgid "Stopped Receiving Updates"
 msgstr "Parou de receber atualizações"
 
@@ -1900,8 +1902,8 @@ msgstr[1] "Atualizações foram instaladas"
 #: src/gs-common.c:831
 msgid "An app has been uninstalled"
 msgid_plural "Apps have been uninstalled"
-msgstr[0] "Uma app foi desinstalada"
-msgstr[1] "Apps foram desinstaladas"
+msgstr[0] "Um aplicativo foi desinstalado"
+msgstr[1] "Aplicativos foram desinstalados"
 
 #. TRANSLATORS: the new apps will not be run until we restart
 #: src/gs-common.c:837
@@ -1983,32 +1985,32 @@ msgid "%s %s"
 msgstr "%s %s"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1496
+#: src/gs-common.c:1515
 #, c-format
 msgid "Use the %s System Service"
 msgstr "Usa o serviço de sistema %s"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1499
+#: src/gs-common.c:1518
 #, c-format
 msgid "Use the %s Session Service"
 msgstr "Usa o serviço de seção %s"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1502
+#: src/gs-common.c:1521
 #, c-format
 msgid "Use the %s Service"
 msgstr "Usa o serviço %s"
 
-#: src/gs-common.c:1523
+#: src/gs-common.c:1542
 msgid "Can see the non-portal service"
 msgstr "Pode ver o serviço sem portais"
 
-#: src/gs-common.c:1525
+#: src/gs-common.c:1544
 msgid "Can talk to the non-portal service"
 msgstr "Pode falar com serviço sem portais"
 
-#: src/gs-common.c:1527
+#: src/gs-common.c:1546
 msgid "Can own the non-portal service"
 msgstr "Pode ser proprietário do serviço sem portais"
 
@@ -2560,7 +2562,8 @@ msgstr "Você precisa de acesso à Internet para escrever uma avaliação"
 #: src/gs-details-page.c:1941
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
-"Este app não está mais recebendo atualizações, inclusive as de segurança"
+"Este aplicativo não está mais recebendo atualizações, inclusive as de "
+"segurança"
 
 #: src/gs-details-page.c:1942
 msgid ""
@@ -2626,7 +2629,7 @@ msgstr "Página de detalhes"
 
 #: src/gs-details-page.ui:22
 msgid "Loading App Details"
-msgstr "Carregando detalhes do app"
+msgstr "Carregando detalhes do aplicativo"
 
 #: src/gs-details-page.ui:146
 msgid "Verified"
@@ -2698,7 +2701,7 @@ msgstr "Use apenas repositórios de programas que você confia."
 
 #: src/gs-details-page.ui:794
 msgid "Clear app data"
-msgstr "Limpar dados do app"
+msgstr "Limpar dados do aplicativo"
 
 #: src/gs-details-page.ui:811
 msgid "D_elete Data"
@@ -2746,7 +2749,7 @@ msgstr "Todas as avaliações"
 
 #: src/gs-details-page.ui:1174
 msgid "Unable to Show App Details"
-msgstr "Não foi possível mostrar detalhes da app"
+msgstr "Não foi possível mostrar detalhes do aplicativo"
 
 #: src/gs-dkms-dialog.c:66
 msgid "Failed to prepare reboot"
@@ -2834,11 +2837,12 @@ msgstr ""
 
 #: src/gs-dkms-dialog.ui:244
 msgid ""
-"Further guidance can be found on the <a href=\"https://docs.fedoraproject."
-"org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
+"Further guidance can be found on the <a href=\"https://"
+"docs.fedoraproject.org/en-US/quick-docs/mok-enrollment/\">docs page</a>."
 msgstr ""
-"Mais orientação pode ser encontrada em <a href=\"https://docs.fedoraproject."
-"org/en-US/quick-docs/mok-enrollment/\">página de documentos</a>."
+"Mais orientação pode ser encontrada em <a href=\"https://"
+"docs.fedoraproject.org/en-US/quick-docs/mok-enrollment/\">página de "
+"documentos</a>."
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:293
@@ -3048,16 +3052,16 @@ msgstr[1] ""
 msgid "Failed to find any search results: %s"
 msgstr "Falha em localizar qualquer resultado de pesquisa: %s"
 
-#: src/gs-extras-page.c:957
+#: src/gs-extras-page.c:958
 #, c-format
 msgid "%s file format"
 msgstr "Formato de arquivo %s"
 
-#: src/gs-extras-page.c:1315
+#: src/gs-extras-page.c:1316
 msgid "Install _All"
 msgstr "Instalar _todos"
 
-#: src/gs-extras-page.c:1345
+#: src/gs-extras-page.c:1346
 msgid "Unable to Find Requested Software"
 msgstr "Não foi possível localizar o programa requisitado"
 
@@ -3710,13 +3714,13 @@ msgstr "Preparar %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:543
+#: src/gs-page.c:544
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Você tem certeza de que deseja remover o repositório %s?"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is a repository name.
-#: src/gs-page.c:547
+#: src/gs-page.c:548
 #, c-format
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
@@ -3737,8 +3741,8 @@ msgstr ""
 #. * name of a firmware
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:556 src/gs-page.c:567 src/gs-page.c:578 src/gs-page.c:589
-#: src/gs-page.c:600 src/gs-page.c:612
+#: src/gs-page.c:557 src/gs-page.c:568 src/gs-page.c:579 src/gs-page.c:590
+#: src/gs-page.c:601 src/gs-page.c:613
 #, c-format
 msgid "Uninstall %s?"
 msgstr "Desinstalar %s?"
@@ -3746,14 +3750,14 @@ msgstr "Desinstalar %s?"
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of an addon or an input method.
 #. Translators: the '%s' is replaced with the app name
-#: src/gs-page.c:560 src/gs-page.c:619
+#: src/gs-page.c:561 src/gs-page.c:620 src/gs-page.c:627
 #, c-format
 msgid "It will not be possible to use %s after removal."
 msgstr "Não será possível utilizar %s após sua remoção."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
-#: src/gs-page.c:571
+#: src/gs-page.c:572
 #, c-format
 msgid ""
 "It will not be possible to use any apps which depend on %s after removal."
@@ -3762,7 +3766,7 @@ msgstr ""
 "remoção."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
-#: src/gs-page.c:581
+#: src/gs-page.c:582
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use "
@@ -3772,7 +3776,7 @@ msgstr ""
 "documentos que a utilizem vão aparecer numa fonte diferente."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
-#: src/gs-page.c:592
+#: src/gs-page.c:593
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media "
@@ -3782,7 +3786,7 @@ msgstr ""
 "que alguns arquivos de mídia não serão mais reproduzíveis."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
-#: src/gs-page.c:603
+#: src/gs-page.c:604
 #, c-format
 msgid ""
 "Hardware which depends on %s may no longer function correctly after removal."
@@ -3792,15 +3796,15 @@ msgstr ""
 
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
-#: src/gs-page.c:627
+#: src/gs-page.c:632
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. App data and settings will "
 "be kept on disk, to allow restoring the app in the future."
 msgstr ""
-"Não será mais possível utilizar %s após a remoção. Dados do app e "
-"configurações serão mantidas em disco para possibilitar a restauração do app "
-"no futuro."
+"Não será mais possível utilizar %s após a remoção. Dados do aplicativo e "
+"configurações serão mantidas em disco para possibilitar a restauração do "
+"aplicativo no futuro."
 
 #: src/gs-prefs-dialog.ui:6
 msgid "Preferences"
@@ -3903,7 +3907,7 @@ msgstr "_Manter"
 
 #: src/gs-remove-app-dialog.ui:23
 msgid "Allows restoring app settings and content"
-msgstr "Permite restaurar configurações e conteúdos do app"
+msgstr "Permite restaurar configurações e conteúdos do aplicativo"
 
 #. Translators: this is part of section about deleting app's data
 #: src/gs-remove-app-dialog.ui:37
@@ -4487,8 +4491,8 @@ msgid ""
 "This app does not specify what license it is developed under, and may be "
 "proprietary"
 msgstr ""
-"Este app não especifica sob qual licença está sendo desenvolvido, e pode ser "
-"privativo"
+"Este aplicativo não especifica sob qual licença está sendo desenvolvido, e "
+"pode ser privativo"
 
 #: src/gs-safety-context-dialog.c:465
 msgid ""
@@ -4515,7 +4519,7 @@ msgstr ""
 #: src/gs-safety-context-dialog.c:487
 #, c-format
 msgid "This app is developed under the special license “%s”"
-msgstr "Este app é desenvolvido sob a licença especial “%s”"
+msgstr "Este aplicativo é desenvolvido sob a licença especial “%s”"
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-safety-context-dialog.c:490
@@ -4600,8 +4604,9 @@ msgid ""
 "This app uses an outdated version of the software platform (SDK) and might "
 "contain bugs or security vulnerabilities which will not be fixed."
 msgstr ""
-"Esta app usa uma versão desatualizada da plataforma de software (SDK) e pode "
-"conter erros ou vulnerabilidades de segurança que não foram consertadas."
+"Este aplicativo usa uma versão desatualizada da plataforma de software (SDK) "
+"e pode conter erros ou vulnerabilidades de segurança que não foram "
+"consertadas."
 
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:46
@@ -5545,24 +5550,24 @@ msgid "Review"
 msgstr "Verificar"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1459
+#: src/gs-update-monitor.c:1457
 msgid "Failed To Update"
 msgstr "Ocorreu falha ao atualizar"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1464
+#: src/gs-update-monitor.c:1462
 msgid "The system was already up to date."
 msgstr "O sistema já está atualizado."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1469
+#: src/gs-update-monitor.c:1467
 msgid "The update was cancelled."
 msgstr "A atualização foi cancelada."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1474
+#: src/gs-update-monitor.c:1472
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5571,7 +5576,7 @@ msgstr ""
 "certifique-se de que você possui acesso à internet e tente novamente."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1479
+#: src/gs-update-monitor.c:1477
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -5580,7 +5585,7 @@ msgstr ""
 "fornecedor de programa para mais detalhes."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1484
+#: src/gs-update-monitor.c:1482
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -5588,7 +5593,7 @@ msgstr ""
 "novamente."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1488
+#: src/gs-update-monitor.c:1486
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -5899,12 +5904,8 @@ msgstr "Adicione, remova ou atualize programas neste computador"
 
 #. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:11
-msgid ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;"
-msgstr ""
-"Atualizações;Upgrade;Atualização;Fontes;Repositórios;Preferências;Instalação;"
-"Instalar;Desinstalar;Programa;Software;Aplicativo;App;Loja;Store;"
+msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
+msgstr "Atualizações;Upgrade;Atualização;Fontes;Repositórios;Preferências;Instalação;Instalar;Desinstalar;Programa;Software;Aplicativo;App;Loja;Store;"
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the first part of a system notification.
@@ -6131,7 +6132,7 @@ msgstr "Instalação de sistema"
 
 #: plugins/flatpak/gs-flatpak-utils.c:273
 msgid "App ID"
-msgstr "ID do app"
+msgstr "ID do aplicativo"
 
 #: plugins/flatpak/gs-plugin-flatpak.c:1515
 #, c-format
