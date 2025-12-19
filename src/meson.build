@@ -113,24 +113,24 @@ if get_option('dkms')
   ]
 endif
 
+gnome_software_sources += [
+  'gs-dbus-helper.c',
+]
+gnome_software_sources += gnome.gdbus_codegen(
+  'gs-packagekit-generated',
+  'org.freedesktop.PackageKit.xml',
+  interface_prefix: 'org.freedesktop.',
+  namespace: 'Gs',
+  extra_args: [ '--glib-min-required=' + glib.version() ],
+)
+gnome_software_sources += gnome.gdbus_codegen(
+  'gs-packagekit-modify2-generated',
+  'org.freedesktop.PackageKit.Modify2.xml',
+  interface_prefix: 'org.freedesktop.',
+  namespace: 'Gs',
+  extra_args: [ '--glib-min-required=' + glib.version() ],
+)
 if get_option('packagekit')
-  gnome_software_sources += [
-    'gs-dbus-helper.c',
-  ]
-  gnome_software_sources += gnome.gdbus_codegen(
-    'gs-packagekit-generated',
-    'org.freedesktop.PackageKit.xml',
-    interface_prefix: 'org.freedesktop.',
-    namespace: 'Gs',
-    extra_args: [ '--glib-min-required=' + glib.version() ],
-  )
-  gnome_software_sources += gnome.gdbus_codegen(
-    'gs-packagekit-modify2-generated',
-    'org.freedesktop.PackageKit.Modify2.xml',
-    interface_prefix: 'org.freedesktop.',
-    namespace: 'Gs',
-    extra_args: [ '--glib-min-required=' + glib.version() ],
-  )
   gnome_software_dependencies += [packagekit]
 endif
 
@@ -310,15 +310,13 @@ if get_option('man')
   )
 endif
 
-if get_option('packagekit')
-  # replace @bindir@
-  configure_file(
-    input: 'org.freedesktop.PackageKit.service.in',
-    output: 'org.freedesktop.PackageKit.service',
-    install_dir: join_paths(get_option('datadir'), 'dbus-1', 'services'),
-    configuration: cdata
-  )
-endif
+# replace @bindir@
+configure_file(
+  input: 'org.freedesktop.PackageKit.service.in',
+  output: 'org.freedesktop.PackageKit.service',
+  install_dir: join_paths(get_option('datadir'), 'dbus-1', 'services'),
+  configuration: cdata
+)
 
 if get_option('tests')
   test_env = environment()

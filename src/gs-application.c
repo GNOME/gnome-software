@@ -17,9 +17,7 @@
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
 
-#ifdef HAVE_PACKAGEKIT
 #include "gs-dbus-helper.h"
-#endif
 
 #include "gs-build-ident.h"
 #include "gs-common.h"
@@ -40,9 +38,7 @@ struct _GsApplication {
 	GtkWindow	*main_window;
 	GsShell		*shell;
 	GsUpdateMonitor *update_monitor;
-#ifdef HAVE_PACKAGEKIT
 	GsDbusHelper	*dbus_helper;
-#endif
 	GsShellSearchProvider *search_provider;  /* (nullable) (owned) */
 	GSettings       *settings;
 	GSimpleActionGroup	*action_map;
@@ -1092,9 +1088,8 @@ gs_application_startup (GApplication *application)
 
 	gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
 
-#ifdef HAVE_PACKAGEKIT
 	app->dbus_helper = gs_dbus_helper_new (g_application_get_dbus_connection (application));
-#endif
+
 	settings = g_settings_new ("org.gnome.software");
 	app->settings = settings;
 	g_signal_connect_swapped (settings, "changed",
@@ -1238,9 +1233,7 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->search_provider);
 	g_clear_object (&app->plugin_loader);
 	g_clear_object (&app->update_monitor);
-#ifdef HAVE_PACKAGEKIT
 	g_clear_object (&app->dbus_helper);
-#endif
 	g_clear_object (&app->settings);
 	g_clear_object (&app->action_map);
 	g_clear_object (&app->debug);

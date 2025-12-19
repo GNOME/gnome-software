@@ -13,7 +13,9 @@
 #include <gio/gio.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#ifdef HAVE_PACKAGEKIT
 #include <packagekit-glib2/packagekit.h>
+#endif
 
 #include "gnome-software-private.h"
 
@@ -29,7 +31,9 @@ struct _GsDbusHelper {
 	GDBusInterfaceSkeleton	*query_interface;
 	GDBusInterfaceSkeleton	*modify_interface;
 	GDBusInterfaceSkeleton	*modify2_interface;
+#ifdef HAVE_PACKAGEKIT
 	PkTask			*task;
+#endif
 	guint			 dbus_own_name_id;
 
 	GDBusConnection		*bus_connection;  /* (owned) (not nullable) */
@@ -98,6 +102,7 @@ gs_dbus_helper_task_set_interaction (GsDbusHelperTask *dtask, const gchar *inter
 	}
 }
 
+#ifdef HAVE_PACKAGEKIT
 static void
 gs_dbus_helper_progress_cb (PkProgress *progress, PkProgressType type, gpointer data)
 {
@@ -197,6 +202,7 @@ gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointe
 	                                           info == PK_INFO_ENUM_INSTALLED,
 	                                           pk_package_get_name (item));
 }
+#endif /* HAVE_PACKAGEKIT */
 
 static gboolean
 handle_query_search_file (GsPackageKitQuery	 *skeleton,
@@ -205,6 +211,7 @@ handle_query_search_file (GsPackageKitQuery	 *skeleton,
                           const gchar		 *interaction,
                           gpointer		  user_data)
 {
+#ifdef HAVE_PACKAGEKIT
 	GsDbusHelper *dbus_helper = user_data;
 	GsDbusHelperTask *dtask;
 	g_auto(GStrv) names = NULL;
@@ -221,6 +228,13 @@ handle_query_search_file (GsPackageKitQuery	 *skeleton,
 	                              names, NULL,
 	                              gs_dbus_helper_progress_cb, dtask,
 	                              gs_dbus_helper_query_search_file_cb, dtask);
+#else
+	g_debug ("****** SearchFile, but without PackageKit");
+	g_dbus_method_invocation_return_error (invocation,
+					       G_IO_ERROR,
+					       G_IO_ERROR_NOT_SUPPORTED,
+					       "cannot search for files, not built with PackageKit");
+#endif
 
 	return TRUE;
 }
@@ -232,6 +246,7 @@ handle_query_is_installed (GsPackageKitQuery	 *skeleton,
                            const gchar		 *interaction,
                            gpointer		  user_data)
 {
+#ifdef HAVE_PACKAGEKIT
 	GsDbusHelper *dbus_helper = user_data;
 	GsDbusHelperTask *dtask;
 	g_auto(GStrv) names = NULL;
@@ -248,7 +263,13 @@ handle_query_is_installed (GsPackageKitQuery	 *skeleton,
 	                         names, NULL,
 	                         gs_dbus_helper_progress_cb, dtask,
 	                         gs_dbus_helper_query_is_installed_cb, dtask);
-
+#else /* HAVE_PACKAGEKIT */
+	g_debug ("****** IsInstalled, but without PackageKit");
+	g_dbus_method_invocation_return_error (invocation,
+					       G_IO_ERROR,
+					       G_IO_ERROR_NOT_SUPPORTED,
+					       "cannot query whether installed, not built with PackageKit");
+#endif
 	return TRUE;
 }
 
@@ -831,7 +852,9 @@ export_objects (GsDbusHelper *dbus_helper)
 static void
 gs_dbus_helper_init (GsDbusHelper *dbus_helper)
 {
+#ifdef HAVE_PACKAGEKIT
 	dbus_helper->task = pk_task_new ();
+#endif
 }
 
 static void
@@ -916,7 +939,9 @@ gs_dbus_helper_dispose (GObject *object)
 		g_clear_object (&dbus_helper->modify2_interface);
 	}
 
+#ifdef HAVE_PACKAGEKIT
 	g_clear_object (&dbus_helper->task);
+#endif
 	g_clear_object (&dbus_helper->bus_connection);
 
 	G_OBJECT_CLASS (gs_dbus_helper_parent_class)->dispose (object);
