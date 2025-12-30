@@ -215,7 +215,7 @@ if get_option('flatpak')
   flatpak = dependency('flatpak', version : '>= 1.14.1')
   ostree = dependency('ostree-1')
 
-  flatpak_httpbackend = flatpak.get_variable('httpbackend')
+  flatpak_httpbackend = flatpak.get_variable('httpbackend', default_value: 'unspecified')
   if flatpak_httpbackend == 'soup'
     flatpak_soupapiversion = flatpak.get_variable('soupapiversion', default_value: '2')
     if flatpak_soupapiversion.version_compare('< 3')
