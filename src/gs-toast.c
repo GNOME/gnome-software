@@ -81,8 +81,8 @@ gs_toast_setup (AdwToast *self)
  * gs_toast_new:
  * @title: a toast title
  * @button: what button to show, if any
- * @details_message: (optional): details message to use, or %NULL
- * @details_text: (optional): details text to use, or %NULL
+ * @details_message: (nullable): details message to use, or %NULL
+ * @details_text: (nullable): details text to use, or %NULL
  *
  * Creates a new #AdwToast with set properties from the argument.
  * The @details_message is ignored when @details_text is %NULL.

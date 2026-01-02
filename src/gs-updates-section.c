@@ -434,7 +434,7 @@ _download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 
 static void
 gs_updates_section_run_download (GsUpdatesSection *self,
-				 GsApp *only_app) /* (optional) */
+				 GsApp *only_app) /* (nullable) */
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
