@@ -443,15 +443,21 @@ repos_dialog_compare_sections_cb (gconstpointer aa,
 }
 
 static void
-refine_sources_related_finish (GsReposDialog *dialog)
+refine_sources_related_finish (GsReposDialog *dialog,
+                               const GError  *error)
 {
 	GHashTableIter iter;
 	gpointer value;
 
+	/* Bail out early if cancelled, as that only happens during dispose(),
+	 * so we don’t want to deref anything in `dialog`. */
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		return;
+
 	g_hash_table_iter_init (&iter, dialog->sections);
 	while (g_hash_table_iter_next (&iter, NULL, &value)) {
 		if (GS_IS_REPOS_SECTION (value))
-			gs_repos_section_set_related_loaded (GS_REPOS_SECTION (value), TRUE);
+			gs_repos_section_set_related_loaded (GS_REPOS_SECTION (value), (error == NULL));
 	}
 }
 
@@ -468,13 +474,12 @@ refine_sources_related_cb (GObject *source_object,
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("refine sources' related cancelled");
-			return;
 		} else {
 			g_warning ("failed to refine sources' related: %s", error->message);
 		}
 	}
 
-	refine_sources_related_finish (dialog);
+	refine_sources_related_finish (dialog, error);
 }
 
 static void
@@ -495,8 +500,9 @@ refine_sources_cb (GObject *source_object,
 			g_debug ("refine sources cancelled");
 		} else {
 			g_warning ("failed to refine sources: %s", error->message);
-			refine_sources_related_finish (dialog);
 		}
+
+		refine_sources_related_finish (dialog, error);
 		return;
 	}
 
@@ -524,7 +530,7 @@ refine_sources_cb (GObject *source_object,
 						    refine_sources_related_cb,
 						    dialog);
 	} else {
-		refine_sources_related_finish (dialog);
+		refine_sources_related_finish (dialog, NULL);
 	}
 }
 
