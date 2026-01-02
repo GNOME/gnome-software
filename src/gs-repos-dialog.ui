@@ -18,41 +18,45 @@
           </object>
         </child>
         <property name="content">
-          <object class="GtkStack" id="stack">
-            <property name="vexpand">True</property>
+          <object class="AdwToastOverlay" id="toast_overlay">
+            <property name="child">
+              <object class="GtkStack" id="stack">
+                <property name="vexpand">True</property>
 
-            <child>
-              <object class="GtkStackPage">
-                <property name="name">waiting</property>
-                <property name="child">
-                  <object class="AdwSpinner" id="spinner"/>
-                </property>
-              </object>
-            </child>
-
-            <child>
-              <object class="GtkStackPage">
-                <property name="name">empty</property>
-                <property name="child">
-                  <object class="AdwStatusPage" id="status_empty">
-                    <property name="icon_name">org.gnome.Software-symbolic</property>
-                    <property name="title" translatable="yes">No Repositories</property>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">waiting</property>
+                    <property name="child">
+                      <object class="AdwSpinner" id="spinner"/>
+                    </property>
                   </object>
-                </property>
-              </object>
-            </child>
+                </child>
 
-
-            <child>
-              <object class="GtkStackPage">
-                <property name="name">sources</property>
-                <property name="child">
-                  <object class="AdwPreferencesPage" id="content_page">
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">empty</property>
+                    <property name="child">
+                      <object class="AdwStatusPage" id="status_empty">
+                        <property name="icon_name">org.gnome.Software-symbolic</property>
+                        <property name="title" translatable="yes">No Repositories</property>
+                      </object>
+                    </property>
                   </object>
-                </property>
-              </object>
-            </child>
+                </child>
 
+
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">sources</property>
+                    <property name="child">
+                      <object class="AdwPreferencesPage" id="content_page">
+                      </object>
+                    </property>
+                  </object>
+                </child>
+
+              </object>
+            </property>
           </object>
         </property>
       </object>
