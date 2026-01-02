@@ -52,7 +52,7 @@ gs_toast_setup (AdwToast *self)
 	if (button != GS_TOAST_BUTTON_NONE &&
 	    button != GS_TOAST_BUTTON_DETAILS_URI &&
 	    details_text != NULL)
-		g_warning ("GsToast has set both button and details text, the Details button is being used");
+		g_critical ("GsToast: Do not set both button and details text");
 
 	if (details_text != NULL) {
 		adw_toast_set_button_label (self, _("_Details"));
