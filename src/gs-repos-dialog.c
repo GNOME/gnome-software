@@ -329,6 +329,8 @@ fedora_third_party_switch_done_cb (GObject *source_object,
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
 		g_warning ("Failed to switch 'fedora-third-party' config: %s", error->message);
+
+		return;
 	}
 
 	/* Reload the state, because the user could dismiss the authentication prompt
