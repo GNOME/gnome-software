@@ -1167,3 +1167,125 @@ gs_plugin_url_to_app_data_free (GsPluginUrlToAppData *data)
 	g_free (data->url);
 	g_free (data);
 }
+
+/**
+ * gs_plugin_get_offline_update_state_data_new:
+ * @flags: operation flags
+ *
+ * Common context data for a call to #GsPluginClass.get_offline_update_state_async.
+ *
+ * Returns: (transfer full): context data structure
+ * Since: 50
+ */
+GsPluginGetOfflineUpdateStateData *
+gs_plugin_get_offline_update_state_data_new (GsPluginGetOfflineUpdateStateFlags flags)
+{
+	g_autoptr(GsPluginGetOfflineUpdateStateData) data = g_new0 (GsPluginGetOfflineUpdateStateData, 1);
+	data->flags = flags;
+
+	return g_steal_pointer (&data);
+}
+
+/**
+ * gs_plugin_get_offline_update_state_data_new_task:
+ * @source_object: task source object
+ * @flags: operation flags
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: function to call once asynchronous operation is finished
+ * @user_data: data to pass to @callback
+ *
+ * Create a #GTask for an get-offline-update-state operation with the given arguments. The task
+ * data will be set to a #GsPluginGetOfflineUpdateStateData containing the given context.
+ *
+ * This is essentially a combination of gs_plugin_get_offline_update_state_data_new(),
+ * g_task_new() and g_task_set_task_data().
+ *
+ * Returns: (transfer full): new #GTask with the given context data
+ * Since: 50
+ */
+GTask *
+gs_plugin_get_offline_update_state_data_new_task (gpointer                           source_object,
+                                                  GsPluginGetOfflineUpdateStateFlags flags,
+                                                  GCancellable                      *cancellable,
+                                                  GAsyncReadyCallback                callback,
+                                                  gpointer                           user_data)
+{
+	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
+	g_task_set_task_data (task, gs_plugin_get_offline_update_state_data_new (flags), (GDestroyNotify) gs_plugin_get_offline_update_state_data_free);
+	return g_steal_pointer (&task);
+}
+
+/**
+ * gs_plugin_get_offline_update_state_data_free:
+ * @data: (transfer full): a #GsPluginGetOfflineUpdateStateData
+ *
+ * Free the given @data.
+ *
+ * Since: 50
+ */
+void
+gs_plugin_get_offline_update_state_data_free (GsPluginGetOfflineUpdateStateData *data)
+{
+	g_free (data);
+}
+
+/**
+ * gs_plugin_set_offline_update_action_data_new:
+ * @flags: operation flags
+ *
+ * Common context data for a call to #GsPluginClass.set_offline_update_action_async.
+ *
+ * Returns: (transfer full): context data structure
+ * Since: 50
+ */
+GsPluginSetOfflineUpdateActionData *
+gs_plugin_set_offline_update_action_data_new (GsPluginSetOfflineUpdateActionFlags flags)
+{
+	g_autoptr(GsPluginSetOfflineUpdateActionData) data = g_new0 (GsPluginSetOfflineUpdateActionData, 1);
+	data->flags = flags;
+
+	return g_steal_pointer (&data);
+}
+
+/**
+ * gs_plugin_set_offline_update_action_data_new_task:
+ * @source_object: task source object
+ * @flags: operation flags
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: function to call once asynchronous operation is finished
+ * @user_data: data to pass to @callback
+ *
+ * Create a #GTask for an set-offline-update-action operation with the given arguments. The task
+ * data will be set to a #GsPluginSetOfflineUpdateActionData containing the given context.
+ *
+ * This is essentially a combination of gs_plugin_set_offline_update_action_data_new(),
+ * g_task_new() and g_task_set_task_data().
+ *
+ * Returns: (transfer full): new #GTask with the given context data
+ * Since: 50
+ */
+GTask *
+gs_plugin_set_offline_update_action_data_new_task (gpointer                            source_object,
+                                                   GsPluginSetOfflineUpdateActionFlags flags,
+                                                   GCancellable                       *cancellable,
+                                                   GAsyncReadyCallback                 callback,
+                                                   gpointer                            user_data)
+{
+	g_autoptr(GTask) task = g_task_new (source_object, cancellable, callback, user_data);
+	g_task_set_task_data (task, gs_plugin_set_offline_update_action_data_new (flags), (GDestroyNotify) gs_plugin_set_offline_update_action_data_free);
+	return g_steal_pointer (&task);
+}
+
+/**
+ * gs_plugin_set_offline_update_action_data_free:
+ * @data: (transfer full): a #GsPluginSetOfflineUpdateActionData
+ *
+ * Free the given @data.
+ *
+ * Since: 50
+ */
+void
+gs_plugin_set_offline_update_action_data_free (GsPluginSetOfflineUpdateActionData *data)
+{
+	g_free (data);
+}

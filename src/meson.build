@@ -77,6 +77,7 @@ gnome_software_sources = [
   'gs-search-page.c',
   'gs-shell.c',
   'gs-shell-search-provider.c',
+  'gs-software-offline-updates-provider.c',
   'gs-star-image.c',
   'gs-star-widget.c',
   'gs-storage-context-dialog.c',
@@ -137,6 +138,14 @@ endif
 if get_option('mogwai')
   gnome_software_dependencies += [mogwai_schedule_client]
 endif
+
+gnome_software_sources += gnome.gdbus_codegen(
+  'gs-software-offline-updates-generated',
+  'org.gnome.Software.OfflineUpdates.xml',
+  interface_prefix : 'org.gnome',
+  namespace : 'Gs',
+  extra_args : [ '--glib-min-required=' + glib.version() ],
+)
 
 executable(
   'gnome-software',
