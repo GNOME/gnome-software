@@ -19,6 +19,8 @@ RUN dnf -y install \
     gi-docgen \
     git \
     glib2-devel \
+    glibc-langpack-cs \
+    glibc-langpack-en \
     glibc-locale-source \
     gnome-desktop4 \
     gobject-introspection \
