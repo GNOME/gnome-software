@@ -549,6 +549,23 @@ gs_plugin_job_url_to_app_new (const gchar                *url,
 }
 
 /**
+ * gs_plugin_job_url_to_app_get_url:
+ * @self: a #GsPluginJobUrlToApp
+ *
+ * Get the URL from #GsPluginJobUrlToApp:url.
+ *
+ * Returns: (not nullable): the URL the job is running on
+ * Since: 50
+ */
+const char *
+gs_plugin_job_url_to_app_get_url (GsPluginJobUrlToApp *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB_URL_TO_APP (self), NULL);
+
+	return self->url;
+}
+
+/**
  * gs_plugin_job_url_to_app_get_result_list:
  * @self: a #GsPluginJobUrlToApp
  *

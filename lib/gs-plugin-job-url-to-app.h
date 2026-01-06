@@ -23,6 +23,8 @@ G_DECLARE_FINAL_TYPE (GsPluginJobUrlToApp, gs_plugin_job_url_to_app, GS, PLUGIN_
 GsPluginJob	*gs_plugin_job_url_to_app_new	(const gchar		*url,
 						 GsPluginUrlToAppFlags	 flags,
 						 GsPluginRefineRequireFlags require_flags);
+const char	*gs_plugin_job_url_to_app_get_url
+						(GsPluginJobUrlToApp	 *self);
 GsAppList	*gs_plugin_job_url_to_app_get_result_list
 						(GsPluginJobUrlToApp	 *self);
 
