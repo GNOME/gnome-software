@@ -1568,7 +1568,7 @@ gs_plugin_rpm_ostree_build_version_refspec (GsPluginRpmOstree *self,
 	g_autoptr(GVariant) booted_deployment = gs_rpmostree_os_dup_booted_deployment (os_proxy);
 	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autoptr(GError) local_error = NULL;
-	g_auto(GVariantDict) booted_deployment_dict = { 0, };
+	g_auto(GVariantDict) booted_deployment_dict = G_VARIANT_DICT_INIT (NULL);
 	g_auto(GStrv) split_origin = NULL;
 	const gchar *origin = NULL;
 	const gchar *current_version = NULL;
@@ -3102,7 +3102,7 @@ list_apps_for_update_sync (GsPluginRpmOstree *self,
 	g_autoptr(GError) local_error = NULL;
 	const gchar *checksum = NULL;
 	const gchar *version = NULL;
-	g_auto(GVariantDict) cached_update_dict;
+	g_auto(GVariantDict) cached_update_dict = G_VARIANT_DICT_INIT (NULL);
 
 	/* ensure D-Bus properties are updated before reading them */
 	if (!gs_rpmostree_sysroot_call_reload_sync (sysroot_proxy,
@@ -3178,8 +3178,7 @@ list_apps_for_update_sync (GsPluginRpmOstree *self,
 		g_autoptr(GVariant) downgraded = NULL;
 		g_autoptr(GVariant) removed = NULL;
 		g_autoptr(GVariant) added = NULL;
-		g_auto(GVariantDict) rpm_diff_dict;
-		g_variant_dict_init (&rpm_diff_dict, rpm_diff);
+		g_auto(GVariantDict) rpm_diff_dict = G_VARIANT_DICT_INIT (rpm_diff);
 
 		upgraded = g_variant_dict_lookup_value (&rpm_diff_dict, "upgraded", G_VARIANT_TYPE ("a(us(ss)(ss))"));
 		if (upgraded == NULL) {
