@@ -849,7 +849,7 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
 }
 
-GtkWidget *
+GsReposDialog *
 gs_repos_dialog_new (GsPluginLoader *plugin_loader)
 {
 	GsReposDialog *dialog;
@@ -861,5 +861,5 @@ gs_repos_dialog_new (GsPluginLoader *plugin_loader)
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");
 	reload_third_party_repos (dialog);
 
-	return GTK_WIDGET (dialog);
+	return dialog;
 }

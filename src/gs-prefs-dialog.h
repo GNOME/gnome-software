@@ -19,6 +19,6 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsPrefsDialog, gs_prefs_dialog, GS, PREFS_DIALOG, AdwPreferencesDialog)
 
-GtkWidget	*gs_prefs_dialog_new		(GsPluginLoader	*plugin_loader);
+GsPrefsDialog *gs_prefs_dialog_new (GsPluginLoader *plugin_loader);
 
 G_END_DECLS

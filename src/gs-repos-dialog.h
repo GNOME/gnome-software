@@ -20,6 +20,6 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsReposDialog, gs_repos_dialog, GS, REPOS_DIALOG, AdwDialog)
 
-GtkWidget	*gs_repos_dialog_new		(GsPluginLoader	*plugin_loader);
+GsReposDialog *gs_repos_dialog_new (GsPluginLoader *plugin_loader);
 
 G_END_DECLS

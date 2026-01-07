@@ -15,7 +15,7 @@
  * @stability: Stable
  * @short_description: A small page showing an app's details
  *
- * This is a page from #GsUpdateDialog.
+ * This is a page from #GsInstalledUpdatesDialog.
  */
 
 #include "config.h"

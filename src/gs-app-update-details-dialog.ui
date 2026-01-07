@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adwaita" version="1.0"/>
+  <template class="GsAppUpdateDetailsDialog" parent="AdwDialog">
+    <property name="content-width">640</property>
+    <property name="content-height">576</property>
+
+    <child>
+      <object class="AdwNavigationView" id="navigation_view">
+        <!-- Contents are set in code -->
+        <placeholder/>
+      </object>
+    </child>
+  </template>
+</interface>

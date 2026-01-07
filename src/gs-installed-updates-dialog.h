@@ -16,12 +16,10 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_UPDATE_DIALOG (gs_update_dialog_get_type ())
+#define GS_TYPE_INSTALLED_UPDATES_DIALOG (gs_installed_updates_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsUpdateDialog, gs_update_dialog, GS, UPDATE_DIALOG, AdwDialog)
+G_DECLARE_FINAL_TYPE (GsInstalledUpdatesDialog, gs_installed_updates_dialog, GS, INSTALLED_UPDATES_DIALOG, AdwDialog)
 
-GtkWidget	*gs_update_dialog_new				(GsPluginLoader		*plugin_loader);
-GtkWidget	*gs_update_dialog_new_for_app			(GsPluginLoader		*plugin_loader,
-								 GsApp			*app);
+GsInstalledUpdatesDialog *gs_installed_updates_dialog_new (GsPluginLoader *plugin_loader);
 
 G_END_DECLS

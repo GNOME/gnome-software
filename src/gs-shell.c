@@ -24,6 +24,7 @@
 #include "gs-basic-auth-dialog.h"
 #include "gs-details-page.h"
 #include "gs-installed-page.h"
+#include "gs-installed-updates-dialog.h"
 #include "gs-loading-page.h"
 #include "gs-search-page.h"
 #include "gs-overview-page.h"
@@ -34,7 +35,6 @@
 #include "gs-repos-dialog.h"
 #include "gs-prefs-dialog.h"
 #include "gs-toast.h"
-#include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
 
@@ -116,6 +116,10 @@ struct _GsShell
 
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 	gulong			 overview_page_refreshed_id;
+
+	GsInstalledUpdatesDialog *installed_updates_dialog;  /* (nullable) (not owned) */
+	GsReposDialog		*repos_dialog;  /* (nullable) (not owned) */
+	GsPrefsDialog		*prefs_dialog;  /* (nullable) (not owned) */
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, ADW_TYPE_APPLICATION_WINDOW)
@@ -2303,32 +2307,46 @@ gs_shell_uninstall (GsShell *shell, GsApp *app)
 	gs_page_remove_app (shell->pages[GS_SHELL_MODE_DETAILS], app, shell->cancellable);
 }
 
+static void
+dialog_closed_cb (AdwDialog *dialog,
+                  void      *user_data)
+{
+	AdwDialog **dialog_weak_ptr = user_data;
+
+	*dialog_weak_ptr = NULL;
+}
+
 void
 gs_shell_show_installed_updates (GsShell *shell)
 {
-	GtkWidget *dialog;
+	if (shell->installed_updates_dialog == NULL) {
+		shell->installed_updates_dialog = gs_installed_updates_dialog_new (shell->plugin_loader);
+		g_signal_connect (shell->installed_updates_dialog, "closed", G_CALLBACK (dialog_closed_cb), &shell->installed_updates_dialog);
+	}
 
-	dialog = gs_update_dialog_new (shell->plugin_loader);
-
-	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (shell));
+	adw_dialog_present (ADW_DIALOG (shell->installed_updates_dialog), GTK_WIDGET (shell));
 }
 
 void
 gs_shell_show_repositories (GsShell *shell)
 {
-	GtkWidget *dialog;
+	if (shell->repos_dialog == NULL) {
+		shell->repos_dialog = gs_repos_dialog_new (shell->plugin_loader);
+		g_signal_connect (shell->repos_dialog, "closed", G_CALLBACK (dialog_closed_cb), &shell->repos_dialog);
+	}
 
-	dialog = gs_repos_dialog_new (shell->plugin_loader);
-	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (shell));
+	adw_dialog_present (ADW_DIALOG (shell->repos_dialog), GTK_WIDGET (shell));
 }
 
 void
 gs_shell_show_prefs (GsShell *shell)
 {
-	GtkWidget *dialog;
+	if (shell->prefs_dialog == NULL) {
+		shell->prefs_dialog = gs_prefs_dialog_new (shell->plugin_loader);
+		g_signal_connect (shell->prefs_dialog, "closed", G_CALLBACK (dialog_closed_cb), &shell->prefs_dialog);
+	}
 
-	dialog = gs_prefs_dialog_new (shell->plugin_loader);
-	adw_dialog_present (ADW_DIALOG (dialog), GTK_WIDGET (shell));
+	adw_dialog_present (ADW_DIALOG (shell->prefs_dialog), GTK_WIDGET (shell));
 }
 
 void
@@ -2477,6 +2495,13 @@ static void
 gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
+
+	if (shell->installed_updates_dialog != NULL)
+		adw_dialog_force_close (ADW_DIALOG (shell->installed_updates_dialog));
+	if (shell->repos_dialog != NULL)
+		adw_dialog_force_close (ADW_DIALOG (shell->repos_dialog));
+	if (shell->prefs_dialog != NULL)
+		adw_dialog_force_close (ADW_DIALOG (shell->prefs_dialog));
 
 	g_clear_signal_handler (&shell->overview_page_refreshed_id, shell->pages[GS_SHELL_MODE_OVERVIEW]);
 

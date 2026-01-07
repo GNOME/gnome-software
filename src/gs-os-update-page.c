@@ -15,7 +15,7 @@
  * @stability: Stable
  * @short_description: A small page showing OS updates
  *
- * This is a page from #GsUpdateDialog.
+ * This is a page from #GsInstalledUpdatesDialog.
  */
 
 #include "config.h"
@@ -434,8 +434,8 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 	 * @app: a #GsApp
 	 *
 	 * Emitted when an app listed in this page got activated and the
-	 * #GsUpdateDialog containing this page is expected to present its
-	 * details via a #GsAppDetailsPage.
+	 * #GsInstalledUpdatesDialog containing this page is expected to present
+	 * its details via a #GsAppDetailsPage.
 	 *
 	 * Since: 41
 	 */
