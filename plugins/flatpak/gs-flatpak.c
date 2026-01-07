@@ -3745,167 +3745,158 @@ gs_flatpak_refine_app (GsFlatpak *self,
 }
 
 gboolean
-gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
-			    GsAppList *list, GsPluginRefineRequireFlags require_flags,
-			    gboolean interactive,
-			    XbSilo **inout_silo,
-			    gchar **inout_silo_filename,
-			    GHashTable **inout_installed_by_desktopid,
-			    GHashTable **inout_components_by_id,
-			    GHashTable **inout_components_by_bundle,
-			    GCancellable *cancellable, GError **error)
+gs_flatpak_refine_wildcards (GsFlatpak *self,
+			     GPtrArray *wildcard_apps,
+			     GsAppList *list,
+			     GsPluginRefineRequireFlags require_flags,
+			     gboolean interactive,
+			     GCancellable *cancellable,
+			     GError **error)
 {
-	const gchar *id;
-	GPtrArray* components = NULL;
-	XbSilo *silo;
-	GHashTable *silo_installed_by_desktopid;
-	const gchar *silo_filename;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
+	g_autoptr(GHashTable) components_by_id = NULL;
+	g_autoptr(GHashTable) components_by_bundle = NULL;
+	g_autoptr(GPtrArray) components_with_id = NULL;
+	g_autoptr(GPtrArray) bundles = NULL;
+	g_autofree gchar *silo_filename = NULL;
 
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcard, "Flatpak (refine wildcard)", NULL);
 
-	/* not enough info to find */
-	id = gs_app_get_id (app);
-	if (id == NULL)
-		return TRUE;
-
-	if (*inout_silo == NULL)
-		*inout_silo = gs_flatpak_ref_silo (self, interactive, inout_silo_filename, inout_installed_by_desktopid, cancellable, error);
-	if (*inout_silo == NULL)
+	silo = gs_flatpak_ref_silo (self, interactive, &silo_filename, &silo_installed_by_desktopid, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
-
-	silo = *inout_silo;
-	silo_filename = *inout_silo_filename;
-	silo_installed_by_desktopid = *inout_installed_by_desktopid;
 
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardQuerySilo, "Flatpak (query silo)", NULL);
 
-	if (*inout_components_by_id != NULL) {
-		components = g_hash_table_lookup (*inout_components_by_id, gs_app_get_id (app));
-	} else {
-		g_autoptr(GPtrArray) components_with_id = NULL;
-		*inout_components_by_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
-		components_with_id = xb_silo_query (silo, "components/component/id", 0, &error_local);
-		if (components_with_id == NULL) {
-			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-				return TRUE;
-			g_propagate_error (error, g_steal_pointer (&error_local));
-			return FALSE;
+	components_by_id = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
+	components_with_id = xb_silo_query (silo, "components/component/id", 0, &error_local);
+	if (components_with_id == NULL) {
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
+	}
+
+	for (guint i = 0; i < components_with_id->len; i++) {
+		XbNode *node = g_ptr_array_index (components_with_id, i);
+		XbNode *comp_node = xb_node_get_parent (node);
+		const gchar *comp_id = xb_node_get_text (node);
+		GPtrArray *comps = g_hash_table_lookup (components_by_id, comp_id);
+		if (comps == NULL) {
+			comps = g_ptr_array_new_with_free_func (g_object_unref);
+			g_hash_table_insert (components_by_id, g_strdup (comp_id), comps);
 		}
-		for (guint i = 0; i < components_with_id->len; i++) {
-			XbNode *node = g_ptr_array_index (components_with_id, i);
-			XbNode *comp_node = xb_node_get_parent (node);
-			const gchar *comp_id = xb_node_get_text (node);
-			GPtrArray *comps = g_hash_table_lookup (*inout_components_by_id, comp_id);
-			if (comps == NULL) {
-				comps = g_ptr_array_new_with_free_func (g_object_unref);
-				g_hash_table_insert (*inout_components_by_id, g_strdup (comp_id), comps);
+		g_ptr_array_add (comps, comp_node);
+	}
+
+	components_by_bundle = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
+	bundles = xb_silo_query (silo, "/components/component/bundle[@type='flatpak']", 0, NULL);
+	for (guint b = 0; bundles != NULL && b < bundles->len; b++) {
+		XbNode *bundle_node = g_ptr_array_index (bundles, b);
+		g_autoptr(XbNode) component_node = xb_node_get_parent (bundle_node);
+		g_autoptr(XbNode) components_node = xb_node_get_parent (component_node);
+		const gchar *origin = xb_node_get_attr (components_node, "origin");
+		if (origin != NULL) {
+			const gchar *bundle = xb_node_get_text (bundle_node);
+			if (bundle != NULL) {
+				g_autofree gchar *key = g_strconcat (origin, "\n", bundle, NULL);
+				g_hash_table_insert (components_by_bundle, g_steal_pointer (&key), g_steal_pointer (&component_node));
 			}
-			g_ptr_array_add (comps, comp_node);
-			if (components == NULL && g_strcmp0 (id, comp_id) == 0)
-				components = comps;
 		}
 	}
 
 	GS_PROFILER_END_SCOPED (FlatpakRefineWildcardQuerySilo);
 
-	if (components == NULL)
-		return TRUE;
-
 	gs_flatpak_ensure_remote_title (self, interactive, cancellable);
 
-	if (*inout_components_by_bundle == NULL) {
-		g_autoptr(GPtrArray) bundles = NULL;
+	for (guint j = 0; j < wildcard_apps->len; j++) {
+		GsApp *app = g_ptr_array_index (wildcard_apps, j);
+		GPtrArray *components = NULL;
+		const gchar *id;
 
-		*inout_components_by_bundle = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
-		bundles = xb_silo_query (silo, "/components/component/bundle[@type='flatpak']", 0, NULL);
-		for (guint b = 0; bundles != NULL && b < bundles->len; b++) {
-			XbNode *bundle_node = g_ptr_array_index (bundles, b);
-			g_autoptr(XbNode) component_node = xb_node_get_parent (bundle_node);
-			g_autoptr(XbNode) components_node = xb_node_get_parent (component_node);
-			const gchar *origin = xb_node_get_attr (components_node, "origin");
-			if (origin != NULL) {
-				const gchar *bundle = xb_node_get_text (bundle_node);
-				if (bundle != NULL) {
-					g_autofree gchar *key = g_strconcat (origin, "\n", bundle, NULL);
-					g_hash_table_insert (*inout_components_by_bundle, g_steal_pointer (&key), g_steal_pointer (&component_node));
-				}
-			}
-		}
-	}
+		/* not enough info to find */
+		id = gs_app_get_id (app);
+		if (id == NULL)
+			continue;
 
+		components = g_hash_table_lookup (components_by_id, id);
+		if (components == NULL)
+			continue;
 
-	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardGenerateApps, "Flatpak (create app)", NULL);
-	for (guint i = 0; i < components->len; i++) {
-		XbNode *component = g_ptr_array_index (components, i);
-		g_autoptr(GsApp) new = NULL;
+		GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardGenerateApps, "Flatpak (create app)", NULL);
+		for (guint i = 0; i < components->len; i++) {
+			XbNode *component = g_ptr_array_index (components, i);
+			g_autoptr(GsApp) new = NULL;
 
-		GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardCreateAppstreamApp, "Flatpak (create Appstream app)", NULL);
-		new = gs_appstream_create_app (self->plugin, silo, component, silo_filename ? silo_filename : "",
-					       self->scope, error);
-		GS_PROFILER_END_SCOPED (FlatpakRefineWildcardCreateAppstreamApp);
+			GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardCreateAppstreamApp, "Flatpak (create Appstream app)", NULL);
+			new = gs_appstream_create_app (self->plugin, silo, component, silo_filename ? silo_filename : "",
+						       self->scope, error);
+			GS_PROFILER_END_SCOPED (FlatpakRefineWildcardCreateAppstreamApp);
 
-		if (new == NULL)
-			return FALSE;
-
-		gs_flatpak_claim_app (self, new);
-
-		/* The appstream plugin did not find the component in the plugin's cache,
-		   thus read the required info from the 'bundle' element. */
-		if (gs_flatpak_app_get_ref_name (new) == NULL ||
-		    gs_flatpak_app_get_ref_arch (new) == NULL) {
-			const gchar *xref_str = NULL;
-			g_autoptr(XbNode) child = NULL;
-			g_autoptr(XbNode) next = NULL;
-			for (child = xb_node_get_child (component); child != NULL && xref_str == NULL;
-			     g_object_unref (child), child = g_steal_pointer (&next)) {
-				next = xb_node_get_next (child);
-				if (g_strcmp0 (xb_node_get_element (child), "bundle") == 0 &&
-				    g_strcmp0 (xb_node_get_attr (child, "type"), "flatpak") == 0) {
-					xref_str = xb_node_get_text (child);
-					break;
-				}
-			}
-			if (xref_str != NULL) {
-				g_auto(GStrv) split = NULL;
-
-				/* get the kind/name/arch/branch */
-				split = g_strsplit (xref_str, "/", -1);
-				if (g_strv_length (split) == 4) {
-					const gchar *comp_type = xb_node_get_attr (component, "type");
-					AsComponentKind kind = as_component_kind_from_string (comp_type);
-					if (kind != AS_COMPONENT_KIND_UNKNOWN)
-						gs_app_set_kind (new, kind);
-					else if (g_ascii_strcasecmp (split[0], "app") == 0)
-						gs_app_set_kind (new, AS_COMPONENT_KIND_DESKTOP_APP);
-					else if (g_ascii_strcasecmp (split[0], "runtime") == 0)
-						gs_flatpak_set_runtime_kind_from_id (new);
-					gs_flatpak_app_set_ref_name (new, split[1]);
-					gs_flatpak_app_set_ref_arch (new, split[2]);
-					gs_app_set_branch (new, split[3]);
-					gs_app_set_metadata (new, "GnomeSoftware::packagename-value", xref_str);
-				}
-			}
-		}
-
-		if (gs_flatpak_app_get_ref_name (new) == NULL ||
-		    gs_flatpak_app_get_ref_arch (new) == NULL) {
-			g_debug ("Failed to get ref info for '%s' from wildcard '%s', skipping it...", gs_app_get_id (new), id);
-		} else {
-			GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardRefineNewApp, "Flatpak (refine new app)", NULL);
-			if (!gs_flatpak_refine_app_internal (self, new, require_flags, interactive, FALSE, *inout_components_by_bundle,
-							     silo, silo_filename, silo_installed_by_desktopid, cancellable, error))
+			if (new == NULL)
 				return FALSE;
-			GS_PROFILER_END_SCOPED (FlatpakRefineWildcardRefineNewApp);
 
-			GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardSubsumeMetadata, "Flatpak (subsume metadata)", NULL);
-			gs_app_subsume_metadata (new, app);
-			GS_PROFILER_END_SCOPED (FlatpakRefineWildcardSubsumeMetadata);
+			gs_flatpak_claim_app (self, new);
 
-			gs_app_list_add (list, new);
+			/* The appstream plugin did not find the component in the plugin's cache,
+			   thus read the required info from the 'bundle' element. */
+			if (gs_flatpak_app_get_ref_name (new) == NULL ||
+			    gs_flatpak_app_get_ref_arch (new) == NULL) {
+				const gchar *xref_str = NULL;
+				g_autoptr(XbNode) child = NULL;
+				g_autoptr(XbNode) next = NULL;
+				for (child = xb_node_get_child (component); child != NULL && xref_str == NULL;
+				     g_object_unref (child), child = g_steal_pointer (&next)) {
+					next = xb_node_get_next (child);
+					if (g_strcmp0 (xb_node_get_element (child), "bundle") == 0 &&
+					    g_strcmp0 (xb_node_get_attr (child, "type"), "flatpak") == 0) {
+						xref_str = xb_node_get_text (child);
+						break;
+					}
+				}
+				if (xref_str != NULL) {
+					g_auto(GStrv) split = NULL;
+
+					/* get the kind/name/arch/branch */
+					split = g_strsplit (xref_str, "/", -1);
+					if (g_strv_length (split) == 4) {
+						const gchar *comp_type = xb_node_get_attr (component, "type");
+						AsComponentKind kind = as_component_kind_from_string (comp_type);
+						if (kind != AS_COMPONENT_KIND_UNKNOWN)
+							gs_app_set_kind (new, kind);
+						else if (g_ascii_strcasecmp (split[0], "app") == 0)
+							gs_app_set_kind (new, AS_COMPONENT_KIND_DESKTOP_APP);
+						else if (g_ascii_strcasecmp (split[0], "runtime") == 0)
+							gs_flatpak_set_runtime_kind_from_id (new);
+						gs_flatpak_app_set_ref_name (new, split[1]);
+						gs_flatpak_app_set_ref_arch (new, split[2]);
+						gs_app_set_branch (new, split[3]);
+						gs_app_set_metadata (new, "GnomeSoftware::packagename-value", xref_str);
+					}
+				}
+			}
+
+			if (gs_flatpak_app_get_ref_name (new) == NULL ||
+			    gs_flatpak_app_get_ref_arch (new) == NULL) {
+				g_debug ("Failed to get ref info for '%s' from wildcard '%s', skipping it...", gs_app_get_id (new), id);
+			} else {
+				GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardRefineNewApp, "Flatpak (refine new app)", NULL);
+				if (!gs_flatpak_refine_app_internal (self, new, require_flags, interactive, FALSE, components_by_bundle,
+								     silo, silo_filename, silo_installed_by_desktopid, cancellable, error))
+					return FALSE;
+				GS_PROFILER_END_SCOPED (FlatpakRefineWildcardRefineNewApp);
+
+				GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcardSubsumeMetadata, "Flatpak (subsume metadata)", NULL);
+				gs_app_subsume_metadata (new, app);
+				GS_PROFILER_END_SCOPED (FlatpakRefineWildcardSubsumeMetadata);
+
+				gs_app_list_add (list, new);
+			}
 		}
+		GS_PROFILER_END_SCOPED (FlatpakRefineWildcardGenerateApps);
 	}
-	GS_PROFILER_END_SCOPED (FlatpakRefineWildcardGenerateApps);
 
 	GS_PROFILER_END_SCOPED (FlatpakRefineWildcard);
 
