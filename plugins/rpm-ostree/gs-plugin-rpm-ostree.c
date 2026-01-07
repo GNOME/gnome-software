@@ -3254,6 +3254,23 @@ list_apps_for_update_sync (GsPluginRpmOstree *self,
 	return g_steal_pointer (&list);
 }
 
+static gchar *
+extract_deployment_checksum (GVariant *deployment)
+{
+	g_auto(GVariantDict) dict = G_VARIANT_DICT_INIT (deployment);
+	g_autoptr(GVariant) checksum = NULL;
+
+	if (deployment == NULL)
+		return NULL;
+
+	checksum = g_variant_dict_lookup_value (&dict, "checksum", G_VARIANT_TYPE_STRING);
+
+	if (checksum == NULL)
+		return NULL;
+
+	return g_variant_dup_string (checksum, NULL);
+}
+
 static GsAppList * /* (transfer full) */
 list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 				   gboolean interactive,
@@ -3265,6 +3282,11 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 	g_autoptr(GSubprocess) subprocess = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autofree gchar *stdout_data = NULL;
+	g_autofree gchar *booted_checksum = NULL;
+	g_autofree gchar *rollback_checksum = NULL;
+
+	booted_checksum = extract_deployment_checksum (gs_rpmostree_os_get_booted_deployment (os_proxy));
+	rollback_checksum = extract_deployment_checksum (gs_rpmostree_os_get_rollback_deployment (os_proxy));
 
 	subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE, error,
 				       "rpm-ostree",
@@ -3272,6 +3294,8 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 				       "diff",
 				       "--changelogs",
 				       "--format=block",
+				       rollback_checksum,
+				       booted_checksum,
 				       NULL);
 	if (subprocess == NULL)
 		return NULL;
