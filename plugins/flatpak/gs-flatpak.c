@@ -59,7 +59,7 @@ struct _GsFlatpak {
 	AsComponentScope	 scope;
 	GsPlugin		*plugin;
 	XbSilo			*silo;
-	GMutex			 silo_lock;
+	GRecMutex		 silo_lock;
 	gchar			*silo_filename;
 	GHashTable		*silo_installed_by_desktopid;
 	gint			 silo_change_stamp;
@@ -1187,11 +1187,11 @@ gs_flatpak_ref_silo (GsFlatpak *self,
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(GPtrArray) desktop_paths = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GRecMutexLocker) locker = NULL;
 	g_autoptr(XbBuilder) builder = NULL;
 	g_autoptr(GMainContext) old_thread_default = NULL;
 
-	locker = g_mutex_locker_new (&self->silo_lock);
+	locker = g_rec_mutex_locker_new (&self->silo_lock);
 	/* everything is okay */
 	if (self->silo != NULL && xb_silo_is_valid (self->silo) &&
 	    g_atomic_int_get (&self->silo_change_stamp_current) == g_atomic_int_get (&self->silo_change_stamp)) {
@@ -3754,6 +3754,7 @@ gs_flatpak_refine_wildcards (GsFlatpak *self,
 			     GError **error)
 {
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GRecMutexLocker) silo_locker = NULL;
 	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GHashTable) silo_installed_by_desktopid = NULL;
 	g_autoptr(GHashTable) components_by_id = NULL;
@@ -3763,6 +3764,11 @@ gs_flatpak_refine_wildcards (GsFlatpak *self,
 	g_autofree gchar *silo_filename = NULL;
 
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcard, "Flatpak (refine wildcard)", NULL);
+
+	/* the refine can take a long time, thus hold the silo lock to not have
+	   it invalidated from another thread; object reference is not enough
+	   for the XbSilo, it breaks as soon as the underlying file changes */
+	silo_locker = g_rec_mutex_locker_new (&self->silo_lock);
 
 	silo = gs_flatpak_ref_silo (self, interactive, &silo_filename, &silo_installed_by_desktopid, cancellable, error);
 	if (silo == NULL)
@@ -4810,7 +4816,7 @@ gs_flatpak_finalize (GObject *object)
 	g_object_unref (self->plugin);
 	g_hash_table_unref (self->broken_remotes);
 	g_mutex_clear (&self->broken_remotes_mutex);
-	g_mutex_clear (&self->silo_lock);
+	g_rec_mutex_clear (&self->silo_lock);
 	g_hash_table_unref (self->app_silos);
 	g_mutex_clear (&self->app_silos_mutex);
 	g_clear_pointer (&self->remote_title, g_hash_table_unref);
@@ -4831,7 +4837,7 @@ gs_flatpak_init (GsFlatpak *self)
 {
 	/* XbSilo needs external locking as we destroy the silo and build a new
 	 * one when something changes */
-	g_mutex_init (&self->silo_lock);
+	g_rec_mutex_init (&self->silo_lock);
 
 	g_mutex_init (&self->installed_refs_mutex);
 	self->installed_refs = NULL;
