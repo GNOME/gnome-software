@@ -321,12 +321,12 @@ gs_details_page_switch_to (GsPage *page)
 	/* Always refresh other developer apps */
 	g_clear_pointer (&self->last_developer_name, g_free);
 
-	/* hide the alternates for now until the query is complete */
-	gtk_widget_set_visible (self->origin_box, FALSE);
-
 	/* not set, perhaps file-to-app */
-	if (self->app == NULL)
+	if (self->app == NULL) {
+		/* hide the alternates */
+		gtk_widget_set_visible (self->origin_box, FALSE);
 		return;
+	}
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
@@ -2174,6 +2174,9 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	g_cancellable_cancel (self->cancellable);
 	g_set_object (&self->cancellable, cancellable);
 	g_cancellable_connect (self->cancellable, G_CALLBACK (gs_details_page_cancel_cb), self, NULL);
+
+	/* hide the alternates for now until the query is complete */
+	gtk_widget_set_visible (self->origin_box, FALSE);
 
 	/* get extra details about the app */
 	plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_PLUGIN_REFINE_FLAGS_INTERACTIVE, GS_DETAILS_PAGE_REFINE_REQUIRE_FLAGS);
