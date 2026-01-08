@@ -3284,8 +3284,12 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 	g_autofree gchar *booted_checksum = NULL;
 	g_autofree gchar *rollback_checksum = NULL;
 
-	booted_checksum = extract_deployment_checksum (gs_rpmostree_os_get_booted_deployment (os_proxy));
 	rollback_checksum = extract_deployment_checksum (gs_rpmostree_os_get_rollback_deployment (os_proxy));
+	/* can happen when ran after clean install of the system */
+	if (rollback_checksum == NULL)
+		return gs_app_list_new ();
+
+	booted_checksum = extract_deployment_checksum (gs_rpmostree_os_get_booted_deployment (os_proxy));
 
 	subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE, error,
 				       "rpm-ostree",
@@ -3301,12 +3305,12 @@ list_apps_historical_updates_sync (GsPluginRpmOstree *self,
 	if (!g_subprocess_communicate_utf8 (subprocess, NULL, cancellable, &stdout_data, NULL, error))
 		return NULL;
 
+	list = gs_app_list_new ();
+
 	if (stdout_data != NULL && *stdout_data != '\0') {
 		GsPlugin *plugin = GS_PLUGIN (self);
 		g_autoptr(GsApp) app = NULL;
 		g_autoptr(GIcon) ic = NULL;
-
-		list = gs_app_list_new ();
 
 		/* create new */
 		app = gs_app_new ("org.gnome.Software.RpmostreeUpdate");
