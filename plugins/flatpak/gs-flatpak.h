@@ -11,6 +11,7 @@
 
 #include <gnome-software.h>
 #include <flatpak.h>
+#include <xmlb.h>
 
 G_BEGIN_DECLS
 
@@ -103,13 +104,11 @@ gboolean	gs_flatpak_refine_app_state	(GsFlatpak		*self,
 						 void			*event_user_data,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_refine_wildcard	(GsFlatpak		*self,
-						 GsApp			*app,
+gboolean	gs_flatpak_refine_wildcards	(GsFlatpak		*self,
+						 GPtrArray		*wildcard_apps,
 						 GsAppList		*list,
 						 GsPluginRefineRequireFlags	 require_flags,
 						 gboolean		 interactive,
-						 GHashTable		**inout_components_by_id,
-						 GHashTable		**inout_components_by_bundle,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_launch		(GsFlatpak		*self,
