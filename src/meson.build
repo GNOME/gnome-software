@@ -43,7 +43,6 @@ gnome_software_sources = [
   'gs-category-tile.c',
   'gs-common.c',
   'gs-context-dialog-row.c',
-  'gs-css.c',
   'gs-description-box.c',
   'gs-details-page.c',
   'gs-extras-page.c',
@@ -326,5 +325,3 @@ configure_file(
   install_dir: join_paths(get_option('datadir'), 'dbus-1', 'services'),
   configuration: cdata
 )
-
-subdir('tests')

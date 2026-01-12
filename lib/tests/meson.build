@@ -4,6 +4,7 @@
 
 libgnomesoftware_tests = {
   'app-permissions': {},
+  'css': {},
   'utils': {},
 }
 

@@ -114,6 +114,7 @@ libgnomesoftware = library(
     'gs-appstream.c',
     'gs-category.c',
     'gs-category-manager.c',
+    'gs-css.c',
     'gs-debug.c',
     'gs-desktop-data.c',
     'gs-download-utils.c',

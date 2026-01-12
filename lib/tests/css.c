@@ -14,7 +14,7 @@
 #include "gs-test.h"
 
 static void
-gs_css_func (void)
+test_css_parsing (void)
 {
 	const gchar *tmp;
 	gboolean ret;
@@ -43,10 +43,9 @@ gs_css_func (void)
 int
 main (int argc, char **argv)
 {
-	gs_test_init (&argc, &argv);
+	g_test_init (&argc, &argv, NULL);
 
-	/* tests go here */
-	g_test_add_func ("/gnome-software/src/css", gs_css_func);
+	g_test_add_func ("/css/parsing", test_css_parsing);
 
 	return g_test_run ();
 }
