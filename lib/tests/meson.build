@@ -4,6 +4,7 @@
 
 libgnomesoftware_tests = {
   'app-permissions': {},
+  'utils': {},
 }
 
 test_env = environment()
@@ -11,7 +12,7 @@ test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
 test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
 test_deps = [libgnomesoftware_dep]
-test_cargs = []
+test_cargs = ['-DTESTDATADIR="' + join_paths(meson.project_source_root(), 'data') + '"']
 test_cpp_args = ['-DG_LOG_DOMAIN="libgnomesoftware"']
 
 foreach test_name, extra_args : libgnomesoftware_tests

@@ -216,36 +216,5 @@ executable(
   install_rpath : gs_private_libdir,
 )
 
-if get_option('tests')
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', 'data') + '"']
-  e = executable(
-    'general',
-    compiled_schemas,
-    sources : [
-      'tests/general.c'
-    ],
-    include_directories : [
-      include_directories('..'),
-    ],
-    dependencies : [
-      appstream,
-      gio_unix,
-      glib,
-      gmodule,
-      gtk,
-      json_glib,
-      libgnomesoftware_dep,
-      libm,
-      libsoup
-    ],
-    c_args : cargs
-  )
-  test('general', e, suite: ['lib'], env: test_env, timeout : 120)
-endif
-
 subdir('tests')
 subdir('tools')
