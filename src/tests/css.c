@@ -10,7 +10,7 @@
 
 #include "gnome-software-private.h"
 
-#include "gs-css.h"
+#include "../gs-css.h"
 #include "gs-test.h"
 
 static void
