@@ -13,7 +13,7 @@
 
 #include "gnome-software-private.h"
 
-#include "gs-flatpak-app.h"
+#include "../gs-flatpak-app.h"
 
 #include "gs-test.h"
 

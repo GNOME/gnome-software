@@ -1,5 +1,4 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginFwupd"']
-cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
 deps = [
   plugin_libs,
   fwupd,
@@ -31,20 +30,4 @@ i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
-if get_option('tests')
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
-  e = executable(
-    'fwupd',
-    compiled_schemas,
-    sources : [
-      'tests/fwupd.c'
-    ],
-    dependencies : deps,
-    c_args : cargs,
-  )
-  test('fwupd', e, suite: ['plugins', 'fwupd'], env: test_env)
-endif
+subdir('tests')

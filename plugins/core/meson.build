@@ -69,24 +69,4 @@ shared_module(
   dependencies : plugin_libs,
 )
 
-if get_option('tests')
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
-  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
-  e = executable(
-    'core',
-    compiled_schemas,
-    sources : [
-      'tests/core.c',
-    ],
-    dependencies : [
-      plugin_libs,
-      libxmlb,
-    ],
-    c_args : cargs,
-  )
-  test('core', e, suite: ['plugins', 'core'], env: test_env)
-endif
+subdir('tests')

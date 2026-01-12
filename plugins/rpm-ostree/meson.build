@@ -22,23 +22,4 @@ shared_module(
   dependencies : [ plugin_libs, ostree, rpm, rpm_ostree ],
 )
 
-if get_option('tests')
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
-  e = executable(
-    'rpm-ostree',
-    compiled_schemas,
-    sources : [
-      'gs-rpm-ostree-utils.c',
-      'tests/rpm-ostree.c',
-    ],
-    dependencies : [
-      plugin_libs,
-    ],
-    c_args : cargs,
-  )
-  test('rpm-ostree', e, suite: ['plugins', 'rpm-ostree'], env: test_env)
-endif
+subdir('tests')

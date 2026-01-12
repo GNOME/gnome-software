@@ -1,6 +1,4 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginDummy"']
-cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
-cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
 
 shared_module(
   'gs_plugin_dummy',
@@ -11,29 +9,4 @@ shared_module(
   dependencies : [plugin_libs],
 )
 
-if get_option('tests')
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  resources_src = gnome.compile_resources(
-    'gs-resources',
-    '../../src/gnome-software.gresource.xml',
-    source_dir : '../../src',
-    c_name : 'gs'
-  )
-
-  e = executable(
-    'dummy',
-    compiled_schemas,
-    resources_src,
-    sources : [
-      'tests/dummy.c'
-    ],
-    dependencies : [
-      plugin_libs,
-    ],
-    c_args : cargs,
-  )
-  test('dummy', e, suite: ['plugins', 'dummy'], env: test_env)
-endif
+subdir('tests')

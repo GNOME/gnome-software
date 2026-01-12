@@ -9,23 +9,4 @@ shared_module(
   dependencies : plugin_libs,
 )
 
-if get_option('tests')
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
-  cargs += ['-DLOCALPLUGINDIR_PACKAGEKIT="' + meson.current_build_dir() + '/../packagekit"']
-  e = executable(
-    'fedora-langpacks',
-    compiled_schemas,
-    sources : [
-      'tests/fedora-langpacks.c',
-    ],
-    dependencies : [
-      plugin_libs,
-    ],
-    c_args : cargs,
-  )
-  test('fedora-langpacks', e, suite: ['plugins', 'fedora-langpacks'], env: test_env)
-endif
+subdir('tests')

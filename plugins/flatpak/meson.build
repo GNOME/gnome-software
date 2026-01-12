@@ -35,25 +35,4 @@ i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
-if get_option('tests')
-  subdir('tests')
-
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
-  cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
-  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_build_dir(), 'tests') + '"']
-  e = executable(
-    'flatpak',
-    compiled_schemas,
-    sources : [
-      'gs-flatpak-app.c',
-      'tests/flatpak.c'
-    ],
-    dependencies : deps,
-    c_args : cargs,
-  )
-  test('flatpak', e, suite: ['plugins', 'flatpak'], env: test_env, timeout : 120)
-endif
+subdir('tests')

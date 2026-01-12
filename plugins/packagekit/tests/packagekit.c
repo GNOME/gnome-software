@@ -10,7 +10,7 @@
 
 #include "gnome-software-private.h"
 
-#include "gs-markdown.h"
+#include "../gs-markdown.h"
 #include "gs-test.h"
 
 static void

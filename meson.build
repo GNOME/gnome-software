@@ -332,8 +332,8 @@ add_test_setup('default',
 
 subdir('data')
 subdir('lib')
-subdir('plugins')
 subdir('src')
+subdir('plugins')
 if get_option('external_appstream')
   subdir('gs-install-appstream')
 endif

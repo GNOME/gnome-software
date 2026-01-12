@@ -1,73 +1,23 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# SPDX-FileCopyrightText: 2017 Richard Hughes
-# SPDX-FileCopyrightText: 2019 Abderrahim Kitouni
-# SPDX-FileCopyrightText: 2019 Umang Jain
-# SPDX-FileCopyrightText: 2020 Matthew Leeds
 # SPDX-FileCopyrightText: 2026 Philip Withnall
 # Authors: Philip Withnall <pwithnall@gnome.org>
 
-tar = find_program('tar')
-custom_target(
-  'flatpak-test-data',
-  input : 'flatpakrepos.tar.gz',
-  output : 'done',
-  command : [
-    tar,
-    '--no-same-owner',
-    '--directory=' + meson.current_build_dir(),
-    '-xf', '@INPUT@',
-  ],
-  build_by_default : true,
-)
-
-custom_target(
-  'flatpak-test-bundle',
-  output : 'flatpakrepos.tar.gz',
-  command : [
-    tar,
-    '-czf', '@OUTPUT@',
-    'app-missing-runtime/repo/',
-    'app-update/repo/',
-    'app-with-runtime/repo/',
-    'only-runtime/repo/',
-    'app-extension/repo',
-    'app-extension-update/repo',
-  ],
-)
-
-configure_file(
-  input : 'chiron.flatpak',
-  output : 'chiron.flatpak',
-  copy : true,
-)
-
-flatpak_tests = {
-  'flatpak': {
-    'source': [
-      'flatpak.c',
-      '../gs-flatpak-app.c',
-    ],
-  },
+repos_tests = {
+  'repos': {},
 }
 
 test_env = environment()
 test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
 test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
-test_deps = [
-  plugin_libs,
-  flatpak,
-  libxmlb,
-  ostree,
-]
+test_deps = [plugin_libs]
 test_cargs = [
   '-DLOCALPLUGINDIR="' + meson.current_build_dir() + '/../"',
-  '-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../../core"',
   '-DTESTDATADIR="' + join_paths(meson.project_source_root(), 'data') + '"',
 ]
-test_cpp_args = ['-DG_LOG_DOMAIN="flatpak"']
+test_cpp_args = ['-DG_LOG_DOMAIN="repos"']
 
-foreach test_name, extra_args : flatpak_tests
+foreach test_name, extra_args : repos_tests
   source = extra_args.get('source', test_name + '.c')
 
   if installed_tests_enabled
@@ -98,6 +48,6 @@ foreach test_name, extra_args : flatpak_tests
     env: test_env,
     timeout: 30,
     depends: [compiled_schemas],
-    suite: ['plugins', 'flatpak'],
+    suite: ['plugins', 'repos'],
   )
 endforeach
