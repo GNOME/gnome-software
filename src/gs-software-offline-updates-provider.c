@@ -27,6 +27,29 @@ struct _GsSoftwareOfflineUpdatesProvider {
 
 G_DEFINE_TYPE (GsSoftwareOfflineUpdatesProvider, gs_software_offline_updates_provider, G_TYPE_OBJECT)
 
+/* convert some of the common errors to their GIOError variants,
+   thus they can be easily checked for when passed through the D-Bus */
+static void
+convert_plugin_error_to_gio_error (GError *error)
+{
+	if (error == NULL)
+		return;
+
+	if (error->domain != GS_PLUGIN_ERROR)
+		return;
+
+	if (error->code == GS_PLUGIN_ERROR_FAILED)
+		error->code = G_IO_ERROR_FAILED;
+	else if (error->code == GS_PLUGIN_ERROR_NOT_SUPPORTED)
+		error->code = G_IO_ERROR_NOT_SUPPORTED;
+	else if (error->code == GS_PLUGIN_ERROR_CANCELLED)
+		error->code = G_IO_ERROR_CANCELLED;
+	else
+		return;
+
+	error->domain = G_IO_ERROR;
+}
+
 static void
 pending_job_data_free (PendingJobData *data)
 {
@@ -63,6 +86,7 @@ get_state_done_cb (GObject *source_object,
 	} else {
 		g_prefix_error_literal (&local_error, "Failed to get offline update state: ");
 		g_debug ("%s", local_error->message);
+		convert_plugin_error_to_gio_error (local_error);
 		g_dbus_method_invocation_return_gerror (data->invocation, local_error);
 	}
 
@@ -113,6 +137,7 @@ cancel_done_cb (GObject *source_object,
 	} else {
 		g_prefix_error_literal (&local_error, "Failed to cancel offline update: ");
 		g_debug ("%s", local_error->message);
+		convert_plugin_error_to_gio_error (local_error);
 		g_dbus_method_invocation_return_gerror (data->invocation, local_error);
 	}
 
@@ -163,6 +188,7 @@ set_action_done_cb (GObject *source_object,
 	} else {
 		g_prefix_error_literal (&local_error, "Failed to set offline update action: ");
 		g_debug ("%s", local_error->message);
+		convert_plugin_error_to_gio_error (local_error);
 		g_dbus_method_invocation_return_gerror (data->invocation, local_error);
 	}
 
