@@ -5464,17 +5464,13 @@ gs_packagekit_get_offline_update_state_thread (GTask        *task,
                                                gpointer      task_data,
                                                GCancellable *cancellable)
 {
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
-	gboolean has_prepared = self->is_triggered;
+	PkOfflineAction action;
+	gboolean has_prepared;
 
-	if (!has_prepared) {
-		g_auto(GStrv) prepared_ids = NULL;
-		prepared_ids = pk_offline_get_prepared_ids (NULL);
-		has_prepared = prepared_ids != NULL && *prepared_ids != NULL;
-	}
+	action = pk_offline_get_action (NULL);
+	/* it can be prepared, but not scheduled, thus check the action */
+	has_prepared = action == PK_OFFLINE_ACTION_REBOOT || action == PK_OFFLINE_ACTION_POWER_OFF;
 
-	/* prepared update or triggered update are both considered as scheduled, even
-	   the prepared update won't be installed on reboot without being also trigger */
 	g_task_return_int (task, has_prepared ? GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED : GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE);
 }
 
