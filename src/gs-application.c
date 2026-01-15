@@ -27,7 +27,7 @@
 #include "gs-shell-search-provider.h"
 #include "gs-software-offline-updates-provider.h"
 
-#define CODE_COPYRIGHT_YEAR 2025
+#define CODE_COPYRIGHT_YEAR 2026
 
 #define ENABLE_REPOS_DIALOG_CONF_KEY "enable-repos-dialog"
 
