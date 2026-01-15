@@ -17,6 +17,7 @@
 #include "gs-os-release.h"
 #include "gs-repo-row.h"
 #include "gs-repos-section.h"
+#include "gs-toast.h"
 #include "gs-utils.h"
 #include <glib/gi18n.h>
 
@@ -34,11 +35,52 @@ struct _GsReposDialog
 	GtkWidget	*status_empty;
 	GtkWidget	*content_page;
 	GtkWidget	*stack;
+	AdwToastOverlay	*toast_overlay;
 };
 
 G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, ADW_TYPE_DIALOG)
 
 static void reload_third_party_repos (GsReposDialog *dialog);
+static void toast_show_details_cb (GsReposDialog *self,
+                                   AdwToast      *toast);
+
+static void
+gs_repos_dialog_show_error (GsReposDialog *self,
+                            const char    *error_title,
+                            const GError  *error)
+{
+	g_autoptr(AdwToast) toast = NULL;
+
+	g_debug ("%s: %s", error_title, error->message);
+
+	toast = gs_toast_new (error_title,
+			      GS_TOAST_BUTTON_NONE,
+			      NULL,
+			      error->message);
+
+	g_signal_connect_object (toast, "button-clicked",
+				 G_CALLBACK (toast_show_details_cb), self, G_CONNECT_SWAPPED);
+
+	adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (self->toast_overlay), g_steal_pointer (&toast));
+}
+
+static void
+toast_show_details_cb (GsReposDialog *self,
+                       AdwToast      *toast)
+{
+	const char *details_message;
+	const char *details_text;
+
+	details_message = gs_toast_get_details_message (toast);
+	details_text = gs_toast_get_details_text (toast);
+
+	if (details_message == NULL || *details_message == '\0')
+		details_message = adw_toast_get_title (toast);
+
+	gs_utils_show_error_dialog_simple (GTK_WIDGET (self),
+					   details_message,
+					   details_text);
+}
 
 typedef struct {
 	GsReposDialog		     *dialog;
@@ -67,13 +109,28 @@ repo_enabled_cb (GObject *source,
 	g_autoptr(InstallRemoveData) install_remove_data = (InstallRemoveData *) user_data;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsRepoRow) row = NULL;
-	const gchar *operation_str;
+	const char *operation_str, *error_title;
 
-	operation_str = install_remove_data->operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL ? "install" :
-			install_remove_data->operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE ? "remove" :
-			install_remove_data->operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_ENABLE ? "enable" :
-			install_remove_data->operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE ? "disable" : NULL;
-	g_assert (operation_str != NULL);
+	switch (install_remove_data->operation) {
+	case GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL:
+		operation_str = "install";
+		error_title = _("Unable to install repository");
+		break;
+	case GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE:
+		operation_str = "remove";
+		error_title = _("Unable to remove repository");
+		break;
+	case GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_ENABLE:
+		operation_str = "enable";
+		error_title = _("Unable to enable repository");
+		break;
+	case GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE:
+		operation_str = "disable";
+		error_title = _("Unable to disable repository");
+		break;
+	default:
+		g_assert_not_reached ();
+	}
 
 	row = g_weak_ref_get (&install_remove_data->row_weakref);
 	if (row)
@@ -86,7 +143,9 @@ repo_enabled_cb (GObject *source,
 			return;
 		}
 
-		g_warning ("failed to %s repo: %s", operation_str, error->message);
+		gs_repos_dialog_show_error (install_remove_data->dialog,
+					    error_title,
+					    error);
 		return;
 	}
 
@@ -328,7 +387,11 @@ fedora_third_party_switch_done_cb (GObject *source_object,
 	if (!gs_fedora_third_party_switch_finish (GS_FEDORA_THIRD_PARTY (source_object), result, &error)) {
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
-		g_warning ("Failed to switch 'fedora-third-party' config: %s", error->message);
+
+		gs_repos_dialog_show_error (self,
+					    _("Unable to change Fedora third party repositories configuration"),
+					    error);
+		return;
 	}
 
 	/* Reload the state, because the user could dismiss the authentication prompt
@@ -441,15 +504,21 @@ repos_dialog_compare_sections_cb (gconstpointer aa,
 }
 
 static void
-refine_sources_related_finish (GsReposDialog *dialog)
+refine_sources_related_finish (GsReposDialog *dialog,
+                               const GError  *error)
 {
 	GHashTableIter iter;
 	gpointer value;
 
+	/* Bail out early if cancelled, as that only happens during dispose(),
+	 * so we don’t want to deref anything in `dialog`. */
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		return;
+
 	g_hash_table_iter_init (&iter, dialog->sections);
 	while (g_hash_table_iter_next (&iter, NULL, &value)) {
 		if (GS_IS_REPOS_SECTION (value))
-			gs_repos_section_set_related_loaded (GS_REPOS_SECTION (value), TRUE);
+			gs_repos_section_set_related_loaded (GS_REPOS_SECTION (value), (error == NULL));
 	}
 }
 
@@ -466,13 +535,14 @@ refine_sources_related_cb (GObject *source_object,
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("refine sources' related cancelled");
-			return;
 		} else {
-			g_warning ("failed to refine sources' related: %s", error->message);
+			gs_repos_dialog_show_error (dialog,
+						    _("Unable to look up related apps"),
+						    error);
 		}
 	}
 
-	refine_sources_related_finish (dialog);
+	refine_sources_related_finish (dialog, error);
 }
 
 static void
@@ -492,9 +562,12 @@ refine_sources_cb (GObject *source_object,
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("refine sources cancelled");
 		} else {
-			g_warning ("failed to refine sources: %s", error->message);
-			refine_sources_related_finish (dialog);
+			gs_repos_dialog_show_error (dialog,
+						    _("Unable to load repositories"),
+						    error);
 		}
+
+		refine_sources_related_finish (dialog, error);
 		return;
 	}
 
@@ -522,7 +595,7 @@ refine_sources_cb (GObject *source_object,
 						    refine_sources_related_cb,
 						    dialog);
 	} else {
-		refine_sources_related_finish (dialog);
+		refine_sources_related_finish (dialog, NULL);
 	}
 }
 
@@ -549,7 +622,9 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 			g_debug ("get sources cancelled");
 			return;
 		} else {
-			g_warning ("failed to get sources: %s", error->message);
+			gs_repos_dialog_show_error (dialog,
+						    _("Unable to load repositories"),
+						    error);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 		return;
@@ -694,7 +769,10 @@ fedora_third_party_list_repos_done_cb (GObject *source_object,
 	if (!gs_fedora_third_party_list_finish (GS_FEDORA_THIRD_PARTY (source_object), result, &repos, &error)) {
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
-		g_warning ("Failed to list 'fedora-third-party' repos: %s", error->message);
+
+		gs_repos_dialog_show_error (self,
+					    _("Unable to load Fedora third party repositories"),
+					    error);
 	} else {
 		self->third_party_repos = g_steal_pointer (&repos);
 	}
@@ -714,7 +792,10 @@ fedora_third_party_query_done_cb (GObject *source_object,
 	if (!gs_fedora_third_party_query_finish (GS_FEDORA_THIRD_PARTY (source_object), result, &state, &error)) {
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
-		g_warning ("Failed to query 'fedora-third-party': %s", error->message);
+
+		gs_repos_dialog_show_error (self,
+					    _("Unable to load Fedora third party repositories"),
+					    error);
 	} else {
 		self->third_party_enabled = state == GS_FEDORA_THIRD_PARTY_STATE_ENABLED;
 	}
@@ -847,6 +928,7 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, status_empty);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_page);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, toast_overlay);
 }
 
 GsReposDialog *
