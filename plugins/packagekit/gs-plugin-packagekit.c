@@ -5480,9 +5480,12 @@ gs_plugin_packagekit_get_offline_update_state_finish (GsPlugin                  
 					              GsPluginOfflineUpdateState *out_state,
                                                       GError                    **error)
 {
-	gssize res = g_task_propagate_int (G_TASK (result), error);
-	if (res == -1)
+	g_autoptr(GError) local_error = NULL;
+	gssize res = g_task_propagate_int (G_TASK (result), &local_error);
+	if (local_error != NULL) {
+		g_propagate_error (error, g_steal_pointer (&local_error));
 		return FALSE;
+	}
 	*out_state = (GsPluginOfflineUpdateState) res;
 	return TRUE;
 }
