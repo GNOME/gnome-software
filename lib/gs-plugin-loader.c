@@ -83,6 +83,9 @@ struct _GsPluginLoader
 
 	GDBusConnection		*session_bus_connection;  /* (owned); (not nullable) after setup */
 	GDBusConnection		*system_bus_connection;  /* (owned); (not nullable) after setup */
+
+	GMutex			 idle_queue_mutex;
+	GPtrArray		*idle_queue;  /* (owned) (not nullable) (element-type GSource) */
 };
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
@@ -125,12 +128,73 @@ gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 	return NULL;
 }
 
+/* Could be called in any thread.
+ *
+ * @data should not hold a strong reference on the `GsPluginLoader` as that
+ * could cause it to be kept alive longer than the last external strong
+ * reference held on it. Instead, the idle queue will be cleared on
+ * `dispose()`, essentially cancelling any idle callbacks which haven’t yet been
+ * invoked. */
+static void
+_gs_plugin_loader_queue_idle_callback (GsPluginLoader *plugin_loader,
+                                       const char     *name,
+                                       GSourceFunc     func,
+                                       void           *data,
+                                       GDestroyNotify  notify)
+{
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GSource) source = NULL;
+
+	source = g_idle_source_new ();
+	g_source_set_callback (source, func, data, notify);
+	g_source_set_name (source, name);
+	g_source_attach (source, NULL);
+
+	locker = g_mutex_locker_new (&plugin_loader->idle_queue_mutex);
+	g_ptr_array_add (plugin_loader->idle_queue, g_steal_pointer (&source));
+}
+
+#define gs_plugin_loader_queue_idle_callback(p,f,d,n) \
+	(_gs_plugin_loader_queue_idle_callback) (p, G_STRINGIFY (f), f, d, n)
+
+/* Could be called in any thread
+ *
+ * This should be called from any idle callback passed to
+ * `gs_plugin_loader_queue_idle_callback()`.
+ *
+ * It will clean the `GSource` for the current callback (if `!keep_current_source`),
+ * plus all previous ones which have been destroyed. This will prevent the queue
+ * growing unbounded. It keeps the queue in order. */
+static void
+gs_plugin_loader_clean_idle_queue (GsPluginLoader *plugin_loader,
+                                   gboolean        keep_current_source)
+{
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->idle_queue_mutex);
+	GSource *current_source = g_main_current_source ();
+
+	for (unsigned int i = 0; i < plugin_loader->idle_queue->len;) {
+		GSource *source = plugin_loader->idle_queue->pdata[i];
+
+		if (g_source_is_destroyed (source) ||
+		    (keep_current_source == G_SOURCE_REMOVE &&
+		     current_source != NULL && source == current_source))
+			g_ptr_array_remove_index (plugin_loader->idle_queue, i);
+		else
+			i++;
+	}
+}
+
 static gboolean
 gs_plugin_loader_notify_idle_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+	gboolean keep_current_source = G_SOURCE_REMOVE;
+
 	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_EVENTS]);
-	return FALSE;
+
+	gs_plugin_loader_clean_idle_queue (plugin_loader, keep_current_source);
+
+	return keep_current_source;
 }
 
 /* Could be called in any thread. */
@@ -144,7 +208,10 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 	g_hash_table_insert (plugin_loader->events_by_id,
 			     g_strdup (gs_plugin_event_get_unique_id (event)),
 			     g_object_ref (event));
-	g_idle_add (gs_plugin_loader_notify_idle_cb, plugin_loader);
+	gs_plugin_loader_queue_idle_callback (plugin_loader,
+					      gs_plugin_loader_notify_idle_cb,
+					      plugin_loader,
+					      NULL);
 }
 
 static void
@@ -551,12 +618,16 @@ gs_plugin_loader_job_process_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 static gboolean
-emit_pending_apps_idle (gpointer loader)
+emit_pending_apps_idle (void *user_data)
 {
-	g_signal_emit (loader, signals[SIGNAL_PENDING_APPS_CHANGED], 0);
-	g_object_unref (loader);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+	gboolean keep_current_source = G_SOURCE_REMOVE;
 
-	return G_SOURCE_REMOVE;
+	g_signal_emit (plugin_loader, signals[SIGNAL_PENDING_APPS_CHANGED], 0);
+
+	gs_plugin_loader_clean_idle_queue (plugin_loader, keep_current_source);
+
+	return keep_current_source;
 }
 
 /* If the plugin job is an uninstall, returns the return value from
@@ -586,7 +657,10 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 		g_assert_not_reached ();
 	}
 
-	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
+	gs_plugin_loader_queue_idle_callback (plugin_loader,
+					      emit_pending_apps_idle,
+					      plugin_loader,
+					      NULL);
 
 	return retval;
 }
@@ -626,7 +700,11 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 		}
 
 	}
-	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
+
+	gs_plugin_loader_queue_idle_callback (plugin_loader,
+					      emit_pending_apps_idle,
+					      plugin_loader,
+					      NULL);
 }
 
 /* This will load the install queue and add it to #GsPluginLoader.pending_apps,
@@ -731,7 +809,6 @@ static void
 add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
 	g_autoptr(GsAppList) addons = NULL;
-	g_autoptr(GSource) source = NULL;
 	guint i;
 
 	/* queue the app itself */
@@ -743,10 +820,10 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 
 	gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
 
-	source = g_idle_source_new ();
-	g_source_set_callback (source, emit_pending_apps_idle, g_object_ref (plugin_loader), NULL);
-	g_source_set_name (source, "[gnome-software] emit_pending_apps_idle");
-	g_source_attach (source, NULL);
+	gs_plugin_loader_queue_idle_callback (plugin_loader,
+					      emit_pending_apps_idle,
+					      plugin_loader,
+					      NULL);
 
 	save_install_queue (plugin_loader);
 
@@ -783,18 +860,16 @@ remove_apps_from_install_queue (GsPluginLoader *plugin_loader, GsAppList *apps)
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	if (any_removed) {
-		g_autoptr(GSource) source = NULL;
-
 		for (guint i = 0; i < gs_app_list_length (removed_apps); i++) {
 			GsApp *app = gs_app_list_index (removed_apps, i);
 			if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL)
 				gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 		}
 
-		source = g_idle_source_new ();
-		g_source_set_callback (source, emit_pending_apps_idle, g_object_ref (plugin_loader), NULL);
-		g_source_set_name (source, "[gnome-software] emit_pending_apps_idle");
-		g_source_attach (source, NULL);
+		gs_plugin_loader_queue_idle_callback (plugin_loader,
+						      emit_pending_apps_idle,
+						      plugin_loader,
+						      NULL);
 
 		save_install_queue (plugin_loader);
 
@@ -944,10 +1019,19 @@ gs_plugin_loader_report_event_cb (GsPlugin *plugin,
 }
 
 typedef struct {
-	GsPluginLoader *plugin_loader; /* owned */
+	GsPluginLoader *plugin_loader; /* (not owned) */
 	GsPlugin *plugin; /* owned */
 	gboolean allow_updates;
 } AllowUpdatesData;
+
+static void
+allow_updates_data_free (AllowUpdatesData *data)
+{
+	g_clear_object (&data->plugin);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (AllowUpdatesData, allow_updates_data_free)
 
 static gboolean
 gs_plugin_loader_allow_updates_idle_cb (gpointer user_data)
@@ -957,6 +1041,7 @@ gs_plugin_loader_allow_updates_idle_cb (gpointer user_data)
 	GsPlugin *plugin = data->plugin;
 	gboolean allow_updates = data->allow_updates;
 	gboolean changed = FALSE;
+	gboolean keep_current_source = G_SOURCE_REMOVE;
 
 	/* plugin now allowing gnome-software to show updates panel */
 	if (allow_updates) {
@@ -981,11 +1066,9 @@ gs_plugin_loader_allow_updates_idle_cb (gpointer user_data)
 	if (changed)
 		g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_ALLOW_UPDATES]);
 
-	g_clear_object (&data->plugin_loader);
-	g_clear_object (&data->plugin);
-	g_free (data);
+	gs_plugin_loader_clean_idle_queue (plugin_loader, keep_current_source);
 
-	return G_SOURCE_REMOVE;
+	return keep_current_source;
 }
 
 static void
@@ -993,14 +1076,17 @@ gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
 				   gboolean allow_updates,
 				   GsPluginLoader *plugin_loader)
 {
-	AllowUpdatesData *data;
+	g_autoptr(AllowUpdatesData) data = NULL;
 
 	data = g_new0 (AllowUpdatesData, 1);
-	data->plugin_loader = g_object_ref (plugin_loader);
+	data->plugin_loader = plugin_loader;
 	data->plugin = g_object_ref (plugin);
 	data->allow_updates = allow_updates;
 
-	g_idle_add (gs_plugin_loader_allow_updates_idle_cb, data);
+	gs_plugin_loader_queue_idle_callback (plugin_loader,
+					      gs_plugin_loader_allow_updates_idle_cb,
+					      g_steal_pointer (&data),
+					      (GDestroyNotify) allow_updates_data_free);
 }
 
 static void
@@ -2055,6 +2141,16 @@ gs_plugin_loader_dispose (GObject *object)
 		g_source_remove (plugin_loader->updates_changed_id);
 		plugin_loader->updates_changed_id = 0;
 	}
+
+	/* Cancel any pending idle callbacks */
+	g_mutex_lock (&plugin_loader->idle_queue_mutex);
+	for (unsigned int i = plugin_loader->idle_queue->len; i > 0; i--) {
+		GSource *source = plugin_loader->idle_queue->pdata[i - 1];
+		g_source_destroy (source);
+	}
+	g_ptr_array_set_size (plugin_loader->idle_queue, 0);
+	g_mutex_unlock (&plugin_loader->idle_queue_mutex);
+
 	if (plugin_loader->network_changed_handler != 0) {
 		g_signal_handler_disconnect (plugin_loader->network_monitor,
 					     plugin_loader->network_changed_handler);
@@ -2090,6 +2186,12 @@ static void
 gs_plugin_loader_finalize (GObject *object)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+
+	g_mutex_lock (&plugin_loader->idle_queue_mutex);
+	g_assert (plugin_loader->idle_queue->len == 0);
+	g_ptr_array_unref (plugin_loader->idle_queue);
+	g_mutex_unlock (&plugin_loader->idle_queue_mutex);
+	g_mutex_clear (&plugin_loader->idle_queue_mutex);
 
 	g_strfreev (plugin_loader->compatible_projects);
 	g_ptr_array_unref (plugin_loader->locations);
@@ -2275,6 +2377,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 							     (GEqualFunc) as_utils_data_id_equal,
 							     g_free,
 							     (GDestroyNotify) g_object_unref);
+
+	g_mutex_init (&plugin_loader->idle_queue_mutex);
+	plugin_loader->idle_queue = g_ptr_array_new_with_free_func ((GDestroyNotify) g_source_unref);
 
 	/* get the job manager */
 	plugin_loader->job_manager = gs_job_manager_new ();
