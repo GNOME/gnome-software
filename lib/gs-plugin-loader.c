@@ -943,11 +943,19 @@ gs_plugin_loader_report_event_cb (GsPlugin *plugin,
 	gs_plugin_loader_add_event (plugin_loader, event);
 }
 
-static void
-gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
-				   gboolean allow_updates,
-				   GsPluginLoader *plugin_loader)
+typedef struct {
+	GsPluginLoader *plugin_loader; /* owned */
+	GsPlugin *plugin; /* owned */
+	gboolean allow_updates;
+} AllowUpdatesData;
+
+static gboolean
+gs_plugin_loader_allow_updates_idle_cb (gpointer user_data)
 {
+	AllowUpdatesData *data = user_data;
+	GsPluginLoader *plugin_loader = data->plugin_loader;
+	GsPlugin *plugin = data->plugin;
+	gboolean allow_updates = data->allow_updates;
 	gboolean changed = FALSE;
 
 	/* plugin now allowing gnome-software to show updates panel */
@@ -972,6 +980,27 @@ gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
 	/* notify display layer */
 	if (changed)
 		g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_ALLOW_UPDATES]);
+
+	g_clear_object (&data->plugin_loader);
+	g_clear_object (&data->plugin);
+	g_free (data);
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
+				   gboolean allow_updates,
+				   GsPluginLoader *plugin_loader)
+{
+	AllowUpdatesData *data;
+
+	data = g_new0 (AllowUpdatesData, 1);
+	data->plugin_loader = g_object_ref (plugin_loader);
+	data->plugin = g_object_ref (plugin);
+	data->allow_updates = allow_updates;
+
+	g_idle_add (gs_plugin_loader_allow_updates_idle_cb, data);
 }
 
 static void
