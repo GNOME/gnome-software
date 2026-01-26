@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-01-07 17:38+0000\n"
-"PO-Revision-Date: 2026-01-08 18:33+0300\n"
+"POT-Creation-Date: 2026-01-15 17:43+0000\n"
+"PO-Revision-Date: 2026-01-16 14:59+0300\n"
 "Last-Translator: Artur So <arturios2005@mail.ru>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -76,7 +76,7 @@ msgid "The update details"
 msgstr "Подробности об обновлении"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2923 src/gs-application.c:271
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2950 src/gs-application.c:271
 msgid "The GNOME Project"
 msgstr "Проект GNOME"
 
@@ -1598,7 +1598,7 @@ msgstr "Требуется вход"
 #. TRANSLATORS: button text
 #: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:272 src/gs-common.c:674 src/gs-details-page.ui:291
 #: src/gs-dkms-dialog.ui:28 src/gs-dkms-dialog.ui:120 src/gs-page.c:410 src/gs-removal-dialog.ui:24
-#: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:182 src/gs-repos-dialog.c:265
+#: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:241 src/gs-repos-dialog.c:324
 #: src/gs-review-dialog.ui:24 src/gs-review-row.c:239 src/gs-review-row.c:263 src/gs-updates-page.c:854
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
@@ -1720,7 +1720,7 @@ msgstr "Включить репозиторий ПО?"
 #. ask for confirmation
 #. TRANSLATORS: "Enable Third-Party Software Repository?" is
 #. * the confirmation dialog title
-#: src/gs-common.c:216 src/gs-repos-dialog.c:179
+#: src/gs-common.c:216 src/gs-repos-dialog.c:238
 msgid "Enable Third-Party Software Repository?"
 msgstr "Включить репозиторий стороннего ПО?"
 
@@ -3497,7 +3497,7 @@ msgstr "_Игнорировать"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:761 src/gs-repos-dialog.c:184
+#: src/gs-overview-page.c:761 src/gs-repos-dialog.c:243
 msgid "_Enable"
 msgstr "_Включить"
 
@@ -3759,68 +3759,100 @@ msgstr "У_далить"
 msgid "Permanently deletes data to save disk space"
 msgstr "Безвозвратно удаляет данные для экономии дискового пространства"
 
+#: src/gs-repos-dialog.c:117
+msgid "Unable to install repository"
+msgstr "Не удалось установить репозиторий"
+
+#: src/gs-repos-dialog.c:121
+msgid "Unable to remove repository"
+msgstr "Не удалось удалить репозиторий"
+
+#: src/gs-repos-dialog.c:125
+msgid "Unable to enable repository"
+msgstr "Не удалось включить репозиторий"
+
+#: src/gs-repos-dialog.c:129
+msgid "Unable to disable repository"
+msgstr "Не удалось отключить репозиторий"
+
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:258
+#: src/gs-repos-dialog.c:317
 #, c-format
 msgid "Software that has been installed from “%s” will cease to receive updates."
 msgstr "ПО, которое было установлено с \"%s\", перестанет получать обновления."
 
 #. ask for confirmation
-#: src/gs-repos-dialog.c:262
+#: src/gs-repos-dialog.c:321
 msgid "Disable Repository?"
 msgstr "Отключить репозиторий?"
 
-#: src/gs-repos-dialog.c:262
+#: src/gs-repos-dialog.c:321
 msgid "Remove Repository?"
 msgstr "Удалить репозиторий?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:269
+#: src/gs-repos-dialog.c:328
 msgid "_Disable"
 msgstr "_Отключить"
 
 #. TRANSLATORS: this is button text to remove a repo
 #. TRANSLATORS: button text when
 #. * removing a review
-#: src/gs-repos-dialog.c:273 src/gs-review-row.c:266
+#: src/gs-repos-dialog.c:332 src/gs-review-row.c:266
 msgid "_Remove"
 msgstr "_Удалить"
 
-#: src/gs-repos-dialog.c:607
+#: src/gs-repos-dialog.c:392
+msgid "Unable to change Fedora third party repositories configuration"
+msgstr "Не удалось изменить конфигурацию сторонних репозиториев Fedora"
+
+#: src/gs-repos-dialog.c:540
+msgid "Unable to look up related apps"
+msgstr "Не удалось найти связанные приложения"
+
+#: src/gs-repos-dialog.c:566 src/gs-repos-dialog.c:626
+msgid "Unable to load repositories"
+msgstr "Не удалось загрузить репозитории"
+
+#: src/gs-repos-dialog.c:682
 msgid "Enable New Repositories"
 msgstr "Включить новые репозитории"
 
-#: src/gs-repos-dialog.c:608
+#: src/gs-repos-dialog.c:683
 msgid "Turn on new repositories when they are added"
 msgstr "Включить новые репозитории при их добавлении"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:615
+#: src/gs-repos-dialog.c:690
 msgid "more information"
 msgstr "больше информации"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:620
+#: src/gs-repos-dialog.c:695
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Дополнительные репозитории от выбранных сторонних источников - %s."
 
-#: src/gs-repos-dialog.c:625
+#: src/gs-repos-dialog.c:700
 msgid "Fedora Third Party Repositories"
 msgstr "Сторонние репозитории Fedora"
 
+#: src/gs-repos-dialog.c:774 src/gs-repos-dialog.c:797
+msgid "Unable to load Fedora third party repositories"
+msgstr "Не удалось загрузить сторонние репозитории Fedora"
+
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:776
+#: src/gs-repos-dialog.c:857
 msgid "the operating system"
 msgstr "операционная система"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:832
+#: src/gs-repos-dialog.c:913
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Эти репозитории дополняют ПО по умолчанию, предоставленное %s."
@@ -3829,7 +3861,7 @@ msgstr "Эти репозитории дополняют ПО по умолча�
 msgid "Software Repositories"
 msgstr "Репозитории ПО"
 
-#: src/gs-repos-dialog.ui:39
+#: src/gs-repos-dialog.ui:41
 msgid "No Repositories"
 msgstr "Нет репозиторий"
 
@@ -5765,13 +5797,13 @@ msgstr "Включить"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:81 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3319
+#: plugins/core/gs-plugin-generic-updates.c:81 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3323
 msgid "System Updates"
 msgstr "Обновления системы"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:86 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3324
+#: plugins/core/gs-plugin-generic-updates.c:86 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3328
 msgid "General system updates, such as security or bug fixes, and performance improvements."
 msgstr ""
 "Общие обновления системы, такие как исправления безопасности или ошибок, а также улучшения "
@@ -5960,17 +5992,17 @@ msgstr "Системная установка"
 msgid "App ID"
 msgstr "ID приложения"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1515
+#: plugins/flatpak/gs-plugin-flatpak.c:1487
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Не удалось добавить установку для дополнения '%s': %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1529
+#: plugins/flatpak/gs-plugin-flatpak.c:1501
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Не удалось добавить удаление для дополнения '%s': %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:2151
+#: plugins/flatpak/gs-plugin-flatpak.c:2123
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. Remove the filter and repeat "
@@ -6323,7 +6355,7 @@ msgstr "Не удалось загрузить обновления: "
 msgid "Failed to trigger update: "
 msgstr "Не удалось вызвать обновление: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3423
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3427
 msgid "Operating System (OSTree)"
 msgstr "Операционная система (OSTree)"
 
@@ -6571,10 +6603,6 @@ msgstr "Удаление задания sysupdate '%s' не удалось со 
 #, c-format
 #~ msgid "Unable to remove %s: The battery level is too low"
 #~ msgstr "Не удалось удалить %s: низкий уровень заряда батареи"
-
-#, c-format
-#~ msgid "Unable to remove %s"
-#~ msgstr "Не удалось удалить %s"
 
 #~ msgid "Failed to install file: not supported"
 #~ msgstr "Сбой при установке файла: не поддерживается"
