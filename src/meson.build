@@ -223,6 +223,20 @@ i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'applications')
 )
 
+i18n.merge_file(
+  input:
+    configure_file(
+      input: 'gnome-software-local-file-metainfo.desktop.in',
+      output: 'gnome-software-local-file-metainfo.desktop.tmp',
+      configuration: cdata,
+   ),
+  output: 'gnome-software-local-file-metainfo.desktop',
+  type: 'desktop',
+  po_dir: join_paths(meson.project_source_root(), 'po'),
+  install: true,
+  install_dir: join_paths(get_option('datadir'), 'applications'),
+)
+
 if get_option('flatpak')
   i18n.merge_file(
     input:
