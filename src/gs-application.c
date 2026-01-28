@@ -22,6 +22,7 @@
 #include "gs-build-ident.h"
 #include "gs-common.h"
 #include "gs-debug.h"
+#include "gs-ioprio.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-shell-search-provider.h"
@@ -45,6 +46,7 @@ struct _GsApplication {
 	GSettings       *settings;
 	GSimpleActionGroup	*action_map;
 	gulong		 shell_loaded_handler_id;
+	gulong		 shell_notify_visible_handler_id;
 	GsDebug		*debug;  /* (owned) (not nullable) */
 
 	/* Created/freed on demand */
@@ -193,6 +195,7 @@ gs_application_shutdown (GApplication *application)
 	g_cancellable_cancel (app->cancellable);
 	g_clear_object (&app->cancellable);
 
+	g_clear_signal_handler (&app->shell_notify_visible_handler_id, app->shell);
 	g_clear_object (&app->shell);
 
 	G_APPLICATION_CLASS (gs_application_parent_class)->shutdown (application);
@@ -209,6 +212,74 @@ static gboolean
 gs_application_is_shell_loaded (GsApplication *app)
 {
 	return (app->shell_loaded_handler_id == 0);
+}
+
+/* Update the I/O priority (ioprio) of the application, depending on
+ * whether it has any open windows. If no windows are open, lower the priority
+ * so the app consumes fewer resources in the background. If windows are open,
+ * raise the priority to normal.
+ *
+ * In particular, this means that gnome-software will start in the background
+ * with a low priority and not consume lots of CPU when starting up, contending
+ * with other desktop processes at startup.
+ */
+static void
+gs_application_update_priority (GsApplication *self)
+{
+	gboolean has_visible_windows = FALSE;
+	gboolean is_service, shell_is_loaded, should_be_low_priority;
+	GList *windows;  /* (element-type GtkWindow) */
+
+	windows = gtk_application_get_windows (GTK_APPLICATION (self));
+	for (GList *l = windows; l != NULL; l = l->next) {
+		GtkWindow *window = GTK_WINDOW (l->data);
+
+		if (gtk_widget_is_visible (GTK_WIDGET (window))) {
+			has_visible_windows = TRUE;
+			break;
+		}
+	}
+
+	is_service = (g_application_get_flags (G_APPLICATION (self)) & G_APPLICATION_IS_SERVICE);
+	shell_is_loaded = gs_application_is_shell_loaded (self);
+	should_be_low_priority = ((is_service || shell_is_loaded) && !has_visible_windows);
+
+	g_debug ("gnome-software has %s visible windows, %s a --gapplication-service, and shell %s loaded; %s",
+	         has_visible_windows ? "some" : "no",
+	         is_service ? "is" : "is not",
+	         shell_is_loaded ? "is" : "is not",
+	         should_be_low_priority ? "lowering CPU and I/O priorities" : "setting CPU and I/O priorities to default");
+
+	/* I/O */
+	gs_ioprio_set (should_be_low_priority ? G_PRIORITY_LOW : G_PRIORITY_DEFAULT);
+}
+
+static void
+gs_application_window_added (GtkApplication *application,
+                             GtkWindow      *window)
+{
+	GTK_APPLICATION_CLASS (gs_application_parent_class)->window_added (application, window);
+
+	gs_application_update_priority (GS_APPLICATION (application));
+}
+
+static void
+gs_application_window_removed (GtkApplication *application,
+                               GtkWindow      *window)
+{
+	GTK_APPLICATION_CLASS (gs_application_parent_class)->window_removed (application, window);
+
+	gs_application_update_priority (GS_APPLICATION (application));
+}
+
+static void
+gs_application_shell_notify_visible_cb (GObject    *object,
+                                        GParamSpec *pspec,
+                                        void       *user_data)
+{
+	GsApplication *self = GS_APPLICATION (user_data);
+
+	gs_application_update_priority (self);
 }
 
 static void
@@ -1116,6 +1187,9 @@ gs_application_startup (GApplication *application)
 	app->shell_loaded_handler_id = g_signal_connect (app->shell, "loaded",
 							 G_CALLBACK (gs_application_shell_loaded_cb),
 							 app);
+	app->shell_notify_visible_handler_id = g_signal_connect (app->shell, "notify::visible",
+								 G_CALLBACK (gs_application_shell_notify_visible_cb),
+								 app);
 
 	app->main_window = GTK_WINDOW (app->shell);
 	gtk_application_add_window (GTK_APPLICATION (app), app->main_window);
@@ -1408,6 +1482,7 @@ gs_application_class_init (GsApplicationClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GApplicationClass *application_class = G_APPLICATION_CLASS (klass);
+	GtkApplicationClass *gtk_application_class = GTK_APPLICATION_CLASS (klass);
 
 	object_class->constructed = gs_application_constructed;
 	object_class->get_property = gs_application_get_property;
@@ -1421,6 +1496,9 @@ gs_application_class_init (GsApplicationClass *klass)
 	application_class->dbus_register = gs_application_dbus_register;
 	application_class->dbus_unregister = gs_application_dbus_unregister;
 	application_class->shutdown = gs_application_shutdown;
+
+	gtk_application_class->window_added = gs_application_window_added;
+	gtk_application_class->window_removed = gs_application_window_removed;
 
 	/**
 	 * GsApplication:debug: (nullable)
