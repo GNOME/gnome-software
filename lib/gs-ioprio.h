@@ -22,10 +22,15 @@
 
 #pragma once
 
+#include <gio/gio.h>
 #include <glib.h>
 
 G_BEGIN_DECLS
 
 void gs_ioprio_set (gint priority);
+
+void gs_set_thread_cpu_niceness (GDBusConnection *system_bus_connection,
+                                 pid_t            tid,
+                                 int              niceness);
 
 G_END_DECLS
