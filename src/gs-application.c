@@ -44,7 +44,7 @@ struct _GsApplication {
 	GsSoftwareOfflineUpdatesProvider *offline_updates_provider;  /* (nullable) (owned) */
 	GSettings       *settings;
 	GSimpleActionGroup	*action_map;
-	guint		 shell_loaded_handler_id;
+	gulong		 shell_loaded_handler_id;
 	GsDebug		*debug;  /* (owned) (not nullable) */
 
 	/* Created/freed on demand */
