@@ -205,6 +205,12 @@ gs_application_shell_loaded_cb (GsShell *shell, GsApplication *app)
 	app->shell_loaded_handler_id = 0;
 }
 
+static gboolean
+gs_application_is_shell_loaded (GsApplication *app)
+{
+	return (app->shell_loaded_handler_id == 0);
+}
+
 static void
 gs_application_present_window (GsApplication *app, const gchar *startup_id)
 {
@@ -1012,7 +1018,7 @@ wrapper_action_activated_cb (GSimpleAction *action,
 	GAction *real_action = g_action_map_lookup_action (G_ACTION_MAP (app->action_map),
 							   action_name);
 
-	if (app->shell_loaded_handler_id != 0) {
+	if (!gs_application_is_shell_loaded (app)) {
 		GsActivationHelper *helper = gs_activation_helper_new (app,
 								       G_SIMPLE_ACTION (real_action),
 								       parameter);
@@ -1170,7 +1176,7 @@ gs_application_activate (GApplication *application)
 {
 	GsApplication *app = GS_APPLICATION (application);
 
-	if (app->shell_loaded_handler_id == 0)
+	if (gs_application_is_shell_loaded (app))
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 
 	gs_shell_activate (GS_APPLICATION (application)->shell);
