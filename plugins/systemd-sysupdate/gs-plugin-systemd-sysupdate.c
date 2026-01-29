@@ -2317,13 +2317,6 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_apps_async);
 
-	/* It's forbidden to mix these flags, but let's check just in case. */
-	if (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD &&
-	    flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY) {
-		g_task_return_boolean (task, TRUE);
-		return;
-	}
-
 	/* The download and apply steps are merged into a single operation in
 	 * systemd-sysupdate, meaning we can't download the update without
 	 * downloading and vice versa. In the meantime, let's do as the
