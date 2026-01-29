@@ -16,6 +16,7 @@
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
+#include <malloc.h>
 
 #include "gs-dbus-helper.h"
 
@@ -276,6 +277,16 @@ gs_application_update_priority (GsApplication *self)
 		gs_set_thread_cpu_niceness (connection, gettid (), should_be_low_priority ? 15 : original_niceness);
 
 	gs_plugin_loader_set_cpu_priority (self->plugin_loader, should_be_low_priority ? G_PRIORITY_LOW : G_PRIORITY_DEFAULT);
+
+	/* Trim heap usage if we’re lowering priority. This is a GNU extension
+	 * in malloc.h, and it doesn’t actually free any memory or defragment
+	 * things, it just drops heap pages which glibc was caching for faster
+	 * reuse, so it lowers apparent heap usage, but at the cost of slower
+	 * allocations in the immediate future. */
+#ifdef __GLIBC__
+	if (should_be_low_priority)
+		malloc_trim (0);
+#endif
 }
 
 static void
