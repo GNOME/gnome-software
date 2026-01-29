@@ -120,4 +120,8 @@ void		 gs_plugin_loader_run_adopt		(GsPluginLoader *plugin_loader,
 							 GsAppList *list);
 void		 gs_plugin_loader_emit_updates_changed	(GsPluginLoader *self);
 
+int		 gs_plugin_loader_get_cpu_priority	(GsPluginLoader *self);
+void		 gs_plugin_loader_set_cpu_priority	(GsPluginLoader *self,
+							 int             cpu_priority);
+
 G_END_DECLS

@@ -56,6 +56,7 @@ typedef struct
 	gchar			*language;		/* allow-none */
 	gchar			*name;
 	guint			 scale;
+	int			 cpu_priority;  /* a G_PRIORITY_* value */
 	guint			 order;
 	guint			 priority;
 	guint			 timer_id;
@@ -73,6 +74,7 @@ G_DEFINE_QUARK (gs-plugin-error-quark, gs_plugin_error)
 typedef enum {
 	PROP_NAME = 1,
 	PROP_SCALE,
+	PROP_CPU_PRIORITY,
 	PROP_SESSION_BUS_CONNECTION,
 	PROP_SYSTEM_BUS_CONNECTION,
 } GsPluginProperty;
@@ -95,6 +97,7 @@ static guint signals [SIGNAL_LAST] = { 0 };
 /**
  * gs_plugin_create:
  * @filename: an absolute filename
+ * @cpu_priority: CPU priority to use for the plugin (a `G_PRIORITY_*` value)
  * @session_bus_connection: (not nullable) (transfer none): a session bus
  *   connection to use
  * @system_bus_connection: (not nullable) (transfer none): a system bus
@@ -105,10 +108,11 @@ static guint signals [SIGNAL_LAST] = { 0 };
  *
  * Returns: (transfer full): the #GsPlugin, or %NULL on error
  *
- * Since: 43
+ * Since: 50
  **/
 GsPlugin *
 gs_plugin_create (const gchar      *filename,
+                  int               cpu_priority,
                   GDBusConnection  *session_bus_connection,
                   GDBusConnection  *system_bus_connection,
                   GError          **error)
@@ -160,6 +164,7 @@ gs_plugin_create (const gchar      *filename,
 			       "session-bus-connection", session_bus_connection,
 			       "system-bus-connection", system_bus_connection,
 			       "name", basename + strlen (library_prefix),
+			       "cpu-priority", cpu_priority,
 			       NULL);
 	priv = gs_plugin_get_instance_private (plugin);
 	priv->module = g_steal_pointer (&module);
@@ -290,6 +295,49 @@ gs_plugin_set_scale (GsPlugin *plugin, guint scale)
 	if (priv->scale != scale) {
 		priv->scale = scale;
 		g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_SCALE]);
+	}
+}
+
+/**
+ * gs_plugin_get_cpu_priority:
+ * @plugin: a plugin
+ *
+ * Gets the CPU priority for the plugin.
+ *
+ * Returns: the priority (a `G_PRIORITY_*` value)
+ *
+ * Since: 50
+ **/
+int
+gs_plugin_get_cpu_priority (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), G_PRIORITY_DEFAULT);
+
+	return priv->cpu_priority;
+}
+
+/**
+ * gs_plugin_set_cpu_priority:
+ * @plugin: a plugin
+ * @cpu_priority: the CPU priority (a `G_PRIORITY_*` value)
+ *
+ * Sets the CPU priority for the plugin.
+ *
+ * Since: 50
+ **/
+void
+gs_plugin_set_cpu_priority (GsPlugin *plugin,
+                            int       cpu_priority)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+
+	if (priv->cpu_priority != cpu_priority) {
+		priv->cpu_priority = cpu_priority;
+		g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_CPU_PRIORITY]);
 	}
 }
 
@@ -1433,6 +1481,9 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 	case PROP_SCALE:
 		gs_plugin_set_scale (plugin, g_value_get_uint (value));
 		break;
+	case PROP_CPU_PRIORITY:
+		gs_plugin_set_cpu_priority (plugin, g_value_get_int (value));
+		break;
 	case PROP_SESSION_BUS_CONNECTION:
 		/* Construct only */
 		g_assert (priv->session_bus_connection == NULL);
@@ -1461,6 +1512,9 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 		break;
 	case PROP_SCALE:
 		g_value_set_uint (value, gs_plugin_get_scale (plugin));
+		break;
+	case PROP_CPU_PRIORITY:
+		g_value_set_int (value, gs_plugin_get_cpu_priority (plugin));
 		break;
 	case PROP_SESSION_BUS_CONNECTION:
 		g_value_set_object (value, priv->session_bus_connection);
@@ -1515,6 +1569,20 @@ gs_plugin_class_init (GsPluginClass *klass)
 	obj_props[PROP_SCALE] =
 		g_param_spec_uint ("scale", NULL, NULL,
 				   1, G_MAXUINT, 1,
+				   G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPlugin:cpu-priority:
+	 *
+	 * The plugin’s CPU priority.
+	 *
+	 * This may change during the plugin’s lifetime.
+	 *
+	 * Since: 50
+	 */
+	obj_props[PROP_CPU_PRIORITY] =
+		g_param_spec_int ("cpu-priority", NULL, NULL,
+				   INT_MIN, INT_MAX, G_PRIORITY_DEFAULT,
 				   G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
@@ -1610,6 +1678,7 @@ gs_plugin_init (GsPlugin *plugin)
 
 	priv->enabled = TRUE;
 	priv->scale = 1;
+	priv->cpu_priority = G_PRIORITY_DEFAULT;
 	priv->cache = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash,
 					     (GEqualFunc) as_utils_data_id_equal,
 					     g_free,

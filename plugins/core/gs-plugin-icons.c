@@ -41,12 +41,19 @@ struct _GsPluginIcons
 
 G_DEFINE_TYPE (GsPluginIcons, gs_plugin_icons, GS_TYPE_PLUGIN)
 
+static void notify_cpu_priority_cb (GObject    *obj,
+                                    GParamSpec *pspec,
+                                    void       *user_data);
+
 static void
 gs_plugin_icons_init (GsPluginIcons *self)
 {
 	/* needs remote icons downloaded */
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "epiphany");
+
+	g_signal_connect (self, "notify::cpu-priority",
+			  G_CALLBACK (notify_cpu_priority_cb), NULL);
 }
 
 static void
@@ -58,6 +65,19 @@ gs_plugin_icons_dispose (GObject *object)
 	g_clear_object (&self->soup_session);
 
 	G_OBJECT_CLASS (gs_plugin_icons_parent_class)->dispose (object);
+}
+
+static void
+notify_cpu_priority_cb (GObject    *obj,
+                        GParamSpec *pspec,
+                        void       *user_data)
+{
+	GsPluginIcons *self = GS_PLUGIN_ICONS (obj);
+	GDBusConnection *connection = gs_plugin_get_system_bus_connection (GS_PLUGIN (self));
+
+	if (connection != NULL && self->icon_downloader != NULL)
+		gs_icon_downloader_update_priority (self->icon_downloader, connection,
+						    gs_plugin_get_cpu_priority (GS_PLUGIN (self)));
 }
 
 static void
@@ -80,6 +100,7 @@ gs_plugin_icons_setup_async (GsPlugin            *plugin,
 	g_object_bind_property (plugin, "scale",
 				self->icon_downloader, "scale",
 				G_BINDING_SYNC_CREATE);
+	notify_cpu_priority_cb (G_OBJECT (self), NULL, NULL);
 
 	g_task_return_boolean (task, TRUE);
 }

@@ -27,6 +27,10 @@ G_DECLARE_FINAL_TYPE (GsIconDownloader, gs_icon_downloader, GS, ICON_DOWNLOADER,
 GsIconDownloader	*gs_icon_downloader_new			(SoupSession		*soup_session,
 								 guint			 maximum_size);
 
+void			 gs_icon_downloader_update_priority	(GsIconDownloader	*self,
+								 GDBusConnection	*system_bus_connection,
+								 int			 priority);
+
 void			 gs_icon_downloader_queue_app		(GsIconDownloader	*self,
 								 GsApp			*app,
 								 gboolean		 interactive);

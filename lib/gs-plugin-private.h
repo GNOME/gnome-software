@@ -17,6 +17,7 @@
 G_BEGIN_DECLS
 
 GsPlugin	*gs_plugin_create			(const gchar	*filename,
+							 int		 cpu_priority,
 							 GDBusConnection *session_bus_connection,
 							 GDBusConnection *system_bus_connection,
 							 GError		**error);
@@ -24,6 +25,8 @@ const gchar	*gs_plugin_error_to_string		(GsPluginError	 error);
 
 void		 gs_plugin_set_scale			(GsPlugin	*plugin,
 							 guint		 scale);
+void		 gs_plugin_set_cpu_priority		(GsPlugin	*plugin,
+							 int		 cpu_priority);
 guint		 gs_plugin_get_order			(GsPlugin	*plugin);
 void		 gs_plugin_set_order			(GsPlugin	*plugin,
 							 guint		 order);

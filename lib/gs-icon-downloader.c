@@ -189,6 +189,31 @@ gs_icon_downloader_new (SoupSession *soup_session,
 			     NULL);
 }
 
+/**
+ * gs_icon_downloader_update_priority:
+ * @self: an icon downloader
+ * @system_bus_connection: a connection to the D-Bus system bus
+ * @priority: new priority for the icon downloader’s worker thread to use,
+ *   using the `G_PRIORITY_*` constants; default to `G_PRIORITY_DEFAULT`
+ *
+ * Sets the priority of the icon downloader’s worker thread.
+ *
+ * This is intended to be used for long-term priority changes (for example, if
+ * the main gnome-software window is closed or opened) rather than changing the
+ * priority of individual icon downloads.
+ *
+ * Since: 50
+ */
+void
+gs_icon_downloader_update_priority (GsIconDownloader *self,
+                                    GDBusConnection  *system_bus_connection,
+                                    int               priority)
+{
+	g_return_if_fail (GS_IS_ICON_DOWNLOADER (self));
+	g_return_if_fail (G_IS_DBUS_CONNECTION (system_bus_connection));
+
+	gs_worker_thread_update_cpu_priority (self->worker, system_bus_connection, priority);
+}
 
 static void download_remote_icons_of_the_app_cb (GTask        *task,
                                                  gpointer      source_object,

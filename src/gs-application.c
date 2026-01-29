@@ -47,6 +47,7 @@ struct _GsApplication {
 	GSimpleActionGroup	*action_map;
 	gulong		 shell_loaded_handler_id;
 	gulong		 shell_notify_visible_handler_id;
+	gulong		 plugin_loader_notify_system_bus_connection_handler_id;
 	GsDebug		*debug;  /* (owned) (not nullable) */
 
 	/* Created/freed on demand */
@@ -214,7 +215,7 @@ gs_application_is_shell_loaded (GsApplication *app)
 	return (app->shell_loaded_handler_id == 0);
 }
 
-/* Update the I/O priority (ioprio) of the application, depending on
+/* Update the nice() and I/O priority (ioprio) of the application, depending on
  * whether it has any open windows. If no windows are open, lower the priority
  * so the app consumes fewer resources in the background. If windows are open,
  * raise the priority to normal.
@@ -229,6 +230,10 @@ gs_application_update_priority (GsApplication *self)
 	gboolean has_visible_windows = FALSE;
 	gboolean is_service, shell_is_loaded, should_be_low_priority;
 	GList *windows;  /* (element-type GtkWindow) */
+	static size_t original_niceness_set = 0;
+	static int original_niceness;
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	windows = gtk_application_get_windows (GTK_APPLICATION (self));
 	for (GList *l = windows; l != NULL; l = l->next) {
@@ -252,6 +257,25 @@ gs_application_update_priority (GsApplication *self)
 
 	/* I/O */
 	gs_ioprio_set (should_be_low_priority ? G_PRIORITY_LOW : G_PRIORITY_DEFAULT);
+
+	/* CPU */
+	if (g_once_init_enter (&original_niceness_set)) {
+		errno = 0;
+		original_niceness = nice (0);
+		if (original_niceness == -1 && errno != 0) {
+			int errsv = errno;
+			g_debug ("Failed to get niceness: %s", g_strerror (errsv));
+			original_niceness = 0;  /* arbitrary default */
+		}
+
+		g_once_init_leave (&original_niceness_set, TRUE);
+	}
+
+	connection = gs_plugin_loader_get_system_bus_connection (self->plugin_loader);
+	if (connection != NULL)
+		gs_set_thread_cpu_niceness (connection, gettid (), should_be_low_priority ? 15 : original_niceness);
+
+	gs_plugin_loader_set_cpu_priority (self->plugin_loader, should_be_low_priority ? G_PRIORITY_LOW : G_PRIORITY_DEFAULT);
 }
 
 static void
@@ -276,6 +300,16 @@ static void
 gs_application_shell_notify_visible_cb (GObject    *object,
                                         GParamSpec *pspec,
                                         void       *user_data)
+{
+	GsApplication *self = GS_APPLICATION (user_data);
+
+	gs_application_update_priority (self);
+}
+
+static void
+gs_application_plugin_loader_notify_system_bus_connection_cb (GObject    *object,
+                                                              GParamSpec *pspec,
+                                                              void       *user_data)
 {
 	GsApplication *self = GS_APPLICATION (user_data);
 
@@ -1190,6 +1224,10 @@ gs_application_startup (GApplication *application)
 	app->shell_notify_visible_handler_id = g_signal_connect (app->shell, "notify::visible",
 								 G_CALLBACK (gs_application_shell_notify_visible_cb),
 								 app);
+	app->plugin_loader_notify_system_bus_connection_handler_id =
+		g_signal_connect (app->plugin_loader, "notify::system-bus-connection",
+				  G_CALLBACK (gs_application_plugin_loader_notify_system_bus_connection_cb),
+				  app);
 
 	app->main_window = GTK_WINDOW (app->shell);
 	gtk_application_add_window (GTK_APPLICATION (app), app->main_window);
@@ -1319,7 +1357,10 @@ gs_application_dispose (GObject *object)
 
 	g_clear_object (&app->search_provider);
 	g_clear_object (&app->offline_updates_provider);
+
+	g_clear_signal_handler (&app->plugin_loader_notify_system_bus_connection_handler_id, app->plugin_loader);
 	g_clear_object (&app->plugin_loader);
+
 	g_clear_object (&app->update_monitor);
 	g_clear_object (&app->dbus_helper);
 	g_clear_object (&app->settings);
