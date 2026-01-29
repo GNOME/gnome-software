@@ -2489,6 +2489,50 @@ gs_plugin_loader_new (GDBusConnection *session_bus_connection,
 			     NULL);
 }
 
+/**
+ * gs_plugin_loader_get_session_bus_connection:
+ * @plugin_loader: a plugin loader
+ *
+ * Gets the session D-Bus connection used by the plugin loader.
+ *
+ * This is guaranteed to return a non-`NULL` D-Bus connection after the plugin
+ * loader has been successfully set up (and before it’s shut down). Otherwise,
+ * it will return `NULL`.
+ *
+ * Returns: (nullable) (transfer none): session D-Bus connection, or `NULL` if
+ *   the plugin loader is not set up
+ * Since: 50
+ */
+GDBusConnection *
+gs_plugin_loader_get_session_bus_connection (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->session_bus_connection;
+}
+
+/**
+ * gs_plugin_loader_get_system_bus_connection:
+ * @plugin_loader: a plugin loader
+ *
+ * Gets the system D-Bus connection used by the plugin loader.
+ *
+ * This is guaranteed to return a non-`NULL` D-Bus connection after the plugin
+ * loader has been successfully set up (and before it’s shut down). Otherwise,
+ * it will return `NULL`.
+ *
+ * Returns: (nullable) (transfer none): system D-Bus connection, or `NULL` if
+ *   the plugin loader is not set up
+ * Since: 50
+ */
+GDBusConnection *
+gs_plugin_loader_get_system_bus_connection (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->system_bus_connection;
+}
+
 static void
 gs_plugin_loader_apps_installed_cb (GObject *source,
 				    GAsyncResult *res,
