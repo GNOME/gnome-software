@@ -14,6 +14,8 @@
 
 #include "gs-app-addon-row.h"
 
+#include "gs-progress-button.h"
+
 struct _GsAppAddonRow
 {
 	AdwActionRow	 parent_instance;
@@ -75,6 +77,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 {
 	g_autoptr(GString) str = NULL;
 	gboolean show_install = FALSE, show_remove = FALSE;
+	GtkWidget *active_button = NULL;
 
 	if (row->app == NULL)
 		return;
@@ -157,9 +160,27 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 	}
 
 	g_assert (!(show_install && show_remove));
+	active_button = show_install ? row->button_install : row->button_remove;
+
+	/* do a fill bar for the current progress */
+	switch (gs_app_get_state (row->app)) {
+	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_DOWNLOADING:
+	case GS_APP_STATE_REMOVING:
+		if (show_install || show_remove) {
+			gs_progress_button_set_progress (GS_PROGRESS_BUTTON (active_button),
+			                                 gs_app_get_progress (row->app));
+			gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (active_button), TRUE);
+		}
+		break;
+	default:
+		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (row->button_install), FALSE);
+		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (row->button_remove), FALSE);
+		break;
+	}
 
 	gtk_widget_set_visible (row->buttons_stack, show_install || show_remove);
-	gtk_stack_set_visible_child (GTK_STACK (row->buttons_stack), show_install ? row->button_install : row->button_remove);
+	gtk_stack_set_visible_child (GTK_STACK (row->buttons_stack), active_button);
 }
 
 GsApp *
@@ -196,6 +217,9 @@ gs_app_addon_row_set_addon (GsAppAddonRow *row, GsApp *app)
 	g_signal_connect_object (row->app, "notify::state",
 				 G_CALLBACK (gs_app_addon_row_notify_props_changed_cb),
 				 row, 0);
+	g_signal_connect_object (row->app, "notify::progress",
+				 G_CALLBACK (gs_app_addon_row_notify_props_changed_cb),
+				 row, 0);
 	gs_app_addon_row_refresh (row);
 }
 
@@ -219,6 +243,8 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_app_addon_row_dispose;
+
+	g_type_ensure (GS_TYPE_PROGRESS_BUTTON);
 
 	signals [SIGNAL_INSTALL_BUTTON_CLICKED] =
 		g_signal_new ("install-button-clicked",
