@@ -1137,6 +1137,8 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		break;
 	}
 
+	gs_app_queue_notify (app, obj_props[PROP_STATE]);
+
 	return TRUE;
 }
 
@@ -1229,8 +1231,7 @@ gs_app_set_state (GsApp *app, GsAppState state)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	if (gs_app_set_state_internal (app, state))
-		gs_app_queue_notify (app, obj_props[PROP_STATE]);
+	gs_app_set_state_internal (app, state);
 }
 
 /**
@@ -5702,7 +5703,7 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_STATE] = g_param_spec_enum ("state", NULL, NULL,
 				   GS_TYPE_APP_STATE,
 				   GS_APP_STATE_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:progress:
