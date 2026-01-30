@@ -60,6 +60,10 @@ struct _GsWorkerThread
 	GMainContext		*worker_context;  /* (owned); may be NULL before setup or after shutdown */
 	GThread			*worker_thread;  /* (atomic); may be NULL before setup or after shutdown */
 
+	pid_t			 tid;  /* (mutex tid_mutex); will be zero if not known yet */
+	GMutex			 tid_mutex;
+	GCond			 tid_cond;
+
 	GMutex			 queue_mutex;
 	GQueue			 queue;
 };
@@ -149,6 +153,8 @@ gs_worker_thread_finalize (GObject *object)
 	GsWorkerThread *self = GS_WORKER_THREAD (object);
 
 	g_mutex_clear (&self->queue_mutex);
+	g_mutex_clear (&self->tid_mutex);
+	g_cond_clear (&self->tid_cond);
 
 	G_OBJECT_CLASS (gs_worker_thread_parent_class)->finalize (object);
 }
@@ -233,6 +239,14 @@ thread_cb (gpointer data)
 	GsWorkerThread *self = GS_WORKER_THREAD (data);
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (self->worker_context);
 
+	/* Store the thread ID. */
+	g_mutex_lock (&self->tid_mutex);
+	self->tid = gettid ();
+	g_assert (self->tid != 0);
+	g_cond_broadcast (&self->tid_cond);
+	g_mutex_unlock (&self->tid_mutex);
+
+	/* Run until shut down. */
 	while (g_atomic_int_get (&self->worker_state) != GS_WORKER_THREAD_STATE_SHUT_DOWN) {
 		g_main_context_iteration (self->worker_context, TRUE);
 		gs_worker_thread_run_queue (self);
@@ -246,6 +260,8 @@ gs_worker_thread_init (GsWorkerThread *self)
 {
 	g_mutex_init (&self->queue_mutex);
 	g_queue_init (&self->queue);
+	g_mutex_init (&self->tid_mutex);
+	g_cond_init (&self->tid_cond);
 }
 
 /**
@@ -267,6 +283,58 @@ gs_worker_thread_new (const gchar *name)
 	return g_object_new (GS_TYPE_WORKER_THREAD,
 			     "name", name,
 			     NULL);
+}
+
+/**
+ * gs_worker_thread_update_cpu_priority:
+ * @self: a worker thread
+ * @system_bus_connection: a connection to the D-Bus system bus
+ * @priority: new priority for the worker thread to use, using the
+ *   `G_PRIORITY_*` constants; default to `G_PRIORITY_DEFAULT`
+ *
+ * Sets the CPU priority of the worker thread.
+ *
+ * This is intended to be used for long-term priority changes (for example, if
+ * the main gnome-software window is closed or opened) rather than changing the
+ * priority of individual jobs (which can be done using the `priority` argument
+ * to [method@Gs.WorkerThread.queue]).
+ *
+ * Specifically, that argument sets the I/O priority of the worker thread for
+ * the duration of that job. This method, however, sets the CPU priority of the
+ * worker thread for all jobs until it is next called. This is because setting
+ * the CPU priority (several D-Bus calls) is a lot more expensive than setting
+ * the I/O priority (one syscall).
+ *
+ * Since: 50
+ */
+void
+gs_worker_thread_update_cpu_priority (GsWorkerThread  *self,
+                                      GDBusConnection *system_bus_connection,
+                                      int              priority)
+{
+	pid_t tid;
+	int new_niceness;
+
+	g_return_if_fail (GS_IS_WORKER_THREAD (self));
+	g_return_if_fail (G_IS_DBUS_CONNECTION (system_bus_connection));
+
+	/* Can’t do anything if the thread is shutting down. */
+	if (g_atomic_int_get (&self->worker_state) != GS_WORKER_THREAD_STATE_RUNNING)
+		return;
+
+	/* If the thread hasn’t started yet, it will start shortly (as it’s
+	 * started on construction of the `GsWorkerThread`), so wait until it’s
+	 * ready. */
+	g_mutex_lock (&self->tid_mutex);
+	while (self->tid == 0)
+		g_cond_wait (&self->tid_cond, &self->tid_mutex);
+	tid = self->tid;
+	g_mutex_unlock (&self->tid_mutex);
+
+	/* Simplistic mapping of G_PRIORITY_* to niceness for now. */
+	new_niceness = (priority == G_PRIORITY_DEFAULT) ? 0 : 15;
+
+	gs_set_thread_cpu_niceness (system_bus_connection, tid, new_niceness);
 }
 
 static gint

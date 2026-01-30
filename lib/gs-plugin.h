@@ -431,6 +431,7 @@ gboolean	 gs_plugin_get_enabled			(GsPlugin	*plugin);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);
 guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
+int		 gs_plugin_get_cpu_priority		(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);
 void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 GsPluginRule	 rule,

@@ -22,6 +22,10 @@ G_DECLARE_FINAL_TYPE (GsWorkerThread, gs_worker_thread, GS, WORKER_THREAD, GObje
 
 GsWorkerThread	*gs_worker_thread_new			(const gchar *name);
 
+void		 gs_worker_thread_update_cpu_priority	(GsWorkerThread  *self,
+							 GDBusConnection *system_bus_connection,
+							 int              priority);
+
 void		 gs_worker_thread_queue			(GsWorkerThread  *self,
 							 gint             priority,
 							 GTaskThreadFunc  work_func,

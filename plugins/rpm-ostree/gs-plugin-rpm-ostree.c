@@ -82,6 +82,9 @@ static gboolean gs_rpm_ostree_refine_apps (GsPlugin                    *plugin,
                                            GsPluginRefineRequireFlags   require_flags,
                                            GCancellable                *cancellable,
                                            GError                     **error);
+static void notify_cpu_priority_cb (GObject    *obj,
+                                    GParamSpec *pspec,
+                                    void       *user_data);
 
 #define assert_in_worker(self) \
 	g_assert (gs_worker_thread_is_in_worker_context (self->worker))
@@ -175,6 +178,22 @@ gs_plugin_rpm_ostree_init (GsPluginRpmOstree *self)
 
 	/* generic updates happen after rpm-ostree updates */
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_BEFORE, "generic-updates");
+
+	g_signal_connect (self, "notify::cpu-priority",
+			  G_CALLBACK (notify_cpu_priority_cb), NULL);
+}
+
+static void
+notify_cpu_priority_cb (GObject    *obj,
+                        GParamSpec *pspec,
+                        void       *user_data)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (obj);
+	GDBusConnection *connection = gs_plugin_get_system_bus_connection (GS_PLUGIN (self));
+
+	if (connection != NULL && self->worker != NULL)
+		gs_worker_thread_update_cpu_priority (self->worker, connection,
+						      gs_plugin_get_cpu_priority (GS_PLUGIN (self)));
 }
 
 static void
@@ -501,6 +520,7 @@ gs_plugin_rpm_ostree_setup_async (GsPlugin            *plugin,
 
 	/* Start up a worker thread to process all the plugin’s function calls. */
 	self->worker = gs_worker_thread_new ("gs-plugin-rpm-ostree");
+	notify_cpu_priority_cb (G_OBJECT (self), NULL, NULL);
 
 	/* Queue a job to set up the D-Bus proxies. While these could be set
 	 * up from the main thread asynchronously, setting them up in the worker

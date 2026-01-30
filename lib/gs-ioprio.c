@@ -32,6 +32,8 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <sched.h>
+#include <sys/resource.h>
 
 #ifdef HAVE_LINUX_UNISTD_H
 #include <linux/unistd.h>
@@ -187,10 +189,80 @@ gs_ioprio_set (gint priority)
 	}
 }
 
+/**
+ * gs_set_thread_cpu_niceness:
+ * @system_bus_connection: (transfer none): a connection to the D-Bus system bus
+ * @tid: ID of the thread to change the niceness of
+ * @niceness: new niceness (0 is default, >0 means lower scheduling priority,
+ *   <0 means higher scheduling priority and is disallowed)
+ *
+ * Set the CPU niceness of the given thread using RealtimeKit.
+ *
+ * This is essentially equivalent to calling
+ * `setpriority (PRIO_PROCESS, tid, niceness)`, or calling `nice (niceness)`
+ * from within the given thread. However, either of those syscalls require the
+ * `CAP_SYS_NICE` capability, which would also allow the process to _raise_ its
+ * priority. That is a capability we don’t want to have. Requesting the niceness
+ * change to happen via RealtimeKit means that it’s done using RealtimeKit’s
+ * `CAP_SYS_NICE` capability, and appropriate polkit permissions checks can be
+ * done, as well as checks on the requested @niceness value.
+ *
+ * This function may fail if the process doesn’t have permission to change its
+ * thread niceness priority to the given value. If so, *no* warning will be
+ * printed, as that would require waiting for a D-Bus round trip from
+ * RealtimeKit, which seems unnecessary given that the niceness values are
+ * chosen so they shouldn’t typically require permissions to set.
+ *
+ * Since: 50
+ */
+void
+gs_set_thread_cpu_niceness (GDBusConnection *system_bus_connection,
+                            pid_t            tid,
+                            int              niceness)
+{
+	int old_niceness;
+
+	g_return_if_fail (G_IS_DBUS_CONNECTION (system_bus_connection));
+	g_return_if_fail (niceness >= 0);
+
+	errno = 0;
+	old_niceness = getpriority (PRIO_PROCESS, 0);
+	if (old_niceness == -1 && errno != 0) {
+		int errsv = errno;
+		g_warning ("Error getting CPU priority: %s", g_strerror (errsv));
+		old_niceness = 0;
+	}
+
+	g_debug ("Changing thread %d niceness from %d to %d (%s priority)",
+		 tid, old_niceness, niceness, (niceness > 0) ? "low" : "default");
+
+	/* Don’t wait for a reply as we’d only use that to print a debug message
+	 * about success or failure. If you’re debugging this, it’s easy enough
+	 * to run `top -H -p $(pidof gnome-software)`. */
+	g_dbus_connection_call (system_bus_connection,
+				"org.freedesktop.RealtimeKit1",
+				"/org/freedesktop/RealtimeKit1",
+				"org.freedesktop.RealtimeKit1",
+				"MakeThreadHighPriorityWithPID",
+				g_variant_new ("(tti)", getpid (), tid, niceness),
+				NULL,
+				G_DBUS_CALL_FLAGS_NONE,
+				-1,  /* default timeout */
+				NULL,
+				NULL,
+				NULL);
+}
+
 #else  /* __linux__ */
 
 void
 gs_ioprio_set (gint priority)
+{
+}
+
+void
+gs_set_thread_cpu_niceness (pid_t tid,
+                            int   niceness)
 {
 }
 

@@ -28,6 +28,10 @@ G_DECLARE_FINAL_TYPE (GsPluginLoader, gs_plugin_loader, GS, PLUGIN_LOADER, GObje
 
 GsPluginLoader	*gs_plugin_loader_new			(GDBusConnection *session_bus_connection,
 							 GDBusConnection *system_bus_connection);
+
+GDBusConnection	*gs_plugin_loader_get_session_bus_connection (GsPluginLoader *plugin_loader);
+GDBusConnection	*gs_plugin_loader_get_system_bus_connection (GsPluginLoader *plugin_loader);
+
 void		 gs_plugin_loader_job_process_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
@@ -115,5 +119,9 @@ gboolean	 gs_plugin_loader_app_is_compatible	(GsPluginLoader *plugin_loader,
 void		 gs_plugin_loader_run_adopt		(GsPluginLoader *plugin_loader,
 							 GsAppList *list);
 void		 gs_plugin_loader_emit_updates_changed	(GsPluginLoader *self);
+
+int		 gs_plugin_loader_get_cpu_priority	(GsPluginLoader *self);
+void		 gs_plugin_loader_set_cpu_priority	(GsPluginLoader *self,
+							 int             cpu_priority);
 
 G_END_DECLS

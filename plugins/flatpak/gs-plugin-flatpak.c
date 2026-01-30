@@ -88,6 +88,10 @@ G_DEFINE_TYPE (GsPluginFlatpak, gs_plugin_flatpak, GS_TYPE_PLUGIN)
 	} G_STMT_END
 #endif  /* flatpak < 1.13.0 */
 
+static void notify_cpu_priority_cb (GObject    *obj,
+                                    GParamSpec *pspec,
+                                    void       *user_data);
+
 static void
 gs_plugin_flatpak_dispose (GObject *object)
 {
@@ -126,6 +130,24 @@ gs_plugin_flatpak_init (GsPluginFlatpak *self)
 
 	/* used for self tests */
 	self->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
+
+	g_signal_connect (self, "notify::cpu-priority",
+			  G_CALLBACK (notify_cpu_priority_cb), NULL);
+}
+
+static void
+notify_cpu_priority_cb (GObject    *obj,
+                        GParamSpec *pspec,
+                        void       *user_data)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (obj);
+	GDBusConnection *connection = gs_plugin_get_system_bus_connection (GS_PLUGIN (self));
+	int cpu_priority = gs_plugin_get_cpu_priority (GS_PLUGIN (self));
+
+	if (connection != NULL && self->worker != NULL)
+		gs_worker_thread_update_cpu_priority (self->worker, connection, cpu_priority);
+	if (connection != NULL && self->long_running_worker != NULL)
+		gs_worker_thread_update_cpu_priority (self->long_running_worker, connection, cpu_priority);
 }
 
 /* Run in @worker. */
@@ -287,6 +309,8 @@ gs_plugin_flatpak_setup_async (GsPlugin            *plugin,
 	/* Start up two worker threads to process all the plugin’s function calls. */
 	self->worker = gs_worker_thread_new ("gs-plugin-flatpak");
 	self->long_running_worker = gs_worker_thread_new ("gs-plugin-flatpak-long");
+
+	notify_cpu_priority_cb (G_OBJECT (self), NULL, NULL);
 
 	/* Queue a job to find and set up the installations. */
 	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,

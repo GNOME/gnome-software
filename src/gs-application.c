@@ -16,12 +16,14 @@
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
+#include <malloc.h>
 
 #include "gs-dbus-helper.h"
 
 #include "gs-build-ident.h"
 #include "gs-common.h"
 #include "gs-debug.h"
+#include "gs-ioprio.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-shell-search-provider.h"
@@ -44,7 +46,9 @@ struct _GsApplication {
 	GsSoftwareOfflineUpdatesProvider *offline_updates_provider;  /* (nullable) (owned) */
 	GSettings       *settings;
 	GSimpleActionGroup	*action_map;
-	guint		 shell_loaded_handler_id;
+	gulong		 shell_loaded_handler_id;
+	gulong		 shell_notify_visible_handler_id;
+	gulong		 plugin_loader_notify_system_bus_connection_handler_id;
 	GsDebug		*debug;  /* (owned) (not nullable) */
 
 	/* Created/freed on demand */
@@ -193,6 +197,7 @@ gs_application_shutdown (GApplication *application)
 	g_cancellable_cancel (app->cancellable);
 	g_clear_object (&app->cancellable);
 
+	g_clear_signal_handler (&app->shell_notify_visible_handler_id, app->shell);
 	g_clear_object (&app->shell);
 
 	G_APPLICATION_CLASS (gs_application_parent_class)->shutdown (application);
@@ -203,6 +208,123 @@ gs_application_shell_loaded_cb (GsShell *shell, GsApplication *app)
 {
 	g_signal_handler_disconnect (app->shell, app->shell_loaded_handler_id);
 	app->shell_loaded_handler_id = 0;
+}
+
+static gboolean
+gs_application_is_shell_loaded (GsApplication *app)
+{
+	return (app->shell_loaded_handler_id == 0);
+}
+
+/* Update the nice() and I/O priority (ioprio) of the application, depending on
+ * whether it has any open windows. If no windows are open, lower the priority
+ * so the app consumes fewer resources in the background. If windows are open,
+ * raise the priority to normal.
+ *
+ * In particular, this means that gnome-software will start in the background
+ * with a low priority and not consume lots of CPU when starting up, contending
+ * with other desktop processes at startup.
+ */
+static void
+gs_application_update_priority (GsApplication *self)
+{
+	gboolean has_visible_windows = FALSE;
+	gboolean is_service, shell_is_loaded, should_be_low_priority;
+	GList *windows;  /* (element-type GtkWindow) */
+	static size_t original_niceness_set = 0;
+	static int original_niceness;
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	windows = gtk_application_get_windows (GTK_APPLICATION (self));
+	for (GList *l = windows; l != NULL; l = l->next) {
+		GtkWindow *window = GTK_WINDOW (l->data);
+
+		if (gtk_widget_is_visible (GTK_WIDGET (window))) {
+			has_visible_windows = TRUE;
+			break;
+		}
+	}
+
+	is_service = (g_application_get_flags (G_APPLICATION (self)) & G_APPLICATION_IS_SERVICE);
+	shell_is_loaded = gs_application_is_shell_loaded (self);
+	should_be_low_priority = ((is_service || shell_is_loaded) && !has_visible_windows);
+
+	g_debug ("gnome-software has %s visible windows, %s a --gapplication-service, and shell %s loaded; %s",
+	         has_visible_windows ? "some" : "no",
+	         is_service ? "is" : "is not",
+	         shell_is_loaded ? "is" : "is not",
+	         should_be_low_priority ? "lowering CPU and I/O priorities" : "setting CPU and I/O priorities to default");
+
+	/* I/O */
+	gs_ioprio_set (should_be_low_priority ? G_PRIORITY_LOW : G_PRIORITY_DEFAULT);
+
+	/* CPU */
+	if (g_once_init_enter (&original_niceness_set)) {
+		errno = 0;
+		original_niceness = nice (0);
+		if (original_niceness == -1 && errno != 0) {
+			int errsv = errno;
+			g_debug ("Failed to get niceness: %s", g_strerror (errsv));
+			original_niceness = 0;  /* arbitrary default */
+		}
+
+		g_once_init_leave (&original_niceness_set, TRUE);
+	}
+
+	connection = gs_plugin_loader_get_system_bus_connection (self->plugin_loader);
+	if (connection != NULL)
+		gs_set_thread_cpu_niceness (connection, gettid (), should_be_low_priority ? 15 : original_niceness);
+
+	gs_plugin_loader_set_cpu_priority (self->plugin_loader, should_be_low_priority ? G_PRIORITY_LOW : G_PRIORITY_DEFAULT);
+
+	/* Trim heap usage if we’re lowering priority. This is a GNU extension
+	 * in malloc.h, and it doesn’t actually free any memory or defragment
+	 * things, it just drops heap pages which glibc was caching for faster
+	 * reuse, so it lowers apparent heap usage, but at the cost of slower
+	 * allocations in the immediate future. */
+#ifdef __GLIBC__
+	if (should_be_low_priority)
+		malloc_trim (0);
+#endif
+}
+
+static void
+gs_application_window_added (GtkApplication *application,
+                             GtkWindow      *window)
+{
+	GTK_APPLICATION_CLASS (gs_application_parent_class)->window_added (application, window);
+
+	gs_application_update_priority (GS_APPLICATION (application));
+}
+
+static void
+gs_application_window_removed (GtkApplication *application,
+                               GtkWindow      *window)
+{
+	GTK_APPLICATION_CLASS (gs_application_parent_class)->window_removed (application, window);
+
+	gs_application_update_priority (GS_APPLICATION (application));
+}
+
+static void
+gs_application_shell_notify_visible_cb (GObject    *object,
+                                        GParamSpec *pspec,
+                                        void       *user_data)
+{
+	GsApplication *self = GS_APPLICATION (user_data);
+
+	gs_application_update_priority (self);
+}
+
+static void
+gs_application_plugin_loader_notify_system_bus_connection_cb (GObject    *object,
+                                                              GParamSpec *pspec,
+                                                              void       *user_data)
+{
+	GsApplication *self = GS_APPLICATION (user_data);
+
+	gs_application_update_priority (self);
 }
 
 static void
@@ -1012,7 +1134,7 @@ wrapper_action_activated_cb (GSimpleAction *action,
 	GAction *real_action = g_action_map_lookup_action (G_ACTION_MAP (app->action_map),
 							   action_name);
 
-	if (app->shell_loaded_handler_id != 0) {
+	if (!gs_application_is_shell_loaded (app)) {
 		GsActivationHelper *helper = gs_activation_helper_new (app,
 								       G_SIMPLE_ACTION (real_action),
 								       parameter);
@@ -1110,6 +1232,13 @@ gs_application_startup (GApplication *application)
 	app->shell_loaded_handler_id = g_signal_connect (app->shell, "loaded",
 							 G_CALLBACK (gs_application_shell_loaded_cb),
 							 app);
+	app->shell_notify_visible_handler_id = g_signal_connect (app->shell, "notify::visible",
+								 G_CALLBACK (gs_application_shell_notify_visible_cb),
+								 app);
+	app->plugin_loader_notify_system_bus_connection_handler_id =
+		g_signal_connect (app->plugin_loader, "notify::system-bus-connection",
+				  G_CALLBACK (gs_application_plugin_loader_notify_system_bus_connection_cb),
+				  app);
 
 	app->main_window = GTK_WINDOW (app->shell);
 	gtk_application_add_window (GTK_APPLICATION (app), app->main_window);
@@ -1170,7 +1299,7 @@ gs_application_activate (GApplication *application)
 {
 	GsApplication *app = GS_APPLICATION (application);
 
-	if (app->shell_loaded_handler_id == 0)
+	if (gs_application_is_shell_loaded (app))
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 
 	gs_shell_activate (GS_APPLICATION (application)->shell);
@@ -1239,7 +1368,10 @@ gs_application_dispose (GObject *object)
 
 	g_clear_object (&app->search_provider);
 	g_clear_object (&app->offline_updates_provider);
+
+	g_clear_signal_handler (&app->plugin_loader_notify_system_bus_connection_handler_id, app->plugin_loader);
 	g_clear_object (&app->plugin_loader);
+
 	g_clear_object (&app->update_monitor);
 	g_clear_object (&app->dbus_helper);
 	g_clear_object (&app->settings);
@@ -1402,6 +1534,7 @@ gs_application_class_init (GsApplicationClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GApplicationClass *application_class = G_APPLICATION_CLASS (klass);
+	GtkApplicationClass *gtk_application_class = GTK_APPLICATION_CLASS (klass);
 
 	object_class->constructed = gs_application_constructed;
 	object_class->get_property = gs_application_get_property;
@@ -1415,6 +1548,9 @@ gs_application_class_init (GsApplicationClass *klass)
 	application_class->dbus_register = gs_application_dbus_register;
 	application_class->dbus_unregister = gs_application_dbus_unregister;
 	application_class->shutdown = gs_application_shutdown;
+
+	gtk_application_class->window_added = gs_application_window_added;
+	gtk_application_class->window_removed = gs_application_window_removed;
 
 	/**
 	 * GsApplication:debug: (nullable)

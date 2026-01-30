@@ -64,6 +64,7 @@ struct _GsPluginLoader
 
 	gchar			**compatible_projects;
 	guint			 scale;
+	int			 cpu_priority;  /* a `G_PRIORITY_*` value */
 
 	guint			 updates_changed_id;
 	guint			 updates_changed_cnt;
@@ -112,9 +113,10 @@ typedef enum {
 	PROP_NETWORK_METERED,
 	PROP_SESSION_BUS_CONNECTION,
 	PROP_SYSTEM_BUS_CONNECTION,
+	PROP_CPU_PRIORITY,
 } GsPluginLoaderProperty;
 
-static GParamSpec *obj_props[PROP_SYSTEM_BUS_CONNECTION + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_CPU_PRIORITY + 1] = { NULL, };
 
 GsPlugin *
 gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
@@ -1225,6 +1227,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 
 	/* create plugin from file */
 	plugin = gs_plugin_create (filename,
+				   plugin_loader->cpu_priority,
 				   plugin_loader->session_bus_connection,
 				   plugin_loader->system_bus_connection,
 				   &error);
@@ -1256,6 +1259,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	gs_plugin_set_language (plugin, plugin_loader->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
 	gs_plugin_set_network_monitor (plugin, plugin_loader->network_monitor);
+
+	g_object_bind_property (plugin_loader, "cpu-priority", plugin, "cpu-priority", G_BINDING_DEFAULT);
+
 	g_debug ("opened plugin %s: %s", filename, gs_plugin_get_name (plugin));
 
 	/* add to array */
@@ -2088,6 +2094,9 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 	case PROP_SYSTEM_BUS_CONNECTION:
 		g_value_set_object (value, plugin_loader->system_bus_connection);
 		break;
+	case PROP_CPU_PRIORITY:
+		g_value_set_int (value, gs_plugin_loader_get_cpu_priority (plugin_loader));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2117,6 +2126,9 @@ gs_plugin_loader_set_property (GObject *object, guint prop_id,
 		/* Construct only */
 		g_assert (plugin_loader->system_bus_connection == NULL);
 		plugin_loader->system_bus_connection = g_value_dup_object (value);
+		break;
+	case PROP_CPU_PRIORITY:
+		gs_plugin_loader_set_cpu_priority (plugin_loader, g_value_get_int (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -2295,6 +2307,20 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 				     G_TYPE_DBUS_CONNECTION,
 				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsPluginLoader:cpu-priority:
+	 *
+	 * CPU priority to use for all plugins.
+	 *
+	 * This is given as a `G_PRIORITY_*` value.
+	 *
+	 * Since: 50
+	 */
+	obj_props[PROP_CPU_PRIORITY] =
+		g_param_spec_int ("cpu-priority", NULL, NULL,
+				  INT_MIN, INT_MAX, G_PRIORITY_DEFAULT,
+				  G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_PENDING_APPS_CHANGED] =
@@ -2366,6 +2392,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	plugin_loader->setup_complete_cancellable = g_cancellable_new ();
 	plugin_loader->scale = 1;
+	plugin_loader->cpu_priority = G_PRIORITY_DEFAULT;
 	plugin_loader->plugins = g_ptr_array_new_with_free_func (g_object_unref);
 	plugin_loader->pending_apps = NULL;
 	plugin_loader->file_monitors = g_ptr_array_new_with_free_func (g_object_unref);
@@ -2487,6 +2514,50 @@ gs_plugin_loader_new (GDBusConnection *session_bus_connection,
 			     "session-bus-connection", session_bus_connection,
 			     "system-bus-connection", system_bus_connection,
 			     NULL);
+}
+
+/**
+ * gs_plugin_loader_get_session_bus_connection:
+ * @plugin_loader: a plugin loader
+ *
+ * Gets the session D-Bus connection used by the plugin loader.
+ *
+ * This is guaranteed to return a non-`NULL` D-Bus connection after the plugin
+ * loader has been successfully set up (and before it’s shut down). Otherwise,
+ * it will return `NULL`.
+ *
+ * Returns: (nullable) (transfer none): session D-Bus connection, or `NULL` if
+ *   the plugin loader is not set up
+ * Since: 50
+ */
+GDBusConnection *
+gs_plugin_loader_get_session_bus_connection (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->session_bus_connection;
+}
+
+/**
+ * gs_plugin_loader_get_system_bus_connection:
+ * @plugin_loader: a plugin loader
+ *
+ * Gets the system D-Bus connection used by the plugin loader.
+ *
+ * This is guaranteed to return a non-`NULL` D-Bus connection after the plugin
+ * loader has been successfully set up (and before it’s shut down). Otherwise,
+ * it will return `NULL`.
+ *
+ * Returns: (nullable) (transfer none): system D-Bus connection, or `NULL` if
+ *   the plugin loader is not set up
+ * Since: 50
+ */
+GDBusConnection *
+gs_plugin_loader_get_system_bus_connection (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->system_bus_connection;
 }
 
 static void
@@ -3249,4 +3320,47 @@ gs_plugin_loader_emit_updates_changed (GsPluginLoader *self)
 		g_idle_add_full (G_PRIORITY_HIGH_IDLE,
 				 gs_plugin_loader_job_updates_changed_delay_cb,
 				 g_object_ref (self), g_object_unref);
+}
+
+/**
+ * gs_plugin_loader_get_cpu_priority:
+ * @self: a plugin loader
+ *
+ * Gets the CPU priority of the plugins.
+ *
+ * Returns: a CPU priority, as a `G_PRIORITY_*` value
+ * Since: 50
+ */
+int
+gs_plugin_loader_get_cpu_priority (GsPluginLoader *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (self), G_PRIORITY_DEFAULT);
+
+	return self->cpu_priority;
+}
+
+/**
+ * gs_plugin_loader_set_cpu_priority:
+ * @self: a plugin loader
+ * @cpu_priority: new priority for the plugins to use, using the `G_PRIORITY_*`
+ *   constants; default to `G_PRIORITY_DEFAULT`
+ *
+ * Sets the CPU priority of the plugins, for example for their worker threads.
+ *
+ * This is intended to be used for long-term priority changes (for example, if
+ * the main gnome-software window is closed or opened) rather than changing the
+ * priority of individual jobs.
+ *
+ * Since: 50
+ */
+void
+gs_plugin_loader_set_cpu_priority (GsPluginLoader *self,
+                                   int             cpu_priority)
+{
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (self));
+
+	if (self->cpu_priority != cpu_priority) {
+		self->cpu_priority = cpu_priority;
+		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_CPU_PRIORITY]);
+	}
 }

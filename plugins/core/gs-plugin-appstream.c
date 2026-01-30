@@ -56,6 +56,10 @@ G_DEFINE_TYPE (GsPluginAppstream, gs_plugin_appstream, GS_TYPE_PLUGIN)
 #define assert_in_worker(self) \
 	g_assert (gs_worker_thread_is_in_worker_context (self->worker))
 
+static void notify_cpu_priority_cb (GObject    *obj,
+                                    GParamSpec *pspec,
+                                    void       *user_data);
+
 static void
 gs_plugin_appstream_dispose (GObject *object)
 {
@@ -90,6 +94,22 @@ gs_plugin_appstream_init (GsPluginAppstream *self)
 		g_signal_connect_object (application, "repository-changed",
 			G_CALLBACK (gs_plugin_update_cache_state_for_repository), self, G_CONNECT_SWAPPED);
 	}
+
+	g_signal_connect (self, "notify::cpu-priority",
+			  G_CALLBACK (notify_cpu_priority_cb), NULL);
+}
+
+static void
+notify_cpu_priority_cb (GObject    *obj,
+                        GParamSpec *pspec,
+                        void       *user_data)
+{
+	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (obj);
+	GDBusConnection *connection = gs_plugin_get_system_bus_connection (GS_PLUGIN (self));
+
+	if (connection != NULL && self->worker != NULL)
+		gs_worker_thread_update_cpu_priority (self->worker, connection,
+						      gs_plugin_get_cpu_priority (GS_PLUGIN (self)));
 }
 
 static const gchar *
@@ -719,6 +739,7 @@ gs_plugin_appstream_setup_async (GsPlugin            *plugin,
 
 	/* Start up a worker thread to process all the plugin’s function calls. */
 	self->worker = gs_worker_thread_new ("gs-plugin-appstream");
+	notify_cpu_priority_cb (G_OBJECT (self), NULL, NULL);
 
 	/* Queue a job to check the silo, which will cause it to be loaded. */
 	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
