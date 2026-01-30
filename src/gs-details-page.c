@@ -1742,23 +1742,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		return;
 
 	/* show or hide the entire reviews section */
-	switch (gs_app_get_kind (self->app)) {
-	case AS_COMPONENT_KIND_DESKTOP_APP:
-	case AS_COMPONENT_KIND_FONT:
-	case AS_COMPONENT_KIND_INPUT_METHOD:
-	case AS_COMPONENT_KIND_WEB_APP:
-		/* don't show a missing rating on a local file */
-		if (gs_app_get_state (self->app) != GS_APP_STATE_AVAILABLE_LOCAL &&
-		    self->odrs_provider != NULL)
-			show_reviews = TRUE;
-		break;
-	default:
-		break;
-	}
-
-	/* some apps are unreviewable */
-	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_NOT_REVIEWABLE))
-		show_reviews = FALSE;
+	show_reviews = gs_app_get_show_reviews (self->app) && self->odrs_provider != NULL;
 
 	/* set the star rating */
 	if (show_reviews) {
