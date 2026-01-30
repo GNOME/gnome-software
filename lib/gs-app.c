@@ -4370,7 +4370,7 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 	 * degrade to the offline state */
 	if (priv->state == GS_APP_STATE_UPDATABLE_LIVE &&
 	    priv2->state == GS_APP_STATE_UPDATABLE)
-		priv->state = priv2->state;
+		gs_app_set_state_internal (app, priv2->state);
 
 	gs_app_list_add (priv->related, app2);
 
