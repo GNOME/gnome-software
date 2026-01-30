@@ -491,7 +491,8 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->star, FALSE);
 	} else {
 		gtk_widget_set_visible (priv->version_box, FALSE);
-		if (missing_search_result || gs_app_get_rating (priv->app) <= 0 || !priv->show_rating) {
+		if (missing_search_result || gs_app_get_rating (priv->app) <= 0 ||
+		    !priv->show_rating || !gs_app_get_show_reviews (priv->app)) {
 			gtk_widget_set_visible (priv->star, FALSE);
 		} else {
 			gtk_widget_set_visible (priv->star, TRUE);
@@ -795,6 +796,9 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 	g_signal_connect_object (priv->app, "notify::rating",
+				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
+				 app_row, 0);
+	g_signal_connect_object (priv->app, "notify::show-reviews",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 	g_signal_connect_object (priv->app, "notify::progress",
