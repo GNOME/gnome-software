@@ -2680,6 +2680,8 @@ gs_plugin_systemd_sysupdate_trigger_upgrade_async (GsPlugin                    *
                                                    GAsyncReadyCallback          callback,
                                                    gpointer                     user_data)
 {
+	GsPluginUpdateAppsFlags update_flags = GS_PLUGIN_UPDATE_APPS_FLAGS_NONE;
+
 	/* Download and install specific distro upgrade
 	 */
 	g_autoptr(GsAppList) apps = NULL;
@@ -2687,8 +2689,11 @@ gs_plugin_systemd_sysupdate_trigger_upgrade_async (GsPlugin                    *
 	apps = gs_app_list_new ();
 	gs_app_list_add (apps, app);
 
+	if (flags & GS_PLUGIN_TRIGGER_UPGRADE_FLAGS_INTERACTIVE)
+		update_flags |= GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE;
+
 	gs_plugin_systemd_sysupdate_update_apps_async (plugin, apps,
-	                                               GS_PLUGIN_UPDATE_APPS_FLAGS_NONE,
+	                                               update_flags,
 	                                               NULL, NULL,
 	                                               NULL, NULL,
 	                                               NULL, NULL,
