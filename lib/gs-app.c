@@ -174,6 +174,7 @@ typedef enum {
 	PROP_SUMMARY,
 	PROP_DESCRIPTION,
 	PROP_RATING,
+	PROP_SHOW_REVIEWS,
 	PROP_KIND,
 	PROP_SPECIAL_KIND,
 	PROP_STATE,
@@ -1104,6 +1105,7 @@ gs_app_set_state_recover (GsApp *app)
 
 	priv->state = priv->state_recover;
 	gs_app_queue_notify (app, obj_props[PROP_STATE]);
+	gs_app_queue_notify (app, obj_props[PROP_SHOW_REVIEWS]);
 }
 
 /* mutex must be held */
@@ -1136,6 +1138,9 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 			priv->state_recover = state;
 		break;
 	}
+
+	gs_app_queue_notify (app, obj_props[PROP_STATE]);
+	gs_app_queue_notify (app, obj_props[PROP_SHOW_REVIEWS]);
 
 	return TRUE;
 }
@@ -1229,8 +1234,7 @@ gs_app_set_state (GsApp *app, GsAppState state)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	if (gs_app_set_state_internal (app, state))
-		gs_app_queue_notify (app, obj_props[PROP_STATE]);
+	gs_app_set_state_internal (app, state);
 }
 
 /**
@@ -1322,6 +1326,7 @@ gs_app_set_kind (GsApp *app, AsComponentKind kind)
 
 	priv->kind = kind;
 	gs_app_queue_notify (app, obj_props[PROP_KIND]);
+	gs_app_queue_notify (app, obj_props[PROP_SHOW_REVIEWS]);
 
 	/* no longer valid */
 	priv->unique_id_valid = FALSE;
@@ -3383,10 +3388,41 @@ gs_app_set_management_plugin (GsApp    *app,
 }
 
 /**
+ * gs_app_get_show_reviews:
+ * @app: an app
+ *
+ * Gets whether the ratings and reviews should be shown for the app.
+ *
+ * Returns: true if reviews and ratings should be shown, false otherwise
+ * Since: 50
+ */
+gboolean
+gs_app_get_show_reviews (GsApp *app)
+{
+	AsComponentKind app_kind;
+	GsAppState app_state;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	app_kind = gs_app_get_kind (app);
+	app_state = gs_app_get_state (app);
+
+	return (!gs_app_has_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE) &&
+		(app_kind == AS_COMPONENT_KIND_DESKTOP_APP ||
+		 app_kind == AS_COMPONENT_KIND_FONT ||
+		 app_kind == AS_COMPONENT_KIND_INPUT_METHOD ||
+		 app_kind == AS_COMPONENT_KIND_WEB_APP) &&
+		/* don't show a missing rating on a local file: */
+		app_state != GS_APP_STATE_AVAILABLE_LOCAL);
+}
+
+/**
  * gs_app_get_rating:
  * @app: a #GsApp
  *
  * Gets the percentage rating of the application, where 100 is 5 stars.
+ *
+ * This should only be shown to the user if [prop@Gs.App:show-reviews] is true.
  *
  * Returns: a percentage, or -1 for unset
  *
@@ -3427,6 +3463,8 @@ gs_app_set_rating (GsApp *app, gint rating)
  * @app: a #GsApp
  *
  * Gets the review ratings.
+ *
+ * These should only be shown to the user if [prop@Gs.App:show-reviews] is true.
  *
  * Returns: (element-type guint32) (transfer none): a list
  *
@@ -3478,6 +3516,8 @@ review_score_sort_cb (gconstpointer a, gconstpointer b)
  * Gets all the user-submitted reviews for the application.
  *
  * The reviews are guaranteed to be returned in decreasing order of review priority.
+ *
+ * These should only be shown to the user if [prop@Gs.App:show-reviews] is true.
  *
  * The returned array must not be modified.
  *
@@ -4330,7 +4370,7 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 	 * degrade to the offline state */
 	if (priv->state == GS_APP_STATE_UPDATABLE_LIVE &&
 	    priv2->state == GS_APP_STATE_UPDATABLE)
-		priv->state = priv2->state;
+		gs_app_set_state_internal (app, priv2->state);
 
 	gs_app_list_add (priv->related, app2);
 
@@ -5135,7 +5175,10 @@ gs_app_add_quirk (GsApp *app, GsAppQuirk quirk)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 	priv->quirk |= quirk;
+
 	gs_app_queue_notify (app, obj_props[PROP_QUIRK]);
+	if (quirk == GS_APP_QUIRK_NOT_REVIEWABLE)
+		gs_app_queue_notify (app, obj_props[PROP_SHOW_REVIEWS]);
 }
 
 /**
@@ -5160,7 +5203,10 @@ gs_app_remove_quirk (GsApp *app, GsAppQuirk quirk)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 	priv->quirk &= ~quirk;
+
 	gs_app_queue_notify (app, obj_props[PROP_QUIRK]);
+	if (quirk == GS_APP_QUIRK_NOT_REVIEWABLE)
+		gs_app_queue_notify (app, obj_props[PROP_SHOW_REVIEWS]);
 }
 
 /**
@@ -5306,6 +5352,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		break;
 	case PROP_RATING:
 		g_value_set_int (value, priv->rating);
+		break;
+	case PROP_SHOW_REVIEWS:
+		g_value_set_boolean (value, gs_app_get_show_reviews (app));
 		break;
 	case PROP_KIND:
 		g_value_set_uint (value, priv->kind);
@@ -5454,6 +5503,10 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_RATING:
 		gs_app_set_rating (app, g_value_get_int (value));
+		break;
+	case PROP_SHOW_REVIEWS:
+		/* Read only. */
+		g_assert_not_reached ();
 		break;
 	case PROP_KIND:
 		gs_app_set_kind (app, g_value_get_uint (value));
@@ -5674,6 +5727,18 @@ gs_app_class_init (GsAppClass *klass)
 				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsApp:show-reviews:
+	 *
+	 * Whether the ratings and reviews should be shown for the app.
+	 *
+	 * Since: 50
+	 */
+	obj_props[PROP_SHOW_REVIEWS] =
+		g_param_spec_boolean ("show-reviews", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
 	 * GsApp:kind:
 	 */
 	/* FIXME: Should use AS_TYPE_APP_KIND when it’s available */
@@ -5702,7 +5767,7 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_STATE] = g_param_spec_enum ("state", NULL, NULL,
 				   GS_TYPE_APP_STATE,
 				   GS_APP_STATE_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:progress:
