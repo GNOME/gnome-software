@@ -397,6 +397,7 @@ typedef struct {
 	gpointer app_needs_user_action_data;
 	GCancellable *cancellable; /* (owned) (nullable) */
 	GsPluginUpdateAppsFlags flags;
+	void *schedule_entry_handle;
 } GsPluginSystemdSysupdateUpdateAppsData;
 
 static GsPluginSystemdSysupdateUpdateAppsData *
@@ -432,6 +433,7 @@ gs_plugin_systemd_sysupdate_update_apps_data_free (GsPluginSystemdSysupdateUpdat
 	data->app_needs_user_action_data = NULL;
 	g_clear_object (&data->cancellable);
 	data->flags = 0;
+	g_assert (data->schedule_entry_handle == NULL);
 	g_free (data);
 }
 
@@ -440,13 +442,7 @@ typedef struct {
 	GCancellable *cancellable; /* (owned) (nullable) */
 	gulong cancelled_id;
 	gboolean interactive;
-	gpointer schedule_entry_handle;
 } GsPluginSystemdSysupdateUpdateAppData;
-
-static void
-gs_plugin_systemd_sysupdate_update_app_data_remove_from_download_scheduler_cb (GObject      *source_object,
-                                                                               GAsyncResult *result,
-                                                                               gpointer      schedule_entry_handle);
 
 static GsPluginSystemdSysupdateUpdateAppData *
 gs_plugin_systemd_sysupdate_update_app_data_new (GsApp        *app,
@@ -471,36 +467,7 @@ gs_plugin_systemd_sysupdate_update_app_data_free (GsPluginSystemdSysupdateUpdate
 	g_clear_object (&data->cancellable);
 	data->cancelled_id = 0;
 	data->interactive = FALSE;
-	g_assert (data->schedule_entry_handle == NULL);
 	g_free (data);
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_app_data_remove_from_download_scheduler (GsPluginSystemdSysupdateUpdateAppData *data)
-{
-	if (data->schedule_entry_handle == NULL) {
-		return;
-	}
-
-	gs_metered_remove_from_download_scheduler_async (data->schedule_entry_handle,
-	                                                 NULL,
-	                                                 gs_plugin_systemd_sysupdate_update_app_data_remove_from_download_scheduler_cb,
-	                                                 data->schedule_entry_handle);
-	data->schedule_entry_handle = NULL;
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_app_data_remove_from_download_scheduler_cb (GObject      *source_object,
-                                                                               GAsyncResult *result,
-                                                                               gpointer      schedule_entry_handle)
-{
-	g_autoptr(GError) local_error = NULL;
-
-	if (!gs_metered_remove_from_download_scheduler_finish (schedule_entry_handle, result, &local_error)) {
-		g_warning ("Failed to remove from download scheduler: %s",
-		           local_error->message);
-		g_clear_error (&local_error);
-	}
 }
 
 /* Plugin object */
@@ -647,7 +614,10 @@ static gboolean
 gs_plugin_systemd_sysupdate_target_refresh_metadata_finish (GsPlugin      *plugin,
                                                             GAsyncResult  *result,
                                                             GError       **error);
-
+static void
+gs_plugin_systemd_sysupdate_update_apps_download_scheduler_cb (GObject      *source_object,
+                                                               GAsyncResult *result,
+                                                               gpointer      user_data);
 static void
 gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
                                               GAsyncResult *result,
@@ -664,20 +634,11 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
                                               GCancellable                       *cancellable,
                                               GAsyncReadyCallback                 callback,
                                               gpointer                            user_data);
-static void
-gs_plugin_systemd_sysupdate_update_app_download_scheduler_cb (GObject      *source_object,
-                                                              GAsyncResult *result,
-                                                              gpointer      user_data);
 
 static void
 gs_plugin_systemd_sysupdate_update_app_update_target_cb (GObject      *source_object,
                                                          GAsyncResult *result,
                                                          gpointer      user_data);
-
-static void
-gs_plugin_systemd_sysupdate_update_app_remove_from_download_scheduler_cb (GObject      *source_object,
-                                                                          GAsyncResult *result,
-                                                                          gpointer      user_data);
 
 static gboolean
 gs_plugin_systemd_sysupdate_update_app_finish (GsPlugin      *plugin,
@@ -2311,6 +2272,7 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	GsPluginSystemdSysupdateUpdateAppsData *data = NULL;
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GQueue) queue = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 
 	/* TODO Report progress */
 
@@ -2358,6 +2320,35 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	                                                         flags);
 	g_task_set_task_data (task, data, (GDestroyNotify)gs_plugin_systemd_sysupdate_update_apps_data_free);
 
+	if (!interactive) {
+		g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
+		g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
+		gs_metered_block_on_download_scheduler_async (g_variant_dict_end (&parameters_dict),
+		                                              cancellable,
+		                                              gs_plugin_systemd_sysupdate_update_apps_download_scheduler_cb,
+		                                              g_steal_pointer (&task));
+	} else {
+		gs_plugin_systemd_sysupdate_update_apps_download_scheduler_cb (NULL, NULL, g_steal_pointer (&task));
+	}
+}
+
+static void
+gs_plugin_systemd_sysupdate_update_apps_download_scheduler_cb (GObject      *source_object,
+                                                               GAsyncResult *result,
+                                                               gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginSystemdSysupdateUpdateAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (result != NULL &&
+	    !gs_metered_block_on_download_scheduler_finish (result, &data->schedule_entry_handle, &local_error)) {
+		if (!g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("Failed to block on download scheduler: %s",
+				   local_error->message);
+		g_clear_error (&local_error);
+	}
+
 	gs_plugin_systemd_sysupdate_update_apps_iter (NULL, NULL, g_steal_pointer (&task));
 }
 
@@ -2387,6 +2378,12 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 	app = g_queue_pop_head (data->queue);
 	if (app == NULL) {
 		/* We reached the end of the queue. */
+
+		/* Fire this call off into the void, it’s not worth tracking it.
+		 * Don’t pass a cancellable in, as the download may have been cancelled. */
+		if (data->schedule_entry_handle != NULL)
+			gs_metered_remove_from_download_scheduler_async (data->schedule_entry_handle, NULL, NULL, NULL);
+
 		g_task_return_boolean (task, TRUE);
 		return;
 	}
@@ -2450,6 +2447,8 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
 	g_autoptr(GTask) task = NULL;
 	gulong cancelled_id = 0;
+	TargetItem *target = NULL;
+	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 
 	/* TODO Report progress */
 
@@ -2470,39 +2469,9 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	                                                        interactive);
 	g_task_set_task_data (task, data, (GDestroyNotify) gs_plugin_systemd_sysupdate_update_app_data_free);
 
-	if (!interactive) {
-		gs_metered_block_on_download_scheduler_async (gs_metered_build_scheduler_parameters_for_app (data->app),
-		                                              cancellable,
-		                                              gs_plugin_systemd_sysupdate_update_app_download_scheduler_cb,
-		                                              g_steal_pointer (&task));
-	} else {
-		gs_plugin_systemd_sysupdate_update_app_download_scheduler_cb (NULL, NULL, g_steal_pointer (&task));
-	}
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_app_download_scheduler_cb (GObject      *source_object,
-                                                              GAsyncResult *result,
-                                                              gpointer      user_data)
-{
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginSystemdSysupdateUpdateAppData *data = g_task_get_task_data (task);
-	g_autoptr(GError) local_error = NULL;
-	TargetItem *target = NULL;
-	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
-	GCancellable *cancellable = g_task_get_cancellable (task);
-
-	if (result != NULL &&
-	    !gs_metered_block_on_download_scheduler_finish (result, &data->schedule_entry_handle, &local_error)) {
-		g_warning ("Failed to block on download scheduler: %s",
-		           local_error->message);
-		g_clear_error (&local_error);
-	}
-
 	/* find the target associated to the app */
 	target = lookup_target_by_app (self, data->app);
 	if (target == NULL) {
-		gs_plugin_systemd_sysupdate_update_app_data_remove_from_download_scheduler (data);
 		g_task_return_new_error (task, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
 		                         "Can´t find target for app: %s", gs_app_get_name (data->app));
 		return;
@@ -2526,40 +2495,11 @@ gs_plugin_systemd_sysupdate_update_app_update_target_cb (GObject      *source_ob
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
-	GsPluginSystemdSysupdateUpdateAppData *data = g_task_get_task_data (task);
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
-	GCancellable *cancellable = g_task_get_cancellable (task);
 
 	if (!gs_plugin_systemd_sysupdate_update_target_finish (self, result, &local_error)) {
-		gs_plugin_systemd_sysupdate_update_app_data_remove_from_download_scheduler (data);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
-	}
-
-	if (data->schedule_entry_handle != NULL) {
-		gs_metered_remove_from_download_scheduler_async (data->schedule_entry_handle,
-		                                                 cancellable,
-		                                                 gs_plugin_systemd_sysupdate_update_app_remove_from_download_scheduler_cb,
-		                                                 g_steal_pointer (&task));
-	} else {
-		gs_plugin_systemd_sysupdate_update_app_remove_from_download_scheduler_cb (NULL, NULL, g_steal_pointer (&task));
-	}
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_app_remove_from_download_scheduler_cb (GObject      *source_object,
-                                                                          GAsyncResult *result,
-                                                                          gpointer      user_data)
-{
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginSystemdSysupdateUpdateAppData *data = g_task_get_task_data (task);
-	g_autoptr(GError) local_error = NULL;
-
-	if (result != NULL &&
-	    !gs_metered_remove_from_download_scheduler_finish (g_steal_pointer (&data->schedule_entry_handle), result, &local_error)) {
-		g_warning ("Failed to remove from download scheduler: %s",
-		           local_error->message);
-		g_clear_error (&local_error);
 	}
 
 	g_task_return_boolean (task, TRUE);
