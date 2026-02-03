@@ -454,6 +454,7 @@ finish_task (GTask     *task,
 {
 	GsPluginJobListApps *self = g_task_get_source_object (task);
 	GsPluginLoader *plugin_loader = g_task_get_task_data (task);
+	GsPluginRefineFlags refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 	GsAppListFilterFlags dedupe_flags = GS_APP_LIST_FILTER_FLAG_NONE;
 	GsAppListSortFunc sort_func = NULL;
 	gpointer sort_func_data = NULL;
@@ -471,26 +472,29 @@ finish_task (GTask     *task,
 		developer_verified_type = gs_app_query_get_developer_verified_type (self->query);
 		is_for_update = gs_app_query_get_is_for_update (self->query);
 		component_kinds = gs_app_query_get_component_kinds (self->query);
+		refine_flags = gs_app_query_get_refine_flags (self->query);
 	}
 
-	if (gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY)) {
-		/* Filtering for sources/repositories. */
-		gs_app_list_filter (merged_list, filter_sources, self);
-	} else {
-		/* Standard filtering for apps.
-		 *
-		 * FIXME: It feels like this filter should be done in a different layer. */
-		gs_app_list_filter (merged_list, filter_valid_apps, self);
-		gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
+	if (!(refine_flags & GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING)) {
+		if (gs_component_kind_array_contains (component_kinds, AS_COMPONENT_KIND_REPOSITORY)) {
+			/* Filtering for sources/repositories. */
+			gs_app_list_filter (merged_list, filter_sources, self);
+		} else {
+			/* Standard filtering for apps.
+			 *
+			 * FIXME: It feels like this filter should be done in a different layer. */
+			gs_app_list_filter (merged_list, filter_valid_apps, self);
+			gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
 
-		if (license_type == GS_APP_QUERY_LICENSE_FOSS)
-			gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
-		if (developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY)
-			gs_app_list_filter (merged_list, filter_developer_verified_apps, self);
-		if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE)
-			gs_app_list_filter (merged_list, filter_updatable_apps, self);
-		else if (is_for_update == GS_APP_QUERY_TRISTATE_FALSE)
-			gs_app_list_filter (merged_list, filter_nonupdatable_apps, self);
+			if (license_type == GS_APP_QUERY_LICENSE_FOSS)
+				gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
+			if (developer_verified_type == GS_APP_QUERY_DEVELOPER_VERIFIED_ONLY)
+				gs_app_list_filter (merged_list, filter_developer_verified_apps, self);
+			if (is_for_update == GS_APP_QUERY_TRISTATE_TRUE)
+				gs_app_list_filter (merged_list, filter_updatable_apps, self);
+			else if (is_for_update == GS_APP_QUERY_TRISTATE_FALSE)
+				gs_app_list_filter (merged_list, filter_nonupdatable_apps, self);
+		}
 	}
 
 	/* Caller-specified filtering. */
