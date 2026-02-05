@@ -207,9 +207,9 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 
 	g_debug ("%s: Adding event %s", G_STRFUNC, gs_plugin_event_get_unique_id (event));
 
-	g_hash_table_insert (plugin_loader->events_by_id,
-			     g_strdup (gs_plugin_event_get_unique_id (event)),
-			     g_object_ref (event));
+	g_hash_table_replace (plugin_loader->events_by_id,
+			      g_strdup (gs_plugin_event_get_unique_id (event)),
+			      g_object_ref (event));
 	gs_plugin_loader_queue_idle_callback (plugin_loader,
 					      gs_plugin_loader_notify_idle_cb,
 					      plugin_loader,
