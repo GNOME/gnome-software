@@ -1311,9 +1311,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 					} else {
 						for (i = 0; i < releases_inst->len; i++) {
 							XbNode *release = g_ptr_array_index (releases_inst, i);
-							g_hash_table_insert (installed,
-									     (gpointer) xb_node_get_attr (release, "version"),
-									     g_object_ref (release));
+							g_hash_table_replace (installed,
+									      (gpointer) xb_node_get_attr (release, "version"),
+									      g_object_ref (release));
 						}
 					}
 					g_clear_error (&local_error);

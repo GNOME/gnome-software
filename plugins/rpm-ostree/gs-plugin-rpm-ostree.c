@@ -2439,7 +2439,7 @@ gs_rpm_ostree_refine_apps (GsPlugin                    *plugin,
 	for (guint ii = 0; ii < pkglist->len; ii++) {
 		RpmOstreePackage *pkg = g_ptr_array_index (pkglist, ii);
 		if (rpm_ostree_package_get_name (pkg))
-			g_hash_table_insert (packages, (gpointer) rpm_ostree_package_get_name (pkg), pkg);
+			g_hash_table_replace (packages, (gpointer) rpm_ostree_package_get_name (pkg), pkg);
 	}
 
 	for (guint ii = 0; layered_packages_strv && layered_packages_strv[ii]; ii++) {
@@ -2458,7 +2458,7 @@ gs_rpm_ostree_refine_apps (GsPlugin                    *plugin,
 		/* first try to resolve from installed packages and
 		   if we didn't find anything, try resolving from available packages */
 		if (!resolve_installed_packages_app (plugin, packages, layered_packages, layered_local_packages, app))
-			g_hash_table_insert (lookup_apps, (gpointer) gs_app_get_default_source (app), app);
+			g_hash_table_replace (lookup_apps, (gpointer) gs_app_get_default_source (app), app);
 	}
 
 	if (g_hash_table_size (lookup_apps) > 0) {
