@@ -399,6 +399,9 @@ typedef struct {
 	gpointer app_needs_user_action_data;
 
 	/* In-progress data. */
+	GCancellable *cancellable;  /* (nullable) (not owned) */
+	unsigned long cancelled_id;
+
 	void *schedule_entry_handle;
 	guint current_update_app_index;
 } UpdateAppsData;
@@ -406,6 +409,11 @@ typedef struct {
 static void
 update_apps_data_free (UpdateAppsData *data)
 {
+	if (data->cancellable != NULL && data->cancelled_id != 0)
+		g_cancellable_disconnect (data->cancellable, data->cancelled_id);
+	data->cancelled_id = 0;
+	data->cancellable = NULL;
+
 	/* All pending ops should have been completed by now. */
 	g_assert (data->schedule_entry_handle == NULL);
 	g_assert (data->current_update_app_index == gs_app_list_length (data->apps));
@@ -419,21 +427,15 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppsData, update_apps_data_free)
 
 typedef struct {
 	GsApp *app; /* (owned) (not nullable) */
-	GCancellable *cancellable; /* (owned) (nullable) */
-	gulong cancelled_id;
 	gboolean interactive;
 } GsPluginSystemdSysupdateUpdateAppData;
 
 static GsPluginSystemdSysupdateUpdateAppData *
 gs_plugin_systemd_sysupdate_update_app_data_new (GsApp        *app,
-                                                 GCancellable *cancellable,
-                                                 gulong        cancelled_id,
                                                  gboolean      interactive)
 {
 	GsPluginSystemdSysupdateUpdateAppData *data = g_new0 (GsPluginSystemdSysupdateUpdateAppData, 1);
 	data->app = g_object_ref (app);
-	g_set_object (&data->cancellable, cancellable);
-	data->cancelled_id = cancelled_id;
 	data->interactive = interactive;
 	return data;
 }
@@ -441,11 +443,7 @@ gs_plugin_systemd_sysupdate_update_app_data_new (GsApp        *app,
 static void
 gs_plugin_systemd_sysupdate_update_app_data_free (GsPluginSystemdSysupdateUpdateAppData *data)
 {
-	g_cancellable_disconnect (data->cancellable, data->cancelled_id);
-
 	g_clear_object (&data->app);
-	g_clear_object (&data->cancellable);
-	data->cancelled_id = 0;
 	data->interactive = FALSE;
 	g_free (data);
 }
@@ -2233,6 +2231,9 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_finish (GsPlugin      *plugi
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+static void update_apps_cancelled_cb (GCancellable *cancellable,
+                                      gpointer      user_data);
+
 static void
 gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                           *plugin,
                                                GsAppList                          *apps,
@@ -2325,6 +2326,7 @@ gs_plugin_systemd_sysupdate_update_apps_download_scheduler_cb (GObject      *sou
                                                                gpointer      user_data)
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GCancellable *cancellable = g_task_get_cancellable (task);
 	UpdateAppsData *data = g_task_get_task_data (task);
 	g_autoptr(GError) local_error = NULL;
 
@@ -2336,7 +2338,39 @@ gs_plugin_systemd_sysupdate_update_apps_download_scheduler_cb (GObject      *sou
 		g_clear_error (&local_error);
 	}
 
+	/* connect to cancellation signal */
+	if (g_task_return_error_if_cancelled (task))
+		return;
+
+	if (cancellable != NULL) {
+		data->cancellable = cancellable;  /* so we can disconnect later */
+		data->cancelled_id = g_cancellable_connect (cancellable,
+		                                            G_CALLBACK (update_apps_cancelled_cb),
+		                                            task,
+		                                            NULL);
+	}
+
 	gs_plugin_systemd_sysupdate_update_apps_iter (NULL, NULL, g_steal_pointer (&task));
+}
+
+static void
+update_apps_cancelled_cb (GCancellable *cancellable,
+                          gpointer      user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
+	UpdateAppsData *data = g_task_get_task_data (task);
+
+	if (!g_cancellable_is_cancelled (cancellable))
+		return;
+
+	g_debug ("%s called with current_update_app_index %u",
+		 G_STRFUNC, data->current_update_app_index);
+
+	if (data->current_update_app_index < gs_app_list_length (data->apps)) {
+		GsApp *app = gs_app_list_index (data->apps, data->current_update_app_index);
+		gs_plugin_systemd_sysupdate_cancel_job (self, app, data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	}
 }
 
 /* Iterate over the elements of the queue one-by-one.
@@ -2403,23 +2437,6 @@ gs_plugin_systemd_sysupdate_update_apps_finish (GsPlugin      *plugin,
 }
 
 static void
-update_app_cancelled_cb (GCancellable *cancellable,
-                         gpointer      user_data)
-{
-	GTask *task = G_TASK (user_data);
-	GsPluginSystemdSysupdate *self = NULL;
-	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
-
-	if (!g_cancellable_is_cancelled (cancellable)) {
-		return;
-	}
-
-	self = g_task_get_source_object (task);
-	data = g_task_get_task_data (task);
-	gs_plugin_systemd_sysupdate_cancel_job (self, data->app, data->interactive);
-}
-
-static void
 gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                           *plugin,
                                               GsApp                              *app,
                                               gboolean                            interactive,
@@ -2435,7 +2452,6 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	 */
 	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
 	g_autoptr(GTask) task = NULL;
-	gulong cancelled_id = 0;
 	TargetItem *target = NULL;
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 
@@ -2444,17 +2460,7 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_apps_async);
 
-	/* connect to cancellation signal */
-	if (cancellable != NULL) {
-		cancelled_id = g_cancellable_connect (cancellable,
-		                                      G_CALLBACK (update_app_cancelled_cb),
-		                                      (gpointer)task,
-		                                      (GDestroyNotify)NULL);
-	}
-
 	data = gs_plugin_systemd_sysupdate_update_app_data_new (app,
-	                                                        cancellable,
-	                                                        cancelled_id,
 	                                                        interactive);
 	g_task_set_task_data (task, data, (GDestroyNotify) gs_plugin_systemd_sysupdate_update_app_data_free);
 
@@ -2499,17 +2505,7 @@ gs_plugin_systemd_sysupdate_update_app_finish (GsPlugin      *plugin,
                                                GAsyncResult  *result,
                                                GError       **error)
 {
-	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
 	GTask *task = G_TASK (result);
-	GCancellable *cancellable = g_task_get_cancellable (task);
-
-	data = g_task_get_task_data (task);
-
-	/* disconnect cancellation signal */
-	if (data != NULL) {
-		g_cancellable_disconnect (cancellable, data->cancelled_id);
-		data->cancelled_id = 0;
-	}
 
 	return g_task_propagate_boolean (g_steal_pointer (&task), error);
 }
