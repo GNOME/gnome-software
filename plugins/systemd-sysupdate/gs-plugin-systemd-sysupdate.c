@@ -390,28 +390,28 @@ gs_plugin_systemd_sysupdate_refine_app_data_free (GsPluginSystemdSysupdateRefine
 }
 
 typedef struct {
-	GQueue *queue; /* (owned) (not nullable) (element-type GsApp) */
+	/* Input data. */
+	GsAppList *apps;  /* (owned) (not nullable) */
+	GsPluginUpdateAppsFlags flags;
 	GsPluginProgressCallback progress_callback;
 	gpointer progress_user_data;
 	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
 	gpointer app_needs_user_action_data;
-	GsPluginUpdateAppsFlags flags;
+
+	/* In-progress data. */
 	void *schedule_entry_handle;
+	guint current_update_app_index;
 } UpdateAppsData;
 
 static void
 update_apps_data_free (UpdateAppsData *data)
 {
-	if (data->queue != NULL) {
-		g_queue_free_full (data->queue, g_object_unref);
-		data->queue = NULL;
-	}
-	data->progress_callback = NULL;
-	data->progress_user_data = NULL;
-	data->app_needs_user_action_callback = NULL;
-	data->app_needs_user_action_data = NULL;
-	data->flags = 0;
+	/* All pending ops should have been completed by now. */
 	g_assert (data->schedule_entry_handle == NULL);
+	g_assert (data->current_update_app_index == gs_app_list_length (data->apps));
+
+	g_clear_object (&data->apps);
+
 	g_free (data);
 }
 
@@ -2251,7 +2251,7 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	 */
 	g_autoptr(UpdateAppsData) data = NULL;
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GQueue) queue = NULL;
+	g_autoptr(GsAppList) filtered_apps = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 
 	/* TODO Report progress */
@@ -2271,7 +2271,8 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 		return;
 	}
 
-	queue = g_queue_new ();
+	/* Pre-filter the app list. */
+	filtered_apps = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
 
@@ -2287,17 +2288,22 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 			continue;
 		}
 
-		g_queue_push_head (queue, g_object_ref (app));
+		gs_app_list_add (filtered_apps, app);
+	}
+
+	if (gs_app_list_length (filtered_apps) == 0) {
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
 
 	/* put apps in queue to task data */
 	data = g_new0 (UpdateAppsData, 1);
-	data->queue = g_steal_pointer (&queue);
+	data->apps = g_steal_pointer (&filtered_apps);
+	data->flags = flags;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
 	data->app_needs_user_action_callback = app_needs_user_action_callback;
 	data->app_needs_user_action_data = app_needs_user_action_data;
-	data->flags = flags;
 
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) update_apps_data_free);
 
@@ -2349,7 +2355,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autoptr(GError) local_error = NULL;
-	g_autoptr (GsApp) app = NULL;
+	GsApp *app = NULL;
 
 	if (result != NULL &&
 	    !gs_plugin_systemd_sysupdate_update_app_finish (GS_PLUGIN (self), result, &local_error)) {
@@ -2357,8 +2363,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 		g_clear_error (&local_error);
 	}
 
-	app = g_queue_pop_head (data->queue);
-	if (app == NULL) {
+	if (data->current_update_app_index == gs_app_list_length (data->apps)) {
 		/* We reached the end of the queue. */
 
 		/* Fire this call off into the void, it’s not worth tracking it.
@@ -2375,6 +2380,8 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 		return;
 	}
 
+	app = gs_app_list_index (data->apps, data->current_update_app_index);
+	data->current_update_app_index++;
 	gs_plugin_systemd_sysupdate_update_app_async (GS_PLUGIN (self),
 	                                              app,
 	                                              data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE,
