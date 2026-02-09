@@ -398,30 +398,10 @@ typedef struct {
 	GCancellable *cancellable; /* (owned) (nullable) */
 	GsPluginUpdateAppsFlags flags;
 	void *schedule_entry_handle;
-} GsPluginSystemdSysupdateUpdateAppsData;
-
-static GsPluginSystemdSysupdateUpdateAppsData *
-gs_plugin_systemd_sysupdate_update_apps_data_new (GQueue                             *queue,
-                                                  GsPluginProgressCallback            progress_callback,
-                                                  gpointer                            progress_user_data,
-                                                  GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
-                                                  gpointer                            app_needs_user_action_data,
-                                                  GCancellable                       *cancellable,
-                                                  GsPluginUpdateAppsFlags             flags)
-{
-	GsPluginSystemdSysupdateUpdateAppsData *data = g_new0 (GsPluginSystemdSysupdateUpdateAppsData, 1);
-	data->queue = g_steal_pointer (&queue);
-	data->progress_callback = progress_callback;
-	data->progress_user_data = progress_user_data;
-	data->app_needs_user_action_callback = app_needs_user_action_callback;
-	data->app_needs_user_action_data = app_needs_user_action_data;
-	g_set_object (&data->cancellable, cancellable);
-	data->flags = flags;
-	return data;
-}
+} UpdateAppsData;
 
 static void
-gs_plugin_systemd_sysupdate_update_apps_data_free (GsPluginSystemdSysupdateUpdateAppsData *data)
+update_apps_data_free (UpdateAppsData *data)
 {
 	if (data->queue != NULL) {
 		g_queue_free_full (data->queue, g_object_unref);
@@ -436,6 +416,8 @@ gs_plugin_systemd_sysupdate_update_apps_data_free (GsPluginSystemdSysupdateUpdat
 	g_assert (data->schedule_entry_handle == NULL);
 	g_free (data);
 }
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppsData, update_apps_data_free)
 
 typedef struct {
 	GsApp *app; /* (owned) (not nullable) */
@@ -2269,7 +2251,7 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 {
 	/* Install the given system updates
 	 */
-	GsPluginSystemdSysupdateUpdateAppsData *data = NULL;
+	g_autoptr(UpdateAppsData) data = NULL;
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GQueue) queue = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
@@ -2311,14 +2293,16 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	}
 
 	/* put apps in queue to task data */
-	data = gs_plugin_systemd_sysupdate_update_apps_data_new (g_steal_pointer (&queue),
-	                                                         progress_callback,
-	                                                         progress_user_data,
-	                                                         app_needs_user_action_callback,
-	                                                         app_needs_user_action_data,
-	                                                         cancellable,
-	                                                         flags);
-	g_task_set_task_data (task, data, (GDestroyNotify)gs_plugin_systemd_sysupdate_update_apps_data_free);
+	data = g_new0 (UpdateAppsData, 1);
+	data->queue = g_steal_pointer (&queue);
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	data->app_needs_user_action_callback = app_needs_user_action_callback;
+	data->app_needs_user_action_data = app_needs_user_action_data;
+	g_set_object (&data->cancellable, cancellable);
+	data->flags = flags;
+
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) update_apps_data_free);
 
 	if (!interactive) {
 		g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
@@ -2338,7 +2322,7 @@ gs_plugin_systemd_sysupdate_update_apps_download_scheduler_cb (GObject      *sou
                                                                gpointer      user_data)
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginSystemdSysupdateUpdateAppsData *data = g_task_get_task_data (task);
+	UpdateAppsData *data = g_task_get_task_data (task);
 	g_autoptr(GError) local_error = NULL;
 
 	if (result != NULL &&
@@ -2364,7 +2348,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
                                               gpointer      user_data)
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginSystemdSysupdateUpdateAppsData *data = g_task_get_task_data (task);
+	UpdateAppsData *data = g_task_get_task_data (task);
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr (GsApp) app = NULL;
