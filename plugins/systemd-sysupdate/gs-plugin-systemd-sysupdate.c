@@ -395,7 +395,6 @@ typedef struct {
 	gpointer progress_user_data;
 	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
 	gpointer app_needs_user_action_data;
-	GCancellable *cancellable; /* (owned) (nullable) */
 	GsPluginUpdateAppsFlags flags;
 	void *schedule_entry_handle;
 } UpdateAppsData;
@@ -411,7 +410,6 @@ update_apps_data_free (UpdateAppsData *data)
 	data->progress_user_data = NULL;
 	data->app_needs_user_action_callback = NULL;
 	data->app_needs_user_action_data = NULL;
-	g_clear_object (&data->cancellable);
 	data->flags = 0;
 	g_assert (data->schedule_entry_handle == NULL);
 	g_free (data);
@@ -2299,7 +2297,6 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	data->progress_user_data = progress_user_data;
 	data->app_needs_user_action_callback = app_needs_user_action_callback;
 	data->app_needs_user_action_data = app_needs_user_action_data;
-	g_set_object (&data->cancellable, cancellable);
 	data->flags = flags;
 
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) update_apps_data_free);
@@ -2350,6 +2347,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	UpdateAppsData *data = g_task_get_task_data (task);
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr (GsApp) app = NULL;
 
@@ -2384,7 +2382,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 	                                              data->progress_user_data,
 	                                              data->app_needs_user_action_callback,
 	                                              data->app_needs_user_action_data,
-	                                              data->cancellable,
+	                                              cancellable,
 	                                              gs_plugin_systemd_sysupdate_update_apps_iter,
 	                                              g_steal_pointer (&task));
 }
