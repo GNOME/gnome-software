@@ -38,6 +38,7 @@
 #include "gs-utils.h"
 
 #define NARROW_WIDTH_THRESHOLD 800
+#define WINDOW_STATE_FILE_NAME "window-state"
 
 static const gchar *page_name[] = {
 	"unknown",
@@ -112,6 +113,7 @@ struct _GsShell
 	gboolean		 is_narrow;
 	gint			 allocation_width;
 	guint			 allocation_changed_cb_id;
+	guint			 save_window_state_id;
 
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 	gulong			 overview_page_refreshed_id;
@@ -136,6 +138,92 @@ enum {
 static GParamSpec *obj_props[PROP_ALLOCATION_WIDTH + 1] = { NULL, };
 
 static guint signals [SIGNAL_LAST] = { 0 };
+
+static gchar *
+gs_shell_get_window_state_file (void)
+{
+	const gchar *state_dir;
+
+	state_dir = g_get_user_state_dir ();
+
+	return g_build_filename (state_dir, "gnome-software", WINDOW_STATE_FILE_NAME, NULL);
+}
+
+static void
+gs_shell_save_window_state (GsShell *shell)
+{
+	g_autofree gchar *state_file = NULL;
+	g_autofree gchar *state_file_dir = NULL;
+	g_autoptr(GKeyFile) key_file = NULL;
+	g_autoptr(GError) error = NULL;
+	gint width, height;
+	gboolean maximized;
+
+	width = gtk_widget_get_width (GTK_WIDGET (shell));
+	height = gtk_widget_get_height (GTK_WIDGET (shell));
+	maximized = gtk_window_is_maximized (GTK_WINDOW (shell));
+
+	key_file = g_key_file_new ();
+	g_key_file_set_integer (key_file, "WindowState", "width", width);
+	g_key_file_set_integer (key_file, "WindowState", "height", height);
+	g_key_file_set_boolean (key_file, "WindowState", "maximized", maximized);
+
+	state_file = gs_shell_get_window_state_file ();
+	state_file_dir = g_path_get_dirname (state_file);
+	g_mkdir_with_parents (state_file_dir, 0700);
+	if (!g_key_file_save_to_file (key_file, state_file, &error)) {
+		g_warning ("Failed to save window state: %s", error->message);
+	}
+}
+
+// returns true if the file was loaded and the window state restored, 
+// false otherwise (if there was no file, or an error loading it)
+static gboolean
+gs_shell_restore_window_state (GsShell *shell)
+{
+	g_autofree gchar *state_file = NULL;
+	g_autoptr(GKeyFile) key_file = NULL;
+	g_autoptr(GError) error = NULL;
+	gint width, height;
+	gboolean maximized;
+
+	state_file = gs_shell_get_window_state_file ();
+
+	key_file = g_key_file_new ();
+	if (!g_key_file_load_from_file (key_file, state_file, G_KEY_FILE_NONE, &error)) {
+		if (!g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
+			g_debug ("Failed to load window state: %s", error->message);
+		return FALSE;
+	}
+
+	width = g_key_file_get_integer (key_file, "WindowState", "width", &error);
+	if (error != NULL) {
+		g_debug ("Invalid or missing width in window state: %s", error->message);
+		return FALSE;
+	}
+
+	height = g_key_file_get_integer (key_file, "WindowState", "height", &error);
+	if (error != NULL) {
+		g_debug ("Invalid or missing height in window state: %s", error->message);
+		return FALSE;
+	}
+
+	// unset the default dimentions if the file is corrupted
+	if (width < -1 || height < -1) {
+		width = height = -1;
+	}
+
+	maximized = g_key_file_get_boolean (key_file, "WindowState", "maximized", &error);
+	if (error != NULL) {
+		maximized = FALSE;
+	}
+
+	gtk_window_set_default_size (GTK_WINDOW (shell), width, height);
+	if (maximized)
+		gtk_window_maximize (GTK_WINDOW (shell));
+
+	return TRUE;
+}
 
 void
 gs_shell_activate (GsShell *shell)
@@ -1011,6 +1099,8 @@ main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 {
 	GsShell *shell = user_data;
 
+	gs_shell_save_window_state (shell);
+
 	/* hide any notifications */
 	g_application_withdraw_notification (g_application_get_default (),
 					     "installed");
@@ -1067,13 +1157,16 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 	GdkSurface *surface;
 	GdkDisplay *display;
 	GdkMonitor *monitor;
+	gboolean state_restored;
+
+	state_restored = gs_shell_restore_window_state (shell);
 
 	display = gtk_widget_get_display (GTK_WIDGET (shell));
 	surface = gtk_native_get_surface (GTK_NATIVE (shell));
 	monitor = gdk_display_get_monitor_at_surface (display, surface);
 
 	/* adapt the window for low and medium resolution screens */
-	if (monitor != NULL) {
+	if (!state_restored && monitor != NULL) {
 		gdk_monitor_get_geometry (monitor, &geometry);
 		if (geometry.width < 800 || geometry.height < 600) {
 		} else if (geometry.width < 1366 || geometry.height < 768) {
@@ -2522,6 +2615,8 @@ gs_shell_dispose (GObject *object)
 	g_clear_signal_handler (&shell->settings_changed_download_updates_id, shell->settings);
 	g_clear_object (&shell->settings);
 
+	g_clear_handle_id (&shell->save_window_state_id, g_source_remove);
+
 #ifdef HAVE_MOGWAI
 	if (shell->scheduler != NULL) {
 		if (shell->scheduler_invalidated_handler > 0)
@@ -2539,6 +2634,28 @@ gs_shell_dispose (GObject *object)
 #endif  /* HAVE_MOGWAI */
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
+}
+
+static gboolean
+save_window_state_cb (gpointer user_data)
+{
+	GsShell *shell = GS_SHELL (user_data);
+
+	gs_shell_save_window_state (shell);
+	shell->save_window_state_id = 0;
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+schedule_save_window_state (GsShell *shell)
+{
+	// cancel older times
+	if (shell->save_window_state_id != 0)
+		g_source_remove (shell->save_window_state_id);
+
+	// Save after 1s of no resizing 
+	shell->save_window_state_id = g_timeout_add_seconds (1, save_window_state_cb, shell);
 }
 
 static gboolean
@@ -2590,6 +2707,8 @@ gs_shell_size_allocate (GtkWidget *widget,
 	 */
 	if (shell->allocation_changed_cb_id == 0)
 		shell->allocation_changed_cb_id = g_idle_add (allocation_changed_cb, shell);
+
+	schedule_save_window_state (shell);
 }
 
 static void
@@ -2709,6 +2828,9 @@ gs_shell_init (GsShell *shell)
 	gtk_search_bar_connect_entry (GTK_SEARCH_BAR (shell->search_bar), GTK_EDITABLE (shell->entry_search));
 
 	shell->back_entry_stack = g_queue_new ();
+
+	g_signal_connect_swapped (shell, "notify::maximized",
+				  G_CALLBACK (schedule_save_window_state), shell);
 }
 
 GsShell *
