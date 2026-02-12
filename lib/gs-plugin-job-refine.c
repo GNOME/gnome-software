@@ -579,6 +579,10 @@ finish_refine_internal_op (GTask  *task,
 	/* filter any wildcard apps left in the list */
 	gs_app_list_filter (list, app_is_non_wildcard, NULL);
 
+	/* try to adopt each app with a plugin also after refine, in case
+	   the plugins expect properties set by the refine itself */
+	gs_plugin_loader_run_adopt (plugin_loader, list);
+
 	/* Now run several recursive calls to run_refine_internal_async() in
 	 * parallel, to refine related components. */
 	data->n_pending_recursions = 1;
