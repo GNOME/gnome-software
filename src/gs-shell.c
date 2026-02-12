@@ -108,6 +108,7 @@ struct _GsShell
 	GtkWidget		*primary_menu;
 	GtkWidget		*sub_header;
 	GtkWidget		*sub_page_header_title;
+	GtkWidget		*window_title;
 
 	gboolean		 activate_after_setup;
 	gboolean		 is_narrow;
@@ -2711,6 +2712,23 @@ gs_shell_size_allocate (GtkWidget *widget,
 	schedule_save_window_state (shell);
 }
 
+static gboolean
+gs_shell_transform_nullable_to_string (GBinding *binding,
+				       const GValue *from_value,
+				       GValue *to_value,
+				       gpointer user_data)
+{
+	const gchar *value;
+
+	value = g_value_get_string (from_value);
+	if (value == NULL)
+		value = "";
+
+	g_value_set_string (to_value, value);
+
+	return TRUE;
+}
+
 static void
 gs_shell_class_init (GsShellClass *klass)
 {
@@ -2779,6 +2797,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_page_header_title);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, window_title);
 
 	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));
 	gtk_widget_class_bind_template_child_full (widget_class, "updates_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_UPDATES]));
@@ -2831,6 +2850,12 @@ gs_shell_init (GsShell *shell)
 
 	g_signal_connect_swapped (shell, "notify::maximized",
 				  G_CALLBACK (schedule_save_window_state), shell);
+
+	g_object_bind_property_full (shell->pages[GS_SHELL_MODE_DETAILS], "title",
+				     shell->window_title, "title",
+				     G_BINDING_SYNC_CREATE,
+				     gs_shell_transform_nullable_to_string,
+				     NULL, NULL, NULL);
 }
 
 GsShell *

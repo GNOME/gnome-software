@@ -349,8 +349,7 @@
                                 <property name="hexpand">True</property>
                                 <property name="show-end-title-buttons">True</property>
                                 <property name="title-widget">
-                                  <object class="AdwWindowTitle">
-                                    <property name="title" bind-source="details_page" bind-property="title" bind-flags="sync-create"/>
+                                  <object class="AdwWindowTitle" id="window_title">
                                   </object>
                                 </property>
                                 <child>
