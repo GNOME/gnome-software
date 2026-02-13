@@ -2306,6 +2306,7 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 	UpdateAppData *data = g_task_get_task_data (task);
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
+	void *job_status_ptr, *cancel_task_ptr;
 
 	proxy = gs_systemd_sysupdate_job_proxy_new_finish (result, &local_error);
 	if (proxy == NULL) {
@@ -2339,16 +2340,16 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 	/* If the update job has been filed for removal during its preparation,
 	 * we need to resume the removal request. This will also revoke any
 	 * cancellation request. */
-	if (g_hash_table_contains (self->job_to_remove_status_map, data->job_path)) {
-		gint32 job_status = GPOINTER_TO_INT (g_hash_table_lookup (self->job_to_remove_status_map, data->job_path));
+	if (g_hash_table_lookup_extended (self->job_to_remove_status_map, data->job_path, NULL, &job_status_ptr)) {
+		gint32 job_status = GPOINTER_TO_INT (job_status_ptr);
 		gs_plugin_systemd_sysupdate_remove_job_apply (self, task, data->job_path, job_status);
 		return;
 	}
 
 	/* If the update job has been filed for cancellation during its
 	 * preparation, we need to resume the cancellation request. */
-	if (g_hash_table_contains (self->job_to_cancel_task_map, data->job_path)) {
-		GTask *cancel_task = g_hash_table_lookup (self->job_to_cancel_task_map, data->job_path);
+	if (g_hash_table_lookup_extended (self->job_to_cancel_task_map, data->job_path, NULL, &cancel_task_ptr)) {
+		GTask *cancel_task = G_TASK (cancel_task_ptr);
 
 		if (data->interactive) {
 			call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
