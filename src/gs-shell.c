@@ -149,11 +149,39 @@ gs_shell_get_window_state_file (void)
 	return g_build_filename (state_dir, "gnome-software", WINDOW_STATE_FILE_NAME, NULL);
 }
 
-static void
-gs_shell_save_window_state (GsShell *shell)
+static GKeyFile *
+gs_shell_load_state_key_file (void)
+{
+	g_autofree gchar *state_file = NULL;
+	GKeyFile *key_file;
+
+	state_file = gs_shell_get_window_state_file ();
+	key_file = g_key_file_new ();
+	g_key_file_load_from_file (key_file, state_file, G_KEY_FILE_NONE, NULL);
+
+	return key_file;
+}
+
+static gboolean
+gs_shell_save_state_key_file (GKeyFile *key_file, GError **error)
 {
 	g_autofree gchar *state_file = NULL;
 	g_autofree gchar *state_file_dir = NULL;
+
+	state_file = gs_shell_get_window_state_file ();
+	state_file_dir = g_path_get_dirname (state_file);
+	g_mkdir_with_parents (state_file_dir, 0700);
+
+	if (!g_key_file_save_to_file (key_file, state_file, error)) {
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static void
+gs_shell_save_window_state (GsShell *shell)
+{
 	g_autoptr(GKeyFile) key_file = NULL;
 	g_autoptr(GError) error = NULL;
 	gint width, height;
@@ -163,17 +191,13 @@ gs_shell_save_window_state (GsShell *shell)
 	height = gtk_widget_get_height (GTK_WIDGET (shell));
 	maximized = gtk_window_is_maximized (GTK_WINDOW (shell));
 
-	key_file = g_key_file_new ();
+	key_file = gs_shell_load_state_key_file ();
 	g_key_file_set_integer (key_file, "WindowState", "width", width);
 	g_key_file_set_integer (key_file, "WindowState", "height", height);
 	g_key_file_set_boolean (key_file, "WindowState", "maximized", maximized);
 
-	state_file = gs_shell_get_window_state_file ();
-	state_file_dir = g_path_get_dirname (state_file);
-	g_mkdir_with_parents (state_file_dir, 0700);
-	if (!g_key_file_save_to_file (key_file, state_file, &error)) {
+	if (!gs_shell_save_state_key_file (key_file, &error))
 		g_warning ("Failed to save window state: %s", error->message);
-	}
 }
 
 // returns true if the file was loaded and the window state restored, 
@@ -223,6 +247,57 @@ gs_shell_restore_window_state (GsShell *shell)
 		gtk_window_maximize (GTK_WINDOW (shell));
 
 	return TRUE;
+}
+
+/**
+ * gs_shell_set_restore_after_restart:
+ * @shell: the shell
+ * @restore: true if the window should be made visible after restarting, false otherwise
+ *
+ * Sets whether to restore the window so it’s visible after gnome-software is restarted.
+ *
+ * Since: 50
+ */
+void
+gs_shell_set_restore_after_restart (GsShell *shell, gboolean restore)
+{
+	g_autoptr(GKeyFile) key_file = NULL;
+	g_autoptr(GError) error = NULL;
+
+	key_file = gs_shell_load_state_key_file ();
+	g_key_file_set_boolean (key_file, "WindowState", "restore-window", restore);
+	if (!gs_shell_save_state_key_file (key_file, &error))
+		g_warning ("Failed to save window state: %s", error->message);
+}
+
+/**
+ * gs_shell_get_and_clear_restore_after_restart:
+ * @shell: the shell
+ *
+ * Gets whether the application window should be made visible after restart,
+ * and clears the flag if it was set.
+ *
+ * Returns: true if the window should be restored, false otherwise
+ *
+ * Since: 50
+ **/
+gboolean
+gs_shell_get_and_clear_restore_after_restart (GsShell *shell)
+{
+	g_autoptr(GKeyFile) key_file = NULL;
+	g_autoptr(GError) error = NULL;
+	gboolean restore;
+
+	key_file = gs_shell_load_state_key_file ();
+
+	restore = g_key_file_get_boolean (key_file, "WindowState", "restore-window", NULL);
+	if (restore) {
+		g_key_file_set_boolean (key_file, "WindowState", "restore-window", FALSE);
+		if (!gs_shell_save_state_key_file (key_file, &error))
+			g_warning ("Failed to save window state: %s", error->message);
+	}
+
+	return restore;
 }
 
 void
@@ -792,9 +867,9 @@ gs_shell_plugin_events_details_uri_cb (GsShell *shell,
 static void
 gs_shell_plugin_events_restart_required_cb (GsShell *shell)
 {
-	g_autoptr(GError) error = NULL;
-	if (!g_spawn_command_line_async (LIBEXECDIR "/gnome-software-restarter", &error))
-		g_warning ("failed to restart: %s", error->message);
+	GApplication *app = g_application_get_default ();
+	
+	g_action_group_activate_action (G_ACTION_GROUP (app), "restart", NULL);
 }
 
 static void gs_shell_rescan_events (GsShell *shell);

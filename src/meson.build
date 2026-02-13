@@ -164,21 +164,6 @@ executable(
   install_rpath: gs_private_libdir,
 )
 
-executable(
-  'gnome-software-restarter',
-  sources: 'gs-restarter.c',
-  include_directories: [
-    include_directories('..'),
-  ],
-  dependencies: [
-    gio_unix,
-    glib,
-  ],
-  c_args: cargs,
-  install: true,
-  install_dir: get_option('libexecdir')
-)
-
 # no quoting
 cdata = configuration_data()
 cdata.set('bindir', join_paths(get_option('prefix'),
