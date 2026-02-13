@@ -92,5 +92,10 @@ GsAppQueryLicenseType gs_shell_get_query_license_type (GsShell	*self);
 GsAppQueryDeveloperVerifiedType
 		 gs_shell_get_query_developer_verified_type
 						(GsShell	*self);
+void		 gs_shell_set_restore_after_restart
+						(GsShell	*shell,
+						 gboolean	 restore);
+gboolean	 gs_shell_get_and_clear_restore_after_restart
+						(GsShell	*shell);
 
 G_END_DECLS

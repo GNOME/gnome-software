@@ -17,4 +17,7 @@ Type=dbus
 BusName=org.gnome.Software
 ExecStart=@bindir@/gnome-software --gapplication-service
 Restart=on-failure
+# Used to get systemd to automatically restart gnome-software after plugins
+# have been updated.
+RestartForceExitStatus=42
 Slice=app.slice

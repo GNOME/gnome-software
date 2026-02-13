@@ -33,6 +33,8 @@
 
 #define ENABLE_REPOS_DIALOG_CONF_KEY "enable-repos-dialog"
 
+#define EXIT_STATUS_RESTART_REQUIRED 42
+
 struct _GsApplication {
 	AdwApplication	 parent;
 	GCancellable	*cancellable;
@@ -50,6 +52,7 @@ struct _GsApplication {
 	gulong		 shell_notify_visible_handler_id;
 	gulong		 plugin_loader_notify_system_bus_connection_handler_id;
 	GsDebug		*debug;  /* (owned) (not nullable) */
+	gboolean	 restart_requested;
 
 	/* Created/freed on demand */
 	GHashTable *withdraw_notifications; /* gchar *notification_id ~> GUINT_TO_POINTER (timeout_id) */
@@ -208,6 +211,10 @@ gs_application_shell_loaded_cb (GsShell *shell, GsApplication *app)
 {
 	g_signal_handler_disconnect (app->shell, app->shell_loaded_handler_id);
 	app->shell_loaded_handler_id = 0;
+
+	/* Check if we need to restore the window after a restart */
+	if (gs_shell_get_and_clear_restore_after_restart (app->shell))
+		g_application_activate (G_APPLICATION (app));
 }
 
 static gboolean
@@ -459,6 +466,10 @@ job_manager_shutdown_ready_cb (GObject *source_object,
 	else
 		g_debug ("Job manager shutdown finished, going to quit the application.");
 
+	if (self->restart_requested) {
+		exit (EXIT_STATUS_RESTART_REQUIRED);
+	}
+
 	g_application_quit (G_APPLICATION (self));
 }
 
@@ -472,6 +483,20 @@ shutdown_activated (GSimpleAction *action,
 
 	g_debug ("Initiating shutdown of the job manager from %s()", G_STRFUNC);
 	gs_job_manager_shutdown_async (job_manager, NULL, job_manager_shutdown_ready_cb, g_object_ref (self));
+}
+
+static void
+restart_activated (GSimpleAction *action,
+		   GVariant      *parameter,
+		   gpointer       data)
+{
+	GsApplication *self = GS_APPLICATION (data);
+	gboolean window_visible = gtk_widget_get_visible (GTK_WIDGET (self->main_window));
+	
+	gs_shell_set_restore_after_restart (GS_SHELL (self->main_window), window_visible);
+	self->restart_requested = TRUE;
+
+	shutdown_activated (action, parameter, data);
 }
 
 static void offline_update_get_app_cb (GObject      *source_object,
@@ -1081,6 +1106,7 @@ static GActionEntry actions[] = {
 static GActionEntry actions_after_loading[] = {
 	{ "reboot-and-install", reboot_and_install, NULL, NULL, NULL },
 	{ "reboot", reboot_activated, NULL, NULL, NULL },
+	{ "restart", restart_activated, NULL, NULL, NULL },
 	{ "shutdown", shutdown_activated, NULL, NULL, NULL },
 	{ "launch", launch_activated, "(ss)", NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
