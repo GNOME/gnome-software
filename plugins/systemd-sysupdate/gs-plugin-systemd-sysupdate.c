@@ -447,29 +447,20 @@ typedef struct {
 	GsSystemdSysupdateJob *job_proxy; /* (owned) (nullable) */
 	char *target_path; /* (owned) (nullable) */
 	gchar *job_path; /* (owned) (nullable) */
-} GsPluginSystemdSysupdateUpdateAppData;
-
-static GsPluginSystemdSysupdateUpdateAppData *
-gs_plugin_systemd_sysupdate_update_app_data_new (GsApp        *app,
-                                                 gboolean      interactive)
-{
-	GsPluginSystemdSysupdateUpdateAppData *data = g_new0 (GsPluginSystemdSysupdateUpdateAppData, 1);
-	data->app = g_object_ref (app);
-	data->interactive = interactive;
-	return data;
-}
+} UpdateAppData;
 
 static void
-gs_plugin_systemd_sysupdate_update_app_data_free (GsPluginSystemdSysupdateUpdateAppData *data)
+update_app_data_free (UpdateAppData *data)
 {
 	g_clear_object (&data->app);
-	data->interactive = FALSE;
 	g_clear_object (&data->job_proxy);
 	g_clear_pointer (&data->target_path, g_free);
 	g_clear_pointer (&data->job_path, g_free);
 
 	g_free (data);
 }
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppData, update_app_data_free)
 
 /* Plugin object */
 struct _GsPluginSystemdSysupdate {
@@ -888,13 +879,12 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
                                               const gchar              *job_path,
                                               gint32                    job_status)
 {
-	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
+	UpdateAppData *data = g_task_get_task_data (task);
 	const gchar *target_class = NULL;
 	gboolean target_is_host = FALSE;
 
 	g_debug ("Removing task found for job `%s`", job_path);
 	/* pass the parameters to the callback */
-	data = g_task_get_task_data (task);
 	target_class = gs_app_get_metadata_item (data->app, "SystemdSysupdated::Class");
 	target_is_host = g_strcmp0 (target_class, "host") == 0;
 
@@ -965,7 +955,7 @@ gs_plugin_systemd_sysupdate_cancel_job (GsPluginSystemdSysupdate *self,
 	g_autoptr(GCancellable) cancellable = NULL;
 	g_autoptr(GTask) task = NULL;
 	GTask *update_task = NULL;
-	GsPluginSystemdSysupdateUpdateAppData *update_data = NULL;
+	UpdateAppData *update_data = NULL;
 	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
 
 	target = lookup_target_by_app (self, app);
@@ -977,7 +967,7 @@ gs_plugin_systemd_sysupdate_cancel_job (GsPluginSystemdSysupdate *self,
 	/* iterate over the on-going tasks to find the job */
 	g_hash_table_iter_init (&iter, self->job_task_map);
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		GsPluginSystemdSysupdateUpdateAppData *job_data = g_task_get_task_data (value);
+		UpdateAppData *job_data = g_task_get_task_data (value);
 		if (job_data != NULL &&
 		    g_strcmp0 (job_data->target_path, target->object_path) == 0) {
 			job_path = key;
@@ -2198,7 +2188,8 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 {
 	/* Install the given system updates
 	 */
-	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
+	g_autoptr(UpdateAppData) data_owned = NULL;
+	UpdateAppData *data;
 	g_autoptr(GTask) task = NULL;
 	TargetItem *target = NULL;
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
@@ -2208,9 +2199,11 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_apps_async);
 
-	data = gs_plugin_systemd_sysupdate_update_app_data_new (app,
-	                                                        interactive);
-	g_task_set_task_data (task, data, (GDestroyNotify) gs_plugin_systemd_sysupdate_update_app_data_free);
+	data = data_owned = g_new0 (UpdateAppData, 1);
+	data->app = g_object_ref (app);
+	data->interactive = interactive;
+
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) update_app_data_free);
 
 	/* find the target associated to the app */
 	target = lookup_target_by_app (self, data->app);
@@ -2245,7 +2238,7 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsSystemdSysupdateTarget) proxy = NULL;
-	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
+	UpdateAppData *data = g_task_get_task_data (task);
 	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
 
 	proxy = gs_systemd_sysupdate_target_proxy_new_finish (result, &local_error);
@@ -2253,8 +2246,6 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
-
-	data = g_task_get_task_data (task);
 
 	if (data->interactive) {
 		call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
@@ -2280,7 +2271,7 @@ gs_plugin_systemd_sysupdate_update_app_update_cb (GObject      *source_object,
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 	g_autofree gchar *job_path = NULL;
 	GsPlugin *plugin = GS_PLUGIN (self);
-	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
+	UpdateAppData *data = g_task_get_task_data (task);
 
 	if (!gs_systemd_sysupdate_target_call_update_finish (GS_SYSTEMD_SYSUPDATE_TARGET (source_object),
 	                                                     NULL,
@@ -2292,7 +2283,6 @@ gs_plugin_systemd_sysupdate_update_app_update_cb (GObject      *source_object,
 		return;
 	}
 
-	data = g_task_get_task_data (task);
 	g_set_str (&data->job_path, job_path);
 
 	gs_systemd_sysupdate_job_proxy_new (gs_plugin_get_system_bus_connection (plugin),
@@ -2313,11 +2303,9 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsSystemdSysupdateJob) proxy = NULL;
 	GCancellable *cancellable = g_task_get_cancellable (task);
-	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
+	UpdateAppData *data = g_task_get_task_data (task);
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
-
-	data = g_task_get_task_data (task);
 
 	proxy = gs_systemd_sysupdate_job_proxy_new_finish (result, &local_error);
 	if (proxy == NULL) {
@@ -2386,7 +2374,7 @@ static void
 gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (gpointer user_data)
 {
 	GTask *task = G_TASK (user_data);
-	GsPluginSystemdSysupdateUpdateAppData *data = g_task_get_task_data (task);
+	UpdateAppData *data = g_task_get_task_data (task);
 	guint progress = gs_systemd_sysupdate_job_get_progress (data->job_proxy);
 
 	gs_app_set_state (data->app, GS_APP_STATE_DOWNLOADING);
