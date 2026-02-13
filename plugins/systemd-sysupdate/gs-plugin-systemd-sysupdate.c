@@ -389,6 +389,22 @@ gs_plugin_systemd_sysupdate_refine_app_data_free (GsPluginSystemdSysupdateRefine
 	g_free (data);
 }
 
+/* Wrapper methods for async. target update
+ *
+ * The goal of the method `gs_plugin_systemd_sysupdate_update_apps_async()`
+ * is to wrap the specific target update as a single async. call, for each app.
+ * By design, there are two D-Bus method calls and two D-Bus signals
+ * involved in one app’s 'target update' progress:
+ *  1) D-Bus method `Target.Update()`
+ *  2) D-Bus method `Job.Cancel()`
+ *  3) D-Bus signal `Job.PropertiesChanged()`
+ *  4) D-Bus signal `Manager.JobRemoved()`
+ *
+ * Assumes there is only one job created dynamically in the runtime
+ * by `systemd-sysupdated` is associated to the `Target.Update()`.
+ * Here we create a subtask for each individual target update, and
+ * hide the 'target to job' mapping from the caller by maintaining
+ * the relationships internally within a look-up table. */
 typedef struct {
 	/* Input data. */
 	GsAppList *apps;  /* (owned) (not nullable) */
@@ -428,6 +444,9 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppsData, update_apps_data_free)
 typedef struct {
 	GsApp *app; /* (owned) (not nullable) */
 	gboolean interactive;
+	GsSystemdSysupdateJob *job_proxy; /* (owned) (nullable) */
+	char *target_path; /* (owned) (nullable) */
+	gchar *job_path; /* (owned) (nullable) */
 } GsPluginSystemdSysupdateUpdateAppData;
 
 static GsPluginSystemdSysupdateUpdateAppData *
@@ -445,6 +464,10 @@ gs_plugin_systemd_sysupdate_update_app_data_free (GsPluginSystemdSysupdateUpdate
 {
 	g_clear_object (&data->app);
 	data->interactive = FALSE;
+	g_clear_object (&data->job_proxy);
+	g_clear_pointer (&data->target_path, g_free);
+	g_clear_pointer (&data->job_path, g_free);
+
 	g_free (data);
 }
 
@@ -466,43 +489,29 @@ struct _GsPluginSystemdSysupdate {
 
 /* Plugin private methods, and their callbacks. */
 
-static void
-gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
-                                              GTask                    *task,
-                                              const gchar              *job_path,
-                                              gint32                    job_status);
+static void gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
+                                                          GTask                    *task,
+                                                          const gchar              *job_path,
+                                                          gint32                    job_status);
+static void gs_plugin_systemd_sysupdate_cancel_job_cancel_cb (GObject      *source_object,
+                                                              GAsyncResult *result,
+                                                              gpointer      user_data);
+static void gs_plugin_systemd_sysupdate_cancel_job_cb (GObject      *source_object,
+                                                       GAsyncResult *result,
+                                                       gpointer      user_data);
+static void gs_plugin_systemd_sysupdate_cancel_job_revoke (GsPluginSystemdSysupdate *self,
+                                                           const gchar              *job_path);
 
-static void
-gs_plugin_systemd_sysupdate_cancel_job_cancel_cb (GObject      *source_object,
-                                                  GAsyncResult *result,
-                                                  gpointer      user_data);
-
-static void
-gs_plugin_systemd_sysupdate_cancel_job_cb (GObject      *source_object,
-                                           GAsyncResult *result,
-                                           gpointer      user_data);
-
-static void
-gs_plugin_systemd_sysupdate_cancel_job_revoke (GsPluginSystemdSysupdate *self,
-                                               const gchar              *job_path);
-
-static void
-gs_plugin_systemd_sysupdate_update_target_proxy_new_cb (GObject      *source_object,
-                                                        GAsyncResult *result,
-                                                        gpointer      user_data);
-
-static void
-gs_plugin_systemd_sysupdate_update_target_update_cb (GObject      *source_object,
-                                                     GAsyncResult *result,
-                                                     gpointer      user_data);
-
-static void
-gs_plugin_systemd_sysupdate_update_target_job_proxy_new_cb (GObject      *source_object,
-                                                            GAsyncResult *result,
-                                                            gpointer      user_data);
-
-static void
-gs_plugin_systemd_sysupdate_update_target_notify_progress_cb (gpointer user_data);
+static void gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object,
+                                                                 GAsyncResult *result,
+                                                                 gpointer      user_data);
+static void gs_plugin_systemd_sysupdate_update_app_update_cb (GObject      *source_object,
+                                                              GAsyncResult *result,
+                                                              gpointer      user_data);
+static void gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_object,
+                                                                     GAsyncResult *result,
+                                                                     gpointer      user_data);
+static void gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (gpointer user_data);
 
 /* Plugin overridden virtual methods, and their callbacks. */
 
@@ -612,11 +621,6 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
                                               GCancellable                       *cancellable,
                                               GAsyncReadyCallback                 callback,
                                               gpointer                            user_data);
-
-static void
-gs_plugin_systemd_sysupdate_update_app_update_target_cb (GObject      *source_object,
-                                                         GAsyncResult *result,
-                                                         gpointer      user_data);
 
 static gboolean
 gs_plugin_systemd_sysupdate_update_app_finish (GsPlugin      *plugin,
@@ -847,53 +851,6 @@ update_app_for_target (GsPluginSystemdSysupdate *self,
 	gs_app_set_state (app, app_state);
 }
 
-/* Wrapper methods for async. target update
- *
- * The goal of the method `gs_plugin_systemd_sysupdate_update_target_async()`
- * is to wrap the specific target update as a single async. call.
- * By design, there are two D-Bus method calls and two D-Bus signals
- * involved in one 'target update' progress:
- *  1) D-Bus method `Target.Update()`
- *  2) D-Bus method `Job.Cancel()`
- *  3) D-Bus signal `Job.PropertiesChanged()`
- *  4) D-Bus signal `Manager.JobRemoved()`
- *
- * Assumes there is only one job created dynamically in the runtime
- * by `systemd-sysupdated` is associated to the `Target.Update()`.
- * Here we create a subtask for each individual target update, and
- * hide the 'target to job' mapping from the caller by maintaining
- * the relationships internally within a look-up table. */
-typedef struct {
-	GsApp *app; /* (owned) (not nullable) */
-	GsSystemdSysupdateJob *job_proxy; /* (owned) (nullable) */
-	gchar *target_path; /* (owned) (not nullable) */
-	gchar *job_path; /* (owned) (nullable) */
-	gboolean interactive;
-} GsPluginSystemdSysupdateUpdateTargetData;
-
-static GsPluginSystemdSysupdateUpdateTargetData *
-gs_plugin_systemd_sysupdate_update_target_data_new (GsApp       *app,
-                                                    const gchar *target_path,
-                                                    gboolean     interactive)
-{
-	GsPluginSystemdSysupdateUpdateTargetData *data = g_new0 (GsPluginSystemdSysupdateUpdateTargetData, 1);
-	data->app = g_object_ref (app);
-	data->target_path = g_strdup (target_path);
-	data->interactive = interactive;
-	return data;
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_target_data_free (GsPluginSystemdSysupdateUpdateTargetData *data)
-{
-	g_clear_object (&data->app);
-	g_clear_object (&data->job_proxy);
-	g_clear_pointer (&data->target_path, g_free);
-	g_clear_pointer (&data->job_path, g_free);
-	data->interactive = FALSE;
-	g_free (data);
-}
-
 /* Remove the given job. It is called when the server notified us a job
  * terminated.
  *
@@ -931,7 +888,7 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
                                               const gchar              *job_path,
                                               gint32                    job_status)
 {
-	GsPluginSystemdSysupdateUpdateTargetData *data = NULL;
+	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
 	const gchar *target_class = NULL;
 	gboolean target_is_host = FALSE;
 
@@ -1008,7 +965,7 @@ gs_plugin_systemd_sysupdate_cancel_job (GsPluginSystemdSysupdate *self,
 	g_autoptr(GCancellable) cancellable = NULL;
 	g_autoptr(GTask) task = NULL;
 	GTask *update_task = NULL;
-	GsPluginSystemdSysupdateUpdateTargetData *update_data = NULL;
+	GsPluginSystemdSysupdateUpdateAppData *update_data = NULL;
 	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
 
 	target = lookup_target_by_app (self, app);
@@ -1020,7 +977,7 @@ gs_plugin_systemd_sysupdate_cancel_job (GsPluginSystemdSysupdate *self,
 	/* iterate over the on-going tasks to find the job */
 	g_hash_table_iter_init (&iter, self->job_task_map);
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		GsPluginSystemdSysupdateUpdateTargetData *job_data = g_task_get_task_data (value);
+		GsPluginSystemdSysupdateUpdateAppData *job_data = g_task_get_task_data (value);
 		if (job_data != NULL &&
 		    g_strcmp0 (job_data->target_path, target->object_path) == 0) {
 			job_path = key;
@@ -1129,215 +1086,6 @@ gs_plugin_systemd_sysupdate_cancel_job_revoke (GsPluginSystemdSysupdate *self,
 	}
 
 	g_cancellable_cancel (cancellable);
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_target_async (GsPluginSystemdSysupdate *self,
-                                                 GsApp                    *app,
-                                                 const gchar              *target_path,
-                                                 const gchar              *target_version,
-                                                 gboolean                  interactive,
-                                                 GCancellable             *cancellable,
-                                                 GAsyncReadyCallback       callback,
-                                                 gpointer                  user_data)
-{
-	GsPluginSystemdSysupdateUpdateTargetData *data = NULL;
-	g_autoptr(GTask) task = NULL;
-	TargetItem *target = NULL;
-	GsPlugin *plugin = GS_PLUGIN (self);
-
-	task = g_task_new (self, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_target_async);
-
-	data = gs_plugin_systemd_sysupdate_update_target_data_new (app,
-	                                                           target_path,
-	                                                           interactive);
-	g_task_set_task_data (task, data, (GDestroyNotify)gs_plugin_systemd_sysupdate_update_target_data_free);
-
-	target = lookup_target_by_app (self, data->app);
-	if (target == NULL) {
-		g_task_return_new_error (task, G_IO_ERROR, GS_PLUGIN_ERROR_FAILED,
-		                         "cannot find target for app: %s", gs_app_get_name (data->app));
-		return;
-	}
-
-	/* currently two actions `download file` and `deploy changes`
-	 * are bound together as one method in `Target.Update()`.
-	 * This method will trigger the update to start and return
-	 * immediately. Results should be waited and handled within the
-	 * signal `Manager.JobRemoved()` */
-	gs_systemd_sysupdate_target_proxy_new (gs_plugin_get_system_bus_connection (plugin),
-	                                       G_DBUS_PROXY_FLAGS_NONE,
-	                                       "org.freedesktop.sysupdate1",
-	                                       target_path,
-	                                       cancellable,
-	                                       gs_plugin_systemd_sysupdate_update_target_proxy_new_cb,
-	                                       g_steal_pointer (&task));
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_target_proxy_new_cb (GObject      *source_object,
-                                                        GAsyncResult *result,
-                                                        gpointer      user_data)
-{
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GsSystemdSysupdateTarget) proxy = NULL;
-	g_autofree gchar *job_path = NULL;
-	GsPluginSystemdSysupdateUpdateTargetData *data = NULL;
-	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
-
-	proxy = gs_systemd_sysupdate_target_proxy_new_finish (result, &local_error);
-	if (proxy == NULL) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	data = g_task_get_task_data (task);
-
-	if (data->interactive) {
-		call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
-	}
-
-	gs_systemd_sysupdate_target_call_update (proxy,
-	                                         "", /* left empty as the latest version */
-	                                         SYSUPDATED_TARGET_UPDATE_FLAGS_NONE,
-	                                         call_flags,
-	                                         SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS,
-	                                         NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
-	                                         gs_plugin_systemd_sysupdate_update_target_update_cb,
-	                                         g_steal_pointer (&task));
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_target_update_cb (GObject      *source_object,
-                                                     GAsyncResult *result,
-                                                     gpointer      user_data)
-{
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	g_autoptr(GError) local_error = NULL;
-	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
-	g_autofree gchar *job_path = NULL;
-	GsPlugin *plugin = GS_PLUGIN (self);
-	GsPluginSystemdSysupdateUpdateTargetData *data = NULL;
-
-	if (!gs_systemd_sysupdate_target_call_update_finish (GS_SYSTEMD_SYSUPDATE_TARGET (source_object),
-	                                                     NULL,
-	                                                     NULL,
-	                                                     &job_path,
-	                                                     result,
-	                                                     &local_error)) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	data = g_task_get_task_data (task);
-	g_set_str (&data->job_path, job_path);
-
-	gs_systemd_sysupdate_job_proxy_new (gs_plugin_get_system_bus_connection (plugin),
-	                                    G_DBUS_PROXY_FLAGS_NONE,
-	                                    "org.freedesktop.sysupdate1",
-	                                    job_path,
-	                                    NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
-	                                    gs_plugin_systemd_sysupdate_update_target_job_proxy_new_cb,
-	                                    g_steal_pointer (&task));
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_target_job_proxy_new_cb (GObject      *source_object,
-                                                            GAsyncResult *result,
-                                                            gpointer      user_data)
-{
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GsSystemdSysupdateJob) proxy = NULL;
-	GCancellable *cancellable = g_task_get_cancellable (task);
-	GsPluginSystemdSysupdateUpdateTargetData *data = NULL;
-	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
-	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
-
-	data = g_task_get_task_data (task);
-
-	proxy = gs_systemd_sysupdate_job_proxy_new_finish (result, &local_error);
-	if (proxy == NULL) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		/* The job's preparation failed, we can't act on it, revoke any
-		 * removal or cancellation request that we filed during its
-		 * preparation. */
-		gs_plugin_systemd_sysupdate_remove_job_revoke (self, data->job_path);
-		gs_plugin_systemd_sysupdate_cancel_job_revoke (self, data->job_path);
-		return;
-	}
-
-	g_set_object (&data->job_proxy, proxy);
-
-	g_signal_connect_object (proxy, "notify::progress",
-	                         G_CALLBACK (gs_plugin_systemd_sysupdate_update_target_notify_progress_cb),
-	                         g_object_ref (task), G_CONNECT_SWAPPED);
-
-	gs_plugin_systemd_sysupdate_update_target_notify_progress_cb (task);
-
-	/* job path to task mapping, easier for the callbacks to use the
-	 * object path to find it's related task */
-	g_hash_table_insert (self->job_task_map,
-	                     g_strdup (data->job_path),
-	                     g_object_ref (task));
-
-	/* We don't chain up or return here, the task will be terminated when
-	 * systemd-sysupdate notifies us that the job is removed, or by
-	 * cancelling the task. */
-
-	/* If the update job has been filed for removal during its preparation,
-	 * we need to resume the removal request. This will also revoke any
-	 * cancellation request. */
-	if (g_hash_table_contains (self->job_to_remove_status_map, data->job_path)) {
-		gint32 job_status = GPOINTER_TO_INT (g_hash_table_lookup (self->job_to_remove_status_map, data->job_path));
-		gs_plugin_systemd_sysupdate_remove_job_apply (self, task, data->job_path, job_status);
-		return;
-	}
-
-	/* If the update job has been filed for cancellation during its
-	 * preparation, we need to resume the cancellation request. */
-	if (g_hash_table_contains (self->job_to_cancel_task_map, data->job_path)) {
-		GTask *cancel_task = g_hash_table_lookup (self->job_to_cancel_task_map, data->job_path);
-
-		if (data->interactive) {
-			call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
-		}
-
-		gs_systemd_sysupdate_job_call_cancel (data->job_proxy,
-		                                      call_flags,
-		                                      SYSUPDATED_JOB_CANCEL_TIMEOUT_MS,
-		                                      g_task_get_cancellable (cancel_task),
-		                                      gs_plugin_systemd_sysupdate_cancel_job_cancel_cb,
-		                                      g_steal_pointer (&cancel_task));
-		return;
-	}
-
-	/* If the task has been cancelled during its preparation, we need to ask
-	 * systemd-sysdupdate to cancel it. */
-	if (g_cancellable_is_cancelled (cancellable)) {
-		gs_plugin_systemd_sysupdate_cancel_job (self, data->app, data->interactive);
-	}
-}
-
-static void
-gs_plugin_systemd_sysupdate_update_target_notify_progress_cb (gpointer user_data)
-{
-	GTask *task = G_TASK (user_data);
-	GsPluginSystemdSysupdateUpdateTargetData *data = g_task_get_task_data (task);
-	guint progress = gs_systemd_sysupdate_job_get_progress (data->job_proxy);
-
-	gs_app_set_state (data->app, GS_APP_STATE_DOWNLOADING);
-	gs_app_set_progress (data->app, progress);
-}
-
-static gboolean
-gs_plugin_systemd_sysupdate_update_target_finish (GsPluginSystemdSysupdate  *self,
-                                                  GAsyncResult              *result,
-                                                  GError                   **error)
-{
-	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /* Plugin methods */
@@ -2473,31 +2221,176 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	}
 
 	/* update the 'target' to specific version */
-	gs_plugin_systemd_sysupdate_update_target_async (self,
-	                                                 data->app,
-	                                                 target->object_path,
-	                                                 gs_app_get_version (data->app),
-	                                                 data->interactive,
-	                                                 cancellable,
-	                                                 gs_plugin_systemd_sysupdate_update_app_update_target_cb,
-	                                                 g_steal_pointer (&task));
+	data->target_path = g_strdup (target->object_path);
+
+	/* currently two actions `download file` and `deploy changes`
+	 * are bound together as one method in `Target.Update()`.
+	 * This method will trigger the update to start and return
+	 * immediately. Results should be waited and handled within the
+	 * signal `Manager.JobRemoved()` */
+	gs_systemd_sysupdate_target_proxy_new (gs_plugin_get_system_bus_connection (GS_PLUGIN (self)),
+	                                       G_DBUS_PROXY_FLAGS_NONE,
+	                                       "org.freedesktop.sysupdate1",
+	                                       target->object_path,
+	                                       cancellable,
+	                                       gs_plugin_systemd_sysupdate_update_app_proxy_new_cb,
+	                                       g_steal_pointer (&task));
 }
 
 static void
-gs_plugin_systemd_sysupdate_update_app_update_target_cb (GObject      *source_object,
+gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object,
+                                                     GAsyncResult *result,
+                                                     gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GsSystemdSysupdateTarget) proxy = NULL;
+	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
+	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
+
+	proxy = gs_systemd_sysupdate_target_proxy_new_finish (result, &local_error);
+	if (proxy == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	data = g_task_get_task_data (task);
+
+	if (data->interactive) {
+		call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
+	}
+
+	gs_systemd_sysupdate_target_call_update (proxy,
+	                                         "", /* left empty as the latest version */
+	                                         SYSUPDATED_TARGET_UPDATE_FLAGS_NONE,
+	                                         call_flags,
+	                                         SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS,
+	                                         NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
+	                                         gs_plugin_systemd_sysupdate_update_app_update_cb,
+	                                         g_steal_pointer (&task));
+}
+
+static void
+gs_plugin_systemd_sysupdate_update_app_update_cb (GObject      *source_object,
+                                                  GAsyncResult *result,
+                                                  gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
+	g_autofree gchar *job_path = NULL;
+	GsPlugin *plugin = GS_PLUGIN (self);
+	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
+
+	if (!gs_systemd_sysupdate_target_call_update_finish (GS_SYSTEMD_SYSUPDATE_TARGET (source_object),
+	                                                     NULL,
+	                                                     NULL,
+	                                                     &job_path,
+	                                                     result,
+	                                                     &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	data = g_task_get_task_data (task);
+	g_set_str (&data->job_path, job_path);
+
+	gs_systemd_sysupdate_job_proxy_new (gs_plugin_get_system_bus_connection (plugin),
+	                                    G_DBUS_PROXY_FLAGS_NONE,
+	                                    "org.freedesktop.sysupdate1",
+	                                    job_path,
+	                                    NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
+	                                    gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb,
+	                                    g_steal_pointer (&task));
+}
+
+static void
+gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_object,
                                                          GAsyncResult *result,
                                                          gpointer      user_data)
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GsSystemdSysupdateJob) proxy = NULL;
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPluginSystemdSysupdateUpdateAppData *data = NULL;
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
+	GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
 
-	if (!gs_plugin_systemd_sysupdate_update_target_finish (self, result, &local_error)) {
+	data = g_task_get_task_data (task);
+
+	proxy = gs_systemd_sysupdate_job_proxy_new_finish (result, &local_error);
+	if (proxy == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
+		/* The job's preparation failed, we can't act on it, revoke any
+		 * removal or cancellation request that we filed during its
+		 * preparation. */
+		gs_plugin_systemd_sysupdate_remove_job_revoke (self, data->job_path);
+		gs_plugin_systemd_sysupdate_cancel_job_revoke (self, data->job_path);
 		return;
 	}
 
-	g_task_return_boolean (task, TRUE);
+	g_set_object (&data->job_proxy, proxy);
+
+	g_signal_connect_object (proxy, "notify::progress",
+	                         G_CALLBACK (gs_plugin_systemd_sysupdate_update_app_notify_progress_cb),
+	                         g_object_ref (task), G_CONNECT_SWAPPED);
+
+	gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (task);
+
+	/* job path to task mapping, easier for the callbacks to use the
+	 * object path to find its related task */
+	g_hash_table_insert (self->job_task_map,
+	                     g_strdup (data->job_path),
+	                     g_object_ref (task));
+
+	/* We don't chain up or return here, the task will be terminated when
+	 * systemd-sysupdate notifies us that the job is removed, or by
+	 * cancelling the task. */
+
+	/* If the update job has been filed for removal during its preparation,
+	 * we need to resume the removal request. This will also revoke any
+	 * cancellation request. */
+	if (g_hash_table_contains (self->job_to_remove_status_map, data->job_path)) {
+		gint32 job_status = GPOINTER_TO_INT (g_hash_table_lookup (self->job_to_remove_status_map, data->job_path));
+		gs_plugin_systemd_sysupdate_remove_job_apply (self, task, data->job_path, job_status);
+		return;
+	}
+
+	/* If the update job has been filed for cancellation during its
+	 * preparation, we need to resume the cancellation request. */
+	if (g_hash_table_contains (self->job_to_cancel_task_map, data->job_path)) {
+		GTask *cancel_task = g_hash_table_lookup (self->job_to_cancel_task_map, data->job_path);
+
+		if (data->interactive) {
+			call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
+		}
+
+		gs_systemd_sysupdate_job_call_cancel (data->job_proxy,
+		                                      call_flags,
+		                                      SYSUPDATED_JOB_CANCEL_TIMEOUT_MS,
+		                                      g_task_get_cancellable (cancel_task),
+		                                      gs_plugin_systemd_sysupdate_cancel_job_cancel_cb,
+		                                      g_steal_pointer (&cancel_task));
+		return;
+	}
+
+	/* If the task has been cancelled during its preparation, we need to ask
+	 * systemd-sysdupdate to cancel it. */
+	if (g_cancellable_is_cancelled (cancellable)) {
+		gs_plugin_systemd_sysupdate_cancel_job (self, data->app, data->interactive);
+	}
+}
+
+static void
+gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (gpointer user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPluginSystemdSysupdateUpdateAppData *data = g_task_get_task_data (task);
+	guint progress = gs_systemd_sysupdate_job_get_progress (data->job_proxy);
+
+	gs_app_set_state (data->app, GS_APP_STATE_DOWNLOADING);
+	gs_app_set_progress (data->app, progress);
 }
 
 static gboolean
