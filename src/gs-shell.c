@@ -1174,6 +1174,8 @@ main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 {
 	GsShell *shell = user_data;
 
+	// cancel any pending window state save, and save the state immediately
+	g_clear_handle_id (&shell->save_window_state_id, g_source_remove);
 	gs_shell_save_window_state (shell);
 
 	/* hide any notifications */
@@ -2716,7 +2718,8 @@ save_window_state_cb (gpointer user_data)
 {
 	GsShell *shell = GS_SHELL (user_data);
 
-	gs_shell_save_window_state (shell);
+	if (gtk_widget_get_mapped (GTK_WIDGET (shell)))
+		gs_shell_save_window_state (shell);
 	shell->save_window_state_id = 0;
 
 	return G_SOURCE_REMOVE;
@@ -2725,6 +2728,9 @@ save_window_state_cb (gpointer user_data)
 static void
 schedule_save_window_state (GsShell *shell)
 {
+	if (!gtk_widget_get_mapped (GTK_WIDGET (shell)))
+		return;
+
 	// cancel older times
 	if (shell->save_window_state_id != 0)
 		g_source_remove (shell->save_window_state_id);
