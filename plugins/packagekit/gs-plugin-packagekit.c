@@ -81,7 +81,6 @@ struct _GsPluginPackagekit {
 
 	GFileMonitor		*monitor;
 	GFileMonitor		*monitor_trigger;
-	GPermission		*permission;
 	gboolean		 is_triggered;
 	gboolean		 offline_update_cancelled; /* can be requested before reboot/shutdown, to not auto-prepare it */
 	GHashTable		*prepared_updates;  /* (element-type utf8); set of package IDs for updates which are already prepared */
@@ -3186,18 +3185,6 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	gs_app_set_install_date (app, timestamp);
 }
 
-/* Run in the main thread. */
-static void
-gs_plugin_packagekit_permission_cb (GPermission *permission,
-                                    GParamSpec  *pspec,
-                                    gpointer     data)
-{
-	GsPlugin *plugin = GS_PLUGIN (data);
-	gboolean ret = g_permission_get_allowed (permission) ||
-			g_permission_get_can_acquire (permission);
-	gs_plugin_set_allow_updates (plugin, ret);
-}
-
 static void gs_plugin_packagekit_download_async (GsPluginPackagekit    *self,
                                                  GsAppList             *list,
                                                  gboolean               interactive,
@@ -3409,9 +3396,6 @@ gs_plugin_systemd_trigger_changed_cb (GFileMonitor *monitor,
 static void setup_proxy_settings_cb (GObject      *source_object,
                                      GAsyncResult *result,
                                      gpointer      user_data);
-static void get_offline_update_permission_cb (GObject      *source_object,
-                                              GAsyncResult *result,
-                                              gpointer      user_data);
 
 static void
 gs_plugin_packagekit_get_properties_cb (GObject *source_object,
@@ -3512,27 +3496,6 @@ setup_proxy_settings_cb (GObject      *source_object,
 	g_signal_connect (self->monitor_trigger, "changed",
 			  G_CALLBACK (gs_plugin_systemd_trigger_changed_cb),
 			  self);
-
-	/* check if we have permission to trigger offline updates */
-	gs_utils_get_permission_async ("org.freedesktop.packagekit.trigger-offline-update",
-				       cancellable, get_offline_update_permission_cb, g_steal_pointer (&task));
-}
-
-static void
-get_offline_update_permission_cb (GObject      *source_object,
-                                  GAsyncResult *result,
-                                  gpointer      user_data)
-{
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginPackagekit *self = g_task_get_source_object (task);
-	g_autoptr(GError) local_error = NULL;
-
-	self->permission = gs_utils_get_permission_finish (result, &local_error);
-	if (self->permission != NULL) {
-		g_signal_connect (self->permission, "notify",
-				  G_CALLBACK (gs_plugin_packagekit_permission_cb),
-				  self);
-	}
 
 	/* get the list of currently downloaded packages */
 	if (!gs_plugin_systemd_update_cache (self, g_task_get_cancellable (task), &local_error))
