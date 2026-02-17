@@ -450,6 +450,9 @@ add_repo (GsReposDialog *dialog,
 	}
 
 	if (third_party_repos && is_third_party_repo (dialog, repo)) {
+		/* do not let user remove these repos */
+		gs_app_add_quirk (repo, GS_APP_QUIRK_PROVENANCE);
+
 		*third_party_repos = g_slist_prepend (*third_party_repos, repo);
 		return;
 	}
