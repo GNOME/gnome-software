@@ -92,8 +92,6 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 	gs_app_set_metadata (app, "GnomeSoftware::SortKey", "100");
 	gs_app_set_metadata (app, "GnomeSoftware::InstallationKind",
 		is_user ? _("User Installation") : _("System Installation"));
-	if (!is_user)
-		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 
 	/* title */
 	title = flatpak_remote_get_title (xremote);
