@@ -289,6 +289,10 @@ perms_from_metadata (GKeyFile *keyfile)
 		else if (g_str_equal (strv[i], "fallback-x11") &&
 		         !g_strv_contains ((const gchar * const*)strv, "wayland"))
 			flags |= GS_APP_PERMISSIONS_FLAGS_X11;
+		else if (g_str_equal (strv[i], "x11") ||
+			 g_str_equal (strv[i], "fallback-x11") ||
+			 g_str_equal (strv[i], "wayland"))
+			/* with the above cases handled, these are all safe */;
 		else if (g_str_equal (strv[i], "inherit-wayland-socket"))
 			/* used by input methods like fcitx, gives them access to the compositor’s Wayland socket */
 			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
@@ -303,6 +307,15 @@ perms_from_metadata (GKeyFile *keyfile)
 		else if (g_str_equal (strv[i], "ssh-auth"))
 			/* could use ssh-agent to authenticate on localhost or another host */
 			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		else {
+			/* Unknown socket, so we have to assume it’s unsafe,
+			 * since session/system services which allow access via
+			 * a plain socket are typically not written to protect
+			 * against malicious clients. */
+			g_debug ("Unrecognised Context.sockets value ‘%s’ for app %s",
+				 strv[i], app_id);
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		}
 	}
 	g_strfreev (strv);
 
@@ -2684,10 +2697,22 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 	}
 	sockets = g_key_file_get_string_list (kf, "Context", "sockets", NULL, NULL);
 	if (sockets != NULL) {
-		/* X11 isn't secure enough, neither is gpg-agent */
-		if (g_strv_contains ((const gchar * const *) sockets, "x11") ||
-		    g_strv_contains ((const char * const *) sockets, "gpg-agent"))
-			secure = FALSE;
+		/* Sockets predate portals, so any unknown socket has to be
+		 * assumed to be unsafe. Many of the known sockets are also
+		 * unsafe for potentially malicious apps.
+		 * See https://docs.flatpak.org/en/latest/sandbox-permissions.html#standard-permissions */
+		const char *known_safe_sockets[] = {
+			"fallback-x11",
+			"wayland",
+			NULL,
+		};
+
+		for (size_t i = 0; sockets[i] != NULL; i++) {
+			if (!g_strv_contains (known_safe_sockets, sockets[i])) {
+				secure = FALSE;
+				break;
+			}
+		}
 	}
 	filesystems = g_key_file_get_string_list (kf, "Context", "filesystems", NULL, NULL);
 	if (filesystems != NULL) {
