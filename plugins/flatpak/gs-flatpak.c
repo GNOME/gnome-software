@@ -289,9 +289,19 @@ perms_from_metadata (GKeyFile *keyfile)
 		else if (g_str_equal (strv[i], "fallback-x11") &&
 		         !g_strv_contains ((const gchar * const*)strv, "wayland"))
 			flags |= GS_APP_PERMISSIONS_FLAGS_X11;
+		else if (g_str_equal (strv[i], "inherit-wayland-socket"))
+			/* used by input methods like fcitx, gives them access to the compositor’s Wayland socket */
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 		else if (g_str_equal (strv[i], "pulseaudio"))
 			flags |= GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES;
 		else if (g_str_equal (strv[i], "gpg-agent"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		else if (g_str_equal (strv[i], "cups"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_DEVICES;
+		else if (g_str_equal (strv[i], "pcsc"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_DEVICES;  /* smartcard devices */
+		else if (g_str_equal (strv[i], "ssh-auth"))
+			/* could use ssh-agent to authenticate on localhost or another host */
 			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 	}
 	g_strfreev (strv);
