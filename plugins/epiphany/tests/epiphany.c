@@ -234,6 +234,10 @@ main (int argc, char **argv)
 			      (GTestDataFunc) gs_plugins_epiphany_installed_func);
 
 	res = g_test_run ();
+
+	gs_plugin_loader_shutdown (plugin_loader, NULL);
 	gt_dbus_queue_disconnect (queue, TRUE);
+	gs_test_flush_main_context ();
+
 	return res;
 }
