@@ -1211,26 +1211,6 @@ invoke_plugin_loader_refresh_metadata_assert_no_error (GsPluginLoader *plugin_lo
 }
 
 static GsAppList *
-invoke_plugin_loader_list_upgrades_assert_no_error (GsPluginLoader *plugin_loader)
-{
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-	GsAppList *list;
-	g_autoptr(GError) error = NULL;
-
-	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
-	                                                     GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
-	gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
-	list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
-	gs_test_flush_main_context ();
-
-	g_assert_no_error (error);
-	g_assert_nonnull (list);
-
-	gs_app_list_sort (list, (GsAppListSortFunc) compare_apps_by_name, NULL);
-	return g_steal_pointer (&list);
-}
-
-static GsAppList *
 invoke_plugin_loader_list_apps_for_update_assert_no_error (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -1371,11 +1351,20 @@ gs_plugin_systemd_sysupdate_distro_upgrade_func (TestData *test_data)
 
 	mock_sysupdated_registrar_init (&registrar, test_data->web_port, &test_data->handle, targets);
 	{
-		g_autoptr(GsAppList) list_upgrades = NULL;
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		GsAppList *list_upgrades;
+		g_autoptr(GError) error = NULL;
 
 		invoke_plugin_loader_refresh_metadata_assert_no_error (plugin_loader);
-		list_upgrades = invoke_plugin_loader_list_upgrades_assert_no_error (plugin_loader);
-		g_assert_cmpint (gs_app_list_length (list_upgrades), ==, 0);
+
+		plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
+			                                             GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
+		gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+		list_upgrades = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
+		gs_test_flush_main_context ();
+
+		g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED);
+		g_assert_null (list_upgrades);
 	}
 }
 
