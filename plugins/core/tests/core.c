@@ -223,7 +223,7 @@ main (int argc, char **argv)
 	g_assert_nonnull (tmp_root);
 	g_setenv ("GS_TEST_CACHEDIR", tmp_root, TRUE);
 
-	os_release_filename = gs_test_get_filename (TESTDATADIR, "os-release");
+	os_release_filename = g_test_build_filename (G_TEST_DIST, "os-release", NULL);
 	g_assert_nonnull (os_release_filename);
 	g_setenv ("GS_TEST_OS_RELEASE_FILENAME", os_release_filename, TRUE);
 

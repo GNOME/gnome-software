@@ -47,7 +47,7 @@ main (int argc, char **argv)
 	gs_test_init (&argc, &argv);
 
 	/* dummy data */
-	reposdir = gs_test_get_filename (TESTDATADIR, "yum.repos.d");
+	reposdir = g_test_build_filename (G_TEST_DIST, "yum.repos.d", NULL);
 	g_assert (reposdir != NULL);
 	g_setenv ("GS_TEST_REPOS_DIR", reposdir, TRUE);
 

@@ -228,7 +228,7 @@ gs_plugins_packagekit_local_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* load local file */
-	fn = gs_test_get_filename (TESTDATADIR, "chiron-1.1-1.fc24.x86_64.rpm");
+	fn = g_test_build_filename (G_TEST_DIST, "chiron-1.1-1.fc24.x86_64.rpm", NULL);
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_file_to_app_new (file, GS_PLUGIN_FILE_TO_APP_FLAGS_NONE,
