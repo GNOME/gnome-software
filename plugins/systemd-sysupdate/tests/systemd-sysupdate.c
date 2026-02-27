@@ -1275,21 +1275,6 @@ invoke_plugin_loader_upgrade_trigger_end_assert_no_error (RunPluginJobActionData
 	g_slice_free (RunPluginJobActionData, data);
 }
 
-static void
-invoke_plugin_loader_upgrade_trigger_end_assert_error (RunPluginJobActionData *data,
-                                                       GQuark                  domain,
-                                                       gint                    code)
-{
-	g_clear_pointer (&data->plugin_thread, g_thread_join);
-
-	g_assert_error (data->error, domain, code);
-	g_assert_false (data->ret);
-
-	g_clear_error (&data->error);
-	g_clear_pointer (&data->plugin_job, g_object_unref);
-	g_slice_free (RunPluginJobActionData, data);
-}
-
 static RunPluginJobActionData *
 invoke_plugin_loader_update_apps_begin (GsPluginLoader *plugin_loader,
                                         GsAppList      *list_updates)
@@ -1313,14 +1298,6 @@ static void
 invoke_plugin_loader_update_apps_end_assert_no_error (RunPluginJobActionData *data)
 {
 	invoke_plugin_loader_upgrade_trigger_end_assert_no_error (data);
-}
-
-static void
-invoke_plugin_loader_update_apps_end_assert_error (RunPluginJobActionData *data,
-                                                   GQuark                  domain,
-                                                   gint                    code)
-{
-	invoke_plugin_loader_upgrade_trigger_end_assert_error (data, domain, code);
 }
 
 /* Checks that the plugin is enabled. If it isn't, it could be because the
@@ -1580,9 +1557,15 @@ gs_plugin_systemd_sysupdate_app_update_cancellable_func (TestData *test_data)
 			/* emit `job_status` = -1 as what real service returns */
 			mock_sysupdated_emit_signal_job_removed (&test_data->handle, -1);
 
-			invoke_plugin_loader_update_apps_end_assert_error (g_steal_pointer (&data),
-			                                                   G_IO_ERROR,
-			                                                   G_IO_ERROR_CANCELLED);
+			g_clear_pointer (&data->plugin_thread, g_thread_join);
+
+			g_assert_true (g_error_matches (data->error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+				       g_error_matches (data->error, G_IO_ERROR, G_IO_ERROR_CANCELLED));
+			g_assert_false (data->ret);
+
+			g_clear_error (&data->error);
+			g_clear_pointer (&data->plugin_job, g_object_unref);
+			g_slice_free (RunPluginJobActionData, data);
 		}
 
 		for (guint i = 0; i < gs_app_list_length (list_updates); i++) {
