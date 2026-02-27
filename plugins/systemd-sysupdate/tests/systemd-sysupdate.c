@@ -1216,6 +1216,7 @@ invoke_plugin_loader_list_apps_for_update_assert_no_error (GsPluginLoader *plugi
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsAppQuery) query = NULL;
 	GsAppList *list;
+	g_autoptr(GsAppList) list_copy = NULL;
 	g_autoptr(GError) error = NULL;
 
 	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
@@ -1229,8 +1230,9 @@ invoke_plugin_loader_list_apps_for_update_assert_no_error (GsPluginLoader *plugi
 	g_assert_no_error (error);
 	g_assert_nonnull (list);
 
-	gs_app_list_sort (list, (GsAppListSortFunc) compare_apps_by_name, NULL);
-	return g_steal_pointer (&list);
+	list_copy = gs_app_list_copy (list);
+	gs_app_list_sort (list_copy, (GsAppListSortFunc) compare_apps_by_name, NULL);
+	return g_steal_pointer (&list_copy);
 }
 
 /**
