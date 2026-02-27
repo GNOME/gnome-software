@@ -25,17 +25,33 @@ gs_test_init (gint *pargc,
 	      gchar ***pargv)
 {
 	g_autoptr(GSettings) settings = NULL;
+	const char * const *system_data_dirs = NULL;
+	g_autoptr(GStrvBuilder) builder = g_strv_builder_new ();
+	g_auto(GStrv) schema_dirs = NULL;
+	g_autofree char *schema_dir = NULL;
 
 	g_setenv ("GSETTINGS_BACKEND", "memory", FALSE);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
-	/* To not download ODRS data during the test */
-	settings = g_settings_new ("org.gnome.software");
-	g_settings_set_string (settings, "review-server", "");
+	/* Override the GSettings schema directory before calling g_test_init()
+	 * so that we retain access to the system GSettings schemas, for things
+	 * like proxy information. */
+	g_strv_builder_take (builder, g_build_filename (g_getenv ("G_TEST_BUILDDIR"), "..", "..", "data", NULL));
+	g_strv_builder_take (builder, g_build_filename (g_getenv ("G_TEST_BUILDDIR"), "..", "..", "..", "data", NULL));
+	system_data_dirs = g_get_system_data_dirs ();
+	for (size_t i = 0; system_data_dirs[i] != NULL; i++)
+		g_strv_builder_take (builder, g_build_filename (system_data_dirs[i], "glib-2.0", "schemas", NULL));
+	schema_dirs = g_strv_builder_end (builder);
+	schema_dir = g_strjoinv (":", schema_dirs);
+	g_setenv ("GSETTINGS_SCHEMA_DIR", schema_dir, TRUE);
 
 	g_test_init (pargc, pargv,
 		     G_TEST_OPTION_ISOLATE_DIRS,
 		     NULL);
+
+	/* To not download ODRS data during the test */
+	settings = g_settings_new ("org.gnome.software");
+	g_settings_set_string (settings, "review-server", "");
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
