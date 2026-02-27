@@ -718,6 +718,7 @@ gs_app_list_performance_func (void)
 	g_autoptr(GPtrArray) apps = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	g_autoptr(GTimer) timer = NULL;
+	double elapsed_time_ms;
 
 	/* create a few apps */
 	for (guint i = 0; i < 500; i++) {
@@ -731,7 +732,9 @@ gs_app_list_performance_func (void)
 		GsApp *app = g_ptr_array_index (apps, i);
 		gs_app_list_add (list, app);
 	}
-	g_print ("%.2fms ", g_timer_elapsed (timer, NULL) * 1000);
+	elapsed_time_ms = g_timer_elapsed (timer, NULL) * 1000;
+
+	g_test_minimized_result (elapsed_time_ms, "Adding apps to list took %.2fms", elapsed_time_ms);
 }
 
 static void
