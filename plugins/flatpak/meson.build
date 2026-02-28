@@ -6,6 +6,13 @@ deps = [
   ostree,
 ]
 
+flatpak_enums = gnome.mkenums_simple('gs-flatpak-enums',
+  sources: [
+    'gs-flatpak-transaction.h',
+  ],
+  install_header: false,
+)
+
 if get_option('mogwai')
   deps += mogwai_schedule_client
 endif
@@ -51,7 +58,7 @@ if get_option('tests')
     sources : [
       'gs-flatpak-app.c',
       'gs-self-test.c'
-    ],
+    ] + flatpak_enums,
     dependencies : deps,
     c_args : cargs,
   )
