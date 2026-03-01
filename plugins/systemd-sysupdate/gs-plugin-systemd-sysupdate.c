@@ -938,7 +938,8 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
 	 * want to Install() it. */
 	if (job_status == 0 &&
 	    job_is_acquire &&
-	    data->install_job_path == NULL) {
+	    data->install_job_path == NULL &&
+	    !(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
 		GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
 
 		if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE) {
@@ -2036,17 +2037,9 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_apps_async);
 
-	/* The download and apply steps are merged into a single operation in
-	 * systemd-sysupdate, meaning we can't download the update without
-	 * downloading and vice versa. In the meantime, let's do as the
-	 * eos-updater plugin by completing the task successfully on
-	 * NO_DOWNLOAD and by ignoring NO_APPLY. */
-	/* TODO Split the download and apply steps once systemd-sysupdate allows
-	 * it: https://github.com/systemd/systemd/issues/34814 */
-	if (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD) {
-		g_task_return_boolean (task, TRUE);
-		return;
-	}
+	/* Since systemd 260, systemd-sysupdate supports separately downloading
+	 * (‘acquiring’) and applying (installing) an update. Prior to that, it
+	 * could only do them as a single operation. */
 
 	/* Pre-filter the app list. */
 	filtered_apps = gs_app_list_new ();
@@ -2084,7 +2077,7 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) update_apps_data_free);
 
-	if (!interactive) {
+	if (!interactive && !(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
 		g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
 		g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
 		gs_metered_block_on_download_scheduler_async (g_variant_dict_end (&parameters_dict),
@@ -2254,9 +2247,7 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	/* update the 'target' to specific version */
 	data->target_path = g_strdup (target->object_path);
 
-	/* currently two actions `download file` and `deploy changes`
-	 * are bound together as one method in `Target.Update()`.
-	 * This method will trigger the update to start and return
+	/* This method will trigger the update to start and return
 	 * immediately. Results should be waited and handled within the
 	 * signal `Manager.JobRemoved()` */
 	gs_systemd_sysupdate_target_proxy_new (gs_plugin_get_system_bus_connection (GS_PLUGIN (self)),
@@ -2292,14 +2283,31 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 		call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
 	}
 
-	gs_systemd_sysupdate_target_call_acquire (data->target_proxy,
-	                                          "", /* left empty as the latest version */
-	                                          SYSUPDATED_TARGET_UPDATE_FLAGS_NONE,
-	                                          call_flags,
-	                                          SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS,
-	                                          NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
-	                                          gs_plugin_systemd_sysupdate_update_app_acquire_cb,
-	                                          g_steal_pointer (&task));
+	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
+		gs_systemd_sysupdate_target_call_acquire (data->target_proxy,
+		                                          "", /* left empty as the latest version */
+		                                          SYSUPDATED_TARGET_UPDATE_FLAGS_NONE,
+		                                          call_flags,
+		                                          SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS,
+		                                          NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
+		                                          gs_plugin_systemd_sysupdate_update_app_acquire_cb,
+		                                          g_steal_pointer (&task));
+	} else {
+		/* Skip downloading the update and instead try to apply any
+		 * updates which were previously downloaded. */
+		g_assert (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY));
+
+		data->acquire_job_path = NULL;
+
+		gs_systemd_sysupdate_target_call_install (data->target_proxy,
+		                                          "", /* left empty as the latest version */
+		                                          SYSUPDATED_TARGET_UPDATE_FLAGS_NONE,
+		                                          call_flags,
+		                                          SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS,
+		                                          NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
+		                                          gs_plugin_systemd_sysupdate_update_app_install_cb,
+		                                          g_steal_pointer (&task));
+	}
 }
 
 static void
