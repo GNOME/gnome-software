@@ -443,7 +443,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppsData, update_apps_data_free)
 
 typedef struct {
 	GsApp *app; /* (owned) (not nullable) */
-	gboolean interactive;
+	GsPluginUpdateAppsFlags flags;
 	GsSystemdSysupdateJob *current_job_proxy; /* (owned) (nullable); either contains the proxy for the Acquire() call or, later, the Install() call */
 	GsSystemdSysupdateTarget *target_proxy;  /* (owned) (nullable) */
 	char *target_path; /* (owned) (nullable) */
@@ -612,7 +612,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 static void
 gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                           *plugin,
                                               GsApp                              *app,
-                                              gboolean                            interactive,
+                                              GsPluginUpdateAppsFlags             flags,
                                               GsPluginProgressCallback            progress_callback,
                                               gpointer                            progress_user_data,
                                               GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
@@ -941,7 +941,7 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
 	    data->install_job_path == NULL) {
 		GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
 
-		if (data->interactive) {
+		if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE) {
 			call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
 		}
 
@@ -1041,7 +1041,7 @@ gs_plugin_systemd_sysupdate_cancel_job (GsPluginSystemdSysupdate *self,
 
 	update_data = g_task_get_task_data (update_task);
 
-	if (update_data->interactive) {
+	if (update_data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE) {
 		call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
 	}
 
@@ -2194,7 +2194,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 	data->current_update_app_index++;
 	gs_plugin_systemd_sysupdate_update_app_async (GS_PLUGIN (self),
 	                                              app,
-	                                              data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE,
+	                                              data->flags,
 	                                              data->progress_callback,
 	                                              data->progress_user_data,
 	                                              data->app_needs_user_action_callback,
@@ -2215,7 +2215,7 @@ gs_plugin_systemd_sysupdate_update_apps_finish (GsPlugin      *plugin,
 static void
 gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                           *plugin,
                                               GsApp                              *app,
-                                              gboolean                            interactive,
+                                              GsPluginUpdateAppsFlags             flags,
                                               GsPluginProgressCallback            progress_callback,
                                               gpointer                            progress_user_data,
                                               GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
@@ -2239,7 +2239,7 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 
 	data = data_owned = g_new0 (UpdateAppData, 1);
 	data->app = g_object_ref (app);
-	data->interactive = interactive;
+	data->flags = flags;
 
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) update_app_data_free);
 
@@ -2288,7 +2288,7 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 	g_assert (data->target_proxy == NULL);
 	data->target_proxy = g_object_ref (proxy);
 
-	if (data->interactive) {
+	if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE) {
 		call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
 	}
 
@@ -2431,7 +2431,7 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 	if (g_hash_table_lookup_extended (self->job_to_cancel_task_map, data->current_job_path, NULL, &cancel_task_ptr)) {
 		GTask *cancel_task = G_TASK (cancel_task_ptr);
 
-		if (data->interactive) {
+		if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE) {
 			call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
 		}
 
@@ -2447,7 +2447,8 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 	/* If the task has been cancelled during its preparation, we need to ask
 	 * systemd-sysdupdate to cancel it. */
 	if (g_cancellable_is_cancelled (cancellable)) {
-		gs_plugin_systemd_sysupdate_cancel_job (self, data->app, data->interactive);
+		gs_plugin_systemd_sysupdate_cancel_job (self, data->app,
+							data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	}
 }
 
