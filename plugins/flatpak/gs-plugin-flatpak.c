@@ -1124,7 +1124,7 @@ _webflow_done (FlatpakTransaction *transaction,
 static FlatpakTransaction *
 _build_transaction (GsPluginFlatpak        *plugin,
                     GsFlatpak              *flatpak,
-                    gboolean                stop_on_first_error,
+                    GsFlatpakErrorMode      error_mode,
                     gboolean                interactive,
                     GMainContext           *callback_context,
                     GsPluginEventCallback   event_callback,
@@ -1142,7 +1142,7 @@ _build_transaction (GsPluginFlatpak        *plugin,
 	installation_clone = g_object_ref (installation);
 
 	/* create transaction */
-	transaction = gs_flatpak_transaction_new (installation_clone, stop_on_first_error, cancellable, error);
+	transaction = gs_flatpak_transaction_new (installation_clone, error_mode, cancellable, error);
 	if (transaction == NULL) {
 		g_prefix_error (error, "failed to build transaction: ");
 		gs_flatpak_error_convert (error);
@@ -1281,7 +1281,7 @@ update_apps_thread_cb (GTask        *task,
 		/* Now apply the updates. */
 		gs_flatpak_set_busy (flatpak, TRUE);
 
-		/* Build and run transaction. Pass %FALSE to stop_on_first_error
+		/* Build and run transaction. Pass %GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS to error_mode
 		 * so that the transaction continues past the first fatal error
 		 * in an attempt to try and update as many apps as possible.
 		 *

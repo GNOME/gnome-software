@@ -11,12 +11,13 @@
 
 #include "gs-flatpak-app.h"
 #include "gs-flatpak-transaction.h"
+#include "gs-flatpak-enums.h"
 
 struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
 	GHashTable		*refhash;	/* ref:GsApp */
 	GError			*first_operation_error;
-	gboolean		 stop_on_first_error;
+	GsFlatpakErrorMode		 error_mode;
 	FlatpakTransactionOperation *error_operation;  /* (nullable) (owned) */
 };
 
@@ -30,10 +31,10 @@ static guint signals[LAST_SIGNAL] = { 0 };
 G_DEFINE_TYPE (GsFlatpakTransaction, gs_flatpak_transaction, FLATPAK_TYPE_TRANSACTION)
 
 typedef enum {
-	PROP_STOP_ON_FIRST_ERROR = 1,
+	PROP_ERROR_MODE = 1,
 } GsFlatpakTransactionProperty;
 
-static GParamSpec *props[PROP_STOP_ON_FIRST_ERROR + 1] = { NULL, };
+static GParamSpec *props[PROP_ERROR_MODE + 1] = { NULL, };
 
 static void
 gs_flatpak_transaction_get_property (GObject    *object,
@@ -44,8 +45,8 @@ gs_flatpak_transaction_get_property (GObject    *object,
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (object);
 
 	switch ((GsFlatpakTransactionProperty) prop_id) {
-	case PROP_STOP_ON_FIRST_ERROR:
-		g_value_set_boolean (value, self->stop_on_first_error);
+	case PROP_ERROR_MODE:
+		g_value_set_enum (value, self->error_mode);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -62,9 +63,9 @@ gs_flatpak_transaction_set_property (GObject      *object,
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (object);
 
 	switch ((GsFlatpakTransactionProperty) prop_id) {
-	case PROP_STOP_ON_FIRST_ERROR:
+	case PROP_ERROR_MODE:
 		/* Construct only. */
-		self->stop_on_first_error = g_value_get_boolean (value);
+		self->error_mode = g_value_get_enum (value);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	default:
@@ -725,7 +726,7 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 	}
 
 	if (!(detail & FLATPAK_TRANSACTION_ERROR_DETAILS_NON_FATAL) &&
-	    self->stop_on_first_error)
+	    self->error_mode == GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR)
 		return FALSE;  /* stop */
 
 	return TRUE; /* continue */
@@ -848,25 +849,26 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 	transaction_class->end_of_lifed_with_rebase = _transaction_end_of_lifed_with_rebase;
 
 	/**
-	 * GsFlatpakTransaction:stop-on-first-error:
+	 * GsFlatpakTransaction:error-mode:
 	 *
-	 * Stop the transaction on the first fatal error. If %FALSE, the
+	 * Stop the transaction on the first fatal error. If %GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS, the
 	 * transaction will continue running and ignore subsequent errors. Some
 	 * operations may be automatically skipped if they are related to
 	 * operations which have errored.
 	 *
-	 * Typically this should be %TRUE. It may be %FALSE for transactions
+	 * Typically this should be %GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR. It may be %GS_FLATPAK_ERROR_MODE_IGNORE_ERRORS for transactions
 	 * where lots of apps are being updated, as typically updates should be
 	 * mostly independent of each other, and we want as many of them to
 	 * be attempted as possible.
 	 *
-	 * Since: 44
+	 * Since: 50
 	 */
-	props[PROP_STOP_ON_FIRST_ERROR] =
-		g_param_spec_boolean ("stop-on-first-error",
-				      "Stop on First Error",
+	props[PROP_ERROR_MODE] =
+		g_param_spec_enum ("error-mode",
+				      "Error Mode",
 				      "Stop the transaction on the first fatal error.",
-				      TRUE,
+					  GS_TYPE_FLATPAK_ERROR_MODE,
+				      GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR,
 				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
@@ -883,12 +885,12 @@ gs_flatpak_transaction_init (GsFlatpakTransaction *self)
 {
 	self->refhash = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       g_free, (GDestroyNotify) g_object_unref);
-	self->stop_on_first_error = TRUE;
+	self->error_mode = GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR;
 }
 
 FlatpakTransaction *
 gs_flatpak_transaction_new (FlatpakInstallation	*installation,
-			    gboolean stop_on_first_error,
+			    GsFlatpakErrorMode error_mode,
 			    GCancellable *cancellable,
 			    GError **error)
 {
@@ -896,7 +898,7 @@ gs_flatpak_transaction_new (FlatpakInstallation	*installation,
 	self = g_initable_new (GS_TYPE_FLATPAK_TRANSACTION,
 			       cancellable, error,
 			       "installation", installation,
-			       "stop-on-first-error", stop_on_first_error,
+			       "error-mode", error_mode,
 			       NULL);
 	if (self == NULL)
 		return NULL;
@@ -914,7 +916,7 @@ gs_flatpak_transaction_new (FlatpakInstallation	*installation,
  * Get the #FlatpakTransactionOperation which caused the most recent error in
  * the transaction.
  *
- * For transactions with #GsFlatpakTransaction:stop-on-first-error set, this
+ * For transactions with #GsFlatpakTransaction:error-mode set to GS_FLATPAK_ERROR_MODE_STOP_ON_FIRST_ERROR , this
  * will be the operation that caused the fatal error.
  *
  * Returns: (nullable) (transfer none): the operation which caused the error, or
