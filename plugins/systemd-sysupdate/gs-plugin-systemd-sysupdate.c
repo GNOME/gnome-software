@@ -2453,7 +2453,7 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 	}
 
 	/* If the task has been cancelled during its preparation, we need to ask
-	 * systemd-sysdupdate to cancel it. */
+	 * systemd-sysupdated to cancel it. */
 	if (g_cancellable_is_cancelled (cancellable)) {
 		gs_plugin_systemd_sysupdate_cancel_job (self, data->app,
 							data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
