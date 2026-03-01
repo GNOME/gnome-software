@@ -25,7 +25,7 @@ shared_module(
     'gs-flatpak-transaction.c',
     'gs-flatpak-utils.c',
     'gs-plugin-flatpak.c'
-  ],
+  ] + flatpak_enums,
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
@@ -58,7 +58,7 @@ if get_option('tests')
     sources : [
       'gs-flatpak-app.c',
       'gs-self-test.c'
-    ] + flatpak_enums,
+    ],
     dependencies : deps,
     c_args : cargs,
   )
