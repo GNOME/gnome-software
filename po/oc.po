@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: gnome-calendar master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2026-02-27 09:27+0000\n"
-"PO-Revision-Date: 2026-03-02 18:27+0100\n"
+"PO-Revision-Date: 2026-03-02 21:41+0100\n"
 "Last-Translator: Quentin PAGÈS\n"
 "Language-Team: Tot en òc\n"
 "Language: oc\n"
@@ -1208,26 +1208,20 @@ msgstr "A accès a la ret"
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:317
-#, fuzzy
-#| msgid "Uses system services"
 msgid "Uses non-portal system services"
-msgstr "Utiliza los servicis sistèma"
+msgstr "Utiliza de servicis sistèma non portals"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:324
-#, fuzzy
-#| msgid "Uses session services"
 msgid "Uses non-portal session services"
-msgstr "Utiliza los servicis de session"
+msgstr "Utiliza de sessions sistèma non portals"
 
 #. Translators: This indicates an app can access session or system bus services unknown to the Software.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:331
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Can access some specific non-portal services"
-msgstr "Pòt accedir als fichièrs del sistèma"
+msgstr "Pòt accedir a certans servicis sistèma especifics non portals"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
@@ -2475,17 +2469,13 @@ msgid "This app is no longer receiving updates, including security fixes"
 msgstr "Aqueste logicial recep pas mai de mesas a jorn, inclutz de correccions de seguretat"
 
 #: src/gs-details-page.c:1926
-#, fuzzy
-#| msgid "This software is already provided by your distribution and should not be replaced."
 msgid "This app is already provided by your distribution and should not be replaced."
 msgstr "Aquesta aplicacion fa ja partida de vòstra distribucion e deuriá pas èsser remplaçada."
 
 #: src/gs-details-page.c:1927
-#, fuzzy
-#| msgid "This software doesn’t provide any links to a website, code repository or issue tracker."
 msgid "This app doesn’t provide any links to a website, code repository or issue tracker."
 msgstr ""
-"Aqueste logicial provesís pas cap de ligam cap al site web, repertòri de còdi o traçador d’avarias."
+"Aquesta aplicacion provesís pas cap de ligam cap al site web, depaus de còdi o traçador d’avarias."
 
 #: src/gs-details-page.c:1929
 msgid "This software is no longer receiving updates, including security fixes"
@@ -2537,10 +2527,9 @@ msgid "Invalid review response received from server"
 msgstr "Una responsa incorrècta es estada recebuda del servidor"
 
 #: src/gs-details-page.c:2437
-#, fuzzy, c-format
-#| msgid "Failed to refine addon ‘%s’: %s"
+#, c-format
 msgid "Failed to submit review for “%s”: %s"
-msgstr "Impossible de tornar definir l’extension « %s » : %s"
+msgstr "Fracàs del mandadís de l’avís « %s » : %s"
 
 #. display a toast to the user
 #: src/gs-details-page.c:2451
@@ -2578,24 +2567,18 @@ msgid "Add-ons"
 msgstr "Extensions"
 
 #: src/gs-details-page.ui:606
-#, fuzzy
-#| msgid "This application can only be used when there is an active internet connection."
 msgid "This app can only be used when there is an active internet connection."
-msgstr "Aquesta aplicacion pòt pas èsser utilizada que se una connexion a Internet es activa."
+msgstr "Aquesta aplicacion pòt pas èsser utilizada que se una connexion a internet es activa."
 
 #: src/gs-details-page.ui:629
 msgid "Software Repository Included"
 msgstr "Depaus de logicials inclús"
 
 #: src/gs-details-page.ui:639
-#, fuzzy
-#| msgid ""
-#| "This application includes a software repository which provides updates, as well as access to "
-#| "other software."
 msgid ""
 "This app includes a software repository which provides updates, as well as access to other software."
 msgstr ""
-"Aquesta aplicacion inclutz un depaus de logicials que provesís las mesas a jorn e tanben l’accès a "
+"Aquesta aplicacion inclutz un depaus logicial que provesís las mesas a jorn e tanben l’accès a "
 "d’autres programas."
 
 #: src/gs-details-page.ui:667
@@ -2676,10 +2659,8 @@ msgid "Unable to Show App Details"
 msgstr "Impossible d’afichar los detalhs de l’aplicacion"
 
 #: src/gs-dkms-dialog.c:66
-#, fuzzy
-#| msgid "Failed to save file"
 msgid "Failed to prepare reboot"
-msgstr "Fracàs d’enregistrament del fichièr"
+msgstr "Fracàs de la preparacion de la reaviada"
 
 #: src/gs-dkms-dialog.c:92
 msgid "Unknown error"
@@ -2694,10 +2675,8 @@ msgid "The key is not enrolled"
 msgstr "La clau es pas marcada"
 
 #: src/gs-dkms-dialog.ui:17 src/gs-dkms-dialog.ui:108
-#, fuzzy
-#| msgid "Mouse Required"
 msgid "MOK Enrollment Required"
-msgstr "Mirga requerida"
+msgstr "Inscripcion de la clau proprietària de la maquina (MOK) requerida"
 
 #: src/gs-dkms-dialog.ui:36
 msgid "_Next"
@@ -2715,16 +2694,12 @@ msgstr ""
 "clau :"
 
 #: src/gs-dkms-dialog.ui:83
-#, fuzzy
-#| msgid "I have forgotten my password"
 msgid "I have made a note of the MOK _password"
-msgstr "Ai doblidat mon senhal"
+msgstr "Ai notat lo _senhal de la clau proprietària maquina (MOK)"
 
 #: src/gs-dkms-dialog.ui:128
-#, fuzzy
-#| msgid "_Restart Now…"
 msgid "_Restart & Enroll…"
-msgstr "_Reaviar ara…"
+msgstr "_Reaviar e marcar…"
 
 #: src/gs-dkms-dialog.ui:149
 msgid "Setup Instructions: Please Read Carefully"
@@ -5407,10 +5382,8 @@ msgid "Updates Available to Download"
 msgstr "De mesas a jorn son disponiblas"
 
 #: src/gs-update-monitor.c:278
-#, fuzzy
-#| msgid "Software Updates Failed"
 msgid "Software updates can be downloaded"
-msgstr "Fracàs de las mesas a jorn logicialas"
+msgstr "Se pòt telecargar las mesas a jorn logicialas"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
 #: src/gs-update-monitor.c:401
@@ -5466,10 +5439,8 @@ msgstr "Lo sistèma a atengut sa fin de vida"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
 #: src/gs-update-monitor.c:757
-#, fuzzy
-#| msgid "Upgrade to continue receiving security updates."
 msgid "Upgrade to continue receiving updates"
-msgstr "Metètz al nivèl per contunhar de beneficiar de las mesas a jorn de seguretat."
+msgstr "Metètz al nivèl per contunhar de beneficiar de mesas a jorn"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
@@ -5598,10 +5569,8 @@ msgstr "%s %s quitèt de recebre de mesas a jorn logicialas criticas"
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
 #: src/gs-updates-page.c:604
-#, fuzzy
-#| msgid "Your operating system is no longer supported."
 msgid "Your operating system has stopped receiving critical software updates"
-msgstr "Vòstre sistèma operatiu es pas mai pres en carga."
+msgstr "Vòstre sistèma operatiu quitèt de recebre las mesas a jorn criticas"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
 #: src/gs-updates-page.c:850
@@ -5655,10 +5624,8 @@ msgid "Use Mobile Data?"
 msgstr "Utilizar la connexion mobila ?"
 
 #: src/gs-updates-page.ui:180
-#, fuzzy
-#| msgid "Checking for updates when using mobile broadband could cause you to incur charges."
 msgid "Checking for updates when using mobile broadband could cause you to incur charges"
-msgstr "Recercar de mesas a jorn amb vòstre telefòn portable vos pòt èsser facturat."
+msgstr "Recercar de mesas a jorn en utilizant a telefòn portable vos pòt èsser facturat"
 
 #: src/gs-updates-page.ui:183
 msgid "_Check Anyway"
