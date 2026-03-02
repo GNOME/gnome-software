@@ -2448,7 +2448,7 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 		                                      SYSUPDATED_JOB_CANCEL_TIMEOUT_MS,
 		                                      g_task_get_cancellable (cancel_task),
 		                                      gs_plugin_systemd_sysupdate_cancel_job_cancel_cb,
-		                                      g_steal_pointer (&cancel_task));
+		                                      g_object_ref (cancel_task));
 		return;
 	}
 
