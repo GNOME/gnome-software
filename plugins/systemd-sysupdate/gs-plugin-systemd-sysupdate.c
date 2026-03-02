@@ -887,10 +887,15 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
                                               const gchar              *job_path,
                                               gint32                    job_status)
 {
+	g_autoptr(GTask) task_owned = NULL;
 	UpdateAppData *data = g_task_get_task_data (task);
 	const gchar *target_class = NULL;
 	gboolean target_is_host = FALSE;
 	gboolean job_is_acquire;
+
+	/* Take a ref on the task for the duration of this function, as we may
+	 * drop the last other strong ref to it when removing it from the hash maps */
+	task_owned = g_object_ref (task);
 
 	g_debug ("Removing task found for job `%s`", job_path);
 	/* pass the parameters to the callback */
@@ -1140,6 +1145,11 @@ gs_plugin_systemd_sysupdate_finalize (GObject *object)
 {
 	GsPluginSystemdSysupdate *self = GS_PLUGIN_SYSTEMD_SYSUPDATE (object);
 
+	/* These should all have been emptied by now; if not, something is wrong. */
+	g_assert (g_hash_table_size (self->job_task_map) == 0);
+	g_assert (g_hash_table_size (self->job_to_remove_status_map) == 0);
+	g_assert (g_hash_table_size (self->job_to_cancel_task_map) == 0);
+
 	g_clear_pointer (&self->os_pretty_name, g_free);
 	g_clear_pointer (&self->os_version, g_free);
 	g_clear_pointer (&self->target_item_map, g_hash_table_destroy);
@@ -1276,9 +1286,9 @@ gs_plugin_systemd_sysupdate_setup_proxy_new_cb (GObject      *source_object,
 	self->os_pretty_name = g_strdup (os_pretty_name);
 	self->os_version = g_strdup (os_version);
 	self->target_item_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)target_item_free);
-	self->job_task_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)NULL);
+	self->job_task_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_object_unref);
 	self->job_to_remove_status_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)NULL);
-	self->job_to_cancel_task_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)NULL);
+	self->job_to_cancel_task_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_object_unref);
 	self->cache_age_secs = 0;
 
 	/* on success */
