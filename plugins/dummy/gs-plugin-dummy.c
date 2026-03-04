@@ -631,9 +631,8 @@ gs_plugin_dummy_install_apps_async (GsPlugin                           *plugin,
 		GsApp *app = gs_app_list_index (apps, i);
 		g_autoptr(InstallSingleAppData) app_data = NULL;
 
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
+		/*  This should be guaranteed by GsPluginJobInstallApps */
+		g_assert (gs_app_has_management_plugin (app, GS_PLUGIN (self)));
 
 		if (!g_str_equal (gs_app_get_id (app), "chiron.desktop") &&
 		    !g_str_equal (gs_app_get_id (app), "zeus.desktop"))
