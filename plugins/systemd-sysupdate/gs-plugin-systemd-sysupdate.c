@@ -2340,10 +2340,8 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
 
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, plugin)) {
-			continue;
-		}
+		/* This should be guaranteed by GsPluginJobUpdateApps */
+		g_assert (gs_app_has_management_plugin (app, plugin));
 
 		/* only update the app if it is source available */
 		if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE &&

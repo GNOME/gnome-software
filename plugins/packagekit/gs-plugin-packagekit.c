@@ -5122,10 +5122,12 @@ update_apps_download_cb (GObject      *source_object,
 			GsApp *app = gs_app_list_index (data->apps, i);
 			GsAppList *related = gs_app_get_related (app);
 
+			/* This should be guaranteed by GsPluginJobUpdateApps */
+			g_assert (gs_app_has_management_plugin (app, GS_PLUGIN (self)));
+
 			/* try to trigger this app */
 			if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY) &&
-			    gs_app_get_state (app) == GS_APP_STATE_UPDATABLE &&
-			    gs_app_has_management_plugin (app, GS_PLUGIN (self))) {
+			    gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ) {
 				trigger_update = TRUE;
 				break;
 			}

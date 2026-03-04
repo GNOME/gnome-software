@@ -1328,9 +1328,8 @@ update_apps_cb (GObject      *source_object,
 		for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
 			GsApp *app = gs_app_list_index (data->apps, i);
 
-			/* only process this app if was created by this plugin */
-			if (!gs_app_has_management_plugin (app, plugin))
-				continue;
+			/* This should be guaranteed by GsPluginJobUpdateApps */
+			g_assert (gs_app_has_management_plugin (app, plugin));
 
 			if (!g_str_has_prefix (gs_app_get_id (app), "proxy")) {
 				g_autoptr(GsPluginEvent) event = NULL;

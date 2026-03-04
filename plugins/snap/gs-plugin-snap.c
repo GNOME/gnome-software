@@ -2612,9 +2612,8 @@ gs_plugin_snap_update_apps_async (GsPlugin                           *plugin,
 		const gchar *name;
 		g_autoptr(RefreshAppData) app_data = NULL;
 
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, plugin))
-			continue;
+		/* This should be guaranteed by GsPluginJobUpdateApps */
+		g_assert (gs_app_has_management_plugin (app, plugin));
 
 		/* Get the name of the snap to refresh */
 		name = gs_app_get_metadata_item (app, "snap::name");

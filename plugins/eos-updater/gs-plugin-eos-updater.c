@@ -1559,14 +1559,14 @@ gs_plugin_eos_updater_update_apps_async (GsPlugin                           *plu
 		return;
 	}
 
-	/* Find the app for the OS upgrade in the list of apps. It might not be present. */
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app_i = gs_app_list_index (apps, i);
 
-		if (gs_app_has_management_plugin (app_i, plugin)) {
-			app = app_i;
-			n_managed_apps++;
-		}
+		/* This should be guaranteed by GsPluginJobUpdateApps */
+		g_assert (gs_app_has_management_plugin (app_i, plugin));
+
+		app = app_i;
+                n_managed_apps++;
 	}
 
 	if (n_managed_apps == 0) {
@@ -1637,3 +1637,4 @@ gs_plugin_query_type (void)
 {
 	return GS_TYPE_PLUGIN_EOS_UPDATER;
 }
+
