@@ -512,7 +512,9 @@ static void gs_plugin_systemd_sysupdate_update_app_install_cb (GObject      *sou
 static void gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_object,
                                                                      GAsyncResult *result,
                                                                      gpointer      user_data);
-static void gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (gpointer user_data);
+static void gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (GObject    *object,
+                                                                       GParamSpec *pspec,
+                                                                       void       *user_data);
 
 /* Plugin overridden virtual methods, and their callbacks. */
 
@@ -2044,8 +2046,6 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	g_autoptr(GsAppList) filtered_apps = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 
-	/* TODO Report progress */
-
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_apps_async);
 
@@ -2237,8 +2237,6 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	TargetItem *target = NULL;
 	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 
-	/* TODO Report progress */
-
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_apps_async);
 
@@ -2296,6 +2294,8 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 	}
 
 	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
+		gs_app_set_progress (data->app, 0);
+
 		gs_systemd_sysupdate_target_call_acquire (data->target_proxy,
 		                                          "", /* left empty as the latest version */
 		                                          SYSUPDATED_TARGET_ACQUIRE_FLAGS_NONE,
@@ -2310,6 +2310,8 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 		g_assert (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY));
 
 		data->acquire_job_path = NULL;
+
+		gs_app_set_progress (data->app, 0);
 
 		gs_systemd_sysupdate_target_call_install (data->target_proxy,
 		                                          "", /* left empty as the latest version */
@@ -2421,9 +2423,9 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 
 	g_signal_connect_object (proxy, "notify::progress",
 	                         G_CALLBACK (gs_plugin_systemd_sysupdate_update_app_notify_progress_cb),
-	                         g_object_ref (task), G_CONNECT_SWAPPED);
+	                         g_object_ref (task), G_CONNECT_DEFAULT);
 
-	gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (task);
+	gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (G_OBJECT (proxy), NULL, task);
 
 	/* job path to task mapping, easier for the callbacks to use the
 	 * object path to find its related task */
@@ -2473,14 +2475,37 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 }
 
 static void
-gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (gpointer user_data)
+gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (GObject    *object,
+                                                           GParamSpec *pspec,
+                                                           void       *user_data)
 {
+	GsSystemdSysupdateJob *job = GS_SYSTEMD_SYSUPDATE_JOB (object);
 	GTask *task = G_TASK (user_data);
 	UpdateAppData *data = g_task_get_task_data (task);
-	guint progress = gs_systemd_sysupdate_job_get_progress (data->current_job_proxy);
+	unsigned int progress = gs_systemd_sysupdate_job_get_progress (job);
+	const char *job_type = gs_systemd_sysupdate_job_get_type_ (job);
+	unsigned int n_jobs;
 
-	gs_app_set_state (data->app, GS_APP_STATE_DOWNLOADING);
-	gs_app_set_progress (data->app, progress);
+	progress = MIN (progress, 100);
+
+	/* The progress is split in halves: the first 50% of progress is for
+	 * downloading (the Acquire job); the second 50% is for installing (the
+	 * Install job). */
+	n_jobs = (2 -
+		  ((data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD) ? 1 : 0) -
+		  ((data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY) ? 1 : 0));
+	g_assert (n_jobs == 1 || n_jobs == 2);
+
+	if (g_str_equal (job_type, "acquire")) {
+		gs_app_set_state (data->app, GS_APP_STATE_DOWNLOADING);
+		gs_app_set_progress (data->app, progress / n_jobs);
+	} else if (g_str_equal (job_type, "install")) {
+		gs_app_set_state (data->app, GS_APP_STATE_INSTALLING);
+		gs_app_set_progress (data->app, ((n_jobs - 1) * (100 / n_jobs)) + progress / n_jobs);
+	} else {
+		g_critical ("Unrecognised job type ‘%s’", job_type);
+		g_assert_not_reached ();
+	}
 }
 
 static gboolean
