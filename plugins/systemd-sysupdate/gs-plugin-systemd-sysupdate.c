@@ -1130,8 +1130,10 @@ gs_plugin_systemd_sysupdate_cancel_job_revoke (GsPluginSystemdSysupdate *self,
 static void
 gs_plugin_systemd_sysupdate_init (GsPluginSystemdSysupdate *self)
 {
-	/* Plugin constructor
-	 */
+	self->target_item_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)target_item_free);
+	self->job_task_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_object_unref);
+	self->job_to_remove_status_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)NULL);
+	self->job_to_cancel_task_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_object_unref);
 }
 
 static void
@@ -1289,10 +1291,6 @@ gs_plugin_systemd_sysupdate_setup_proxy_new_cb (GObject      *source_object,
 	/* plugin object attributes init. */
 	self->os_pretty_name = g_strdup (os_pretty_name);
 	self->os_version = g_strdup (os_version);
-	self->target_item_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)target_item_free);
-	self->job_task_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_object_unref);
-	self->job_to_remove_status_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)NULL);
-	self->job_to_cancel_task_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_object_unref);
 	self->cache_age_secs = 0;
 
 	/* on success */
