@@ -559,6 +559,68 @@ gs_plugin_adopt_app (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_shutdown_async:
+ * @plugin: a #GsPlugin
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: (not nullable): a #GAsyncReadyCallback to call when plugin
+ *   shutdown is complete
+ * @user_data: (closure callback) (scope async): data to pass to @callback
+ *
+ * Asynchronously shuts down the plugin, releasing any resources it had open.
+ *
+ * Finish the call with gs_plugin_shutdown_finish().
+ *
+ * Other #GsPlugin methods should not be called after shutdown has started.
+ *
+ * Since: 51
+ **/
+void
+gs_plugin_shutdown_async (GsPlugin            *plugin,
+                          GCancellable        *cancellable,
+                          GAsyncReadyCallback  callback,
+                          void                *user_data)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_async != NULL) {
+		GS_PLUGIN_GET_CLASS (plugin)->shutdown_async (plugin, cancellable,
+							      callback, user_data);
+	} else {
+		g_autoptr(GTask) task = g_task_new (plugin, cancellable, callback, user_data);
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
+/**
+ * gs_plugin_shutdown_finish:
+ * @plugin: a #GsPlugin
+ * @result: an async result
+ * @error: a #GError or %NULL
+ *
+ * Finishes operation started by gs_plugin_shutdown_async().
+ * This function should be called from the main thread.
+ *
+ * Returns: whether succeeded
+ * Since: 51
+ **/
+gboolean
+gs_plugin_shutdown_finish (GsPlugin      *plugin,
+                           GAsyncResult  *result,
+                           GError       **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish != NULL)
+		return GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish (plugin, result, error);
+	else
+		return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+/**
  * gs_plugin_check_distro_id:
  * @plugin: a #GsPlugin
  * @distro_id: a distro ID, e.g. "fedora"

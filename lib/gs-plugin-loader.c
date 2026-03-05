@@ -1422,11 +1422,8 @@ gs_plugin_loader_shutdown (GsPluginLoader *plugin_loader,
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
 
-		if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_async != NULL) {
-			GS_PLUGIN_GET_CLASS (plugin)->shutdown_async (plugin, cancellable,
-								      plugin_shutdown_cb, &shutdown_data);
-			shutdown_data.n_pending++;
-		}
+		gs_plugin_shutdown_async (plugin, cancellable, plugin_shutdown_cb, &shutdown_data);
+		shutdown_data.n_pending++;
 	}
 
 	/* Wait for shutdown to complete in all plugins. */
@@ -1455,9 +1452,7 @@ plugin_shutdown_cb (GObject      *source_object,
 	ShutdownData *data = user_data;
 	g_autoptr(GError) local_error = NULL;
 
-	g_assert (GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish != NULL);
-
-	if (!GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish (plugin, result, &local_error)) {
+	if (!gs_plugin_shutdown_finish (plugin, result, &local_error)) {
 		g_debug ("disabling %s as shutdown failed: %s",
 			 gs_plugin_get_name (plugin),
 			 local_error->message);
