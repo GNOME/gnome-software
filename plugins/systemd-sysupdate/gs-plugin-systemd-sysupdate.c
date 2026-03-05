@@ -48,12 +48,14 @@
 #define SYSUPDATED_TARGET_DESCRIBE_TIMEOUT_MS (1000)
 #define SYSUPDATED_TARGET_GET_APP_STREAM_TIMEOUT_MS (1000)
 #define SYSUPDATED_TARGET_GET_VERSION_TIMEOUT_MS (1000)
-#define SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS (-1)
+#define SYSUPDATED_TARGET_ACQUIRE_TIMEOUT_MS (-1)
+#define SYSUPDATED_TARGET_INSTALL_TIMEOUT_MS (-1)
 
 /* See the org.freedesktop.sysupdate1 manual for a list of flags. */
 #define SYSUPDATED_TARGET_DESCRIBE_FLAGS_NONE ((guint64) 0)
 #define SYSUPDATED_TARGET_DESCRIBE_FLAGS_OFFLINE ((guint64) (1 << 0))
-#define SYSUPDATED_TARGET_UPDATE_FLAGS_NONE ((guint64) 0)
+#define SYSUPDATED_TARGET_ACQUIRE_FLAGS_NONE ((guint64) 0)
+#define SYSUPDATED_TARGET_INSTALL_FLAGS_NONE ((guint64) 0)
 
 /* Structure stores the `target` information reported by
  * `systemd-sysupdated` */
@@ -953,9 +955,9 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
 
 		gs_systemd_sysupdate_target_call_install (data->target_proxy,
 		                                          "", /* left empty as the latest version */
-		                                          SYSUPDATED_TARGET_UPDATE_FLAGS_NONE,
+		                                          SYSUPDATED_TARGET_INSTALL_FLAGS_NONE,
 		                                          call_flags,
-		                                          SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS,
+		                                          SYSUPDATED_TARGET_INSTALL_TIMEOUT_MS,
 		                                          NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
 		                                          gs_plugin_systemd_sysupdate_update_app_install_cb,
 		                                          g_object_ref (task));
@@ -2296,9 +2298,9 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
 		gs_systemd_sysupdate_target_call_acquire (data->target_proxy,
 		                                          "", /* left empty as the latest version */
-		                                          SYSUPDATED_TARGET_UPDATE_FLAGS_NONE,
+		                                          SYSUPDATED_TARGET_ACQUIRE_FLAGS_NONE,
 		                                          call_flags,
-		                                          SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS,
+		                                          SYSUPDATED_TARGET_ACQUIRE_TIMEOUT_MS,
 		                                          NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
 		                                          gs_plugin_systemd_sysupdate_update_app_acquire_cb,
 		                                          g_steal_pointer (&task));
@@ -2311,9 +2313,9 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 
 		gs_systemd_sysupdate_target_call_install (data->target_proxy,
 		                                          "", /* left empty as the latest version */
-		                                          SYSUPDATED_TARGET_UPDATE_FLAGS_NONE,
+		                                          SYSUPDATED_TARGET_INSTALL_FLAGS_NONE,
 		                                          call_flags,
-		                                          SYSUPDATED_TARGET_UPDATE_TIMEOUT_MS,
+		                                          SYSUPDATED_TARGET_INSTALL_TIMEOUT_MS,
 		                                          NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
 		                                          gs_plugin_systemd_sysupdate_update_app_install_cb,
 		                                          g_steal_pointer (&task));
