@@ -1,6 +1,6 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginDpkg"']
 
-shared_module(
+gs_plugin_dpkg = shared_module(
   'gs_plugin_dpkg',
   sources : 'gs-plugin-dpkg.c',
   install : true,

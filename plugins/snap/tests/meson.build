@@ -48,7 +48,7 @@ foreach test_name, extra_args : snap_tests
     protocol: 'tap',
     env: test_env,
     timeout: 30,
-    depends: [compiled_schemas],
+    depends: [compiled_schemas, gs_plugin_snap],
     suite: ['plugins', 'snap'],
   )
 endforeach

@@ -8,7 +8,7 @@ if get_option('mogwai')
   deps += [mogwai_schedule_client]
 endif
 
-shared_module(
+gs_plugin_fwupd = shared_module(
   'gs_plugin_fwupd',
   sources : [
     'gs-fwupd-app.c',

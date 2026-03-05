@@ -1,6 +1,6 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginOpensuseDistroUpgrade"']
 
-shared_module(
+gs_plugin_opensuse_distro_upgrade = shared_module(
   'gs_plugin_opensuse-distro-upgrade',
   sources : 'gs-plugin-opensuse-distro-upgrade.c',
   install : true,

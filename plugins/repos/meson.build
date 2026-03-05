@@ -1,6 +1,6 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginRepos"']
 
-shared_module(
+gs_plugin_repos = shared_module(
   'gs_plugin_repos',
   sources : 'gs-plugin-repos.c',
   install : true,

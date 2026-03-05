@@ -1,6 +1,6 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginDummy"']
 
-shared_module(
+gs_plugin_dummy = shared_module(
   'gs_plugin_dummy',
   sources : 'gs-plugin-dummy.c',
   install : true,

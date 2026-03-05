@@ -97,7 +97,7 @@ foreach test_name, extra_args : flatpak_tests
     protocol: 'tap',
     env: test_env,
     timeout: 30,
-    depends: [compiled_schemas],
+    depends: [compiled_schemas, gs_plugin_flatpak],
     suite: ['plugins', 'flatpak'],
   )
 endforeach

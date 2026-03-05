@@ -1,6 +1,6 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginFedoraLangpacks"']
 
-shared_module(
+gs_plugin_fedora_langpacks = shared_module(
   'gs_plugin_fedora-langpacks',
   sources : 'gs-plugin-fedora-langpacks.c',
   install : true,

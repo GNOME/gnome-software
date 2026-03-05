@@ -1,6 +1,6 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginSnap"']
 
-shared_module(
+gs_plugin_snap = shared_module(
   'gs_plugin_snap',
   sources : [
     'gs-plugin-snap.c'

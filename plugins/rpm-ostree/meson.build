@@ -8,7 +8,7 @@ rpmostree_generated = gnome.gdbus_codegen(
   extra_args : [ '--glib-min-required=' + glib.version() ],
 )
 
-shared_module(
+gs_plugin_rpm_ostree = shared_module(
   'gs_plugin_rpm-ostree',
   rpmostree_generated,
   sources : [

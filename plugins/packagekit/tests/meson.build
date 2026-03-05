@@ -52,7 +52,7 @@ foreach test_name, extra_args : packagekit_tests
     protocol: 'tap',
     env: test_env,
     timeout: 30,
-    depends: [compiled_schemas],
+    depends: [compiled_schemas, gs_plugin_packagekit],
     suite: ['plugins', 'packagekit'],
   )
 endforeach

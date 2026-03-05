@@ -8,7 +8,7 @@ eos_updater_generated = gnome.gdbus_codegen(
   extra_args : [ '--glib-min-required=' + glib.version() ],
 )
 
-shared_module(
+gs_plugin_eos_updater = shared_module(
   'gs_plugin_eos-updater',
   eos_updater_generated,
   sources : 'gs-plugin-eos-updater.c',

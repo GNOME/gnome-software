@@ -53,7 +53,7 @@ foreach test_name, extra_args : dummy_tests
     protocol: 'tap',
     env: test_env,
     timeout: 30,
-    depends: [compiled_schemas],
+    depends: [compiled_schemas, gs_plugin_dummy],
     suite: ['plugins', 'dummy'],
   )
 endforeach

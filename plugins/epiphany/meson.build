@@ -10,7 +10,7 @@ epiphany_generated = gnome.gdbus_codegen(
   extra_args : [ '--glib-min-required=' + glib.version() ],
 )
 
-shared_module(
+gs_plugin_epiphany = shared_module(
   'gs_plugin_epiphany',
   epiphany_generated,
   sources : 'gs-plugin-epiphany.c',

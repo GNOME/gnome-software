@@ -15,7 +15,7 @@ systemd_sysupdated_generated = gnome.gdbus_codegen(
   extra_args : [ '--glib-min-required=' + glib.version() ],
 )
 
-shared_module(
+gs_plugin_systemd_sysupdate = shared_module(
   'gs_plugin_systemd-sysupdate',
   systemd_sysupdated_generated,
   sources : [

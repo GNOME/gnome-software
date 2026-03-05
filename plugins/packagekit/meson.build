@@ -9,7 +9,7 @@ if get_option('mogwai')
   deps += [mogwai_schedule_client]
 endif
 
-shared_module(
+gs_plugin_packagekit = shared_module(
   'gs_plugin_packagekit',
   sources : [
     'gs-plugin-packagekit.c',

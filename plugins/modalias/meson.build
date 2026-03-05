@@ -1,6 +1,6 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginModalias"']
 
-shared_module(
+gs_plugin_modalias = shared_module(
   'gs_plugin_modalias',
   sources : 'gs-plugin-modalias.c',
   install : true,
