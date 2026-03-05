@@ -614,7 +614,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
                                               gpointer      user_data);
 
 static void
-gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                           *plugin,
+gs_plugin_systemd_sysupdate_update_app_async (GsPluginSystemdSysupdate           *self,
                                               GsApp                              *app,
                                               GsPluginUpdateAppsFlags             flags,
                                               GsPluginProgressCallback            progress_callback,
@@ -2197,7 +2197,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 
 	app = gs_app_list_index (data->apps, data->current_update_app_index);
 	data->current_update_app_index++;
-	gs_plugin_systemd_sysupdate_update_app_async (GS_PLUGIN (self),
+	gs_plugin_systemd_sysupdate_update_app_async (self,
 	                                              app,
 	                                              data->flags,
 	                                              data->progress_callback,
@@ -2218,7 +2218,7 @@ gs_plugin_systemd_sysupdate_update_apps_finish (GsPlugin      *plugin,
 }
 
 static void
-gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                           *plugin,
+gs_plugin_systemd_sysupdate_update_app_async (GsPluginSystemdSysupdate           *self,
                                               GsApp                              *app,
                                               GsPluginUpdateAppsFlags             flags,
                                               GsPluginProgressCallback            progress_callback,
@@ -2235,9 +2235,8 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPlugin                          
 	UpdateAppData *data;
 	g_autoptr(GTask) task = NULL;
 	TargetItem *target = NULL;
-	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
 
-	task = g_task_new (plugin, cancellable, callback, user_data);
+	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_systemd_sysupdate_update_apps_async);
 
 	data = data_owned = g_new0 (UpdateAppData, 1);
