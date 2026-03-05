@@ -2420,7 +2420,7 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 
 	g_signal_connect_object (proxy, "notify::progress",
 	                         G_CALLBACK (gs_plugin_systemd_sysupdate_update_app_notify_progress_cb),
-	                         g_object_ref (task), G_CONNECT_DEFAULT);
+	                         task, G_CONNECT_DEFAULT);
 
 	gs_plugin_systemd_sysupdate_update_app_notify_progress_cb (G_OBJECT (proxy), NULL, task);
 
