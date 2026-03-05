@@ -1423,7 +1423,7 @@ gs_plugin_systemd_sysupdate_refine_app_async (GsPlugin                   *plugin
 	target_path = target->object_path;
 
 	gs_systemd_sysupdate_target_proxy_new (gs_plugin_get_system_bus_connection (plugin),
-	                                       G_DBUS_PROXY_FLAGS_NONE,
+	                                       G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
 	                                       "org.freedesktop.sysupdate1",
 	                                       target_path,
 	                                       cancellable,
@@ -1793,7 +1793,7 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_async (GsPlugin             
 	g_task_set_task_data (task, data, (GDestroyNotify)gs_plugin_systemd_sysupdate_target_refresh_metadata_data_free);
 
 	gs_systemd_sysupdate_target_proxy_new (gs_plugin_get_system_bus_connection (plugin),
-	                                       G_DBUS_PROXY_FLAGS_NONE,
+	                                       G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
 	                                       "org.freedesktop.sysupdate1",
 	                                       data->target->object_path,
 	                                       cancellable,
@@ -2258,7 +2258,7 @@ gs_plugin_systemd_sysupdate_update_app_async (GsPluginSystemdSysupdate          
 	 * immediately. Results should be waited and handled within the
 	 * signal `Manager.JobRemoved()` */
 	gs_systemd_sysupdate_target_proxy_new (gs_plugin_get_system_bus_connection (GS_PLUGIN (self)),
-	                                       G_DBUS_PROXY_FLAGS_NONE,
+	                                       G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
 	                                       "org.freedesktop.sysupdate1",
 	                                       target->object_path,
 	                                       cancellable,
