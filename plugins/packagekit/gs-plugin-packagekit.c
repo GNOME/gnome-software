@@ -1076,9 +1076,8 @@ gs_plugin_packagekit_uninstall_apps_async (GsPlugin                           *p
 		GPtrArray *source_ids;
 		g_autoptr(GPtrArray) array_package_ids = NULL;
 
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
+	        /* This should be guaranteed by GsPluginJobUninstallApps */
+		g_assert (gs_app_has_management_plugin (app, GS_PLUGIN (self)));
 
 		/* disable repo, handled by dedicated function */
 		g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
