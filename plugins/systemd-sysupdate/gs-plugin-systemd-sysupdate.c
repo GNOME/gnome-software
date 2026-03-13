@@ -443,6 +443,15 @@ update_apps_data_free (UpdateAppsData *data)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpdateAppsData, update_apps_data_free)
 
+static void
+remove_schedule_entry (void *schedule_entry_handle)
+{
+	/* Fire this call off into the void, it’s not worth tracking it.
+	 * Don’t pass a cancellable in, as the download may have been cancelled. */
+	if (schedule_entry_handle != NULL)
+		gs_metered_remove_from_download_scheduler_async (schedule_entry_handle, NULL, NULL, NULL);
+}
+
 typedef struct {
 	GsApp *app; /* (owned) (not nullable) */
 	GsPluginUpdateAppsFlags flags;
@@ -2118,8 +2127,10 @@ gs_plugin_systemd_sysupdate_update_apps_download_scheduler_cb (GObject      *sou
 	}
 
 	/* connect to cancellation signal */
-	if (g_task_return_error_if_cancelled (task))
+	if (g_task_return_error_if_cancelled (task)) {
+		remove_schedule_entry (g_steal_pointer (&data->schedule_entry_handle));
 		return;
+	}
 
 	if (cancellable != NULL) {
 		data->cancellable = cancellable;  /* so we can disconnect later */
@@ -2178,11 +2189,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 
 	if (data->current_update_app_index == gs_app_list_length (data->apps)) {
 		/* We reached the end of the queue. */
-
-		/* Fire this call off into the void, it’s not worth tracking it.
-		 * Don’t pass a cancellable in, as the download may have been cancelled. */
-		if (data->schedule_entry_handle != NULL)
-			gs_metered_remove_from_download_scheduler_async (data->schedule_entry_handle, NULL, NULL, NULL);
+		remove_schedule_entry (g_steal_pointer (&data->schedule_entry_handle));
 
 		g_task_return_boolean (task, TRUE);
 		return;
@@ -2190,6 +2197,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 
 	if (g_task_return_error_if_cancelled (task)) {
 		g_debug ("%s: Cancelled", G_STRFUNC);
+		remove_schedule_entry (g_steal_pointer (&data->schedule_entry_handle));
 		return;
 	}
 
