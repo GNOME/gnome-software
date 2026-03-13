@@ -2192,6 +2192,7 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 	if (data->current_update_app_index == gs_app_list_length (data->apps)) {
 		/* We reached the end of the queue. */
 		remove_schedule_entry (g_steal_pointer (&data->schedule_entry_handle));
+		gs_plugin_updates_changed (GS_PLUGIN (self));
 
 		g_task_return_boolean (task, TRUE);
 		return;
