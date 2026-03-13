@@ -964,6 +964,8 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
 			call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
 		}
 
+		gs_app_set_state (data->app, GS_APP_STATE_INSTALLING);
+
 		gs_systemd_sysupdate_target_call_install (data->target_proxy,
 		                                          "", /* left empty as the latest version */
 		                                          SYSUPDATED_TARGET_INSTALL_FLAGS_NONE,
@@ -2299,6 +2301,7 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 	}
 
 	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
+		gs_app_set_state (data->app, GS_APP_STATE_DOWNLOADING);
 		gs_app_set_progress (data->app, 0);
 
 		gs_systemd_sysupdate_target_call_acquire (data->target_proxy,
@@ -2316,6 +2319,7 @@ gs_plugin_systemd_sysupdate_update_app_proxy_new_cb (GObject      *source_object
 
 		data->acquire_job_path = NULL;
 
+		gs_app_set_state (data->app, GS_APP_STATE_INSTALLING);
 		gs_app_set_progress (data->app, 0);
 
 		gs_systemd_sysupdate_target_call_install (data->target_proxy,
@@ -2347,6 +2351,7 @@ gs_plugin_systemd_sysupdate_update_app_acquire_cb (GObject      *source_object,
 	                                                      &job_path,
 	                                                      result,
 	                                                      &local_error)) {
+		gs_app_set_state_recover (data->app);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -2380,6 +2385,7 @@ gs_plugin_systemd_sysupdate_update_app_install_cb (GObject      *source_object,
 	                                                      &job_path,
 	                                                      result,
 	                                                      &local_error)) {
+		gs_app_set_state_recover (data->app);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -2415,6 +2421,7 @@ gs_plugin_systemd_sysupdate_update_app_job_proxy_new_cb (GObject      *source_ob
 
 	proxy = gs_systemd_sysupdate_job_proxy_new_finish (result, &local_error);
 	if (proxy == NULL) {
+		gs_app_set_state_recover (data->app);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		/* The job's preparation failed, we can't act on it, revoke any
 		 * removal or cancellation request that we filed during its
