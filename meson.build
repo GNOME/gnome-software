@@ -161,6 +161,7 @@ libadwaita = dependency('libadwaita-1',
   ]
 )
 libglib_testing = dependency('glib-testing-0',
+  version: '>= 0.2.0',
   fallback: ['libglib-testing', 'libglib_testing_dep'],
 )
 

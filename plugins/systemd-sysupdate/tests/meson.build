@@ -15,7 +15,10 @@ test_env = environment()
 test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
 test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
-test_deps = [plugin_libs]
+test_deps = [
+  plugin_libs,
+  libglib_testing,
+]
 test_cargs = [
   '-DLOCALPLUGINDIR="' + meson.current_build_dir() + '/../"',
   '-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../../core"',
@@ -57,5 +60,3 @@ foreach test_name, extra_args : systemd_sysupdate_tests
     suite: ['plugins', 'systemd-sysupdate'],
   )
 endforeach
-
-subdir('services')
