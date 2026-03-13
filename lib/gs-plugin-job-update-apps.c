@@ -435,8 +435,11 @@ finish_op (GTask  *task,
 
 	/* Emit one final progress update, then stop any further ones.
 	 * Ensure the emission is in the right #GMainContext. */
-	g_assert (g_main_context_is_owner (g_task_get_context (task)));
-	progress_cb (self);
+	if (self->plugins_progress != NULL && g_hash_table_size (self->plugins_progress) > 0) {
+		g_assert (g_main_context_is_owner (g_task_get_context (task)));
+		progress_cb (self);
+	}
+
 	g_source_destroy (self->progress_source);
 	g_clear_pointer (&self->plugins_progress, g_hash_table_unref);
 
