@@ -413,6 +413,8 @@ typedef struct {
 	GsPluginUpdateAppsFlags flags;
 	GsPluginProgressCallback progress_callback;
 	gpointer progress_user_data;
+	GsPluginEventCallback event_callback;
+	void *event_user_data;
 	GsPluginAppNeedsUserActionCallback app_needs_user_action_callback;
 	gpointer app_needs_user_action_data;
 
@@ -1177,6 +1179,51 @@ gs_plugin_systemd_sysupdate_finalize (GObject *object)
 	self->cache_age_secs = 0;
 
 	G_OBJECT_CLASS (gs_plugin_systemd_sysupdate_parent_class)->finalize (object);
+}
+
+static void
+gs_plugin_systemd_sysupdate_error_convert (GError **perror)
+{
+	GError *error = (perror != NULL) ? *perror : NULL;
+
+	if (error == NULL)
+		return;
+
+	/* parse remote systemd-sysupdated error */
+	if (g_dbus_error_is_remote_error (error)) {
+		g_autofree char *remote_error = g_dbus_error_get_remote_error (error);
+
+		g_dbus_error_strip_remote_error (error);
+
+		if (g_str_equal (remote_error, "org.freedesktop.DBus.Error.InvalidArgs") ||
+		    g_str_equal (remote_error, "org.freedesktop.DBus.Error.Failed") ||
+		    g_str_equal (remote_error, "org.freedesktop.DBus.Error.NoMemory")) {
+			error->code = GS_PLUGIN_ERROR_FAILED;
+		} else if (g_str_equal (remote_error, "org.freedesktop.DBus.Error.AccessDenied")) {
+			error->code = GS_PLUGIN_ERROR_NO_SECURITY;
+		} else if (g_str_equal (remote_error, "org.freedesktop.DBus.Error.ObjectPathInUse")) {
+			/* FIXME: This error means we’re racing with another caller
+			 * on the sysupdated methods. We could probably handle this
+			 * better by monitoring and retrying later rather than
+			 * erroring out. */
+			error->code = GS_PLUGIN_ERROR_FAILED;
+		} else if (g_str_equal (remote_error, "org.freedesktop.DBus.Error.ServiceUnknown")) {
+			error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
+		} else {
+			g_warning ("Can’t reliably fixup remote error ‘%s’", remote_error);
+			error->code = GS_PLUGIN_ERROR_FAILED;
+		}
+		error->domain = GS_PLUGIN_ERROR;
+		return;
+	}
+
+	/* these are allowed for low-level errors */
+	if (gs_utils_error_convert_gio (perror))
+		return;
+
+	/* most errors will be D-Bus errors */
+	if (gs_utils_error_convert_gdbus (perror))
+		return;
 }
 
 static void
@@ -2093,6 +2140,8 @@ gs_plugin_systemd_sysupdate_update_apps_async (GsPlugin                         
 	data->flags = flags;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
+	data->event_callback = event_callback;
+	data->event_user_data = event_user_data;
 	data->app_needs_user_action_callback = app_needs_user_action_callback;
 	data->app_needs_user_action_data = app_needs_user_action_data;
 
@@ -2185,7 +2234,28 @@ gs_plugin_systemd_sysupdate_update_apps_iter (GObject      *source_object,
 
 	if (result != NULL &&
 	    !gs_plugin_systemd_sysupdate_update_app_finish (GS_PLUGIN (self), result, &local_error)) {
-		g_debug ("Failed to update app: %s", local_error->message);
+		GsApp *previous_app;
+
+		g_assert (data->current_update_app_index > 0);
+		previous_app = gs_app_list_index (data->apps, data->current_update_app_index - 1);
+
+		g_debug ("Failed to update app ‘%s’: %s", gs_app_get_id (previous_app), local_error->message);
+
+		if (data->event_callback != NULL) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			gs_plugin_systemd_sysupdate_error_convert (&local_error);
+
+			event = gs_plugin_event_new ("error", local_error,
+						     "app", previous_app,
+						     NULL);
+			if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE)
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+
+			data->event_callback (GS_PLUGIN (self), event, data->event_user_data);
+		}
+
 		g_clear_error (&local_error);
 	}
 
