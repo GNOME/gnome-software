@@ -142,30 +142,23 @@ target_item_matches_keywords (TargetItem         *target,
 }
 
 static const gchar *
-target_item_get_cache_hash (TargetItem  *target,
-                            GError     **error)
+target_item_get_cache_hash (TargetItem *target)
 {
 	if (target->cache_hash != NULL) {
 		return target->cache_hash;
 	}
 
 	target->cache_hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, target->object_path, -1);
-	if (target->cache_hash == NULL) {
-		g_set_error (error,
-		             GS_PLUGIN_ERROR,
-		             GS_PLUGIN_ERROR_FAILED,
-		             "Failed to hash object path ‘%s’",
-		             target->object_path);
-		return NULL;
-	}
+
+	/* This should never fail, as G_CHECKSUM_SHA1 is always supported by GLib */
+	g_assert (target->cache_hash != NULL);
 
 	return target->cache_hash;
 }
 
 static const gchar *
-target_item_get_xml_cache_kind (TargetItem  *target,
-                                GsPlugin    *plugin,
-                                GError     **error)
+target_item_get_xml_cache_kind (TargetItem *target,
+                                GsPlugin   *plugin)
 {
 	const gchar *cache_hash;
 
@@ -173,11 +166,7 @@ target_item_get_xml_cache_kind (TargetItem  *target,
 		return target->xml_cache_kind;
 	}
 
-	cache_hash = target_item_get_cache_hash (target, error);
-	if (cache_hash == NULL) {
-		return NULL;
-	}
-
+	cache_hash = target_item_get_cache_hash (target);
 	target->xml_cache_kind = g_build_filename (gs_plugin_get_name (plugin), cache_hash, "xml", NULL);
 
 	return target->xml_cache_kind;
@@ -196,11 +185,7 @@ target_item_get_xml_blob (TargetItem  *target,
 		return target->xml_blob;
 	}
 
-	cache_hash = target_item_get_cache_hash (target, error);
-	if (cache_hash == NULL) {
-		return NULL;
-	}
-
+	cache_hash = target_item_get_cache_hash (target);
 	cache_kind = g_build_filename (gs_plugin_get_name (plugin), cache_hash, NULL);
 	xml_blob_path = gs_utils_get_cache_filename (cache_kind,
 	                                             "components.xmlb",
@@ -1916,11 +1901,7 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_get_app_stream_cb (GObject  
 
 	data = g_task_get_task_data (task);
 
-	cache_kind = target_item_get_xml_cache_kind (data->target, plugin, &local_error);
-	if (cache_kind == NULL) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
+	cache_kind = target_item_get_xml_cache_kind (data->target, plugin);
 
 	gs_external_appstream_refresh_async (cache_kind,
 	                                     appstream_urls,
