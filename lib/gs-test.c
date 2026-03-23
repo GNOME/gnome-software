@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
+#include <locale.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
 
@@ -25,6 +26,8 @@ gs_test_init (gint *pargc,
 	      gchar ***pargv)
 {
 	g_autoptr(GSettings) settings = NULL;
+
+	setlocale (LC_ALL, "");
 
 	g_setenv ("GSETTINGS_BACKEND", "memory", FALSE);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
