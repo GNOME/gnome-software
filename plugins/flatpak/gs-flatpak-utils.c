@@ -584,8 +584,10 @@ gs_flatpak_app_build_permissions_from_metadata (GKeyFile *keyfile)
 				    (g_str_equal (bus_name_pattern, app_id) ||
 				     (g_str_has_prefix (bus_name_pattern, app_id) && bus_name_pattern[strlen (app_id)] == '.') ||
 				     g_str_equal (bus_name_pattern, mpris_id) ||
-				     g_str_equal (bus_name_pattern, "org.freedesktop.DBus") ||
-				     g_str_has_prefix (bus_name_pattern, "org.freedesktop.portal.")))
+				     (g_str_equal (bus_name_pattern, "org.freedesktop.DBus") &&
+				      bus_policy <= GS_BUS_POLICY_PERMISSION_TALK) ||
+				     (g_str_has_prefix (bus_name_pattern, "org.freedesktop.portal.") &&
+				      bus_policy <= GS_BUS_POLICY_PERMISSION_TALK)))
 					continue;
 
 				/* Allow .Devel apps to own their non-devel names on the session bus. */
