@@ -1118,6 +1118,11 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 	if (priv->state == state)
 		return FALSE;
 
+	g_debug ("setting state on %s from %s to %s",
+		 priv->id,
+		 gs_app_state_to_string (priv->state),
+		 gs_app_state_to_string (state));
+
 	priv->state = state;
 
 	if (state == GS_APP_STATE_UNKNOWN ||

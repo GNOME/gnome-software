@@ -33,7 +33,6 @@ struct _GsAppList
 	GMutex			 mutex;
 	guint			 size_peak;
 	GsAppListFlags		 flags;
-	GsAppState		 state;
 	guint			 progress;  /* 0–100 inclusive, or %GS_APP_PROGRESS_UNKNOWN */
 	guint			 custom_progress; /* overrides the 'progress', if not %GS_APP_PROGRESS_UNKNOWN */
 };
@@ -41,8 +40,7 @@ struct _GsAppList
 G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
 
 enum {
-	PROP_STATE = 1,
-	PROP_PROGRESS,
+	PROP_PROGRESS = 1,
 	PROP_LAST
 };
 
@@ -53,26 +51,6 @@ enum {
 
 static GParamSpec *properties [PROP_LAST];
 static guint signals [SIGNAL_LAST] = { 0 };
-
-/**
- * gs_app_list_get_state:
- * @list: A #GsAppList
- *
- * Gets the state of the list.
- *
- * This method will only return a valid result if gs_app_list_add_flag() has
- * been called with %GS_APP_LIST_FLAG_WATCH_APPS.
- *
- * Returns: the #GsAppState, e.g. %GS_APP_STATE_INSTALLED
- *
- * Since: 3.30
- **/
-GsAppState
-gs_app_list_get_state (GsAppList *list)
-{
-	g_return_val_if_fail (GS_IS_APP_LIST (list), GS_APP_STATE_UNKNOWN);
-	return list->state;
-}
 
 /**
  * gs_app_list_get_progress:
@@ -207,29 +185,6 @@ gs_app_list_invalidate_progress (GsAppList *self)
 }
 
 static void
-gs_app_list_invalidate_state (GsAppList *self)
-{
-	GsAppState state = GS_APP_STATE_UNKNOWN;
-	g_autoptr(GPtrArray) apps = gs_app_list_get_watched (self);
-
-	/* find any action state of the list */
-	for (guint i = 0; i < apps->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (apps, i);
-		GsAppState state_tmp = gs_app_get_state (app_tmp);
-		if (state_tmp == GS_APP_STATE_DOWNLOADING ||
-		    state_tmp == GS_APP_STATE_INSTALLING ||
-		    state_tmp == GS_APP_STATE_REMOVING) {
-			state = state_tmp;
-			break;
-		}
-	}
-	if (self->state != state) {
-		self->state = state;
-		g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_STATE]);
-	}
-}
-
-static void
 gs_app_list_progress_notify_cb (GsApp *app, GParamSpec *pspec, GsAppList *self)
 {
 	gs_app_list_invalidate_progress (self);
@@ -238,8 +193,6 @@ gs_app_list_progress_notify_cb (GsApp *app, GParamSpec *pspec, GsAppList *self)
 static void
 gs_app_list_state_notify_cb (GsApp *app, GParamSpec *pspec, GsAppList *self)
 {
-	gs_app_list_invalidate_state (self);
-
 	g_signal_emit (self, signals[SIGNAL_APP_STATE_CHANGED], 0, app);
 }
 
@@ -465,7 +418,6 @@ gs_app_list_add (GsAppList *list, GsApp *app)
 	gs_app_list_add_safe (list, app, GS_APP_LIST_ADD_FLAG_CHECK_FOR_DUPE);
 
 	/* recalculate global state */
-	gs_app_list_invalidate_state (list);
 	gs_app_list_invalidate_progress (list);
 }
 
@@ -495,7 +447,6 @@ gs_app_list_remove (GsAppList *list, GsApp *app)
 		gs_app_list_maybe_unwatch_app (list, app);
 
 		/* recalculate global state */
-		gs_app_list_invalidate_state (list);
 		gs_app_list_invalidate_progress (list);
 	}
 
@@ -530,7 +481,6 @@ gs_app_list_add_list (GsAppList *list, GsAppList *donor)
 	}
 
 	/* recalculate global state */
-	gs_app_list_invalidate_state (list);
 	gs_app_list_invalidate_progress (list);
 }
 
@@ -576,7 +526,6 @@ gs_app_list_remove_all_safe (GsAppList *list)
 		gs_app_list_maybe_unwatch_app (list, app);
 	}
 	g_ptr_array_set_size (list->array, 0);
-	gs_app_list_invalidate_state (list);
 	gs_app_list_invalidate_progress (list);
 }
 
@@ -920,9 +869,6 @@ gs_app_list_get_property (GObject *object, guint prop_id, GValue *value, GParamS
 {
 	GsAppList *self = GS_APP_LIST (object);
 	switch (prop_id) {
-	case PROP_STATE:
-		g_value_set_enum (value, self->state);
-		break;
 	case PROP_PROGRESS:
 		g_value_set_uint (value, self->progress);
 		break;
@@ -958,15 +904,6 @@ gs_app_list_class_init (GsAppListClass *klass)
 	object_class->get_property = gs_app_list_get_property;
 	object_class->set_property = gs_app_list_set_property;
 	object_class->finalize = gs_app_list_finalize;
-
-	/**
-	 * GsAppList:state:
-	 */
-	properties[PROP_STATE] =
-		g_param_spec_enum ("state", NULL, NULL,
-				   GS_TYPE_APP_STATE,
-				   GS_APP_STATE_UNKNOWN,
-				   G_PARAM_READABLE);
 
 	/**
 	 * GsAppList:progress:
