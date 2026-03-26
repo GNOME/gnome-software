@@ -381,7 +381,7 @@ perms_from_metadata (GKeyFile *keyfile)
 			flags = flags & ~GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ;
 
 		if (strv_len > filesystems_hits) {
-			/* Cover those not being part of the above filesystem_access array */
+			/* Cover those not being part of the above filesystems_access array */
 			const struct {
 				const gchar *prefix;
 				const gchar *title;
