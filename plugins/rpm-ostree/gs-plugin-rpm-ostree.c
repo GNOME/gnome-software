@@ -1348,9 +1348,8 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 		return TRUE;
 
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-		return TRUE;
+	/* This should be guaranteed by GsPluginJobUpdateApps */
+	g_assert (gs_app_has_management_plugin (app, GS_PLUGIN (self)));
 
 	/* already in correct state */
 	if (self->update_triggered)
