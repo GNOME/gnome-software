@@ -245,45 +245,39 @@ gs_page_set_header_end_widget (GsPage *page, GtkWidget *widget)
 	g_set_object (&priv->header_end_widget, widget);
 }
 
-void
-gs_page_install_app (GsPage *page,
-		     GsApp *app,
-		     GsShellInteraction interaction,
-		     GCancellable *cancellable)
+static void
+gs_page_notify_unavailable_response_cb (AdwAlertDialog *dialog,
+                                        const gchar    *response,
+                                        gpointer        user_data)
 {
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	GsPageHelper *helper;
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) g_steal_pointer (&user_data);
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
-	/* probably non-free */
-	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
-		GtkResponseType response;
-
-		response = gs_app_notify_unavailable (app, GTK_WIDGET (page));
-		if (response != GTK_RESPONSE_OK) {
-			g_autoptr(GError) error_local = NULL;
-			g_set_error_literal (&error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED, _("User declined installation"));
-			gs_application_emit_install_resources_done (GS_APPLICATION (g_application_get_default ()), NULL, error_local);
-			return;
-		}
+	if (g_strcmp0 (response, "dont-warn-again") == 0) {
+		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+		g_settings_set_boolean (settings, "prompt-for-nonfree", FALSE);
 	}
 
-	helper = g_slice_new0 (GsPageHelper);
-	helper->app = g_object_ref (app);
-	helper->page = g_object_ref (page);
-	helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
-	helper->interaction = interaction;
+	/* not agreed */
+	if (response != NULL && g_strcmp0 (response, "install") != 0 && g_strcmp0 (response, "dont-warn-again") != 0) {
+		g_autoptr(GError) error_local = NULL;
+		g_set_error_literal (&error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED, _("User declined installation"));
+		gs_application_emit_install_resources_done (GS_APPLICATION (g_application_get_default ()), NULL, error_local);
+		return;
+	}
 
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
+	if (gs_app_get_kind (helper->app) == AS_COMPONENT_KIND_REPOSITORY) {
 		plugin_job = gs_plugin_job_manage_repository_new (helper->app,
 								  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL |
-								  ((interaction == GS_SHELL_INTERACTION_FULL) ?
+								  ((helper->interaction == GS_SHELL_INTERACTION_FULL) ?
 								   GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE : 0));
 	} else {
-		g_autoptr(GsAppList) list = gs_app_list_new ();
-		gs_app_list_add (list, app);
+		list = gs_app_list_new ();
+		gs_app_list_add (list, helper->app);
 		plugin_job = gs_plugin_job_install_apps_new (list,
-							     (interaction == GS_SHELL_INTERACTION_FULL) ? GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
+							     (helper->interaction == GS_SHELL_INTERACTION_FULL) ? GS_PLUGIN_INSTALL_APPS_FLAGS_INTERACTIVE : GS_PLUGIN_INSTALL_APPS_FLAGS_NONE);
 	}
 
 	g_assert (helper->job == NULL);
@@ -295,6 +289,41 @@ gs_page_install_app (GsPage *page,
 					    gs_page_app_installed_cb,
 					    helper);
 	g_steal_pointer (&helper);
+}
+
+void
+gs_page_install_app (GsPage *page,
+		     GsApp *app,
+		     GsShellInteraction interaction,
+		     GCancellable *cancellable)
+{
+	GsPageHelper *helper;
+
+	/* probably non-free */
+	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
+		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+
+		if (g_settings_get_boolean (settings, "prompt-for-nonfree")) {
+			helper = g_slice_new0 (GsPageHelper);
+			helper->app = g_object_ref (app);
+			helper->page = g_object_ref (page);
+			helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
+			helper->interaction = interaction;
+
+			gs_app_notify_unavailable (app, GTK_WIDGET (page),
+						   G_CALLBACK (gs_page_notify_unavailable_response_cb),
+						   g_steal_pointer (&helper));
+			return;
+		}
+	}
+
+	helper = g_slice_new0 (GsPageHelper);
+	helper->app = g_object_ref (app);
+	helper->page = g_object_ref (page);
+	helper->cancellable = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
+	helper->interaction = interaction;
+
+	gs_page_notify_unavailable_response_cb (NULL, NULL, g_steal_pointer (&helper));
 }
 
 static void

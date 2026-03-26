@@ -24,9 +24,10 @@ void	 gs_widget_remove_all		(GtkWidget	*container,
 void	 gs_grab_focus_when_mapped	(GtkWidget	*widget);
 
 void	 gs_app_notify_installed	(GsApp		*app);
-GtkResponseType
-	gs_app_notify_unavailable	(GsApp		*app,
-					 GtkWidget	*parent);
+void     gs_app_notify_unavailable  	(GsApp          *app,
+                                  	 GtkWidget      *parent,
+                                  	 GCallback       callback,
+                                  	 gpointer        user_data);
 
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
 gchar		*gs_utils_set_key_colors_in_css	(const gchar	*css,
