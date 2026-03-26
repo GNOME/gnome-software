@@ -65,6 +65,9 @@ typedef struct
 
 	GDBusConnection		*session_bus_connection;  /* (owned) (not nullable) */
 	GDBusConnection		*system_bus_connection;  /* (owned) (not nullable) */
+
+	GSource			*updates_changed_source;  /* (owned) (nullable) */
+	GSource			*reload_source;  /* (owned) (nullable) */
 } GsPluginPrivate;
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
@@ -180,6 +183,10 @@ gs_plugin_dispose (GObject *object)
 
 	g_clear_object (&priv->session_bus_connection);
 	g_clear_object (&priv->system_bus_connection);
+
+	/* Should have been cleared during shutdown. */
+	g_assert (priv->updates_changed_source == NULL);
+	g_assert (priv->reload_source == NULL);
 
 	G_OBJECT_CLASS (gs_plugin_parent_class)->dispose (object);
 }
@@ -556,6 +563,79 @@ gs_plugin_adopt_app (GsPlugin *plugin,
 	plugin_class = GS_PLUGIN_GET_CLASS (plugin);
 	if (plugin_class->adopt_app != NULL)
 		plugin_class->adopt_app (plugin, app);
+}
+
+/**
+ * gs_plugin_shutdown_async:
+ * @plugin: a #GsPlugin
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: (not nullable): a #GAsyncReadyCallback to call when plugin
+ *   shutdown is complete
+ * @user_data: (closure callback) (scope async): data to pass to @callback
+ *
+ * Asynchronously shuts down the plugin, releasing any resources it had open.
+ *
+ * Finish the call with gs_plugin_shutdown_finish().
+ *
+ * Other #GsPlugin methods should not be called after shutdown has started.
+ *
+ * Since: 51
+ **/
+void
+gs_plugin_shutdown_async (GsPlugin            *plugin,
+                          GCancellable        *cancellable,
+                          GAsyncReadyCallback  callback,
+                          void                *user_data)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* Clear any pending signal emissions */
+	if (priv->updates_changed_source != NULL) {
+		g_source_destroy (priv->updates_changed_source);
+		g_clear_pointer (&priv->updates_changed_source, g_source_unref);
+	}
+
+	if (priv->reload_source != NULL) {
+		g_source_destroy (priv->reload_source);
+		g_clear_pointer (&priv->reload_source, g_source_unref);
+	}
+
+	if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_async != NULL) {
+		GS_PLUGIN_GET_CLASS (plugin)->shutdown_async (plugin, cancellable,
+							      callback, user_data);
+	} else {
+		g_autoptr(GTask) task = g_task_new (plugin, cancellable, callback, user_data);
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
+/**
+ * gs_plugin_shutdown_finish:
+ * @plugin: a #GsPlugin
+ * @result: an async result
+ * @error: a #GError or %NULL
+ *
+ * Finishes operation started by gs_plugin_shutdown_async().
+ * This function should be called from the main thread.
+ *
+ * Returns: whether succeeded
+ * Since: 51
+ **/
+gboolean
+gs_plugin_shutdown_finish (GsPlugin      *plugin,
+                           GAsyncResult  *result,
+                           GError       **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish != NULL)
+		return GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish (plugin, result, error);
+	else
+		return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /**
@@ -999,33 +1079,14 @@ gs_plugin_app_launch_filtered_finish (GsPlugin *plugin,
 	return launch_app_info (data->appinfo, error);
 }
 
-static void
-weak_ref_free (GWeakRef *weak)
-{
-	g_weak_ref_clear (weak);
-	g_free (weak);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC (GWeakRef, weak_ref_free)
-
-/* @obj is a gpointer rather than a GObject* to avoid the need for casts */
-static GWeakRef *
-weak_ref_new (gpointer obj)
-{
-	g_autoptr(GWeakRef) weak = g_new0 (GWeakRef, 1);
-	g_weak_ref_init (weak, obj);
-	return g_steal_pointer (&weak);
-}
-
 static gboolean
-gs_plugin_updates_changed_cb (gpointer user_data)
+gs_plugin_updates_changed_cb (void *user_data)
 {
-	GWeakRef *plugin_weak = user_data;
-	g_autoptr(GsPlugin) plugin = NULL;
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
-	plugin = g_weak_ref_get (plugin_weak);
-	if (plugin != NULL)
-		g_signal_emit (plugin, signals[SIGNAL_UPDATES_CHANGED], 0);
+	g_signal_emit (plugin, signals[SIGNAL_UPDATES_CHANGED], 0);
+	g_clear_pointer (&priv->updates_changed_source, g_source_unref);
 
 	return G_SOURCE_REMOVE;
 }
@@ -1042,19 +1103,28 @@ gs_plugin_updates_changed_cb (gpointer user_data)
 void
 gs_plugin_updates_changed (GsPlugin *plugin)
 {
-	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, gs_plugin_updates_changed_cb,
-			 weak_ref_new (plugin), (GDestroyNotify) weak_ref_free);
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_autoptr(GSource) idle_source = NULL;
+
+	if (priv->updates_changed_source != NULL)
+		return;
+
+	idle_source = g_idle_source_new ();
+	g_source_set_callback (idle_source, gs_plugin_updates_changed_cb, plugin, NULL);
+	g_source_set_static_name (idle_source, G_STRFUNC);
+	g_source_attach (idle_source, NULL);
+
+	priv->updates_changed_source = g_steal_pointer (&idle_source);
 }
 
 static gboolean
 gs_plugin_reload_cb (gpointer user_data)
 {
-	GWeakRef *plugin_weak = user_data;
-	g_autoptr(GsPlugin) plugin = NULL;
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
-	plugin = g_weak_ref_get (plugin_weak);
-	if (plugin != NULL)
-		g_signal_emit (plugin, signals[SIGNAL_RELOAD], 0);
+	g_signal_emit (plugin, signals[SIGNAL_RELOAD], 0);
+	g_clear_pointer (&priv->reload_source, g_source_unref);
 
 	return G_SOURCE_REMOVE;
 }
@@ -1074,9 +1144,20 @@ gs_plugin_reload_cb (gpointer user_data)
 void
 gs_plugin_reload (GsPlugin *plugin)
 {
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_autoptr(GSource) idle_source = NULL;
+
+	if (priv->reload_source != NULL)
+		return;
+
 	g_debug ("emitting %s::reload in idle", gs_plugin_get_name (plugin));
-	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, gs_plugin_reload_cb,
-			 weak_ref_new (plugin), (GDestroyNotify) weak_ref_free);
+
+	idle_source = g_idle_source_new ();
+	g_source_set_callback (idle_source, gs_plugin_reload_cb, plugin, NULL);
+	g_source_set_static_name (idle_source, G_STRFUNC);
+	g_source_attach (idle_source, NULL);
+
+	priv->reload_source = g_steal_pointer (&idle_source);
 }
 
 /**

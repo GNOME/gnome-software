@@ -439,6 +439,14 @@ void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
 							 GsApp		*app);
 
+void		 gs_plugin_shutdown_async		(GsPlugin	*plugin,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 void		*user_data);
+gboolean	 gs_plugin_shutdown_finish		(GsPlugin	*plugin,
+							 GAsyncResult	*result,
+							 GError		**error);
+
 /* helpers */
 gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
 							 const gchar	*distro_id);

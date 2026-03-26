@@ -1147,8 +1147,8 @@ gs_plugin_loader_updates_changed (GsPluginLoader *plugin_loader)
 		g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
 					    GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
 					    gs_plugin_loader_job_updates_changed_delay_cb,
-					    g_object_ref (plugin_loader),
-					    g_object_unref);
+					    plugin_loader,
+					    NULL);
 }
 
 static void
@@ -1175,7 +1175,6 @@ gs_plugin_loader_reload_delay_cb (gpointer user_data)
 	g_signal_emit (plugin_loader, signals[SIGNAL_RELOAD], 0);
 	plugin_loader->reload_id = 0;
 
-	g_object_unref (plugin_loader);
 	return FALSE;
 }
 
@@ -1200,7 +1199,7 @@ gs_plugin_loader_reload_cb (GsPlugin *in_plugin,
 	plugin_loader->reload_id =
 		g_timeout_add_seconds (GS_PLUGIN_LOADER_RELOAD_DELAY,
 				       gs_plugin_loader_reload_delay_cb,
-				       g_object_ref (plugin_loader));
+				       plugin_loader);
 }
 
 static void
@@ -1423,11 +1422,8 @@ gs_plugin_loader_shutdown (GsPluginLoader *plugin_loader,
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
 
-		if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_async != NULL) {
-			GS_PLUGIN_GET_CLASS (plugin)->shutdown_async (plugin, cancellable,
-								      plugin_shutdown_cb, &shutdown_data);
-			shutdown_data.n_pending++;
-		}
+		gs_plugin_shutdown_async (plugin, cancellable, plugin_shutdown_cb, &shutdown_data);
+		shutdown_data.n_pending++;
 	}
 
 	/* Wait for shutdown to complete in all plugins. */
@@ -1456,9 +1452,7 @@ plugin_shutdown_cb (GObject      *source_object,
 	ShutdownData *data = user_data;
 	g_autoptr(GError) local_error = NULL;
 
-	g_assert (GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish != NULL);
-
-	if (!GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish (plugin, result, &local_error)) {
+	if (!gs_plugin_shutdown_finish (plugin, result, &local_error)) {
 		g_debug ("disabling %s as shutdown failed: %s",
 			 gs_plugin_get_name (plugin),
 			 local_error->message);
@@ -2149,9 +2143,15 @@ gs_plugin_loader_dispose (GObject *object)
 
 		g_clear_pointer (&plugin_loader->plugins, g_ptr_array_unref);
 	}
+
 	if (plugin_loader->updates_changed_id != 0) {
 		g_source_remove (plugin_loader->updates_changed_id);
 		plugin_loader->updates_changed_id = 0;
+	}
+
+	if (plugin_loader->reload_id != 0) {
+		g_source_remove (plugin_loader->reload_id);
+		plugin_loader->reload_id = 0;
 	}
 
 	/* Cancel any pending idle callbacks */
