@@ -261,10 +261,21 @@ gs_plugin_job_install_apps_run_async (GsPluginJob         *job,
 	for (guint i = 0; i < plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (plugins, i);
 		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+		g_autoptr(GsAppList) plugin_apps = gs_app_list_new ();
 
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
 		if (plugin_class->install_apps_async == NULL)
+			continue;
+
+		for (guint j = 0; j < gs_app_list_length (self->apps); j++) {
+			GsApp *app = gs_app_list_index (self->apps, j);
+			if (gs_app_has_management_plugin (app, plugin))
+				gs_app_list_add (plugin_apps, app);
+		}
+
+		/* skip plugin if none of the apps belongs to it */
+		if (gs_app_list_length (plugin_apps) == 0)
 			continue;
 
 		/* at least one plugin supports this vfunc */
@@ -280,7 +291,7 @@ gs_plugin_job_install_apps_run_async (GsPluginJob         *job,
 		/* run the plugin */
 		self->n_pending_ops++;
 		plugin_class->install_apps_async (plugin,
-						  self->apps,
+						  plugin_apps,
 						  self->flags,
 						  plugin_progress_cb,
 						  task,

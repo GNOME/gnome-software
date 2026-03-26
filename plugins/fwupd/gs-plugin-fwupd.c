@@ -1794,9 +1794,8 @@ install_or_update_apps_impl (GsPluginFwupd                      *self,
 		/* source -> remote, handled by dedicated function */
 		g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
 
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
+		/* This should be guaranteed by GsPluginJobInstallApps and GsPluginJobUpdateApps */
+		g_assert (gs_app_has_management_plugin (app, GS_PLUGIN (self)));
 
 		app_data = g_new0 (InstallOrUpdateSingleAppData, 1);
 		app_data->index = i;

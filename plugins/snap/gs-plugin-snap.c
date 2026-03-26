@@ -1922,9 +1922,8 @@ gs_plugin_snap_install_apps_async (GsPlugin                           *plugin,
 		const gchar *name, *channel;
 		SnapdInstallFlags install_flags = SNAPD_INSTALL_FLAGS_NONE;
 
-		/* We can only install apps we know of */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
+		/* This should be guaranteed by GsPluginJobInstallApps */
+		g_assert (gs_app_has_management_plugin (app, GS_PLUGIN (self)));
 
 		name = gs_app_get_metadata_item (app, "snap::name");
 		channel = gs_app_get_branch (app);

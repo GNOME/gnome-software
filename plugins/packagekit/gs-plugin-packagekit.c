@@ -532,9 +532,8 @@ gs_plugin_packagekit_install_apps_async (GsPlugin                           *plu
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
 
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
+		/* This should be guaranteed by GsPluginJobInstallApps */
+		g_assert (gs_app_has_management_plugin (app, GS_PLUGIN (self)));
 
 		/* enable repo, handled by dedicated function */
 		g_assert (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY);
