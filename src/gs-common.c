@@ -160,8 +160,11 @@ gs_common_app_is_from_official_repository (GsApp *app,
 	       gs_utils_strv_fnmatch ((gchar **) official_repos, origin);
 }
 
-GtkResponseType
-gs_app_notify_unavailable (GsApp *app, GtkWidget *parent)
+void
+gs_app_notify_unavailable (GsApp     *app,
+                           GtkWidget *parent,
+                           GCallback  response_func,
+                           gpointer   user_data)
 {
 	GsAppLicenseHint hint = GS_APP_LICENSE_FREE;
 	AdwDialog *dialog;
@@ -181,9 +184,6 @@ gs_app_notify_unavailable (GsApp *app, GtkWidget *parent)
 	g_autoptr(GSettings) settings = NULL;
 	g_autoptr(GString) body = NULL;
 	const gchar *title;
-	g_autoptr(GAsyncResult) result = NULL;
-	const char *response;
-	int response_id = GTK_RESPONSE_NONE;
 
 	/* this is very crude */
 	license = gs_app_get_license (app);
@@ -199,8 +199,6 @@ gs_app_notify_unavailable (GsApp *app, GtkWidget *parent)
 
 	/* check if the user has already dismissed */
 	settings = g_settings_new ("org.gnome.software");
-	if (!g_settings_get_boolean (settings, "prompt-for-nonfree"))
-		return GTK_RESPONSE_OK;
 
 	if (already_enabled) {
 		title = gs_common_app_is_from_official_repository (app, settings) ?
@@ -286,26 +284,8 @@ gs_app_notify_unavailable (GsApp *app, GtkWidget *parent)
 
 	adw_alert_dialog_set_close_response (ADW_ALERT_DIALOG (dialog), "cancel");
 
-	/* Run.
-	 * FIXME: Make this properly async, see https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2741 */
-	adw_alert_dialog_choose (ADW_ALERT_DIALOG (dialog), parent, NULL, async_result_cb, &result);
-
-	while (result == NULL)
-		g_main_context_iteration (NULL, TRUE);
-
-	response = adw_alert_dialog_choose_finish (ADW_ALERT_DIALOG (dialog), result);
-
-	/* Map responses. */
-	if (g_strcmp0 (response, "install") == 0) {
-		response_id = GTK_RESPONSE_OK;
-	} else if (g_strcmp0 (response, "dont-warn-again") == 0) {
-		response_id = GTK_RESPONSE_OK;
-		g_settings_set_boolean (settings, "prompt-for-nonfree", FALSE);
-	} else {
-		response_id = GTK_RESPONSE_CANCEL;
-	}
-
-	return response_id;
+	g_signal_connect (dialog, "response", response_func, user_data);
+	adw_dialog_present (dialog, parent);
 }
 
 gboolean
