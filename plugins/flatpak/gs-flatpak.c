@@ -395,6 +395,8 @@ perms_from_metadata (GKeyFile *keyfile)
 				{ "host-etc",		N_("Host system configuration from /etc"), NULL },
 				{ "xdg-desktop",	N_("Desktop folder"),			   N_("Desktop subfolder %s") },
 				{ "xdg-documents",	N_("Documents folder"),			   N_("Documents subfolder %s") },
+				/* note: xdg-download is listed in filesystems_access, but we list it here again to catch subdirectories */
+				{ "xdg-download",	N_("Downloads folder"),			   N_("Downloads subfolder %s") },
 				{ "xdg-music",		N_("Music folder"),			   N_("Music subfolder %s") },
 				{ "xdg-pictures",	N_("Pictures folder"),			   N_("Pictures subfolder %s") },
 				{ "xdg-public-share",	N_("Public Share folder"),		   N_("Public Share subfolder %s") },
