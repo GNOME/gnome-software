@@ -26,6 +26,11 @@ G_BEGIN_DECLS
  *    session bus (i.e. can talk to and own any name on it).
  * @GS_APP_PERMISSIONS_FLAGS_DEVICES: App can access general purpose devices
  *   such as webcams or gaming controllers.
+ * @GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER: App can access file system
+ *   locations other than home, the downloads folder, or the full file system;
+ *   these locations can be listed by calling
+ *   [method@Gs.AppPermissions.get_filesystem_read] and
+ *   [method@Gs.AppPermissions.get_filesystem_full]
  * @GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES: App can access non-physical
  *   privileged system devices, such as `/dev/shm` or `/dev/kvm` (Since: 44)
  * @GS_APP_PERMISSIONS_FLAGS_SCREEN: App can access screen contents
