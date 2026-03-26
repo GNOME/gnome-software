@@ -5146,17 +5146,7 @@ update_apps_download_cb (GObject      *source_object,
 			GDBusConnection *connection;
 
 			/* trigger offline update if it’s not already been triggered */
-
-			/* Assume we can use the singleton system bus connection
-			 * due to prior PackageKit calls having created it. This
-			 * avoids an async callback. */
-			connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
-						     cancellable,
-						     &local_error);
-			if (connection == NULL) {
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
-			}
+			connection = gs_plugin_get_system_bus_connection (GS_PLUGIN (self));
 
 			/* FIXME: This can be simplified down to a call to
 			 * pk_offline_trigger_with_flags_async() when it exists.
