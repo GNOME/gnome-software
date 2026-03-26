@@ -20,5 +20,6 @@ GsApp		*gs_flatpak_app_new_from_repo_file	(GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
 void		 gs_flatpak_app_set_packaging_info	(GsApp		*app);
+GsAppPermissions *gs_flatpak_app_build_permissions_from_metadata (GKeyFile *keyfile);
 
 G_END_DECLS

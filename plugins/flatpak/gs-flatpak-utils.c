@@ -270,3 +270,359 @@ gs_flatpak_app_set_packaging_info (GsApp *app)
 	gs_app_set_metadata (app, "GnomeSoftware::PackagingIcon", "package-flatpak-symbolic");
 	gs_app_set_metadata (app, "GnomeSoftware::packagename-title", _("App ID"));
 }
+
+static guint
+gs_get_strv_index (const gchar * const *strv,
+		   const gchar *value)
+{
+	guint ii;
+
+	for (ii = 0; strv[ii]; ii++) {
+		if (g_str_equal (strv[ii], value))
+			break;
+	}
+
+	return ii;
+}
+
+static GsBusPolicyPermission
+bus_policy_permission_from_string (const char *str)
+{
+	if (str == NULL || g_str_equal (str, "none"))
+		return GS_BUS_POLICY_PERMISSION_NONE;
+	else if (g_str_equal (str, "see"))
+		return GS_BUS_POLICY_PERMISSION_SEE;
+	else if (g_str_equal (str, "talk"))
+		return GS_BUS_POLICY_PERMISSION_TALK;
+	else if (g_str_equal (str, "own"))
+		return GS_BUS_POLICY_PERMISSION_OWN;
+	else
+		return GS_BUS_POLICY_PERMISSION_UNKNOWN;
+}
+
+/**
+ * gs_flatpak_app_build_permissions_from_metadata:
+ * @keyfile: app’s metadata file
+ *
+ * Build the app permissions data structure from a flatpak app’s metadata file.
+ *
+ * Returns: (transfer full): sealed permissions data structure
+ * Since: 51
+ */
+GsAppPermissions *
+gs_flatpak_app_build_permissions_from_metadata (GKeyFile *keyfile)
+{
+	char **strv;
+	GsAppPermissions *permissions = gs_app_permissions_new ();
+	GsAppPermissionsFlags flags = GS_APP_PERMISSIONS_FLAGS_NONE;
+	g_autofree char *app_id = g_key_file_get_value (keyfile, "Application", "name", NULL);
+	g_autofree char *mpris_id = NULL;
+	g_autofree char *app_id_non_devel = NULL;
+	g_autofree char *mpris_id_non_devel = NULL;
+
+	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
+	for (size_t i = 0; strv != NULL && strv[i] != NULL; i++) {
+		if (g_str_equal (strv[i], "system-bus"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS | GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		else if (g_str_equal (strv[i], "session-bus"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_SESSION_BUS | GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		else if (g_str_equal (strv[i], "x11") &&
+			 !g_strv_contains ((const gchar * const*)strv, "fallback-x11"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_X11;
+		/* "fallback-x11" without "wayland" means X11 */
+		else if (g_str_equal (strv[i], "fallback-x11") &&
+		         !g_strv_contains ((const gchar * const*)strv, "wayland"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_X11;
+		else if (g_str_equal (strv[i], "x11") ||
+			 g_str_equal (strv[i], "fallback-x11") ||
+			 g_str_equal (strv[i], "wayland"))
+			/* with the above cases handled, these are all safe */;
+		else if (g_str_equal (strv[i], "inherit-wayland-socket"))
+			/* used by input methods like fcitx, gives them access to the compositor’s Wayland socket */
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		else if (g_str_equal (strv[i], "pulseaudio"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES;
+		else if (g_str_equal (strv[i], "gpg-agent"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		else if (g_str_equal (strv[i], "cups"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_DEVICES;
+		else if (g_str_equal (strv[i], "pcsc"))
+			flags |= GS_APP_PERMISSIONS_FLAGS_DEVICES;  /* smartcard devices */
+		else if (g_str_equal (strv[i], "ssh-auth"))
+			/* could use ssh-agent to authenticate on localhost or another host */
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		else {
+			/* Unknown socket, so we have to assume it’s unsafe,
+			 * since session/system services which allow access via
+			 * a plain socket are typically not written to protect
+			 * against malicious clients. */
+			g_debug ("Unrecognised Context.sockets value ‘%s’ for app %s",
+				 strv[i], app_id);
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+		}
+	}
+	g_strfreev (strv);
+
+	strv = g_key_file_get_string_list (keyfile, "Context", "devices", NULL, NULL);
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "all"))
+		flags |= GS_APP_PERMISSIONS_FLAGS_DEVICES;
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "input"))
+		flags |= GS_APP_PERMISSIONS_FLAGS_INPUT_DEVICES;
+	if (strv != NULL && (g_strv_contains ((const gchar * const*)strv, "shm") ||
+			     g_strv_contains ((const gchar * const*)strv, "kvm")))
+		flags |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_DEVICES;
+	g_strfreev (strv);
+
+	strv = g_key_file_get_string_list (keyfile, "Context", "shared", NULL, NULL);
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "network"))
+		flags |= GS_APP_PERMISSIONS_FLAGS_NETWORK;
+	g_strfreev (strv);
+
+	strv = g_key_file_get_string_list (keyfile, "Context", "filesystems", NULL, NULL);
+	if (strv != NULL) {
+		const struct {
+			const gchar *key;
+			GsAppPermissionsFlags perm;
+		} filesystems_access[] = {
+			/* Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264 */
+			{ "home", GS_APP_PERMISSIONS_FLAGS_HOME_FULL },
+			{ "home:rw", GS_APP_PERMISSIONS_FLAGS_HOME_FULL },
+			{ "home:ro", GS_APP_PERMISSIONS_FLAGS_HOME_READ },
+			{ "~", GS_APP_PERMISSIONS_FLAGS_HOME_FULL },
+			{ "~:rw", GS_APP_PERMISSIONS_FLAGS_HOME_FULL },
+			{ "~:ro", GS_APP_PERMISSIONS_FLAGS_HOME_READ },
+			{ "host", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },
+			{ "host:rw", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },
+			{ "host:ro", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ },
+			{ "xdg-config/kdeglobals:ro", GS_APP_PERMISSIONS_FLAGS_NONE },  /* ignore this; all KDE apps need it */
+			{ "xdg-download", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL },
+			{ "xdg-download:rw", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL },
+			{ "xdg-download:ro", GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ },
+			{ "xdg-data/flatpak/overrides:create", GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX },
+			{ "xdg-run/pipewire-0", GS_APP_PERMISSIONS_FLAGS_SCREEN | GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES },  /* see https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2329 */
+			{ "xdg-run/pipewire-0:rw", GS_APP_PERMISSIONS_FLAGS_SCREEN | GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES },
+			{ "xdg-run/pipewire-0:ro", GS_APP_PERMISSIONS_FLAGS_SCREEN | GS_APP_PERMISSIONS_FLAGS_AUDIO_DEVICES },
+			{ "xdg-run/gvfsd", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },  /* see https://gitlab.gnome.org/GNOME/gnome-software/-/issues/2760 */
+		};
+		guint filesystems_hits = 0;
+		guint strv_len = g_strv_length (strv);
+
+		for (guint i = 0; i < G_N_ELEMENTS (filesystems_access); i++) {
+			guint index = gs_get_strv_index ((const gchar * const *) strv, filesystems_access[i].key);
+			if (index < strv_len) {
+				flags |= filesystems_access[i].perm;
+				filesystems_hits++;
+				/* Mark it as used */
+				strv[index][0] = '\0';
+			}
+		}
+
+		if ((flags & GS_APP_PERMISSIONS_FLAGS_HOME_FULL) != 0)
+			flags = flags & ~GS_APP_PERMISSIONS_FLAGS_HOME_READ;
+		if ((flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL) != 0)
+			flags = flags & ~GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ;
+		if ((flags & GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL) != 0)
+			flags = flags & ~GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ;
+
+		if (strv_len > filesystems_hits) {
+			/* Cover those not being part of the above filesystems_access array */
+			const struct {
+				const gchar *prefix;
+				const gchar *title;
+				const gchar *title_subdir;
+			} filesystems_other[] = {
+				/* Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264 */
+				{ "/",			NULL,					   N_("System folder %s") },
+				{ "home/",		NULL,					   N_("Home subfolder %s") },
+				{ "~/",			NULL,					   N_("Home subfolder %s") },
+				{ "host-os",		N_("Host system folders"),		   NULL },
+				{ "host-etc",		N_("Host system configuration from /etc"), NULL },
+				{ "xdg-desktop",	N_("Desktop folder"),			   N_("Desktop subfolder %s") },
+				{ "xdg-documents",	N_("Documents folder"),			   N_("Documents subfolder %s") },
+				/* note: xdg-download is listed in filesystems_access, but we list it here again to catch subdirectories */
+				{ "xdg-download",	N_("Downloads folder"),			   N_("Downloads subfolder %s") },
+				{ "xdg-music",		N_("Music folder"),			   N_("Music subfolder %s") },
+				{ "xdg-pictures",	N_("Pictures folder"),			   N_("Pictures subfolder %s") },
+				{ "xdg-public-share",	N_("Public Share folder"),		   N_("Public Share subfolder %s") },
+				{ "xdg-videos",		N_("Videos folder"),			   N_("Videos subfolder %s") },
+				{ "xdg-templates",	N_("Templates folder"),			   N_("Templates subfolder %s") },
+				{ "xdg-cache",		N_("User cache folder"),		   N_("User cache subfolder %s") },
+				{ "xdg-config",		N_("User configuration folder"),	   N_("User configuration subfolder %s") },
+				{ "xdg-data",		N_("User data folder"),			   N_("User data subfolder %s") },
+				{ "xdg-run",		N_("User runtime folder"),		   N_("User runtime subfolder %s") }
+			};
+
+			flags |= GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER;
+
+			for (guint j = 0; strv[j]; j++) {
+				gchar *perm = strv[j];
+				gboolean is_readonly;
+				gchar *colon;
+				guint i;
+
+				/* Already handled by the flags */
+				if (!perm[0])
+					continue;
+
+				is_readonly = g_str_has_suffix (perm, ":ro");
+				colon = strrchr (perm, ':');
+				/* modifiers are ":ro", ":rw", ":create", where ":create" is ":rw" + create
+				   and ":rw" is default; treat ":create" as ":rw" */
+				if (colon) {
+					/* Completeness check */
+					if (!g_str_equal (colon, ":ro") &&
+					    !g_str_equal (colon, ":rw") &&
+					    !g_str_equal (colon, ":create"))
+						g_debug ("Unknown filesystem permission modifier '%s' from '%s'", colon, perm);
+					/* cut it off */
+					*colon = '\0';
+				}
+
+				for (i = 0; i < G_N_ELEMENTS (filesystems_other); i++) {
+					if (g_str_has_prefix (perm, filesystems_other[i].prefix)) {
+						g_autofree gchar *title_tmp = NULL;
+						const gchar *slash, *title = NULL;
+						slash = strchr (perm, '/');
+						/* Catch and ignore invalid permission definitions */
+						if (slash && filesystems_other[i].title_subdir != NULL) {
+							#pragma GCC diagnostic push
+							#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+							title_tmp = g_strdup_printf (
+								_(filesystems_other[i].title_subdir),
+								slash + (slash == perm ? 0 : 1));
+							#pragma GCC diagnostic pop
+							title = title_tmp;
+						} else if (!slash && filesystems_other[i].title != NULL) {
+							title = _(filesystems_other[i].title);
+						}
+						if (title != NULL) {
+							if (is_readonly)
+								gs_app_permissions_add_filesystem_read (permissions, title);
+							else
+								gs_app_permissions_add_filesystem_full (permissions, title);
+						}
+						break;
+					}
+				}
+
+				/* Nothing matched, use a generic entry */
+				if (i == G_N_ELEMENTS (filesystems_other)) {
+					g_autofree gchar *title = g_strdup_printf (_("Filesystem access to %s"), perm);
+					if (is_readonly)
+						gs_app_permissions_add_filesystem_read (permissions, title);
+					else
+						gs_app_permissions_add_filesystem_full (permissions, title);
+				}
+			}
+		}
+	}
+	g_strfreev (strv);
+
+	/* Iterate over all the D-Bus permissions, working out the consequences of each permission
+	 * and either adding to the GsAppPermissions’ flags, or adding more detailed
+	 * service information to it. */
+	if (!(flags & (GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS | GS_APP_PERMISSIONS_FLAGS_SESSION_BUS))) {
+		const struct {
+			GBusType bus_type;
+			const char *keyfile_group;
+			GsAppPermissionsFlags unfiltered_flag;
+		} bus_policy_types[] = {
+			{ G_BUS_TYPE_SESSION, "Session Bus Policy", GS_APP_PERMISSIONS_FLAGS_SESSION_BUS },
+			{ G_BUS_TYPE_SYSTEM, "System Bus Policy", GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS },
+		};
+
+		/* Build various IDs for the default bus policies.
+		 * MPRIS (https://specifications.freedesktop.org/mpris-spec/latest/)
+		 * is a spec for remotely controlling media players, and requires
+		 * apps to be able to own a sub-name in the MRPIS namespace on
+		 * the bus. */
+		if (app_id != NULL) {
+			mpris_id = g_strconcat ("org.mpris.MediaPlayer2.", app_id, NULL);
+			app_id_non_devel = g_str_has_suffix (app_id, ".Devel") ? g_strndup (app_id, strlen (app_id) - strlen (".Devel")) : NULL;
+			mpris_id_non_devel = (app_id_non_devel != NULL) ? g_strconcat ("org.mpris.MediaPlayer2.", app_id_non_devel, NULL) : NULL;
+		}
+
+		for (size_t h = 0; h < G_N_ELEMENTS (bus_policy_types); h++) {
+			g_auto(GStrv) bus_policies = NULL;
+
+			/* If the app already has unfiltered access to this bus, skip it. */
+			if (flags & bus_policy_types[h].unfiltered_flag)
+				continue;
+
+			bus_policies = g_key_file_get_keys (keyfile, bus_policy_types[h].keyfile_group, NULL, NULL);
+
+			for (size_t i = 0; bus_policies != NULL && bus_policies[i] != NULL; i++) {
+				const struct {
+					GBusType bus_type;
+					const char *bus_name;
+					gboolean is_prefix;
+					GsBusPolicyPermission permission_is_at_least;
+					GsAppPermissionsFlags flags;
+				} bus_policy_permissions[] = {
+					/* Being able to talk to dconf means the app can read and write all settings: */
+					{ G_BUS_TYPE_SESSION, "ca.desrt.dconf", FALSE, GS_BUS_POLICY_PERMISSION_TALK, GS_APP_PERMISSIONS_FLAGS_SETTINGS },
+
+					/* There are various services on the session bus which are known to give sandbox escapes: */
+					{ G_BUS_TYPE_SESSION, "org.freedesktop.Flatpak", FALSE, GS_BUS_POLICY_PERMISSION_TALK, GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX },
+					{ G_BUS_TYPE_SESSION, "org.freedesktop.impl.portal.PermissionStore", FALSE, GS_BUS_POLICY_PERMISSION_TALK, GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX },
+
+					/* org.gtk.vfs.* is known to allow file system access: */
+					{ G_BUS_TYPE_SESSION, "org.gtk.vfs.", TRUE, GS_BUS_POLICY_PERMISSION_TALK, GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },
+				};
+				const char *bus_name_pattern = bus_policies[i];
+				g_autofree char *bus_policy_str = g_key_file_get_string (keyfile, bus_policy_types[h].keyfile_group, bus_name_pattern, NULL);
+				GsBusPolicyPermission bus_policy;
+				size_t j;
+
+				/* This can’t fail because we’re iterating over the keys */
+				g_assert (bus_policy_str != NULL);
+				bus_policy = bus_policy_permission_from_string (bus_policy_str);
+
+				/* Ignore the default policies (see man:flatpak-metadata(5))*/
+				if (app_id != NULL &&
+				    bus_policy_types[h].bus_type == G_BUS_TYPE_SESSION &&
+				    (g_str_equal (bus_name_pattern, app_id) ||
+				     (g_str_has_prefix (bus_name_pattern, app_id) && bus_name_pattern[strlen (app_id)] == '.') ||
+				     g_str_equal (bus_name_pattern, mpris_id) ||
+				     g_str_equal (bus_name_pattern, "org.freedesktop.DBus") ||
+				     g_str_has_prefix (bus_name_pattern, "org.freedesktop.portal.")))
+					continue;
+
+				/* Allow .Devel apps to own their non-devel names on the session bus. */
+				if (app_id_non_devel != NULL &&
+				    bus_policy_types[h].bus_type == G_BUS_TYPE_SESSION &&
+				    (g_str_equal (bus_name_pattern, app_id_non_devel) ||
+				     (g_str_has_prefix (bus_name_pattern, app_id_non_devel) && bus_name_pattern[strlen (app_id_non_devel)] == '.') ||
+				     g_str_equal (bus_name_pattern, mpris_id_non_devel)))
+					continue;
+
+				/* Search for flags to apply to the GsAppPermissions in response to the app’s policies */
+				for (j = 0; j < G_N_ELEMENTS (bus_policy_permissions); j++) {
+					if (bus_policy_permissions[j].bus_type == bus_policy_types[h].bus_type &&
+					    ((!bus_policy_permissions[j].is_prefix && g_str_equal (bus_name_pattern, bus_policy_permissions[j].bus_name)) ||
+					     (bus_policy_permissions[j].is_prefix && g_str_has_prefix (bus_name_pattern, bus_policy_permissions[j].bus_name))) &&
+					    bus_policy >= bus_policy_permissions[j].permission_is_at_least) {
+						flags |= bus_policy_permissions[j].flags;
+						break;
+					}
+				}
+
+				/* This entry in the keyfile hasn’t matched any of the specific
+				 * `bus_policy_permissions` we know about, so list it generally
+				 * for the user. */
+				if (j == G_N_ELEMENTS (bus_policy_permissions)) {
+					flags |= GS_APP_PERMISSIONS_FLAGS_BUS_POLICY_OTHER;
+					gs_app_permissions_add_bus_policy (permissions,
+									   bus_policy_types[h].bus_type,
+									   bus_name_pattern,
+									   bus_policy);
+				}
+			}
+		}
+	}
+
+	gs_app_permissions_set_flags (permissions, flags);
+	gs_app_permissions_seal (permissions);
+
+	return permissions;
+}
