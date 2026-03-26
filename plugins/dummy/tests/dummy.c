@@ -76,7 +76,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	GsPlugin *plugin;
 
 	/* drop all caches */
-	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
+	gs_utils_rmtree (g_getenv ("GS_TEST_CACHEDIR"), NULL);
 	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* update, which should cause an error to be emitted */
@@ -607,7 +607,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) local_error = NULL;
 
 	/* drop all caches */
-	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
+	gs_utils_rmtree (g_getenv ("GS_TEST_CACHEDIR"), NULL);
 	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* get the updates list */
@@ -804,16 +804,16 @@ main (int argc, char **argv)
 
 	/* set all the things required as a dummy test harness */
 	setlocale (LC_MESSAGES, "en_GB.UTF-8");
-	g_setenv ("GS_SELF_TEST_DUMMY_ENABLE", "1", TRUE);
-	g_setenv ("GS_SELF_TEST_PROVENANCE_SOURCES", "london*,boston", TRUE);
-	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_SOURCES", "london*,boston", TRUE);
-	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_URL", "https://www.debian.org/", TRUE);
+	g_setenv ("GS_TEST_DUMMY_ENABLE", "1", TRUE);
+	g_setenv ("GS_TEST_PROVENANCE_SOURCES", "london*,boston", TRUE);
+	g_setenv ("GS_TEST_PROVENANCE_LICENSE_SOURCES", "london*,boston", TRUE);
+	g_setenv ("GS_TEST_PROVENANCE_LICENSE_URL", "https://www.debian.org/", TRUE);
 
 	/* Use a common cache directory for all tests, since the appstream
 	 * plugin uses it and cannot be reinitialised for each test. */
 	tmp_root = g_dir_make_tmp ("gnome-software-dummy-test-XXXXXX", NULL);
 	g_assert (tmp_root != NULL);
-	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
+	g_setenv ("GS_TEST_CACHEDIR", tmp_root, TRUE);
 
 	xml = g_strdup ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"
@@ -868,7 +868,7 @@ main (int argc, char **argv)
 		"    <scope>user</scope>\n"
 		"  </info>\n"
 		"</components>\n");
-	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
+	g_setenv ("GS_TEST_APPSTREAM_XML", xml, TRUE);
 
 	/* we can only load this once per process */
 	plugin_loader = gs_plugin_loader_new (NULL, NULL);

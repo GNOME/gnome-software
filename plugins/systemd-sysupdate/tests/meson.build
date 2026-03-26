@@ -1,22 +1,29 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# SPDX-FileCopyrightText: 2025 GNOME Foundation, Inc.
+# SPDX-FileCopyrightText: 2026 Philip Withnall
 # Authors: Philip Withnall <pwithnall@gnome.org>
 
-libgnomesoftware_tests = {
-  'app-permissions': {},
-  'css': {},
-  'utils': {},
+systemd_sysupdate_tests = {
+  'systemd-sysupdate': {
+    'source': [
+      'systemd-sysupdate.c',
+      systemd_sysupdated_generated,
+    ],
+  },
 }
 
 test_env = environment()
 test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
 test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
-test_deps = [libgnomesoftware_dep]
-test_cargs = ['-DTESTDATADIR="' + join_paths(meson.project_source_root(), 'data') + '"']
-test_cpp_args = ['-DG_LOG_DOMAIN="libgnomesoftware"']
+test_deps = [plugin_libs]
+test_cargs = [
+  '-DLOCALPLUGINDIR="' + meson.current_build_dir() + '/../"',
+  '-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../../core"',
+  '-DTESTDATADIR="' + join_paths(meson.project_source_root(), 'data') + '"',
+]
+test_cpp_args = ['-DG_LOG_DOMAIN="systemd-sysupdate"']
 
-foreach test_name, extra_args : libgnomesoftware_tests
+foreach test_name, extra_args : systemd_sysupdate_tests
   source = extra_args.get('source', test_name + '.c')
 
   if installed_tests_enabled
@@ -46,6 +53,9 @@ foreach test_name, extra_args : libgnomesoftware_tests
     protocol: 'tap',
     env: test_env,
     timeout: 30,
-    suite: ['libgnomesoftware'],
+    depends: [compiled_schemas, gs_plugin_systemd_sysupdate],
+    suite: ['plugins', 'systemd-sysupdate'],
   )
 endforeach
+
+subdir('services')

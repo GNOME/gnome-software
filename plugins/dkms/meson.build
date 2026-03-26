@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # SPDX-FileCopyrightText: 2024 Red Hat
 
-shared_module(
+gs_plugin_dkms = shared_module(
   'gs_plugin_dkms',
   sources : 'gs-plugin-dkms.c',
   install : true,

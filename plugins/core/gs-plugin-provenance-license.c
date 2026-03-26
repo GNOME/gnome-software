@@ -37,7 +37,7 @@ gs_plugin_provenance_license_get_sources (GsPluginProvenanceLicense *self)
 {
 	const gchar *tmp;
 
-	tmp = g_getenv ("GS_SELF_TEST_PROVENANCE_LICENSE_SOURCES");
+	tmp = g_getenv ("GS_TEST_PROVENANCE_LICENSE_SOURCES");
 	if (tmp != NULL) {
 		g_debug ("using custom provenance_license sources of %s", tmp);
 		return g_strsplit (tmp, ",", -1);
@@ -51,7 +51,7 @@ gs_plugin_provenance_license_get_id (GsPluginProvenanceLicense *self)
 	const gchar *tmp;
 	g_autofree gchar *url = NULL;
 
-	tmp = g_getenv ("GS_SELF_TEST_PROVENANCE_LICENSE_URL");
+	tmp = g_getenv ("GS_TEST_PROVENANCE_LICENSE_URL");
 	if (tmp != NULL) {
 		g_debug ("using custom license generic sources of %s", tmp);
 		url = g_strdup (tmp);

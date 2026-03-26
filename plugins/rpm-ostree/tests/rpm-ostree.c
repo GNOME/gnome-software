@@ -10,7 +10,7 @@
 #include <locale.h>
 
 #include "gnome-software-private.h"
-#include "gs-rpm-ostree-utils.h"
+#include "../gs-rpm-ostree-utils.h"
 #include "gs-test.h"
 
 static GsApp * /* transfer full */

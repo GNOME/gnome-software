@@ -114,6 +114,7 @@ libgnomesoftware = library(
     'gs-appstream.c',
     'gs-category.c',
     'gs-category-manager.c',
+    'gs-css.c',
     'gs-debug.c',
     'gs-desktop-data.c',
     'gs-download-utils.c',
@@ -215,37 +216,6 @@ executable(
   install_dir : get_option('libexecdir'),
   install_rpath : gs_private_libdir,
 )
-
-if get_option('tests')
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', 'data') + '"']
-  e = executable(
-    'gs-self-test',
-    compiled_schemas,
-    sources : [
-      'gs-self-test.c'
-    ],
-    include_directories : [
-      include_directories('..'),
-    ],
-    dependencies : [
-      appstream,
-      gio_unix,
-      glib,
-      gmodule,
-      gtk,
-      json_glib,
-      libgnomesoftware_dep,
-      libm,
-      libsoup
-    ],
-    c_args : cargs
-  )
-  test('gs-self-test-lib', e, suite: ['lib'], env: test_env, timeout : 120)
-endif
 
 subdir('tests')
 subdir('tools')

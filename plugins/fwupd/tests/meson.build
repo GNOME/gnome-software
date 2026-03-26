@@ -1,22 +1,23 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# SPDX-FileCopyrightText: 2025 GNOME Foundation, Inc.
+# SPDX-FileCopyrightText: 2026 Philip Withnall
 # Authors: Philip Withnall <pwithnall@gnome.org>
 
-libgnomesoftware_tests = {
-  'app-permissions': {},
-  'css': {},
-  'utils': {},
+fwupd_tests = {
+  'fwupd': {},
 }
 
 test_env = environment()
 test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
 test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
-test_deps = [libgnomesoftware_dep]
-test_cargs = ['-DTESTDATADIR="' + join_paths(meson.project_source_root(), 'data') + '"']
-test_cpp_args = ['-DG_LOG_DOMAIN="libgnomesoftware"']
+test_deps = [plugin_libs, fwupd]
+test_cargs = [
+  '-DLOCALPLUGINDIR="' + meson.current_build_dir() + '/../"',
+  '-DTESTDATADIR="' + join_paths(meson.project_source_root(), 'data') + '"',
+]
+test_cpp_args = ['-DG_LOG_DOMAIN="fwupd"']
 
-foreach test_name, extra_args : libgnomesoftware_tests
+foreach test_name, extra_args : fwupd_tests
   source = extra_args.get('source', test_name + '.c')
 
   if installed_tests_enabled
@@ -46,6 +47,7 @@ foreach test_name, extra_args : libgnomesoftware_tests
     protocol: 'tap',
     env: test_env,
     timeout: 30,
-    suite: ['libgnomesoftware'],
+    depends: [compiled_schemas, gs_plugin_fwupd],
+    suite: ['plugins', 'fwupd'],
   )
 endforeach

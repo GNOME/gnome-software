@@ -62,7 +62,7 @@ main (int argc, char **argv)
 	};
 
 	gs_test_init (&argc, &argv);
-	g_setenv ("GS_SELF_TEST_DUMMY_ENABLE", "1", TRUE);
+	g_setenv ("GS_TEST_DUMMY_ENABLE", "1", TRUE);
 
 	xml = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"
@@ -79,13 +79,13 @@ main (int argc, char **argv)
 		"    <scope>system</scope>\n"
 		"  </info>\n"
 		"</components>\n");
-	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
+	g_setenv ("GS_TEST_APPSTREAM_XML", xml, TRUE);
 
 	/* Use a common cache directory for all tests, since the appstream
 	 * plugin uses it and cannot be reinitialised for each test. */
 	tmp_root = g_dir_make_tmp ("gnome-software-modalias-test-XXXXXX", NULL);
 	g_assert (tmp_root != NULL);
-	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
+	g_setenv ("GS_TEST_CACHEDIR", tmp_root, TRUE);
 
 	/* we can only load this once per process */
 	plugin_loader = gs_plugin_loader_new (NULL, NULL);

@@ -94,7 +94,7 @@ GsApp		*gs_plugin_loader_get_system_app_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 GsOdrsProvider	*gs_plugin_loader_get_odrs_provider	(GsPluginLoader	*plugin_loader);
 
-/* only useful from the self tests */
+/* only useful from the tests */
 void		 gs_plugin_loader_clear_caches		(GsPluginLoader	*plugin_loader);
 GsPlugin	*gs_plugin_loader_find_plugin		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);

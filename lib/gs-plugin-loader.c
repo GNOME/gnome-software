@@ -999,7 +999,7 @@ gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
  * @plugin_loader: A #GsPluginLoader
  *
  * Removes all plugin events from the loader. This function should only be
- * called from the self tests.
+ * called from the tests.
  **/
 void
 gs_plugin_loader_remove_events (GsPluginLoader *plugin_loader)
@@ -1209,7 +1209,7 @@ gs_plugin_loader_repository_changed_cb (GsPlugin *plugin,
 {
 	GApplication *application = g_application_get_default ();
 
-	/* Can be NULL when running the self tests */
+	/* Can be NULL when running the tests */
 	if (application) {
 		g_signal_emit_by_name (application,
 			"repository-changed",

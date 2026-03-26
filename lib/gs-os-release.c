@@ -72,7 +72,7 @@ gs_os_release_initable_init (GInitable *initable,
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
 	/* get contents */
-	filename = g_getenv ("GS_SELF_TEST_OS_RELEASE_FILENAME");
+	filename = g_getenv ("GS_TEST_OS_RELEASE_FILENAME");
 	if (filename == NULL) {
 		filename = "/etc/os-release";
 		if (!g_file_test (filename, G_FILE_TEST_EXISTS))

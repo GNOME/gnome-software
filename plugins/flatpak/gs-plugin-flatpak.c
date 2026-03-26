@@ -128,8 +128,8 @@ gs_plugin_flatpak_init (GsPluginFlatpak *self)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "rpm-ostree");
 
-	/* used for self tests */
-	self->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
+	/* used for tests */
+	self->destdir_for_tests = g_getenv ("GS_TEST_FLATPAK_DATADIR");
 
 	g_signal_connect (self, "notify::cpu-priority",
 			  G_CALLBACK (notify_cpu_priority_cb), NULL);
@@ -1862,7 +1862,7 @@ gs_plugin_flatpak_ensure_scope (GsPlugin *plugin,
 			gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
 		}
 		if (self->destdir_for_tests != NULL) {
-			g_debug ("in self tests, using user");
+			g_debug ("in tests, using user");
 			gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
 		}
 	}

@@ -1211,31 +1211,12 @@ invoke_plugin_loader_refresh_metadata_assert_no_error (GsPluginLoader *plugin_lo
 }
 
 static GsAppList *
-invoke_plugin_loader_list_upgrades_assert_no_error (GsPluginLoader *plugin_loader)
-{
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-	GsAppList *list;
-	g_autoptr(GError) error = NULL;
-
-	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
-	                                                     GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
-	gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
-	list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
-	gs_test_flush_main_context ();
-
-	g_assert_no_error (error);
-	g_assert_nonnull (list);
-
-	gs_app_list_sort (list, (GsAppListSortFunc) compare_apps_by_name, NULL);
-	return g_steal_pointer (&list);
-}
-
-static GsAppList *
 invoke_plugin_loader_list_apps_for_update_assert_no_error (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsAppQuery) query = NULL;
 	GsAppList *list;
+	g_autoptr(GsAppList) list_copy = NULL;
 	g_autoptr(GError) error = NULL;
 
 	query = gs_app_query_new ("is-for-update", GS_APP_QUERY_TRISTATE_TRUE,
@@ -1249,8 +1230,9 @@ invoke_plugin_loader_list_apps_for_update_assert_no_error (GsPluginLoader *plugi
 	g_assert_no_error (error);
 	g_assert_nonnull (list);
 
-	gs_app_list_sort (list, (GsAppListSortFunc) compare_apps_by_name, NULL);
-	return g_steal_pointer (&list);
+	list_copy = gs_app_list_copy (list);
+	gs_app_list_sort (list_copy, (GsAppListSortFunc) compare_apps_by_name, NULL);
+	return g_steal_pointer (&list_copy);
 }
 
 /**
@@ -1293,21 +1275,6 @@ invoke_plugin_loader_upgrade_trigger_end_assert_no_error (RunPluginJobActionData
 	g_slice_free (RunPluginJobActionData, data);
 }
 
-static void
-invoke_plugin_loader_upgrade_trigger_end_assert_error (RunPluginJobActionData *data,
-                                                       GQuark                  domain,
-                                                       gint                    code)
-{
-	g_clear_pointer (&data->plugin_thread, g_thread_join);
-
-	g_assert_error (data->error, domain, code);
-	g_assert_false (data->ret);
-
-	g_clear_error (&data->error);
-	g_clear_pointer (&data->plugin_job, g_object_unref);
-	g_slice_free (RunPluginJobActionData, data);
-}
-
 static RunPluginJobActionData *
 invoke_plugin_loader_update_apps_begin (GsPluginLoader *plugin_loader,
                                         GsAppList      *list_updates)
@@ -1331,14 +1298,6 @@ static void
 invoke_plugin_loader_update_apps_end_assert_no_error (RunPluginJobActionData *data)
 {
 	invoke_plugin_loader_upgrade_trigger_end_assert_no_error (data);
-}
-
-static void
-invoke_plugin_loader_update_apps_end_assert_error (RunPluginJobActionData *data,
-                                                   GQuark                  domain,
-                                                   gint                    code)
-{
-	invoke_plugin_loader_upgrade_trigger_end_assert_error (data, domain, code);
 }
 
 /* Checks that the plugin is enabled. If it isn't, it could be because the
@@ -1371,11 +1330,20 @@ gs_plugin_systemd_sysupdate_distro_upgrade_func (TestData *test_data)
 
 	mock_sysupdated_registrar_init (&registrar, test_data->web_port, &test_data->handle, targets);
 	{
-		g_autoptr(GsAppList) list_upgrades = NULL;
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		GsAppList *list_upgrades;
+		g_autoptr(GError) error = NULL;
 
 		invoke_plugin_loader_refresh_metadata_assert_no_error (plugin_loader);
-		list_upgrades = invoke_plugin_loader_list_upgrades_assert_no_error (plugin_loader);
-		g_assert_cmpint (gs_app_list_length (list_upgrades), ==, 0);
+
+		plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
+			                                             GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE);
+		gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+		list_upgrades = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
+		gs_test_flush_main_context ();
+
+		g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED);
+		g_assert_null (list_upgrades);
 	}
 }
 
@@ -1589,9 +1557,15 @@ gs_plugin_systemd_sysupdate_app_update_cancellable_func (TestData *test_data)
 			/* emit `job_status` = -1 as what real service returns */
 			mock_sysupdated_emit_signal_job_removed (&test_data->handle, -1);
 
-			invoke_plugin_loader_update_apps_end_assert_error (g_steal_pointer (&data),
-			                                                   G_IO_ERROR,
-			                                                   G_IO_ERROR_CANCELLED);
+			g_clear_pointer (&data->plugin_thread, g_thread_join);
+
+			g_assert_true (g_error_matches (data->error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+				       g_error_matches (data->error, G_IO_ERROR, G_IO_ERROR_CANCELLED));
+			g_assert_false (data->ret);
+
+			g_clear_error (&data->error);
+			g_clear_pointer (&data->plugin_job, g_object_unref);
+			g_slice_free (RunPluginJobActionData, data);
 		}
 
 		for (guint i = 0; i < gs_app_list_length (list_updates); i++) {

@@ -35,7 +35,7 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	const gchar *keywords[2] = { NULL, };
 
 	/* drop all caches */
-	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
+	gs_utils_rmtree (g_getenv ("GS_TEST_CACHEDIR"), NULL);
 	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* force this app to be installed */
@@ -76,7 +76,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 
 	/* drop all caches */
-	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
+	gs_utils_rmtree (g_getenv ("GS_TEST_CACHEDIR"), NULL);
 	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* refine system application */
@@ -131,7 +131,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	GsAppList *result_list_wildcard;
 
 	/* drop all caches */
-	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
+	gs_utils_rmtree (g_getenv ("GS_TEST_CACHEDIR"), NULL);
 	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* create a list with generic apps */
@@ -221,11 +221,11 @@ main (int argc, char **argv)
 	 * plugin uses it and cannot be reinitialised for each test. */
 	tmp_root = g_dir_make_tmp ("gnome-software-core-test-XXXXXX", NULL);
 	g_assert_nonnull (tmp_root);
-	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
+	g_setenv ("GS_TEST_CACHEDIR", tmp_root, TRUE);
 
-	os_release_filename = gs_test_get_filename (TESTDATADIR, "os-release");
+	os_release_filename = g_test_build_filename (G_TEST_DIST, "os-release", NULL);
 	g_assert_nonnull (os_release_filename);
-	g_setenv ("GS_SELF_TEST_OS_RELEASE_FILENAME", os_release_filename, TRUE);
+	g_setenv ("GS_TEST_OS_RELEASE_FILENAME", os_release_filename, TRUE);
 
 	/* fake some data */
 	xml = "<?xml version=\"1.0\"?>\n"
@@ -247,7 +247,7 @@ main (int argc, char **argv)
 		"    <scope>user</scope>\n"
 		"  </info>\n"
 		"</components>\n";
-	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
+	g_setenv ("GS_TEST_APPSTREAM_XML", xml, TRUE);
 
 	/* we can only load this once per process */
 	plugin_loader = gs_plugin_loader_new (NULL, NULL);

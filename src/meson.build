@@ -43,7 +43,6 @@ gnome_software_sources = [
   'gs-category-tile.c',
   'gs-common.c',
   'gs-context-dialog-row.c',
-  'gs-css.c',
   'gs-description-box.c',
   'gs-details-page.c',
   'gs-extras-page.c',
@@ -326,38 +325,3 @@ configure_file(
   install_dir: join_paths(get_option('datadir'), 'dbus-1', 'services'),
   configuration: cdata
 )
-
-if get_option('tests')
-  test_env = environment()
-  test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
-  test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-
-  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', 'data') + '"']
-  e = executable(
-    'gs-self-test-src',
-    compiled_schemas,
-    sources: [
-      'gs-css.c',
-      'gs-common.c',
-      'gs-self-test.c',
-    ],
-    include_directories: [
-      include_directories('..'),
-      include_directories('../lib'),
-    ],
-    dependencies: [
-      appstream,
-      gio_unix,
-      glib,
-      gmodule,
-      gtk,
-      json_glib,
-      libadwaita,
-      libgnomesoftware_dep,
-      libm,
-      libsoup,
-    ],
-    c_args: cargs
-  )
-  test('gs-self-test-src', e, suite: ['plugins', 'src'], env: test_env)
-endif

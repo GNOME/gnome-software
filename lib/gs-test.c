@@ -26,19 +26,35 @@ gs_test_init (gint *pargc,
 	      gchar ***pargv)
 {
 	g_autoptr(GSettings) settings = NULL;
+	const char * const *system_data_dirs = NULL;
+	g_autoptr(GStrvBuilder) builder = g_strv_builder_new ();
+	g_auto(GStrv) schema_dirs = NULL;
+	g_autofree char *schema_dir = NULL;
 
 	setlocale (LC_ALL, "");
 
 	g_setenv ("GSETTINGS_BACKEND", "memory", FALSE);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
-	/* To not download ODRS data during the test */
-	settings = g_settings_new ("org.gnome.software");
-	g_settings_set_string (settings, "review-server", "");
+	/* Override the GSettings schema directory before calling g_test_init()
+	 * so that we retain access to the system GSettings schemas, for things
+	 * like proxy information. */
+	g_strv_builder_take (builder, g_build_filename (g_getenv ("G_TEST_BUILDDIR"), "..", "..", "data", NULL));
+	g_strv_builder_take (builder, g_build_filename (g_getenv ("G_TEST_BUILDDIR"), "..", "..", "..", "data", NULL));
+	system_data_dirs = g_get_system_data_dirs ();
+	for (size_t i = 0; system_data_dirs[i] != NULL; i++)
+		g_strv_builder_take (builder, g_build_filename (system_data_dirs[i], "glib-2.0", "schemas", NULL));
+	schema_dirs = g_strv_builder_end (builder);
+	schema_dir = g_strjoinv (":", schema_dirs);
+	g_setenv ("GSETTINGS_SCHEMA_DIR", schema_dir, TRUE);
 
 	g_test_init (pargc, pargv,
 		     G_TEST_OPTION_ISOLATE_DIRS,
 		     NULL);
+
+	/* To not download ODRS data during the test */
+	settings = g_settings_new ("org.gnome.software");
+	g_settings_set_string (settings, "review-server", "");
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
@@ -74,7 +90,7 @@ gs_test_flush_main_context (void)
 /**
  * gs_test_expose_icon_theme_paths:
  *
- * Calculate and set the `GS_SELF_TEST_ICON_THEME_PATH` environment variable
+ * Calculate and set the `GS_TEST_ICON_THEME_PATH` environment variable
  * to include the current system icon theme paths. This is designed to be called
  * before calling `gs_test_init()`, which will clear the system icon theme paths.
  *
@@ -101,7 +117,7 @@ gs_test_expose_icon_theme_paths (void)
 					(data_dirs_str->len > 0) ? ":" : "",
 					data_dirs[i]);
 	data_dirs_joined = g_string_free (g_steal_pointer (&data_dirs_str), FALSE);
-	g_setenv ("GS_SELF_TEST_ICON_THEME_PATH", data_dirs_joined, TRUE);
+	g_setenv ("GS_TEST_ICON_THEME_PATH", data_dirs_joined, TRUE);
 
 	if (display) {
 		GtkIconTheme *default_theme;
@@ -114,7 +130,7 @@ gs_test_expose_icon_theme_paths (void)
  * gs_test_reinitialise_plugin_loader:
  * @plugin_loader: a #GsPluginLoader
  *
- * Calls setup on each plugin. This should only be used from the self tests
+ * Calls setup on each plugin. This should only be used from the tests
  * and in a controlled way.
  *
  * Since: 42
