@@ -41,7 +41,7 @@ test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
 test_deps = [
   plugin_libs,
-  dependency('glib-testing-0', fallback: ['libglib-testing', 'libglib_testing_dep']),
+  libglib_testing,
 ]
 test_cargs = [
   '-DLOCALPLUGINDIR="' + meson.current_build_dir() + '/../"',

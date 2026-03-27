@@ -160,6 +160,10 @@ libadwaita = dependency('libadwaita-1',
     'vapi=false',
   ]
 )
+libglib_testing = dependency('glib-testing-0',
+  version: '>= 0.2.0',
+  fallback: ['libglib-testing', 'libglib_testing_dep'],
+)
 
 # This should be available in GLib 2.74
 if meson.get_compiler('c').has_header_symbol('glib.h', 'G_FORMAT_SIZE_ONLY_VALUE', dependencies: glib)
