@@ -163,6 +163,7 @@ libadwaita = dependency('libadwaita-1',
 libglib_testing = dependency('glib-testing-0',
   version: '>= 0.2.0',
   fallback: ['libglib-testing', 'libglib_testing_dep'],
+  required: get_option('webapps') or get_option('systemd-sysupdate'),
 )
 
 # This should be available in GLib 2.74
