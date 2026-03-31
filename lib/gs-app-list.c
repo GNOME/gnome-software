@@ -135,20 +135,36 @@ gs_app_list_add_watched_for_app (GsAppList *list, GPtrArray *apps, GsApp *app)
 static GPtrArray *
 gs_app_list_get_watched_for_app (GsAppList *list, GsApp *app)
 {
-	GPtrArray *apps = g_ptr_array_new ();
+	g_autoptr(GPtrArray) apps = NULL;
+
+	if (!(list->flags & (GS_APP_LIST_FLAG_WATCH_APPS |
+			     GS_APP_LIST_FLAG_WATCH_APPS_RELATED |
+			     GS_APP_LIST_FLAG_WATCH_APPS_ADDONS)))
+		return NULL;
+
+	apps = g_ptr_array_new ();
 	gs_app_list_add_watched_for_app (list, apps, app);
-	return apps;
+	return g_steal_pointer (&apps);
 }
 
 static GPtrArray *
 gs_app_list_get_watched (GsAppList *list)
 {
-	GPtrArray *apps = g_ptr_array_new ();
+	g_autoptr(GPtrArray) apps = NULL;
+
+	if (!(list->flags & (GS_APP_LIST_FLAG_WATCH_APPS |
+			     GS_APP_LIST_FLAG_WATCH_APPS_RELATED |
+			     GS_APP_LIST_FLAG_WATCH_APPS_ADDONS)))
+		return NULL;
+
+	apps = g_ptr_array_new ();
+
 	for (guint i = 0; i < list->array->len; i++) {
 		GsApp *app_tmp = g_ptr_array_index (list->array, i);
 		gs_app_list_add_watched_for_app (list, apps, app_tmp);
 	}
-	return apps;
+
+	return g_steal_pointer (&apps);
 }
 
 static void
@@ -158,7 +174,7 @@ gs_app_list_invalidate_progress (GsAppList *self)
 	g_autoptr(GPtrArray) apps = gs_app_list_get_watched (self);
 
 	/* find the average percentage complete of the list */
-	if (apps->len > 0) {
+	if (apps != NULL && apps->len > 0) {
 		guint64 pc_cnt = 0;
 		gboolean unknown_seen = FALSE;
 
@@ -200,7 +216,8 @@ static void
 gs_app_list_maybe_watch_app (GsAppList *list, GsApp *app)
 {
 	g_autoptr(GPtrArray) apps = gs_app_list_get_watched_for_app (list, app);
-	for (guint i = 0; i < apps->len; i++) {
+
+	for (guint i = 0; apps != NULL && i < apps->len; i++) {
 		GsApp *app_tmp = g_ptr_array_index (apps, i);
 		g_signal_connect_object (app_tmp, "notify::progress",
 					 G_CALLBACK (gs_app_list_progress_notify_cb),
@@ -215,7 +232,8 @@ static void
 gs_app_list_maybe_unwatch_app (GsAppList *list, GsApp *app)
 {
 	g_autoptr(GPtrArray) apps = gs_app_list_get_watched_for_app (list, app);
-	for (guint i = 0; i < apps->len; i++) {
+
+	for (guint i = 0; apps != NULL && i < apps->len; i++) {
 		GsApp *app_tmp = g_ptr_array_index (apps, i);
 		g_signal_handlers_disconnect_by_data (app_tmp, list);
 	}
