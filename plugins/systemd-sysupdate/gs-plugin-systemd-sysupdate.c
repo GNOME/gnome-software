@@ -2403,6 +2403,41 @@ gs_plugin_systemd_sysupdate_update_app_acquire_cb (GObject      *source_object,
 	                                                      &job_path,
 	                                                      result,
 	                                                      &local_error)) {
+
+
+		if (g_dbus_error_is_remote_error (local_error)) {
+			g_autofree gchar *error_name = NULL;
+
+			error_name = g_dbus_error_get_remote_error (local_error);
+
+			if (g_str_equal (error_name, "org.freedesktop.sysupdate1.NoCandidate")) {
+				gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+				gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
+
+				if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+					GDBusCallFlags call_flags = G_DBUS_CALL_FLAGS_NONE;
+
+					if (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE) {
+						call_flags |= G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
+					}
+
+					gs_app_set_state (data->app, GS_APP_STATE_INSTALLING);
+
+					gs_systemd_sysupdate_target_call_install (data->target_proxy,
+										  "", /* left empty as the latest version */
+										  SYSUPDATED_TARGET_INSTALL_FLAGS_NONE,
+										  call_flags,
+										  SYSUPDATED_TARGET_INSTALL_TIMEOUT_MS,
+										  NULL, /* Makes the call explicitly non-cancellable so we can get the job path and cancel it correctly. */
+										  gs_plugin_systemd_sysupdate_update_app_install_cb,
+										  g_object_ref (task));
+
+				}
+
+				g_task_return_boolean (task, TRUE);
+				return;
+			}
+		}
 		gs_app_set_state_recover (data->app);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
@@ -2437,6 +2472,31 @@ gs_plugin_systemd_sysupdate_update_app_install_cb (GObject      *source_object,
 	                                                      &job_path,
 	                                                      result,
 	                                                      &local_error)) {
+		if (g_dbus_error_is_remote_error (local_error)) {
+			g_autofree gchar *error_name = NULL;
+
+			error_name = g_dbus_error_get_remote_error (local_error);
+
+			if (g_str_equal (error_name, "org.freedesktop.sysupdate1.NoCandidate")) {
+				const gchar *target_class = NULL;
+				gboolean target_is_host = FALSE;
+
+				target_class = gs_app_get_metadata_item (data->app, "SystemdSysupdated::Class");
+				target_is_host = g_strcmp0 (target_class, "host") == 0;
+
+				gs_app_set_progress (data->app, GS_APP_PROGRESS_UNKNOWN);
+				if (target_is_host) {
+					gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+					gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
+				} else {
+					gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
+				}
+
+				g_task_return_boolean (task, TRUE);
+				return;
+			}
+		}
+
 		gs_app_set_state_recover (data->app);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
