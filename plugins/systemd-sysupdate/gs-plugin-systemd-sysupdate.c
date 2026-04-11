@@ -2408,9 +2408,9 @@ gs_plugin_systemd_sysupdate_update_app_acquire_cb (GObject      *source_object,
 		if (g_dbus_error_is_remote_error (local_error)) {
 			g_autofree gchar *error_name = NULL;
 
-			error_name = g_dbus_error_get_remote_error(local_error);
+			error_name = g_dbus_error_get_remote_error (local_error);
 
-			if (g_str_equal(error_name, "org.freedesktop.sysupdate1.NoCandidate")) {
+			if (g_str_equal (error_name, "org.freedesktop.sysupdate1.NoCandidate")) {
 				gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
 				gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
 
@@ -2472,12 +2472,12 @@ gs_plugin_systemd_sysupdate_update_app_install_cb (GObject      *source_object,
 	                                                      &job_path,
 	                                                      result,
 	                                                      &local_error)) {
-		if (g_dbus_error_is_remote_error(local_error)) {
+		if (g_dbus_error_is_remote_error (local_error)) {
 			g_autofree gchar *error_name = NULL;
 
-			error_name = g_dbus_error_get_remote_error(local_error);
+			error_name = g_dbus_error_get_remote_error (local_error);
 
-			if (g_str_equal(error_name, "org.freedesktop.sysupdate1.NoCandidate")) {
+			if (g_str_equal (error_name, "org.freedesktop.sysupdate1.NoCandidate")) {
 				const gchar *target_class = NULL;
 				gboolean target_is_host = FALSE;
 
