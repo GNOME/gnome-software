@@ -409,6 +409,37 @@ gs_plugin_packagekit_dup_app_origin_repo (GsPluginPackagekit  *self,
 	return g_steal_pointer (&repo_app);
 }
 
+/*
+ * Ensure @helper stays alive at least as long as @client.
+ *
+ * PkClient stores the progress callback user_data as a raw pointer
+ * without taking a reference and may invoke the callback even after
+ * the async operation's GAsyncReadyCallback has run (e.g. during
+ * D-Bus proxy teardown or client finalization). Attaching a ref to
+ * the client via qdata guarantees the helper outlives all possible
+ * progress callback invocations — GObject clears qdata only in its
+ * own finalize, which runs after the PkClient subclass finalize.
+ */
+static void
+gs_pk_client_bind_helper (PkClient           *client,
+                          GsPackagekitHelper *helper)
+{
+	GPtrArray *helpers;
+
+	g_return_if_fail (PK_IS_CLIENT (client));
+	g_return_if_fail (GS_IS_PACKAGEKIT_HELPER (helper));
+
+	helpers = g_object_get_data (G_OBJECT (client), "gs-bound-helpers");
+	if (helpers == NULL) {
+		helpers = g_ptr_array_new_with_free_func (g_object_unref);
+		g_object_set_data_full (G_OBJECT (client),
+		                        "gs-bound-helpers",
+		                        helpers,
+		                        (GDestroyNotify) g_ptr_array_unref);
+	}
+	g_ptr_array_add (helpers, g_object_ref (helper));
+}
+
 typedef struct {
 	/* Input data. */
 	GsAppList *apps;  /* (owned) (not nullable) */
@@ -798,6 +829,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 	data->progress_data = gs_packagekit_helper_new (GS_PLUGIN (self));
 	task_install = gs_packagekit_task_new (GS_PLUGIN (self));
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, interactive);
+	gs_pk_client_bind_helper (PK_CLIENT (task_install), data->progress_data);
 
 	data->n_pending_install_ops = 1;  /* to track setup */
 
@@ -1152,6 +1184,7 @@ gs_plugin_packagekit_uninstall_apps_async (GsPlugin                           *p
 	data->progress_data = gs_packagekit_helper_new (GS_PLUGIN (self));
 	task_uninstall = gs_packagekit_task_new (GS_PLUGIN (self));
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_uninstall), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_pk_client_bind_helper (PK_CLIENT (task_uninstall), data->progress_data);
 
 	/* Update the app’s and its addons‘ states. */
 	for (guint i = 0; i < gs_app_list_length (data->apps_to_uninstall); i++) {
@@ -1639,6 +1672,7 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 
 	task_list_apps = gs_packagekit_task_new (plugin);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_list_apps), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_pk_client_bind_helper (PK_CLIENT (task_list_apps), helper);
 
 	if (provides_files != NULL) {
 		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
@@ -1876,6 +1910,7 @@ gs_plugin_packagekit_resolve_packages_with_filter_async (GsPluginPackagekit  *se
 	g_ptr_array_add (package_ids, NULL);
 
 	/* resolve them all at once */
+	gs_pk_client_bind_helper (client_refine, data_unowned->progress_data);
 	pk_client_resolve_async (client_refine,
 				 filter,
 				 (gchar **) package_ids->pdata,
@@ -2113,8 +2148,8 @@ refine_data_free (RefineData *data)
 	g_assert (data->completed);
 
 	g_clear_error (&data->error);
-	g_clear_pointer (&data->progress_datas, g_ptr_array_unref);
 	g_clear_object (&data->client_refine);
+	g_clear_pointer (&data->progress_datas, g_ptr_array_unref);
 	g_clear_object (&data->full_list);
 	g_clear_object (&data->resolve_list);
 	g_clear_object (&data->app_operating_system);
@@ -2128,7 +2163,10 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefineData, refine_data_free)
 
 /* Add @helper to the list of progress data closures to free when the
  * #RefineData is freed. This means it can be reliably used, 0 or more times,
- * by the async operation up until the operation is finished. */
+ * by the async operation up until the operation is finished.
+ *
+ * Also binds the helper's lifetime to the PkClient so that it cannot
+ * be freed before the client finishes invoking progress callbacks. */
 static GsPackagekitHelper *
 refine_task_add_progress_data (GTask              *refine_task,
                                GsPackagekitHelper *helper)
@@ -2136,6 +2174,7 @@ refine_task_add_progress_data (GTask              *refine_task,
 	RefineData *data = g_task_get_task_data (refine_task);
 
 	g_ptr_array_add (data->progress_datas, g_object_ref (helper));
+	gs_pk_client_bind_helper (data->client_refine, helper);
 
 	return helper;
 }
@@ -4883,6 +4922,7 @@ download_schedule_cb (GObject      *source_object,
 				  GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD,
 				  data->interactive);
 
+	gs_pk_client_bind_helper (PK_CLIENT (task_update), data->helper);
 	pk_client_get_updates_async (PK_CLIENT (task_update),
 				     pk_bitfield_value (PK_FILTER_ENUM_NONE),
 				     cancellable,
@@ -5233,6 +5273,7 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
 	pk_client_set_cache_age (PK_CLIENT (task_refresh), cache_age_secs);
 
 	/* refresh the metadata */
+	gs_pk_client_bind_helper (PK_CLIENT (task_refresh), helper);
 	pk_client_refresh_cache_async (PK_CLIENT (task_refresh),
 				       FALSE /* force */,
 				       cancellable,
