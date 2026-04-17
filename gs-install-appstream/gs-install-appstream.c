@@ -23,6 +23,7 @@
 #include "config.h"
 
 #include <errno.h>
+#include <fcntl.h>
 #include <locale.h>
 #include <pwd.h>
 #include <stdlib.h>
@@ -68,30 +69,43 @@ gs_install_appstream_move_file (GFile *file, GError **error)
 			  NULL, NULL, NULL, error))
 		return FALSE;
 
-	/* verify it is "-rw-r--r--" and the root owns the file */
-	if (g_stat (cachefn, &stat_buf)  == 0) {
-		struct passwd *pwd;
-		mode_t expected_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-		if ((stat_buf.st_mode & expected_mode) != expected_mode &&
-		     g_chmod (cachefn, expected_mode) == -1) {
-			int errn = errno;
-			g_debug ("Failed to chmod '%s': %s", cachefn, g_strerror (errn));
-		}
-
-		/* the file should be owned by the root */
-		pwd = getpwnam ("root");
-		if (pwd != NULL) {
-			if (chown (cachefn, pwd->pw_uid, pwd->pw_gid) == -1) {
+	/* verify it is "-rw-r--r--" and the root owns the file, using fd-based
+	 * operations to avoid TOCTOU races with symlink substitution */
+	{
+		int fd = open (cachefn, O_RDONLY | O_NOFOLLOW);
+		if (fd >= 0) {
+			struct passwd *pwd;
+			mode_t expected_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+			if (fstat (fd, &stat_buf) == 0) {
+				if (!S_ISREG (stat_buf.st_mode)) {
+					g_debug ("'%s' is not a regular file, skipping permissions", cachefn);
+					close (fd);
+					return TRUE;
+				}
+				if ((stat_buf.st_mode & expected_mode) != expected_mode &&
+				     fchmod (fd, expected_mode) == -1) {
+					int errn = errno;
+					g_debug ("Failed to fchmod '%s': %s", cachefn, g_strerror (errn));
+				}
+				pwd = getpwnam ("root");
+				if (pwd != NULL) {
+					if (fchown (fd, pwd->pw_uid, pwd->pw_gid) == -1) {
+						int errn = errno;
+						g_debug ("Failed to fchown on '%s': %s", cachefn, g_strerror (errn));
+					}
+				} else {
+					int errn = errno;
+					g_debug ("Failed to get root info: %s", g_strerror (errn));
+				}
+			} else {
 				int errn = errno;
-				g_debug ("Failed to chown on '%s': %s", cachefn, g_strerror (errn));
+				g_debug ("Failed to fstat '%s': %s", cachefn, g_strerror (errn));
 			}
+			close (fd);
 		} else {
 			int errn = errno;
-			g_debug ("Failed to get root info: %s", g_strerror (errn));
+			g_debug ("Failed to open '%s': %s", cachefn, g_strerror (errn));
 		}
-	} else {
-		int errn = errno;
-		g_debug ("Failed to stat '%s': %s", cachefn, g_strerror (errn));
 	}
 
 	return TRUE;
@@ -108,10 +122,10 @@ gs_install_appstream_check_content_type (GFile *file, GError **error)
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 	g_autoptr(XbSilo) silo = NULL;
 
-	/* check is correct type */
+	/* check is correct type (NOFOLLOW_SYMLINKS to prevent symlink-based TOCTOU) */
 	info = g_file_query_info (file,
 				  G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-				  G_FILE_QUERY_INFO_NONE,
+				  G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS,
 				  NULL, error);
 	if (info == NULL)
 		return FALSE;
