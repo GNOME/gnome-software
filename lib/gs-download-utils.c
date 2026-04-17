@@ -913,7 +913,7 @@ gs_download_rewrite_resource_async (const gchar         *resource,
 					return;
 				}
 				cachefn = g_strdup (unprefixed_uri);
-			} else {
+			} else if (g_str_has_prefix (unprefixed_uri, "https://")) {
 				/* get cache location */
 				cachefn = gs_utils_get_cache_filename ("cssresource", unprefixed_uri,
 								       GS_UTILS_CACHE_FLAG_WRITEABLE |
@@ -941,6 +941,10 @@ gs_download_rewrite_resource_async (const gchar         *resource,
 								cancellable,
 								download_rewrite_cb, g_object_ref (task));
 				}
+			} else {
+				g_debug ("Rejecting non-HTTPS CSS resource URI: %s", uri);
+				start = 0;
+				continue;
 			}
 
 			g_string_append_printf (data->rewritten_resource, "'file://%s'", cachefn);
