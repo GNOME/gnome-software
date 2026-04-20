@@ -510,9 +510,15 @@ refine_app (GsPluginEpiphany           *self,
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
 	gs_app_set_launchable (app, AS_LAUNCHABLE_KIND_URL, url);
 
-	installed_app_id = g_hash_table_lookup (self->url_id_map, url);
-	if (installed_app_id) {
-		gs_app_set_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID, installed_app_id);
+	/* Check if the app already has a desktop ID set (e.g. for installed
+	 * apps with duplicate URLs where the url_id_map cannot hold both).
+	 * Fall back to the url_id_map for apps coming from AppStream data.
+	 */
+	installed_app_id = gs_app_get_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
+	if (installed_app_id == NULL) {
+		installed_app_id = g_hash_table_lookup (self->url_id_map, url);
+		if (installed_app_id)
+			gs_app_set_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID, installed_app_id);
 	}
 
 	/* Hard-code the licenses as it's hard to get them programmatically. We
@@ -764,11 +770,20 @@ ensure_installed_apps_cache_get_installed_apps_cb (GObject      *obj,
 			continue;
 		}
 
-		/* Store the installed app id for use in refine_app() */
-		g_hash_table_insert (self->url_id_map, g_strdup (url),
-				     g_strdup (desktop_file_id));
+		/* Store the installed app id for use in refine_app().
+		 * Only store the first mapping for a given URL; if there are
+		 * multiple web apps with the same URL (e.g. two PWAs pointing
+		 * at the same domain), each subsequent one will use the
+		 * Epiphany desktop file ID as its app ID instead.
+		 */
+		if (!g_hash_table_contains (self->url_id_map, url)) {
+			g_hash_table_insert (self->url_id_map, g_strdup (url),
+					     g_strdup (desktop_file_id));
+			metainfo_app_id = generate_app_id_for_url (url);
+		} else {
+			metainfo_app_id = g_strdup (desktop_file_id);
+		}
 
-		metainfo_app_id = generate_app_id_for_url (url);
 		g_debug ("Creating GsApp for webapp with URL %s using app ID %s (desktop file id: %s)",
 			 url, metainfo_app_id, desktop_file_id);
 
@@ -776,6 +791,12 @@ ensure_installed_apps_cache_get_installed_apps_cb (GObject      *obj,
 		app = gs_epiphany_create_app (self, metainfo_app_id);
 
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
+		/* Set the desktop file ID directly on the app so that
+		 * refine_app() can find it even for apps whose URL is not
+		 * in the url_id_map (i.e. duplicate-URL apps).
+		 */
+		gs_app_set_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID, desktop_file_id);
 
 		require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON |
 			        GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE |
