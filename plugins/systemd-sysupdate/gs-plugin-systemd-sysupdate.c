@@ -11,6 +11,7 @@
 #include <gio/gio.h>
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <json-glib/json-glib.h>
 #include <malloc.h>
 #include <xmlb.h>
 
@@ -45,7 +46,7 @@
 #define SYSUPDATED_JOB_CANCEL_TIMEOUT_MS (1000)
 #define SYSUPDATED_MANAGER_LIST_TARGET_TIMEOUT_MS (1000)
 #define SYSUPDATED_TARGET_CHECK_NEW_TIMEOUT_MS (10000)
-#define SYSUPDATED_TARGET_DESCRIBE_TIMEOUT_MS (1000)
+#define SYSUPDATED_TARGET_DESCRIBE_TIMEOUT_MS (10000)
 #define SYSUPDATED_TARGET_GET_APP_STREAM_TIMEOUT_MS (1000)
 #define SYSUPDATED_TARGET_GET_VERSION_TIMEOUT_MS (1000)
 #define SYSUPDATED_TARGET_ACQUIRE_TIMEOUT_MS (-1)
@@ -62,6 +63,10 @@
 typedef struct {
 	GsSystemdSysupdateTarget *proxy;
 	gboolean is_valid;
+	gboolean is_installed;
+	gboolean is_pending;
+	gboolean is_partial;
+	gboolean is_incomplete;
 	gchar *id; /* (owned) (not nullable) */
 	gchar *class; /* (owned) (not nullable) */
 	gchar *name; /* (owned) (not nullable) */
@@ -115,21 +120,21 @@ target_item_get_id (TargetItem *target)
 }
 
 static gboolean
-target_item_is_available (TargetItem *target)
+target_item_is_pending (TargetItem *target)
 {
-	return target->latest_version != NULL;
+	return target->is_installed && target->is_pending && !target->is_partial && !target->is_incomplete;
 }
 
 static gboolean
 target_item_is_installed (TargetItem *target)
 {
-	return target->current_version != NULL;
+	return target->is_installed && !target->is_pending && !target->is_partial && !target->is_incomplete;
 }
 
 static gboolean
 target_item_is_updatable (TargetItem *target)
 {
-	return target_item_is_available (target) && target_item_is_installed (target);
+	return target->is_pending || target->is_incomplete || target->is_partial || !target->is_installed;
 }
 
 static gboolean
@@ -596,6 +601,11 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_check_new_cb (GObject      *
                                                                   GAsyncResult *result,
                                                                   gpointer      user_data);
 
+static void
+gs_plugin_systemd_sysupdate_target_refresh_metadata_describe_cb (GObject      *source_object,
+								 GAsyncResult *result,
+								 gpointer      user_data);
+
 static gboolean
 gs_plugin_systemd_sysupdate_target_refresh_metadata_finish (GsPlugin      *plugin,
                                                             GAsyncResult  *result,
@@ -833,10 +843,16 @@ update_app_for_target (GsPluginSystemdSysupdate *self,
 {
 	const gchar *app_version = NULL;
 	GsAppState app_state = GS_APP_STATE_UNKNOWN;
+	GsSizeType size_type = GS_SIZE_TYPE_UNKNOWN;
 
-	if (target_item_is_updatable (target)) {
+	if (target_item_is_pending (target)) {
 		app_version = target->latest_version;
 		app_state = GS_APP_STATE_UPDATABLE;
+		size_type = GS_SIZE_TYPE_VALID;
+	} else if (target_item_is_updatable (target)) {
+		app_version = target->latest_version;
+		app_state = GS_APP_STATE_UPDATABLE;
+		size_type = GS_SIZE_TYPE_UNKNOWABLE;
 	} else if (target_item_is_installed (target)) {
 		if (g_strcmp0 (target->class, "host") == 0) {
 			app_version = self->os_version;
@@ -844,10 +860,12 @@ update_app_for_target (GsPluginSystemdSysupdate *self,
 			app_version = target->current_version;
 		}
 		app_state = GS_APP_STATE_INSTALLED;
+		size_type = GS_SIZE_TYPE_VALID;
 	}
 
 	gs_app_set_version (app, app_version);
 	gs_app_set_state (app, app_state);
+	gs_app_set_size_download (app, size_type, 0);
 }
 
 /* Remove the given job. It is called when the server notified us a job
@@ -2015,9 +2033,9 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_check_new_cb (GObject      *
 	GsPluginSystemdSysupdateTargetRefreshMetadataData *data = NULL;
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
-	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
-	g_autoptr(GsApp) app = NULL;
 	g_autofree gchar *latest_version = NULL;
+	const gchar *version = NULL;
+	GCancellable *cancellable = g_task_get_cancellable (task);
 
 	/* currently, the returned result contains only one string
 	 * representing the latest version found in the server. However,
@@ -2038,6 +2056,72 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_check_new_cb (GObject      *
 	if (latest_version != NULL && *latest_version != '\0') {
 		data->target->latest_version = g_steal_pointer (&latest_version);
 	}
+
+	version = data->target->latest_version != NULL ? data->target->latest_version
+	                                         : data->target->current_version;
+
+	gs_systemd_sysupdate_target_call_describe (data->target->proxy,
+	                                           version,
+	                                           SYSUPDATED_TARGET_DESCRIBE_FLAGS_NONE,
+	                                           G_DBUS_CALL_FLAGS_NONE,
+	                                           SYSUPDATED_TARGET_DESCRIBE_TIMEOUT_MS,
+	                                           cancellable,
+	                                           gs_plugin_systemd_sysupdate_target_refresh_metadata_describe_cb,
+	                                           g_steal_pointer (&task));
+}
+
+static void
+gs_plugin_systemd_sysupdate_target_refresh_metadata_describe_cb (GObject      *source_object,
+								 GAsyncResult *result,
+								 gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginSystemdSysupdateTargetRefreshMetadataData *data = g_task_get_task_data (task);
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginSystemdSysupdate *self = g_task_get_source_object (task);
+	g_autofree gchar *json = NULL;
+	g_autoptr(JsonParser) json_parser = NULL;
+	JsonNode *json_root;
+	JsonObject *json_item;
+
+	if (!gs_systemd_sysupdate_target_call_describe_finish (GS_SYSTEMD_SYSUPDATE_TARGET (source_object),
+	                                                       &json,
+	                                                       result,
+	                                                       &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	json_parser = json_parser_new_immutable ();
+	if (!json_parser_load_from_data (json_parser, json, -1, &local_error)) {
+		g_task_return_new_error (task, G_IO_ERROR, GS_PLUGIN_ERROR_FAILED,
+		                         "json from describe call for target %s has no root: %s", target_item_get_id (data->target), local_error->message);
+		return;
+	}
+
+	json_root = json_parser_get_root (json_parser);
+	if (json_root == NULL) {
+		g_task_return_new_error (task, G_IO_ERROR, GS_PLUGIN_ERROR_FAILED,
+		                         "json from describe call for target %s has no root", target_item_get_id (data->target));
+		return;
+	}
+	if (json_node_get_node_type (json_root) != JSON_NODE_OBJECT) {
+		g_task_return_new_error (task, G_IO_ERROR, GS_PLUGIN_ERROR_FAILED,
+		                         "json from describe call for target %s is not an object", target_item_get_id (data->target));
+		return;
+	}
+	json_item = json_node_get_object (json_root);
+	if (json_item == NULL) {
+		g_task_return_new_error (task, G_IO_ERROR, GS_PLUGIN_ERROR_FAILED,
+		                         "json from describe call for target %s is not an object", target_item_get_id (data->target));
+		return;
+	}
+
+	data->target->is_installed = json_object_get_boolean_member_with_default (json_item, "installed", false);
+	data->target->is_pending = json_object_get_boolean_member_with_default (json_item, "pending", false);
+	data->target->is_partial = json_object_get_boolean_member_with_default (json_item, "partial", false);
+	data->target->is_incomplete = json_object_get_boolean_member_with_default (json_item, "incomplete", false);
 
 	/* update app state base on the target's new version */
 	app = get_or_create_app_for_target (self, data->target, &local_error);
