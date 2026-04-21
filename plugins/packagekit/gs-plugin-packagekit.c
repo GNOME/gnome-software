@@ -5399,10 +5399,9 @@ gs_plugin_packagekit_trigger_upgrade_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static void gs_packagekit_get_offline_update_state_thread (GTask        *task,
-                                                           gpointer      source_object,
-                                                           gpointer      task_data,
-                                                           GCancellable *cancellable);
+static void gs_packagekit_get_offline_update_state_ready_cb (GObject      *source_object,
+                                                             GAsyncResult *result,
+                                                             gpointer      user_data);
 
 static void
 gs_plugin_packagekit_get_offline_update_state_async (GsPlugin                          *plugin,
@@ -5416,25 +5415,59 @@ gs_plugin_packagekit_get_offline_update_state_async (GsPlugin                   
 	task = gs_plugin_get_offline_update_state_data_new_task (plugin, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_get_offline_update_state_async);
 
-	/* There is no async API in the pk-offline, thus run in a thread;
-	   see https://github.com/PackageKit/PackageKit/issues/605 */
-	g_task_run_in_thread (task, gs_packagekit_get_offline_update_state_thread);
+	g_dbus_connection_call (gs_plugin_get_system_bus_connection (plugin),
+				"org.freedesktop.PackageKit",
+				"/org/freedesktop/PackageKit",
+				"org.freedesktop.DBus.Properties",
+				"GetAll",
+				g_variant_new ("(s)", "org.freedesktop.PackageKit.Offline"),
+				G_VARIANT_TYPE ("(a{sv})"),
+				G_DBUS_CALL_FLAGS_NONE,
+				/* use short timeout, to not wait for a response for long,
+				   as this is blocking gnome-shell's endSessionDialog open */
+				1000,
+				cancellable,
+				gs_packagekit_get_offline_update_state_ready_cb,
+				g_steal_pointer (&task));
 }
 
 static void
-gs_packagekit_get_offline_update_state_thread (GTask        *task,
-                                               gpointer      source_object,
-                                               gpointer      task_data,
-                                               GCancellable *cancellable)
+gs_packagekit_get_offline_update_state_ready_cb (GObject      *source_object,
+                                                 GAsyncResult *async_result,
+                                                 gpointer      user_data)
 {
-	PkOfflineAction action;
-	gboolean has_prepared;
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GVariant) result = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	action = pk_offline_get_action (NULL);
-	/* it can be prepared, but not scheduled, thus check the action */
-	has_prepared = action == PK_OFFLINE_ACTION_REBOOT || action == PK_OFFLINE_ACTION_POWER_OFF;
+	result = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source_object), async_result, &local_error);
 
-	g_task_return_int (task, has_prepared ? GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED : GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE);
+	if (result != NULL) {
+		GsPluginOfflineUpdateState state = GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE;
+		g_autoptr(GVariant) properties = NULL;
+		gboolean update_prepared = FALSE, upgrade_prepared = FALSE;
+		gboolean update_triggered = FALSE, upgrade_triggered = FALSE;
+
+		properties = g_variant_get_child_value (result, 0);  /* get the a{sv} out of the tuple */
+
+		if (g_variant_lookup (properties, "UpdatePrepared", "b", &update_prepared) &&
+		    g_variant_lookup (properties, "UpdateTriggered", "b", &update_triggered) &&
+		    g_variant_lookup (properties, "UpgradePrepared", "b", &upgrade_prepared) &&
+		    g_variant_lookup (properties, "UpgradeTriggered", "b", &upgrade_triggered)) {
+			if (update_triggered || upgrade_triggered)
+				state = GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED;
+			else if (update_prepared || upgrade_prepared)
+				state = GS_PLUGIN_OFFLINE_UPDATE_STATE_PREPARED;
+
+			g_task_return_int (task, state);
+		} else {
+			g_task_return_new_error (task, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+						 "Failed to read expected properties from 'org.freedesktop.PackageKit.Offline'");
+		}
+	} else {
+		g_prefix_error_literal (&local_error, "Failed to get properties of 'org.freedesktop.PackageKit.Offline': ");
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	}
 }
 
 static gboolean
