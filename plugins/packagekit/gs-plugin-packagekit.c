@@ -5417,14 +5417,59 @@ gs_packagekit_get_offline_update_state_thread (GTask        *task,
                                                gpointer      task_data,
                                                GCancellable *cancellable)
 {
-	PkOfflineAction action;
-	gboolean has_prepared;
+	GsPluginOfflineUpdateState state = GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE;
+	g_autoptr(GVariant) result = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	action = pk_offline_get_action (NULL);
-	/* it can be prepared, but not scheduled, thus check the action */
-	has_prepared = action == PK_OFFLINE_ACTION_REBOOT || action == PK_OFFLINE_ACTION_POWER_OFF;
+	result = g_dbus_connection_call_sync (gs_plugin_get_system_bus_connection (GS_PLUGIN (source_object)),
+					      "org.freedesktop.PackageKit",
+					      "/org/freedesktop/PackageKit",
+					      "org.freedesktop.DBus.Properties",
+					      "GetAll",
+					      g_variant_new ("(s)", "org.freedesktop.PackageKit.Offline"),
+					      G_VARIANT_TYPE ("(a{sv})"),
+					      G_DBUS_CALL_FLAGS_NONE,
+					      1000,
+					      cancellable,
+					      &local_error);
+	if (result != NULL && g_variant_is_of_type (result, G_VARIANT_TYPE ("(a{sv})"))) {
+		g_autoptr(GVariantIter) iter = NULL;
+		guint32 found = 0;
+		gchar *key = NULL;
+		GVariant *value = NULL;
+		gboolean update_prepared = FALSE, upgrade_prepared = FALSE;
+		gboolean update_triggered = FALSE, upgrade_triggered = FALSE;
 
-	g_task_return_int (task, has_prepared ? GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED : GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE);
+		g_variant_get (result, "(a{sv})", &iter);
+
+		while (found != 0xf && g_variant_iter_next (iter, "{sv}", &key, &value)) {
+			if (g_strcmp0 (key, "UpdatePrepared") == 0) {
+				found |= 0x1;
+				update_prepared = g_variant_get_boolean (value);
+			} else if (g_strcmp0 (key, "UpdateTriggered") == 0) {
+				found |= 0x2;
+				update_triggered = g_variant_get_boolean (value);
+			} else if (g_strcmp0 (key, "UpgradePrepared") == 0) {
+				found |= 0x4;
+				upgrade_prepared = g_variant_get_boolean (value);
+			} else if (g_strcmp0 (key, "UpgradeTriggered") == 0) {
+				found |= 0x8;
+				upgrade_triggered = g_variant_get_boolean (value);
+			}
+
+			g_clear_pointer (&key, g_free);
+			g_clear_pointer (&value, g_variant_unref);
+		}
+
+		if (update_triggered || upgrade_triggered)
+			state = GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED;
+		else if (update_prepared || upgrade_prepared)
+			state = GS_PLUGIN_OFFLINE_UPDATE_STATE_PREPARED;
+	} else {
+		g_debug ("Failed to get properties of 'org.freedesktop.PackageKit.Offline': %s", local_error->message);
+	}
+
+	g_task_return_int (task, state);
 }
 
 static gboolean
