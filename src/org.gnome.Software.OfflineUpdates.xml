@@ -14,8 +14,9 @@
     <!--
     string GetState(void):
     Gets state of any offline updates. The returned values can be:
-    "none" - no offline update is scheduled
-    "scheduled" - an offline update is scheduled
+    "none" - no offline update is prepared nor scheduled
+    "prepared" - an offline update is prepared and can be scheduled by SetAction() method
+    "scheduled" - an offline update is scheduled for the next reboot
     -->
     <method name="GetState">
       <arg type="s" name="state" direction="out" />

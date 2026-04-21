@@ -319,6 +319,7 @@ typedef enum {
  * GsPluginOfflineUpdateState:
  * @GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE: No offline update is scheduled.
  * @GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED: There is scheduled an offline update.
+ * @GS_PLUGIN_OFFLINE_UPDATE_STATE_PREPARED: There is prepared an offline update, but not scheduled yet.
  *
  * State of an offline update.
  *
@@ -327,6 +328,7 @@ typedef enum {
 typedef enum {
 	GS_PLUGIN_OFFLINE_UPDATE_STATE_NONE = 0,
 	GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED = 1,
+	GS_PLUGIN_OFFLINE_UPDATE_STATE_PREPARED = 2,
 } GsPluginOfflineUpdateState;
 
 /**

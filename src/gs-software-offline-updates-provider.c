@@ -74,6 +74,9 @@ get_state_done_cb (GObject *source_object,
 		state = gs_plugin_job_get_offline_update_state_get_result (plugin_job);
 
 		switch (state) {
+		case GS_PLUGIN_OFFLINE_UPDATE_STATE_PREPARED:
+			state_str = "prepared";
+			break;
 		case GS_PLUGIN_OFFLINE_UPDATE_STATE_SCHEDULED:
 			state_str = "scheduled";
 			break;
