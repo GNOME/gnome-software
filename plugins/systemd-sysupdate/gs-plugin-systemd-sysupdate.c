@@ -847,11 +847,11 @@ update_app_for_target (GsPluginSystemdSysupdate *self,
 
 	if (target_item_is_pending (target)) {
 		app_version = target->latest_version;
-		app_state = GS_APP_STATE_UPDATABLE;
+		app_state = GS_APP_STATE_UPDATABLE_LIVE;
 		size_type = GS_SIZE_TYPE_VALID;
 	} else if (target_item_is_updatable (target)) {
 		app_version = target->latest_version;
-		app_state = GS_APP_STATE_UPDATABLE;
+		app_state = GS_APP_STATE_UPDATABLE_LIVE;
 		size_type = GS_SIZE_TYPE_UNKNOWABLE;
 	} else if (target_item_is_installed (target)) {
 		if (g_strcmp0 (target->class, "host") == 0) {
@@ -927,14 +927,14 @@ gs_plugin_systemd_sysupdate_remove_job_apply (GsPluginSystemdSysupdate *self,
 	 * the failure. */
 	if (job_status == 0 && job_is_acquire) {
 		/* Successful end of the Acquire() job */
-		gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+		gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE_LIVE);
 		gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
 	} else if (job_status == 0) {
 		/* Successful end of the Install() job */
 		gs_app_set_progress (data->app, GS_APP_PROGRESS_UNKNOWN);
 		/* The `host` target should have its state left as `updatable`. */
 		if (target_is_host) {
-			gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+			gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE_LIVE);
 			gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
 		} else {
 			gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
@@ -2495,7 +2495,7 @@ gs_plugin_systemd_sysupdate_update_app_acquire_cb (GObject      *source_object,
 			error_name = g_dbus_error_get_remote_error (local_error);
 
 			if (g_str_equal (error_name, "org.freedesktop.sysupdate1.NoCandidate")) {
-				gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+				gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE_LIVE);
 				gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
 
 				if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
@@ -2570,7 +2570,7 @@ gs_plugin_systemd_sysupdate_update_app_install_cb (GObject      *source_object,
 
 				gs_app_set_progress (data->app, GS_APP_PROGRESS_UNKNOWN);
 				if (target_is_host) {
-					gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE);
+					gs_app_set_state (data->app, GS_APP_STATE_UPDATABLE_LIVE);
 					gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
 				} else {
 					gs_app_set_state (data->app, GS_APP_STATE_INSTALLED);
@@ -2801,7 +2801,7 @@ gs_plugin_systemd_sysupdate_download_upgrade_async (GsPlugin                    
 		return;
 	}
 
-	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 	g_task_return_boolean (task, TRUE);
 }
 
