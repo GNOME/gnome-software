@@ -408,6 +408,25 @@ assert_refresh_metadata_no_error (BusFixture     *fixture,
 						       g_variant_new ("(s)",
 								      target->target_info.latest_version));
 
+		if (g_strcmp0 (target->target_info.latest_version, "") != 0) {
+			g_autoptr(GDBusMethodInvocation) describe_invocation = NULL;
+			uint64_t describe_flags;
+			const char *describe_version;
+
+			describe_invocation =
+				gt_dbus_queue_assert_pop_message (fixture->queue,
+								  target->target_info.object_path,
+								  "org.freedesktop.sysupdate1.Target",
+								  "Describe",
+								  "(st)",
+								  &describe_version,
+								  &describe_flags);
+			g_assert_cmpuint (describe_flags, ==, 0);
+			g_assert_cmpstr (describe_version, ==, target->target_info.latest_version);
+			g_dbus_method_invocation_return_value (describe_invocation,
+							       g_variant_new ("(s)", "{}"));
+		}
+
 		g_hash_table_remove (remaining_targets, target->target_info.object_path);
 	}
 
@@ -514,7 +533,7 @@ test_app_update_success (BusFixture *fixture,
 	assert_list_apps_for_update_no_error (fixture, &updates_list);
 	g_assert_cmpuint (gs_app_list_length (updates_list), ==, 1);
 	updatable_app = gs_app_list_index (updates_list, 0);
-	g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE);
+	g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE_LIVE);
 	g_assert_cmpuint (gs_app_get_progress (updatable_app), ==, GS_APP_PROGRESS_UNKNOWN);
 
 	/* Now update the app, asynchronously so we can inject the mock D-Bus
@@ -846,7 +865,7 @@ test_app_update_failure (BusFixture *fixture,
 		assert_list_apps_for_update_no_error (fixture, &updates_list);
 		g_assert_cmpuint (gs_app_list_length (updates_list), ==, 1);
 		updatable_app = gs_app_list_index (updates_list, 0);
-		g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE);
+		g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE_LIVE);
 		g_assert_cmpuint (gs_app_get_progress (updatable_app), ==, GS_APP_PROGRESS_UNKNOWN);
 
 		/* There should be no events on the plugin loader yet. */
@@ -1012,7 +1031,7 @@ finished:
 		g_assert_no_error (local_error);
 
 		/* Check that the app state reflects the error */
-		g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE);
+		g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE_LIVE);
 
 		/* And check that an event was emitted about the error */
 		events = gs_plugin_loader_get_events (fixture->plugin_loader);
@@ -1073,7 +1092,7 @@ test_app_update_cancellation (BusFixture *fixture,
 		assert_list_apps_for_update_no_error (fixture, &updates_list);
 		g_assert_cmpuint (gs_app_list_length (updates_list), ==, 1);
 		updatable_app = gs_app_list_index (updates_list, 0);
-		g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE);
+		g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE_LIVE);
 		g_assert_cmpuint (gs_app_get_progress (updatable_app), ==, GS_APP_PROGRESS_UNKNOWN);
 
 		/* Now update the app, asynchronously so we can inject the mock D-Bus
@@ -1256,7 +1275,7 @@ assert_cancelled:
 		g_assert_error (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED);
 
 		/* Check that the app state reflects the error */
-		g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE);
+		g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE_LIVE);
 	}
 }
 
@@ -1293,7 +1312,7 @@ test_app_update_split (BusFixture *fixture,
 	assert_list_apps_for_update_no_error (fixture, &updates_list);
 	g_assert_cmpuint (gs_app_list_length (updates_list), ==, 1);
 	updatable_app = gs_app_list_index (updates_list, 0);
-	g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE);
+	g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE_LIVE);
 	g_assert_cmpuint (gs_app_get_progress (updatable_app), ==, GS_APP_PROGRESS_UNKNOWN);
 
 	/* Now update the app, asynchronously so we can inject the mock D-Bus
@@ -1404,7 +1423,7 @@ test_app_update_split (BusFixture *fixture,
 
 	/* Check that the app state changes on success */
 	gt_dbus_queue_assert_no_messages (fixture->queue);
-	g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE);
+	g_assert_cmpint (gs_app_get_state (updatable_app), ==, GS_APP_STATE_UPDATABLE_LIVE);
 	g_assert_cmpint (gs_app_get_size_download (updatable_app, &size_download), ==, GS_SIZE_TYPE_VALID);
 	g_assert_cmpuint (size_download, ==, 0);
 
