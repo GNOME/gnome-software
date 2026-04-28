@@ -251,7 +251,7 @@ split_changelogs (GsApp *owner_app,
 			has_empty_line = FALSE;
 		} else if (from[0] == ' ' && from[1] == ' ') {
 			/* next package */
-			const gchar *package_line = from + 2;
+			gchar *package_line = from + 2;
 			if (state == GS_APP_STATE_UPDATABLE) {
 				if (has_empty_line)
 					finish_app ();
