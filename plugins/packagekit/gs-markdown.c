@@ -264,10 +264,10 @@ gs_markdown_replace (const gchar *haystack,
 }
 
 static gchar *
-gs_markdown_strstr_spaces (const gchar *haystack, const gchar *needle)
+gs_markdown_strstr_spaces (gchar *haystack, const gchar *needle)
 {
 	gchar *found;
-	const gchar *haystack_new = haystack;
+	gchar *haystack_new = haystack;
 
 retry:
 	/* don't find if surrounded by spaces */
@@ -390,7 +390,7 @@ gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 {
 	GString *string;
 	gboolean mode = FALSE;
-	gchar *text;
+	const gchar *text;
 	guint i;
 	g_auto(GStrv) codes = NULL;
 
@@ -404,9 +404,8 @@ gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 	string = g_string_new ("");
 	for (i = 0; codes[i] != NULL; i++) {
 		if (!mode) {
-			text = gs_markdown_to_text_line_format_sections (self, codes[i]);
-			g_string_append (string, text);
-			g_free (text);
+			g_autofree gchar *tmp = gs_markdown_to_text_line_format_sections (self, codes[i]);
+			g_string_append (string, tmp);
 			mode = TRUE;
 		} else {
 			/* just append without formatting */

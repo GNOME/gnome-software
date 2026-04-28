@@ -68,7 +68,7 @@ gs_plugin_fedora_langpacks_dispose (GObject *object)
 
 static GsApp *
 find_langpack (GsPluginFedoraLangpacks  *self,
-               const gchar              *locale,
+               const gchar              *in_locale,
                GCancellable             *cancellable,
                GError                  **error)
 {
@@ -76,6 +76,7 @@ find_langpack (GsPluginFedoraLangpacks  *self,
 	const gchar *language_code;
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *langpack_pkgname = NULL;
+	g_autofree gchar *locale = g_strdup (in_locale);
 	g_auto(GStrv) language_region = NULL;
 	g_autoptr(GsApp) app = NULL;
 
