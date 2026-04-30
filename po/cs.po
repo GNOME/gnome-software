@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2025-08-21 13:34+0000\n"
-"PO-Revision-Date: 2025-08-21 17:02+0200\n"
+"POT-Creation-Date: 2026-01-16 12:46+0000\n"
+"PO-Revision-Date: 2026-04-30 13:32+0200\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.9\n"
 "X-Project-Style: gnome\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35 src/org.gnome.Software.desktop.in:2
@@ -66,7 +66,7 @@ msgid "The update details"
 msgstr "Podrobnosti o aktualizaci"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2825 src/gs-application.c:267
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2943 src/gs-application.c:269
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
 
@@ -788,15 +788,15 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "Balíček"
 
-#: src/gs-app-addon-row.c:93 src/gs-app-row.c:528
+#: src/gs-app-addon-row.c:93 src/gs-app-row.c:529
 msgid "Pending"
 msgstr "Čeká na zpracování"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:532 src/gs-details-page.c:393
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:533 src/gs-details-page.c:393
 msgid "Pending install"
 msgstr "Čeká na instalaci"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:536 src/gs-details-page.c:400
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:537 src/gs-details-page.c:400
 msgid "Pending remove"
 msgstr "Čeká na odebrání"
 
@@ -947,7 +947,7 @@ msgstr "Není k dispozici žádný popis aktualizace."
 msgid "Update Details"
 msgstr "Podrobnosti o aktualizaci"
 
-#: src/gs-app-details-page.ui:27 src/gs-app-row.c:591
+#: src/gs-app-details-page.ui:27 src/gs-app-row.c:592
 msgid "Requires additional permissions"
 msgstr "Vyžaduje dodatečná oprávnění"
 
@@ -955,7 +955,7 @@ msgstr "Vyžaduje dodatečná oprávnění"
 msgid "Invalid ratings data received from server"
 msgstr "Přijata neplatná data hodnocení ze serveru"
 
-#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2425
+#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2428
 msgid "Could not communicate with ratings server"
 msgstr "Nelze komunikovat se serverem hodnocení"
 
@@ -996,97 +996,97 @@ msgid "Installed"
 msgstr "Nainstalováno"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Režim spuštění: buď „updates“ (aktualizace), „updated“ (aktualizované), „installed“ (nainstalované) nebo „overview“ (přehled)"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:128
 msgid "MODE"
 msgstr "REŽIM"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "Search for applications"
 msgstr "Hledat aplikaci"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:130
 msgid "SEARCH"
 msgstr "HLEDAT"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:132
 msgid "Show application details (using application ID)"
 msgstr "Zobrazit informace o aplikaci (pomocí ID aplikace)"
 
-#: src/gs-application.c:130 src/gs-application.c:134 src/gs-application.c:136
+#: src/gs-application.c:132 src/gs-application.c:136 src/gs-application.c:138
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "Show application details (using package name)"
 msgstr "Zobrazit informace o aplikaci (pomocí názvu balíčku)"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:134
 msgid "PKGNAME"
 msgstr "NÁZEV_BALÍČKU"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:136
 msgid "Install the application (using application ID)"
 msgstr "Nainstalovat aplikaci (pomocí ID aplikace)"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:138
 msgid "Uninstall the application (using application ID)"
 msgstr "Odinstalovat aplikaci (pomocí ID aplikace)"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:140
 msgid "Open a local package file"
 msgstr "Otevřít místní soubor s balíčkem"
 
-#: src/gs-application.c:138 src/gs-application.c:143
+#: src/gs-application.c:140 src/gs-application.c:145
 msgid "FILENAME"
 msgstr "NÁZEV_SOUBORU"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:142
 msgid "The kind of interaction expected for this action: either ‘none’, ‘notify’, or ‘full’"
 msgstr "Pro tuto činnost je očekáván druh interakce: buď „none“ (nic), „notify“ (upozornit) nebo „full“ (úplná)"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:143
 msgid "INTERACTION"
 msgstr "INTERAKCE"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:145
 msgid "Show a local metainfo or appdata file"
 msgstr "Zobrazit místní soubor metainfo nebo appdata"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:147
 msgid "Enable verbose debugging output (from the running instance, if already running)"
 msgstr "Povolit podrobný ladicí výstup (z běžící instance, pokud je již spuštěna)"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:149
 msgid "Installs any pending updates in the background"
 msgstr "Nainstalovat na pozadí případné čekající aktualizace"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:151
 msgid "Show preferences"
 msgstr "Zobrazit předvolby"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:153
 msgid "Quit the running instance"
 msgstr "Ukončit běžící instanci"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:155
 msgid "Prefer local file sources to AppStream"
 msgstr "Upřednostnit zdroje v místních souborech před zdroji on-line"
 
-#: src/gs-application.c:155
+#: src/gs-application.c:157
 msgid "Show version number"
 msgstr "Zobrazit číslo verze"
 
-#: src/gs-application.c:262
+#: src/gs-application.c:264
 #, c-format
 msgid "Copyright © 2016–%d GNOME Software contributors"
 msgstr "Copyright © 2016 – %d přispěvatelé Softwaru GNOME"
 
-#: src/gs-application.c:276
+#: src/gs-application.c:278
 msgid "translator-credits"
 msgstr ""
 "Marek Černocký <marek@manet.cz>\n"
@@ -1094,7 +1094,7 @@ msgstr ""
 "Daniel Rusek <mail@asciiwolf.com>"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:515
+#: src/gs-application.c:517
 msgid "Sorry! There are no details for that application."
 msgstr "Omlouváme se, ale pro tuto aplikaci nejsou k dispozici detaily."
 
@@ -1478,24 +1478,24 @@ msgstr "Kritická aktualizace"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:401
+#: src/gs-app-row.c:402
 msgid "Device cannot be used during update."
 msgstr "Zařízení nelze během aktualizace používat."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:411 src/gs-shell-search-provider.c:273
+#: src/gs-app-row.c:412 src/gs-shell-search-provider.c:273
 #, c-format
 msgid "Source: %s"
 msgstr "Zdroj: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:598
+#: src/gs-app-row.c:599
 #, c-format
 msgid "Renamed from %s"
 msgstr "Přejmenováno z %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:635 src/gs-details-page.ui:535
+#: src/gs-app-row.c:636 src/gs-details-page.ui:535
 msgid "Stopped Receiving Updates"
 msgstr "Příjem aktualizací zastaven"
 
@@ -1849,32 +1849,32 @@ msgid "%s %s"
 msgstr "%s %s"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1496
+#: src/gs-common.c:1515
 #, c-format
 msgid "Use the %s System Service"
 msgstr "Využívá službu systému %s"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1499
+#: src/gs-common.c:1518
 #, c-format
 msgid "Use the %s Session Service"
 msgstr "Využívá službu sezení %s"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. The placeholder is a D-Bus name such as `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1502
+#: src/gs-common.c:1521
 #, c-format
 msgid "Use the %s Service"
 msgstr "Využívá službu %s"
 
-#: src/gs-common.c:1523
+#: src/gs-common.c:1542
 msgid "Can see the non-portal service"
 msgstr "Může vidět službu mimo portál"
 
-#: src/gs-common.c:1525
+#: src/gs-common.c:1544
 msgid "Can talk to the non-portal service"
 msgstr "Může komunikovat se službou mimo portál"
 
-#: src/gs-common.c:1527
+#: src/gs-common.c:1546
 msgid "Can own the non-portal service"
 msgstr "Může vlastnit službu mimo portál"
 
@@ -2452,17 +2452,17 @@ msgstr "Tento software neposkytuje žádné odkazy na webové stránky, repozit�
 msgid "Software failed to retrieve information for “%s” and is unable to show the details for this app."
 msgstr "Aplikaci Software se nepodařilo načíst informace pro „%s“ a nedokáže zobrazit podrobnosti o této aplikaci."
 
-#: src/gs-details-page.c:2422
+#: src/gs-details-page.c:2425
 msgid "Invalid review response received from server"
 msgstr "Přijata neplatná odpověď na recenzi ze serveru"
 
-#: src/gs-details-page.c:2432
+#: src/gs-details-page.c:2435
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Selhalo odeslání recenze pro „%s“: %s"
 
 #. display a toast to the user
-#: src/gs-details-page.c:2446
+#: src/gs-details-page.c:2449
 msgid "Review submitted successfully"
 msgstr "Recenze byla úspěšně odeslána"
 
@@ -2832,16 +2832,16 @@ msgstr[2] "Nelze najít kodeky %s, které hledáte. Na další informace se pros
 msgid "Failed to find any search results: %s"
 msgstr "Selhalo získání jakýchkoliv výsledků hledání: %s"
 
-#: src/gs-extras-page.c:957
+#: src/gs-extras-page.c:958
 #, c-format
 msgid "%s file format"
 msgstr "formát souboru %s"
 
-#: src/gs-extras-page.c:1315
+#: src/gs-extras-page.c:1316
 msgid "Install _All"
 msgstr "Inst_alovat vše"
 
-#: src/gs-extras-page.c:1345
+#: src/gs-extras-page.c:1346
 msgid "Unable to Find Requested Software"
 msgstr "Nelze najít požadovaný software"
 
@@ -3436,7 +3436,7 @@ msgstr "Ostatní kategorie"
 msgid "No App Data Found"
 msgstr "O aplikaci nebyly nalezeny žádné informace"
 
-#: lib/gs-plugin-loader.c:2283
+#: lib/gs-plugin-loader.c:2312
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "neznámá"
@@ -3459,13 +3459,13 @@ msgstr "Příprava aplikace %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:543
+#: src/gs-page.c:544
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Opravdu chcete odebrat repozitář %s?"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is a repository name.
-#: src/gs-page.c:547
+#: src/gs-page.c:548
 #, c-format
 msgid "All apps from %s will be uninstalled, and you will have to re-install the repository to use them again."
 msgstr ""
@@ -3484,7 +3484,7 @@ msgstr ""
 #. * name of a firmware
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:556 src/gs-page.c:567 src/gs-page.c:578 src/gs-page.c:589 src/gs-page.c:600 src/gs-page.c:612
+#: src/gs-page.c:557 src/gs-page.c:568 src/gs-page.c:579 src/gs-page.c:590 src/gs-page.c:601 src/gs-page.c:613
 #, c-format
 msgid "Uninstall %s?"
 msgstr "Odinstalovat %s?"
@@ -3492,39 +3492,39 @@ msgstr "Odinstalovat %s?"
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of an addon or an input method.
 #. Translators: the '%s' is replaced with the app name
-#: src/gs-page.c:560 src/gs-page.c:619
+#: src/gs-page.c:561 src/gs-page.c:620 src/gs-page.c:627
 #, c-format
 msgid "It will not be possible to use %s after removal."
 msgstr "Po odebrání nebude možné aplikaci %s používat."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
-#: src/gs-page.c:571
+#: src/gs-page.c:572
 #, c-format
 msgid "It will not be possible to use any apps which depend on %s after removal."
 msgstr "Po odebrání nebude možné používat žádné aplikace, které závisí na %s."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
-#: src/gs-page.c:581
+#: src/gs-page.c:582
 #, c-format
 msgid "It will not be possible to use %s after removal, and any documents which use it will appear in a different font."
 msgstr "Po odebrání nebude možné font %s používat a všechny dokumenty, které jej používají, se zobrazí v jiném písmu."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
-#: src/gs-page.c:592
+#: src/gs-page.c:593
 #, c-format
 msgid "It will not be possible to use %s after removal. This may mean some media files will no longer be playable."
 msgstr "Po odebrání nebude možné kodek %s používat. To může znamenat, že některé soubory médií již nebude možné přehrát."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
-#: src/gs-page.c:603
+#: src/gs-page.c:604
 #, c-format
 msgid "Hardware which depends on %s may no longer function correctly after removal."
 msgstr "Hardware, který závisí na %s, již nemusí po odebrání správně fungovat."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
-#: src/gs-page.c:627
+#: src/gs-page.c:632
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. App data and settings will be kept on disk, to allow restoring the app in the "
@@ -3602,8 +3602,7 @@ msgstr "Zobrazit pouze aplikace od vývojářů, jejichž identita byla ověřen
 #: src/gs-removal-dialog.c:96
 #, c-format
 msgid "Installed software is incompatible with %s, and will be automatically removed during upgrade."
-msgstr ""
-"Některý z právě instalovaného softwaru není kompatibilní s distribucí %s. Pokud budete pokračovat, během povýšení se odstraní."
+msgstr "Některý z nainstalovaného softwaru není kompatibilní se systémem %s. Pokud budete pokračovat, během povýšení se odstraní."
 
 #: src/gs-removal-dialog.ui:6
 msgid "Incompatible Software"
@@ -3703,7 +3702,7 @@ msgstr "operačního systému"
 #: src/gs-repos-dialog.c:832
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
-msgstr "Tyto repozitáře doplňují výchozí nabídku softwaru poskytovaného distribucí %s."
+msgstr "Tyto repozitáře doplňují výchozí nabídku softwaru poskytovaného systémem %s."
 
 #: src/gs-repos-dialog.ui:6
 msgid "Software Repositories"
@@ -4313,35 +4312,35 @@ msgstr "Žádné snímky obrazovky"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:363 src/gs-screenshot-image.c:404 src/gs-screenshot-image.c:608
+#: src/gs-screenshot-image.c:369 src/gs-screenshot-image.c:410 src/gs-screenshot-image.c:614
 msgid "Screenshot not found"
 msgstr "Snímek nebyl nalezen"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:414
+#: src/gs-screenshot-image.c:420
 msgid "Failed to load image"
 msgstr "Selhalo načtení obrázku"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:636
+#: src/gs-screenshot-image.c:642
 msgid "Screenshot size not found"
 msgstr "Velikost snímku nebyla nalezena"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:725
+#: src/gs-screenshot-image.c:731
 msgid "Could not create cache"
 msgstr "Nelze vytvoři mezipaměť"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:739
+#: src/gs-screenshot-image.c:745
 msgid "Screenshot not valid"
 msgstr "Snímek není platný"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:777
+#: src/gs-screenshot-image.c:783
 msgid "Screenshot not available"
 msgstr "Snímek není k dispozici"
 
@@ -5172,7 +5171,7 @@ msgstr "Povýšit, aby byly nadále přijímány aktualizace"
 #: src/gs-update-monitor.c:793
 #, c-format
 msgid "A new version of %s is available to install"
-msgstr "K instalaci je dostupná nová verze distribuce %s"
+msgstr "K instalaci je dostupná nová verze systému %s"
 
 #. TRANSLATORS: this is a distro upgrade
 #: src/gs-update-monitor.c:797
@@ -5233,39 +5232,39 @@ msgid "Review"
 msgstr "Přehled"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1459
+#: src/gs-update-monitor.c:1457
 msgid "Failed To Update"
 msgstr "Aktualizace selhala"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1464
+#: src/gs-update-monitor.c:1462
 msgid "The system was already up to date."
 msgstr "Systém již byl aktuální."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1469
+#: src/gs-update-monitor.c:1467
 msgid "The update was cancelled."
 msgstr "Aktualizace byla zrušena."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1474
+#: src/gs-update-monitor.c:1472
 msgid "Internet access was required but wasn’t available. Please make sure that you have internet access and try again."
 msgstr "Je vyžadován přístup k Internetu, ale není dostupný. Zkontrolujte své připojení k Internetu a zkuste to znovu."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1479
+#: src/gs-update-monitor.c:1477
 msgid "There were security issues with the update. Please consult your software provider for more details."
 msgstr "S aktualizací nastal bezpečnostní problém. Podrobnosti prosím proberte se svým poskytovatelem softwaru."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1484
+#: src/gs-update-monitor.c:1482
 msgid "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Nebyl dostatek místa na disku. Uvolněte prosím nějaké místo a pak to zkuste znovu."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1488
+#: src/gs-update-monitor.c:1486
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update and try again. If the problem persists, contact your "
 "software provider."
@@ -5284,7 +5283,7 @@ msgstr "Poslední kontrola: %s"
 #: src/gs-updates-page.c:598
 #, c-format
 msgid "%s %s has stopped receiving critical software updates"
-msgstr "Distribuce %s %s přestala dostávat kritické aktualizace softwaru"
+msgstr "Systém %s %s přestal dostávat kritické aktualizace softwaru"
 
 #. TRANSLATORS: This message is meant to tell users that they need to upgrade
 #. * or else their distro will not get important updates.
@@ -5589,13 +5588,13 @@ msgstr "Povolit"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:81 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3304
+#: plugins/core/gs-plugin-generic-updates.c:81 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3331
 msgid "System Updates"
 msgstr "Aktualizace systému"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:86 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3309
+#: plugins/core/gs-plugin-generic-updates.c:86 plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3336
 msgid "General system updates, such as security or bug fixes, and performance improvements."
 msgstr "Obecné aktualizace systému, jako jsou bezpečnostní opravy, opravy chyb a vylepšení výkonu."
 
@@ -5636,135 +5635,135 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak je systém pro provozování aplikací na Linuxu"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:368
+#: plugins/flatpak/gs-flatpak.c:370
 #, c-format
 msgid "System folder %s"
 msgstr "Systémová složka %s"
 
-#: plugins/flatpak/gs-flatpak.c:369 plugins/flatpak/gs-flatpak.c:370
+#: plugins/flatpak/gs-flatpak.c:371 plugins/flatpak/gs-flatpak.c:372
 #, c-format
 msgid "Home subfolder %s"
 msgstr "Podsložka %s v domovské složce"
 
-#: plugins/flatpak/gs-flatpak.c:371
+#: plugins/flatpak/gs-flatpak.c:373
 msgid "Host system folders"
 msgstr "Složky hostitelského systému"
 
-#: plugins/flatpak/gs-flatpak.c:372
+#: plugins/flatpak/gs-flatpak.c:374
 msgid "Host system configuration from /etc"
 msgstr "Konfigurace hostitelského systému z /etc"
 
-#: plugins/flatpak/gs-flatpak.c:373
+#: plugins/flatpak/gs-flatpak.c:375
 msgid "Desktop folder"
 msgstr "Složka plochy"
 
-#: plugins/flatpak/gs-flatpak.c:373
+#: plugins/flatpak/gs-flatpak.c:375
 #, c-format
 msgid "Desktop subfolder %s"
 msgstr "Podsložka %s ve složce plochy"
 
-#: plugins/flatpak/gs-flatpak.c:374
+#: plugins/flatpak/gs-flatpak.c:376
 msgid "Documents folder"
 msgstr "Složka dokumentů"
 
-#: plugins/flatpak/gs-flatpak.c:374
+#: plugins/flatpak/gs-flatpak.c:376
 #, c-format
 msgid "Documents subfolder %s"
 msgstr "Podsložka %s ve složce dokumentů"
 
-#: plugins/flatpak/gs-flatpak.c:375
+#: plugins/flatpak/gs-flatpak.c:377
 msgid "Music folder"
 msgstr "Složka hudby"
 
-#: plugins/flatpak/gs-flatpak.c:375
+#: plugins/flatpak/gs-flatpak.c:377
 #, c-format
 msgid "Music subfolder %s"
 msgstr "Podsložka %s ve složce hudby"
 
-#: plugins/flatpak/gs-flatpak.c:376
+#: plugins/flatpak/gs-flatpak.c:378
 msgid "Pictures folder"
 msgstr "Složka obrázků"
 
-#: plugins/flatpak/gs-flatpak.c:376
+#: plugins/flatpak/gs-flatpak.c:378
 #, c-format
 msgid "Pictures subfolder %s"
 msgstr "Podsložka %s ve složce obrázků"
 
-#: plugins/flatpak/gs-flatpak.c:377
+#: plugins/flatpak/gs-flatpak.c:379
 msgid "Public Share folder"
 msgstr "Složka veřejně sdílených"
 
-#: plugins/flatpak/gs-flatpak.c:377
+#: plugins/flatpak/gs-flatpak.c:379
 #, c-format
 msgid "Public Share subfolder %s"
 msgstr "Podsložka %s ve složce veřejně sdílených"
 
-#: plugins/flatpak/gs-flatpak.c:378
+#: plugins/flatpak/gs-flatpak.c:380
 msgid "Videos folder"
 msgstr "Složka videí"
 
-#: plugins/flatpak/gs-flatpak.c:378
+#: plugins/flatpak/gs-flatpak.c:380
 #, c-format
 msgid "Videos subfolder %s"
 msgstr "Podsložka %s ve složce videí"
 
-#: plugins/flatpak/gs-flatpak.c:379
+#: plugins/flatpak/gs-flatpak.c:381
 msgid "Templates folder"
 msgstr "Složka šablon"
 
-#: plugins/flatpak/gs-flatpak.c:379
+#: plugins/flatpak/gs-flatpak.c:381
 #, c-format
 msgid "Templates subfolder %s"
 msgstr "Podsložka %s ve složce šablon"
 
-#: plugins/flatpak/gs-flatpak.c:380
+#: plugins/flatpak/gs-flatpak.c:382
 msgid "User cache folder"
 msgstr "Složka uživatelské mezipaměti"
 
-#: plugins/flatpak/gs-flatpak.c:380
+#: plugins/flatpak/gs-flatpak.c:382
 #, c-format
 msgid "User cache subfolder %s"
 msgstr "Podsložka %s ve složce uživatelské mezipaměti"
 
-#: plugins/flatpak/gs-flatpak.c:381
+#: plugins/flatpak/gs-flatpak.c:383
 msgid "User configuration folder"
 msgstr "Složka uživatelské konfigurace"
 
-#: plugins/flatpak/gs-flatpak.c:381
+#: plugins/flatpak/gs-flatpak.c:383
 #, c-format
 msgid "User configuration subfolder %s"
 msgstr "Podsložka %s ve složce uživatelské konfigurace"
 
-#: plugins/flatpak/gs-flatpak.c:382
+#: plugins/flatpak/gs-flatpak.c:384
 msgid "User data folder"
 msgstr "Složka uživatelských dat"
 
-#: plugins/flatpak/gs-flatpak.c:382
+#: plugins/flatpak/gs-flatpak.c:384
 #, c-format
 msgid "User data subfolder %s"
 msgstr "Podsložka %s ve složce uživatelských dat"
 
-#: plugins/flatpak/gs-flatpak.c:383
+#: plugins/flatpak/gs-flatpak.c:385
 msgid "User runtime folder"
 msgstr "Uživatelská složka pro běh aplikací"
 
-#: plugins/flatpak/gs-flatpak.c:383
+#: plugins/flatpak/gs-flatpak.c:385
 #, c-format
 msgid "User runtime subfolder %s"
 msgstr "Podsložka %s v uživatelské složce pro běh aplikací"
 
-#: plugins/flatpak/gs-flatpak.c:441
+#: plugins/flatpak/gs-flatpak.c:443
 #, c-format
 msgid "Filesystem access to %s"
 msgstr "Přístup k souborovému systému v %s"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1460
+#: plugins/flatpak/gs-flatpak.c:1462
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Získávají se metadata Flatpak pro %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3700
+#: plugins/flatpak/gs-flatpak.c:3703
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Selhalo vylepšení doplňku „%s“: %s"
@@ -6077,44 +6076,44 @@ msgstr ""
 "Aktualizace softwaru budou zakázány, dokud nebudou nepodepsané aktualizace buďto odstraněny nebo nahrazeny jinými."
 
 #. Translators: the '%s' is replaced with the key ID, usually a few hex digits
-#: plugins/packagekit/gs-packagekit-task.c:219
+#: plugins/packagekit/gs-packagekit-task.c:224
 #, c-format
 msgid "Do you want to import key %s?"
 msgstr "Chcete importovat klíč %s?"
 
 #. Translators: the '%s' is replaced with the key ID, usually a few hex digits
-#: plugins/packagekit/gs-packagekit-task.c:226
+#: plugins/packagekit/gs-packagekit-task.c:231
 #, c-format
 msgid "Key %s"
 msgstr "Klíč %s"
 
 #. Translators: the '%s' is replaced with the key user name
-#: plugins/packagekit/gs-packagekit-task.c:240
+#: plugins/packagekit/gs-packagekit-task.c:245
 #, c-format
 msgid "Key user: %s"
 msgstr "Uživatel klíče: %s"
 
 #. Translators: the '%s' is replaced with the key fingerprint, a few hex digits
-#: plugins/packagekit/gs-packagekit-task.c:242
+#: plugins/packagekit/gs-packagekit-task.c:247
 #, c-format
 msgid "Fingerprint: %s"
 msgstr "Otisk: %s"
 
 #. Translators: the '%s' is replaced with the local path or a URI to the key
-#: plugins/packagekit/gs-packagekit-task.c:244
+#: plugins/packagekit/gs-packagekit-task.c:249
 #, c-format
 msgid "From: %s"
 msgstr "Zdroj: %s"
 
-#: plugins/packagekit/gs-packagekit-task.c:250
+#: plugins/packagekit/gs-packagekit-task.c:255
 msgid "Import Key"
 msgstr "Importovat klíč"
 
-#: plugins/packagekit/gs-packagekit-task.c:251
+#: plugins/packagekit/gs-packagekit-task.c:256
 msgid "Do you want to import keys?"
 msgstr "Chcete klíče importovat?"
 
-#: plugins/packagekit/gs-packagekit-task.c:253
+#: plugins/packagekit/gs-packagekit-task.c:258
 msgid "_Import Key"
 msgstr "_Importovat klíč"
 
@@ -6138,7 +6137,7 @@ msgstr "Selhalo stažení aktualizací: "
 msgid "Failed to trigger update: "
 msgstr "Selhalo spuštění aktualizace: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3404
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3431
 msgid "Operating System (OSTree)"
 msgstr "Operační systém (OSTree)"
 
