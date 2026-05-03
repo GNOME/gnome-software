@@ -122,19 +122,23 @@ target_item_get_id (TargetItem *target)
 static gboolean
 target_item_is_pending (TargetItem *target)
 {
-	return target->is_installed && target->is_pending && !target->is_partial && !target->is_incomplete;
+	return target->latest_version && target->is_installed && target->is_pending && !target->is_partial && !target->is_incomplete;
 }
 
 static gboolean
 target_item_is_installed (TargetItem *target)
 {
-	return target->is_installed && !target->is_pending && !target->is_partial && !target->is_incomplete;
+	return target->current_version || (target->latest_version && target->is_installed && !target->is_pending && !target->is_partial && !target->is_incomplete);
 }
 
 static gboolean
 target_item_is_updatable (TargetItem *target)
 {
-	return target->is_pending || target->is_incomplete || target->is_partial || !target->is_installed;
+	/* To be updatable, there needs to be a latest version.
+	 * If that latest version pending/incomplete... we should "update".
+	 * If other case, if it is not already installed AND there is already a version installed (current), we should update.
+	 */
+	return target->latest_version && (target->is_pending || target->is_incomplete || target->is_partial || (target->current_version && !target->is_installed));
 }
 
 static gboolean
@@ -605,6 +609,11 @@ static void
 gs_plugin_systemd_sysupdate_target_refresh_metadata_describe_cb (GObject      *source_object,
 								 GAsyncResult *result,
 								 gpointer      user_data);
+
+static void
+gs_plugin_systemd_sysupdate_target_refresh_metadata_done (GsPluginSystemdSysupdate *self,
+							  GTask *task,
+							  GsPluginSystemdSysupdateTargetRefreshMetadataData *data);
 
 static gboolean
 gs_plugin_systemd_sysupdate_target_refresh_metadata_finish (GsPlugin      *plugin,
@@ -2034,7 +2043,6 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_check_new_cb (GObject      *
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
 	g_autofree gchar *latest_version = NULL;
-	const gchar *version = NULL;
 	GCancellable *cancellable = g_task_get_cancellable (task);
 
 	/* currently, the returned result contains only one string
@@ -2057,17 +2065,23 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_check_new_cb (GObject      *
 		data->target->latest_version = g_steal_pointer (&latest_version);
 	}
 
-	version = data->target->latest_version != NULL ? data->target->latest_version
-	                                         : data->target->current_version;
+	if (data->target->latest_version) {
+		gs_systemd_sysupdate_target_call_describe (data->target->proxy,
+							   data->target->latest_version,
+							   SYSUPDATED_TARGET_DESCRIBE_FLAGS_NONE,
+							   G_DBUS_CALL_FLAGS_NONE,
+							   SYSUPDATED_TARGET_DESCRIBE_TIMEOUT_MS,
+							   cancellable,
+							   gs_plugin_systemd_sysupdate_target_refresh_metadata_describe_cb,
+							   g_steal_pointer (&task));
+	} else {
+		data->target->is_installed = true;
+		data->target->is_pending = false;
+		data->target->is_partial = false;
+		data->target->is_incomplete = false;
 
-	gs_systemd_sysupdate_target_call_describe (data->target->proxy,
-	                                           version,
-	                                           SYSUPDATED_TARGET_DESCRIBE_FLAGS_NONE,
-	                                           G_DBUS_CALL_FLAGS_NONE,
-	                                           SYSUPDATED_TARGET_DESCRIBE_TIMEOUT_MS,
-	                                           cancellable,
-	                                           gs_plugin_systemd_sysupdate_target_refresh_metadata_describe_cb,
-	                                           g_steal_pointer (&task));
+		gs_plugin_systemd_sysupdate_target_refresh_metadata_done (g_task_get_source_object (task), task, data);
+	}
 }
 
 static void
@@ -2122,6 +2136,16 @@ gs_plugin_systemd_sysupdate_target_refresh_metadata_describe_cb (GObject      *s
 	data->target->is_pending = json_object_get_boolean_member_with_default (json_item, "pending", false);
 	data->target->is_partial = json_object_get_boolean_member_with_default (json_item, "partial", false);
 	data->target->is_incomplete = json_object_get_boolean_member_with_default (json_item, "incomplete", false);
+
+	gs_plugin_systemd_sysupdate_target_refresh_metadata_done (self, task, data);
+}
+
+static void
+gs_plugin_systemd_sysupdate_target_refresh_metadata_done (GsPluginSystemdSysupdate *self,
+							  GTask *task,
+							  GsPluginSystemdSysupdateTargetRefreshMetadataData *data) {
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* update app state base on the target's new version */
 	app = get_or_create_app_for_target (self, data->target, &local_error);
