@@ -63,6 +63,9 @@ typedef enum {
  * @GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING: Normally the results of a refine are
  *   filtered to remove non-valid apps; if this flag is set, that won’t happen.
  *   This is intended to be used by internal #GsPluginLoader code.
+ * @GS_PLUGIN_REFINE_FLAGS_DISABLE_ICONS: Do not ensure remote icons on
+ *   the result of the refine job; usually used when the caller truncates
+ *   the list of the apps. (Since: 51)
  *
  * Flags for an operation to refine apps.
  *
@@ -76,6 +79,7 @@ typedef enum {
 	GS_PLUGIN_REFINE_FLAGS_INTERACTIVE		= 1 << 0,
 	GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES		= 1 << 1,
 	GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING	= 1 << 2,
+	GS_PLUGIN_REFINE_FLAGS_DISABLE_ICONS		= 1 << 3,
 } GsPluginRefineFlags;
 
 /**
