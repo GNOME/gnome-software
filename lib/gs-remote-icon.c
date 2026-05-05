@@ -259,10 +259,10 @@ gs_icon_download (SoupSession   *session,
 	/* Create the request */
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	if (msg == NULL) {
-		g_set_error_literal (error,
-				     G_IO_ERROR,
-				     G_IO_ERROR_INVALID_DATA,
-				     "Icon has an invalid URL");
+		g_set_error (error,
+			     G_IO_ERROR,
+			     G_IO_ERROR_INVALID_DATA,
+			     "Icon has an invalid URL '%s'", uri);
 		return NULL;
 	}
 
@@ -283,6 +283,7 @@ gs_icon_download (SoupSession   *session,
 	if (status_code == SOUP_STATUS_NOT_MODIFIED) {
 		return gdk_pixbuf_new_from_file (destination_path, error);
 	} else if (stream == NULL) {
+		g_prefix_error (error, "Failed to download icon '%s': ", uri);
 		return NULL;
 	} else if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
