@@ -415,7 +415,7 @@ finish_op (GTask  *task,
 		g_autoptr(GsPluginJob) refine_job = NULL;
 
 		refine_job = gs_plugin_job_refine_new (merged_list,
-						       refine_flags | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING,
+						       refine_flags | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING | GS_PLUGIN_REFINE_FLAGS_DISABLE_ICONS,
 						       require_flags);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
@@ -454,6 +454,7 @@ finish_task (GTask     *task,
 {
 	GsPluginJobListApps *self = g_task_get_source_object (task);
 	GsPluginLoader *plugin_loader = g_task_get_task_data (task);
+	GsPluginRefineRequireFlags refine_require_flags = GS_PLUGIN_REFINE_REQUIRE_FLAGS_NONE;
 	GsAppListFilterFlags dedupe_flags = GS_APP_LIST_FILTER_FLAG_NONE;
 	GsAppListSortFunc sort_func = NULL;
 	gpointer sort_func_data = NULL;
@@ -464,6 +465,7 @@ finish_task (GTask     *task,
 	GsAppListFilterFunc filter_func = NULL;
 	gpointer filter_func_data = NULL;
 	guint max_results = 0;
+	gboolean interactive = FALSE;
 	g_autofree gchar *job_debug = NULL;
 
 	if (self->query != NULL) {
@@ -520,13 +522,23 @@ finish_task (GTask     *task,
 	}
 
 	/* Truncate the results if needed. */
-	if (self->query != NULL)
+	if (self->query != NULL) {
 		max_results = gs_app_query_get_max_results (self->query);
+		refine_require_flags = gs_app_query_get_refine_require_flags (self->query);
+		interactive = (gs_app_query_get_refine_flags (self->query) & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
+	}
 
 	if (max_results > 0 && gs_app_list_length (merged_list) > max_results) {
 		g_debug ("truncating results from %u to %u",
 			 gs_app_list_length (merged_list), max_results);
 		gs_app_list_truncate (merged_list, max_results);
+	}
+
+	/* ensure icons only on the truncated list */
+	if ((refine_require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON) != 0) {
+		GsIconDownloader *icon_downloader = gs_plugin_loader_get_icon_downloader (plugin_loader);
+		if (icon_downloader != NULL)
+			gs_icon_downloader_queue_app_list (icon_downloader, merged_list, interactive);
 	}
 
 	/* show elapsed time */
