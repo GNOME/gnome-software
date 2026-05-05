@@ -384,10 +384,25 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 		gdk_pixbuf_get_file_info (cache_filename, &pixbuf_width, &pixbuf_height);
 	} else {
 		g_autoptr(GdkPixbuf) cached_pixbuf = NULL;
+		g_autofree gchar *failed_filename = g_strconcat (cache_filename, ".failed", NULL);
+
+		/* re-try max once per day for failed downloads */
+		if (g_stat (failed_filename, &stat_buf) != -1 &&
+		    S_ISREG (stat_buf.st_mode) &&
+		    (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24)) {
+			g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED, "Previously failed to download '%s'", uri);
+			return FALSE;
+		}
 
 		cached_pixbuf = gs_icon_download (soup_session, uri, cache_filename, maximum_icon_size * gs_icon_get_scale (icon), cancellable, error);
-		if (cached_pixbuf == NULL)
+		if (cached_pixbuf == NULL) {
+			g_autoptr(GError) local_error = NULL;
+			if (!g_file_set_contents_full (failed_filename, "", 0, G_FILE_SET_CONTENTS_NONE, 0600, &local_error))
+				g_debug ("%s: Failed to save '%s' for uri '%s': %s", G_STRFUNC, failed_filename, uri, local_error->message);
 			return FALSE;
+		}
+
+		(void) g_unlink (failed_filename);
 
 		pixbuf_width = gdk_pixbuf_get_width (cached_pixbuf);
 		pixbuf_height = gdk_pixbuf_get_height (cached_pixbuf);
