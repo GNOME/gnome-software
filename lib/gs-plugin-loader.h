@@ -14,6 +14,7 @@
 #include "gs-app.h"
 #include "gs-category.h"
 #include "gs-category-manager.h"
+#include "gs-icon-downloader.h"
 #include "gs-odrs-provider.h"
 #include "gs-plugin-event.h"
 #include "gs-plugin.h"
@@ -123,5 +124,7 @@ void		 gs_plugin_loader_emit_updates_changed	(GsPluginLoader *self);
 int		 gs_plugin_loader_get_cpu_priority	(GsPluginLoader *self);
 void		 gs_plugin_loader_set_cpu_priority	(GsPluginLoader *self,
 							 int             cpu_priority);
+GsIconDownloader *
+		 gs_plugin_loader_get_icon_downloader	(GsPluginLoader *self);
 
 G_END_DECLS
