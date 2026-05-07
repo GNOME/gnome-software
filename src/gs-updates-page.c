@@ -1027,7 +1027,7 @@ gs_updates_page_upgrade_confirm_cb (GtkDialog *dialog,
                                     GsUpdatesPage *self)
 {
 	/* unmap the dialog */
-	gtk_window_destroy (GTK_WINDOW (dialog));
+	adw_dialog_force_close (ADW_DIALOG (dialog));
 
 	switch (response_type) {
 	case GTK_RESPONSE_ACCEPT:
