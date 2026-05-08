@@ -2897,6 +2897,8 @@ gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
 	if (appstream_paths != NULL) {
 		g_autoptr(GError) local_error = NULL;
 		g_autoptr(XbBuilder) builder = xb_builder_new ();
+		g_autofree gchar *cache_fn = NULL;
+		g_autoptr(GFile) cache_file = NULL;
 		gboolean any_loaded = FALSE;
 		gs_appstream_add_current_locales (builder);
 		for (guint i = 0; i < appstream_paths->len && !g_cancellable_is_cancelled (cancellable); i++) {
@@ -2917,12 +2919,19 @@ gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
 			any_loaded = gs_appstream_load_appstream_dir (builder, path, cancellable) || any_loaded;
 		}
 		if (any_loaded && !g_cancellable_is_cancelled (cancellable)) {
-			md->appstream_silo = xb_builder_compile (builder,
-								 XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
-								 XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
-								 cancellable, &local_error);
+			cache_fn = gs_utils_get_cache_filename ("appstream", "merge-appstream.xmlb",
+								GS_UTILS_CACHE_FLAG_WRITEABLE |
+								GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
+								&local_error);
+			if (cache_fn != NULL) {
+				cache_file = g_file_new_for_path (cache_fn);
+				md->appstream_silo = xb_builder_ensure (builder, cache_file,
+									XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
+									XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
+									cancellable, &local_error);
+			}
 			#ifdef __GLIBC__
-			/* https://gitlab.gnome.org/GNOME/gnome-software/-/issues/941 
+			/* https://gitlab.gnome.org/GNOME/gnome-software/-/issues/941
 			* libxmlb <= 0.3.22 makes lots of temporary heap allocations parsing large XMLs
 			* trim the heap after parsing to control RSS growth. */
 			malloc_trim (0);
@@ -2935,6 +2944,8 @@ gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
 	} else {
 		g_autoptr(GError) local_error = NULL;
 		g_autoptr(XbBuilder) builder = xb_builder_new ();
+		g_autofree gchar *cache_fn = NULL;
+		g_autoptr(GFile) cache_file = NULL;
 		gboolean any_loaded = FALSE;
 		gs_appstream_add_current_locales (builder);
 		for (guint i = 0; i < common_appstream_paths->len && !g_cancellable_is_cancelled (cancellable); i++) {
@@ -2942,10 +2953,17 @@ gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
 			any_loaded = gs_appstream_load_appstream_dir (builder, path, cancellable) || any_loaded;
 		}
 		if (any_loaded && !g_cancellable_is_cancelled (cancellable)) {
-			md->appstream_silo = xb_builder_compile (builder,
-								 XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
-								 XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
-								 cancellable, &local_error);
+			cache_fn = gs_utils_get_cache_filename ("appstream", "merge-appstream.xmlb",
+								GS_UTILS_CACHE_FLAG_WRITEABLE |
+								GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
+								&local_error);
+			if (cache_fn != NULL) {
+				cache_file = g_file_new_for_path (cache_fn);
+				md->appstream_silo = xb_builder_ensure (builder, cache_file,
+									XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
+									XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
+									cancellable, &local_error);
+			}
 			if (md->appstream_silo != NULL)
 				md->appstream_index = gs_appstream_create_silo_index (md->appstream_silo, TRUE);
 			else
@@ -2955,6 +2973,8 @@ gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
 	if (desktop_paths != NULL) {
 		g_autoptr(GError) local_error = NULL;
 		g_autoptr(XbBuilder) builder = xb_builder_new ();
+		g_autofree gchar *cache_fn = NULL;
+		g_autoptr(GFile) cache_file = NULL;
 		gboolean any_loaded = FALSE;
 		gs_appstream_add_current_locales (builder);
 		for (guint i = 0; i < desktop_paths->len && !g_cancellable_is_cancelled (cancellable); i++) {
@@ -2964,10 +2984,17 @@ gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
 			any_loaded = any_loaded || this_loaded;
 		}
 		if (any_loaded && !g_cancellable_is_cancelled (cancellable)) {
-			md->desktop_silo = xb_builder_compile (builder,
-							       XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
-							       XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
-							       cancellable, &local_error);
+			cache_fn = gs_utils_get_cache_filename ("appstream", "merge-desktop.xmlb",
+								GS_UTILS_CACHE_FLAG_WRITEABLE |
+								GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
+								&local_error);
+			if (cache_fn != NULL) {
+				cache_file = g_file_new_for_path (cache_fn);
+				md->desktop_silo = xb_builder_ensure (builder, cache_file,
+								      XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
+								      XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
+								      cancellable, &local_error);
+			}
 			if (md->desktop_silo != NULL)
 				md->desktop_index = gs_appstream_create_silo_index (md->desktop_silo, FALSE);
 			else
