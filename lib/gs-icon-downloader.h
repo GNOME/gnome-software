@@ -17,6 +17,7 @@
 #include <libsoup/soup.h>
 
 #include "gs-app.h"
+#include "gs-app-list.h"
 
 G_BEGIN_DECLS
 
@@ -33,6 +34,9 @@ void			 gs_icon_downloader_update_priority	(GsIconDownloader	*self,
 
 void			 gs_icon_downloader_queue_app		(GsIconDownloader	*self,
 								 GsApp			*app,
+								 gboolean		 interactive);
+void			 gs_icon_downloader_queue_app_list	(GsIconDownloader	*self,
+								 GsAppList		*list,
 								 gboolean		 interactive);
 
 void		 	gs_icon_downloader_shutdown_async	(GsIconDownloader	*self,
