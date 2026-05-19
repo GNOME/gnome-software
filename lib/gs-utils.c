@@ -40,6 +40,7 @@
 #endif
 
 #include "gs-app.h"
+#include "gs-app-collation.h"
 #include "gs-app-private.h"
 #include "gs-utils.h"
 #include "gs-plugin.h"
@@ -1870,4 +1871,52 @@ gs_utils_compare_versions (const gchar *ver1,
 	}
 
 	return rc;
+}
+
+/**
+ * gs_utils_filter_apps_for_plugin:
+ * @list: a list of apps
+ * @plugin: a plugin to filter apps for
+ *
+ * Extracts all apps belonging to the @plugin from the @list,
+ * traversing proxy apps as well.
+ *
+ * The returned list can be empty, but it will never be %NULL.
+ *
+ * Returns: (transfer full): a new app list with apps owned by the @plugin only
+ *
+ * Since: 52
+ **/
+GsAppList *
+gs_utils_filter_apps_for_plugin (GsAppList *list,
+				 GsPlugin *plugin)
+{
+	GsAppList *new_list;
+
+	g_return_val_if_fail (GS_IS_APP_LIST (list), NULL);
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+
+	new_list = gs_app_list_new ();
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		if (gs_app_has_management_plugin (app, plugin)) {
+			gs_app_list_add (new_list, app);
+		} else if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
+			GsAppList *related = gs_app_get_related (app);
+
+			if (related == NULL)
+				continue;
+
+			for (guint j = 0; j < gs_app_list_length (related); j++) {
+				GsApp *related_app = gs_app_list_index (related, j);
+
+				if (gs_app_has_management_plugin (related_app, plugin))
+					gs_app_list_add (new_list, related_app);
+			}
+		}
+	}
+
+	return new_list;
 }
