@@ -13,6 +13,8 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-app-list.h"
+#include "gs-plugin.h"
 
 G_BEGIN_DECLS
 
@@ -164,5 +166,7 @@ gint		 gs_utils_app_sort_kind		(GsApp			*app1,
 						 GsApp			*app2);
 gint		 gs_utils_compare_versions	(const gchar		*ver1,
 						 const gchar		*ver2);
+GsAppList	*gs_utils_filter_apps_for_plugin(GsAppList		*list,
+						 GsPlugin		*plugin);
 
 G_END_DECLS
