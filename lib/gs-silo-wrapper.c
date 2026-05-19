@@ -117,7 +117,8 @@ gs_silo_wrapper_build (GsSiloWrapper *self,
 				}
 			}
 
-			node = xb_silo_query_first (self->silo, "info", NULL);
+			/* the 'info' node is added by the plugins (appstream, flatpak, ...) */
+			node = xb_silo_query_first (self->silo, "/components/info", NULL);
 			if (node != NULL) {
 				g_autoptr(XbNode) child = NULL;
 				g_autoptr(XbNode) next = NULL;
