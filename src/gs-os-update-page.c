@@ -26,10 +26,10 @@
 #include "gs-common.h"
 
 typedef enum {
-	GS_OS_UPDATE_PAGE_SECTION_ADDITIONS,
 	GS_OS_UPDATE_PAGE_SECTION_REMOVALS,
-	GS_OS_UPDATE_PAGE_SECTION_UPDATES,
 	GS_OS_UPDATE_PAGE_SECTION_DOWNGRADES,
+	GS_OS_UPDATE_PAGE_SECTION_ADDITIONS,
+	GS_OS_UPDATE_PAGE_SECTION_UPDATES,
 	GS_OS_UPDATE_PAGE_SECTION_LAST,
 } GsOsUpdatePageSection;
 
@@ -184,10 +184,10 @@ get_app_section (GsApp *app)
 	GsOsUpdatePageSection section;
 
 	/* Sections:
-	 * 1. additions
-	 * 2. removals
-	 * 3. updates
-	 * 4. downgrades */
+	 * 1. removals
+	 * 2. downgrades
+	 * 3. additions
+	 * 4. updates */
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_AVAILABLE:
 		section = GS_OS_UPDATE_PAGE_SECTION_ADDITIONS;
