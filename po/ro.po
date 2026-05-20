@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-04-13 09:22+0000\n"
-"PO-Revision-Date: 2026-04-18 10:29+0200\n"
+"POT-Creation-Date: 2026-05-19 14:03+0000\n"
+"PO-Revision-Date: 2026-05-20 10:54+0200\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -416,11 +416,8 @@ msgid "Failed to move: %s"
 msgstr "Nu s-a putut muta: %s"
 
 #: src/gnome-software-local-file-flatpak.desktop.in:2
-#: src/gnome-software-local-file-fwupd.desktop.in:2
-#: src/gnome-software-local-file-packagekit.desktop.in:2
-#: src/gnome-software-local-file-snap.desktop.in:2
-msgid "Software Install"
-msgstr "Instalare aplicații"
+msgid "Software Install (flatpak)"
+msgstr "Instalare aplicații (flatpak)"
 
 #: src/gnome-software-local-file-flatpak.desktop.in:3
 #: src/gnome-software-local-file-fwupd.desktop.in:3
@@ -428,6 +425,18 @@ msgstr "Instalare aplicații"
 #: src/gnome-software-local-file-snap.desktop.in:3
 msgid "Install selected software on the system"
 msgstr "Instalează în sistem aplicațiile alese"
+
+#: src/gnome-software-local-file-fwupd.desktop.in:2
+msgid "Software Install (firmware)"
+msgstr "Instalare aplicații (firmware)"
+
+#: src/gnome-software-local-file-packagekit.desktop.in:2
+msgid "Software Install (packages)"
+msgstr "Instalare aplicații (pachete)"
+
+#: src/gnome-software-local-file-snap.desktop.in:2
+msgid "Software Install (snap)"
+msgstr "Instalare aplicații (snap)"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:134
@@ -5978,12 +5987,12 @@ msgstr "Detaliile erorii"
 msgid "Copy Details"
 msgstr "Copiază detaliile"
 
-#: lib/gs-utils.c:581 lib/gs-utils.c:612
+#: lib/gs-utils.c:582 lib/gs-utils.c:613
 #, c-format
 msgid "Failed to delete file “%s”: %s"
 msgstr "Nu s-a putut șterge fișierul „%s”: %s"
 
-#: lib/gs-utils.c:623
+#: lib/gs-utils.c:624
 #, c-format
 msgid "Failed to delete directory “%s”: %s"
 msgstr "Nu s-a putut șterge dosarul „%s”: %s"
@@ -6614,16 +6623,16 @@ msgid "A snap is a universal Linux package"
 msgstr "Un snap este un pachet Linux universal"
 
 #. TRANSLATORS: this is the system OS upgrade
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:727
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:746
 msgid "System"
 msgstr "Sistem"
 
 #. TRANSLATORS: this is the system component update
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:731
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:750
 msgid "System component"
 msgstr "Componentă de sistem"
 
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:972
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:999
 #, c-format
 msgid "Removing sysupdate job '%s' failed with status %i"
 msgstr "Eliminarea lucrării sysupdate „%s” nu a reușit cu starea %i"
