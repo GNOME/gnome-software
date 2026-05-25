@@ -161,6 +161,7 @@ gs_silo_wrapper_finalize (GObject *object)
 	g_clear_pointer (&self->file_monitors, g_ptr_array_unref);
 	g_clear_pointer (&self->filename, g_free);
 	g_clear_pointer (&self->installed_by_desktopid, g_hash_table_unref);
+	g_clear_object (&self->silo);
 
 	G_OBJECT_CLASS (gs_silo_wrapper_parent_class)->finalize (object);
 }
