@@ -35,6 +35,7 @@ GsApp		*gs_packagekit_helper_get_app_by_id	(GsPackagekitHelper	*self,
 void		 gs_packagekit_helper_cb		(PkProgress		*progress,
 							 PkProgressType		 type,
 							 gpointer		 user_data);
-
+void		 gs_packagekit_helper_attach_client	(GsPackagekitHelper	*self,
+							 PkClient		*client);
 
 G_END_DECLS

@@ -798,6 +798,7 @@ finish_install_apps_enable_repo_op (GTask  *task,
 	data->progress_data = gs_packagekit_helper_new (GS_PLUGIN (self));
 	task_install = gs_packagekit_task_new (GS_PLUGIN (self));
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_install), GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL, interactive);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_install), g_object_ref (data->progress_data));
 
 	data->n_pending_install_ops = 1;  /* to track setup */
 
@@ -1152,6 +1153,7 @@ gs_plugin_packagekit_uninstall_apps_async (GsPlugin                           *p
 	data->progress_data = gs_packagekit_helper_new (GS_PLUGIN (self));
 	task_uninstall = gs_packagekit_task_new (GS_PLUGIN (self));
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_uninstall), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_uninstall), g_object_ref (data->progress_data));
 
 	/* Update the app’s and its addons‘ states. */
 	for (guint i = 0; i < gs_app_list_length (data->apps_to_uninstall); i++) {
@@ -1639,6 +1641,7 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 
 	task_list_apps = gs_packagekit_task_new (plugin);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_list_apps), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_list_apps), g_object_ref (helper));
 
 	if (provides_files != NULL) {
 		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
@@ -1874,6 +1877,8 @@ gs_plugin_packagekit_resolve_packages_with_filter_async (GsPluginPackagekit  *se
 	}
 
 	g_ptr_array_add (package_ids, NULL);
+
+	gs_packagekit_helper_attach_client (data_unowned->progress_data, client_refine);
 
 	/* resolve them all at once */
 	pk_client_resolve_async (client_refine,
@@ -2136,6 +2141,7 @@ refine_task_add_progress_data (GTask              *refine_task,
 	RefineData *data = g_task_get_task_data (refine_task);
 
 	g_ptr_array_add (data->progress_datas, g_object_ref (helper));
+	gs_packagekit_helper_attach_client (helper, data->client_refine);
 
 	return helper;
 }
@@ -4882,6 +4888,7 @@ download_schedule_cb (GObject      *source_object,
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_update),
 				  GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD,
 				  data->interactive);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_update), g_object_ref (data->helper));
 
 	pk_client_get_updates_async (PK_CLIENT (task_update),
 				     pk_bitfield_value (PK_FILTER_ENUM_NONE),
@@ -5230,13 +5237,14 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
 	task_refresh = gs_packagekit_task_new (plugin);
 	pk_task_set_only_download (task_refresh, TRUE);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE, interactive);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_refresh), helper);
 	pk_client_set_cache_age (PK_CLIENT (task_refresh), cache_age_secs);
 
 	/* refresh the metadata */
 	pk_client_refresh_cache_async (PK_CLIENT (task_refresh),
 				       FALSE /* force */,
 				       cancellable,
-				       gs_packagekit_helper_cb, helper,
+				       gs_packagekit_helper_cb, g_steal_pointer (&helper),
 				       refresh_metadata_cb, g_steal_pointer (&task));
 }
 

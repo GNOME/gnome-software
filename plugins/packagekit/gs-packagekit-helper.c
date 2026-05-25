@@ -20,6 +20,9 @@ struct _GsPackagekitHelper {
 	/* Map of source/package ID to `GsApp` instance: */
 	GHashTable		*apps;  /* (not nullable) (owned) (element-type utf8 GsApp) */
 
+	/* clients using the helper; will unref itself after each client is freed */
+	GHashTable		*clients; /* (nullable) (owned) (element-type PkClient NULL) */
+
 	GsApp			*progress_app;  /* (owned) (nullable) */
 	GsAppList		*progress_list;  /* (owned) (nullable) */
 	GsPlugin		*plugin;  /* (owned) (not nullable) */
@@ -173,6 +176,9 @@ gs_packagekit_helper_finalize (GObject *object)
 	g_clear_object (&self->progress_list);
 	g_hash_table_unref (self->apps);
 
+	g_assert (self->clients == NULL || g_hash_table_size (self->clients) == 0);
+	g_clear_pointer (&self->clients, g_hash_table_unref);
+
 	G_OBJECT_CLASS (gs_packagekit_helper_parent_class)->finalize (object);
 }
 
@@ -201,4 +207,37 @@ gs_packagekit_helper_new (GsPlugin *plugin)
 	self = g_object_new (GS_TYPE_PACKAGEKIT_HELPER, NULL);
 	self->plugin = g_object_ref (plugin);
 	return GS_PACKAGEKIT_HELPER (self);
+}
+
+static void
+gs_packagekit_helper_client_freed_cb (gpointer user_data,
+				      GObject *freed_client)
+{
+	GsPackagekitHelper *self = user_data;
+
+	g_assert (g_hash_table_remove (self->clients, freed_client));
+
+	/* this can be the last reference */
+	g_object_unref (self);
+}
+
+/* ensures the @self won't be freed before the @client is freed, because
+   the @self is used as a callback data in @client calls, which can be
+   invoked on idle, long after the plugin's async call was finished. */
+void
+gs_packagekit_helper_attach_client (GsPackagekitHelper *self,
+				    PkClient *client)
+{
+	g_return_if_fail (GS_IS_PACKAGEKIT_HELPER (self));
+	g_return_if_fail (PK_IS_CLIENT (client));
+
+	if (self->clients == NULL)
+		self->clients = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	if (g_hash_table_contains (self->clients, client))
+		return;
+
+	g_object_ref (self);
+	g_hash_table_add (self->clients, client);
+	g_object_weak_ref (G_OBJECT (client), gs_packagekit_helper_client_freed_cb, self);
 }
