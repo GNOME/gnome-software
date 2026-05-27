@@ -46,6 +46,7 @@ flatpak_tests = {
     'source': [
       'flatpak.c',
       '../gs-flatpak-app.c',
+      '../gs-flatpak-utils.c',
     ],
   },
 }
