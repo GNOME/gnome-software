@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-05-19 14:03+0000\n"
-"PO-Revision-Date: 2026-05-20 10:54+0200\n"
+"POT-Creation-Date: 2026-05-27 15:35+0000\n"
+"PO-Revision-Date: 2026-05-28 10:32+0200\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -1017,7 +1017,9 @@ msgid "File system"
 msgstr "Sistemul de fișiere"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
+#. note: xdg-download is listed in filesystems_access, but we list it here again to catch subdirectories
 #: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
+#: plugins/flatpak/gs-flatpak-utils.c:443
 msgid "Downloads folder"
 msgstr "Dosarul în care se descarcă"
 
@@ -6087,136 +6089,13 @@ msgstr "Flatpak"
 msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr "Flatpak este o platformă de aplicații pentru Linux"
 
-#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:391
-#, c-format
-msgid "System folder %s"
-msgstr "Dosar de sistem %s"
-
-#: plugins/flatpak/gs-flatpak.c:392 plugins/flatpak/gs-flatpak.c:393
-#, c-format
-msgid "Home subfolder %s"
-msgstr "Subdosar personal %s"
-
-#: plugins/flatpak/gs-flatpak.c:394
-msgid "Host system folders"
-msgstr "Dosarele sistemului gazdă"
-
-#: plugins/flatpak/gs-flatpak.c:395
-msgid "Host system configuration from /etc"
-msgstr "Personalizarea sistemului gazdă din /etc"
-
-#: plugins/flatpak/gs-flatpak.c:396
-msgid "Desktop folder"
-msgstr "Dosar birou"
-
-#: plugins/flatpak/gs-flatpak.c:396
-#, c-format
-msgid "Desktop subfolder %s"
-msgstr "Subdosar birou %s"
-
-#: plugins/flatpak/gs-flatpak.c:397
-msgid "Documents folder"
-msgstr "Dosar cu documente"
-
-#: plugins/flatpak/gs-flatpak.c:397
-#, c-format
-msgid "Documents subfolder %s"
-msgstr "Subdosar cu documente %s"
-
-#: plugins/flatpak/gs-flatpak.c:398
-msgid "Music folder"
-msgstr "Dosar cu muzică"
-
-#: plugins/flatpak/gs-flatpak.c:398
-#, c-format
-msgid "Music subfolder %s"
-msgstr "Subdosar cu muzică %s"
-
-#: plugins/flatpak/gs-flatpak.c:399
-msgid "Pictures folder"
-msgstr "Dosar cu poze"
-
-#: plugins/flatpak/gs-flatpak.c:399
-#, c-format
-msgid "Pictures subfolder %s"
-msgstr "Subdosar cu poze %s"
-
-#: plugins/flatpak/gs-flatpak.c:400
-msgid "Public Share folder"
-msgstr "Dosar public"
-
-#: plugins/flatpak/gs-flatpak.c:400
-#, c-format
-msgid "Public Share subfolder %s"
-msgstr "Subdosar public %s"
-
-#: plugins/flatpak/gs-flatpak.c:401
-msgid "Videos folder"
-msgstr "Dosar cu video"
-
-#: plugins/flatpak/gs-flatpak.c:401
-#, c-format
-msgid "Videos subfolder %s"
-msgstr "Subdosar cu video %s"
-
-#: plugins/flatpak/gs-flatpak.c:402
-msgid "Templates folder"
-msgstr "Dosar cu modele"
-
-#: plugins/flatpak/gs-flatpak.c:402
-#, c-format
-msgid "Templates subfolder %s"
-msgstr "Subdosar cu modele %s"
-
-#: plugins/flatpak/gs-flatpak.c:403
-msgid "User cache folder"
-msgstr "Dosar cache al utilizatorului"
-
-#: plugins/flatpak/gs-flatpak.c:403
-#, c-format
-msgid "User cache subfolder %s"
-msgstr "Subdosar cache al utilizatorului %s"
-
-#: plugins/flatpak/gs-flatpak.c:404
-msgid "User configuration folder"
-msgstr "Dosar cu preferințele utilizatorului"
-
-#: plugins/flatpak/gs-flatpak.c:404
-#, c-format
-msgid "User configuration subfolder %s"
-msgstr "Subdosar cu preferințele utilizatorului %s"
-
-#: plugins/flatpak/gs-flatpak.c:405
-msgid "User data folder"
-msgstr "Dosarele cu date ale utilizatorului"
-
-#: plugins/flatpak/gs-flatpak.c:405
-#, c-format
-msgid "User data subfolder %s"
-msgstr "Subdosar cu date al utilizatorului %s"
-
-#: plugins/flatpak/gs-flatpak.c:406
-msgid "User runtime folder"
-msgstr "Dosar personal de execuție"
-
-#: plugins/flatpak/gs-flatpak.c:406
-#, c-format
-msgid "User runtime subfolder %s"
-msgstr "Subdosar personal de execuție %s"
-
-#: plugins/flatpak/gs-flatpak.c:464
-#, c-format
-msgid "Filesystem access to %s"
-msgstr "Accesul sistemului de fișiere la %s"
-
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1415
+#: plugins/flatpak/gs-flatpak.c:1070
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Se obțin metadatele flatpak pentru %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3673
+#: plugins/flatpak/gs-flatpak.c:3328
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Eșec la obținerea de informații noi pentru suplimentul „%s”: %s"
@@ -6233,10 +6112,139 @@ msgstr "Instalarea sistemului"
 msgid "App ID"
 msgstr "ID-ul aplicației"
 
+#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
+#: plugins/flatpak/gs-flatpak-utils.c:435
+#, c-format
+msgid "System folder %s"
+msgstr "Dosar de sistem %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:436
+#: plugins/flatpak/gs-flatpak-utils.c:437
+#, c-format
+msgid "Home subfolder %s"
+msgstr "Subdosar personal %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:438
+msgid "Host system folders"
+msgstr "Dosarele sistemului gazdă"
+
+#: plugins/flatpak/gs-flatpak-utils.c:439
+msgid "Host system configuration from /etc"
+msgstr "Personalizarea sistemului gazdă din /etc"
+
+#: plugins/flatpak/gs-flatpak-utils.c:440
+msgid "Desktop folder"
+msgstr "Dosar birou"
+
+#: plugins/flatpak/gs-flatpak-utils.c:440
+#, c-format
+msgid "Desktop subfolder %s"
+msgstr "Subdosar birou %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:441
+msgid "Documents folder"
+msgstr "Dosar cu documente"
+
+#: plugins/flatpak/gs-flatpak-utils.c:441
+#, c-format
+msgid "Documents subfolder %s"
+msgstr "Subdosar cu documente %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:443
+#, c-format
+msgid "Downloads subfolder %s"
+msgstr "Subdosar în care se descarcă %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:444
+msgid "Music folder"
+msgstr "Dosar cu muzică"
+
+#: plugins/flatpak/gs-flatpak-utils.c:444
+#, c-format
+msgid "Music subfolder %s"
+msgstr "Subdosar cu muzică %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:445
+msgid "Pictures folder"
+msgstr "Dosar cu poze"
+
+#: plugins/flatpak/gs-flatpak-utils.c:445
+#, c-format
+msgid "Pictures subfolder %s"
+msgstr "Subdosar cu poze %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:446
+msgid "Public Share folder"
+msgstr "Dosar public"
+
+#: plugins/flatpak/gs-flatpak-utils.c:446
+#, c-format
+msgid "Public Share subfolder %s"
+msgstr "Subdosar public %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:447
+msgid "Videos folder"
+msgstr "Dosar cu video"
+
+#: plugins/flatpak/gs-flatpak-utils.c:447
+#, c-format
+msgid "Videos subfolder %s"
+msgstr "Subdosar cu video %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:448
+msgid "Templates folder"
+msgstr "Dosar cu modele"
+
+#: plugins/flatpak/gs-flatpak-utils.c:448
+#, c-format
+msgid "Templates subfolder %s"
+msgstr "Subdosar cu modele %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:449
+msgid "User cache folder"
+msgstr "Dosar cache al utilizatorului"
+
+#: plugins/flatpak/gs-flatpak-utils.c:449
+#, c-format
+msgid "User cache subfolder %s"
+msgstr "Subdosar cache al utilizatorului %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:450
+msgid "User configuration folder"
+msgstr "Dosar cu preferințele utilizatorului"
+
+#: plugins/flatpak/gs-flatpak-utils.c:450
+#, c-format
+msgid "User configuration subfolder %s"
+msgstr "Subdosar cu preferințele utilizatorului %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:451
+msgid "User data folder"
+msgstr "Dosar cu datele utilizatorului"
+
+#: plugins/flatpak/gs-flatpak-utils.c:451
+#, c-format
+msgid "User data subfolder %s"
+msgstr "Subdosar cu datele utilizatorului %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:452
+msgid "User runtime folder"
+msgstr "Dosar personal de execuție"
+
+#: plugins/flatpak/gs-flatpak-utils.c:452
+#, c-format
+msgid "User runtime subfolder %s"
+msgstr "Subdosar personal de execuție %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:510
+#, c-format
+msgid "Filesystem access to %s"
+msgstr "Accesul sistemului de fișiere la %s"
+
 #: plugins/flatpak/gs-plugin-flatpak.c:1511
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
-msgstr "Nu s-a putut adăuga suplimentul „%s” în lista de instalareg: %s"
+msgstr "Nu s-a putut adăuga suplimentul „%s” în lista de instalare: %s"
 
 #: plugins/flatpak/gs-plugin-flatpak.c:1525
 #, c-format
@@ -6249,7 +6257,7 @@ msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
 "Remove the filter and repeat the install. Detailed error: %s"
 msgstr ""
-"„%s” la distanță nu permite instalarea a „%s”, posibil din cauza filtrului "
+"„%s” la distanță nu permite instalarea „%s”, posibil din cauza filtrului "
 "acestuia. Elimină filtrul și repetă instalarea. Eroare detaliată: %s"
 
 #. TRANSLATORS: as in laptop battery power
@@ -6290,7 +6298,7 @@ msgstr "Se așteaptă ca actualizarea să fie aplicată"
 #. TRANSLATORS: as in, wired mains power for a laptop
 #: plugins/fwupd/gs-fwupd-app.c:99
 msgid "Device requires AC power to be connected"
-msgstr "Aparatul trebuie conectat la o sursă de curent"
+msgstr "Aparatul trebuie conectat la o sursă de energie electrică"
 
 #. TRANSLATORS: lid means "laptop top cover"
 #: plugins/fwupd/gs-fwupd-app.c:103
