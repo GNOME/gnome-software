@@ -1286,7 +1286,8 @@ gs_plugin_packagekit_set_update_app_state (GsApp *app,
 	    pk_package_get_info (package) == PK_INFO_ENUM_OBSOLETING) {
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	} else if (pk_package_get_info (package) == PK_INFO_ENUM_INSTALL ||
-		   pk_package_get_info (package) == PK_INFO_ENUM_INSTALLING) {
+		   pk_package_get_info (package) == PK_INFO_ENUM_INSTALLING ||
+		   pk_package_get_info (package) == PK_INFO_ENUM_ENHANCEMENT) {
 		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	} else {
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
