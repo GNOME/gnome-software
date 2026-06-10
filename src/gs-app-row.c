@@ -233,6 +233,14 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		break;
 	}
 
+	/* tooltip for icon-only (narrow) mode */
+	if (priv->is_narrow) {
+		gtk_widget_set_tooltip_text (priv->button,
+					     gs_progress_button_get_label (GS_PROGRESS_BUTTON (priv->button)));
+	} else {
+		gtk_widget_set_tooltip_text (priv->button, NULL);
+	}
+
 	/* visible */
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_UNAVAILABLE:
