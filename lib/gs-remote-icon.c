@@ -167,8 +167,11 @@ gs_remote_icon_get_cache_filename (const gchar  *uri,
 
 	/* convert filename from jpg to png, as we always convert to PNG on
 	 * download */
-	if (g_str_has_suffix (uri_basename, ".jpg"))
-		memcpy (uri_basename + strlen (uri_basename) - 4, ".png", 4);
+	if (g_str_has_suffix (uri_basename, ".jpg")) {
+		gsize len = strlen (uri_basename);
+		if (len >= 4)
+			memcpy (uri_basename + len - 4, ".png", 4);
+	}
 
 	cache_basename = g_strdup_printf ("%s-%s", uri_checksum, uri_basename);
 
