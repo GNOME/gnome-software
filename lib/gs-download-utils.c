@@ -196,7 +196,7 @@ gs_download_stream_async (SoupSession                *soup_session,
 	data->uri = g_strdup (uri);
 	data->output_stream = g_object_ref (output_stream);
 	data->close_output_stream = TRUE;
-	data->buffer_size_bytes = 8192;  /* arbitrarily chosen */
+	data->buffer_size_bytes = 64 * 1024;  /* reduce async callback overhead */
 	data->io_priority = io_priority;
 	data->progress_callback = progress_callback;
 	data->progress_user_data = progress_user_data;
