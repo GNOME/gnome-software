@@ -2064,6 +2064,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 			g_debug ("found remote %s", remote_name);
 			gs_flatpak_set_app_origin (self, app, remote_name, xremote, interactive, cancellable);
 			gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (FLATPAK_REF (xref)));
+			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
 			gs_plugin_refine_item_scope (self, app);
 			return TRUE;
 		}
