@@ -3510,24 +3510,16 @@ gs_flatpak_refine_wildcards (GsFlatpak *self,
 					}
 				}
 				if (xref_str != NULL) {
-					g_auto(GStrv) split = NULL;
+					g_autoptr(FlatpakRef) xref = NULL;
 
-					/* get the kind/name/arch/branch */
-					split = g_strsplit (xref_str, "/", -1);
-					if (g_strv_length (split) == 4) {
-						const gchar *comp_type = xb_node_get_attr (component, "type");
-						AsComponentKind kind = as_component_kind_from_string (comp_type);
-						if (kind != AS_COMPONENT_KIND_UNKNOWN)
-							gs_app_set_kind (new, kind);
-						else if (g_ascii_strcasecmp (split[0], "app") == 0)
-							gs_app_set_kind (new, AS_COMPONENT_KIND_DESKTOP_APP);
-						else if (g_ascii_strcasecmp (split[0], "runtime") == 0)
-							gs_flatpak_set_runtime_kind_from_id (new);
-						gs_flatpak_app_set_ref_name (new, split[1]);
-						gs_flatpak_app_set_ref_arch (new, split[2]);
-						gs_app_set_branch (new, split[3]);
-						gs_app_set_metadata (new, "GnomeSoftware::packagename-value", xref_str);
-					}
+					/* parse the ref */
+					xref = flatpak_ref_parse (xref_str, &error_local);
+					if (xref != NULL)
+						gs_flatpak_set_metadata (self, new, xref);
+					else
+						g_debug ("Failed to parse ref ‘%s’ for wildcard ‘%s’: %s",
+							 xref_str, id, error_local->message);
+					g_clear_error (&error_local);
 				}
 			}
 
