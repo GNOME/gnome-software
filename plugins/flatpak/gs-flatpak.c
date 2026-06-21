@@ -3211,6 +3211,27 @@ gs_flatpak_refine_app_internal (GsFlatpak *self,
 		}
 	}
 
+	/* EOL data, which we can only get from a FlatpakRemoteRef (or a
+	 * FlatpakInstalledRef, but that’s easy and always happens in create_installed()) */
+	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SETUP_ACTION) &&
+	    gs_app_get_metadata_item (app, "GnomeSoftware::EolReason") == NULL) {
+		g_autoptr(FlatpakRemoteRef) remote_ref = NULL;
+		FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
+
+		remote_ref = flatpak_installation_fetch_remote_ref_sync (installation,
+									 gs_app_get_origin (app),
+									 gs_flatpak_app_get_ref_kind (app),
+									 gs_flatpak_app_get_ref_name (app),
+									 gs_flatpak_app_get_ref_arch (app),
+									 gs_app_get_branch (app),
+									 cancellable, error);
+		if (remote_ref == NULL)
+			return FALSE;
+
+		if (flatpak_remote_ref_get_eol (remote_ref) != NULL)
+			gs_app_set_metadata (app, "GnomeSoftware::EolReason", flatpak_remote_ref_get_eol (remote_ref));
+	}
+
 	/* size */
 	if (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_SIZE) {
 		g_autoptr(GError) error_local = NULL;
