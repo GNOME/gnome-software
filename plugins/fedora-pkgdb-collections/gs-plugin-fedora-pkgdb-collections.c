@@ -721,7 +721,7 @@ refine_app (GsPluginFedoraPkgdbCollections  *self,
 	/* find item */
 	for (guint i = 0; i < distros->len; i++) {
 		item = g_ptr_array_index (distros, i);
-		if (item->version == self->os_version &&
+		if (item->version == app_version &&
 		    g_ascii_strcasecmp (item->name, self->os_name) == 0)
 			break;
 		item = NULL;
