@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-04-16 12:35+0000\n"
+"POT-Creation-Date: 2026-05-22 04:26+0000\n"
 "PO-Revision-Date: 2026-04-26 17:24+0200\n"
 "Last-Translator: Victoria Niedzielska <victorian@gnome.org>\n"
 "Language-Team: Polish <https://l10n.gnome.org/teams/pl/>\n"
@@ -73,7 +73,7 @@ msgid "The update details"
 msgstr "Informacje o aktualizacji"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3033
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3057
 #: src/gs-application.c:400
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
@@ -161,15 +161,15 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:20
 msgid "Notify the user about software updated in the background"
-msgstr "Powiadamianie osoby o oprogramowaniu zaktualizowanym w tle"
+msgstr "Powiadamianie użytkownika o oprogramowaniu zaktualizowanym w tle"
 
 #: data/org.gnome.software.gschema.xml:21
 msgid ""
 "If enabled, GNOME Software notifies the user about updates that happened "
 "whilst the user was idle."
 msgstr ""
-"Jeśli jest włączone, to Oprogramowanie GNOME powiadamia osobę o wykonanych "
-"aktualizacjach, kiedy nie używała komputera."
+"Jeśli jest włączone, to Oprogramowanie GNOME powiadamia użytkownika "
+"o aktualizacjach wykonanych, kiedy nie używał komputera."
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
@@ -183,7 +183,7 @@ msgid ""
 msgstr ""
 "Jeśli jest włączone, to Oprogramowanie GNOME automatycznie odświeża w tle, "
 "nawet podczas używania połączenia taryfowego (pobieranie metadanych, "
-"wyszukiwanie aktualizacji itp., co może oznaczać koszty dla osoby)."
+"wyszukiwanie aktualizacji itp., co może oznaczać koszty dla użytkownika)."
 
 #: data/org.gnome.software.gschema.xml:30
 msgid "Whether it’s the very first run of GNOME Software"
@@ -286,7 +286,8 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:102
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
-"Instalowanie pakietów dla wszystkich osób na systemie, gdzie to możliwe"
+"Instalowanie pakietów dla wszystkich użytkowników systemu tam, gdzie to "
+"możliwe"
 
 #: data/org.gnome.software.gschema.xml:106
 msgid "Allow access to the Software Repositories dialog"
@@ -299,7 +300,7 @@ msgstr "Oferowanie aktualizacji do wydań testowych"
 #: data/org.gnome.software.gschema.xml:114
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
-"Wyświetlanie elementów interfejsu informujących osobę, że program jest "
+"Wyświetlanie elementu interfejsu informującego użytkownika, że program jest "
 "własnościowy"
 
 #: data/org.gnome.software.gschema.xml:118
@@ -331,9 +332,9 @@ msgid ""
 "false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
 "directory"
 msgstr ""
-"Instalowanie plików AppStream w położeniu systemowym dla wszystkich osób. "
-"Wyłączenie spowoduje instalowanie plików w niestandardowym katalogu "
-"$XDG_DATA_HOME/swcatalog/xml"
+"Instalowanie plików AppStream w położeniu systemowym dla wszystkich "
+"użytkowników. Wyłączenie spowoduje instalowanie plików w niestandardowym "
+"katalogu $XDG_DATA_HOME/swcatalog/xml"
 
 #: data/org.gnome.software.gschema.xml:135
 msgid ""
@@ -368,8 +369,8 @@ msgid ""
 "Set to 'true' to show only apps from developers whose identity has been "
 "verified."
 msgstr ""
-"Ustawienie na wartość „true” spowoduje wyświetlanie tylko programów od osób, "
-"których tożsamość została zweryfikowana."
+"Ustawienie na wartość „true” spowoduje wyświetlanie tylko programów od "
+"autorów, których tożsamość została zweryfikowana."
 
 #: data/org.gnome.software.gschema.xml:151
 msgid "The timestamp of the last received historical updates."
@@ -398,7 +399,7 @@ msgstr "Należy podać dokładnie jedną nazwę pliku"
 #. TRANSLATORS: only able to install files as root
 #: gs-install-appstream/gs-install-appstream.c:201
 msgid "This program can only be used by the root user"
-msgstr "Ten program może być używany tylko przez osobę root"
+msgstr "Ten program może być używany tylko przez użytkownika root"
 
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:209
@@ -591,22 +592,23 @@ msgstr "Brak informacji o możliwości wydawania pieniędzy"
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:294
 msgid "Chat Between Users"
-msgstr "Czatowanie między osobami"
+msgstr "Czatowanie między użytkownikami"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:296
 msgid "No information regarding ways to chat with other users"
-msgstr "Brak informacji o możliwościach czatowania z innymi osobami"
+msgstr "Brak informacji o możliwościach czatowania z innymi użytkownikami"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:304
 msgid "Audio Chat Between Users"
-msgstr "Rozmowy głosowe między osobami"
+msgstr "Rozmowy głosowe między użytkownikami"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:306
 msgid "No information regarding ways to talk with other users"
-msgstr "Brak informacji o możliwościach rozmów głosowych z innymi osobami"
+msgstr ""
+"Brak informacji o możliwościach rozmów głosowych z innymi użytkownikami"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:314
@@ -619,8 +621,8 @@ msgid ""
 "No information regarding sharing of social network usernames or email "
 "addresses"
 msgstr ""
-"Brak informacji o udostępnianiu nazw osób na serwisach społecznościowych lub "
-"adresów email"
+"Brak informacji o udostępnianiu nazw użytkowników serwisów społecznościowych "
+"lub adresów email"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:324
@@ -630,7 +632,8 @@ msgstr "Informacje identyfikujące"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:326
 msgid "No information regarding sharing of user information with third parties"
-msgstr "Brak informacji o udostępnianiu informacji o osobach stronom trzecim"
+msgstr ""
+"Brak informacji o udostępnianiu informacji o użytkownikach stronom trzecim"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:334
@@ -640,7 +643,8 @@ msgstr "Udostępnianie położenia"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:336
 msgid "No information regarding sharing of physical location with other users"
-msgstr "Brak informacji o udostępnianiu rzeczywistego adresu innym osobom"
+msgstr ""
+"Brak informacji o udostępnianiu rzeczywistego adresu innym użytkownikom"
 
 # I really wish "homophobia" was a category instead of this :/
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
@@ -1181,7 +1185,7 @@ msgstr "Wyświetla numer wersji"
 #: src/gs-application.c:395
 #, c-format
 msgid "Copyright © 2016–%d GNOME Software contributors"
-msgstr "Copyright © 2016-%d osoby tworzące Oprogramowanie GNOME"
+msgstr "Prawa autorskie © 2016-%d współtwórcy Oprogramowania GNOME"
 
 #: src/gs-application.c:409
 msgid "translator-credits"
@@ -1193,7 +1197,7 @@ msgstr ""
 #. TRANSLATORS: we tried to show an app that did not exist
 #: src/gs-application.c:666
 msgid "Sorry! There are no details for that application."
-msgstr "Nie ma informacji o tym programie."
+msgstr "Przepraszamy! Nie ma informacji o tym programie."
 
 #. Translators: The disk usage of an app when installed.
 #. * This is displayed in a context tile, so the string should be short.
@@ -1324,7 +1328,7 @@ msgstr "Ma dostęp do określonych plików"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:418 src/gs-safety-context-dialog.c:263
 msgid "Can access and change user settings"
-msgstr "Może używać i zmieniać ustawienia osoby"
+msgstr "Może używać i zmieniać ustawienia użytkownika"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
@@ -1342,7 +1346,7 @@ msgstr "Może uzyskać dowolne uprawnienia"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:444
 msgid "Software developer is verified"
-msgstr "Osoba tworząca oprogramowanie jest zweryfikowana"
+msgstr "Zweryfikowany autor oprogramowania"
 
 #. Translators: This indicates that an app has been packaged
 #. * by the user’s distribution and is probably safe.
@@ -1671,7 +1675,7 @@ msgstr "_Zaloguj się"
 #. Translators: Title for a login entry.
 #: src/gs-basic-auth-dialog.ui:45
 msgid "_User"
-msgstr "_Osoba"
+msgstr "_Użytkownik"
 
 #. Translators: Title for a login entry.
 #: src/gs-basic-auth-dialog.ui:54
@@ -2526,13 +2530,13 @@ msgstr "Inne programy od %s"
 #: src/gs-details-page.c:1463
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
-msgstr "Osoba %s dowiodła posiadanie programu %s"
+msgstr "Autor %s dowiódł posiadanie programu %s"
 
 #. Translators: the %s is replaced with the app id
 #: src/gs-details-page.c:1466
 #, c-format
 msgid "Developer has proven the ownership of %s"
-msgstr "Osoba tworząca program %s dowiodła posiadanie go "
+msgstr "Autor dowiódł posiadanie programu %s"
 
 #. TRANSLATORS: we need a remote server to process
 #: src/gs-details-page.c:1821
@@ -3473,9 +3477,9 @@ msgid ""
 "\n"
 "You may not be able to contribute to this app."
 msgstr ""
-"Ten program nie jest tworzony publicznie, więc tylko osoby tworzące go "
-"wiedzą, jak działa. Może być niebezpieczny na trudne do wykrycia sposoby "
-"i może zmienić się niespodziewanie.\n"
+"Ten program nie jest tworzony publicznie, więc tylko autorzy wiedzą, jak "
+"działa. Może być niebezpieczny na trudne do wykrycia sposoby i może zmienić "
+"się niespodziewanie.\n"
 "\n"
 "Nie można pomóc go ulepszać."
 
@@ -3487,7 +3491,7 @@ msgid ""
 "\n"
 "You may not be able to contribute to this software."
 msgstr ""
-"To oprogramowanie nie jest tworzone publicznie, więc tylko osoby tworzące go "
+"To oprogramowanie nie jest tworzone publicznie, więc tylko jego autorzy "
 "wiedzą, jak działa. Może być niebezpieczne na trudne do wykrycia sposoby "
 "i może zmienić się niespodziewanie.\n"
 "\n"
@@ -3564,7 +3568,8 @@ msgstr "Uruchamianie"
 #. TRANSLATORS: only run app as non-root user
 #: src/gs-main.c:39
 msgid "Software should be run as a non-root user. Exiting…"
-msgstr "Oprogramowanie nie może działać jako osoba root. Kończenie działania…"
+msgstr ""
+"Oprogramowanie nie może działać jako użytkownik root. Kończenie działania…"
 
 #: src/gs-origin-popover-row.c:105
 msgid "Unknown source"
@@ -3578,7 +3583,7 @@ msgstr "Beta"
 #. Translators: It's an origin scope, 'User' or 'System' installation
 #: src/gs-origin-popover-row.ui:131
 msgid "User"
-msgstr "Indywidualnie"
+msgstr "Użytkownika"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
@@ -3691,7 +3696,7 @@ msgstr "_OK"
 
 #: src/gs-page.c:265
 msgid "User declined installation"
-msgstr "Osoba odmówiła instalacji"
+msgstr "Użytkownik odmówił instalacji"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an app summary, e.g. 'GNOME Clocks'
@@ -3863,12 +3868,13 @@ msgstr ""
 
 #: src/gs-prefs-dialog.ui:97
 msgid "Only Show _Verified Developers"
-msgstr "Tylko programy ze _zweryfikowanymi osobami tworzącymi"
+msgstr "Tylko _zweryfikowani autorzy"
 
 #: src/gs-prefs-dialog.ui:98
 msgid "Show only apps from developers whose identity has been verified"
 msgstr ""
-"Wyświetlanie tylko programów od osób, których tożsamość została zweryfikowana"
+"Wyświetlanie tylko programów od autorów, których tożsamość została "
+"zweryfikowana"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -3968,7 +3974,7 @@ msgstr ""
 
 #: src/gs-repos-dialog.c:543
 msgid "Unable to look up related apps"
-msgstr "Nie można wyszukać podobnych aplikacji"
+msgstr "Nie udało się wyszukać podobnych programów"
 
 #: src/gs-repos-dialog.c:569 src/gs-repos-dialog.c:629
 msgid "Unable to load repositories"
@@ -4198,7 +4204,7 @@ msgid ""
 msgstr ""
 "Proszę podać ocenę, podsumowanie i tekst opinii. Opinie nie powinny być "
 "używane do zgłaszania problemów: zamiast tego należy skontaktować się "
-"z osobą tworzącą program lub używaną dystrybucją."
+"z autorem programu lub dostawcą wsparcia."
 
 #: src/gs-review-dialog.ui:76
 msgid "Review Summary"
@@ -4340,7 +4346,7 @@ msgstr "Nie ma dostępu do sieci"
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:203
 msgid "User Device Access"
-msgstr "Dostęp do urządzeń osoby"
+msgstr "Dostęp do urządzeń użytkownika"
 
 #: src/gs-safety-context-dialog.c:204
 msgid "Can access devices such as webcams or gaming controllers"
@@ -4349,7 +4355,7 @@ msgstr "Może mieć dostęp do urządzeń, na przykład kamerki lub kontrolera"
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:207
 msgid "No User Device Access"
-msgstr "Brak dostępu do urządzeń osoby"
+msgstr "Brak dostępu do urządzeń użytkownika"
 
 #: src/gs-safety-context-dialog.c:208
 msgid "Cannot access devices such as webcams or gaming controllers"
@@ -4403,7 +4409,7 @@ msgstr "Dowolne uprawnienia"
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:262
 msgid "User Settings"
-msgstr "Ustawienia osoby"
+msgstr "Ustawienia użytkownika"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:274
@@ -4507,11 +4513,11 @@ msgstr "W ogóle nie ma dostępu do bezportalowych usług systemowych ani sesji
 #. * It’s used in a context tile, so should be short.
 #: src/gs-safety-context-dialog.c:438
 msgid "App developer is verified"
-msgstr "Zweryfikowano osobę tworzącą program"
+msgstr "Zweryfikowany autor programu"
 
 #: src/gs-safety-context-dialog.c:439
 msgid "The developer of this app has been verified to be who they say they are"
-msgstr "Tożsamość osoby tworzącej program została zweryfikowana"
+msgstr "Tożsamość autora tego programu została zweryfikowana"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
@@ -5399,11 +5405,11 @@ msgstr "Dane wymagane do działania programu"
 
 #: src/gs-storage-context-dialog.c:145
 msgid "User Data"
-msgstr "Dane osoby"
+msgstr "Dane użytkownika"
 
 #: src/gs-storage-context-dialog.c:146
 msgid "Data created by you in the app"
-msgstr "Dane utworzone przez Ciebie w programie"
+msgstr "Dane utworzone przez użytkownika w programie"
 
 #: src/gs-storage-context-dialog.c:153
 msgid "Cache Data"
@@ -6162,39 +6168,39 @@ msgstr "Podkatalog szablonów %s"
 
 #: plugins/flatpak/gs-flatpak.c:401
 msgid "User cache folder"
-msgstr "Katalog pamięci podręcznej osoby"
+msgstr "Katalog pamięci podręcznej użytkownika"
 
 #: plugins/flatpak/gs-flatpak.c:401
 #, c-format
 msgid "User cache subfolder %s"
-msgstr "Podkatalog pamięci podręcznej osoby %s"
+msgstr "Podkatalog pamięci podręcznej użytkownika %s"
 
 #: plugins/flatpak/gs-flatpak.c:402
 msgid "User configuration folder"
-msgstr "Katalog konfiguracji osoby"
+msgstr "Katalog konfiguracji użytkownika"
 
 #: plugins/flatpak/gs-flatpak.c:402
 #, c-format
 msgid "User configuration subfolder %s"
-msgstr "Podkatalog konfiguracji osoby %s"
+msgstr "Podkatalog konfiguracji użytkownika %s"
 
 #: plugins/flatpak/gs-flatpak.c:403
 msgid "User data folder"
-msgstr "Katalog danych osoby"
+msgstr "Katalog danych użytkownika"
 
 #: plugins/flatpak/gs-flatpak.c:403
 #, c-format
 msgid "User data subfolder %s"
-msgstr "Podkatalog danych osoby %s"
+msgstr "Podkatalog danych użytkownika %s"
 
 #: plugins/flatpak/gs-flatpak.c:404
 msgid "User runtime folder"
-msgstr "Katalog wykonawczy osoby"
+msgstr "Katalog wykonawczy użytkownika"
 
 #: plugins/flatpak/gs-flatpak.c:404
 #, c-format
 msgid "User runtime subfolder %s"
-msgstr "Podkatalog wykonawczy osoby %s"
+msgstr "Podkatalog wykonawczy użytkownika %s"
 
 #: plugins/flatpak/gs-flatpak.c:462
 #, c-format
@@ -6214,7 +6220,7 @@ msgstr "Dopracowanie dodatku „%s” się nie powiodło: %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:94
 msgid "User Installation"
-msgstr "Instalacja osoby"
+msgstr "Instalacja użytkownika"
 
 #: plugins/flatpak/gs-flatpak-utils.c:94
 msgid "System Installation"
@@ -6547,7 +6553,7 @@ msgstr "Klucz %s"
 #: plugins/packagekit/gs-packagekit-task.c:245
 #, c-format
 msgid "Key user: %s"
-msgstr "Klucz osoby: %s"
+msgstr "Użytkownik klucza: %s"
 
 #. Translators: the '%s' is replaced with the key fingerprint, a few hex digits
 #: plugins/packagekit/gs-packagekit-task.c:247
