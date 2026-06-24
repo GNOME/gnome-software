@@ -152,6 +152,8 @@ gs_application_init (GsApplication *application)
 		  _("Enable verbose debugging output (from the running instance, if already running)"), NULL },
 		{ "autoupdate", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Installs any pending updates in the background"), NULL },
+		{ "refresh-updates", 0, 0, G_OPTION_ARG_NONE, NULL,
+		  _("Show the updates page and start checking for available updates"), NULL },
 		{ "prefs", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Show preferences"), NULL },
 		{ "quit", 0, 0, G_OPTION_ARG_NONE, NULL,
@@ -1464,6 +1466,11 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	if (g_variant_dict_contains (options, "autoupdate")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"autoupdate",
+						NULL);
+	}
+	if (g_variant_dict_contains (options, "refresh-updates")) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"refresh-updates",
 						NULL);
 	}
 	if (g_variant_dict_contains (options, "prefs")) {
