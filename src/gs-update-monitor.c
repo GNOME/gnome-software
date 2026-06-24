@@ -201,12 +201,22 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 				     GsAppList *apps,
 				     gboolean can_download,
 				     const gchar **out_title,
-				     const gchar **out_body)
+				     const gchar **out_body,
+				     const char **out_additional_button_label,
+				     const char **out_additional_detailed_action)
 {
 	gboolean has_important = FALSE, all_downloaded = FALSE, any_downloaded = FALSE;
 	gboolean should_download, res = FALSE;
 	gint64 notification_timestamp_days;
-	
+
+	g_return_val_if_fail ((out_additional_button_label == NULL) == (out_additional_detailed_action == NULL), FALSE);
+
+	/* We don’t normally expect these to be returned, so default to NULL */
+	if (out_additional_detailed_action != NULL) {
+		*out_additional_button_label = NULL;
+		*out_additional_detailed_action = NULL;
+	}
+
 	if (!gs_plugin_loader_get_allow_updates (monitor->plugin_loader))
 		return FALSE;
 
@@ -253,6 +263,13 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 			    check_if_timestamp_more_than_days_ago (monitor, "check-timestamp", 7)) {
 				*out_title = _("Could Not Check for Updates Recently");
 				*out_body = _("Updates may have been paused due to being on a metered network, power saver mode, or game mode");
+
+				/* Strictly we don’t need an additional button here, as the default action
+				 * for the notification will open the updates page. From there, users still
+				 * have to manually press the refresh button, though, which might be
+				 * non-obvious; so add a button to the notification to help. */
+				*out_additional_button_label = _("Check for Updates");
+				*out_additional_detailed_action = "app.refresh-updates";
 				res = TRUE;
 			}
 		} else if (has_important) {
@@ -310,6 +327,7 @@ notify_about_pending_updates (GsUpdateMonitor *monitor,
 			      gboolean can_download)
 {
 	const gchar *title = NULL, *body = NULL;
+	const char *additional_button_label = NULL, *additional_detailed_action = NULL;
 	gint64 time_diff_sec;
 	g_autoptr(GNotification) nn = NULL;
 
@@ -320,7 +338,8 @@ notify_about_pending_updates (GsUpdateMonitor *monitor,
 		return;
 	}
 
-	if (!should_notify_about_pending_updates (monitor, apps, can_download, &title, &body)) {
+	if (!should_notify_about_pending_updates (monitor, apps, can_download, &title, &body,
+						  &additional_button_label, &additional_detailed_action)) {
 		g_debug ("No update notification needed");
 		return;
 	}
@@ -338,6 +357,10 @@ notify_about_pending_updates (GsUpdateMonitor *monitor,
 	nn = g_notification_new (title);
 	g_notification_set_body (nn, body);
 	g_notification_set_default_action_and_target (nn, "app.set-mode", "s", "updates");
+
+	if (additional_button_label != NULL)
+		g_notification_add_button (nn, additional_button_label, additional_detailed_action);
+
 	gs_application_send_notification (monitor->application, "updates-available", nn, MINUTES_IN_A_DAY);
 
 	/* Keep the old notification time if we cannot download updates (in which case apps == NULL),
