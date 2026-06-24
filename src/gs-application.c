@@ -629,6 +629,17 @@ set_mode_activated (GSimpleAction *action,
 }
 
 static void
+refresh_updates_activated (GSimpleAction *action,
+                           GVariant      *parameter,
+                           void          *user_data)
+{
+	GsApplication *app = GS_APPLICATION (user_data);
+
+	gs_application_present_window (app, NULL);
+	gs_shell_refresh_updates (app->shell);
+}
+
+static void
 search_activated (GSimpleAction *action,
 		  GVariant      *parameter,
 		  gpointer       data)
@@ -1123,6 +1134,7 @@ static GActionEntry actions_after_loading[] = {
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "install-resources", install_resources_activated, "(sassss)", NULL, NULL },
 	{ "show-metainfo", show_metainfo_activated, "(ay)", NULL, NULL },
+	{ "refresh-updates", refresh_updates_activated, NULL, NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 

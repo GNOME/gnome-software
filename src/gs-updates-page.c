@@ -828,11 +828,29 @@ gs_updates_page_button_mobile_refresh_cb (GtkWidget *widget,
 	gs_updates_page_get_new_updates (self);
 }
 
-static void
-gs_updates_page_button_refresh_cb (GtkWidget *widget,
-                                   GsUpdatesPage *self)
+/**
+ * gs_updates_page_refresh_updates:
+ * @self: an updates page
+ *
+ * Start refreshing the update metadata.
+ *
+ * As if the user had pressed the ‘refresh’ button. If the user needs to be
+ * asked about mobile data usage, a dialogue will be shown for that.
+ *
+ * If a refresh operation is already in progress, or if `allow-updates` is
+ * disabled, this is a no-op.
+ *
+ * Since: 51
+ */
+void
+gs_updates_page_refresh_updates (GsUpdatesPage *self)
 {
 	AdwDialog *dialog;
+
+	/* If we’re already checking for updates, or are not allowed, do nothing */
+	if (self->cancellable_refresh != NULL ||
+	    !gs_plugin_loader_get_allow_updates (self->plugin_loader))
+		return;
 
 	/* check we have a "free" network connection */
 	if (gs_plugin_loader_get_network_available (self->plugin_loader) &&
@@ -860,6 +878,13 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 				  self);
 		adw_dialog_present (dialog, GTK_WIDGET (self));
 	}
+}
+
+static void
+gs_updates_page_button_refresh_cb (GtkWidget *widget,
+                                   GsUpdatesPage *self)
+{
+	gs_updates_page_refresh_updates (self);
 }
 
 static void

@@ -2472,6 +2472,25 @@ gs_shell_uninstall (GsShell *shell, GsApp *app)
 	gs_page_remove_app (shell->pages[GS_SHELL_MODE_DETAILS], app, shell->cancellable);
 }
 
+/**
+ * gs_shell_refresh_updates:
+ * @shell: the shell
+ *
+ * Switch to the ‘updates’ page and start refreshing the update metadata.
+ *
+ * This is as if the user had switched to that page and pressed the ‘refresh’
+ * button.
+ *
+ * Since: 51
+ */
+void
+gs_shell_refresh_updates (GsShell *shell)
+{
+	save_back_entry (shell);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_UPDATES, NULL, TRUE);
+	gs_updates_page_refresh_updates (GS_UPDATES_PAGE (shell->pages[GS_SHELL_MODE_UPDATES]));
+}
+
 static void
 dialog_closed_cb (AdwDialog *dialog,
                   void      *user_data)
