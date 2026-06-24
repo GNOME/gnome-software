@@ -251,8 +251,8 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 		if (apps == NULL || !gs_app_list_length (apps)) {
 			if (notification_timestamp_days >= 1 &&
 			    check_if_timestamp_more_than_days_ago (monitor, "check-timestamp", 7)) {
-				*out_title = _("Updates Are Out of Date");
-				*out_body = _("Please check for available updates");
+				*out_title = _("Could Not Check for Updates Recently");
+				*out_body = _("Updates may have been paused due to being on a metered network, power saver mode, or game mode");
 				res = TRUE;
 			}
 		} else if (has_important) {
