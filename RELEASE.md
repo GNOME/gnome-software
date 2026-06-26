@@ -59,6 +59,11 @@ git add -p
 git commit -S -m "Release version ${new_version}"
 ```
 
+Test build the release tarball:
+```sh
+meson dist -C ${builddir}
+```
+
 Tag, sign and push the release (see below for information about `git evtag`):
 ```
 git evtag sign -u ${key_id} ${new_version}
