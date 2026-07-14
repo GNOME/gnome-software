@@ -152,6 +152,8 @@ gs_application_init (GsApplication *application)
 		  _("Enable verbose debugging output (from the running instance, if already running)"), NULL },
 		{ "autoupdate", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Installs any pending updates in the background"), NULL },
+		{ "refresh-updates", 0, 0, G_OPTION_ARG_NONE, NULL,
+		  _("Show the updates page and start checking for available updates"), NULL },
 		{ "prefs", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Show preferences"), NULL },
 		{ "quit", 0, 0, G_OPTION_ARG_NONE, NULL,
@@ -626,6 +628,17 @@ set_mode_activated (GSimpleAction *action,
 	} else {
 		g_warning ("Mode '%s' not recognised", mode);
 	}
+}
+
+static void
+refresh_updates_activated (GSimpleAction *action,
+                           GVariant      *parameter,
+                           void          *user_data)
+{
+	GsApplication *app = GS_APPLICATION (user_data);
+
+	gs_application_present_window (app, NULL);
+	gs_shell_refresh_updates (app->shell);
 }
 
 static void
@@ -1123,6 +1136,7 @@ static GActionEntry actions_after_loading[] = {
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "install-resources", install_resources_activated, "(sassss)", NULL, NULL },
 	{ "show-metainfo", show_metainfo_activated, "(ay)", NULL, NULL },
+	{ "refresh-updates", refresh_updates_activated, NULL, NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 
@@ -1452,6 +1466,11 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	if (g_variant_dict_contains (options, "autoupdate")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"autoupdate",
+						NULL);
+	}
+	if (g_variant_dict_contains (options, "refresh-updates")) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"refresh-updates",
 						NULL);
 	}
 	if (g_variant_dict_contains (options, "prefs")) {
