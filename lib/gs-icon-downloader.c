@@ -270,6 +270,30 @@ gs_icon_downloader_queue_app (GsIconDownloader *self,
 				download_remote_icons_of_the_app_cb, g_steal_pointer (&task));
 }
 
+/**
+ * gs_icon_downloader_queue_app_list:
+ * @self: a #GsIconDownloader
+ * @list: (transfer none): a #GsAppList
+ * @interactive: whether this icon download was triggered by user action
+ *
+ * Puts each app in the @list in the queue to download icons.
+ *
+ * Since: 51
+ **/
+void
+gs_icon_downloader_queue_app_list (GsIconDownloader *self,
+				   GsAppList *list,
+				   gboolean interactive)
+{
+	g_return_if_fail (GS_IS_ICON_DOWNLOADER (self));
+	g_return_if_fail (GS_IS_APP_LIST (list));
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		gs_icon_downloader_queue_app (self, app, interactive);
+	}
+}
+
 /* Run in @worker. */
 static void
 download_remote_icons_of_the_app_cb (GTask        *task,

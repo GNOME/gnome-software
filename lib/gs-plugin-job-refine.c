@@ -728,6 +728,34 @@ run_refine_internal_finish (GsPluginJobRefine  *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+typedef struct {
+	GsAppList *result_list; /* (owned) */
+	GsPluginLoader *plugin_loader; /* (owned) */
+} RefineData;
+
+static RefineData *
+refine_data_new (GsAppList *result_list, /* (transfer none) */
+		 GsPluginLoader *plugin_loader) /* (transfer none) */
+{
+	RefineData *data;
+
+	data = g_new0 (RefineData, 1);
+	data->result_list = gs_app_list_copy (result_list);
+	data->plugin_loader = g_object_ref (plugin_loader);
+
+	return data;
+}
+
+static void
+refine_data_free (gpointer ptr)
+{
+	RefineData *data = ptr;
+
+	g_clear_object (&data->result_list);
+	g_clear_object (&data->plugin_loader);
+	g_free (data);
+}
+
 static void run_cb (GObject      *source_object,
                     GAsyncResult *result,
                     gpointer      user_data);
@@ -743,7 +771,7 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 {
 	GsPluginJobRefine *self = GS_PLUGIN_JOB_REFINE (job);
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GsAppList) result_list = NULL;
+	RefineData *refine_data;
 
 	/* check required args */
 	task = g_task_new (job, cancellable, callback, user_data);
@@ -751,14 +779,14 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 
 	/* Operate on a copy of the input list so we don’t modify it when
 	 * resolving wildcards. */
-	result_list = gs_app_list_copy (self->app_list);
-	g_task_set_task_data (task, g_object_ref (result_list), (GDestroyNotify) g_object_unref);
+	refine_data = refine_data_new (self->app_list, plugin_loader);
+	g_task_set_task_data (task, refine_data, refine_data_free);
 
 	/* nothing to do */
 	if (self->require_flags == 0 ||
-	    gs_app_list_length (result_list) == 0) {
+	    gs_app_list_length (refine_data->result_list) == 0) {
 		g_debug ("no refine flags set for transaction or app list is empty");
-		finish_run (task, result_list);
+		finish_run (task, refine_data->result_list);
 		return;
 	}
 
@@ -767,7 +795,7 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 #endif
 
 	/* Start refining the apps. */
-	run_refine_internal_async (self, plugin_loader, result_list,
+	run_refine_internal_async (self, plugin_loader, refine_data->result_list,
 				   self->job_flags, self->require_flags, cancellable,
 				   run_cb, g_steal_pointer (&task));
 }
@@ -779,7 +807,8 @@ run_cb (GObject      *source_object,
 {
 	GsPluginJobRefine *self = GS_PLUGIN_JOB_REFINE (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsAppList *result_list = g_task_get_task_data (task);
+	RefineData *refine_data = g_task_get_task_data (task);
+	GsAppList *result_list = refine_data->result_list;
 	g_autoptr(GError) local_error = NULL;
 
 	if (run_refine_internal_finish (self, result, &local_error)) {
@@ -829,6 +858,7 @@ finish_run (GTask     *task,
             GsAppList *result_list)
 {
 	GsPluginJobRefine *self = g_task_get_source_object (task);
+	RefineData *refine_data = g_task_get_task_data (task);
 	g_autofree gchar *job_debug = NULL;
 
 	/* Internal calls to #GsPluginJobRefine may want to do their own
@@ -843,6 +873,13 @@ finish_run (GTask     *task,
 		gs_app_list_filter (result_list, app_is_non_wildcard, NULL);
 	else
 		gs_app_list_filter (result_list, app_is_valid_filter, self);
+
+	if (self->require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_ICON_CONTENT) {
+		gboolean interactive = (self->job_flags & GS_PLUGIN_REFINE_FLAGS_INTERACTIVE) != 0;
+		GsIconDownloader *icon_downloader = gs_plugin_loader_get_icon_downloader (refine_data->plugin_loader);
+		if (icon_downloader != NULL)
+			gs_icon_downloader_queue_app_list (icon_downloader, result_list, interactive);
+	}
 
 	/* show elapsed time */
 	job_debug = gs_plugin_job_to_string (GS_PLUGIN_JOB (self));

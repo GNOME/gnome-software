@@ -27,15 +27,6 @@ gs_plugin_provenance_license = shared_module(
   dependencies : plugin_libs,
 )
 
-gs_plugin_icons = shared_module(
-  'gs_plugin_icons',
-  sources : 'gs-plugin-icons.c',
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : plugin_libs,
-)
-
 gs_plugin_appstream = shared_module(
   'gs_plugin_appstream',
   sources : [

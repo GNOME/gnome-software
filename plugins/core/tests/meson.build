@@ -51,7 +51,6 @@ foreach test_name, extra_args : core_tests
       compiled_schemas,
       gs_plugin_appstream,
       gs_plugin_generic_updates,
-      gs_plugin_icons,
       gs_plugin_os_release,
     ],
     suite: ['plugins', 'core'],
