@@ -3004,7 +3004,14 @@ get_renamed_component (GsFlatpak *self,
 	if (renamed_to == NULL)
 		return NULL;
 
+#if LIBXMLB_CHECK_VERSION(0, 3, 27)
+	query = xb_silo_lookup_query_full (silo, "components[@origin=?]/component/bundle[@type='flatpak'][text()=?]/..", error);
+	if (query == NULL)
+		return NULL;
+#else
 	query = xb_silo_lookup_query (silo, "components[@origin=?]/component/bundle[@type='flatpak'][text()=?]/..");
+#endif
+
 	xb_value_bindings_bind_str (xb_query_context_get_bindings (&context), 0, origin, NULL);
 	xb_value_bindings_bind_str (xb_query_context_get_bindings (&context), 1, renamed_to, NULL);
 	component = xb_silo_query_first_with_context (silo, query, &context, NULL);
