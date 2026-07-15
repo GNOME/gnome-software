@@ -1763,7 +1763,13 @@ gs_appstream_do_search (GsPlugin *plugin,
 	if (components->len > 0)
 		gs_appstream_read_silo_info_from_component (g_ptr_array_index (components, 0), &silo_filename, &default_scope);
 
+#if LIBXMLB_CHECK_VERSION(0, 3, 27)
+	extends_query = xb_silo_lookup_query_full (silo, "extends", error);
+	if (extends_query == NULL)
+		return FALSE;
+#else
 	extends_query = xb_silo_lookup_query (silo, "extends");
+#endif
 
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
