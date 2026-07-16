@@ -2565,6 +2565,8 @@ gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
 				continue;
 
 			filename = gs_app_get_metadata_item (app, "repos::repo-filename");
+			if (filename == NULL)
+				continue;
 
 			sources = gs_app_get_sources (app);
 			if (!is_pk_apt_backend_broken && sources->len > 0) {
