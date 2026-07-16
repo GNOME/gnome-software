@@ -734,7 +734,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 					  ADW_PREFERENCES_GROUP (section));
 	}
 
-	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_NONE, GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED);
+	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_ALLOW_REPOSITORIES,
+					    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
 					    refine_sources_cb,
