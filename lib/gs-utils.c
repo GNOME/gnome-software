@@ -693,10 +693,11 @@ wilson_score (gdouble value, gdouble n, gdouble power)
  * @star4: The number of 4 star reviews
  * @star5: The number of 5 star reviews
  *
- * Returns the lower bound of Wilson score confidence interval for a
+ * Returns the lower bound of Wilson score confidence interval (at 90% confidence) for a
  * Bernoulli parameter. This ensures small numbers of ratings don't give overly
  * high scores.
  * See https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
+ * or https://www.evanmiller.org/how-not-to-sort-by-average-rating.html
  * for details.
  *
  * Returns: Wilson rating percentage, or -1 for error
@@ -708,16 +709,17 @@ gs_utils_get_wilson_rating (guint64 star1,
 			    guint64 star4,
 			    guint64 star5)
 {
+	gdouble confidence = 0.9;
 	gdouble val;
 	guint64 star_sum = star1 + star2 + star3 + star4 + star5;
 	if (star_sum == 0)
 		return -1;
 
 	/* get score */
-	val =  (wilson_score ((gdouble) star1, (gdouble) star_sum, 0.2) * -2);
-	val += (wilson_score ((gdouble) star2, (gdouble) star_sum, 0.2) * -1);
-	val += (wilson_score ((gdouble) star4, (gdouble) star_sum, 0.2) * 1);
-	val += (wilson_score ((gdouble) star5, (gdouble) star_sum, 0.2) * 2);
+	val =  (wilson_score ((gdouble) star1, (gdouble) star_sum, (1.0 - confidence) * 2.0) * -2);
+	val += (wilson_score ((gdouble) star2, (gdouble) star_sum, (1.0 - confidence) * 2.0) * -1);
+	val += (wilson_score ((gdouble) star4, (gdouble) star_sum, (1.0 - confidence) * 2.0) * 1);
+	val += (wilson_score ((gdouble) star5, (gdouble) star_sum, (1.0 - confidence) * 2.0) * 2);
 
 	/* normalize from -2..+2 to 0..5 */
 	val += 3;
