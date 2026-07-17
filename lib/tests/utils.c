@@ -52,8 +52,11 @@ gs_utils_wilson_func (void)
 	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 0), ==, -1);
 	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 400), ==, 100);
 	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (10, 0, 0, 0, 400), ==, 98);
+	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 10, 0, 0), ==, 60);
 	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 1), ==, 76);
 	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (5, 4, 20, 100, 400), ==, 93);
+	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 2, 4), ==, 80);
+	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 1, 1), ==, 70);
 }
 
 static void
