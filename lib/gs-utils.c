@@ -643,13 +643,15 @@ gs_utils_rmtree (const gchar *directory, GError **error)
 	return gs_utils_rmtree_real (directory, error);
 }
 
-static gdouble
-pnormaldist (gdouble qn)
+static double pnormaldist (double qn) G_GNUC_CONST;
+
+static double
+pnormaldist (double qn)
 {
-	static gdouble b[11] = { 1.570796288,      0.03706987906,   -0.8364353589e-3,
-				-0.2250947176e-3,  0.6841218299e-5,  0.5824238515e-5,
-				-0.104527497e-5,   0.8360937017e-7, -0.3231081277e-8,
-				 0.3657763036e-10, 0.6936233982e-12 };
+	static const double b[11] = {  1.570796288,      0.03706987906,   -0.8364353589e-3,
+				      -0.2250947176e-3,  0.6841218299e-5,  0.5824238515e-5,
+				      -0.104527497e-5,   0.8360937017e-7, -0.3231081277e-8,
+				       0.3657763036e-10, 0.6936233982e-12 };
 	gdouble w1, w3;
 	guint i;
 
