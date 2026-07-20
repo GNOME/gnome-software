@@ -663,7 +663,7 @@ gs_odrs_provider_refine_ratings (GsOdrsProvider  *self,
                                  GCancellable    *cancellable,
                                  GError         **error)
 {
-	gint rating;
+	unsigned int rating;
 	guint32 ratings_raw[6] = { 0, 0, 0, 0, 0, 0 };
 	guint cnt = 0;
 	g_autoptr(GArray) review_ratings = NULL;
@@ -741,8 +741,9 @@ gs_odrs_provider_refine_ratings (GsOdrsProvider  *self,
 					     g_array_index (review_ratings, guint32, 2),
 					     g_array_index (review_ratings, guint32, 3),
 					     g_array_index (review_ratings, guint32, 4),
-					     g_array_index (review_ratings, guint32, 5));
-	if (rating > 0)
+					     g_array_index (review_ratings, guint32, 5),
+					     &should_show_score);
+	if (should_show_score)
 		gs_app_set_rating (app, rating);
 	return TRUE;
 }

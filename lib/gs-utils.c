@@ -692,6 +692,9 @@ wilson_score (gdouble value, gdouble n, gdouble power)
  * @star3: The number of 3 star reviews
  * @star4: The number of 4 star reviews
  * @star5: The number of 5 star reviews
+ * @out_should_show_score: (out) (optional): return location for a boolean
+ *   indicating if there have been enough votes to be able to reliably show an
+ *   average score
  *
  * Returns the lower bound of Wilson score confidence interval (at 90% confidence) for a
  * Bernoulli parameter. This ensures small numbers of ratings don't give overly
@@ -700,20 +703,25 @@ wilson_score (gdouble value, gdouble n, gdouble power)
  * or https://www.evanmiller.org/how-not-to-sort-by-average-rating.html
  * for details.
  *
- * Returns: Wilson rating percentage, or -1 for error
+ * Returns: an ‘average’ measure of the votes, given as a percentage [0, 100];
+ *   this measure is only credible if @out_should_show_score returns true
  **/
-gint
-gs_utils_get_wilson_rating (guint64 star1,
-			    guint64 star2,
-			    guint64 star3,
-			    guint64 star4,
-			    guint64 star5)
+unsigned int
+gs_utils_get_wilson_rating (uint64_t  star1,
+                            uint64_t  star2,
+                            uint64_t  star3,
+                            uint64_t  star4,
+                            uint64_t  star5,
+                            gboolean *out_should_show_score)
 {
 	gdouble confidence = 0.9;
 	gdouble val;
 	guint64 star_sum = star1 + star2 + star3 + star4 + star5;
-	if (star_sum == 0)
-		return -1;
+	if (star_sum == 0) {
+		if (out_should_show_score != NULL)
+			*out_should_show_score = FALSE;
+		return 0;
+	}
 
 	/* get score */
 	val =  (wilson_score ((gdouble) star1, (gdouble) star_sum, (1.0 - confidence) * 2.0) * -2);
@@ -726,6 +734,9 @@ gs_utils_get_wilson_rating (guint64 star1,
 
 	/* multiply to a percentage */
 	val *= 20;
+
+	if (out_should_show_score != NULL)
+		*out_should_show_score = TRUE;
 
 	/* return rounded up integer */
 	return (gint) ceil (val);

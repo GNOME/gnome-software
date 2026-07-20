@@ -49,14 +49,29 @@ gs_utils_url_func (void)
 static void
 gs_utils_wilson_func (void)
 {
-	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 0), ==, -1);
-	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 400), ==, 100);
-	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (10, 0, 0, 0, 400), ==, 98);
-	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 10, 0, 0), ==, 60);
-	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 1), ==, 76);
-	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (5, 4, 20, 100, 400), ==, 93);
-	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 2, 4), ==, 80);
-	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 1, 1), ==, 70);
+	const struct {
+		uint64_t votes[5];
+		unsigned int expected_score;
+		gboolean expected_should_show_score;
+	} vectors[] = {
+		{ { 0, 0, 0, 0, 0 }, 0, FALSE },
+		{ { 0, 0, 0, 0, 400 }, 100, TRUE },
+		{ { 10, 0, 0, 0, 400 }, 98, TRUE },
+		{ { 0, 0, 10, 0, 0 }, 60, TRUE },
+		{ { 0, 0, 0, 0, 1 }, 76, TRUE },
+		{ { 5, 4, 20, 100, 400 }, 93, TRUE },
+		{ { 0, 0, 0, 2, 4 }, 80, TRUE },
+		{ { 0, 0, 0, 1, 1 }, 70, TRUE },
+	};
+
+	for (size_t i = 0; i < G_N_ELEMENTS (vectors); i++) {
+		gboolean should_show_score;
+
+		g_test_message ("Test %zu", i);
+		g_assert_cmpuint (gs_utils_get_wilson_rating (vectors[i].votes[0], vectors[i].votes[1], vectors[i].votes[2], vectors[i].votes[3], vectors[i].votes[4],
+							      &should_show_score), ==, vectors[i].expected_score);
+		g_assert_true (should_show_score == vectors[i].expected_should_show_score);
+	}
 }
 
 static void
