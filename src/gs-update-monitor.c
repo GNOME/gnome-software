@@ -381,11 +381,7 @@ _filter_by_app_kind (GsApp *app, gpointer user_data)
 static gboolean
 _sort_by_rating_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	if (gs_app_get_rating (app1) < gs_app_get_rating (app2))
-		return -1;
-	if (gs_app_get_rating (app1) > gs_app_get_rating (app2))
-		return 1;
-	return 0;
+	return gs_app_get_rating (app1) - gs_app_get_rating (app2);
 }
 
 static GNotification *
