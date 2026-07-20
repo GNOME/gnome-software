@@ -47,30 +47,56 @@ gs_utils_url_func (void)
 }
 
 static void
-gs_utils_wilson_func (void)
+test_estimate_average_rating_score (void)
 {
 	const struct {
 		uint64_t votes[5];
 		unsigned int expected_score;
 		gboolean expected_should_show_score;
 	} vectors[] = {
-		{ { 0, 0, 0, 0, 0 }, 0, FALSE },
-		{ { 0, 0, 0, 0, 400 }, 100, TRUE },
-		{ { 10, 0, 0, 0, 400 }, 98, TRUE },
-		{ { 0, 0, 10, 0, 0 }, 60, TRUE },
-		{ { 0, 0, 0, 0, 1 }, 76, TRUE },
-		{ { 5, 4, 20, 100, 400 }, 93, TRUE },
-		{ { 0, 0, 0, 2, 4 }, 80, TRUE },
-		{ { 0, 0, 0, 1, 1 }, 70, TRUE },
+		{ { 0, 0, 0, 0, 0 }, 45, FALSE },
+		{ { 0, 0, 0, 0, 400 }, 99, TRUE },
+		{ { 10, 0, 0, 0, 400 }, 96, TRUE },
+		{ { 0, 0, 10, 0, 0 }, 54, FALSE },
+		{ { 0, 0, 0, 0, 1 }, 52, FALSE },
+		{ { 5, 4, 20, 100, 400 }, 92, TRUE },
+		{ { 0, 0, 0, 2, 4 }, 68, FALSE },
+		{ { 0, 0, 0, 1, 1 }, 55, FALSE },
+		{ { 0, 0, 0, 10, 20 }, 84, TRUE },
+		{ { 0, 0, 0, 7, 14 }, 82, TRUE },
+		{ { 0, 0, 0, 6, 12 }, 80, FALSE },
+		{ { 29, 0, 0, 0, 58 }, 67, TRUE },
+		{ { 28, 0, 0, 0, 56 }, 67, FALSE },
+		{ { 10, 10, 10, 10, 10 }, 55, TRUE },
+		{ { 9, 9, 9, 9, 9 }, 54, FALSE },
 	};
 
 	for (size_t i = 0; i < G_N_ELEMENTS (vectors); i++) {
 		gboolean should_show_score;
+		unsigned int simple_mean, total_votes;
 
 		g_test_message ("Test %zu", i);
 		g_assert_cmpuint (gs_utils_get_wilson_rating (vectors[i].votes[0], vectors[i].votes[1], vectors[i].votes[2], vectors[i].votes[3], vectors[i].votes[4],
 							      &should_show_score), ==, vectors[i].expected_score);
 		g_assert_true (should_show_score == vectors[i].expected_should_show_score);
+
+		/* Test that the estimated average rating is similar to the simple mean,
+		 * if we’re being asked to display it. i.e. within half a star */
+		simple_mean = 0;
+		total_votes = 0;
+
+		for (size_t j = 0; j < G_N_ELEMENTS (vectors[i].votes); j++) {
+			simple_mean += (j + 1) * vectors[i].votes[j];
+			total_votes += vectors[i].votes[j];
+		}
+
+		simple_mean = simple_mean * 20 /* convert to percentage points */ / total_votes;
+
+		if (should_show_score) {
+			const unsigned int tolerance = 11;  /* half a star, in percentage points, allowing for rounding */
+			g_assert_cmpuint (vectors[i].expected_score, >=, simple_mean - tolerance);
+			g_assert_cmpuint (vectors[i].expected_score, <=, simple_mean + tolerance);
+		}
 	}
 }
 
@@ -777,7 +803,7 @@ main (int argc, char **argv)
 
 	/* tests go here */
 	g_test_add_func ("/gnome-software/lib/utils{url}", gs_utils_url_func);
-	g_test_add_func ("/gnome-software/lib/utils{wilson}", gs_utils_wilson_func);
+	g_test_add_func ("/gnome-software/lib/utils/estimate-average-rating-score", test_estimate_average_rating_score);
 	g_test_add_func ("/gnome-software/lib/utils{error}", gs_utils_error_func);
 	g_test_add_func ("/gnome-software/lib/utils{cache}", gs_utils_cache_func);
 	g_test_add_func ("/gnome-software/lib/utils{append-kv}", gs_utils_append_kv_func);
