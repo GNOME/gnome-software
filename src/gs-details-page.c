@@ -1736,6 +1736,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	guint n_reviews = 0;
 	guint i;
 	GtkWidget *child;
+	gboolean should_show_average_score = TRUE;
 
 	/* nothing to show */
 	if (self->app == NULL)
@@ -1746,14 +1747,17 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 
 	/* set the star rating */
 	if (show_reviews) {
-		gtk_widget_set_sensitive (self->star, gs_app_get_rating (self->app) >= 0);
-		gs_star_widget_set_rating (GS_STAR_WIDGET (self->star),
-					   gs_app_get_rating (self->app));
+		int average_score = gs_app_get_rating (self->app);
+		should_show_average_score = (average_score >= 0);
+
+		gtk_widget_set_sensitive (self->star, should_show_average_score);
+		gs_star_widget_set_rating (GS_STAR_WIDGET (self->star), average_score);
 
 		review_ratings = gs_app_get_review_ratings (self->app);
 		if (review_ratings != NULL) {
 			gs_review_histogram_set_ratings (GS_REVIEW_HISTOGRAM (self->histogram),
-							 gs_app_get_rating (self->app),
+							 average_score,
+							 should_show_average_score,
 						         review_ratings);
 		}
 		if (review_ratings != NULL) {
@@ -1765,14 +1769,13 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	}
 
 	/* enable appropriate widgets */
-	gtk_widget_set_visible (self->star, show_reviews);
+	gtk_widget_set_visible (self->star, show_reviews && should_show_average_score);
 	gtk_widget_set_visible (self->histogram_row, review_ratings != NULL && review_ratings->len > 0);
-	gtk_widget_set_visible (self->label_review_count, n_reviews > 0);
+	gtk_widget_set_visible (self->label_review_count, n_reviews > 0 && should_show_average_score);
 
 	/* update the review label next to the star widget */
 	if (n_reviews > 0) {
 		g_autofree gchar *text = NULL;
-		gtk_widget_set_visible (self->label_review_count, TRUE);
 		text = g_strdup_printf ("(%u)", n_reviews);
 		gtk_label_set_text (GTK_LABEL (self->label_review_count), text);
 	}
