@@ -663,7 +663,6 @@ gs_odrs_provider_refine_ratings (GsOdrsProvider  *self,
                                  GCancellable    *cancellable,
                                  GError         **error)
 {
-	unsigned int rating;
 	guint32 ratings_raw[6] = { 0, 0, 0, 0, 0, 0 };
 	guint cnt = 0;
 	g_autoptr(GArray) review_ratings = NULL;
@@ -736,15 +735,6 @@ gs_odrs_provider_refine_ratings (GsOdrsProvider  *self,
 		g_array_append_val (review_ratings, ratings_raw[i]);
 	gs_app_set_review_ratings (app, review_ratings);
 
-	/* find the wilson rating */
-	rating = gs_utils_get_wilson_rating (g_array_index (review_ratings, guint32, 1),
-					     g_array_index (review_ratings, guint32, 2),
-					     g_array_index (review_ratings, guint32, 3),
-					     g_array_index (review_ratings, guint32, 4),
-					     g_array_index (review_ratings, guint32, 5),
-					     &should_show_score);
-	if (should_show_score)
-		gs_app_set_rating (app, rating);
 	return TRUE;
 }
 

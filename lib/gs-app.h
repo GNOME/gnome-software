@@ -420,8 +420,6 @@ void		 gs_app_set_metadata_variant	(GsApp		*app,
 						 GVariant	*value);
 gboolean	 gs_app_get_show_reviews	(GsApp		*app);
 gint		 gs_app_get_rating		(GsApp		*app);
-void		 gs_app_set_rating		(GsApp		*app,
-						 gint		 rating);
 GArray		*gs_app_get_review_ratings	(GsApp		*app);
 void		 gs_app_set_review_ratings	(GsApp		*app,
 						 GArray		*review_ratings);

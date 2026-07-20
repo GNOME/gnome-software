@@ -117,7 +117,6 @@ typedef struct
 	GWeakRef		 management_plugin_weak;  /* (element-type GsPlugin) */
 	guint			 match_value;
 	guint			 priority;
-	gint			 rating;
 	GArray			*review_ratings;
 	GPtrArray		*reviews; /* of AsReview; must be kept in sorted order according to review_score_sort_cb() */
 	gboolean		 reviews_sorted;  /* whether ->reviews is currently in sorted order */
@@ -697,14 +696,13 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "origin-appstream", priv->origin_appstream);
 	if (priv->origin_hostname != NULL && priv->origin_hostname[0] != '\0')
 		gs_app_kv_lpad (str, "origin-hostname", priv->origin_hostname);
-	if (priv->rating != -1)
-		gs_app_kv_printf (str, "rating", "%i", priv->rating);
 	if (priv->review_ratings != NULL) {
 		for (i = 0; i < priv->review_ratings->len; i++) {
 			guint32 rat = g_array_index (priv->review_ratings, guint32, i);
 			gs_app_kv_printf (str, "review-rating", "[%u:%u]",
 					  i, rat);
 		}
+		gs_app_kv_printf (str, "rating", "%i", gs_app_get_rating (app));
 	}
 	if (priv->reviews != NULL)
 		gs_app_kv_printf (str, "reviews", "%u", priv->reviews->len);
@@ -3437,30 +3435,27 @@ gint
 gs_app_get_rating (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), -1);
-	return priv->rating;
-}
+	unsigned int rating;
+	gboolean should_show_score;
 
-/**
- * gs_app_set_rating:
- * @app: a #GsApp
- * @rating: a percentage, or -1 for invalid
- *
- * Gets the percentage rating of the application.
- *
- * Since: 3.22
- **/
-void
-gs_app_set_rating (GsApp *app, gint rating)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_return_if_fail (GS_IS_APP (app));
-	locker = g_mutex_locker_new (&priv->mutex);
-	if (rating == priv->rating)
-		return;
-	priv->rating = rating;
-	gs_app_queue_notify (app, obj_props[PROP_RATING]);
+	g_return_val_if_fail (GS_IS_APP (app), -1);
+
+	if (priv->review_ratings == NULL)
+		return -1;
+
+	/* Calculate an ‘average’ measure of the votes for the app’s score.
+	 * This isn’t the mean, but is similar. See the documentation for the
+	 * called function for details.
+	 *
+	 * Indexing starts from 1, not 0, here, because index 0 is for a 0-star
+	 * rating, which we don’t support. */
+	rating = gs_utils_get_wilson_rating (g_array_index (priv->review_ratings, guint32, 1),
+					     g_array_index (priv->review_ratings, guint32, 2),
+					     g_array_index (priv->review_ratings, guint32, 3),
+					     g_array_index (priv->review_ratings, guint32, 4),
+					     g_array_index (priv->review_ratings, guint32, 5),
+					     &should_show_score);
+	return should_show_score ? (int) rating : -1;
 }
 
 /**
@@ -3500,6 +3495,7 @@ gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
 	_g_set_array (&priv->review_ratings, review_ratings);
+	gs_app_queue_notify (app, obj_props[PROP_RATING]);
 }
 
 static gint
@@ -5356,7 +5352,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		g_value_set_string (value, priv->description);
 		break;
 	case PROP_RATING:
-		g_value_set_int (value, priv->rating);
+		g_value_set_int (value, gs_app_get_rating (app));
 		break;
 	case PROP_SHOW_REVIEWS:
 		g_value_set_boolean (value, gs_app_get_show_reviews (app));
@@ -5507,8 +5503,6 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 					g_value_get_string (value));
 		break;
 	case PROP_RATING:
-		gs_app_set_rating (app, g_value_get_int (value));
-		break;
 	case PROP_SHOW_REVIEWS:
 		/* Read only. */
 		g_assert_not_reached ();
@@ -5729,7 +5723,7 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_RATING] = g_param_spec_int ("rating", NULL, NULL,
 				  -1, 100, -1,
-				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
+				  G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:show-reviews:
@@ -6161,7 +6155,6 @@ static void
 gs_app_init (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	priv->rating = -1;
 	priv->sources = g_ptr_array_new_with_free_func (g_free);
 	priv->source_ids = g_ptr_array_new_with_free_func (g_free);
 	priv->categories = g_ptr_array_new_with_free_func (g_free);

@@ -835,11 +835,6 @@ refine_app (GsPluginDummy               *self,
 		gs_app_set_review_ratings (app, ratings);
 	}
 
-	/* add a rating */
-	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING) != 0) {
-		gs_app_set_rating (app, 66);
-	}
-
 	return TRUE;
 }
 
