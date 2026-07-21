@@ -26,6 +26,7 @@ GtkWidget	*gs_review_histogram_new			(void);
 void		 gs_review_histogram_set_ratings		(GsReviewHistogram *histogram,
 								 gint rating_percent,
 								 gboolean should_show_score,
-								 GArray *review_ratings);
+								 const unsigned int *review_ratings,
+								 size_t review_ratings_length);
 
 G_END_DECLS

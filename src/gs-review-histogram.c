@@ -38,7 +38,8 @@ void
 gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 				 gint rating_percent,
 				 gboolean should_show_score,
-				 GArray *review_ratings)
+				 const unsigned int *review_ratings,
+				 size_t review_ratings_length)
 {
 	GsReviewHistogramPrivate *priv = gs_review_histogram_get_instance_private (histogram);
 	g_autofree gchar *text = NULL;
@@ -49,18 +50,15 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 	g_return_if_fail (GS_IS_REVIEW_HISTOGRAM (histogram));
 
 	/* sanity check */
-	if (review_ratings->len != 6) {
-		g_warning ("ratings data incorrect expected 012345");
-		return;
-	}
+	g_assert (review_ratings_length == 6);
 
 	/* idx 0 is '0 stars' which we don't support in the UI */
-	for (guint i = 1; i < review_ratings->len; i++) {
-		guint32 c = g_array_index (review_ratings, guint32, i);
+	for (guint i = 1; i < review_ratings_length; i++) {
+		unsigned int c = review_ratings[i];
 		max = MAX (c, max);
 	}
-	for (guint i = 1; i < review_ratings->len; i++) {
-		guint32 c = g_array_index (review_ratings, guint32, i);
+	for (guint i = 1; i < review_ratings_length; i++) {
+		unsigned int c = review_ratings[i];
 		fraction[i] = max > 0 ? (gdouble) c / (gdouble) max : 0.f;
 		total += c;
 	}

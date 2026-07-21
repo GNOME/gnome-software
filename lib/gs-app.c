@@ -117,7 +117,8 @@ typedef struct
 	GWeakRef		 management_plugin_weak;  /* (element-type GsPlugin) */
 	guint			 match_value;
 	guint			 priority;
-	GArray			*review_ratings;
+	unsigned int		 review_ratings[6];  /* count of the number of votes for each star score: review_ratings[0] is the number of 0-star votes, review_ratings[1] is the number of 1-star votes, etc. */
+	gboolean		 review_ratings_set;
 	GPtrArray		*reviews; /* of AsReview; must be kept in sorted order according to review_score_sort_cb() */
 	gboolean		 reviews_sorted;  /* whether ->reviews is currently in sorted order */
 	GPtrArray		*provided; /* of AsProvided */
@@ -696,12 +697,10 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "origin-appstream", priv->origin_appstream);
 	if (priv->origin_hostname != NULL && priv->origin_hostname[0] != '\0')
 		gs_app_kv_lpad (str, "origin-hostname", priv->origin_hostname);
-	if (priv->review_ratings != NULL) {
-		for (i = 0; i < priv->review_ratings->len; i++) {
-			guint32 rat = g_array_index (priv->review_ratings, guint32, i);
+	if (priv->review_ratings_set) {
+		for (i = 0; i < G_N_ELEMENTS (priv->review_ratings); i++)
 			gs_app_kv_printf (str, "review-rating", "[%u:%u]",
-					  i, rat);
-		}
+					  i, priv->review_ratings[i]);
 		gs_app_kv_printf (str, "rating", "%i", gs_app_get_rating (app));
 	}
 	if (priv->reviews != NULL)
@@ -3440,7 +3439,7 @@ gs_app_get_rating (GsApp *app)
 
 	g_return_val_if_fail (GS_IS_APP (app), -1);
 
-	if (priv->review_ratings == NULL)
+	if (!priv->review_ratings_set)
 		return -1;
 
 	/* Calculate an ‘average’ measure of the votes for the app’s score.
@@ -3449,11 +3448,11 @@ gs_app_get_rating (GsApp *app)
 	 *
 	 * Indexing starts from 1, not 0, here, because index 0 is for a 0-star
 	 * rating, which we don’t support. */
-	rating = gs_utils_get_wilson_rating (g_array_index (priv->review_ratings, guint32, 1),
-					     g_array_index (priv->review_ratings, guint32, 2),
-					     g_array_index (priv->review_ratings, guint32, 3),
-					     g_array_index (priv->review_ratings, guint32, 4),
-					     g_array_index (priv->review_ratings, guint32, 5),
+	rating = gs_utils_get_wilson_rating (priv->review_ratings[1],
+					     priv->review_ratings[2],
+					     priv->review_ratings[3],
+					     priv->review_ratings[4],
+					     priv->review_ratings[5],
 					     &should_show_score);
 	return should_show_score ? (int) rating : -1;
 }
@@ -3461,40 +3460,65 @@ gs_app_get_rating (GsApp *app)
 /**
  * gs_app_get_review_ratings:
  * @app: a #GsApp
+ * @out_length: (out): return location for the array length
  *
  * Gets the review ratings.
  *
  * These should only be shown to the user if [prop@Gs.App:show-reviews] is true.
  *
- * Returns: (element-type guint32) (transfer none): a list
- *
- * Since: 3.22
+ * Returns: (array length=out_length) (transfer none) (nullable): an array
+ *   of the number of votes for each score (index 0 is 0-star votes, index 1 is
+ *   1-star votes, etc.); or `NULL` if unknown
+ * Since: 51
  **/
-GArray *
-gs_app_get_review_ratings (GsApp *app)
+const unsigned int *
+gs_app_get_review_ratings (GsApp  *app,
+                           size_t *out_length)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->review_ratings;
+
+	if (out_length != NULL)
+		*out_length = priv->review_ratings_set ? G_N_ELEMENTS (priv->review_ratings) : 0;
+
+	return priv->review_ratings_set ? priv->review_ratings : NULL;
 }
 
 /**
  * gs_app_set_review_ratings:
  * @app: a #GsApp
- * @review_ratings: (element-type guint32): a list
+ * @review_ratings: (array length=review_ratings_length) (nullable): an array
+ *   of the number of votes for each score (index 0 is 0-star votes, index 1 is
+ *   1-star votes, etc.); or `NULL` if unknown
+ * @review_ratings_length: length of @review_ratings
  *
  * Sets the review ratings.
  *
- * Since: 3.22
+ * Since: 51
  **/
 void
-gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
+gs_app_set_review_ratings (GsApp              *app,
+                           const unsigned int *review_ratings,
+                           size_t              review_ratings_length)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_autoptr(GMutexLocker) locker = NULL;
+
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail ((review_ratings == NULL) == (review_ratings_length == 0));
+	g_return_if_fail (review_ratings_length == 0 ||
+			  review_ratings_length == G_N_ELEMENTS (priv->review_ratings));
+
 	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_array (&priv->review_ratings, review_ratings);
+
+	if (review_ratings != NULL) {
+		for (size_t i = 0; i < G_N_ELEMENTS (priv->review_ratings); i++)
+			priv->review_ratings[i] = review_ratings[i];
+	}
+
+	priv->review_ratings_set = (review_ratings != NULL);
+
 	gs_app_queue_notify (app, obj_props[PROP_RATING]);
 }
 
@@ -5616,7 +5640,6 @@ gs_app_dispose (GObject *object)
 	g_clear_pointer (&priv->history, g_object_unref);
 	g_clear_pointer (&priv->related, g_object_unref);
 	g_clear_pointer (&priv->screenshots, g_ptr_array_unref);
-	g_clear_pointer (&priv->review_ratings, g_array_unref);
 	g_clear_pointer (&priv->reviews, g_ptr_array_unref);
 	g_clear_pointer (&priv->provided, g_ptr_array_unref);
 	g_clear_pointer (&priv->icons, g_ptr_array_unref);
