@@ -3448,12 +3448,15 @@ gs_app_get_rating (GsApp *app)
 	 *
 	 * Indexing starts from 1, not 0, here, because index 0 is for a 0-star
 	 * rating, which we don’t support. */
-	rating = gs_utils_get_wilson_rating (priv->review_ratings[1],
-					     priv->review_ratings[2],
-					     priv->review_ratings[3],
-					     priv->review_ratings[4],
-					     priv->review_ratings[5],
-					     &should_show_score);
+	rating = gs_utils_estimate_average_rating_score ((const uint64_t[]) {1, 2, 3, 4, 5},
+							 5,
+							 (const uint64_t[]) {
+							   priv->review_ratings[1],
+							  priv->review_ratings[2],
+							   priv->review_ratings[3],
+							   priv->review_ratings[4],
+							   priv->review_ratings[5] },
+							 &should_show_score);
 	return should_show_score ? (int) rating : -1;
 }
 

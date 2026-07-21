@@ -706,12 +706,12 @@ estimate_average_score (const uint64_t *score_values,  /* this is s_k in the lit
 }
 
 /**
- * gs_utils_get_wilson_rating:
- * @star1: The number of 1 star reviews
- * @star2: The number of 2 star reviews
- * @star3: The number of 3 star reviews
- * @star4: The number of 4 star reviews
- * @star5: The number of 5 star reviews
+ * gs_utils_estimate_average_rating_score:
+ * @score_values: (array length=n_scores): array of possible rating scores and
+ *   their values; for a 1-5 star scale, this would be `{1, 2, 3, 4, 5}`
+ * @n_scores: length of @score_values and @votes
+ * @votes: (array length=n_scores): array of number of votes for each score,
+ *   indexed the same as @score_values
  * @out_should_show_score: (out) (optional): return location for a boolean
  *   indicating if there have been enough votes to be able to reliably show an
  *   average score
@@ -774,23 +774,17 @@ estimate_average_score (const uint64_t *score_values,  /* this is s_k in the lit
  *   this measure is only credible if @out_should_show_score returns true
  **/
 unsigned int
-gs_utils_get_wilson_rating (uint64_t  star1,
-                            uint64_t  star2,
-                            uint64_t  star3,
-                            uint64_t  star4,
-                            uint64_t  star5,
-                            gboolean *out_should_show_score)
+gs_utils_estimate_average_rating_score (const uint64_t *score_values,
+                                        size_t          n_scores,
+                                        const uint64_t *votes,
+                                        gboolean       *out_should_show_score)
 {
 	const double confidence = 0.9;
-	const uint64_t score_values[] = { 1, 2, 3, 4, 5 };
-	const uint64_t votes[] = { star1, star2, star3, star4, star5 };
 	const double acceptable_credible_interval = 0.5;  /* half a star; this is w in the literature */
 	double estimated_average_score, credible_interval;
 
-	G_STATIC_ASSERT (G_N_ELEMENTS (score_values) == G_N_ELEMENTS (votes));
-
 	estimated_average_score = estimate_average_score (score_values,
-							  G_N_ELEMENTS (score_values),
+							  n_scores,
 							  votes,
 							  (1.0 - confidence) * 2.0,
 							  &credible_interval);

@@ -77,12 +77,10 @@ gint             gs_utils_sort_strcmp		(const gchar    *str1,
 GDesktopAppInfo *gs_utils_get_desktop_app_info	(const gchar	*id);
 gboolean	 gs_utils_rmtree		(const gchar	*directory,
 						 GError		**error);
-unsigned int	 gs_utils_get_wilson_rating	(uint64_t	 star1,
-						 uint64_t	 star2,
-						 uint64_t	 star3,
-						 uint64_t	 star4,
-						 uint64_t	 star5,
-						 gboolean	*out_should_show_score);
+unsigned int	 gs_utils_estimate_average_rating_score	(const uint64_t *score_values,
+							 size_t          n_scores,
+							 const uint64_t *votes,
+							 gboolean       *out_should_show_score);
 void		 gs_utils_error_add_app_id	(GError		**error,
 						 GsApp		*app);
 void		 gs_utils_error_add_origin_id	(GError		**error,

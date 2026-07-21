@@ -76,8 +76,10 @@ test_estimate_average_rating_score (void)
 		unsigned int simple_mean, total_votes;
 
 		g_test_message ("Test %zu", i);
-		g_assert_cmpuint (gs_utils_get_wilson_rating (vectors[i].votes[0], vectors[i].votes[1], vectors[i].votes[2], vectors[i].votes[3], vectors[i].votes[4],
-							      &should_show_score), ==, vectors[i].expected_score);
+		g_assert_cmpuint (gs_utils_estimate_average_rating_score ((const uint64_t[]) { 1, 2, 3, 4, 5 },
+									  G_N_ELEMENTS (vectors[i].votes),
+									  vectors[i].votes,
+									  &should_show_score), ==, vectors[i].expected_score);
 		g_assert_true (should_show_score == vectors[i].expected_should_show_score);
 
 		/* Test that the estimated average rating is similar to the simple mean,
