@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-07-14 14:43+0000\n"
-"PO-Revision-Date: 2026-07-14 21:03+0200\n"
+"POT-Creation-Date: 2026-07-23 11:18+0000\n"
+"PO-Revision-Date: 2026-07-23 19:06+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -67,7 +67,8 @@ msgid "The update details"
 msgstr "Podrobnosti posodobitve"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3053 src/gs-application.c:402
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3053 data/metainfo/org.gnome.Software.metainfo.xml.in:3055
+#: src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
 
@@ -3499,7 +3500,7 @@ msgstr "Druge kategorije"
 msgid "No App Data Found"
 msgstr "Podatkov o programu ni mogoče najti"
 
-#: lib/gs-plugin-loader.c:2444
+#: lib/gs-plugin-loader.c:2484
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Neznano"
@@ -5073,65 +5074,74 @@ msgid "Go back"
 msgstr "Pojdi nazaj"
 
 #: src/gs-shortcuts-dialog.ui:13
+msgctxt "shortcut window"
 msgid "Navigation"
 msgstr "Krmarjenje"
 
 #: src/gs-shortcuts-dialog.ui:17
+msgctxt "shortcut window"
 msgid "Navigate to Explore Page"
 msgstr "Skoči na stran pregleda"
 
 #: src/gs-shortcuts-dialog.ui:23
+msgctxt "shortcut window"
 msgid "Navigate to Installed Page"
-msgstr "Skočite na stran za nameščanje"
+msgstr "Skoči na stran nameščenega"
 
 #: src/gs-shortcuts-dialog.ui:29
+msgctxt "shortcut window"
 msgid "Navigate to Updates Page"
 msgstr "Skoči na stran posodobitev"
 
 #: src/gs-shortcuts-dialog.ui:35
+msgctxt "shortcut window"
 msgid "Open Search Bar"
-msgstr "Odpri iskalno vrstico"
+msgstr "Odpre iskalno vrstico"
 
 #: src/gs-shortcuts-dialog.ui:41
+msgctxt "shortcut window"
 msgid "Open Main Menu"
 msgstr "Odpre glavni meni"
 
 #: src/gs-shortcuts-dialog.ui:49
+msgctxt "shortcut window"
 msgid "Windows"
 msgstr "Okna"
 
 #: src/gs-shortcuts-dialog.ui:53
+msgctxt "shortcut window"
 msgid "Open Preferences"
-msgstr "Odpri nastavitve"
+msgstr "Odpre nastavitve"
 
 #: src/gs-shortcuts-dialog.ui:59
+msgctxt "shortcut window"
 msgid "Open Software Repositories"
-msgstr "Odpri vire programske opreme"
+msgstr "Odpre vire programske opreme"
 
 #: src/gs-shortcuts-dialog.ui:65
+msgctxt "shortcut window"
 msgid "Close Main Window"
 msgstr "Zapre glavno okno"
 
 #: src/gs-shortcuts-dialog.ui:73
+msgctxt "shortcut window"
 msgid "Updates Page"
 msgstr "Stran posodobitev"
 
-#. Strictly we don’t need an additional button here, as the default action
-#. * for the notification will open the updates page. From there, users still
-#. * have to manually press the refresh button, though, which might be
-#. * non-obvious; so add a button to the notification to help.
-#: src/gs-shortcuts-dialog.ui:77 src/gs-update-monitor.c:271 src/gs-updates-page.ui:262
-#: src/gs-updates-page.ui:265
+#: src/gs-shortcuts-dialog.ui:77
+msgctxt "shortcut window"
 msgid "Check for Updates"
 msgstr "Preveri za posodobitve"
 
 #: src/gs-shortcuts-dialog.ui:85
+msgctxt "shortcut window"
 msgid "Help"
 msgstr "Pomoč"
 
 #: src/gs-shortcuts-dialog.ui:89
+msgctxt "shortcut window"
 msgid "Open Keyboard Shortcuts"
-msgstr "Odpri okno tipkovnih bližnjic"
+msgstr "Odpre okno tipkovnih bližnjic"
 
 #. Translators: This is shown in a bubble to represent a 0 byte
 #. * storage size, so its context is “storage size: none”. The
@@ -5249,6 +5259,14 @@ msgid "Updates may have been paused due to being on a metered network, power sav
 msgstr ""
 "Posodobitve so morda začasno ustavljene zaradi uporabe omrežja z omejenim prenosom podatkov, načina "
 "varčevanja z energijo ali igralnega načina."
+
+#. Strictly we don’t need an additional button here, as the default action
+#. * for the notification will open the updates page. From there, users still
+#. * have to manually press the refresh button, though, which might be
+#. * non-obvious; so add a button to the notification to help.
+#: src/gs-update-monitor.c:271 src/gs-updates-page.ui:262 src/gs-updates-page.ui:265
+msgid "Check for Updates"
+msgstr "Preveri za posodobitve"
 
 #: src/gs-update-monitor.c:282
 msgid "Critical Updates Available to Download"
