@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-07-16 16:33+0000\n"
-"PO-Revision-Date: 2026-07-19 10:49+0200\n"
+"POT-Creation-Date: 2026-07-23 11:18+0000\n"
+"PO-Revision-Date: 2026-07-24 09:17+0200\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -23,6 +23,12 @@ msgstr ""
 "X-Generator: Gtranslator 50.0\n"
 "X-Project-Style: gnome\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-DL-VCS-Web: https://gitlab.gnome.org/GNOME/gnome-software/\n"
+"X-DL-Lang: ro\n"
+"X-DL-Module: gnome-software\n"
+"X-DL-Branch: main\n"
+"X-DL-Domain: po\n"
+"X-DL-State: Translating\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35
 #: src/org.gnome.Software.desktop.in:2
@@ -77,6 +83,7 @@ msgstr "Detaliile actualizărilor"
 
 #. developer_name tag deprecated with Appstream 1.0
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:3053
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3055
 #: src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "Proiectul GNOME"
@@ -5346,63 +5353,72 @@ msgid "Go back"
 msgstr "Înapoi"
 
 #: src/gs-shortcuts-dialog.ui:13
+msgctxt "shortcut window"
 msgid "Navigation"
 msgstr "Navigare"
 
 #: src/gs-shortcuts-dialog.ui:17
+msgctxt "shortcut window"
 msgid "Navigate to Explore Page"
-msgstr "Trece la pagina Explorează"
+msgstr "Duce la pagina Explorează"
 
 #: src/gs-shortcuts-dialog.ui:23
+msgctxt "shortcut window"
 msgid "Navigate to Installed Page"
-msgstr "Trece la pagina Instalate"
+msgstr "Duce la pagina Instalate"
 
 #: src/gs-shortcuts-dialog.ui:29
+msgctxt "shortcut window"
 msgid "Navigate to Updates Page"
-msgstr "Trece la pagina Actualizări"
+msgstr "Duce la pagina Actualizări"
 
 #: src/gs-shortcuts-dialog.ui:35
+msgctxt "shortcut window"
 msgid "Open Search Bar"
 msgstr "Apare spațiul de căutare"
 
 #: src/gs-shortcuts-dialog.ui:41
+msgctxt "shortcut window"
 msgid "Open Main Menu"
 msgstr "Arată opțiunile"
 
 #: src/gs-shortcuts-dialog.ui:49
+msgctxt "shortcut window"
 msgid "Windows"
 msgstr "Ferestre"
 
 #: src/gs-shortcuts-dialog.ui:53
+msgctxt "shortcut window"
 msgid "Open Preferences"
 msgstr "Deschide Preferințe"
 
 #: src/gs-shortcuts-dialog.ui:59
+msgctxt "shortcut window"
 msgid "Open Software Repositories"
 msgstr "Deschide Depozite de aplicații"
 
 #: src/gs-shortcuts-dialog.ui:65
+msgctxt "shortcut window"
 msgid "Close Main Window"
 msgstr "Închide fereastra principală"
 
 #: src/gs-shortcuts-dialog.ui:73
+msgctxt "shortcut window"
 msgid "Updates Page"
-msgstr "Pagina cu actualizări"
+msgstr "Pagina Actualizări"
 
-#. Strictly we don’t need an additional button here, as the default action
-#. * for the notification will open the updates page. From there, users still
-#. * have to manually press the refresh button, though, which might be
-#. * non-obvious; so add a button to the notification to help.
-#: src/gs-shortcuts-dialog.ui:77 src/gs-update-monitor.c:271
-#: src/gs-updates-page.ui:262 src/gs-updates-page.ui:265
+#: src/gs-shortcuts-dialog.ui:77
+msgctxt "shortcut window"
 msgid "Check for Updates"
 msgstr "Caută actualizări"
 
 #: src/gs-shortcuts-dialog.ui:85
+msgctxt "shortcut window"
 msgid "Help"
 msgstr "Ajutor"
 
 #: src/gs-shortcuts-dialog.ui:89
+msgctxt "shortcut window"
 msgid "Open Keyboard Shortcuts"
 msgstr "Deschide Scurtături"
 
@@ -5525,6 +5541,15 @@ msgid ""
 msgstr ""
 "S-ar putea ca actualizările să fi fost întrerupte din cauza unei conexiuni "
 "limitate, a economisirii energiei sau a modului joc"
+
+#. Strictly we don’t need an additional button here, as the default action
+#. * for the notification will open the updates page. From there, users still
+#. * have to manually press the refresh button, though, which might be
+#. * non-obvious; so add a button to the notification to help.
+#: src/gs-update-monitor.c:271 src/gs-updates-page.ui:262
+#: src/gs-updates-page.ui:265
+msgid "Check for Updates"
+msgstr "Caută actualizări"
 
 #: src/gs-update-monitor.c:282
 msgid "Critical Updates Available to Download"
