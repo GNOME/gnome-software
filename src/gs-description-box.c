@@ -130,7 +130,14 @@ gs_description_box_update_content (GsDescriptionBox *box)
 					}
 				} else {
 					const gchar *end = strchr (box->text + start_index, '>');
-					opened_markup = g_slist_prepend (opened_markup, g_strndup (box->text + start_index + 1, end - (box->text + start_index) - 1));
+					if (end == NULL) {
+						/* do nothing when the markup text is broken and has an opening
+						   element with no matching closing '>'; it might not happen when
+						   it's taken from a well-formatted Appstream data XML, but better
+						   to stay on a safe side */
+					} else {
+						opened_markup = g_slist_prepend (opened_markup, g_strndup (box->text + start_index + 1, end - (box->text + start_index) - 1));
+					}
 				}
 				in_markup++;
 			} else if (box->text[start_index] == '>') {
