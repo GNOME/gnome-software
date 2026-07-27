@@ -22,6 +22,7 @@ typedef struct
 	GtkWidget	*bar3;
 	GtkWidget	*bar4;
 	GtkWidget	*bar5;
+	GtkWidget	*value_vbox;
 	GtkWidget	*label_value;
 	GtkWidget	*label_total;
 	GtkWidget	*star_value_1;
@@ -36,7 +37,9 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsReviewHistogram, gs_review_histogram, GTK_TYPE_WID
 void
 gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 				 gint rating_percent,
-				 GArray *review_ratings)
+				 gboolean should_show_score,
+				 const unsigned int *review_ratings,
+				 size_t review_ratings_length)
 {
 	GsReviewHistogramPrivate *priv = gs_review_histogram_get_instance_private (histogram);
 	g_autofree gchar *text = NULL;
@@ -47,18 +50,15 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 	g_return_if_fail (GS_IS_REVIEW_HISTOGRAM (histogram));
 
 	/* sanity check */
-	if (review_ratings->len != 6) {
-		g_warning ("ratings data incorrect expected 012345");
-		return;
-	}
+	g_assert (review_ratings_length == 6);
 
 	/* idx 0 is '0 stars' which we don't support in the UI */
-	for (guint i = 1; i < review_ratings->len; i++) {
-		guint32 c = g_array_index (review_ratings, guint32, i);
+	for (guint i = 1; i < review_ratings_length; i++) {
+		unsigned int c = review_ratings[i];
 		max = MAX (c, max);
 	}
-	for (guint i = 1; i < review_ratings->len; i++) {
-		guint32 c = g_array_index (review_ratings, guint32, i);
+	for (guint i = 1; i < review_ratings_length; i++) {
+		unsigned int c = review_ratings[i];
 		fraction[i] = max > 0 ? (gdouble) c / (gdouble) max : 0.f;
 		total += c;
 	}
@@ -74,17 +74,23 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 
 	g_clear_pointer (&text, g_free);
 
-	/* Round explicitly, to avoid rounding inside the printf() call and to use
-	   the same value also for the stars fraction. */
-	fraction[0] = total > 0 ? round (((gdouble) rating_percent ) * 50.0 / 100.0) / 10.0 : 0.0;
-	text = g_strdup_printf ("%.01f", fraction[0]);
-	gtk_label_set_text (GTK_LABEL (priv->label_value), text);
+	/* Only show the ‘average’ score if it’s credible. */
+	gtk_widget_set_visible (priv->value_vbox, should_show_score);
+	gtk_widget_set_visible (priv->label_value, should_show_score);
 
-	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_1), CLAMP (fraction[0], 0.0, 1.0));
-	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_2), CLAMP (fraction[0], 1.0, 2.0) - 1.0);
-	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_3), CLAMP (fraction[0], 2.0, 3.0) - 2.0);
-	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_4), CLAMP (fraction[0], 3.0, 4.0) - 3.0);
-	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_5), CLAMP (fraction[0], 4.0, 5.0) - 4.0);
+	if (should_show_score) {
+		/* Round explicitly, to avoid rounding inside the printf() call and to use
+		   the same value also for the stars fraction. */
+		fraction[0] = total > 0 ? round (((gdouble) rating_percent ) * 50.0 / 100.0) / 10.0 : 0.0;
+		text = g_strdup_printf ("%.01f", fraction[0]);
+		gtk_label_set_text (GTK_LABEL (priv->label_value), text);
+
+		gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_1), CLAMP (fraction[0], 0.0, 1.0));
+		gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_2), CLAMP (fraction[0], 1.0, 2.0) - 1.0);
+		gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_3), CLAMP (fraction[0], 2.0, 3.0) - 2.0);
+		gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_4), CLAMP (fraction[0], 3.0, 4.0) - 3.0);
+		gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_5), CLAMP (fraction[0], 4.0, 5.0) - 4.0);
+	}
 }
 
 static void
@@ -120,6 +126,7 @@ gs_review_histogram_class_init (GsReviewHistogramClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, bar3);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, bar2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, bar1);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, value_vbox);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_value);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_total);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, star_value_1);

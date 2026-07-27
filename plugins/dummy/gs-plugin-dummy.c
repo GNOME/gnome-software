@@ -828,16 +828,8 @@ refine_app (GsPluginDummy               *self,
 
 	/* add fake ratings */
 	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_REVIEW_RATINGS) != 0) {
-		g_autoptr(GArray) ratings = NULL;
-		const gint data[] = { 0, 10, 20, 30, 15, 2 };
-		ratings = g_array_sized_new (FALSE, FALSE, sizeof (gint), 6);
-		g_array_append_vals (ratings, data, 6);
-		gs_app_set_review_ratings (app, ratings);
-	}
-
-	/* add a rating */
-	if ((require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_RATING) != 0) {
-		gs_app_set_rating (app, 66);
+		const unsigned int data[] = { 0, 10, 20, 30, 15, 2 };
+		gs_app_set_review_ratings (app, data, G_N_ELEMENTS (data));
 	}
 
 	return TRUE;

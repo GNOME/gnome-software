@@ -663,10 +663,8 @@ gs_odrs_provider_refine_ratings (GsOdrsProvider  *self,
                                  GCancellable    *cancellable,
                                  GError         **error)
 {
-	gint rating;
 	guint32 ratings_raw[6] = { 0, 0, 0, 0, 0, 0 };
 	guint cnt = 0;
-	g_autoptr(GArray) review_ratings = NULL;
 	g_autoptr(GPtrArray) reviewable_ids = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 
@@ -730,20 +728,8 @@ gs_odrs_provider_refine_ratings (GsOdrsProvider  *self,
 	/* Done with self->ratings now */
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
-	/* merge to accumulator array back to one GArray blob */
-	review_ratings = g_array_sized_new (FALSE, TRUE, sizeof(guint32), 6);
-	for (guint i = 0; i < 6; i++)
-		g_array_append_val (review_ratings, ratings_raw[i]);
-	gs_app_set_review_ratings (app, review_ratings);
+	gs_app_set_review_ratings (app, ratings_raw, G_N_ELEMENTS (ratings_raw));
 
-	/* find the wilson rating */
-	rating = gs_utils_get_wilson_rating (g_array_index (review_ratings, guint32, 1),
-					     g_array_index (review_ratings, guint32, 2),
-					     g_array_index (review_ratings, guint32, 3),
-					     g_array_index (review_ratings, guint32, 4),
-					     g_array_index (review_ratings, guint32, 5));
-	if (rating > 0)
-		gs_app_set_rating (app, rating);
 	return TRUE;
 }
 
@@ -1752,7 +1738,7 @@ refine_app_op (GsOdrsProvider            *self,
 
 	/* add ratings if possible */
 	if ((flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS) &&
-	    gs_app_get_review_ratings (app) == NULL) {
+	    gs_app_get_review_ratings (app, NULL) == NULL) {
 		if (!gs_odrs_provider_refine_ratings (self, app, cancellable, &local_error)) {
 			if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR, GS_ODRS_PROVIDER_ERROR_NO_NETWORK)) {
 				g_debug ("failed to refine app %s: %s",

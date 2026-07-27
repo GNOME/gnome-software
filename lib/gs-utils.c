@@ -643,13 +643,15 @@ gs_utils_rmtree (const gchar *directory, GError **error)
 	return gs_utils_rmtree_real (directory, error);
 }
 
-static gdouble
-pnormaldist (gdouble qn)
+static double pnormaldist (double qn) G_GNUC_CONST;
+
+static double
+pnormaldist (double qn)
 {
-	static gdouble b[11] = { 1.570796288,      0.03706987906,   -0.8364353589e-3,
-				-0.2250947176e-3,  0.6841218299e-5,  0.5824238515e-5,
-				-0.104527497e-5,   0.8360937017e-7, -0.3231081277e-8,
-				 0.3657763036e-10, 0.6936233982e-12 };
+	static const double b[11] = {  1.570796288,      0.03706987906,   -0.8364353589e-3,
+				      -0.2250947176e-3,  0.6841218299e-5,  0.5824238515e-5,
+				      -0.104527497e-5,   0.8360937017e-7, -0.3231081277e-8,
+				       0.3657763036e-10, 0.6936233982e-12 };
 	gdouble w1, w3;
 	guint i;
 
@@ -672,61 +674,126 @@ pnormaldist (gdouble qn)
 		return -sqrt (w1 * w3);
 }
 
-static gdouble
-wilson_score (gdouble value, gdouble n, gdouble power)
+/* An implementation of
+ * https://www.evanmiller.org/ranking-items-with-star-ratings.html
+ *
+ * See the documentation comment below for an overview. */
+static double
+estimate_average_score (const uint64_t *score_values,  /* this is s_k in the literature */
+                        size_t          n_scores,  /* this is K in the literature */
+                        const uint64_t *votes,  /* this is n_k in the literature */
+                        double          alpha,
+                        double         *out_credible_interval)
 {
-	gdouble z, phat;
-	if (value == 0)
-		return 0;
-	z = pnormaldist (1 - power / 2);
-	phat = value / n;
-	return (phat + z * z / (2 * n) -
-		z * sqrt ((phat * (1 - phat) + z * z / (4 * n)) / n)) /
-		(1 + z * z / n);
+	double expected_average_score = 0;
+	double square_sum = 0;
+	double credible_interval;
+	uint64_t total_votes = 0;  /* this is N in the literature */
+
+	g_assert (n_scores > 0);
+
+	for (size_t k = 0; k < n_scores; k++)
+		total_votes += votes[k];
+
+	for (size_t k = 0; k < n_scores; k++) {
+		expected_average_score += (double) score_values[k] * (votes[k] + 1.0) / (total_votes + n_scores);
+		square_sum += (double) score_values[k] * score_values[k] * (votes[k] + 1.0) / (total_votes + n_scores);
+	}
+
+	credible_interval = 2.0 * pnormaldist (1.0 - alpha / 2.0) * sqrt ((square_sum - expected_average_score * expected_average_score) / (total_votes + n_scores + 1));
+	*out_credible_interval = credible_interval;
+	return expected_average_score - credible_interval / 2.0;
 }
 
 /**
- * gs_utils_get_wilson_rating:
- * @star1: The number of 1 star reviews
- * @star2: The number of 2 star reviews
- * @star3: The number of 3 star reviews
- * @star4: The number of 4 star reviews
- * @star5: The number of 5 star reviews
+ * gs_utils_estimate_average_rating_score:
+ * @score_values: (array length=n_scores): array of possible rating scores and
+ *   their values; for a 1-5 star scale, this would be `{1, 2, 3, 4, 5}`
+ * @n_scores: length of @score_values and @votes
+ * @votes: (array length=n_scores): array of number of votes for each score,
+ *   indexed the same as @score_values
+ * @out_should_show_score: (out) (optional): return location for a boolean
+ *   indicating if there have been enough votes to be able to reliably show an
+ *   average score
  *
- * Returns the lower bound of Wilson score confidence interval for a
- * Bernoulli parameter. This ensures small numbers of ratings don't give overly
- * high scores.
- * See https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
- * for details.
+ * Estimates an average rating score for an app, using the given @votes and the
+ * star scale of @score_values.
  *
- * Returns: Wilson rating percentage, or -1 for error
+ * This behaves similarly to the simple mean of the votes, but it does some
+ * statistics to calculate a confidence interval on the result. This means that
+ * the average rating can be hidden if there have not been enough votes to give
+ * a confident mean rating. See @out_should_show_score.
+ *
+ * The properties that we want for the user interface are:
+ *  - Users can rate apps on a 1-5 star scale.
+ *  - We show an ‘average’ rating for an app, on the same scale, by combining
+ *    the votes weighted by their star score value.
+ *  - The ‘average’ rating for an app must be recognisable to users as being an
+ *    average of the votes histogram.
+ *  - Small numbers of votes (a small sample size) must not allow apps to be
+ *    disproportionately ranked. For example, an app with 1 vote of 5/5 must not
+ *    be ranked more highly than an app with 200 votes of 4/5 and 200 votes
+ *    of 5/5.
+ *  - The ‘average’ rating shown for an app must be equal to the rating used for
+ *    ranking purposes, or apps may appear to be sorted out of order to users.
+ *
+ * All these properties can be achieved by
+ * [this approach proposed by Evan Miller](https://www.evanmiller.org/ranking-items-with-star-ratings.html)
+ * which we implement.
+ *
+ * At a high level:
+ *  - Submitted user votes are treated as samples of a larger population of all
+ *    users’ opinions of an app.
+ *  - Statistics are used to estimate the mean and variance of the population
+ *    average.
+ *  - The variance is used to give a credible interval on the population average,
+ *    and the lower bound of this credible interval is used as the ‘average’
+ *    rating.
+ *  - If the credible interval is too wide, the ‘average’ rating should not be
+ *    shown, because there have not been enough votes to make it meaningful.
+ *
+ * The acceptable credible interval is currently set at 0.5 (i.e. half a star),
+ * as users will not notice/care about that difference between the ‘average’
+ * given in the UI and the mean of the votes histogram. The ‘average’ rating is
+ * currently shown to a 0.1 star granularity (e.g. ‘4.1 out of 5’), so if we
+ * wanted to guarantee the ‘average’ matching the votes histogram we should set
+ * `acceptable_credible_interval = 0.1`. However, this would require at least
+ * 176 votes for each app (using 90% confidence), assuming all voters voted in
+ * consensus. It would need 4344 votes if voting was polarised. Given that most
+ * apps receive 10-50 votes (and only a handful of apps receive more), requiring
+ * this level of credibility is not practical.
+ *
+ * Similarly for the confidence interval, we’ve chosen 90% confidence as
+ * anything higher would require too many votes.
+ *
+ * According to https://www.evanmiller.org/ranking-items-with-star-ratings.html#table
+ * for w = 0.5 and 90% confidence, a credible interval can be achieved with
+ * 81 uniformly distributed votes, 31 consensus votes, or 168 polarised votes.
+ *
+ * Returns: an ‘average’ measure of the votes, given as a percentage [0, 100];
+ *   this measure is only credible if @out_should_show_score returns true
  **/
-gint
-gs_utils_get_wilson_rating (guint64 star1,
-			    guint64 star2,
-			    guint64 star3,
-			    guint64 star4,
-			    guint64 star5)
+unsigned int
+gs_utils_estimate_average_rating_score (const uint64_t *score_values,
+                                        size_t          n_scores,
+                                        const uint64_t *votes,
+                                        gboolean       *out_should_show_score)
 {
-	gdouble val;
-	guint64 star_sum = star1 + star2 + star3 + star4 + star5;
-	if (star_sum == 0)
-		return -1;
+	const double confidence = 0.9;
+	const double acceptable_credible_interval = 0.5;  /* half a star; this is w in the literature */
+	double estimated_average_score, credible_interval;
 
-	/* get score */
-	val =  (wilson_score ((gdouble) star1, (gdouble) star_sum, 0.2) * -2);
-	val += (wilson_score ((gdouble) star2, (gdouble) star_sum, 0.2) * -1);
-	val += (wilson_score ((gdouble) star4, (gdouble) star_sum, 0.2) * 1);
-	val += (wilson_score ((gdouble) star5, (gdouble) star_sum, 0.2) * 2);
+	estimated_average_score = estimate_average_score (score_values,
+							  n_scores,
+							  votes,
+							  (1.0 - confidence) * 2.0,
+							  &credible_interval);
 
-	/* normalize from -2..+2 to 0..5 */
-	val += 3;
+	if (out_should_show_score != NULL)
+		*out_should_show_score = (credible_interval < acceptable_credible_interval);
 
-	/* multiply to a percentage */
-	val *= 20;
-
-	/* return rounded up integer */
-	return (gint) ceil (val);
+	/* Scale up to a percentage */
+	return estimated_average_score * 20;
 }
 
 /**
