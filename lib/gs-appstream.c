@@ -20,13 +20,6 @@
 
 #define	GS_APPSTREAM_MAX_SCREENSHOTS	5
 
-/* This requires changes for https://github.com/hughsie/libxmlb/issues/120
- * The libxmlb crashes when all nodes are marked for a removal in the fixup-s
- */
-#if LIBXMLB_CHECK_VERSION(0, 3, 9)
-#define HAVE_FIXED_LIBXMLB 1
-#endif
-
 GsApp *
 gs_appstream_create_app (GsPlugin *plugin,
 			 XbSilo *silo,
@@ -1770,7 +1763,13 @@ gs_appstream_do_search (GsPlugin *plugin,
 	if (components->len > 0)
 		gs_appstream_read_silo_info_from_component (g_ptr_array_index (components, 0), &silo_filename, &default_scope);
 
+#if LIBXMLB_CHECK_VERSION(0, 3, 27)
+	extends_query = xb_silo_lookup_query_full (silo, "extends", error);
+	if (extends_query == NULL)
+		return FALSE;
+#else
 	extends_query = xb_silo_lookup_query (silo, "extends");
+#endif
 
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
@@ -2571,7 +2570,6 @@ gs_appstream_is_merge_node (XbBuilderNode *bn)
 	return FALSE;
 }
 
-#ifdef HAVE_FIXED_LIBXMLB
 static gboolean
 gs_appstream_remove_merge_components_cb (XbBuilderFixup *self,
 					 XbBuilderNode *bn,
@@ -2595,7 +2593,6 @@ gs_appstream_remove_nonmerge_components_cb (XbBuilderFixup *self,
 		xb_builder_node_add_flag (bn, XB_BUILDER_NODE_FLAG_IGNORE);
 	return TRUE;
 }
-#endif
 
 static GInputStream *
 gs_appstream_load_dep11_cb (XbBuilderSource *self,
@@ -2678,13 +2675,11 @@ gs_appstream_load_appstream_file (XbBuilder *builder,
 	xb_builder_node_insert_text (info, "filename", filename, NULL);
 	xb_builder_source_set_info (source, info);
 
-	#ifdef HAVE_FIXED_LIBXMLB
 	fixup = xb_builder_fixup_new ("RemoveNonMergeComponents",
 				       gs_appstream_remove_nonmerge_components_cb,
 				       NULL, NULL);
 	xb_builder_fixup_set_max_depth (fixup, 2);
 	xb_builder_source_add_fixup (source, fixup);
-	#endif
 
 	xb_builder_import_source (builder, source);
 
@@ -3222,23 +3217,19 @@ gs_appstream_add_data_merge_fixup (XbBuilder *builder,
 				   GPtrArray *desktop_paths,
 				   GCancellable *cancellable)
 {
-	#ifdef HAVE_FIXED_LIBXMLB
 	g_autoptr(XbBuilderFixup) fixup1 = NULL;
-	#endif
 	g_autoptr(XbBuilderFixup) fixup2 = NULL;
 	MergeData *md;
 
 	/* First read all of the merge components and .desktop files (which will be merged as well) */
 	md = gs_appstream_gather_merge_data (appstream_paths, desktop_paths, cancellable);
 
-	#ifdef HAVE_FIXED_LIBXMLB
 	/* Then drop all the merge components from the result, because they are useless when being merged */
 	fixup1 = xb_builder_fixup_new ("RemoveMergeComponents",
 				       gs_appstream_remove_merge_components_cb,
 				       NULL, NULL);
 	xb_builder_fixup_set_max_depth (fixup1, 2);
 	xb_builder_add_fixup (builder, fixup1);
-	#endif
 
 	/* Then apply merge data to the components */
 	fixup2 = xb_builder_fixup_new ("ApplyMerges",
