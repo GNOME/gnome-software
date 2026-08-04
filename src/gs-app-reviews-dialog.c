@@ -94,6 +94,7 @@ review_action_completed_cb (GObject      *source_object,
 
 	/* enable review actions after action completion */
 	gs_review_row_actions_set_sensitive (data->row, TRUE);
+	gtk_widget_grab_focus (GTK_WIDGET (data->row));
 
 	if (g_cancellable_is_cancelled (g_task_get_cancellable (G_TASK (result))))
 		return;
