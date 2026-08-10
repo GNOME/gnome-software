@@ -35,7 +35,7 @@ typedef enum {
 /*
  * GsDkmsState:
  * @GS_DKMS_STATE_ERROR: there was an error determining the key state
- * @GS_DKMS_STATE_ENROLLED: the key is enrolled, which means it can used to sign the drivers
+ * @GS_DKMS_STATE_ENROLLED: the key is enrolled or in the Secure Boot database, which means it can used to sign the drivers
  * @GS_DKMS_STATE_NOT_FOUND: the key was not found, it's needed to be created first
  * @GS_DKMS_STATE_NOT_ENROLLED: the key exists, but is not enrolled yet
  * @GS_DKMS_STATE_PENDING: the key is scheduled to be enrolled the next boot
