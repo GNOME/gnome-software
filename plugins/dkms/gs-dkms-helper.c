@@ -24,6 +24,7 @@ gs_dkms_helper_check_result (const gchar *val_stdout,
 	g_autofree gchar *not_enrolled_output = NULL;
 	g_autofree gchar *pending_output = NULL;
 	g_autofree gchar *enrolled_output = NULL;
+	g_autofree gchar *in_db_output = NULL;
 	g_autofree gchar *dkms_key_filename = NULL;
 	const gchar *key_filename;
 
@@ -41,6 +42,7 @@ gs_dkms_helper_check_result (const gchar *val_stdout,
 	not_enrolled_output = g_strconcat (key_filename, " is not enrolled\n", NULL);
 	pending_output = g_strconcat (key_filename, " is already in the enrollment request\n", NULL);
 	enrolled_output = g_strconcat (key_filename, " is already enrolled\n", NULL);
+	in_db_output = g_strconcat (key_filename, " is already in db\n", NULL);
 
 	if (g_ascii_strncasecmp (val_stdout, not_found_output, strlen (not_found_output)) == 0) {
 		return GS_DKMS_STATE_NOT_FOUND;
@@ -48,7 +50,8 @@ gs_dkms_helper_check_result (const gchar *val_stdout,
 		return GS_DKMS_STATE_NOT_ENROLLED;
 	} else if (g_ascii_strncasecmp (val_stdout, pending_output, strlen (pending_output)) == 0) {
 		return GS_DKMS_STATE_PENDING;
-	} else if (g_ascii_strncasecmp (val_stdout, enrolled_output, strlen (enrolled_output)) == 0) {
+	} else if (g_ascii_strncasecmp (val_stdout, enrolled_output, strlen (enrolled_output)) == 0 ||
+		   g_ascii_strncasecmp (val_stdout, in_db_output, strlen (in_db_output)) == 0) {
 		return GS_DKMS_STATE_ENROLLED;
 	} else if (with_print) {
 		g_printerr ("Unexpected output '%s'\n", val_stdout);
