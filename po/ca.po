@@ -5,14 +5,14 @@
 # Jordi Mas i Hernandez <jmas@softcatala.org>, 2013-2026
 # Gil Forcada <gilforcada@guifi.net>, 2014-2020.
 # Francesc Busquets <francesc@gmail.com>, 2025
-#
+# Xavi Ivars <xavi.ivars@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2026-08-05 10:17+0000\n"
-"PO-Revision-Date: 2026-08-11 11:07+0000\n"
-"Last-Translator: Francesc Busquets <francesc@gmail.com>\n"
+"PO-Revision-Date: 2026-08-13 14:12+0000\n"
+"Last-Translator: Xavi Ivars <xavi.ivars@gmail.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Id-Version: gnome-software master\n"
 "X-DamnedLies-Scope: partial\n"
-"X-Generator: Minairó 0.1.0\n"
+"X-Generator: Minairó 1.0.0\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35
 #: src/org.gnome.Software.desktop.in:2
@@ -420,7 +420,6 @@ msgid "Failed to move: %s"
 msgstr "S'ha produït un error en moure: %s"
 
 #: src/gnome-software-local-file-flatpak.desktop.in:2
-#| msgid "Software Install"
 msgid "Software Install (flatpak)"
 msgstr "Instal·lació de programari (flatpak)"
 
@@ -432,17 +431,14 @@ msgid "Install selected software on the system"
 msgstr "Instal·la el programari seleccionat al sistema"
 
 #: src/gnome-software-local-file-fwupd.desktop.in:2
-#| msgid "Software Install"
 msgid "Software Install (firmware)"
 msgstr "Instal·lació de programari (firmware)"
 
 #: src/gnome-software-local-file-packagekit.desktop.in:2
-#| msgid "Software Install"
 msgid "Software Install (packages)"
 msgstr "Instal·lació de programari (paquets)"
 
 #: src/gnome-software-local-file-snap.desktop.in:2
-#| msgid "Software Install"
 msgid "Software Install (snap)"
 msgstr "Instal·lació de programari (snap)"
 
@@ -1189,7 +1185,6 @@ msgid "Installs any pending updates in the background"
 msgstr "Instal·la les actualitzacions pendents en segon pla"
 
 #: src/gs-application.c:156
-#| msgid "Please check for available updates"
 msgid "Show the updates page and start checking for available updates"
 msgstr ""
 "Mostra la pàgina d'actualitzacions i comença a comprovar si hi ha "
@@ -4135,7 +4130,7 @@ msgstr "%s • %s"
 
 #: src/gs-repo-row.c:410
 msgid "Remove"
-msgstr "_Suprimeix"
+msgstr "Suprimeix"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad app
@@ -5339,85 +5334,71 @@ msgid "Go back"
 msgstr "Ves enrere"
 
 #: src/gs-shortcuts-dialog.ui:13
-#| msgid "Navigation"
 msgctxt "shortcut window"
 msgid "Navigation"
 msgstr "Navegació"
 
 #: src/gs-shortcuts-dialog.ui:17
-#| msgid "Navigate to Explore Page"
 msgctxt "shortcut window"
 msgid "Navigate to Explore Page"
 msgstr "Navega a la pàgina «explora»"
 
 #: src/gs-shortcuts-dialog.ui:23
-#| msgid "Navigate to Installed Page"
 msgctxt "shortcut window"
 msgid "Navigate to Installed Page"
 msgstr "Navega a la pàgina «instal·lat»"
 
 #: src/gs-shortcuts-dialog.ui:29
-#| msgid "Navigate to Updates Page"
 msgctxt "shortcut window"
 msgid "Navigate to Updates Page"
 msgstr "Navega a la pàgina d'actualitzacions"
 
 #: src/gs-shortcuts-dialog.ui:35
-#| msgid "Open Search Bar"
 msgctxt "shortcut window"
 msgid "Open Search Bar"
 msgstr "Obre la barra de cerca"
 
 #: src/gs-shortcuts-dialog.ui:41
-#| msgid "Open Main Menu"
 msgctxt "shortcut window"
 msgid "Open Main Menu"
 msgstr "Obre el menú principal"
 
 #: src/gs-shortcuts-dialog.ui:49
-#| msgid "Windows"
 msgctxt "shortcut window"
 msgid "Windows"
 msgstr "Finestres"
 
 #: src/gs-shortcuts-dialog.ui:53
-#| msgid "Open Preferences"
 msgctxt "shortcut window"
 msgid "Open Preferences"
 msgstr "Obre les preferències"
 
 #: src/gs-shortcuts-dialog.ui:59
-#| msgid "Open Software Repositories"
 msgctxt "shortcut window"
 msgid "Open Software Repositories"
 msgstr "Obre els repositoris de programari"
 
 #: src/gs-shortcuts-dialog.ui:65
-#| msgid "Close Main Window"
 msgctxt "shortcut window"
 msgid "Close Main Window"
 msgstr "Tanca la finestra principal"
 
 #: src/gs-shortcuts-dialog.ui:73
-#| msgid "Updates Page"
 msgctxt "shortcut window"
 msgid "Updates Page"
 msgstr "Pàgina d'actualitzacions"
 
 #: src/gs-shortcuts-dialog.ui:77
-#| msgid "Check for Updates"
 msgctxt "shortcut window"
 msgid "Check for Updates"
 msgstr "Comprova si hi ha actualitzacions"
 
 #: src/gs-shortcuts-dialog.ui:85
-#| msgid "Help"
 msgctxt "shortcut window"
 msgid "Help"
 msgstr "Ajuda"
 
 #: src/gs-shortcuts-dialog.ui:89
-#| msgid "Open Keyboard Shortcuts"
 msgctxt "shortcut window"
 msgid "Open Keyboard Shortcuts"
 msgstr "Obre les dreceres de teclat"
@@ -5532,7 +5513,6 @@ msgid "Software updates are ready and waiting"
 msgstr "Les actualitzacions de programari estan a punt i esperant"
 
 #: src/gs-update-monitor.c:264
-#| msgid "Check for Updates"
 msgid "Could Not Check for Updates Recently"
 msgstr "No s'ha pogut comprovar recentment si hi ha actualitzacions"
 
@@ -6198,7 +6178,6 @@ msgstr "Subcarpeta de documents %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:443
 #, c-format
-#| msgid "Downloads folder"
 msgid "Downloads subfolder %s"
 msgstr "Baixa la subcarpeta %s"
 
