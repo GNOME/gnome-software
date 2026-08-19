@@ -474,8 +474,13 @@ gs_plugin_loader_app_is_valid (GsApp               *app,
 		return FALSE;
 	}
 
-	/* don't show sources */
+	/* don't show sources, unless the caller explicitly allows them */
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
+		if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_REPOSITORIES) != 0) {
+			g_debug ("app allowed as source by flag %s",
+				 gs_plugin_loader_get_app_str (app));
+			return TRUE;
+		}
 		g_debug ("app invalid as source %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
