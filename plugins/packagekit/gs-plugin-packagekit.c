@@ -2322,7 +2322,6 @@ gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GPtrArray *sources;
-		const gchar *filename;
 
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
@@ -2334,10 +2333,7 @@ gs_plugin_packagekit_refine_async (GsPlugin                   *plugin,
 		n_considered++;
 
 		/* Repositories */
-		filename = gs_app_get_metadata_item (app, "repos::repo-filename");
-
-		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY &&
-		    filename != NULL) {
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
 			gs_app_list_add (repos_list, app);
 		}
 
