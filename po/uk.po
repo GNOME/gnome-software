@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-07-28 08:53+0000\n"
-"PO-Revision-Date: 2026-07-30 20:33+0300\n"
+"POT-Creation-Date: 2026-08-21 21:24+0000\n"
+"PO-Revision-Date: 2026-08-22 19:01+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -71,8 +71,8 @@ msgid "The update details"
 msgstr "Подробиці оновлення"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3053
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3055
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3075
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3077
 #: src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "Проєкт GNOME"
@@ -410,7 +410,6 @@ msgid "Failed to move: %s"
 msgstr "Не вдалося пересунути: %s"
 
 #: src/gnome-software-local-file-flatpak.desktop.in:2
-#| msgid "Software Install"
 msgid "Software Install (flatpak)"
 msgstr "Установлення програм (flatpak)"
 
@@ -422,17 +421,14 @@ msgid "Install selected software on the system"
 msgstr "Встановити у систему вибрані програми"
 
 #: src/gnome-software-local-file-fwupd.desktop.in:2
-#| msgid "Software Install"
 msgid "Software Install (firmware)"
 msgstr "Установлення програм (мікропрограма)"
 
 #: src/gnome-software-local-file-packagekit.desktop.in:2
-#| msgid "Software Install"
 msgid "Software Install (packages)"
 msgstr "Установлення програм (пакунки)"
 
 #: src/gnome-software-local-file-snap.desktop.in:2
-#| msgid "Software Install"
 msgid "Software Install (snap)"
 msgstr "Установлення програм (snap)"
 
@@ -1055,11 +1051,11 @@ msgstr "Подробиці оновлення"
 msgid "Requires additional permissions"
 msgstr "Потребує додаткових прав доступу"
 
-#: src/gs-app-reviews-dialog.c:135
+#: src/gs-app-reviews-dialog.c:136
 msgid "Invalid ratings data received from server"
 msgstr "З сервера отримано некоректні дані щодо оцінок"
 
-#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2435
+#: src/gs-app-reviews-dialog.c:139 src/gs-details-page.c:2435
 msgid "Could not communicate with ratings server"
 msgstr "Не вдалося обмінятися даними із сервером оцінок"
 
@@ -1178,7 +1174,6 @@ msgid "Installs any pending updates in the background"
 msgstr "Встановлює будь-які оновлення з черги у фоновому режимі"
 
 #: src/gs-application.c:156
-#| msgid "Please check for available updates"
 msgid "Show the updates page and start checking for available updates"
 msgstr "Показати сторінку оновлень і почати пошук доступних оновлень"
 
@@ -3720,7 +3715,7 @@ msgstr "Інші категорії"
 msgid "No App Data Found"
 msgstr "Не знайдено даних про програму"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Невідома"
@@ -4042,19 +4037,19 @@ msgstr "Додаткові сховища з вибраних сторонніх
 msgid "Fedora Third Party Repositories"
 msgstr "Сторонні сховища Fedora"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "Не вдалося завантажити список сторонніх сховищ Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "операційна система"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -5376,85 +5371,71 @@ msgid "Go back"
 msgstr "Повернутися"
 
 #: src/gs-shortcuts-dialog.ui:13
-#| msgid "Navigation"
 msgctxt "shortcut window"
 msgid "Navigation"
 msgstr "Навігація"
 
 #: src/gs-shortcuts-dialog.ui:17
-#| msgid "Navigate to Explore Page"
 msgctxt "shortcut window"
 msgid "Navigate to Explore Page"
 msgstr "Перейти до сторінки ознайомлення"
 
 #: src/gs-shortcuts-dialog.ui:23
-#| msgid "Navigate to Installed Page"
 msgctxt "shortcut window"
 msgid "Navigate to Installed Page"
 msgstr "Перейти до сторінки встановлених"
 
 #: src/gs-shortcuts-dialog.ui:29
-#| msgid "Navigate to Updates Page"
 msgctxt "shortcut window"
 msgid "Navigate to Updates Page"
 msgstr "Перейти до сторінки оновлень"
 
 #: src/gs-shortcuts-dialog.ui:35
-#| msgid "Open Search Bar"
 msgctxt "shortcut window"
 msgid "Open Search Bar"
 msgstr "Відкрити панель пошуку"
 
 #: src/gs-shortcuts-dialog.ui:41
-#| msgid "Open Main Menu"
 msgctxt "shortcut window"
 msgid "Open Main Menu"
 msgstr "Відкрити головне меню"
 
 #: src/gs-shortcuts-dialog.ui:49
-#| msgid "Windows"
 msgctxt "shortcut window"
 msgid "Windows"
 msgstr "Вікна"
 
 #: src/gs-shortcuts-dialog.ui:53
-#| msgid "Open Preferences"
 msgctxt "shortcut window"
 msgid "Open Preferences"
 msgstr "Відкрити налаштування"
 
 #: src/gs-shortcuts-dialog.ui:59
-#| msgid "Open Software Repositories"
 msgctxt "shortcut window"
 msgid "Open Software Repositories"
 msgstr "Відкрити сховища програм"
 
 #: src/gs-shortcuts-dialog.ui:65
-#| msgid "Close Main Window"
 msgctxt "shortcut window"
 msgid "Close Main Window"
 msgstr "Закрити головне вікно"
 
 #: src/gs-shortcuts-dialog.ui:73
-#| msgid "Updates Page"
 msgctxt "shortcut window"
 msgid "Updates Page"
 msgstr "Сторінка оновлень"
 
 #: src/gs-shortcuts-dialog.ui:77
-#| msgid "Check for Updates"
 msgctxt "shortcut window"
 msgid "Check for Updates"
 msgstr "Перевірити наявність оновлень"
 
 #: src/gs-shortcuts-dialog.ui:85
-#| msgid "Help"
 msgctxt "shortcut window"
 msgid "Help"
 msgstr "Довідка"
 
 #: src/gs-shortcuts-dialog.ui:89
-#| msgid "Open Keyboard Shortcuts"
 msgctxt "shortcut window"
 msgid "Open Keyboard Shortcuts"
 msgstr "Відкрити вікно клавіатурних скорочень"
@@ -5519,25 +5500,29 @@ msgstr ""
 msgid "Storage"
 msgstr "Сховище даних"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (встановлено)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (встановлення)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (отримання)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (вилучення)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "Драйвер вказує, що у ньому передбачено підтримку поточної системи"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
@@ -5568,7 +5553,6 @@ msgid "Software updates are ready and waiting"
 msgstr "Оновлення програмного забезпечення готові і очікують"
 
 #: src/gs-update-monitor.c:264
-#| msgid "Check for Updates"
 msgid "Could Not Check for Updates Recently"
 msgstr "Не вдалося виконати пошук оновлень нещодавно"
 
@@ -5577,8 +5561,8 @@ msgid ""
 "Updates may have been paused due to being on a metered network, power saver "
 "mode, or game mode"
 msgstr ""
-"Оновлення може бути призупинено через зв'язок за допомогою тарифікованої мере"
-"жі, режим заощадження енергії або режим гри"
+"Оновлення може бути призупинено через зв'язок за допомогою тарифікованої "
+"мережі, режим заощадження енергії або режим гри"
 
 #. Strictly we don’t need an additional button here, as the default action
 #. * for the notification will open the updates page. From there, users still
@@ -6245,7 +6229,6 @@ msgstr "Підтека документів %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:443
 #, c-format
-#| msgid "Downloads folder"
 msgid "Downloads subfolder %s"
 msgstr "Підтека отриманих даних %s"
 
