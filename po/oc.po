@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-calendar master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-07-31 08:04+0000\n"
-"PO-Revision-Date: 2026-07-31 21:31+0200\n"
+"POT-Creation-Date: 2026-08-21 21:24+0000\n"
+"PO-Revision-Date: 2026-08-22 18:54+0200\n"
 "Last-Translator: Quentin PAGÈS\n"
 "Language-Team: Tot en òc\n"
 "Language: oc\n"
@@ -1003,11 +1003,11 @@ msgstr "Detalhs de la mesa a jorn"
 msgid "Requires additional permissions"
 msgstr "Demanda mai de permissions"
 
-#: src/gs-app-reviews-dialog.c:135
+#: src/gs-app-reviews-dialog.c:136
 msgid "Invalid ratings data received from server"
 msgstr "Donadas de classament invalidas recebudas del servidor"
 
-#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2435
+#: src/gs-app-reviews-dialog.c:139 src/gs-details-page.c:2435
 msgid "Could not communicate with ratings server"
 msgstr "Impossible de comunicar amb lo servidor d’evaluacion"
 
@@ -3548,7 +3548,7 @@ msgstr "Autras categorias"
 msgid "No App Data Found"
 msgstr "Cap de donada d'aplicacion pas trobada"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Desconegut"
@@ -3853,19 +3853,19 @@ msgstr "Repertòris addicionals a partir de fonts tèrças seleccionadas — %s.
 msgid "Fedora Third Party Repositories"
 msgstr "Depauses tèrces de Fedora"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "Impossible de cargar los depauses tèrces de Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "lo sistèma operatiu"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Aquestes depauses complètan lo logicial per defaut provesit per %s."
@@ -5253,25 +5253,29 @@ msgstr "Las donadas en cache se pòdon escafar als <a href=\"dummy\">_paramètre
 msgid "Storage"
 msgstr "Emmagazinatge"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (installada)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (installacion en cors)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (Telecargament)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (supression en cors)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "Lo pilòt indica que pren en carga lo sistèma actual"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
