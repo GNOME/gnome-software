@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-08-05 10:17+0000\n"
-"PO-Revision-Date: 2026-08-15 16:33+0800\n"
+"POT-Creation-Date: 2026-08-21 21:24+0000\n"
+"PO-Revision-Date: 2026-08-23 07:43+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -3567,7 +3567,7 @@ msgstr "其他类别"
 msgid "No App Data Found"
 msgstr "未找到应用数据"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "未知"
@@ -3870,19 +3870,19 @@ msgstr "选择的第三方附加仓库 — %s。"
 msgid "Fedora Third Party Repositories"
 msgstr "Fedora 第三方仓库"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "无法加载 Fedora 第三方仓库"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "操作系统"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "这些仓库内的软件可替代 %s 提供的默认软件。"
@@ -5272,25 +5272,29 @@ msgstr "缓存数据可以从<a href='#'>应用设置(_A)</a>中清除"
 msgid "Storage"
 msgstr "存储"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s（已安装）"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s（安装中）"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s（下载中）"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s（移除中）"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "表明支持当前系统的驱动"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
