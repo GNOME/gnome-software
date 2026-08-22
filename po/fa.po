@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-08-03 16:28+0000\n"
-"PO-Revision-Date: 2026-08-06 00:13+0330\n"
+"POT-Creation-Date: 2026-08-21 21:24+0000\n"
+"PO-Revision-Date: 2026-08-23 02:11+0330\n"
 "Last-Translator: Danial Behzadi <dani.behzi@ubuntu.com>\n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -3404,7 +3404,7 @@ msgstr "دیگر دسته‌ها"
 msgid "No App Data Found"
 msgstr "هیچ دادهٔ کاره‌ای پیدا نشد"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "ناشناخته"
@@ -3683,19 +3683,19 @@ msgstr "مخزن‌های اضافی از سوم‌شخص‌های گزیده �
 msgid "Fedora Third Party Repositories"
 msgstr "مخزن‌های سوم‌شخص فدورا"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "ناتوان در بار کردن مخزن‌های سوم‌شخص فدورا"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "سیستم‌عامل"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "این مخزن‌ها، نرم‌افزارهای پیش‌گزیده‌ای که به دست %s فراهم شده را تکمیل می‌کنند."
@@ -5063,25 +5063,29 @@ msgstr "داده‌های انباشته می‌توانند از <a href=\"#\">
 msgid "Storage"
 msgstr "ذخیره‌سازی"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (نصب شده)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
-msgstr "%s (در حال نصب)"
+msgstr "%s (نصب کردن)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (بار گرفتن)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
-msgstr "%s (در حال برداشتن)"
+msgstr "%s (برداشتن)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "راه‌انداز پشتیبانیش از سامانهٔ کنونی را نشان می‌دهد"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
