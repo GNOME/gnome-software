@@ -70,6 +70,7 @@ struct _GsSummaryTile
 	GtkWidget	*name;
 	GtkWidget	*summary;
 	GtkWidget	*bin;
+	GtkWidget	*matches_hardware_icon;
 	GtkWidget	*stack;
 	gint		 preferred_width;
 
@@ -91,6 +92,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 	GsAppIconsState app_icons_state;
 	GsApp *app = gs_app_tile_get_app (self);
 	gboolean installed;
+	gboolean matches_hardware;
 	g_autofree gchar *name = NULL;
 	const gchar *summary;
 
@@ -163,6 +165,16 @@ gs_summary_tile_refresh (GsAppTile *self)
 	}
 
 	gtk_widget_set_visible (tile->bin, installed);
+
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_HARDWARE_MATCHED)) {
+		matches_hardware = TRUE;
+	} else {
+		matches_hardware = FALSE;
+	}
+
+	gtk_widget_set_visible (tile->matches_hardware_icon, matches_hardware);
+	gtk_widget_set_tooltip_text (tile->matches_hardware_icon,
+				     matches_hardware ? _("Driver indicates that it supports the current system") : NULL);
 
 	if (name != NULL) {
 		gtk_accessible_update_property (GTK_ACCESSIBLE (tile),
@@ -284,6 +296,8 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 					      summary);
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      bin);
+	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
+					      matches_hardware_icon);
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      stack);
 }

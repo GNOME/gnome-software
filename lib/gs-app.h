@@ -138,6 +138,7 @@ typedef enum {
  * @GS_APP_QUIRK_HIDE_EVERYWHERE:	The app should not be shown anywhere (it’s blocklisted)
  * @GS_APP_QUIRK_DO_NOT_AUTO_UPDATE:	The app should not be automatically updated
  * @GS_APP_QUIRK_FROM_DEVELOPMENT_REPOSITORY: The app is from a development/beta repository (Since: 49)
+ * @GS_APP_QUIRK_HARDWARE_MATCHED:	The app provides support for hardware attached to this system (Since: 52)
  *
  * The application attributes.
  **/
@@ -162,6 +163,7 @@ typedef enum {
 	GS_APP_QUIRK_HIDE_EVERYWHERE	= 1 << 16,	/* Since: 3.36 */
 	GS_APP_QUIRK_DO_NOT_AUTO_UPDATE	= 1 << 17,	/* Since: 3.36 */
 	GS_APP_QUIRK_FROM_DEVELOPMENT_REPOSITORY = 1 << 18,	/* Since: 49 */
+	GS_APP_QUIRK_HARDWARE_MATCHED   = 1 << 19,	/* Since: 52 */
 	GS_APP_QUIRK_LAST  /*< skip >*/
 } GsAppQuirk;
 

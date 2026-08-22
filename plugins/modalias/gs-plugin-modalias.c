@@ -147,9 +147,7 @@ refine_app (GsPluginModalias            *self,
 		items = as_provided_get_items (prov);
 		for (guint j = 0; j < items->len; j++) {
 			if (gs_plugin_modalias_matches (self, (const gchar*) g_ptr_array_index (items, j))) {
-				g_autoptr(GIcon) ic = NULL;
-				ic = g_themed_icon_new ("emblem-system-symbolic");
-				gs_app_add_icon (app, ic);
+				gs_app_add_quirk (app, GS_APP_QUIRK_HARDWARE_MATCHED);
 				gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 				break;
 			}
