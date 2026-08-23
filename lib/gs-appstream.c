@@ -1251,7 +1251,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			break;
 		case ELEMENT_KIND_RELEASES: {
 			g_autoptr(GPtrArray) current_version_history = gs_app_get_version_history (app);
-			gboolean needs_version_history = current_version_history == NULL || current_version_history->len == 0;
+			gboolean needs_version_history = (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_HISTORY) != 0 &&
+							 (current_version_history == NULL || current_version_history->len == 0);
 			gboolean needs_update_details = (require_flags & GS_PLUGIN_REFINE_REQUIRE_FLAGS_UPDATE_DETAILS) != 0 &&
 							silo != NULL && gs_app_is_updatable (app);
 			/* set the release date */
