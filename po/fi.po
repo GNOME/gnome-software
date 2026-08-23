@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-08-05 10:17+0000\n"
-"PO-Revision-Date: 2026-08-18 12:21+0300\n"
+"POT-Creation-Date: 2026-08-23 16:40+0000\n"
+"PO-Revision-Date: 2026-08-23 19:51+0300\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -3396,7 +3396,7 @@ msgstr "Muut luokat"
 msgid "No App Data Found"
 msgstr "Sovellustietoja ei löytynyt"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Tuntematon"
@@ -3677,19 +3677,19 @@ msgstr "Lisää ohjelmistolähteitä valituilta kolmansilta osapuolilta — %s."
 msgid "Fedora Third Party Repositories"
 msgstr "Fedoran kolmansien osapuolten ohjelmistolähteet"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "Fedoran kolmansien osapuolten ohjelmistolähteiden lataaminen ei onnistunut"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "käyttöjärjestelmä"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Nämä ohjelmistolähteet täydentävät oletusohjelmistovalikoimaa, jota %s tarjoaa."
@@ -5057,25 +5057,29 @@ msgstr "Välimuistissa olevat tiedot voi tyhjentää <a href='#'>_sovelluksen as
 msgid "Storage"
 msgstr "Tallennustila"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Asennettu)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Asennetaan)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (Ladataan)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (Poistetaan)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "Ajuri ilmaisee, että se tukee nykyistä järjestelmää"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
@@ -5713,7 +5717,6 @@ msgstr "Asiakirjat-alikansio %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:443
 #, c-format
-#| msgid "Downloads folder"
 msgid "Downloads subfolder %s"
 msgstr "Latausten alikansio %s"
 
