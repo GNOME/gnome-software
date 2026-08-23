@@ -268,12 +268,39 @@ gs_markdown_strstr_spaces (gchar *haystack, const gchar *needle)
 {
 	gchar *found;
 	gchar *haystack_new = haystack;
+	gboolean is_inside_anchor;
 
 retry:
-	/* don't find if surrounded by spaces */
-	found = strstr (haystack_new, needle);
-	if (found == NULL)
-		return NULL;
+	do {
+		gchar *anchor_end;
+
+		/* don't find if surrounded by spaces */
+		found = strstr (haystack_new, needle);
+		if (found == NULL)
+			return NULL;
+
+		is_inside_anchor = FALSE;
+
+		for (anchor_end = haystack; *anchor_end != '\0' && anchor_end < found;  anchor_end++) {
+			if (!is_inside_anchor && *anchor_end == '<' && anchor_end[1] == 'a' && anchor_end[2] == ' ') {
+				gboolean in_quotes = FALSE;
+
+				while (*anchor_end != '\0') {
+					if (*anchor_end == '\"')
+						in_quotes = !in_quotes;
+					else if (!in_quotes && *anchor_end == '>')
+						break;
+
+					anchor_end++;
+				}
+
+				is_inside_anchor = anchor_end >= found;
+			}
+		}
+
+		if (is_inside_anchor)
+			haystack_new = anchor_end + 1;
+	} while (is_inside_anchor);
 
 	/* start of the string, always valid */
 	if (found == haystack)
