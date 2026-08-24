@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-08-05 10:17+0000\n"
-"PO-Revision-Date: 2026-08-19 09:07+0200\n"
+"POT-Creation-Date: 2026-08-23 16:40+0000\n"
+"PO-Revision-Date: 2026-08-24 19:33+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: \n"
 "Language: nb\n"
@@ -3619,7 +3619,7 @@ msgstr "Andre kategorier"
 msgid "No App Data Found"
 msgstr "Fant ikke appinformasjon"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Ukjent"
@@ -3933,19 +3933,19 @@ msgstr "Kilder fra utvalgte tredjeparter — %s."
 msgid "Fedora Third Party Repositories"
 msgstr "Tredjepartskilder"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "Klarte ikke å laste tredjepartskilder for Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "systemet"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Kilder med annet innhold enn det som allerede leveres av %s."
@@ -5351,25 +5351,29 @@ msgstr "Hurtiglagring kan fjernes i <a href='#'>_app-instillingene</a>"
 msgid "Storage"
 msgstr "Lagringsplass"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Installert)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Installerer)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (Laster ned)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (Avinstallerer)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "Driveren indikerer at den støtter dette systemet"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
@@ -5407,7 +5411,9 @@ msgstr "Kunne ikke se etter oppdateringer i det siste"
 msgid ""
 "Updates may have been paused due to being on a metered network, power saver "
 "mode, or game mode"
-msgstr "Oppdateringer kan ha blitt satt på pause pga. et målt nettverk, strømsparingsmodus eller spillmodus"
+msgstr ""
+"Oppdateringer kan ha blitt satt på pause pga. et målt nettverk, "
+"strømsparingsmodus eller spillmodus"
 
 #. Strictly we don’t need an additional button here, as the default action
 #. * for the notification will open the updates page. From there, users still
