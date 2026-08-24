@@ -261,7 +261,7 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 		if (apps == NULL || !gs_app_list_length (apps)) {
 			if (notification_timestamp_days >= 1 &&
 			    check_if_timestamp_more_than_days_ago (monitor, "check-timestamp", 7)) {
-				/* Translators: Notification title, keep it short. Context: it’s been a long time since updates were not checked. */
+				/* TRANSLATORS: Notification title, keep it short. Context: it’s been a long time since updates were not checked. */
 				*out_title = _("Could Not Check for Updates Recently");
 				*out_body = _("Updates may have been paused due to being on a metered network, power saver mode, or game mode");
 
