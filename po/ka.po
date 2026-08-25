@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-07-28 08:53+0000\n"
-"PO-Revision-Date: 2026-07-31 07:14+0200\n"
+"POT-Creation-Date: 2026-08-23 16:40+0000\n"
+"PO-Revision-Date: 2026-08-25 06:51+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -59,7 +59,7 @@ msgid "The update details"
 msgstr "განახლების დეტალები"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3053 data/metainfo/org.gnome.Software.metainfo.xml.in:3055 src/gs-application.c:402
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3075 data/metainfo/org.gnome.Software.metainfo.xml.in:3077 src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "პროექტი \"GNOME\""
 
@@ -947,11 +947,11 @@ msgstr "კონტაქტის დეტალები"
 msgid "Requires additional permissions"
 msgstr "საჭიროა დამატებითი წვდომები"
 
-#: src/gs-app-reviews-dialog.c:135
+#: src/gs-app-reviews-dialog.c:136
 msgid "Invalid ratings data received from server"
 msgstr "სერვერიდან მიღებულია არასწორი რეიტინგის მონაცემები"
 
-#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2435
+#: src/gs-app-reviews-dialog.c:139 src/gs-details-page.c:2435
 msgid "Could not communicate with ratings server"
 msgstr "რეიტინგების სერვერთან მიერთება შეუძლებელია"
 
@@ -3407,7 +3407,7 @@ msgstr "სხვა კატეგორიები"
 msgid "No App Data Found"
 msgstr "აპლიკაციის მონაცემები ვერ ვიპოვე"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "უცნობი"
@@ -3690,19 +3690,19 @@ msgstr "დამატებითი რეპოზიტორიები �
 msgid "Fedora Third Party Repositories"
 msgstr "მესამე პირების მიერ მოწოდებული რეპოზიტორიები Fedora-სთვის"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "Fedora-ის მესამე პირების მიერ მოწოდებული რეპოზიტორიების ჩატვირთვა შეუძლებელია"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "ოპერაციული სისტემა"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "ეს რეპოზიტორიები მიემატება %s-ის მიერ მოწოდებულ ნაგულისხმევ პროგრამებს."
@@ -5074,25 +5074,29 @@ msgstr "დაკეშილი მონაცემების გასუ�
 msgid "Storage"
 msgstr "საცავი"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (დაყენებული)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (დაყენება)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (გადმოწერა)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (წაშლა)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "დრაივერი ამბობს, რომ მას აქვს მიმდინარე სისტემის მხარდაჭერა"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
