@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-08-05 10:17+0000\n"
-"PO-Revision-Date: 2026-08-16 13:51+0200\n"
+"POT-Creation-Date: 2026-08-25 05:51+0000\n"
+"PO-Revision-Date: 2026-08-26 13:14+0200\n"
 "Last-Translator: twlvnn kraftwerk <kraft_werk@tutanota.com>\n"
 "Language-Team: Bulgarian <dict@ludost.net>\n"
 "Language: bg\n"
@@ -3699,7 +3699,7 @@ msgstr "Други категории"
 msgid "No App Data Found"
 msgstr "Не са открити програмни данни"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Неизвестно"
@@ -4018,19 +4018,19 @@ msgstr "Допълнителни източници от избрани трет
 msgid "Fedora Third Party Repositories"
 msgstr "Източници от трети лица  за Fedora"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "Източниците от трети лица за Fedora не може да бъдат заредени"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "операционната система"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Тези източници допълват програмите от „%s“."
@@ -5468,25 +5468,29 @@ msgstr ""
 msgid "Storage"
 msgstr "Необходимо пространство"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Инсталирано)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Инсталира се)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (изтегляне)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (Премахва се)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "Драйверът указва, че поддържа текущата система"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
@@ -5500,27 +5504,28 @@ msgstr "_Преглед"
 msgid "_Show Review"
 msgstr "_Показване на рецензията"
 
-#: src/gs-update-monitor.c:248 src/gs-update-monitor.c:278
+#: src/gs-update-monitor.c:248 src/gs-update-monitor.c:279
 msgid "Critical Updates Ready to Install"
 msgstr "Критично важните обновления са готови за инсталация"
 
-#: src/gs-update-monitor.c:249 src/gs-update-monitor.c:279
+#: src/gs-update-monitor.c:249 src/gs-update-monitor.c:280
 msgid "Install critical updates as soon as possible"
 msgstr "Инсталиране на критично важни обновления възможно най-скоро"
 
-#: src/gs-update-monitor.c:255 src/gs-update-monitor.c:289
+#: src/gs-update-monitor.c:255 src/gs-update-monitor.c:290
 msgid "Updates Ready to Install"
 msgstr "Обновленията са готови за инсталиране"
 
-#: src/gs-update-monitor.c:256 src/gs-update-monitor.c:290
+#: src/gs-update-monitor.c:256 src/gs-update-monitor.c:291
 msgid "Software updates are ready and waiting"
 msgstr "Обновленията са готови и чакат одобрение"
 
-#: src/gs-update-monitor.c:264
+#. TRANSLATORS: Notification title, keep it short. Context: it’s been a long time since updates were checked.
+#: src/gs-update-monitor.c:265
 msgid "Could Not Check for Updates Recently"
 msgstr "Скоро е нямало проверка за обновления"
 
-#: src/gs-update-monitor.c:265
+#: src/gs-update-monitor.c:266
 msgid ""
 "Updates may have been paused due to being on a metered network, power saver "
 "mode, or game mode"
@@ -5532,29 +5537,29 @@ msgstr ""
 #. * for the notification will open the updates page. From there, users still
 #. * have to manually press the refresh button, though, which might be
 #. * non-obvious; so add a button to the notification to help.
-#: src/gs-update-monitor.c:271 src/gs-updates-page.ui:262
+#: src/gs-update-monitor.c:272 src/gs-updates-page.ui:262
 #: src/gs-updates-page.ui:265
 msgid "Check for Updates"
 msgstr "Проверка за обновления"
 
-#: src/gs-update-monitor.c:282
+#: src/gs-update-monitor.c:283
 msgid "Critical Updates Available to Download"
 msgstr "Има критично важни обновления, налични за изтегляне"
 
-#: src/gs-update-monitor.c:283
+#: src/gs-update-monitor.c:284
 msgid "Download critical updates as soon as possible"
 msgstr "Изтегляне на критично важни обновления възможно най-скоро"
 
-#: src/gs-update-monitor.c:294
+#: src/gs-update-monitor.c:295
 msgid "Updates Available to Download"
 msgstr "Има налични за изтегляне обновления"
 
-#: src/gs-update-monitor.c:295
+#: src/gs-update-monitor.c:296
 msgid "Software updates can be downloaded"
 msgstr "Обновленията може да се изтеглят"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:420
+#: src/gs-update-monitor.c:421
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
@@ -5562,7 +5567,7 @@ msgstr[0] "%u програма е обновена, необходимо е ре
 msgstr[1] "%u програми са обновени, необходимо е рестартиране"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:426
+#: src/gs-update-monitor.c:427
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
@@ -5570,24 +5575,24 @@ msgstr[0] "%u програма е обновена"
 msgstr[1] "%u програми са обновени"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:437
+#: src/gs-update-monitor.c:438
 #, c-format
 msgid "%s has been updated."
 msgstr "„%s“ е обновена."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:440
+#: src/gs-update-monitor.c:441
 msgid "Please restart the app."
 msgstr "Рестартирайте програмата."
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:448
+#: src/gs-update-monitor.c:449
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "„%s“ и „%s“ са обновени."
 
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:454 src/gs-update-monitor.c:473
+#: src/gs-update-monitor.c:455 src/gs-update-monitor.c:474
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
@@ -5595,69 +5600,69 @@ msgstr[0] "Трябва да рестартирате %u програма."
 msgstr[1] "Трябва да рестартирате %u програми."
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:466
+#: src/gs-update-monitor.c:467
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Включва „%s“, „%s“ и „%s“."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:774
+#: src/gs-update-monitor.c:775
 msgid "System Has Reached End of Life"
 msgstr "Системата стигна края на своя живот"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:776
+#: src/gs-update-monitor.c:777
 msgid "Upgrade to continue receiving updates"
 msgstr "Надградете, за да продължите да получавате обновления"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:835
+#: src/gs-update-monitor.c:836
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Има нова версия на „%s“, която е налична за инсталиране"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:839
+#: src/gs-update-monitor.c:840
 msgid "Software Upgrade Available"
 msgstr "Има налично надграждане"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1366
+#: src/gs-update-monitor.c:1367
 msgid "Software Updates Failed"
 msgstr "Неуспешно обновяване"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1368
+#: src/gs-update-monitor.c:1369
 msgid "Prepared updates were not installed"
 msgstr "Подготвените обновления не са инсталирани"
 
-#: src/gs-update-monitor.c:1369
+#: src/gs-update-monitor.c:1370
 msgid "Show Details"
 msgstr "Показване на подробностите"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1418
+#: src/gs-update-monitor.c:1419
 msgid "System Upgrade Complete"
 msgstr "Надграждането на системата завърши"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1423
+#: src/gs-update-monitor.c:1424
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Добре дошли в „%s %s“!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1432
+#: src/gs-update-monitor.c:1433
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Обновлението е инсталирано"
 msgstr[1] "Обновленията са инсталирани"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1436
+#: src/gs-update-monitor.c:1437
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "Важно обновление за операционната система беше инсталирано."
@@ -5668,30 +5673,30 @@ msgstr[1] "Важни обновления за операционната си�
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1447
+#: src/gs-update-monitor.c:1448
 msgctxt "updates"
 msgid "Review"
 msgstr "Преглед"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1499
+#: src/gs-update-monitor.c:1500
 msgid "Failed To Update"
 msgstr "Неуспешно обновяване"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1504
+#: src/gs-update-monitor.c:1505
 msgid "The system was already up to date."
 msgstr "Системата вече е напълно актуална."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1509
+#: src/gs-update-monitor.c:1510
 msgid "The update was cancelled."
 msgstr "Отменено обновяване."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1514
+#: src/gs-update-monitor.c:1515
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5700,7 +5705,7 @@ msgstr ""
 "отново."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1519
+#: src/gs-update-monitor.c:1520
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -5709,7 +5714,7 @@ msgstr ""
 "си на софтуер за повече информация."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1524
+#: src/gs-update-monitor.c:1525
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -5717,7 +5722,7 @@ msgstr ""
 "отново."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1528
+#: src/gs-update-monitor.c:1529
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
