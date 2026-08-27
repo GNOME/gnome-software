@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-07-28 08:53+0000\n"
-"PO-Revision-Date: 2026-07-30 10:11+0300\n"
+"POT-Creation-Date: 2026-08-25 05:51+0000\n"
+"PO-Revision-Date: 2026-08-27 17:57+0300\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew\n"
 "Language: he\n"
@@ -71,8 +71,8 @@ msgid "The update details"
 msgstr "פרטי עדכון"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3053
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3055 src/gs-application.c:402
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3075
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3077 src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "מיזם GNOME"
 
@@ -988,11 +988,11 @@ msgstr "פרטי עדכון"
 msgid "Requires additional permissions"
 msgstr "נדרשות הרשאות נוספות"
 
-#: src/gs-app-reviews-dialog.c:135
+#: src/gs-app-reviews-dialog.c:136
 msgid "Invalid ratings data received from server"
 msgstr "התקבלו מהשרת נתוני דירוגים שגויים"
 
-#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2435
+#: src/gs-app-reviews-dialog.c:139 src/gs-details-page.c:2435
 msgid "Could not communicate with ratings server"
 msgstr "לא ניתן לתקשר עם שרת הדירוגים"
 
@@ -3521,7 +3521,7 @@ msgstr "קטגוריות אחרות"
 msgid "No App Data Found"
 msgstr "לא נמצא מידע על יישומים"
 
-#: lib/gs-plugin-loader.c:2484
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "לא ידועה"
@@ -3818,19 +3818,19 @@ msgstr "מאגרים נוספים מגורמי צד־שלישי נבחרים —
 msgid "Fedora Third Party Repositories"
 msgstr "מאגרי צד־שלישי של פדורה"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "לא ניתן לטעון את מאגרי הצד־השלישי של פדורה"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "מערכת ההפעלה"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "המאגרים האלה משלימים את תוכנת ברירת המחדל המסופקת על ידי %s."
@@ -5227,25 +5227,29 @@ msgstr "נתונים ששמורים במטמון ניתן לפינוי דרך <a
 msgid "Storage"
 msgstr "אחסון"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "‏%s (הותקן)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "‏%s (בהתקנה)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "‏%s (בהורדה)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "‏%s (בהסרה)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "מנהל ההתקן מציין שהוא תומך במערכת הנוכחית"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
@@ -5259,27 +5263,28 @@ msgstr "_בחינה"
 msgid "_Show Review"
 msgstr "ה_צגת ביקורת"
 
-#: src/gs-update-monitor.c:248 src/gs-update-monitor.c:278
+#: src/gs-update-monitor.c:248 src/gs-update-monitor.c:279
 msgid "Critical Updates Ready to Install"
 msgstr "עדכונים מהותיים מוכנים להתקנה"
 
-#: src/gs-update-monitor.c:249 src/gs-update-monitor.c:279
+#: src/gs-update-monitor.c:249 src/gs-update-monitor.c:280
 msgid "Install critical updates as soon as possible"
 msgstr "יש להתקין עדכונים מהותיים במהירות האפשרית"
 
-#: src/gs-update-monitor.c:255 src/gs-update-monitor.c:289
+#: src/gs-update-monitor.c:255 src/gs-update-monitor.c:290
 msgid "Updates Ready to Install"
 msgstr "עדכונים מוכנים להתקנה"
 
-#: src/gs-update-monitor.c:256 src/gs-update-monitor.c:290
+#: src/gs-update-monitor.c:256 src/gs-update-monitor.c:291
 msgid "Software updates are ready and waiting"
 msgstr "עדכוני תוכנה מוכנים וממתינים"
 
-#: src/gs-update-monitor.c:264
+#. TRANSLATORS: Notification title, keep it short. Context: it’s been a long time since updates were checked.
+#: src/gs-update-monitor.c:265
 msgid "Could Not Check for Updates Recently"
 msgstr "לא ניתן לבדוק אם יש עדכונים לאחרונה"
 
-#: src/gs-update-monitor.c:265
+#: src/gs-update-monitor.c:266
 msgid "Updates may have been paused due to being on a metered network, power saver mode, or game mode"
 msgstr "ייתכן שהעדכונים נעצרו כיוון שזאת רשת מוגבלת, עברת למצב חיסכון בחשמל או מצב משחקים"
 
@@ -5287,29 +5292,29 @@ msgstr "ייתכן שהעדכונים נעצרו כיוון שזאת רשת מו
 #. * for the notification will open the updates page. From there, users still
 #. * have to manually press the refresh button, though, which might be
 #. * non-obvious; so add a button to the notification to help.
-#: src/gs-update-monitor.c:271 src/gs-updates-page.ui:262 src/gs-updates-page.ui:265
+#: src/gs-update-monitor.c:272 src/gs-updates-page.ui:262 src/gs-updates-page.ui:265
 msgid "Check for Updates"
 msgstr "בדיקת עדכונים"
 
-#: src/gs-update-monitor.c:282
+#: src/gs-update-monitor.c:283
 msgid "Critical Updates Available to Download"
 msgstr "עדכונים מהותיים זמינים להורדה"
 
-#: src/gs-update-monitor.c:283
+#: src/gs-update-monitor.c:284
 msgid "Download critical updates as soon as possible"
 msgstr "להוריד עדכונים מהותיים במהירות האפשרית"
 
-#: src/gs-update-monitor.c:294
+#: src/gs-update-monitor.c:295
 msgid "Updates Available to Download"
 msgstr "עדכונים זמינים להורדה"
 
-#: src/gs-update-monitor.c:295
+#: src/gs-update-monitor.c:296
 msgid "Software updates can be downloaded"
 msgstr "ניתן להוריד עדכוני תוכנה"
 
 # msgid_plural "%u Applications Updated — Restart Required"
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:420
+#: src/gs-update-monitor.c:421
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
@@ -5320,7 +5325,7 @@ msgstr[3] "‫‏%u יישומים עודכנו - נדרשת הפעלה מחדש
 
 # msgid_plural "%u Applications Updated"
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:426
+#: src/gs-update-monitor.c:427
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
@@ -5330,25 +5335,25 @@ msgstr[2] "‫‏%u יישומים עודכנו"
 msgstr[3] "‫‏%u יישומים עודכנו"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:437
+#: src/gs-update-monitor.c:438
 #, c-format
 msgid "%s has been updated."
 msgstr "‏%s עודכן."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:440
+#: src/gs-update-monitor.c:441
 msgid "Please restart the app."
 msgstr "יש להפעיל את היישום מחדש."
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:448
+#: src/gs-update-monitor.c:449
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "‏%s ו־%s עודכנו."
 
 # msgid_plural "%u applications require a restart."
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:454 src/gs-update-monitor.c:473
+#: src/gs-update-monitor.c:455 src/gs-update-monitor.c:474
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
@@ -5358,62 +5363,62 @@ msgstr[2] "‫%u יישומים דורשים הפעלה מחדש."
 msgstr[3] "‫%u יישומים דורשים הפעלה מחדש."
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:466
+#: src/gs-update-monitor.c:467
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "כולל ‏%s, ‏%s ו־%s."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:774
+#: src/gs-update-monitor.c:775
 msgid "System Has Reached End of Life"
 msgstr "המערכת הגיעה לסיום התמיכה שלה"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:776
+#: src/gs-update-monitor.c:777
 msgid "Upgrade to continue receiving updates"
 msgstr "יש לשדרג כדי להמשיך לקבל עדכונים"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:835
+#: src/gs-update-monitor.c:836
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "גרסה חדשה של %s זמינה להתקנה"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:839
+#: src/gs-update-monitor.c:840
 msgid "Software Upgrade Available"
 msgstr "יש שדרוג תוכנה"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1366
+#: src/gs-update-monitor.c:1367
 msgid "Software Updates Failed"
 msgstr "עדכוני תוכנה נכשלו"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1368
+#: src/gs-update-monitor.c:1369
 msgid "Prepared updates were not installed"
 msgstr "עדכונים שהוכנו לא הותקנו"
 
-#: src/gs-update-monitor.c:1369
+#: src/gs-update-monitor.c:1370
 msgid "Show Details"
 msgstr "הצגת פרטים"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1418
+#: src/gs-update-monitor.c:1419
 msgid "System Upgrade Complete"
 msgstr "עדכון המערכת הושלם"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1423
+#: src/gs-update-monitor.c:1424
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "ברוך בואך אל %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1432
+#: src/gs-update-monitor.c:1433
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "הותקן עדכון תוכנה"
@@ -5422,7 +5427,7 @@ msgstr[2] "הותקנו עדכוני תוכנה"
 msgstr[3] "הותקנו עדכוני תוכנה"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1436
+#: src/gs-update-monitor.c:1437
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "הותקן עדכון חשוב למערכת הפעלה."
@@ -5435,48 +5440,48 @@ msgstr[3] "הותקנו עדכונים חשובים למערכת הפעלה."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1447
+#: src/gs-update-monitor.c:1448
 msgctxt "updates"
 msgid "Review"
 msgstr "ביקורת"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1499
+#: src/gs-update-monitor.c:1500
 msgid "Failed To Update"
 msgstr "העדכון נכשל"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1504
+#: src/gs-update-monitor.c:1505
 msgid "The system was already up to date."
 msgstr "המערכת כבר היתה עדכנית."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1509
+#: src/gs-update-monitor.c:1510
 msgid "The update was cancelled."
 msgstr "העדכון בוטל."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1514
+#: src/gs-update-monitor.c:1515
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you have internet access "
 "and try again."
 msgstr "נדרשה גישה לאינטרנט אך זו לא היתה זמינה. נא לוודא כי יש לך גישה לאינטרנט ואחר כך לנסות שוב."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1519
+#: src/gs-update-monitor.c:1520
 msgid ""
 "There were security issues with the update. Please consult your software provider for more details."
 msgstr "היתה בעיית אבטחה עם העדכון. נא להתייעץ עם ספק התוכנה שלך למידע נוסף."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1524
+#: src/gs-update-monitor.c:1525
 msgid "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "לא היה מספיק מקום פנוי בכונן הקשיח שלך. נא לפנות מקום ולנסות שוב."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1528
+#: src/gs-update-monitor.c:1529
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update and try again. If the "
 "problem persists, contact your software provider."
