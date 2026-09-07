@@ -3,23 +3,22 @@
 # This file is distributed under the same license as the gnome-software package.
 # Rodrigo <rodhos92@gmail.com>, 2018.
 # germe <FOSSgerme.deb@tuta.io>, 2021.
-# Daniel Mustieles <daniel.mustieles@gmail.com>, 2021-2024.
-# Daniel Mustieles García <daniel.mustieles@gmail.com>, 2024-2026.
+# Daniel Mustieles <daniel.mustieles@gmail.com>, 2024-2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-02-05 16:47+0000\n"
-"PO-Revision-Date: 2026-02-12 15:35+0100\n"
-"Last-Translator: Daniel Mustieles García <daniel.mustieles@gmail.com>\n"
-"Language-Team: Spanish - Spain <gnome-es-list@gnome.org>\n"
-"Language: es_ES\n"
+"POT-Creation-Date: 2026-08-28 18:12+0000\n"
+"PO-Revision-Date: 2026-09-07 12:42+0200\n"
+"Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
+"Language-Team: Spanish <l10n-es@gnome.org>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Gtranslator 49.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 50.0\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35
 #: src/org.gnome.Software.desktop.in:2
@@ -73,8 +72,9 @@ msgid "The update details"
 msgstr "Los detalles de la actualización"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2976
-#: src/gs-application.c:393
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3116
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3118
+#: src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "El proyecto GNOME"
 
@@ -419,11 +419,8 @@ msgid "Failed to move: %s"
 msgstr "Falló al mover: %s"
 
 #: src/gnome-software-local-file-flatpak.desktop.in:2
-#: src/gnome-software-local-file-fwupd.desktop.in:2
-#: src/gnome-software-local-file-packagekit.desktop.in:2
-#: src/gnome-software-local-file-snap.desktop.in:2
-msgid "Software Install"
-msgstr "Instalar software"
+msgid "Software Install (flatpak)"
+msgstr "Instalación de software (flatpak)"
 
 #: src/gnome-software-local-file-flatpak.desktop.in:3
 #: src/gnome-software-local-file-fwupd.desktop.in:3
@@ -431,6 +428,18 @@ msgstr "Instalar software"
 #: src/gnome-software-local-file-snap.desktop.in:3
 msgid "Install selected software on the system"
 msgstr "Instalar el software seleccionado en el sistema"
+
+#: src/gnome-software-local-file-fwupd.desktop.in:2
+msgid "Software Install (firmware)"
+msgstr "Instalación de software (firmware)"
+
+#: src/gnome-software-local-file-packagekit.desktop.in:2
+msgid "Software Install (packages)"
+msgstr "Instalación de software (paquetes)"
+
+#: src/gnome-software-local-file-snap.desktop.in:2
+msgid "Software Install (snap)"
+msgstr "Instalación de software (snap)"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:134
@@ -897,7 +906,7 @@ msgstr "Calificación por edad"
 msgid "_How to contribute missing information"
 msgstr "_Cómo añadir la información que falta"
 
-#: lib/gs-app.c:6323
+#: lib/gs-app.c:6347
 msgid "Local file"
 msgstr "Archivo local"
 
@@ -906,27 +915,27 @@ msgstr "Archivo local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6342 src/gs-safety-context-dialog.c:588
+#: lib/gs-app.c:6366 src/gs-safety-context-dialog.c:588
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app
 #. (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6419 src/gs-safety-context-dialog.c:825
+#: lib/gs-app.c:6443 src/gs-safety-context-dialog.c:825
 #: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "Paquete"
 
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:530
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:538
 msgid "Pending"
 msgstr "Pendiente"
 
-#: src/gs-app-addon-row.c:100 src/gs-app-row.c:534 src/gs-details-page.c:393
+#: src/gs-app-addon-row.c:100 src/gs-app-row.c:542 src/gs-details-page.c:393
 msgid "Pending install"
 msgstr "Instalación pendiente"
 
-#: src/gs-app-addon-row.c:104 src/gs-app-row.c:538 src/gs-details-page.c:400
+#: src/gs-app-addon-row.c:104 src/gs-app-row.c:546 src/gs-details-page.c:400
 msgid "Pending remove"
 msgstr "Eliminación pendiente"
 
@@ -953,8 +962,8 @@ msgstr "Descargando"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #. TRANSLATORS: update the fw
-#: src/gs-app-addon-row.ui:21 src/gs-common.c:279 src/gs-details-page.c:1056
-#: src/gs-details-page.c:1091 src/gs-details-page.ui:203 src/gs-page.c:412
+#: src/gs-app-addon-row.ui:21 src/gs-common.c:277 src/gs-details-page.c:1056
+#: src/gs-details-page.c:1091 src/gs-details-page.ui:203 src/gs-page.c:441
 #: plugins/packagekit/gs-packagekit-task.c:149
 msgid "_Install"
 msgstr "_Instalar"
@@ -1045,7 +1054,10 @@ msgstr "Sistema de archivos"
 
 #. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with
 #. actual files being part of the read/full lists
+#. note: xdg-download is listed in filesystems_access, but we list it here
+#. again to catch subdirectories
 #: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
+#: plugins/flatpak/gs-flatpak-utils.c:443
 msgid "Downloads folder"
 msgstr "Carpeta de descargas"
 
@@ -1085,15 +1097,15 @@ msgstr "No hay ninguna descripción disponible sobre la actualización."
 msgid "Update Details"
 msgstr "Detalles de la actualización"
 
-#: src/gs-app-details-page.ui:27 src/gs-app-row.c:593
+#: src/gs-app-details-page.ui:27 src/gs-app-row.c:601
 msgid "Requires additional permissions"
 msgstr "Necesita permisos adicionales"
 
-#: src/gs-app-reviews-dialog.c:135
+#: src/gs-app-reviews-dialog.c:136
 msgid "Invalid ratings data received from server"
 msgstr "Puntuaciones recibidas del servidor no válidas"
 
-#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2430
+#: src/gs-app-reviews-dialog.c:139 src/gs-details-page.c:2435
 msgid "Could not communicate with ratings server"
 msgstr "No se pudo comunicar con el servidor de puntuaciones"
 
@@ -1130,62 +1142,62 @@ msgstr "No hay detalles disponibles para esta publicación"
 msgid "%e %B %Y"
 msgstr "%e de %B de %Y"
 
-#: src/gs-app-version-history-row.ui:37
+#: src/gs-app-version-history-row.ui:38
 msgid "Installed"
 msgstr "Instalada"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:130
+#: src/gs-application.c:133
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modo de inicio, puede ser «actualizaciones», «actualizados», «instalados» o "
 "«vista general»"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:133
 msgid "MODE"
 msgstr "MODO"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:135
 msgid "Search for applications"
 msgstr "Buscar aplicaciones"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:135
 msgid "SEARCH"
 msgstr "BUSCAR"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:137
 msgid "Show application details (using application ID)"
 msgstr "Mostrar los detalles de la aplicación (usando el ID de la aplicación)"
 
-#: src/gs-application.c:134 src/gs-application.c:138 src/gs-application.c:140
+#: src/gs-application.c:137 src/gs-application.c:141 src/gs-application.c:143
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:139
 msgid "Show application details (using package name)"
 msgstr "Mostrar los detalles de la aplicación (usando el nombre del paquete)"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:139
 msgid "PKGNAME"
 msgstr "PAQUETE"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:141
 msgid "Install the application (using application ID)"
 msgstr "Instalar la aplicación (usando el ID de la aplicación)"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:143
 msgid "Uninstall the application (using application ID)"
 msgstr "Desinstalar la aplicación (usando el ID de la aplicación)"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:145
 msgid "Open a local package file"
 msgstr "Abrir un archivo de paquete local"
 
-#: src/gs-application.c:142 src/gs-application.c:147
+#: src/gs-application.c:145 src/gs-application.c:150
 msgid "FILENAME"
 msgstr "ARCHIVO"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:147
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -1193,15 +1205,15 @@ msgstr ""
 "El tipo de interacción esperada para esta acción: puede ser «none», «notify» "
 "o «full»"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:148
 msgid "INTERACTION"
 msgstr "INTERACCIÓN"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:150
 msgid "Show a local metainfo or appdata file"
 msgstr "Mostrar un archivo de appdata o metainformación local"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:152
 msgid ""
 "Enable verbose debugging output (from the running instance, if already "
 "running)"
@@ -1209,37 +1221,42 @@ msgstr ""
 "Activa la salida de depuración detallada (desde la instancia en ejecución, "
 "si ya lo está)"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:154
 msgid "Installs any pending updates in the background"
 msgstr "Instala cualquier actualización pendiente en segundo plano"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:156
+msgid "Show the updates page and start checking for available updates"
+msgstr ""
+"Mostrar la página de actualizaciones y buscar actualizaciones disponibles"
+
+#: src/gs-application.c:158
 msgid "Show preferences"
 msgstr "Mostrar las preferencias"
 
-#: src/gs-application.c:155
+#: src/gs-application.c:160
 msgid "Quit the running instance"
 msgstr "Salir de la instancia en ejecución"
 
-#: src/gs-application.c:157
+#: src/gs-application.c:162
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferir las fuentes de archivos locales a las de AppStream"
 
-#: src/gs-application.c:159
+#: src/gs-application.c:164
 msgid "Show version number"
 msgstr "Mostrar el número de versión"
 
-#: src/gs-application.c:388
+#: src/gs-application.c:397
 #, c-format
 msgid "Copyright © 2016–%d GNOME Software contributors"
 msgstr "Copyright © 2016–%d colaboradores de GNOME Software"
 
-#: src/gs-application.c:402
+#: src/gs-application.c:411
 msgid "translator-credits"
 msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013-2021"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:641
+#: src/gs-application.c:679
 msgid "Sorry! There are no details for that application."
 msgstr "No hay detalles para esa aplicación."
 
@@ -1635,31 +1652,31 @@ msgstr "Desinstalar…"
 msgid "Uninstalling"
 msgstr "Desinstalando"
 
-#: src/gs-app-row.c:323 src/gs-app-row.ui:60
+#: src/gs-app-row.c:331 src/gs-app-row.ui:60
 msgid "Critical update"
 msgstr "Actualización crítica"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:402
+#: src/gs-app-row.c:410
 msgid "Device cannot be used during update."
 msgstr "No se puede usar el dispositivo durante la actualización."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:412 src/gs-shell-search-provider.c:273
+#: src/gs-app-row.c:420 src/gs-shell-search-provider.c:273
 #, c-format
 msgid "Source: %s"
 msgstr "Fuente: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The
 #. placeholder is the old human-readable name.
-#: src/gs-app-row.c:600
+#: src/gs-app-row.c:608
 #, c-format
 msgid "Renamed from %s"
 msgstr "Renombrado desde %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:637 src/gs-details-page.ui:535
+#: src/gs-app-row.c:645 src/gs-details-page.ui:535
 msgid "Stopped Receiving Updates"
 msgstr "Se ha dejado de recibir actualizaciones"
 
@@ -1702,7 +1719,7 @@ msgstr "Traducciones"
 msgid "_Translation Website"
 msgstr "_Página web de la traducción"
 
-#: lib/gs-appstream.c:303
+#: lib/gs-appstream.c:296
 msgid "Release notes"
 msgstr "Notas de publicación"
 
@@ -1717,12 +1734,12 @@ msgid "Login Required"
 msgstr "Se necesita iniciar sesión"
 
 #. TRANSLATORS: button text
-#: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:272 src/gs-common.c:674
+#: src/gs-basic-auth-dialog.ui:18 src/gs-common.c:270 src/gs-common.c:654
 #: src/gs-details-page.ui:291 src/gs-dkms-dialog.ui:28
-#: src/gs-dkms-dialog.ui:120 src/gs-page.c:410 src/gs-removal-dialog.ui:24
+#: src/gs-dkms-dialog.ui:120 src/gs-page.c:439 src/gs-removal-dialog.ui:24
 #: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:241
 #: src/gs-repos-dialog.c:324 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
-#: src/gs-review-row.c:263 src/gs-updates-page.c:854
+#: src/gs-review-row.c:263 src/gs-updates-page.c:872
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
 msgstr "_Cancelar"
@@ -1819,7 +1836,7 @@ msgstr ""
 "revisión"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:103 src/gs-common.c:842
+#: src/gs-common.c:103 src/gs-common.c:822
 msgid "Restart"
 msgstr "Reiniciar"
 
@@ -1828,17 +1845,17 @@ msgid "Launch"
 msgstr "Lanzar"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:208
+#: src/gs-common.c:206
 msgid "Install Software?"
 msgstr "¿Instalar software?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:210
+#: src/gs-common.c:208
 msgid "Install Third-Party Software?"
 msgstr "¿Instalar software de terceros?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:214
+#: src/gs-common.c:212
 msgid "Enable Software Repository?"
 msgstr "¿Activar el repositorio de software?"
 
@@ -1846,14 +1863,14 @@ msgstr "¿Activar el repositorio de software?"
 #. ask for confirmation
 #. TRANSLATORS: "Enable Third-Party Software Repository?" is
 #. * the confirmation dialog title
-#: src/gs-common.c:216 src/gs-repos-dialog.c:238
+#: src/gs-common.c:214 src/gs-repos-dialog.c:238
 msgid "Enable Third-Party Software Repository?"
 msgstr "¿Activar el repositorio de software de terceros?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:228
+#: src/gs-common.c:226
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1865,123 +1882,123 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. App name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:238
+#: src/gs-common.c:236
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s lo proporciona «%s»."
 
-#: src/gs-common.c:247
+#: src/gs-common.c:245
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Este repositorio de software debe estar activado para continuar la "
 "instalación."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:257
+#: src/gs-common.c:255
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "Puede ser ilegal instalar o usar %s en algunos países."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:263
+#: src/gs-common.c:261
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "Puede ser ilegal instalar o usar este codificador en algunos países."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:275
+#: src/gs-common.c:273
 msgid "Don’t _Warn Again"
 msgstr "No _advertir otra vez"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:284
+#: src/gs-common.c:282
 msgid "Enable and _Install"
 msgstr "Activar e _instalar"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:491
+#: src/gs-common.c:471
 msgid "Detailed errors from the package manager follow:"
 msgstr "Los errores detallados del gestor de paquetes son:"
 
-#: src/gs-common.c:496 src/gs-safety-context-dialog.ui:67
+#: src/gs-common.c:476 src/gs-safety-context-dialog.ui:67
 #: src/gs-updates-paused-banner.c:77 src/gs-utils-error-dialog-simple.ui:31
 msgid "Details"
 msgstr "Detalles"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:554 src/gs-updates-paused-banner.c:64
+#: src/gs-common.c:534 src/gs-updates-paused-banner.c:64
 msgid "_Close"
 msgstr "_Cerrar"
 
-#: src/gs-common.c:586
+#: src/gs-common.c:566
 msgid "Details copied to clipboard"
 msgstr "Detalles copiados al portapapeles"
 
 #. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:666
+#: src/gs-common.c:646
 msgid "_Accept"
 msgstr "_Aceptar"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:817
+#: src/gs-common.c:797
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Se ha instalado una actualización"
 msgstr[1] "Se han instalado las actualizaciones"
 
 #. TRANSLATORS: we've just uninstalled some apps
-#: src/gs-common.c:827
+#: src/gs-common.c:807
 msgid "An app has been uninstalled"
 msgid_plural "Apps have been uninstalled"
 msgstr[0] "Se ha desinstalado una aplicación"
 msgstr[1] "Se han desinstalado las aplicaciones"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:833
+#: src/gs-common.c:813
 msgid "A restart is required for it to take effect"
 msgid_plural "A restart is required for them to take effect"
 msgstr[0] "Se debe reiniciar para aplicar el cambio"
 msgstr[1] "Se debe reiniciar para aplicar los cambios"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:840
+#: src/gs-common.c:820
 msgid "Not Now"
 msgstr "Ahora no"
 
 #. TRANSLATORS: something happened less than a day ago
-#: src/gs-common.c:935
+#: src/gs-common.c:915
 msgid "Today"
 msgstr "Hoy"
 
 #. TRANSLATORS: something happened more than a day ago but less than 2 days
 #. ago
-#: src/gs-common.c:938
+#: src/gs-common.c:918
 msgid "Yesterday"
 msgstr "Ayer"
 
-#: src/gs-common.c:940
+#: src/gs-common.c:920
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "hace %d día"
 msgstr[1] "hace %d días"
 
-#: src/gs-common.c:944
+#: src/gs-common.c:924
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "hace %d semana"
 msgstr[1] "hace %d semanas"
 
-#: src/gs-common.c:948
+#: src/gs-common.c:928
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "hace %d mes"
 msgstr[1] "hace %d meses"
 
-#: src/gs-common.c:952
+#: src/gs-common.c:932
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1989,18 +2006,18 @@ msgstr[0] "hace %d año"
 msgstr[1] "hace %d años"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:1009
+#: src/gs-common.c:989
 msgid "Just now"
 msgstr "Ahora mismo"
 
-#: src/gs-common.c:1011
+#: src/gs-common.c:991
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "hace %d minuto"
 msgstr[1] "hace %d minutos"
 
-#: src/gs-common.c:1013
+#: src/gs-common.c:993
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
@@ -2013,7 +2030,7 @@ msgstr[1] "hace %d horas"
 #. then you can use "%2$s %1$s".
 #. * Make sure you'll preserve the no break space between the values.
 #. * Example result: "13.0 MB"
-#: src/gs-common.c:1376
+#: src/gs-common.c:1356
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
@@ -2022,7 +2039,7 @@ msgstr "%s %s"
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user. The placeholder is a D-Bus name such as
 #. `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1511
+#: src/gs-common.c:1491
 #, c-format
 msgid "Use the %s System Service"
 msgstr "Usa el servicio del sistema %s"
@@ -2030,7 +2047,7 @@ msgstr "Usa el servicio del sistema %s"
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user. The placeholder is a D-Bus name such as
 #. `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1514
+#: src/gs-common.c:1494
 #, c-format
 msgid "Use the %s Session Service"
 msgstr "Usa el servicio de sesión %s"
@@ -2038,20 +2055,20 @@ msgstr "Usa el servicio de sesión %s"
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user. The placeholder is a D-Bus name such as
 #. `org.freedesktop.Flatpak`.
-#: src/gs-common.c:1517
+#: src/gs-common.c:1497
 #, c-format
 msgid "Use the %s Service"
 msgstr "Usa el servicio %s"
 
-#: src/gs-common.c:1538
+#: src/gs-common.c:1518
 msgid "Can see the non-portal service"
 msgstr "Puede ver el servicio que no es portal"
 
-#: src/gs-common.c:1540
+#: src/gs-common.c:1520
 msgid "Can talk to the non-portal service"
 msgstr "Puede hablar con el servicio que no es del portal"
 
-#: src/gs-common.c:1542
+#: src/gs-common.c:1522
 msgid "Can own the non-portal service"
 msgstr "Puede ser propietario del servicio que no es de portal"
 
@@ -2496,7 +2513,7 @@ msgstr "Se necesitan paquetes adicionales"
 msgid "Find in Software"
 msgstr "Buscar en Software"
 
-#: src/gs-description-box.c:93 src/gs-description-box.c:348
+#: src/gs-description-box.c:93 src/gs-description-box.c:355
 msgid "_Show More"
 msgstr "_Mostrar más"
 
@@ -2604,23 +2621,23 @@ msgid "Developer has proven the ownership of %s"
 msgstr "El desarrollador la probado la propiedad de %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1821
+#: src/gs-details-page.c:1826
 msgid "You need internet access to write a review"
 msgstr "Necesita acceso a Internet para escribir una opinión"
 
-#: src/gs-details-page.c:1925
+#: src/gs-details-page.c:1930
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
 "Esta aplicación ya no recibirá actualizaciones, incluyendo parches de "
 "seguridad."
 
-#: src/gs-details-page.c:1926
+#: src/gs-details-page.c:1931
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
 "Esta aplicación ya lo proporciona su distribución y no se debe reemplazar."
 
-#: src/gs-details-page.c:1927
+#: src/gs-details-page.c:1932
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2628,20 +2645,20 @@ msgstr ""
 "Esta aplicación no proporciona enlaces a un sitio web, repositorio de código "
 "o gestor de incidencias."
 
-#: src/gs-details-page.c:1929
+#: src/gs-details-page.c:1934
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "Este software ya no recibirá actualizaciones, incluyendo parches de "
 "seguridad."
 
-#: src/gs-details-page.c:1930
+#: src/gs-details-page.c:1935
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr ""
 "Este software ya lo proporciona su distribución y no se debe reemplazar."
 
-#: src/gs-details-page.c:1931
+#: src/gs-details-page.c:1936
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2649,7 +2666,7 @@ msgstr ""
 "Este software no proporciona enlaces a un sitio web, repositorio de código o "
 "gestor de incidencias."
 
-#: src/gs-details-page.c:2022 src/gs-details-page.c:2039
+#: src/gs-details-page.c:2027 src/gs-details-page.c:2044
 #, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
@@ -2658,7 +2675,7 @@ msgstr ""
 "Software falló al obtener información para «%s» y no puede mostrar los "
 "detalles para esta aplicación."
 
-#: src/gs-details-page.c:2067
+#: src/gs-details-page.c:2072
 #, c-format
 msgid ""
 "Software could not load the file ‘%s’, as it’s not in a format supported by "
@@ -2667,12 +2684,12 @@ msgstr ""
 "El software no pudo cargar el archivo «%s» porque no está en un formato "
 "compatible con este sistema."
 
-#: src/gs-details-page.c:2069
+#: src/gs-details-page.c:2074
 #, c-format
 msgid "Software could not load the file ‘%s’."
 msgstr "El software no pudo cargar el archivo «%s»."
 
-#: src/gs-details-page.c:2098
+#: src/gs-details-page.c:2103
 #, c-format
 msgid ""
 "Software could not load the URL ‘%s’, as it’s not in a format supported by "
@@ -2681,22 +2698,22 @@ msgstr ""
 "El software no pudo cargar la URL «%s», ya que no está en un formato "
 "compatible con este sistema."
 
-#: src/gs-details-page.c:2100
+#: src/gs-details-page.c:2105
 #, c-format
 msgid "Software could not load the URL ‘%s’."
 msgstr "El software no pudo cargar el URL «%s»."
 
-#: src/gs-details-page.c:2427
+#: src/gs-details-page.c:2432
 msgid "Invalid review response received from server"
 msgstr "Respuesta recibida del servidor no válida"
 
-#: src/gs-details-page.c:2437
+#: src/gs-details-page.c:2442
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Falló al enviar la revisión para «%s»: %s"
 
 #. display a toast to the user
-#: src/gs-details-page.c:2451
+#: src/gs-details-page.c:2456
 msgid "Review submitted successfully"
 msgstr "Opinión enviada correctamente"
 
@@ -3404,7 +3421,7 @@ msgstr "En proceso"
 
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
-#: src/gs-installed-page.ui:66 plugins/flatpak/gs-flatpak-utils.c:107
+#: src/gs-installed-page.ui:66 plugins/flatpak/gs-flatpak-utils.c:105
 msgid "Apps"
 msgstr "Aplicaciones"
 
@@ -3764,7 +3781,7 @@ msgstr "Otras categorías"
 msgid "No App Data Found"
 msgstr "No se han encontrado datos sobre la aplicación"
 
-#: lib/gs-plugin-loader.c:2444
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Desconocido"
@@ -3774,26 +3791,26 @@ msgstr "Desconocido"
 msgid "_OK"
 msgstr "_Aceptar"
 
-#: src/gs-page.c:265
+#: src/gs-page.c:266
 msgid "User declined installation"
 msgstr "El usuario ha rechazado la instalación"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:405
+#: src/gs-page.c:434
 #, c-format
 msgid "Prepare %s"
 msgstr "Preparar %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:544
+#: src/gs-page.c:573
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "¿Está seguro de querer quitar el repositorio %s?"
 
 #. TRANSLATORS: Longer dialog text. The placeholder is a repository name.
-#: src/gs-page.c:548
+#: src/gs-page.c:577
 #, c-format
 msgid ""
 "All apps from %s will be uninstalled, and you will have to re-install the "
@@ -3814,8 +3831,8 @@ msgstr ""
 #. * name of a firmware
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * app summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:557 src/gs-page.c:568 src/gs-page.c:579 src/gs-page.c:590
-#: src/gs-page.c:601 src/gs-page.c:613
+#: src/gs-page.c:586 src/gs-page.c:597 src/gs-page.c:608 src/gs-page.c:619
+#: src/gs-page.c:630 src/gs-page.c:642
 #, c-format
 msgid "Uninstall %s?"
 msgstr "¿Quiere desinstalar %s?"
@@ -3823,14 +3840,14 @@ msgstr "¿Quiere desinstalar %s?"
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of an addon or an input method.
 #. Translators: the '%s' is replaced with the app name
-#: src/gs-page.c:561 src/gs-page.c:620
+#: src/gs-page.c:590 src/gs-page.c:649
 #, c-format
 msgid "It will not be possible to use %s after removal."
 msgstr "No será posible usar %s después de eliminarla."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name
 #. * of a runtime.
-#: src/gs-page.c:572
+#: src/gs-page.c:601
 #, c-format
 msgid ""
 "It will not be possible to use any apps which depend on %s after removal."
@@ -3839,7 +3856,7 @@ msgstr ""
 "eliminarla."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a font.
-#: src/gs-page.c:582
+#: src/gs-page.c:611
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal, and any documents which use "
@@ -3849,7 +3866,7 @@ msgstr ""
 "use aparecerá con una tipografía diferente."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a codec.
-#: src/gs-page.c:593
+#: src/gs-page.c:622
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. This may mean some media "
@@ -3859,7 +3876,7 @@ msgstr ""
 "archivos de medios no se podrán reproducir."
 
 #. TRANSLATORS: Longer dialog text. The placeholder is the name of a firmware
-#: src/gs-page.c:604
+#: src/gs-page.c:633
 #, c-format
 msgid ""
 "Hardware which depends on %s may no longer function correctly after removal."
@@ -3868,7 +3885,7 @@ msgstr ""
 "eliminación."
 
 #. Translators: the '%s' is replaced with the app name
-#: src/gs-page.c:627
+#: src/gs-page.c:656
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. It has not saved any app "
@@ -3879,7 +3896,7 @@ msgstr ""
 
 #. TRANSLATORS: Longer dialog text. The placeholder is
 #. * the name of an app.
-#: src/gs-page.c:633
+#: src/gs-page.c:662
 #, c-format
 msgid ""
 "It will not be possible to use %s after removal. App data and settings will "
@@ -4054,25 +4071,25 @@ msgstr ""
 "No se puede cambiar la configuración de los repositorios de terceros de "
 "Fedora"
 
-#: src/gs-repos-dialog.c:540
+#: src/gs-repos-dialog.c:543
 msgid "Unable to look up related apps"
 msgstr "No se pueden buscar aplicaciones relacionadas"
 
-#: src/gs-repos-dialog.c:566 src/gs-repos-dialog.c:626
+#: src/gs-repos-dialog.c:569 src/gs-repos-dialog.c:629
 msgid "Unable to load repositories"
 msgstr "No se pueden cargar los repositorios"
 
-#: src/gs-repos-dialog.c:682
+#: src/gs-repos-dialog.c:685
 msgid "Enable New Repositories"
 msgstr "Activar repositorios nuevos"
 
-#: src/gs-repos-dialog.c:683
+#: src/gs-repos-dialog.c:686
 msgid "Turn on new repositories when they are added"
 msgstr "Activar los repositorios nuevos al añadirlos"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:690
+#: src/gs-repos-dialog.c:693
 msgid "more information"
 msgstr "más información"
 
@@ -4081,29 +4098,29 @@ msgstr "más información"
 #. with a link consisting a text "more information", which constructs a
 #. sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:695
+#: src/gs-repos-dialog.c:698
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Repositorios adicionales de terceras partes. — %s."
 
-#: src/gs-repos-dialog.c:700
+#: src/gs-repos-dialog.c:703
 msgid "Fedora Third Party Repositories"
 msgstr "Repositorios de terceras partes de Fedora"
 
-#: src/gs-repos-dialog.c:774 src/gs-repos-dialog.c:797
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr "No se pueden cargar repositorios de terceros de Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:857
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "el sistema operativo"
 
 #. TRANSLATORS: This is the description text displayed in the Software
 #. Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:913
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -4849,49 +4866,49 @@ msgstr "No se han encontrado aplicaciones"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1159 src/gs-shell.c:1164 src/gs-shell.c:1179
-#: src/gs-shell.c:1183
+#: src/gs-shell.c:1330 src/gs-shell.c:1335 src/gs-shell.c:1350
+#: src/gs-shell.c:1354
 #, c-format
 msgid "“%s”"
 msgstr "«%s»"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1237 src/gs-shell.c:1289
+#: src/gs-shell.c:1408 src/gs-shell.c:1460
 msgid "Unable to download updates"
 msgstr "No se pueden descargar las actualizaciones"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1242
+#: src/gs-shell.c:1413
 msgid "Unable to download firmware updates"
 msgstr "No se pueden descargar las actualizaciones de «firmware»"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1245
+#: src/gs-shell.c:1416
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "No se pueden descargar las actualizaciones de «firmware» de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1250
+#: src/gs-shell.c:1421
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "No se pueden descargar actualizaciones desde %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1257 src/gs-shell.c:1475
+#: src/gs-shell.c:1428 src/gs-shell.c:1646
 msgid "Unable to update: internet access required"
 msgstr "No se puede actualizar: se necesita acceso a Internet"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1260 src/gs-shell.c:1478
+#: src/gs-shell.c:1431 src/gs-shell.c:1649
 msgid "Unable to update: not enough disk space"
 msgstr "No se puede actualizar: no hay suficiente espacio en disco"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1265
+#: src/gs-shell.c:1436
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
@@ -4899,21 +4916,21 @@ msgstr ""
 "disco"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1271 src/gs-shell.c:1489
+#: src/gs-shell.c:1442 src/gs-shell.c:1660
 msgid "Unable to update: authentication required"
 msgstr "No se puede actualizar: autenticación requerida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1275 src/gs-shell.c:1500
+#: src/gs-shell.c:1446 src/gs-shell.c:1671
 msgid "Unable to update: invalid authentication"
 msgstr "No se puede actualizar: la autenticación no es válida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1279 src/gs-shell.c:1511
+#: src/gs-shell.c:1450 src/gs-shell.c:1682
 msgid "Unable to update: permission required"
 msgstr "No se puede actualizar: se necesita conexión a la alimentación"
 
-#: src/gs-shell.c:1280
+#: src/gs-shell.c:1451
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -4921,30 +4938,30 @@ msgstr ""
 "software"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1292
+#: src/gs-shell.c:1463
 msgid "Unable to get list of updates"
 msgstr "No se puede obtener la lista de actualizaciones"
 
-#: src/gs-shell.c:1327
+#: src/gs-shell.c:1498
 msgid "Unable to install: download failed"
 msgstr "No se puede instalar: ha fallado la descarga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1333
+#: src/gs-shell.c:1504
 #, c-format
 msgid "Unable to install %s: failed download from %s"
 msgstr "No se puede instalar %s: falló la descarga de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1338
+#: src/gs-shell.c:1509
 #, c-format
 msgid "Unable to install %s: download failed"
 msgstr "No se puede instalar %s: falló la descarga"
 
-#: src/gs-shell.c:1344
+#: src/gs-shell.c:1515
 msgid "Unable to install: missing runtime"
 msgstr "No se puede instalar: falta la rutina de ejecución"
 
@@ -4952,7 +4969,7 @@ msgstr "No se puede instalar: falta la rutina de ejecución"
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1521
 #, c-format
 msgid "Unable to install %s: runtime %s unavailable"
 msgstr ""
@@ -4960,82 +4977,82 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1353 src/gs-shell.c:1409 src/gs-shell.c:1411
+#: src/gs-shell.c:1524 src/gs-shell.c:1580 src/gs-shell.c:1582
 #, c-format
 msgid "Unable to install %s"
 msgstr "No se puede instalar %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1359
+#: src/gs-shell.c:1530
 msgid "Unable to install: internet access required"
 msgstr "No se puede instalar: se necesita acceso a Internet"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1362
+#: src/gs-shell.c:1533
 msgid "Unable to install: invalid app format"
 msgstr "No se puede instalar:  formato de aplicación no válido"
 
-#: src/gs-shell.c:1365
+#: src/gs-shell.c:1536
 msgid "Unable to install: not enough disk space"
 msgstr "No se puede instalar: no hay suficiente espacio en disco"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1368
+#: src/gs-shell.c:1539
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "No se puede instalar %s: no hay suficiente espacio en disco"
 
-#: src/gs-shell.c:1372
+#: src/gs-shell.c:1543
 msgid "Unable to install: authentication required"
 msgstr "No se puede instalar: autenticación requerida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1545
 #, c-format
 msgid "Unable to install %s: authentication required"
 msgstr "No se puede instalar %s: autenticación requerida"
 
-#: src/gs-shell.c:1378
+#: src/gs-shell.c:1549
 msgid "Unable to install: invalid authentication"
 msgstr "No se puede instalar: autenticación no válida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1381
+#: src/gs-shell.c:1552
 #, c-format
 msgid "Unable to install %s: invalid authentication"
 msgstr "No se puede instalar %s: autenticación no válida"
 
-#: src/gs-shell.c:1385
+#: src/gs-shell.c:1556
 msgid "Unable to install: permission required"
 msgstr "No se puede instalar: permiso requerido"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1388
+#: src/gs-shell.c:1559
 #, c-format
 msgid "Unable to install %s: permission required"
 msgstr "No se puede instalar %s: permiso requerido"
 
-#: src/gs-shell.c:1392
+#: src/gs-shell.c:1563
 msgid "Unable to install: device must be plugged in"
 msgstr "No se puede instalar: el dispositivo debe estar enchufado"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1395
+#: src/gs-shell.c:1566
 #, c-format
 msgid "Unable to install %s: device must be plugged in"
 msgstr "No se puede instalar %s: el dispositivo debe estar enchufado"
 
-#: src/gs-shell.c:1398
+#: src/gs-shell.c:1569
 msgid "Unable to install: low battery"
 msgstr "No se puede instalar: batería baja"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1401
+#: src/gs-shell.c:1572
 #, c-format
 msgid "Unable to install %s: low battery"
 msgstr "No se puede instalar %s: batería baja"
@@ -5044,14 +5061,14 @@ msgstr "No se puede instalar %s: batería baja"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1454
+#: src/gs-shell.c:1625
 #, c-format
 msgid "Unable to update %s from %s: download failed"
 msgstr "No se puede actualizar %s desde %s: falló la descarga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1460
+#: src/gs-shell.c:1631
 #, c-format
 msgid "Unable to update %s: download failed"
 msgstr "No se puede actualizar %s: falló la descarga"
@@ -5059,274 +5076,274 @@ msgstr "No se puede actualizar %s: falló la descarga"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1467
+#: src/gs-shell.c:1638
 #, c-format
 msgid "Unable to install updates from %s: download failed"
 msgstr "No se pueden instalar las actualizaciones desde %s: falló la descarga"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1471
+#: src/gs-shell.c:1642
 msgid "Unable to update: download failed"
 msgstr "No se puede actualizar: falló la descarga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1483
+#: src/gs-shell.c:1654
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "No se puede actualizar %s: no hay suficiente espacio en disco"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1494
+#: src/gs-shell.c:1665
 #, c-format
 msgid "Unable to update %s: authentication required"
 msgstr "No se puede actualizar %s: autenticación requerida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1505
+#: src/gs-shell.c:1676
 #, c-format
 msgid "Unable to update %s: invalid authentication"
 msgstr "No se puede actualizar %s: la autenticación no es válida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1516
+#: src/gs-shell.c:1687
 #, c-format
 msgid "Unable to update %s: permission required"
 msgstr "No se puede actualizar %s: se necesita conexión a la alimentación"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1522
+#: src/gs-shell.c:1693
 msgid "Unable to update: device must be plugged in"
 msgstr "No se puede actualizar: el dispositivo debe estar enchufado"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1527
+#: src/gs-shell.c:1698
 #, c-format
 msgid "Unable to update %s: device must be plugged in"
 msgstr "No se puede actualizar %s: el dispositivo debe estar enchufado"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1532
+#: src/gs-shell.c:1703
 msgid "Unable to update: low battery"
 msgstr "No se puede actualizar: batería baja"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1537
+#: src/gs-shell.c:1708
 #, c-format
 msgid "Unable to update %s: low battery"
 msgstr "No se puede actualizar %s: batería baja"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1548
+#: src/gs-shell.c:1719
 #, c-format
 msgid "Unable to update %s"
 msgstr "No se puede actualizar %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1552
+#: src/gs-shell.c:1723
 msgid "Unable to update"
 msgstr "No se puede actualizar"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1589 src/gs-shell.c:1662
+#: src/gs-shell.c:1760 src/gs-shell.c:1833
 msgid "Unable to upgrade"
 msgstr "No se puede actualizar"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1593
+#: src/gs-shell.c:1764
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "No se puede actualizar a %s desde %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1597
+#: src/gs-shell.c:1768
 msgid "Unable to upgrade: download failed"
 msgstr "No se puede actualizar: falló la descarga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1600
+#: src/gs-shell.c:1771
 #, c-format
 msgid "Unable to upgrade to %s: download failed"
 msgstr "No se puede actualizar a %s: falló la descarga"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1606
+#: src/gs-shell.c:1777
 msgid "Unable to upgrade: internet access required"
 msgstr "No se puede actualizar a: se necesita acceso a Internet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1609
+#: src/gs-shell.c:1780
 #, c-format
 msgid "Unable to upgrade to %s: internet access required"
 msgstr "No se puede actualizar a %s: se necesita acceso a Internet"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1613
+#: src/gs-shell.c:1784
 msgid "Unable to upgrade: not enough disk space"
 msgstr "No se puede actualizar: no hay suficiente espacio en disco"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1616
+#: src/gs-shell.c:1787
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "No se puede actualizar a %s: no hay suficiente espacio en disco"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1621
+#: src/gs-shell.c:1792
 msgid "Unable to upgrade: authentication required"
 msgstr "No se puede actualizar: autenticación requerida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1624
+#: src/gs-shell.c:1795
 #, c-format
 msgid "Unable to upgrade to %s: authentication required"
 msgstr "No se puede actualizar a %s: autenticación requerida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1629
+#: src/gs-shell.c:1800
 msgid "Unable to upgrade: invalid authentication"
 msgstr "No se puede actualizar: autenticación no válida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1632
+#: src/gs-shell.c:1803
 #, c-format
 msgid "Unable to upgrade to %s: invalid authentication"
 msgstr "No se puede actualizar a %s: autenticación no válida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1637
+#: src/gs-shell.c:1808
 msgid "Unable to upgrade: permission required"
 msgstr "No se puede actualizar: permiso requerido"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1640
+#: src/gs-shell.c:1811
 #, c-format
 msgid "Unable to upgrade to %s: permission required"
 msgstr "No se puede actualizar a %s: permiso requerido"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1645
+#: src/gs-shell.c:1816
 msgid "Unable to upgrade: device must be plugged in"
 msgstr "No se puede actualizar: el dispositivo debe estar enchufado"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1648
+#: src/gs-shell.c:1819
 #, c-format
 msgid "Unable to upgrade to %s: device must be plugged in"
 msgstr "No se puede actualizar a %s: el dispositivo debe estar enchufado"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1652
+#: src/gs-shell.c:1823
 msgid "Unable to upgrade: low battery"
 msgstr "No se puede actualizar: batería baja"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1655
+#: src/gs-shell.c:1826
 #, c-format
 msgid "Unable to upgrade to %s: low battery"
 msgstr "No se puede actualizar a %s: batería baja"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1665
+#: src/gs-shell.c:1836
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "No se puede actualizar a %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1699
+#: src/gs-shell.c:1870
 msgid "Unable to uninstall: authentication required"
 msgstr "No se puede desinstalar: autenticación requerida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1702
+#: src/gs-shell.c:1873
 #, c-format
 msgid "Unable to uninstall %s: authentication required"
 msgstr "No se puede desinstalar %s: autenticación requerida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1707
+#: src/gs-shell.c:1878
 msgid "Unable to uninstall: invalid authentication"
 msgstr "No se puede desinstalar: autenticación no válida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1710
+#: src/gs-shell.c:1881
 #, c-format
 msgid "Unable to uninstall %s: invalid authentication"
 msgstr "No se puede desinstalar %s: autenticación no válida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1715
+#: src/gs-shell.c:1886
 msgid "Unable to uninstall: permission required"
 msgstr "No se puede desinstalar: permiso requerido"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1718
+#: src/gs-shell.c:1889
 #, c-format
 msgid "Unable to uninstall %s: permission required"
 msgstr "No se puede desinstalar %s: permiso requerido"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1723
+#: src/gs-shell.c:1894
 msgid "Unable to uninstall: device must be plugged in"
 msgstr "No se puede desinstalar: el dispositivo debe estar enchufado"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1726
+#: src/gs-shell.c:1897
 #, c-format
 msgid "Unable to uninstall %s: device must be plugged in"
 msgstr "No se puede desinstalar %s: el dispositivo debe estar enchufado"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1730
+#: src/gs-shell.c:1901
 msgid "Unable to uninstall: low battery"
 msgstr "No se pueden desinstalar: bateía baja"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1733
+#: src/gs-shell.c:1904
 #, c-format
 msgid "Unable to uninstall %s: low battery"
 msgstr "No se pueden desinstalar %s: bateía baja"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1744
+#: src/gs-shell.c:1915
 #, c-format
 msgid "Unable to uninstall %s"
 msgstr "No se puede desinstalar %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the '%s' is
 #. replaced with the app name (e.g. "GIMP")
-#: src/gs-shell.c:1783
+#: src/gs-shell.c:1954
 #, c-format
 msgid "Unable to launch %s"
 msgstr "No se puede lanzar %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1788 src/gs-shell.c:1816 src/gs-shell.c:1860
-#: src/gs-shell.c:1904 src/gs-shell.c:1968
+#: src/gs-shell.c:1959 src/gs-shell.c:1987 src/gs-shell.c:2031
+#: src/gs-shell.c:2075 src/gs-shell.c:2139
 msgid "Sorry, something went wrong"
 msgstr "Algo salió mal"
 
@@ -5334,58 +5351,58 @@ msgstr "Algo salió mal"
 #. * where the first %s is the app name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1796
+#: src/gs-shell.c:1967
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "No se puede lanzar %s: %s no está instalado"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1806 src/gs-shell.c:1850 src/gs-shell.c:1894
-#: src/gs-shell.c:1948
+#: src/gs-shell.c:1977 src/gs-shell.c:2021 src/gs-shell.c:2065
+#: src/gs-shell.c:2119
 msgid "Not enough disk space for operation"
 msgstr "No hay suficiente espacio en disco para la operación"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1842
+#: src/gs-shell.c:2013
 msgid "Unable to install: file type not supported"
 msgstr "No se puede instalar: tipo de archivo no soportado"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1846 src/gs-shell.c:1890
+#: src/gs-shell.c:2017 src/gs-shell.c:2061
 msgid "Unable to install: authentication failed"
 msgstr "Falló al instalar: falló la autenticación"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1886
+#: src/gs-shell.c:2057
 msgid "Unable to install"
 msgstr "No se puede instalar"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1937
+#: src/gs-shell.c:2108
 #, c-format
 msgid "Unable to contact %s"
 msgstr "No se puede contactar con %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1943
+#: src/gs-shell.c:2114
 msgid "Download failed"
 msgstr "Falló la descarga"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software'
 #. means this app, aka 'GNOME Software'.
-#: src/gs-shell.c:1952
+#: src/gs-shell.c:2123
 msgid "Restart Software to use new plugins"
 msgstr "Reinicie Software para usar los complementos nuevos"
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1956
+#: src/gs-shell.c:2127
 msgid "Device needs to be plugged in"
 msgstr "Debe enchufar el dispositivo"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1959
+#: src/gs-shell.c:2130
 msgid "Battery level is too low"
 msgstr "El nivel de la batería es muy bajo"
 
@@ -5436,66 +5453,79 @@ msgctxt "Header bar button for list of apps to be updated"
 msgid "_Updates"
 msgstr "_Actualizaciones"
 
-#: src/gs-shell.ui:287 src/gs-shell.ui:358
+#: src/gs-shell.ui:287 src/gs-shell.ui:357
 msgid "Go back"
 msgstr "Retroceder"
 
 #: src/gs-shortcuts-dialog.ui:13
+msgctxt "shortcut window"
 msgid "Navigation"
 msgstr "Navegación"
 
 #: src/gs-shortcuts-dialog.ui:17
+msgctxt "shortcut window"
 msgid "Navigate to Explore Page"
-msgstr "Navegar para explorar la página"
+msgstr "Navegar a la página Explorar"
 
 #: src/gs-shortcuts-dialog.ui:23
+msgctxt "shortcut window"
 msgid "Navigate to Installed Page"
-msgstr "Navegar a la página de instalados"
+msgstr "Navegar a la página Instalado"
 
 #: src/gs-shortcuts-dialog.ui:29
+msgctxt "shortcut window"
 msgid "Navigate to Updates Page"
-msgstr "Navegar a la página de actualizaciones"
+msgstr "Navegar a la página Actualizaciones"
 
 #: src/gs-shortcuts-dialog.ui:35
+msgctxt "shortcut window"
 msgid "Open Search Bar"
-msgstr "Abrir la barra de búsqueda"
+msgstr "Abrir barra de búsqueda"
 
 #: src/gs-shortcuts-dialog.ui:41
+msgctxt "shortcut window"
 msgid "Open Main Menu"
 msgstr "Abrir menú principal"
 
 #: src/gs-shortcuts-dialog.ui:49
+msgctxt "shortcut window"
 msgid "Windows"
 msgstr "Ventanas"
 
 #: src/gs-shortcuts-dialog.ui:53
+msgctxt "shortcut window"
 msgid "Open Preferences"
-msgstr "Abrir Preferencias"
+msgstr "Abrir preferencias"
 
 #: src/gs-shortcuts-dialog.ui:59
+msgctxt "shortcut window"
 msgid "Open Software Repositories"
-msgstr "Abrir repositorios de software"
+msgstr "Repositorios de software abiertos"
 
 #: src/gs-shortcuts-dialog.ui:65
+msgctxt "shortcut window"
 msgid "Close Main Window"
 msgstr "Cerrar la ventana principal"
 
 #: src/gs-shortcuts-dialog.ui:73
+msgctxt "shortcut window"
 msgid "Updates Page"
 msgstr "Página de actualizaciones"
 
-#: src/gs-shortcuts-dialog.ui:77 src/gs-updates-page.ui:262
-#: src/gs-updates-page.ui:265
+#: src/gs-shortcuts-dialog.ui:77
+msgctxt "shortcut window"
 msgid "Check for Updates"
-msgstr "Comprobar si hay actualizaciones"
+msgstr "Buscar actualizaciones"
 
 #: src/gs-shortcuts-dialog.ui:85
+msgctxt "shortcut window"
 msgid "Help"
 msgstr "Ayuda"
 
 #: src/gs-shortcuts-dialog.ui:89
+msgctxt "shortcut window"
 msgid "Open Keyboard Shortcuts"
-msgstr "Abrir Atajos del teclado"
+msgstr "Abrir atajos de teclado"
 
 #. Translators: This is shown in a bubble to represent a 0 byte
 #. * storage size, so its context is “storage size: none”. The
@@ -5559,25 +5589,29 @@ msgstr ""
 msgid "Storage"
 msgstr "Almacenamiento"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Instalada)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Instalando)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (Descargando)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (Quitando)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "El controlador indica que es compatible con el sistema actual"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
@@ -5591,49 +5625,64 @@ msgstr "_Examinar"
 msgid "_Show Review"
 msgstr "_Mostrar opiniones"
 
-#: src/gs-update-monitor.c:238 src/gs-update-monitor.c:261
+#: src/gs-update-monitor.c:248 src/gs-update-monitor.c:279
 msgid "Critical Updates Ready to Install"
 msgstr "Actualizaciones críticas listas para instalar"
 
-#: src/gs-update-monitor.c:239 src/gs-update-monitor.c:262
+#: src/gs-update-monitor.c:249 src/gs-update-monitor.c:280
 msgid "Install critical updates as soon as possible"
 msgstr "Instale las actualizaciones críticas lo antes posible"
 
-#: src/gs-update-monitor.c:245 src/gs-update-monitor.c:272
+#: src/gs-update-monitor.c:255 src/gs-update-monitor.c:290
 msgid "Updates Ready to Install"
 msgstr "Actualizaciones listas para instalar"
 
-#: src/gs-update-monitor.c:246 src/gs-update-monitor.c:273
+#: src/gs-update-monitor.c:256 src/gs-update-monitor.c:291
 msgid "Software updates are ready and waiting"
 msgstr ""
 "Las actualizaciones de software están esperando, listas para instalarlas"
 
-#: src/gs-update-monitor.c:254
-msgid "Updates Are Out of Date"
-msgstr "Las actualizaciones están caducadas"
-
-#: src/gs-update-monitor.c:255
-msgid "Please check for available updates"
-msgstr "Compruebe las actualizaciones de software disponibles"
-
+#. TRANSLATORS: Notification title, keep it short. Context: it’s been a long
+#. time since updates were checked.
 #: src/gs-update-monitor.c:265
+msgid "Could Not Check for Updates Recently"
+msgstr "No se pudo buscar actualizaciones recientemente"
+
+#: src/gs-update-monitor.c:266
+msgid ""
+"Updates may have been paused due to being on a metered network, power saver "
+"mode, or game mode"
+msgstr ""
+"Es posible que las actualizaciones se hayan pausado debido a que se "
+"encuentra en una red medida, en modo de ahorro de energía o en modo de juego"
+
+#. Strictly we don’t need an additional button here, as the default action
+#. * for the notification will open the updates page. From there, users still
+#. * have to manually press the refresh button, though, which might be
+#. * non-obvious; so add a button to the notification to help.
+#: src/gs-update-monitor.c:272 src/gs-updates-page.ui:262
+#: src/gs-updates-page.ui:265
+msgid "Check for Updates"
+msgstr "Comprobar si hay actualizaciones"
+
+#: src/gs-update-monitor.c:283
 msgid "Critical Updates Available to Download"
 msgstr "Actualizaciones críticas disponibles para descargar"
 
-#: src/gs-update-monitor.c:266
+#: src/gs-update-monitor.c:284
 msgid "Download critical updates as soon as possible"
 msgstr "Descargue las actualizaciones críticas lo antes posible"
 
-#: src/gs-update-monitor.c:277
+#: src/gs-update-monitor.c:295
 msgid "Updates Available to Download"
 msgstr "Actualizaciones disponibles para descargar"
 
-#: src/gs-update-monitor.c:278
+#: src/gs-update-monitor.c:296
 msgid "Software updates can be downloaded"
 msgstr "Las actualizaciones de software se pueden descargar"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:401
+#: src/gs-update-monitor.c:421
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
@@ -5641,7 +5690,7 @@ msgstr[0] "%u aplicación actualizada — se necesita reiniciar"
 msgstr[1] "%u aplicaciones actualizadas — se necesita reiniciar"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:407
+#: src/gs-update-monitor.c:427
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
@@ -5649,24 +5698,24 @@ msgstr[0] "%u aplicación actualizada"
 msgstr[1] "%u aplicaciones actualizadas"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:418
+#: src/gs-update-monitor.c:438
 #, c-format
 msgid "%s has been updated."
 msgstr "%s se ha actualizado."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:421
+#: src/gs-update-monitor.c:441
 msgid "Please restart the app."
 msgstr "Reinicie la aplicación."
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:429
+#: src/gs-update-monitor.c:449
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s y %s se han actualizado."
 
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:435 src/gs-update-monitor.c:454
+#: src/gs-update-monitor.c:455 src/gs-update-monitor.c:474
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
@@ -5674,70 +5723,70 @@ msgstr[0] "%u aplicación necesita reiniciar."
 msgstr[1] "%u aplicaciones necesitan reiniciar."
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:447
+#: src/gs-update-monitor.c:467
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Incluye %s, %s y %s."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-
 #. life
-#: src/gs-update-monitor.c:755
+#: src/gs-update-monitor.c:775
 msgid "System Has Reached End of Life"
 msgstr "El sistema ha llegado al fin del ciclo de vida"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:757
+#: src/gs-update-monitor.c:777
 msgid "Upgrade to continue receiving updates"
 msgstr "Suba de versión para seguir recibiendo actualizaciones"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:816
+#: src/gs-update-monitor.c:836
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Hay una versión nueva de %s disponible para instalar"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:820
+#: src/gs-update-monitor.c:840
 msgid "Software Upgrade Available"
 msgstr "Actualización de software disponible"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1347
+#: src/gs-update-monitor.c:1367
 msgid "Software Updates Failed"
 msgstr "Falló la actualización de software"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1349
+#: src/gs-update-monitor.c:1369
 msgid "Prepared updates were not installed"
 msgstr "Las actualizaciones preparadas no se han instalado"
 
-#: src/gs-update-monitor.c:1350
+#: src/gs-update-monitor.c:1370
 msgid "Show Details"
 msgstr "Mostrar detalles"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1399
+#: src/gs-update-monitor.c:1419
 msgid "System Upgrade Complete"
 msgstr "Actualización del sistema completa"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1404
+#: src/gs-update-monitor.c:1424
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Bienvenido/a %s %s"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1413
+#: src/gs-update-monitor.c:1433
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Actualización de software instalada"
 msgstr[1] "Actualizaciones de software instaladas"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1417
+#: src/gs-update-monitor.c:1437
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "Se ha instalado una actualización del sistema operativo importante."
@@ -5748,30 +5797,30 @@ msgstr[1] "Se han instalado actualizaciones del sistema operativo importantes."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1428
+#: src/gs-update-monitor.c:1448
 msgctxt "updates"
 msgid "Review"
 msgstr "Revisar"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1480
+#: src/gs-update-monitor.c:1500
 msgid "Failed To Update"
 msgstr "Falló al actualizar"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1485
+#: src/gs-update-monitor.c:1505
 msgid "The system was already up to date."
 msgstr "El sistema ya estaba actualizado."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1490
+#: src/gs-update-monitor.c:1510
 msgid "The update was cancelled."
 msgstr "Se canceló la actualización."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1495
+#: src/gs-update-monitor.c:1515
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5780,7 +5829,7 @@ msgstr ""
 "Internet e inténtelo de nuevo."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1500
+#: src/gs-update-monitor.c:1520
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -5789,7 +5838,7 @@ msgstr ""
 "proveedor de software para obtener más detalles."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1505
+#: src/gs-update-monitor.c:1525
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -5797,7 +5846,7 @@ msgstr ""
 "nuevo."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1509
+#: src/gs-update-monitor.c:1529
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -5825,12 +5874,12 @@ msgid "Your operating system has stopped receiving critical software updates"
 msgstr "Su sistema operativo ya no recibe actualizaciones de software críticas"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:850
+#: src/gs-updates-page.c:868
 msgid "Charges May Apply"
 msgstr "Puede conllevar gastos adicionales"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:852
+#: src/gs-updates-page.c:870
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -5839,19 +5888,19 @@ msgstr ""
 "gastos adicionales."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:856
+#: src/gs-updates-page.c:874
 msgid "Check _Anyway"
 msgstr "Comprob_ar de todas formas"
 
-#: src/gs-updates-page.c:903
+#: src/gs-updates-page.c:928
 msgid "Software Upgrades Downloaded"
 msgstr "Actualizaciones de software descargadas"
 
-#: src/gs-updates-page.c:904
+#: src/gs-updates-page.c:929
 msgid "Upgrades are ready to be installed"
 msgstr "Las actualizaciones están listas para instalarse"
 
-#: src/gs-updates-page.c:1254
+#: src/gs-updates-page.c:1279
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Actualizaciones"
@@ -6091,12 +6140,12 @@ msgstr "Detalles del error"
 msgid "Copy Details"
 msgstr "Copiar detalles"
 
-#: lib/gs-utils.c:581 lib/gs-utils.c:612
+#: lib/gs-utils.c:582 lib/gs-utils.c:613
 #, c-format
 msgid "Failed to delete file “%s”: %s"
 msgstr "Falló al eliminar el archivo «%s»: %s"
 
-#: lib/gs-utils.c:623
+#: lib/gs-utils.c:624
 #, c-format
 msgid "Failed to delete directory “%s”: %s"
 msgstr "Falló al eliminar la carpeta «%s»: %s"
@@ -6137,14 +6186,14 @@ msgstr "Activar"
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
 #: plugins/core/gs-plugin-generic-updates.c:81
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3343
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3340
 msgid "System Updates"
 msgstr "Actualizaciones del sistema"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
 #: plugins/core/gs-plugin-generic-updates.c:86
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3348
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3345
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
@@ -6195,137 +6244,13 @@ msgid "Flatpak is a framework for desktop apps on Linux"
 msgstr ""
 "Flatpak es un entorno de trabajo para aplicaciones de escritorio en Linux"
 
-#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-
-#. reference.html#idm45858571325264
-#: plugins/flatpak/gs-flatpak.c:365
-#, c-format
-msgid "System folder %s"
-msgstr "Carpeta %s del sistema"
-
-#: plugins/flatpak/gs-flatpak.c:366 plugins/flatpak/gs-flatpak.c:367
-#, c-format
-msgid "Home subfolder %s"
-msgstr "Subcarpeta %s de la carpeta personal"
-
-#: plugins/flatpak/gs-flatpak.c:368
-msgid "Host system folders"
-msgstr "Carpetas personal del sistema del equipo"
-
-#: plugins/flatpak/gs-flatpak.c:369
-msgid "Host system configuration from /etc"
-msgstr "Configuración del sistema del equipo de /etc"
-
-#: plugins/flatpak/gs-flatpak.c:370
-msgid "Desktop folder"
-msgstr "Carpeta Escritorio"
-
-#: plugins/flatpak/gs-flatpak.c:370
-#, c-format
-msgid "Desktop subfolder %s"
-msgstr "Subcarpeta %s de Escritorio"
-
-#: plugins/flatpak/gs-flatpak.c:371
-msgid "Documents folder"
-msgstr "Carpeta Documentos"
-
-#: plugins/flatpak/gs-flatpak.c:371
-#, c-format
-msgid "Documents subfolder %s"
-msgstr "Subcarpeta %s de Documentos"
-
-#: plugins/flatpak/gs-flatpak.c:372
-msgid "Music folder"
-msgstr "Carpeta Música"
-
-#: plugins/flatpak/gs-flatpak.c:372
-#, c-format
-msgid "Music subfolder %s"
-msgstr "Subcarpeta %s de Música"
-
-#: plugins/flatpak/gs-flatpak.c:373
-msgid "Pictures folder"
-msgstr "Carpeta Imágenes"
-
-#: plugins/flatpak/gs-flatpak.c:373
-#, c-format
-msgid "Pictures subfolder %s"
-msgstr "Subcarpeta %s de Imágenes"
-
-#: plugins/flatpak/gs-flatpak.c:374
-msgid "Public Share folder"
-msgstr "Carpeta Público"
-
-#: plugins/flatpak/gs-flatpak.c:374
-#, c-format
-msgid "Public Share subfolder %s"
-msgstr "Subcarpeta %s de Público"
-
-#: plugins/flatpak/gs-flatpak.c:375
-msgid "Videos folder"
-msgstr "Carpeta Vídeos"
-
-#: plugins/flatpak/gs-flatpak.c:375
-#, c-format
-msgid "Videos subfolder %s"
-msgstr "Subcarpeta %s de Vídeos"
-
-#: plugins/flatpak/gs-flatpak.c:376
-msgid "Templates folder"
-msgstr "Carpeta Plantillas"
-
-#: plugins/flatpak/gs-flatpak.c:376
-#, c-format
-msgid "Templates subfolder %s"
-msgstr "Subcarpeta %s de Plantillas"
-
-#: plugins/flatpak/gs-flatpak.c:377
-msgid "User cache folder"
-msgstr "Carpeta de caché del usuario"
-
-#: plugins/flatpak/gs-flatpak.c:377
-#, c-format
-msgid "User cache subfolder %s"
-msgstr "Subcarpeta %s de caché de usuario"
-
-#: plugins/flatpak/gs-flatpak.c:378
-msgid "User configuration folder"
-msgstr "Carpeta de configuración del usuario"
-
-#: plugins/flatpak/gs-flatpak.c:378
-#, c-format
-msgid "User configuration subfolder %s"
-msgstr "Subcarpeta %s de configuración del usuario"
-
-#: plugins/flatpak/gs-flatpak.c:379
-msgid "User data folder"
-msgstr "Carpeta de datos de usuario"
-
-#: plugins/flatpak/gs-flatpak.c:379
-#, c-format
-msgid "User data subfolder %s"
-msgstr "Subcarpeta %s de datos de usuario"
-
-#: plugins/flatpak/gs-flatpak.c:380
-msgid "User runtime folder"
-msgstr "Carpeta de tiempo de ejecución del usuario"
-
-#: plugins/flatpak/gs-flatpak.c:380
-#, c-format
-msgid "User runtime subfolder %s"
-msgstr "Subcarpeta %s de tiempo de ejecución del usuario"
-
-#: plugins/flatpak/gs-flatpak.c:438
-#, c-format
-msgid "Filesystem access to %s"
-msgstr "Acceso al sistema de archivos %s"
-
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1389
+#: plugins/flatpak/gs-flatpak.c:1070
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Obteniendo metadatos flatpak para %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3635
+#: plugins/flatpak/gs-flatpak.c:3357
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Falló al depurar el complemento «%s»: %s"
@@ -6338,9 +6263,139 @@ msgstr "Instalación de usuario"
 msgid "System Installation"
 msgstr "Instalacion del sistema"
 
-#: plugins/flatpak/gs-flatpak-utils.c:273
+#: plugins/flatpak/gs-flatpak-utils.c:271
 msgid "App ID"
 msgstr "ID de la aplicación"
+
+#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-
+#. reference.html#idm45858571325264
+#: plugins/flatpak/gs-flatpak-utils.c:435
+#, c-format
+msgid "System folder %s"
+msgstr "Carpeta %s del sistema"
+
+#: plugins/flatpak/gs-flatpak-utils.c:436
+#: plugins/flatpak/gs-flatpak-utils.c:437
+#, c-format
+msgid "Home subfolder %s"
+msgstr "Subcarpeta %s de la carpeta personal"
+
+#: plugins/flatpak/gs-flatpak-utils.c:438
+msgid "Host system folders"
+msgstr "Carpetas personal del sistema del equipo"
+
+#: plugins/flatpak/gs-flatpak-utils.c:439
+msgid "Host system configuration from /etc"
+msgstr "Configuración del sistema del equipo de /etc"
+
+#: plugins/flatpak/gs-flatpak-utils.c:440
+msgid "Desktop folder"
+msgstr "Carpeta Escritorio"
+
+#: plugins/flatpak/gs-flatpak-utils.c:440
+#, c-format
+msgid "Desktop subfolder %s"
+msgstr "Subcarpeta %s de Escritorio"
+
+#: plugins/flatpak/gs-flatpak-utils.c:441
+msgid "Documents folder"
+msgstr "Carpeta Documentos"
+
+#: plugins/flatpak/gs-flatpak-utils.c:441
+#, c-format
+msgid "Documents subfolder %s"
+msgstr "Subcarpeta %s de Documentos"
+
+#: plugins/flatpak/gs-flatpak-utils.c:443
+#, c-format
+msgid "Downloads subfolder %s"
+msgstr "Subcarpeta de descargas %s"
+
+#: plugins/flatpak/gs-flatpak-utils.c:444
+msgid "Music folder"
+msgstr "Carpeta Música"
+
+#: plugins/flatpak/gs-flatpak-utils.c:444
+#, c-format
+msgid "Music subfolder %s"
+msgstr "Subcarpeta %s de Música"
+
+#: plugins/flatpak/gs-flatpak-utils.c:445
+msgid "Pictures folder"
+msgstr "Carpeta Imágenes"
+
+#: plugins/flatpak/gs-flatpak-utils.c:445
+#, c-format
+msgid "Pictures subfolder %s"
+msgstr "Subcarpeta %s de Imágenes"
+
+#: plugins/flatpak/gs-flatpak-utils.c:446
+msgid "Public Share folder"
+msgstr "Carpeta Público"
+
+#: plugins/flatpak/gs-flatpak-utils.c:446
+#, c-format
+msgid "Public Share subfolder %s"
+msgstr "Subcarpeta %s de Público"
+
+#: plugins/flatpak/gs-flatpak-utils.c:447
+msgid "Videos folder"
+msgstr "Carpeta Vídeos"
+
+#: plugins/flatpak/gs-flatpak-utils.c:447
+#, c-format
+msgid "Videos subfolder %s"
+msgstr "Subcarpeta %s de Vídeos"
+
+#: plugins/flatpak/gs-flatpak-utils.c:448
+msgid "Templates folder"
+msgstr "Carpeta Plantillas"
+
+#: plugins/flatpak/gs-flatpak-utils.c:448
+#, c-format
+msgid "Templates subfolder %s"
+msgstr "Subcarpeta %s de Plantillas"
+
+#: plugins/flatpak/gs-flatpak-utils.c:449
+msgid "User cache folder"
+msgstr "Carpeta de caché del usuario"
+
+#: plugins/flatpak/gs-flatpak-utils.c:449
+#, c-format
+msgid "User cache subfolder %s"
+msgstr "Subcarpeta %s de caché de usuario"
+
+#: plugins/flatpak/gs-flatpak-utils.c:450
+msgid "User configuration folder"
+msgstr "Carpeta de configuración del usuario"
+
+#: plugins/flatpak/gs-flatpak-utils.c:450
+#, c-format
+msgid "User configuration subfolder %s"
+msgstr "Subcarpeta %s de configuración del usuario"
+
+#: plugins/flatpak/gs-flatpak-utils.c:451
+msgid "User data folder"
+msgstr "Carpeta de datos de usuario"
+
+#: plugins/flatpak/gs-flatpak-utils.c:451
+#, c-format
+msgid "User data subfolder %s"
+msgstr "Subcarpeta %s de datos de usuario"
+
+#: plugins/flatpak/gs-flatpak-utils.c:452
+msgid "User runtime folder"
+msgstr "Carpeta de tiempo de ejecución del usuario"
+
+#: plugins/flatpak/gs-flatpak-utils.c:452
+#, c-format
+msgid "User runtime subfolder %s"
+msgstr "Subcarpeta %s de tiempo de ejecución del usuario"
+
+#: plugins/flatpak/gs-flatpak-utils.c:510
+#, c-format
+msgid "Filesystem access to %s"
+msgstr "Acceso al sistema de archivos %s"
 
 #: plugins/flatpak/gs-plugin-flatpak.c:1511
 #, c-format
@@ -6593,7 +6648,7 @@ msgstr "Actualizar dispositivo USB %s"
 msgid "Firmware"
 msgstr "Firmware"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1946
+#: plugins/fwupd/gs-plugin-fwupd.c:1945
 msgid "Firmware update could not be applied: "
 msgstr "No se pudo aplicar la actualización de firmware: "
 
@@ -6690,30 +6745,30 @@ msgstr "¿Quiere importar las claves?"
 msgid "_Import Key"
 msgstr "_Importar clave"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:1478
+#: plugins/packagekit/gs-plugin-packagekit.c:1476
 msgid "Failed to install updates: "
 msgstr "Fallo al instalar las actualizaciones: "
 
-#: plugins/packagekit/gs-plugin-packagekit.c:1572
+#: plugins/packagekit/gs-plugin-packagekit.c:1570
 msgid "Packages"
 msgstr "Paquetes"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1470
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1496
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1469
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1495
 msgid "Failed to wait on transaction end before download: "
 msgstr "Falló al esperar el fin de la transacción antes de descargar:"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1503
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1516
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1502
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1515
 msgid "Failed to download updates: "
 msgstr "Falló al descargar las actualizaciones: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1555
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1565
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1554
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:1564
 msgid "Failed to trigger update: "
 msgstr "Fallo al lanzar la actualización: "
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3447
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:3444
 msgid "Operating System (OSTree)"
 msgstr "Sistema operativo (OSTree)"
 
@@ -6731,19 +6786,22 @@ msgid "A snap is a universal Linux package"
 msgstr "Un snap es un paquete universal de Linux"
 
 #. TRANSLATORS: this is the system OS upgrade
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:785
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:746
 msgid "System"
 msgstr "Sistema"
 
 #. TRANSLATORS: this is the system component update
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:789
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:750
 msgid "System component"
 msgstr "Componente del sistema"
 
-#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:1040
+#: plugins/systemd-sysupdate/gs-plugin-systemd-sysupdate.c:999
 #, c-format
 msgid "Removing sysupdate job '%s' failed with status %i"
 msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
+
+#~ msgid "Updates Are Out of Date"
+#~ msgstr "Las actualizaciones están caducadas"
 
 #, fuzzy, c-format
 #~ msgid "New in Version %s"
@@ -6887,7 +6945,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ "changed in Settings."
 #~ msgstr ""
 #~ "La red actual tiene medidores, por lo que puede tener límites de datos o "
-#~ "cargos asociados. "
+#~ "cargos asociados. Para ahorrar datos, se han pausado las actualizaciones "
+#~ "automáticas.\n"
+#~ "\n"
+#~ "Si la red ha sido identificada incorrectamente como medida, esto se puede "
+#~ "cambiar en Configuración."
 
 #, fuzzy
 #~ msgid "Open Network _Settings"
@@ -6922,7 +6984,9 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ msgid ""
 #~ "What did you like about this app? Leaving your feedback along with your "
 #~ "reasons for leaving a review is helpful for others."
-#~ msgstr "¿Qué te gustó de esta aplicación? "
+#~ msgstr ""
+#~ "¿Qué te gustó de esta aplicación? Dejar sus comentarios junto con los "
+#~ "motivos para dejar una reseña es útil para otros."
 
 #, fuzzy
 #~ msgid ""
@@ -7143,7 +7207,8 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "What do you think of the app? Try to give reasons for your views."
-#~ msgstr "¿Qué opinas de la aplicación? "
+#~ msgstr ""
+#~ "¿Qué opinas de la aplicación? Intente dar razones de sus puntos de vista."
 
 #, fuzzy, c-format
 #~ msgid "%s…"
@@ -7295,7 +7360,8 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ "applications you want."
 #~ msgstr ""
 #~ "El software le permite instalar todo el software que necesita, todo desde "
-#~ "un solo lugar. "
+#~ "un solo lugar. Consulta nuestras recomendaciones, navega por las "
+#~ "categorías o busca las aplicaciones que desees."
 
 #, fuzzy
 #~ msgid "_Browse Software"
@@ -7356,9 +7422,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Show the prompt to install nonfree software repositories"
-#~ msgstr ""
-#~ "Mostrar el mensaje para instalar repositorios de software que no son "
-#~ "libres"
+#~ msgstr "Mostrar el mensaje para instalar repositorios de software no libres"
 
 #, fuzzy
 #~ msgid "Requires a specific screen size"
@@ -7594,6 +7658,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ "This is typical for older applications."
 #~ msgstr ""
 #~ "No se puede determinar a qué partes del sistema accede esta aplicación. "
+#~ "Esto es típico de aplicaciones más antiguas."
 
 #, fuzzy
 #~ msgctxt "App permissions"
@@ -7669,7 +7734,8 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ "usually be accessed."
 #~ msgstr ""
 #~ "Esto significa que el software es propiedad de un individuo o una "
-#~ "empresa. "
+#~ "empresa. A menudo existen restricciones en su uso y normalmente no se "
+#~ "puede acceder a su código fuente."
 
 #, fuzzy
 #~ msgid "The license terms of this software are unknown."
@@ -7894,7 +7960,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Gambling on random events using tokens or credits"
-#~ msgstr "Apuestas en eventos aleatorios usando fichas o créditos"
+#~ msgstr "Apuestas en eventos aleatorios utilizando fichas o créditos"
 
 #, fuzzy
 #~ msgid "Gambling using “play” money"
@@ -8064,11 +8130,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "%R"
-#~ msgstr "%R"
+#~ msgstr ".R"
 
 #, fuzzy
 #~ msgid "%l:%M %p"
-#~ msgstr "%l:%M%p"
+#~ msgstr "%-l:%M %P"
 
 #, fuzzy
 #~ msgid "Yesterday, %l:%M %p"
@@ -8076,19 +8142,19 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Three days ago"
-#~ msgstr "hace tres dias"
+#~ msgstr "Hace tres días."
 
 #, fuzzy
 #~ msgid "Four days ago"
-#~ msgstr "hace cuatro dias"
+#~ msgstr "Hace cuatro días."
 
 #, fuzzy
 #~ msgid "Five days ago"
-#~ msgstr "hace cinco dias"
+#~ msgstr "Hace cinco días"
 
 #, fuzzy
 #~ msgid "Six days ago"
-#~ msgstr "Hace seis dias"
+#~ msgstr "Hace seis días."
 
 #, fuzzy
 #~ msgid "Two weeks ago"
@@ -8097,15 +8163,15 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "app status"
 #~ msgid "Removed"
-#~ msgstr "Remoto"
+#~ msgstr "Eliminado"
 
 #, fuzzy
 #~ msgid "Are you sure you want to remove %s?"
-#~ msgstr "¿Estás seguro de que deseas eliminar %s?"
+#~ msgstr "¿Está seguro de que desea eliminarlo %s?"
 
 #, fuzzy
 #~ msgid "_Let’s Go Shopping"
-#~ msgstr "_Vamos de compras"
+#~ msgstr "¡Vamos de compras!"
 
 #, fuzzy
 #~ msgid "Security Updates Pending"
@@ -8113,7 +8179,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "It is recommended that you install important updates now"
-#~ msgstr "Se recomienda instalar actualizaciones importantes ahora."
+#~ msgstr "Se recomienda que instale actualizaciones importantes ahora"
 
 #, fuzzy
 #~ msgid "Restart & Install"
@@ -8122,12 +8188,12 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgid "Important OS and application updates are ready to be installed"
 #~ msgstr ""
-#~ "Las actualizaciones importantes del sistema operativo y de las "
-#~ "aplicaciones están listas para instalarse"
+#~ "Las actualizaciones importantes del sistema operativo y las aplicaciones "
+#~ "están listas para instalarse"
 
 #, fuzzy
 #~ msgid "View"
-#~ msgstr "Vista"
+#~ msgstr "Visualización"
 
 #, fuzzy
 #~ msgid "Enable GNOME Shell extensions repository"
@@ -8135,12 +8201,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "this website"
-#~ msgstr "este sitio web"
+#~ msgstr "esta web"
 
 #, fuzzy
 #~ msgid "This application needs to be restarted to use new plugins."
-#~ msgstr ""
-#~ "Es necesario reiniciar esta aplicación para utilizar nuevos complementos."
+#~ msgstr "Esta aplicación debe reiniciarse para usar nuevos complementos."
 
 #, fuzzy
 #~ msgid "About %s"
@@ -8148,17 +8213,19 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "%s ME"
-#~ msgstr "%s YO"
+#~ msgstr "%s ME"
 
 #, fuzzy
 #~ msgid "Extension Settings"
-#~ msgstr "Configuración de extensión"
+#~ msgstr "Preferencias de las extensiones"
 
 #, fuzzy
 #~ msgid ""
 #~ "Extensions are used at your own risk. If you have any system problems, it "
 #~ "is recommended to disable them."
-#~ msgstr "Las extensiones se utilizan bajo su propio riesgo. "
+#~ msgstr ""
+#~ "Las extensiones se utilizan bajo su propio riesgo. Si tiene algún "
+#~ "problema del sistema, se recomienda deshabilitarlo."
 
 #, fuzzy
 #~ msgid "Spacing"
@@ -8166,7 +8233,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "The amount of space between children"
-#~ msgstr "La cantidad de espacio entre los niños."
+#~ msgstr "La cantidad de espacio entre los niños"
 
 #, fuzzy
 #~ msgid "Featured Applications"
@@ -8175,11 +8242,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu of Add-ons"
 #~ msgid "Shell Extensions"
-#~ msgstr "Extensiones de caparazón"
+#~ msgstr "Explorador de Windows"
 
 #, fuzzy
 #~ msgid "GNOME Shell Extensions Repository"
-#~ msgstr "Repositorio de extensiones de Shell de GNOME"
+#~ msgstr "Repositorio de extensiones de shell de GNOME"
 
 #, fuzzy
 #~ msgid "Downloading shell extension metadata…"
@@ -8187,11 +8254,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "GNOME Shell Extension"
-#~ msgstr "Extensión de shell de GNOME"
+#~ msgstr "Preferencias de las extensiones de GNOME Shell"
 
 #, fuzzy
 #~ msgid "Show the folder management UI"
-#~ msgstr "Mostrar la interfaz de usuario de administración de carpetas"
+#~ msgstr "Mostrar la interfaz de usuario de gestión de carpetas"
 
 #, fuzzy
 #~ msgid "Folder Name"
@@ -8199,23 +8266,23 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "_Add"
-#~ msgstr "_Agregar"
+#~ msgstr "_Sumar"
 
 #, fuzzy
 #~ msgid "Add to Application Folder"
-#~ msgstr "Agregar a la carpeta de la aplicación"
+#~ msgstr "Añadir a la carpeta de la aplicación"
 
 #, fuzzy
 #~ msgid "Failed to load components"
-#~ msgstr "No se pudieron cargar los componentes"
+#~ msgstr "No se han podido cargar los componentes"
 
 #, fuzzy
 #~ msgid "CSS validated OK!"
-#~ msgstr "CSS validado ¡OK!"
+#~ msgstr "¡CSS validado OK!"
 
 #, fuzzy
 #~ msgid "Failed to load file"
-#~ msgstr "No se pudo cargar el archivo"
+#~ msgstr "No se ha podido cargar el archivo"
 
 #, fuzzy
 #~ msgid "Unsaved changes"
@@ -8227,11 +8294,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Merge documents"
-#~ msgstr "Fusionar documentos"
+#~ msgstr "Combinar documentos"
 
 #, fuzzy
 #~ msgid "Throw away changes"
-#~ msgstr "Desechar los cambios"
+#~ msgstr "Tira los cambios"
 
 #, fuzzy
 #~ msgid "Open AppStream File"
@@ -8243,7 +8310,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "_Save"
-#~ msgstr "_Ahorrar"
+#~ msgstr "Guardar"
 
 #, fuzzy
 #~ msgid "%s banner design deleted."
@@ -8251,19 +8318,19 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Banner design deleted."
-#~ msgstr "Se eliminó el diseño del banner."
+#~ msgstr "Diseño de banner eliminado."
 
 #, fuzzy
 #~ msgid "The application list has unsaved changes."
-#~ msgstr "La lista de aplicaciones tiene cambios no guardados."
+#~ msgstr "La lista de aplicaciones tiene cambios sin guardar."
 
 #, fuzzy
 #~ msgid "Use verbose logging"
-#~ msgstr "Utilice el registro detallado"
+#~ msgstr "Registro verbal"
 
 #, fuzzy
 #~ msgid "GNOME Software Banner Designer"
-#~ msgstr "Diseñador de banners del software GNOME"
+#~ msgstr "Diseñador de banners de software de GNOME"
 
 #, fuzzy
 #~ msgid "No Designs"
@@ -8275,7 +8342,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Category Featured"
-#~ msgstr "Categoría Destacada"
+#~ msgstr "Categoría destacada"
 
 #, fuzzy
 #~ msgid "Undo"
@@ -8283,7 +8350,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Banner Designer"
-#~ msgstr "Diseñador de pancartas"
+#~ msgstr "Diseñador de banners"
 
 #, fuzzy
 #~ msgid "New Banner"
@@ -8291,11 +8358,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Export to file"
-#~ msgstr "Exportar a archivo"
+#~ msgstr "Exportar al archivo"
 
 #, fuzzy
 #~ msgid "Click on items to select them"
-#~ msgstr "Haga clic en los elementos para seleccionarlos"
+#~ msgstr "Haz clic en los elementos para seleccionarlos"
 
 #, fuzzy
 #~ msgid "Select"
@@ -8303,15 +8370,15 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "_Add to Folder…"
-#~ msgstr "_Agregar a la carpeta…"
+#~ msgstr "Añadir a carpeta"
 
 #, fuzzy
 #~ msgid "_Move to Folder…"
-#~ msgstr "_Mover a la carpeta…"
+#~ msgstr "Mover a carpeta"
 
 #, fuzzy
 #~ msgid "_Remove from Folder"
-#~ msgstr "_Eliminar de la carpeta"
+#~ msgstr "\"Eliminar de la carpeta\","
 
 #, fuzzy
 #~ msgid "Design the featured banners for GNOME Software"
@@ -8319,7 +8386,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "AppStream;Software;App;"
-#~ msgstr "AppStream;Software;Aplicación;"
+#~ msgstr "AppStream;Software;App;"
 
 #, fuzzy
 #~ msgid "Top Rated"
@@ -8331,7 +8398,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Sign In / Register…"
-#~ msgstr "Iniciar sesión / Registrarse…"
+#~ msgstr "Acceder"
 
 #, fuzzy
 #~ msgid "Continue"
@@ -8343,15 +8410,15 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Add another…"
-#~ msgstr "Añade otro..."
+#~ msgstr "Añadir otro"
 
 #, fuzzy
 #~ msgid "%s will be installed, and you will be charged %s."
-#~ msgstr "Se instalará %s y se le cobrará %s."
+#~ msgstr "%s se instalará y se te cobrará %s."
 
 #, fuzzy
 #~ msgid "A$%.2f"
-#~ msgstr "$%.2f"
+#~ msgstr "A$%.2f"
 
 #, fuzzy
 #~ msgid "C$%.2f"
@@ -8363,23 +8430,23 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "€%.2f"
-#~ msgstr "€%.2f"
+#~ msgstr "2f."
 
 #, fuzzy
 #~ msgid "£%.2f"
-#~ msgstr "£%.2f"
+#~ msgstr "2f."
 
 #, fuzzy
 #~ msgid "¥%.2f"
-#~ msgstr "¥%.2f"
+#~ msgstr "2f."
 
 #, fuzzy
 #~ msgid "NZ$%.2f"
-#~ msgstr "$NZ%.2f"
+#~ msgstr "NZ$%.2f"
 
 #, fuzzy
 #~ msgid "₽%.2f"
-#~ msgstr "₽%.2f"
+#~ msgstr "2f."
 
 #, fuzzy
 #~ msgid "US$%.2f"
@@ -8387,47 +8454,47 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Signed in as %s"
-#~ msgstr "Iniciado sesión como %s"
+#~ msgstr "Conectado como"
 
 #, fuzzy
 #~ msgid "Sign in…"
-#~ msgstr "Iniciar sesión…"
+#~ msgstr "Iniciar sesión"
 
 #, fuzzy
 #~ msgid "Sign out"
-#~ msgstr "desconectar"
+#~ msgstr "Cerrar sesión"
 
 #, fuzzy
 #~ msgid "Unable to purchase %s: authentication was required"
-#~ msgstr "No se pudo comprar %s: se requirió autenticación"
+#~ msgstr "No se puede comprar %s: se requiere autenticación"
 
 #, fuzzy
 #~ msgid "Unable to purchase %s: authentication was invalid"
-#~ msgstr "No se puede comprar %s: la autenticación no era válida"
+#~ msgstr "No se puede comprar %s: la autenticación no es válida"
 
 #, fuzzy
 #~ msgid "Unable to purchase %s: no payment method setup"
-#~ msgstr "No se puede comprar %s: no se ha configurado ningún método de pago"
+#~ msgstr "No se puede comprar %s: no hay configuración del método de pago"
 
 #, fuzzy
 #~ msgid "Unable to purchase %s: payment was declined"
-#~ msgstr "No se puede comprar %s: el pago fue rechazado"
+#~ msgstr "No se puede comprar %s: se ha rechazado el pago"
 
 #, fuzzy
 #~ msgid "To continue, you need to use an Ubuntu One account."
-#~ msgstr "Para continuar, necesitas usar una cuenta de Ubuntu One."
+#~ msgstr "Para continuar, debes usar una cuenta de Ubuntu One."
 
 #, fuzzy
 #~ msgid "To continue, you need to use your Ubuntu One account."
-#~ msgstr "Para continuar, necesita usar su cuenta de Ubuntu One."
+#~ msgstr "Para continuar, debes usar tu cuenta de Ubuntu One."
 
 #, fuzzy
 #~ msgid "system-software-install"
-#~ msgstr "instalación-de-software-del-sistema"
+#~ msgstr "system-software-install"
 
 #, fuzzy
 #~ msgid "Software catalog is being loaded"
-#~ msgstr "Se está cargando el catálogo de software."
+#~ msgstr "Se está cargando el catálogo de software"
 
 #, fuzzy
 #~ msgid "org.gnome.Software"
@@ -8443,7 +8510,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "To continue you need to sign in to %s."
-#~ msgstr "Para continuar necesitas iniciar sesión en %s."
+#~ msgstr "Para continuar, debe iniciar sesión en %s."
 
 #, fuzzy
 #~ msgid "Email address"
@@ -8451,11 +8518,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "I have an account already"
-#~ msgstr "ya tengo una cuenta"
+#~ msgstr "Ya tengo una cuenta"
 
 #, fuzzy
 #~ msgid "I want to register for an account now"
-#~ msgstr "Quiero registrarme para obtener una cuenta ahora"
+#~ msgstr "I want to register an account."
 
 #, fuzzy
 #~ msgid "Sign in automatically next time"
@@ -8463,12 +8530,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Enter your one-time pin for two-factor authentication."
-#~ msgstr ""
-#~ "Ingrese su PIN de un solo uso para la autenticación de dos factores."
+#~ msgstr "Introduce tu PIN único para la autenticación de dos factores."
 
 #, fuzzy
 #~ msgid "PIN"
-#~ msgstr "ALFILER"
+#~ msgstr "PIN"
 
 #, fuzzy
 #~ msgid "Authenticate"
@@ -8476,39 +8542,40 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Your %s account has been suspended."
-#~ msgstr "Tu cuenta de %s ha sido suspendida."
+#~ msgstr "Tu cuenta se ha suspendido."
 
 #, fuzzy
 #~ msgid "It is not possible to install software until this has been resolved."
-#~ msgstr "No es posible instalar software hasta que esto se haya resuelto."
+#~ msgstr "No es posible instalar el software hasta que esto se haya resuelto."
 
 #, fuzzy
 #~ msgid "For more information, visit %s."
-#~ msgstr "Para obtener más información, visite %s."
+#~ msgstr "Para más información, visite las secciones"
 
 #, fuzzy
 #~ msgid "_About"
-#~ msgstr "_Acerca de"
+#~ msgstr "Acerca de"
 
 #, fuzzy
 #~ msgid "Show profiling information for the service"
-#~ msgstr "Mostrar información de perfil para el servicio."
+#~ msgstr "Mostrar información de perfil para el servicio"
 
 #, fuzzy
 #~ msgid ""
 #~ "Information about %s, as well as options for how to get a codec that can "
 #~ "play this format can be found on the website."
 #~ msgstr ""
-#~ "En el sitio web se puede encontrar información sobre %s, así como "
-#~ "opciones sobre cómo obtener un códec que pueda reproducir este formato."
+#~ "La información sobre %s, así como las opciones sobre cómo obtener un "
+#~ "códec que pueda reproducir este formato, se pueden encontrar en el sitio "
+#~ "web."
 
 #, fuzzy
 #~ msgid "Downloading new updates…"
-#~ msgstr "Descargando nuevas actualizaciones…"
+#~ msgstr "Descargando nuevas actualizaciones..."
 
 #, fuzzy
 #~ msgid "Downloading application page…"
-#~ msgstr "Descargando la página de la aplicación…"
+#~ msgstr "Descargando la página de la aplicación..."
 
 #, fuzzy
 #~ msgid "The ultimate entertainment platform from Valve"
@@ -8520,41 +8587,41 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Includes: ."
-#~ msgstr "Incluye: ."
+#~ msgstr "Incluye:"
 
 #, fuzzy
 #~ msgid "_Quit"
-#~ msgstr "_Abandonar"
+#~ msgstr "_Salir"
 
 #, fuzzy
 #~ msgid "Restart & _Install"
-#~ msgstr "Reiniciar e instalar"
+#~ msgstr "Reiniciar & _Instalar"
 
 #, fuzzy
 #~ msgid "Getting runtime source…"
-#~ msgstr "Obteniendo fuente de tiempo de ejecución..."
+#~ msgstr "Obteniendo código fuente en tiempo de ejecución..."
 
 #, fuzzy
 #~ msgid "Limba Support"
-#~ msgstr "Soporte Limba"
+#~ msgstr "Limba Support"
 
 #, fuzzy
 #~ msgid "Limba provides developers a way to easily create software bundles"
 #~ msgstr ""
-#~ "Limba ofrece a los desarrolladores una forma de crear fácilmente paquetes "
-#~ "de software"
+#~ "Limba proporciona a los desarrolladores una forma de crear paquetes de "
+#~ "software fácilmente"
 
 #, fuzzy
 #~ msgid "Sorted by Name"
-#~ msgstr "Ordenado por nombre"
+#~ msgstr "ordenados por"
 
 #, fuzzy
 #~ msgid "Sorted by Rating"
-#~ msgstr "Ordenado por calificación"
+#~ msgstr "Ordenado por clasificación"
 
 #, fuzzy
 #~ msgid "The list of extra sources that have been previously enabled"
-#~ msgstr "La lista de fuentes adicionales que se han habilitado previamente."
+#~ msgstr "La lista de fuentes adicionales que se han habilitado previamente"
 
 #, fuzzy
 #~ msgid ""
@@ -8566,12 +8633,12 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Show non-free software in search results"
-#~ msgstr "Mostrar software no gratuito en los resultados de búsqueda"
+#~ msgstr "Mostrar software no libre en los resultados de búsqueda"
 
 #, fuzzy
 #~ msgid "A list of non-free sources that can be optionally enabled"
 #~ msgstr ""
-#~ "Una lista de fuentes no gratuitas que se pueden habilitar opcionalmente"
+#~ "Una lista de fuentes no libres que se pueden habilitar opcionalmente"
 
 #, fuzzy
 #~ msgid "Enable Proprietary Software Sources?"
@@ -8579,11 +8646,14 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "No applications or addons installed; other software might still be"
-#~ msgstr "No hay aplicaciones ni complementos instalados; "
+#~ msgstr ""
+#~ "No hay aplicaciones o complementos instalados; es posible que todavía "
+#~ "haya otro software"
 
 #, fuzzy
 #~ msgid "Typically has restrictions on use and access to source code."
-#~ msgstr "Normalmente tiene restricciones de uso y acceso al código fuente."
+#~ msgstr ""
+#~ "Por lo general, tiene restricciones de uso y acceso al código fuente."
 
 #, fuzzy
 #~ msgid "Proprietary Software Sources"
@@ -8597,19 +8667,21 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ msgid ""
 #~ "Software sources can be downloaded from the internet. They give you "
 #~ "access to additional software that is not provided by %s."
-#~ msgstr "Las fuentes de software se pueden descargar de Internet. "
+#~ msgstr ""
+#~ "Las fuentes de software se pueden descargar de Internet. Te dan acceso a "
+#~ "software adicional que no es proporcionado por %s."
 
 #, fuzzy
 #~ msgid ""
 #~ "Removing a source will also remove any software you have installed from "
 #~ "it."
 #~ msgstr ""
-#~ "Al eliminar una fuente también se eliminará cualquier software que haya "
-#~ "instalado en ella."
+#~ "Al eliminar una fuente, también se eliminará cualquier software que haya "
+#~ "instalado."
 
 #, fuzzy
 #~ msgid "No software installed from this source"
-#~ msgstr "No hay software instalado desde esta fuente"
+#~ msgstr "No hay software instalado de esta fuente"
 
 #, fuzzy
 #~ msgid "Installed from this Source"
@@ -8617,11 +8689,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Last Checked"
-#~ msgstr "Última comprobación"
+#~ msgstr "Última Comprobación"
 
 #, fuzzy
 #~ msgid "Added"
-#~ msgstr "Agregado"
+#~ msgstr "agregado"
 
 #, fuzzy
 #~ msgid "Website"
@@ -8639,114 +8711,114 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "page1"
-#~ msgstr "pagina1"
+#~ msgstr "Página 1"
 
 #, fuzzy
 #~ msgid "page2"
-#~ msgstr "pagina2"
+#~ msgstr "Página 2"
 
 #, fuzzy
 #~ msgctxt "Menu of AudioVideo"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of AudioVideo"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgctxt "Menu of Development"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of Development"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgctxt "Menu of Education and Science"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of Education and Science"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgctxt "Menu of Graphics"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of Graphics"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgctxt "Menu of Office"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of Office"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgctxt "Menu of Communication"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of Communication"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgctxt "Menu of Utility"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of Utility"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgid "“%s” [%s]"
-#~ msgstr "“%s” [%s]"
+#~ msgstr "S S"
 
 #, fuzzy
 #~ msgid "Total"
-#~ msgstr "Total"
+#~ msgstr "Total actual de tropas"
 
 #, fuzzy
 #~ msgctxt "Menu of Education"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of Education"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgctxt "Menu of Science"
 #~ msgid "All"
-#~ msgstr "Todo"
+#~ msgstr "Todos"
 
 #, fuzzy
 #~ msgctxt "Menu of Science"
 #~ msgid "Featured"
-#~ msgstr "Presentado"
+#~ msgstr "Destacado"
 
 #, fuzzy
 #~ msgctxt "Menu of Science"
 #~ msgid "Astronomy"
-#~ msgstr "Astronomía"
+#~ msgstr "Astronomía."
 
 #, fuzzy
 #~ msgctxt "Menu of Science"
@@ -8764,23 +8836,24 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Installation of %s failed."
-#~ msgstr "La instalación de %s falló."
+#~ msgstr "La instalación de %s ha fallado."
 
 #, fuzzy
 #~ msgid "Removal of %s failed."
-#~ msgstr "Error en la eliminación de %s."
+#~ msgstr "Error al eliminar %s."
 
 #, fuzzy
 #~ msgid "Please make sure that you have internet access and try again."
-#~ msgstr "Asegúrese de tener acceso a Internet e inténtelo nuevamente."
+#~ msgstr "Asegúrate de tener acceso a Internet e inténtalo de nuevo."
 
 #, fuzzy
 #~ msgid "Please free up some space and try again."
-#~ msgstr "Libere espacio e inténtelo de nuevo."
+#~ msgstr "Por favor, libere espacio y vuelva a intentarlo."
 
 #, fuzzy
 #~ msgid "If the problem persists, contact your software provider."
-#~ msgstr "Si el problema persiste, comuníquese con su proveedor de software."
+#~ msgstr ""
+#~ "Si el problema persiste, póngase en contacto con su proveedor de software."
 
 #, fuzzy
 #~ msgctxt "content rating violence-fantasy"
@@ -8879,11 +8952,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Software sources give you access to additional software."
-#~ msgstr "Las fuentes de software le brindan acceso a software adicional."
+#~ msgstr "Las fuentes de software le dan acceso a software adicional."
 
 #, fuzzy
 #~ msgid "3rd party"
-#~ msgstr "tercero"
+#~ msgstr "De terceros"
 
 #, fuzzy
 #~ msgid "nonfree"
@@ -8891,15 +8964,15 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "shell extension"
-#~ msgstr "extensión de concha"
+#~ msgstr "extensión de shell"
 
 #, fuzzy
 #~ msgid "_Installing"
-#~ msgstr "_Instalando"
+#~ msgstr "Instalando"
 
 #, fuzzy
 #~ msgid "_Removing"
-#~ msgstr "_Eliminar"
+#~ msgstr "Eliminando…"
 
 #, fuzzy
 #~ msgid " or "
@@ -8919,44 +8992,44 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ "This software comes from a 3rd party and may contain non-free components."
 #~ msgstr ""
 #~ "Este software proviene de un tercero y puede contener componentes no "
-#~ "gratuitos."
+#~ "libres."
 
 #, fuzzy
 #~ msgid "This software may contain non-free components."
-#~ msgstr "Este software puede contener componentes no gratuitos."
+#~ msgstr "Este software puede contener componentes no libres."
 
 #, fuzzy
 #~ msgid "non-free"
-#~ msgstr "no libre"
+#~ msgstr "no-libre"
 
 #, fuzzy
 #~ msgid "One Star"
-#~ msgstr "una estrella"
+#~ msgstr "Una estrella"
 
 #, fuzzy
 #~ msgid "Two Stars"
-#~ msgstr "dos estrellas"
+#~ msgstr "Dos estrellas"
 
 #, fuzzy
 #~ msgid "Three Stars"
-#~ msgstr "tres estrellas"
+#~ msgstr "Tres estrellas"
 
 #, fuzzy
 #~ msgid "Four Stars"
-#~ msgstr "cuatro estrellas"
+#~ msgstr "cuatro estrellas."
 
 #, fuzzy
 #~ msgid "Five Stars"
-#~ msgstr "Cinco Estrellas"
+#~ msgstr "Cinco estrellas"
 
 #, fuzzy
 #~ msgid "Recommended Office Applications"
-#~ msgstr "Aplicaciones de oficina recomendadas"
+#~ msgstr "Aplicaciones de Office recomendadas"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
 #~ msgid "Editing"
-#~ msgstr "Edición"
+#~ msgstr "Editar"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
@@ -8966,7 +9039,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
 #~ msgid "Disc Burning"
-#~ msgstr "Grabación de discos"
+#~ msgstr "Manuales online"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
@@ -8976,7 +9049,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
 #~ msgid "MIDI"
-#~ msgstr "midi"
+#~ msgstr "MIDI"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
@@ -8991,7 +9064,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
 #~ msgid "Recorders"
-#~ msgstr "Grabadoras"
+#~ msgstr "Registros"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
@@ -9006,7 +9079,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of AudioVideo"
 #~ msgid "TV"
-#~ msgstr "TELEVISOR"
+#~ msgstr "TV"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Development Tools"
@@ -9026,17 +9099,17 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Development Tools"
 #~ msgid "Profiling"
-#~ msgstr "Perfilado"
+#~ msgstr "Elaboración de perfiles"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Development Tools"
 #~ msgid "Project Management"
-#~ msgstr "Gestión de proyectos"
+#~ msgstr "Gestión del proyecto"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Development Tools"
 #~ msgid "Web Development"
-#~ msgstr "Desarrollo Web"
+#~ msgstr "Desarrollo web"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
@@ -9046,7 +9119,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
 #~ msgid "Computer Science"
-#~ msgstr "Ciencias de la Computación"
+#~ msgstr "Ingeniería Informática"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
@@ -9066,22 +9139,22 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
 #~ msgid "Electronics"
-#~ msgstr "Electrónica"
+#~ msgstr "Electrónico"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
 #~ msgid "Engineering"
-#~ msgstr "Ingeniería"
+#~ msgstr "Ingenierías"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
 #~ msgid "Geology"
-#~ msgstr "Geología"
+#~ msgstr "Geología."
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
 #~ msgid "Geoscience"
-#~ msgstr "Geociencia"
+#~ msgstr "Ciencias de la Tierra"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
@@ -9091,7 +9164,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
 #~ msgid "Image Processing"
-#~ msgstr "Procesamiento de imágenes"
+#~ msgstr "Image Processing"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
@@ -9111,7 +9184,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
 #~ msgid "Numerical Analysis"
-#~ msgstr "Análisis numérico"
+#~ msgstr "Análisis Numérico"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Education"
@@ -9131,7 +9204,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Games"
 #~ msgid "Shooter"
-#~ msgstr "Tirador"
+#~ msgstr "Tiros"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Games"
@@ -9151,7 +9224,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Graphics"
 #~ msgid "OCR"
-#~ msgstr "LOC"
+#~ msgstr "OCR"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Graphics"
@@ -9161,22 +9234,22 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Graphics"
 #~ msgid "Raster Graphics"
-#~ msgstr "Gráficos rasterizados"
+#~ msgstr "Imagen de mapa de bits"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
 #~ msgid "Dialup"
-#~ msgstr "Acceso telefónico"
+#~ msgstr "Conexión por línea conmutada"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
 #~ msgid "Email"
-#~ msgstr "Correo electrónico"
+#~ msgstr "Correo Electrónico"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
 #~ msgid "Feed"
-#~ msgstr "Alimentar"
+#~ msgstr "Alimentación"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
@@ -9196,7 +9269,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
 #~ msgid "IRC Clients"
-#~ msgstr "Clientes IRC"
+#~ msgstr "Clientes de IRC"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
@@ -9206,27 +9279,27 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
 #~ msgid "P2P"
-#~ msgstr "P2P"
+#~ msgstr "Ciclo de compras y pagos"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
 #~ msgid "Telephony"
-#~ msgstr "Telefonía"
+#~ msgstr "telefonía"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Internet"
 #~ msgid "Web Development"
-#~ msgstr "Desarrollo Web"
+#~ msgstr "Desarrollo web"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Office"
 #~ msgid "Chart"
-#~ msgstr "Cuadro"
+#~ msgstr "Gráfico"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Office"
 #~ msgid "Contact Management"
-#~ msgstr "Gestión de contactos"
+#~ msgstr "ES Contact Management"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Office"
@@ -9236,7 +9309,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Office"
 #~ msgid "Email"
-#~ msgstr "Correo electrónico"
+#~ msgstr "Correo Electrónico"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Office"
@@ -9256,7 +9329,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Office"
 #~ msgid "Project Management"
-#~ msgstr "Gestión de proyectos"
+#~ msgstr "Gestión del proyecto"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Office"
@@ -9271,7 +9344,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Office"
 #~ msgid "Viewer"
-#~ msgstr "Espectador"
+#~ msgstr "Viewer"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
@@ -9286,7 +9359,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Astronomy"
-#~ msgstr "Astronomía"
+#~ msgstr "Astronomía."
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
@@ -9301,7 +9374,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Computer Science"
-#~ msgstr "Ciencias de la Computación"
+#~ msgstr "Ingeniería Informática"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
@@ -9326,12 +9399,12 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Electronics"
-#~ msgstr "Electrónica"
+#~ msgstr "Electrónico"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Engineering"
-#~ msgstr "Ingeniería"
+#~ msgstr "Ingenierías"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
@@ -9341,12 +9414,12 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Geology"
-#~ msgstr "Geología"
+#~ msgstr "Geología."
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Geoscience"
-#~ msgstr "Geociencia"
+#~ msgstr "Ciencias de la Tierra"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
@@ -9361,7 +9434,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Image Processing"
-#~ msgstr "Procesamiento de imágenes"
+#~ msgstr "Image Processing"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
@@ -9386,12 +9459,12 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Medical"
-#~ msgstr "Médico"
+#~ msgstr "Médica"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Numerical Analysis"
-#~ msgstr "Análisis numérico"
+#~ msgstr "Análisis Numérico"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Science"
@@ -9421,17 +9494,17 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of System"
 #~ msgid "Emulator"
-#~ msgstr "Emulador"
+#~ msgstr "EmuladorComment"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of System"
 #~ msgid "File Manager"
-#~ msgstr "Gestor de archivos"
+#~ msgstr "Gestor de Archivos"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of System"
 #~ msgid "File Tools"
-#~ msgstr "Herramientas de archivo"
+#~ msgstr "Herramientas de archivos"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of System"
@@ -9446,7 +9519,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of System"
 #~ msgid "Terminal Emulator"
-#~ msgstr "Emulador de terminales"
+#~ msgstr "Emulador de terminalComment"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Utilities"
@@ -9466,7 +9539,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Utilities"
 #~ msgid "Clock"
-#~ msgstr "Reloj"
+#~ msgstr "Clock"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Utilities"
@@ -9476,7 +9549,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Utilities"
 #~ msgid "File Tools"
-#~ msgstr "Herramientas de archivo"
+#~ msgstr "Herramientas de archivos"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Utilities"
@@ -9500,7 +9573,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Audio"
-#~ msgstr "Audio"
+#~ msgstr "Sonido"
 
 #, fuzzy
 #~ msgid "Graphics"
@@ -9512,7 +9585,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Office"
-#~ msgstr "Oficina"
+#~ msgstr "principal"
 
 #, fuzzy
 #~ msgid "Video"
@@ -9521,7 +9594,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Video"
 #~ msgid "Editing"
-#~ msgstr "Edición"
+#~ msgstr "Editar"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Video"
@@ -9531,17 +9604,17 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Video"
 #~ msgid "Disc Burning"
-#~ msgstr "Grabación de discos"
+#~ msgstr "Manuales online"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Video"
 #~ msgid "Recorders"
-#~ msgstr "Grabadoras"
+#~ msgstr "Registros"
 
 #, fuzzy
 #~ msgctxt "size"
 #~ msgid "Calculating…"
-#~ msgstr "Calculador…"
+#~ msgstr "Calculando…"
 
 #, fuzzy
 #~ msgctxt "size"
@@ -9550,56 +9623,58 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "_History"
-#~ msgstr "_Historia"
+#~ msgstr "Historia"
 
 #, fuzzy
 #~ msgid "Size"
-#~ msgstr "Tamaño"
+#~ msgstr "Dimensión empresarial"
 
 #, fuzzy
 #~ msgid "No AppStream data found"
-#~ msgstr "No se encontraron datos de AppStream"
+#~ msgstr "No se han encontrado datos de AppStream"
 
 #, fuzzy
 #~ msgid "Internet Only Application"
-#~ msgstr "Solicitud solo por Internet"
+#~ msgstr "Aplicación solo para Internet"
 
 #, fuzzy
 #~ msgid "A previous update was unfinished."
-#~ msgstr "Una actualización anterior estaba inconclusa."
+#~ msgstr "No se ha finalizado una actualización anterior."
 
 #, fuzzy
 #~ msgid ""
 #~ "The update couldn’t be installed; this is often a problem with the update "
 #~ "itself. Please wait for another update and try again."
-#~ msgstr "No se pudo instalar la actualización; "
+#~ msgstr ""
+#~ "No se pudo instalar la actualización; esto suele ser un problema con la "
+#~ "actualización en sí. Espere otra actualización e inténtelo de nuevo."
 
 #, fuzzy
 #~ msgid "An update was not signed in the correct way."
-#~ msgstr "Una actualización no se firmó de forma correcta."
+#~ msgstr "No se ha firmado una actualización de la manera correcta."
 
 #, fuzzy
 #~ msgid "An offline update was requested but no packages required updating."
 #~ msgstr ""
-#~ "Se solicitó una actualización fuera de línea pero no fue necesario "
+#~ "Se solicitó una actualización sin conexión, pero no fue necesario "
 #~ "actualizar ningún paquete."
 
 #, fuzzy
 #~ msgid "No space was left on the drive."
-#~ msgstr "No quedó espacio en el disco."
+#~ msgstr "No quedaba espacio en la unidad."
 
 #, fuzzy
 #~ msgid "An update failed to install correctly."
-#~ msgstr "Una actualización no se pudo instalar correctamente."
+#~ msgstr "No se ha podido instalar correctamente una actualización."
 
 #, fuzzy
 #~ msgid "The offline update failed in an unexpected way."
-#~ msgstr "La actualización sin conexión falló de forma inesperada."
+#~ msgstr "La actualización sin conexión ha fallado de forma inesperada."
 
 #, fuzzy
 #~ msgid "%i application and %i add-ons installed"
 #~ msgid_plural "%i applications and %i add-ons installed"
-#~ msgstr[0] "Aplicación %i y complementos %i instalados"
+#~ msgstr[0] "%i aplicación y %i complementos instalados"
 #~ msgstr[1] "%i aplicaciones y %i complementos instalados"
 
 #, fuzzy
@@ -9607,8 +9682,8 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ "Depending on your country of residence, installing it could make you "
 #~ "liable to prosecution."
 #~ msgstr ""
-#~ "Dependiendo de su país de residencia, instalarlo podría exponerlo a un "
-#~ "proceso judicial."
+#~ "Dependiendo de tu país de residencia, instalarlo podría hacerte "
+#~ "susceptible de enjuiciamiento."
 
 #, fuzzy
 #~ msgid "If you are uncertain about this, you should obtain legal advice."
@@ -9620,20 +9695,20 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Picks"
-#~ msgstr "Selecciones"
+#~ msgstr "Pronósticos"
 
 #, fuzzy
 #~ msgctxt "license"
 #~ msgid "Complicated!"
-#~ msgstr "¡Complicado!"
+#~ msgstr "¡It got complicated!"
 
 #, fuzzy
 #~ msgid "January 30, 2014"
-#~ msgstr "30 de enero de 2014"
+#~ msgstr "29 de enero, 2014"
 
 #, fuzzy
 #~ msgid "_Pending"
-#~ msgstr "_Pendiente"
+#~ msgstr "PENDIENTE"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Development"
@@ -9648,12 +9723,12 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Network"
 #~ msgid "Web Development"
-#~ msgstr "Desarrollo Web"
+#~ msgstr "Desarrollo web"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Utility"
 #~ msgid "File Tools"
-#~ msgstr "Herramientas de archivo"
+#~ msgstr "Herramientas de archivos"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Utility"
@@ -9673,7 +9748,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Addons"
 #~ msgid "Codecs"
-#~ msgstr "Códecs"
+#~ msgstr "Códec"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Addons"
@@ -9683,45 +9758,56 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Addons"
 #~ msgid "Language Packs"
-#~ msgstr "Paquetes de idiomas"
+#~ msgstr "Paquetes de idioma"
 
 #, fuzzy
 #~ msgid "Done"
-#~ msgstr "Hecho"
+#~ msgstr "Terminado"
 
 #, fuzzy
 #~ msgid ""
 #~ "Add or remove folders. Your application folders can be found in the "
 #~ "Activities Overview."
-#~ msgstr "Agregar o eliminar carpetas. "
+#~ msgstr ""
+#~ "Añadir o eliminar carpetas. Las carpetas de su aplicación se pueden "
+#~ "encontrar en la Descripción general de las actividades."
 
 #, fuzzy
 #~ msgid ""
 #~ "Choose a folder for %s. Your application folders can be found in the "
 #~ "Activities Overview."
-#~ msgstr "Elija una carpeta para %s. "
+#~ msgstr ""
+#~ "Elija una carpeta para %s. Las carpetas de su aplicación se pueden "
+#~ "encontrar en la Descripción general de las actividades."
 
 #, fuzzy
 #~ msgid ""
 #~ "Choose a folder for %s and %s. Your application folders can be found in "
 #~ "the Activities Overview."
-#~ msgstr "Elija una carpeta para %s y %s. "
+#~ msgstr ""
+#~ "Elija una carpeta para %s y %s. Las carpetas de su aplicación se pueden "
+#~ "encontrar en la Descripción general de las actividades."
 
 #, fuzzy
 #~ msgid ""
 #~ "Choose a folder for %s, %s and %s. Your application folders can be found "
 #~ "in the Activities Overview."
-#~ msgstr "Elija una carpeta para %s, %s y %s. "
+#~ msgstr ""
+#~ "Elija una carpeta para %s, %s y %s. Las carpetas de su aplicación se "
+#~ "pueden encontrar en la Descripción general de las actividades."
 
 #, fuzzy
 #~ msgid ""
 #~ "Choose a folder for the selected applications. Your application folders "
 #~ "can be found in the Activities Overview."
-#~ msgstr "Elija una carpeta para las aplicaciones seleccionadas. "
+#~ msgstr ""
+#~ "Elija una carpeta para las aplicaciones seleccionadas. Las carpetas de su "
+#~ "aplicación se pueden encontrar en la Descripción general de las "
+#~ "actividades."
 
 #, fuzzy
 #~ msgid "_Installed (%d)"
-#~ msgstr "_Instalado (%d)"
+#~ msgstr "Instalado (%d)"
 
 #, fuzzy
 #~ msgid "_Updates (%d)"
@@ -9729,16 +9815,15 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "The search term to use when starting the UI"
-#~ msgstr ""
-#~ "El término de búsqueda que se utilizará al iniciar la interfaz de usuario"
+#~ msgstr "El término de búsqueda a utilizar al iniciar la interfaz de usuario"
 
 #, fuzzy
 #~ msgid "Shotwell"
-#~ msgstr "Pozo de tiro"
+#~ msgstr "Shotwell"
 
 #, fuzzy
 #~ msgid "Open source photo management for GNOME"
-#~ msgstr "Gestión de fotografías de código abierto para GNOME"
+#~ msgstr "Gestión de fotos de código abierto para GNOME"
 
 #, fuzzy
 #~ msgid "Long description"
@@ -9750,7 +9835,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "View installed applications"
-#~ msgstr "Ver aplicaciones instaladas"
+#~ msgstr "Aplicaciones instaladas"
 
 #, fuzzy
 #~ msgid "View available application updates"
@@ -9758,17 +9843,17 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Install available updates"
-#~ msgstr "Instalar actualizaciones disponibles"
+#~ msgstr "Muestra e instala las actualizaciones disponibles"
 
 #, fuzzy
 #~ msgid "Find an application to handle a specific type of file"
-#~ msgstr "Encuentre una aplicación para manejar un tipo específico de archivo"
+#~ msgstr "Encontrar una aplicación para manejar un tipo específico de archivo"
 
 #, fuzzy
 #~ msgid "Installed apps and updates should be available when offline"
 #~ msgstr ""
-#~ "Las aplicaciones instaladas y las actualizaciones deberían estar "
-#~ "disponibles sin conexión"
+#~ "Las aplicaciones y actualizaciones instaladas deben estar disponibles sin "
+#~ "conexión"
 
 #, fuzzy
 #~ msgid "Goals:"
@@ -9782,7 +9867,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #, fuzzy
 #~ msgctxt "Menu subcategory of Settings"
 #~ msgid "Printing"
-#~ msgstr "Impresión"
+#~ msgstr "Imprimir"
 
 #, fuzzy
 #~ msgctxt "Menu subcategory of Settings"
@@ -9791,11 +9876,11 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "The Gimp"
-#~ msgstr "el cojo"
+#~ msgstr "The Gimp"
 
 #, fuzzy
 #~ msgid "GNU Image Manipulation Program"
-#~ msgstr "Programa de manipulación de imágenes GNU"
+#~ msgstr "Programa de retoque de imágenesName"
 
 #, fuzzy
 #~ msgid ""
@@ -9813,16 +9898,24 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ "conversions, all\n"
 #~ "with multi-level undo.\n"
 #~ msgstr ""
-#~ "GIMP (Programa de manipulación de imágenes GNU) es una poderosa "
-#~ "composición de imágenes y\n"
+#~ "GIMP (GNU Image Manipulation Program) es un potente programa de "
+#~ "composición y edición de imágenes, que puede ser extremadamente útil para "
+#~ "crear logotipos y otros gráficos para páginas web. GIMP tiene muchas de "
+#~ "las herramientas y filtros que esperarías encontrar en ofertas "
+#~ "comerciales similares, y algunos extras interesantes también. GIMP "
+#~ "proporciona una gran caja de herramientas de manipulación de imágenes, "
+#~ "que incluye operaciones y capas de canal, efectos, imágenes de subpíxeles "
+#~ "y anti-aliasing, y conversiones, todo con de múltiples niveles."
 
 #, fuzzy
 #~ msgid "Waiting for package manager..."
-#~ msgstr "Esperando al administrador de paquetes..."
+#~ msgstr ""
+#~ "Esperando por el bloqueo del gestor de paqueteswaiting for user to type "
+#~ "in a password"
 
 #, fuzzy
 #~ msgid "Querying..."
-#~ msgstr "Consultando..."
+#~ msgstr "Consultas"
 
 #, fuzzy
 #~ msgid ""
@@ -9830,7 +9923,7 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 #~ "desktop file..."
 #~ msgstr ""
 #~ "El autor de este software no ha incluido una 'Descripción' en el archivo "
-#~ "del escritorio..."
+#~ "de escritorio..."
 
 #, fuzzy
 #~ msgid "New"
@@ -9842,12 +9935,12 @@ msgstr "Falló al quitar el trabajo «%s» de sysupdate con el estado %i"
 
 #, fuzzy
 #~ msgid "Popular"
-#~ msgstr "Popular"
+#~ msgstr "Populares"
 
 #, fuzzy
 #~ msgid ""
 #~ "Shotwell is a digital photo organiser that runs on Linux. It is the "
 #~ "default photo manager in Ubuntu and Fedora."
 #~ msgstr ""
-#~ "Shotwell es un organizador de fotografías digitales que se ejecuta en "
-#~ "Linux. "
+#~ "Shotwell es un organizador de fotos digital que se ejecuta en Linux. Es "
+#~ "el administrador de fotos predeterminado en Ubuntu y Fedora."
