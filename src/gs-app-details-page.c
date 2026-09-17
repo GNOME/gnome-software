@@ -225,6 +225,12 @@ set_update_description (GsAppDetailsPage *self,
 		update_details = _("No update description available.");
 	}
 
+	/* the markup is not controlled by the gnome-software; if it contains
+	   any problem Pango might reject during parsing the code cannot recognize
+	   it, thus reset to an empty string first, to not have there set any
+	   stale information from a different app. */
+	gtk_label_set_markup (GTK_LABEL (self->label_details), "");
+
 	gtk_label_set_markup (GTK_LABEL (self->label_details), update_details);
 	gtk_stack_set_visible_child_name (self->stack_details, "label");
 }

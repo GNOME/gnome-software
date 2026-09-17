@@ -82,6 +82,10 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	box->last_width = width;
 	box->last_height = height;
 
+	/* Set to an empty string first, in case Pango fails to parse the markup,
+	   to not keep stale data in the label. */
+	gtk_label_set_label (box->label, "");
+
 	if (box->always_expanded) {
 		gtk_widget_set_visible (GTK_WIDGET (box->button), FALSE);
 		gtk_label_set_markup (box->label, box->text);

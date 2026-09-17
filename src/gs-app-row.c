@@ -392,10 +392,15 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	str = gs_app_row_get_description (app_row, &is_markup);
 	if (str != NULL) {
 		gs_utils_gstring_replace (str, "\n", " ");
-		if (is_markup)
+		if (is_markup) {
+			/* Set to an empty string first, in case Pango fails to parse the markup,
+			   to not keep stale data in the label. */
+			gtk_label_set_label (GTK_LABEL (priv->description_label), "");
+
 			gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
-		else
+		} else {
 			gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
+		}
 		g_string_free (str, TRUE);
 	} else {
 		gtk_label_set_text (GTK_LABEL (priv->description_label), NULL);
