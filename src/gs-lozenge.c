@@ -449,6 +449,10 @@ gs_lozenge_set_markup (GsLozenge *self,
 		gtk_widget_set_visible (self->label, FALSE);
 		gtk_widget_set_visible (self->image, TRUE);
 	} else {
+		/* Set to an empty string first, in case Pango fails to parse the markup,
+		   to not keep stale data in the label. */
+		gtk_label_set_label (GTK_LABEL (self->label), "");
+
 		gtk_label_set_markup (GTK_LABEL (self->label), self->markup);
 		gtk_widget_set_visible (self->image, FALSE);
 		gtk_widget_set_visible (self->label, TRUE);
