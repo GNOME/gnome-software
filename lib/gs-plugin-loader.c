@@ -3410,7 +3410,8 @@ gs_plugin_loader_set_cpu_priority (GsPluginLoader *self,
 		self->cpu_priority = cpu_priority;
 		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_CPU_PRIORITY]);
 
-		gs_icon_downloader_update_priority (self->icon_downloader, self->system_bus_connection, cpu_priority);
+		if (self->icon_downloader != NULL)
+			gs_icon_downloader_update_priority (self->icon_downloader, self->system_bus_connection, cpu_priority);
 	}
 }
 
