@@ -15,18 +15,25 @@
 
 struct _GsReposSection
 {
-	AdwPreferencesGroup	 parent_instance;
-	GtkWidget		*title;
+	GtkBox			 parent_instance;
+	AdwPreferencesPage	*page;
+	AdwPreferencesGroup	*group;
 	GtkListBox		*list;
+	GSettings		*settings; /* (owned) (not nullable) */
 	gchar			*sort_key;
+	gchar			*title; /* nullable */
+	gchar			*icon_name; /* nullable */
 	gboolean		 always_allow_enable_disable;
 	gboolean		 related_loaded;
+	gboolean		 options_visible;
 };
 
-G_DEFINE_TYPE (GsReposSection, gs_repos_section, ADW_TYPE_PREFERENCES_GROUP)
+G_DEFINE_TYPE (GsReposSection, gs_repos_section, GTK_TYPE_BOX)
 
 typedef enum {
 	PROP_RELATED_LOADED = 1,
+	PROP_TITLE,
+	PROP_ICON_NAME,
 } GsReposSectionProperty;
 
 enum {
@@ -35,7 +42,7 @@ enum {
 	SIGNAL_LAST
 };
 
-static GParamSpec *obj_props[PROP_RELATED_LOADED + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_ICON_NAME + 1] = { NULL, };
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static void
@@ -50,6 +57,34 @@ repo_switch_clicked_cb (GsRepoRow *row,
 			GsReposSection *section)
 {
 	g_signal_emit (section, signals[SIGNAL_SWITCH_CLICKED], 0, row);
+}
+
+
+static void
+repo_default_source_clicked_cb (GsRepoRow *row,
+				gboolean is_active,
+				gpointer user_data)
+{
+	GsReposSection *section = user_data;
+	GsApp *repo;
+	g_autofree char *tmp = NULL;
+	const char *packaging_format;
+	const char *values[3] = { NULL, NULL, NULL };
+	guint index = 0;
+
+	g_return_if_fail (GS_IS_REPOS_SECTION (section));
+
+	repo = gs_repo_row_get_repo (row);
+	packaging_format = gs_app_get_packaging_format_raw (repo);
+
+	if (is_active) {
+		tmp = g_strconcat (packaging_format, ":", gs_app_get_id (repo), NULL);
+		values[index++] = tmp;
+	}
+
+	values[index++] = packaging_format;
+
+	g_settings_set_strv (section->settings, "packaging-format-preference", (const char * const *) values);
 }
 
 static void
@@ -94,6 +129,12 @@ gs_repos_section_get_property (GObject *object,
 	case PROP_RELATED_LOADED:
 		g_value_set_boolean (value, gs_repos_section_get_related_loaded (self));
 		break;
+	case PROP_TITLE:
+		g_value_set_string (value, gs_repos_section_get_title (self));
+		break;
+	case PROP_ICON_NAME:
+		g_value_set_string (value, gs_repos_section_get_icon_name (self));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -112,6 +153,12 @@ gs_repos_section_set_property (GObject *object,
 	case PROP_RELATED_LOADED:
 		gs_repos_section_set_related_loaded (self, g_value_get_boolean (value));
 		break;
+	case PROP_TITLE:
+		gs_repos_section_set_title (self, g_value_get_string (value));
+		break;
+	case PROP_ICON_NAME:
+		gs_repos_section_set_icon_name (self, g_value_get_string (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -123,7 +170,10 @@ gs_repos_section_finalize (GObject *object)
 {
 	GsReposSection *self = GS_REPOS_SECTION (object);
 
+	g_clear_object (&self->settings);
 	g_free (self->sort_key);
+	g_free (self->title);
+	g_free (self->icon_name);
 
 	G_OBJECT_CLASS (gs_repos_section_parent_class)->finalize (object);
 }
@@ -151,6 +201,30 @@ gs_repos_section_class_init (GsReposSectionClass *klass)
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsReposSection:title: (nullable)
+	 *
+	 * Localized title of the section.
+	 *
+	 * Since: 52
+	 */
+	obj_props[PROP_TITLE] =
+		g_param_spec_string ("title", NULL, NULL,
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsReposSection:icon-name: (not nullable)
+	 *
+	 * Icon name of the section.
+	 *
+	 * Since: 52
+	 */
+	obj_props[PROP_ICON_NAME] =
+		g_param_spec_string ("icon-name", NULL, NULL,
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_REMOVE_CLICKED] =
@@ -171,6 +245,7 @@ gs_repos_section_class_init (GsReposSectionClass *klass)
 static void
 gs_repos_section_init (GsReposSection *self)
 {
+	self->settings = g_settings_new ("org.gnome.software");
 	self->list = GTK_LIST_BOX (gtk_list_box_new ());
 	g_object_set (G_OBJECT (self->list),
 		      "visible", TRUE,
@@ -180,7 +255,13 @@ gs_repos_section_init (GsReposSection *self)
 
 	gtk_widget_add_css_class (GTK_WIDGET (self->list), "boxed-list");
 
-	adw_preferences_group_add (ADW_PREFERENCES_GROUP (self), GTK_WIDGET (self->list));
+	self->page = ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
+	gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->page));
+
+	self->group = ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
+	adw_preferences_group_add (self->group, GTK_WIDGET (self->list));
+
+	adw_preferences_page_add (self->page, self->group);
 
 	g_signal_connect (self->list, "row-activated",
 			  G_CALLBACK (gs_repos_section_row_activated_cb), self);
@@ -189,6 +270,7 @@ gs_repos_section_init (GsReposSection *self)
 /*
  * gs_repos_section_new:
  * @always_allow_enable_disable: always allow enable/disable of the repos in this section
+ * @options_visible: whether to show "Options" button for the repo rows
  *
  * Creates a new #GsReposSection. @always_allow_enable_disable is passed to each
  * #GsRepoRow.
@@ -200,13 +282,18 @@ gs_repos_section_init (GsReposSection *self)
  * Returns: (transfer full): a newly created #GsReposSection
  */
 GtkWidget *
-gs_repos_section_new (gboolean always_allow_enable_disable)
+gs_repos_section_new (gboolean always_allow_enable_disable,
+		      gboolean options_visible)
 {
 	GsReposSection *self;
 
-	self = g_object_new (GS_TYPE_REPOS_SECTION, NULL);
+	self = g_object_new (GS_TYPE_REPOS_SECTION,
+			     "orientation", GTK_ORIENTATION_VERTICAL,
+			     "homogeneous", FALSE,
+			     NULL);
 
 	self->always_allow_enable_disable = always_allow_enable_disable;
+	self->options_visible = options_visible;
 
 	return GTK_WIDGET (self);
 }
@@ -226,7 +313,7 @@ gs_repos_section_add_repo (GsReposSection *self,
 	if (!self->sort_key)
 		self->sort_key = g_strdup (gs_app_get_metadata_item (repo, "GnomeSoftware::SortKey"));
 
-	row = gs_repo_row_new (repo, self->always_allow_enable_disable);
+	row = gs_repo_row_new (repo, self->always_allow_enable_disable, self->options_visible);
 	g_object_bind_property (self, "related-loaded",
 				row, "related-loaded",
 				G_BINDING_SYNC_CREATE);
@@ -234,9 +321,116 @@ gs_repos_section_add_repo (GsReposSection *self,
 	                  G_CALLBACK (repo_remove_clicked_cb), self);
 	g_signal_connect (row, "switch-clicked",
 	                  G_CALLBACK (repo_switch_clicked_cb), self);
+	g_signal_connect (row, "default-source-clicked",
+	                  G_CALLBACK (repo_default_source_clicked_cb), self);
+	g_settings_bind (self->settings, "packaging-format-preference",
+			 row, "packaging-format-preference",
+			 G_SETTINGS_BIND_GET | G_SETTINGS_BIND_NO_SENSITIVITY);
 
 	gtk_list_box_prepend (self->list, row);
 	gtk_widget_set_visible (row, TRUE);
+}
+
+/**
+ * gs_repos_section_get_prefs_page:
+ * @self: a #GsReposSection
+ *
+ * Returns associated #AdwPreferencesPage.
+ *
+ * Returns: (transfer none): associated #AdwPreferencesPage
+ *
+ * Since: 52
+ **/
+AdwPreferencesPage *
+gs_repos_section_get_prefs_page (GsReposSection *self)
+{
+	g_return_val_if_fail (GS_IS_REPOS_SECTION (self), NULL);
+
+	return self->page;
+}
+
+/**
+ * gs_repos_section_get_title:
+ * @self: a #GsReposSection
+ *
+ * Gets a title of the @self.
+ *
+ * Returns: (nullable): title of the @self
+ *
+ * Since: 52
+ **/
+const gchar *
+gs_repos_section_get_title (GsReposSection *self)
+{
+	g_return_val_if_fail (GS_IS_REPOS_SECTION (self), NULL);
+
+	return self->title;
+}
+
+/**
+ * gs_repos_section_set_title:
+ * @self: a #GsReposSection
+ * @value: (nullable): value to set
+ *
+ * Sets a title of the @self.
+ *
+ * Since: 52
+ **/
+void
+gs_repos_section_set_title (GsReposSection *self,
+			    const gchar *value)
+{
+	g_return_if_fail (GS_IS_REPOS_SECTION (self));
+
+	if (g_strcmp0 (self->title, value) == 0)
+		return;
+
+	if (g_set_str (&self->title, value))
+		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_TITLE]);
+}
+
+/**
+ * gs_repos_section_get_icon_name:
+ * @self: a #GsReposSection
+ *
+ * Gets an icon name of the @self.
+ *
+ * Returns: (not nullable): icon name of the @self
+ *
+ * Since: 52
+ **/
+const gchar *
+gs_repos_section_get_icon_name (GsReposSection *self)
+{
+	g_return_val_if_fail (GS_IS_REPOS_SECTION (self), NULL);
+
+	if (self->icon_name == NULL)
+		return "package-generic-symbolic";
+
+	return self->icon_name;
+}
+
+/**
+ * gs_repos_section_set_icon_name:
+ * @self: a #GsReposSection
+ * @value: (nullable): value to set
+ *
+ * Sets an icon name of the @self. Pass %NULL
+ * to set the default section icon.
+ *
+ * Since: 52
+ **/
+void
+gs_repos_section_set_icon_name (GsReposSection *self,
+				const gchar *value)
+{
+	g_return_if_fail (GS_IS_REPOS_SECTION (self));
+
+	if (g_strcmp0 (self->icon_name, value) == 0)
+		return;
+
+	if (g_set_str (&self->icon_name, value))
+		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_ICON_NAME]);
 }
 
 const gchar *

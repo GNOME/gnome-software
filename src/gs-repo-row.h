@@ -25,7 +25,8 @@ struct _GsRepoRowClass
 };
 
 GtkWidget	*gs_repo_row_new			(GsApp		*repo,
-							 gboolean	 always_allow_enable_disable);
+							 gboolean	 always_allow_enable_disable,
+							 gboolean	 options_visible);
 GsApp		*gs_repo_row_get_repo			(GsRepoRow	*row);
 void		 gs_repo_row_mark_busy			(GsRepoRow	*row);
 void		 gs_repo_row_unmark_busy		(GsRepoRow	*row);
@@ -37,5 +38,11 @@ void		 gs_repo_row_set_related_loaded		(GsRepoRow	*row,
 GCancellable	*gs_repo_row_get_cancellable		(GsRepoRow	*row);
 void		 gs_repo_row_set_cancellable		(GsRepoRow	*row,
 							 GCancellable	*cancellable);
+const char * const *
+		 gs_repo_row_get_packaging_format_preference
+							(GsRepoRow	*self);
+void		 gs_repo_row_set_packaging_format_preference
+							(GsRepoRow	*self,
+							 const char * const *value);
 
 G_END_DECLS
