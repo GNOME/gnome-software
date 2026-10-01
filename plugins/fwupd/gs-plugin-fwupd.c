@@ -898,8 +898,9 @@ gs_plugin_fwupd_list_sources_got_remotes_cb (GObject *source_object,
 			gs_app_set_metadata (app, "fwupd::remote-id",
 					     fwupd_remote_get_id (remote));
 			gs_app_set_management_plugin (app, plugin);
-			gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "fwupd");
-			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "800");
+			gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", _("Firmware"));
+			gs_app_set_metadata (app, "GnomeSoftware::PackagingIcon", "package-firmware-symbolic");
+			gs_app_set_metadata (app, "GnomeSoftware::SortKey", "900");
 			gs_app_set_origin_ui (app, _("Firmware"));
 			g_hash_table_insert (self->cached_sources, g_strdup (id), app);
 			g_object_weak_ref (G_OBJECT (app), cached_sources_weak_ref_cb, self);
