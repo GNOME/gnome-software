@@ -166,6 +166,12 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
 
+	/* disable on OSTree */
+	if (g_file_test ("/run/ostree-booted", G_FILE_TEST_EXISTS)) {
+		gs_plugin_set_enabled (plugin, FALSE);
+		return;
+	}
+
 	/* refine */
 	self->control_refine = pk_control_new ();
 	g_signal_connect (self->control_refine, "updates-changed",
