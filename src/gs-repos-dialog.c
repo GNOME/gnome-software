@@ -17,6 +17,7 @@
 #include "gs-os-release.h"
 #include "gs-repo-row.h"
 #include "gs-repos-section.h"
+#include "gs-shell.h"
 #include "gs-toast.h"
 #include "gs-utils.h"
 #include <glib/gi18n.h>
@@ -32,8 +33,9 @@ struct _GsReposDialog
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
+	GsShell		*shell;
 	GtkWidget	*status_empty;
-	GtkWidget	*content_page;
+	AdwViewStack	*stack_sources;
 	GtkWidget	*stack;
 	AdwToastOverlay	*toast_overlay;
 };
@@ -305,7 +307,6 @@ remove_confirm_repo (GsReposDialog *dialog,
 {
 	InstallRemoveData *remove_data;
 	AdwDialog *confirm_dialog;
-	g_autofree gchar *message = NULL;
 
 	remove_data = g_slice_new0 (InstallRemoveData);
 	remove_data->operation = operation;
@@ -313,13 +314,14 @@ remove_confirm_repo (GsReposDialog *dialog,
 	remove_data->repo = g_object_ref (repo);
 	g_weak_ref_init (&remove_data->row_weakref, row);
 
-	/* TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64" */
-	message = g_strdup_printf (_("Software that has been installed from “%s” will cease to receive updates."),
-			gs_app_get_name (repo));
-
 	/* ask for confirmation */
 	confirm_dialog = adw_alert_dialog_new (operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE ? _("Disable Repository?") : _("Remove Repository?"),
-						 message);
+					       NULL);
+	adw_alert_dialog_format_body_markup (ADW_ALERT_DIALOG (confirm_dialog),
+					     /* TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64";
+						keep the "<b></b>", it shows the repository name in bold */
+					     _("Software that has been installed from <b>%s</b> will no longer receive updates"),
+					     gs_app_get_name (repo));
 	adw_alert_dialog_add_response (ADW_ALERT_DIALOG (confirm_dialog),
 					 "cancel",  _("_Cancel"));
 
@@ -433,7 +435,7 @@ add_repo (GsReposDialog *dialog,
 	  GSList **third_party_repos)
 {
 	GsAppState state;
-	GtkWidget *section;
+	GsReposSection *section;
 	g_autofree gchar *origin_ui = NULL;
 
 	state = gs_app_get_state (repo);
@@ -457,9 +459,9 @@ add_repo (GsReposDialog *dialog,
 		return;
 	}
 
-	origin_ui = gs_app_dup_origin_ui (repo, TRUE);
+	origin_ui = gs_app_get_packaging_format (repo);
 	if (!origin_ui)
-		origin_ui = gs_app_get_packaging_format (repo);
+		origin_ui = gs_app_dup_origin_ui (repo, TRUE);
 	if (!origin_ui) {
 		g_autoptr(GsPlugin) plugin = gs_app_dup_management_plugin (repo);
 		origin_ui = (plugin != NULL) ? g_strdup (gs_plugin_get_name (plugin)) : NULL;
@@ -467,18 +469,24 @@ add_repo (GsReposDialog *dialog,
 
 	section = g_hash_table_lookup (dialog->sections, origin_ui);
 	if (section == NULL) {
-		section = gs_repos_section_new (FALSE);
-		adw_preferences_group_set_title (ADW_PREFERENCES_GROUP (section),
-						 origin_ui);
+		AsBundleKind bundle_kind = gs_app_get_bundle_kind (repo);
+
+		section = GS_REPOS_SECTION (gs_repos_section_new (FALSE,
+								  bundle_kind == AS_BUNDLE_KIND_PACKAGE ||
+								  bundle_kind == AS_BUNDLE_KIND_FLATPAK ||
+								  bundle_kind == AS_BUNDLE_KIND_SNAP));
+		gs_repos_section_set_title (section, origin_ui);
+		gs_repos_section_set_icon_name (section,
+						gs_app_get_metadata_item (repo, "GnomeSoftware::PackagingIcon"));
 		g_signal_connect_object (section, "remove-clicked",
 					 G_CALLBACK (repo_section_remove_clicked_cb), dialog, 0);
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
 		g_hash_table_insert (dialog->sections, g_steal_pointer (&origin_ui), section);
-		gs_repos_section_set_related_loaded (GS_REPOS_SECTION (section), FALSE);
+		gs_repos_section_set_related_loaded (section, FALSE);
 	}
 
-	gs_repos_section_add_repo (GS_REPOS_SECTION (section), repo);
+	gs_repos_section_add_repo (section, repo);
 }
 
 static gint
@@ -500,8 +508,8 @@ repos_dialog_compare_sections_cb (gconstpointer aa,
 	if (res != 0)
 		return res;
 
-	title_sort_key_a = gs_utils_sort_key (adw_preferences_group_get_title (ADW_PREFERENCES_GROUP (section_a)));
-	title_sort_key_b = gs_utils_sort_key (adw_preferences_group_get_title (ADW_PREFERENCES_GROUP (section_b)));
+	title_sort_key_a = gs_utils_sort_key (gs_repos_section_get_title (section_a));
+	title_sort_key_b = gs_utils_sort_key (gs_repos_section_get_title (section_b));
 
 	return g_strcmp0 (title_sort_key_a, title_sort_key_b);
 }
@@ -603,6 +611,13 @@ refine_sources_cb (GObject *source_object,
 }
 
 static void
+repos_dialog_3rd_party_more_info_clicked_cb (AdwBanner *banner,
+					     GsReposDialog *self)
+{
+	gs_shell_show_uri (self->shell, "https://docs.fedoraproject.org/en-US/workstation-working-group/third-party-repos/");
+}
+
+static void
 get_sources_cb (GsPluginLoader *plugin_loader,
 		GAsyncResult *res,
 		GsReposDialog *dialog)
@@ -638,8 +653,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	/* remove previous */
 	g_hash_table_iter_init (&iter, dialog->sections);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&added_section)) {
-		adw_preferences_page_remove (ADW_PREFERENCES_PAGE (dialog->content_page),
-					     added_section);
+		adw_view_stack_remove (dialog->stack_sources, GTK_WIDGET (added_section));
 		g_hash_table_iter_remove (&iter);
 	}
 
@@ -660,22 +674,28 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gs_app_list_add (refine_list, app);
 	}
 
-	sections = g_hash_table_get_values (dialog->sections);
-	sections = g_list_sort (sections, repos_dialog_compare_sections_cb);
-	for (GList *link = sections; link; link = g_list_next (link)) {
-		AdwPreferencesGroup *section = link->data;
-		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page), section);
-	}
-
-	gtk_widget_set_visible (dialog->content_page, sections != NULL);
-
 	if (other_repos) {
 		GsReposSection *section;
 		GtkWidget *widget;
 		GtkWidget *row;
-		g_autofree gchar *anchor = NULL;
-		g_autofree gchar *hint = NULL;
 		g_autofree gchar *section_id = NULL;
+
+		widget = adw_banner_new (_("Additional repositories from selected third parties"));
+		adw_banner_set_button_label (ADW_BANNER (widget), _("More Information"));
+		adw_banner_set_revealed (ADW_BANNER (widget), TRUE);
+		g_signal_connect (widget, "button-clicked",
+				  G_CALLBACK (repos_dialog_3rd_party_more_info_clicked_cb), dialog);
+
+		section = GS_REPOS_SECTION (gs_repos_section_new (TRUE, FALSE));
+		gs_repos_section_set_title (section, _("3rd Party"));
+		gs_repos_section_set_icon_name (section, "application-x-addon-symbolic");
+		gs_repos_section_set_sort_key (section, "800");
+		gs_repos_section_set_related_loaded (section, FALSE);
+		g_signal_connect_object (section, "switch-clicked",
+					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
+		gtk_widget_set_visible (GTK_WIDGET (section), TRUE);
+
+		gtk_box_prepend (GTK_BOX (section), widget);
 
 		row = adw_switch_row_new ();
 		adw_switch_row_set_active (ADW_SWITCH_ROW (row), dialog->third_party_enabled);
@@ -684,41 +704,11 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (row), FALSE);
 		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _("Enable New Repositories"));
 		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added"));
-		gtk_widget_set_visible (row, TRUE);
-
-		anchor = g_strdup_printf ("<a href=\"%s\">%s</a>",
-	                        "https://docs.fedoraproject.org/en-US/workstation-working-group/third-party-repos/",
-	                        /* TRANSLATORS: this is the clickable
-	                         * link on the third party repositories info bar */
-	                        _("more information"));
-		hint = g_strdup_printf (
-				/* TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
-				   with a link consisting a text "more information", which constructs a sentence:
-				   "Additional repositories from selected third parties - more information."*/
-				_("Additional repositories from selected third parties — %s."),
-				anchor);
 
 		widget = adw_preferences_group_new ();
-		adw_preferences_group_set_title (ADW_PREFERENCES_GROUP (widget),
-						 _("Fedora Third Party Repositories"));
-
-		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (widget), hint);
-
-		gtk_widget_set_visible (widget, TRUE);
 		adw_preferences_group_add (ADW_PREFERENCES_GROUP (widget), row);
-		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
+		adw_preferences_page_add (gs_repos_section_get_prefs_page (section),
 					  ADW_PREFERENCES_GROUP (widget));
-
-		/* use something unique, not clashing with the other section names */
-		section_id = g_strdup_printf ("fedora-third-party::1::%p", widget);
-		g_hash_table_insert (dialog->sections, g_steal_pointer (&section_id), widget);
-
-		section = GS_REPOS_SECTION (gs_repos_section_new (TRUE));
-		gs_repos_section_set_sort_key (section, "900");
-		gs_repos_section_set_related_loaded (section, FALSE);
-		g_signal_connect_object (section, "switch-clicked",
-					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
-		gtk_widget_set_visible (GTK_WIDGET (section), TRUE);
 
 		for (GSList *link = other_repos; link; link = g_slist_next (link)) {
 			GsApp *repo = link->data;
@@ -727,12 +717,20 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		}
 
 		/* use something unique, not clashing with the other section names */
-		section_id = g_strdup_printf ("fedora-third-party::2::%p", section);
+		section_id = g_strdup_printf ("fedora-third-party::%p", section);
 		g_hash_table_insert (dialog->sections, g_steal_pointer (&section_id), section);
-
-		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
-					  ADW_PREFERENCES_GROUP (section));
 	}
+
+	sections = g_hash_table_get_values (dialog->sections);
+	sections = g_list_sort (sections, repos_dialog_compare_sections_cb);
+	for (GList *link = sections; link; link = g_list_next (link)) {
+		GsReposSection *section = link->data;
+		adw_view_stack_add_titled_with_icon (dialog->stack_sources, GTK_WIDGET (section), NULL,
+						     gs_repos_section_get_title (section),
+						     gs_repos_section_get_icon_name (section));
+	}
+
+	gtk_widget_set_visible (GTK_WIDGET (dialog->stack_sources), sections != NULL);
 
 	plugin_job = gs_plugin_job_refine_new (refine_list, GS_PLUGIN_REFINE_FLAGS_ALLOW_REPOSITORIES,
 					    GS_PLUGIN_REFINE_REQUIRE_FLAGS_RELATED);
@@ -930,18 +928,20 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, status_empty);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_page);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack_sources);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, toast_overlay);
 }
 
 GsReposDialog *
-gs_repos_dialog_new (GsPluginLoader *plugin_loader)
+gs_repos_dialog_new (GsPluginLoader *plugin_loader,
+		     GsShell        *shell)
 {
 	GsReposDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_REPOS_DIALOG,
 			       NULL);
+	dialog->shell = shell;
 	dialog->third_party = gs_fedora_third_party_new (plugin_loader);
 	set_plugin_loader (dialog, plugin_loader);
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");

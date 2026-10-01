@@ -17,11 +17,18 @@ typedef struct
 {
 	GsApp		*repo;
 	GtkWidget	*name_label;
-	GtkWidget	*hostname_label;
 	GtkWidget	*comment_label;
-	GtkWidget	*remove_button;
 	GtkWidget	*disable_switch;
+	GtkWidget	*default_source_image;
+	GtkWidget	*options_button;
+	GtkWidget	*options_popover;
+	GtkWidget	*options_scope_row;
+	GtkLabel	*options_scope_row_label;
+	GtkWidget	*options_default_source_row;
+	GtkWidget	*options_default_source_switch;
+	GtkWidget	*options_delete_row;
 	gulong		 switch_handler_id;
+	gulong		 switch_default_handler_id;
 	guint		 refresh_idle_id;
 	guint		 busy_counter;
 	gboolean	 supports_remove;
@@ -29,6 +36,7 @@ typedef struct
 	gboolean	 always_allow_enable_disable;
 	gboolean	 related_loaded;
 	GCancellable	*cancellable;  /* (nullable) (owned) */
+	char           **packaging_format_preference; /* (nullable) (owned) */
 } GsRepoRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsRepoRow, gs_repo_row, GTK_TYPE_LIST_BOX_ROW)
@@ -36,15 +44,17 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsRepoRow, gs_repo_row, GTK_TYPE_LIST_BOX_ROW)
 typedef enum {
 	PROP_RELATED_LOADED = 1,
 	PROP_CANCELLABLE,
+	PROP_PACKAGING_FORMAT_PREFERENCE
 } GsRepoRowProperty;
 
 enum {
 	SIGNAL_REMOVE_CLICKED,
 	SIGNAL_SWITCH_CLICKED,
+	SIGNAL_DEFAULT_SOURCE_CLICKED,
 	SIGNAL_LAST
 };
 
-static GParamSpec *obj_props[PROP_CANCELLABLE + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_PACKAGING_FORMAT_PREFERENCE + 1] = { NULL, };
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static void
@@ -101,7 +111,7 @@ refresh_ui (GsRepoRow *row)
 
 	/* Disable for the system repos, if installed */
 	gtk_widget_set_sensitive (priv->disable_switch, priv->supports_enable_disable && (state_sensitive || !is_compulsory || priv->always_allow_enable_disable));
-	gtk_widget_set_visible (priv->remove_button, priv->supports_remove && !is_provenance && !is_compulsory);
+	gtk_widget_set_visible (priv->options_delete_row, priv->supports_remove && !is_provenance && !is_compulsory);
 
 	/* Set only the 'state' to visually indicate the state is not saved yet */
 	if (busy)
@@ -236,6 +246,7 @@ refresh_comment_label (GsRepoRow *self)
 {
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
 	g_autofree gchar *comment = NULL;
+	g_autoptr(GUri) uri = NULL;
 	const gchar *tmp;
 
 	if (priv->related_loaded)
@@ -243,11 +254,19 @@ refresh_comment_label (GsRepoRow *self)
 	else
 		comment = g_strdup (_("Checking installed software…"));
 
-	tmp = gs_app_get_metadata_item (priv->repo, "GnomeSoftware::InstallationKind");
+	tmp = gs_app_get_url (priv->repo, AS_URL_KIND_HOMEPAGE);
+	if (tmp != NULL && *tmp != '\0') {
+		uri = g_uri_parse (tmp, SOUP_HTTP_URI_FLAGS, NULL);
+		if (uri && g_uri_get_host (uri) != NULL && *g_uri_get_host (uri) != '\0')
+			tmp = g_uri_get_host (uri);
+	} else {
+		tmp = NULL;
+	}
+
 	if (tmp != NULL && *tmp != '\0') {
 		gchar *cnt;
 
-		/* Translators: The first '%s' is replaced with installation kind, like in case of Flatpak 'User Installation',
+		/* Translators: The first '%s' is replaced with host name, like in case of Flathub 'dl.flathub.org',
 		      the second '%s' is replaced with a text like '10 apps installed'. */
 		cnt = g_strdup_printf (C_("repo-row", "%s • %s"), tmp, comment);
 		g_clear_pointer (&comment, g_free);
@@ -258,11 +277,40 @@ refresh_comment_label (GsRepoRow *self)
 }
 
 static void
+refresh_default_source_tag (GsRepoRow *self)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
+	gboolean is_default_source;
+
+	/* as it is saved, the first item is the exact source, while the next are derivatives from it */
+	is_default_source = priv->repo != NULL && priv->packaging_format_preference != NULL &&
+			    priv->packaging_format_preference[0] != NULL;
+
+	if (is_default_source) {
+		const char *packaging_format = gs_app_get_packaging_format_raw (priv->repo);
+
+		is_default_source = packaging_format != NULL;
+
+		if (is_default_source) {
+			g_autofree char *full_ident = g_strconcat (packaging_format, ":", gs_app_get_id (priv->repo), NULL);
+
+			is_default_source = g_ascii_strcasecmp (priv->packaging_format_preference[0], full_ident) == 0;
+		}
+	}
+
+	gtk_widget_set_visible (priv->default_source_image, is_default_source);
+
+	g_signal_handler_block (priv->options_default_source_switch, priv->switch_default_handler_id);
+	gtk_switch_set_active (GTK_SWITCH (priv->options_default_source_switch), is_default_source);
+	g_signal_handler_unblock (priv->options_default_source_switch, priv->switch_default_handler_id);
+}
+
+static void
 gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 {
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
 	g_autoptr(GsPlugin) plugin = NULL;
-	const gchar *tmp;
+	const char *tmp;
 
 	g_assert (priv->repo == NULL);
 
@@ -285,20 +333,13 @@ gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label), gs_app_get_name (repo));
 
-	gtk_widget_set_visible (priv->hostname_label, FALSE);
-
-	tmp = gs_app_get_url (repo, AS_URL_KIND_HOMEPAGE);
-	if (tmp != NULL && *tmp != '\0') {
-		g_autoptr(GUri) uri = NULL;
-
-		uri = g_uri_parse (tmp, SOUP_HTTP_URI_FLAGS, NULL);
-		if (uri && g_uri_get_host (uri) != NULL && *g_uri_get_host (uri) != '\0') {
-			gtk_label_set_label (GTK_LABEL (priv->hostname_label), g_uri_get_host (uri));
-			gtk_widget_set_visible (priv->hostname_label, TRUE);
-		}
-	}
+	tmp = gs_app_get_metadata_item (priv->repo, "GnomeSoftware::InstallationKind");
+	if (tmp != NULL && *tmp != '\0')
+		gtk_label_set_label (priv->options_scope_row_label, tmp);
+	gtk_widget_set_visible (priv->options_scope_row, tmp != NULL && *tmp != '\0');
 
 	refresh_comment_label (self);
+	refresh_default_source_tag (self);
 	refresh_ui (self);
 }
 
@@ -320,17 +361,49 @@ disable_switch_clicked_cb (GtkWidget *widget,
 }
 
 static void
-gs_repo_row_remove_button_clicked_cb (GtkWidget *button,
-				      GsRepoRow *row)
+options_popover_row_activated_cb (GtkListBox *list_box,
+                                  GtkListBoxRow *box_row,
+                                  GsRepoRow *self)
 {
-	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
+	const char *name = gtk_widget_get_name (GTK_WIDGET (box_row));
 
-	g_return_if_fail (GS_IS_REPO_ROW (row));
+	g_return_if_fail (GS_IS_REPO_ROW (self));
 
 	if (priv->repo == NULL || priv->busy_counter)
 		return;
 
-	g_signal_emit (row, signals[SIGNAL_REMOVE_CLICKED], 0);
+	gtk_popover_popdown (GTK_POPOVER (priv->options_popover));
+
+	if (g_strcmp0 (name, "options_delete_row") == 0) {
+		g_signal_emit (self, signals[SIGNAL_REMOVE_CLICKED], 0);
+	} else if (g_strcmp0 (name, "options_default_source_row") == 0) {
+		gtk_switch_set_active (GTK_SWITCH (priv->options_default_source_switch),
+				       !gtk_switch_get_active (GTK_SWITCH (priv->options_default_source_switch)));
+	} else {
+		g_warning ("%s: Do not know what to do with '%s'", G_STRFUNC, name);
+	}
+}
+
+static void
+options_default_source_switch_activate_cb (GtkWidget *_switch,
+					   GParamSpec *param,
+					   GsRepoRow *self)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
+
+	g_return_if_fail (GS_IS_REPO_ROW (self));
+
+	if (priv->repo == NULL || priv->busy_counter > 0)
+		return;
+
+	gtk_popover_popdown (GTK_POPOVER (priv->options_popover));
+
+	if (!gtk_widget_get_visible (_switch) ||
+	    !gtk_widget_get_sensitive (_switch))
+		return;
+
+	g_signal_emit (self, signals[SIGNAL_DEFAULT_SOURCE_CLICKED], 0, gtk_switch_get_active (GTK_SWITCH (_switch)));
 }
 
 static void
@@ -347,6 +420,9 @@ gs_repo_row_get_property (GObject *object,
 		break;
 	case PROP_CANCELLABLE:
 		g_value_set_object (value, gs_repo_row_get_cancellable (self));
+		break;
+	case PROP_PACKAGING_FORMAT_PREFERENCE:
+		g_value_set_boxed (value, gs_repo_row_get_packaging_format_preference (self));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -368,6 +444,9 @@ gs_repo_row_set_property (GObject *object,
 		break;
 	case PROP_CANCELLABLE:
 		gs_repo_row_set_cancellable (self, g_value_get_object (value));
+		break;
+	case PROP_PACKAGING_FORMAT_PREFERENCE:
+		gs_repo_row_set_packaging_format_preference (self, g_value_get_boxed (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -392,6 +471,7 @@ gs_repo_row_dispose (GObject *object)
 	}
 
 	g_clear_object (&priv->cancellable);
+	g_clear_pointer (&priv->packaging_format_preference, g_strfreev);
 
 	G_OBJECT_CLASS (gs_repo_row_parent_class)->dispose (object);
 }
@@ -400,16 +480,12 @@ static void
 gs_repo_row_init (GsRepoRow *self)
 {
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
-	GtkWidget *image;
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 	priv->switch_handler_id = g_signal_connect (priv->disable_switch, "notify::active",
 						    G_CALLBACK (disable_switch_clicked_cb), self);
-	image = gtk_image_new_from_icon_name ("user-trash-symbolic");
-	gtk_button_set_child (GTK_BUTTON (priv->remove_button), image);
-	gtk_widget_set_tooltip_text(priv->remove_button, _("Remove"));
-	g_signal_connect (priv->remove_button, "clicked",
-		G_CALLBACK (gs_repo_row_remove_button_clicked_cb), self);
+	priv->switch_default_handler_id = g_signal_connect (priv->options_default_source_switch, "notify::active",
+							    G_CALLBACK (options_default_source_switch_activate_cb), self);
 }
 
 static void
@@ -448,6 +524,20 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 				     G_TYPE_CANCELLABLE,
 				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsRepoRow:packaging-format-preference: (nullable)
+	 *
+	 * A packaging format preference, as set in the GSettings.
+	 * It's used to decide whether the repo row holds a default
+	 * source.
+	 *
+	 * Since: 52
+	 */
+	obj_props[PROP_PACKAGING_FORMAT_PREFERENCE] =
+		g_param_spec_boxed ("packaging-format-preference", NULL, NULL,
+				    G_TYPE_STRV,
+				    G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_REMOVE_CLICKED] =
@@ -464,19 +554,35 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 		              NULL, NULL, g_cclosure_marshal_VOID__VOID,
 		              G_TYPE_NONE, 0, G_TYPE_NONE);
 
+	signals [SIGNAL_DEFAULT_SOURCE_CLICKED] =
+		g_signal_new ("default-source-clicked",
+		              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+		              0,
+		              NULL, NULL, g_cclosure_marshal_VOID__BOOLEAN,
+		              G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
+
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repo-row.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, name_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, hostname_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, comment_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, remove_button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, disable_switch);
+	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, default_source_image);
+	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, options_button);
+	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, options_popover);
+	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, options_scope_row);
+	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, options_scope_row_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, options_default_source_row);
+	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, options_default_source_switch);
+	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, options_delete_row);
+
+	gtk_widget_class_bind_template_callback (widget_class, options_popover_row_activated_cb);
 }
 
 /*
  * gs_repo_row_new:
  * @repo: a #GsApp to represent the repo in the new row
  * @always_allow_enable_disable: always allow enabled/disable of the @repo
+ * @options_visible: whether to show "Options" button for the repo row
  *
  * The @always_allow_enable_disable, when %TRUE, means that the @repo in this row
  * can be always enabled/disabled by the user, if supported by the related plugin,
@@ -486,12 +592,15 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
  */
 GtkWidget *
 gs_repo_row_new (GsApp *repo,
-		 gboolean always_allow_enable_disable)
+		 gboolean always_allow_enable_disable,
+		 gboolean options_visible)
 {
 	GsRepoRow *row = g_object_new (GS_TYPE_REPO_ROW, NULL);
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
 	priv->always_allow_enable_disable = always_allow_enable_disable;
 	gs_repo_row_set_repo (row, repo);
+	if (priv->options_button != NULL)
+		gtk_widget_set_visible (priv->options_button, options_visible);
 	return GTK_WIDGET (row);
 }
 
@@ -657,4 +766,66 @@ gs_repo_row_set_cancellable (GsRepoRow    *row,
 
 	if (g_set_object (&priv->cancellable, cancellable))
 		g_object_notify_by_pspec (G_OBJECT (row), obj_props[PROP_CANCELLABLE]);
+}
+
+/**
+ * gs_repo_row_get_packaging_format_preference:
+ * @self: a #GsRepoRow
+ *
+ * Gets packaging format preference property value.
+ *
+ * Returns: (nullable): packaging format preference
+ *
+ * Since: 52
+ **/
+const char * const *
+gs_repo_row_get_packaging_format_preference (GsRepoRow *self)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
+
+	g_return_val_if_fail (GS_IS_REPO_ROW (self), NULL);
+
+	return (const char * const *) priv->packaging_format_preference;
+}
+
+/**
+ * gs_repo_row_set_packaging_format_preference:
+ * @self: a #GsRepoRow
+ * @value: (nullable): a value to set
+ *
+ * Sets packaging format preference property. It's used to decide
+ * whether the @self holds the default source.
+ *
+ * Since: 3.52
+ **/
+void
+gs_repo_row_set_packaging_format_preference (GsRepoRow *self,
+					     const char * const *value)
+{
+	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
+
+	g_return_if_fail (GS_IS_REPO_ROW (self));
+
+	if (value == NULL && priv->packaging_format_preference == NULL)
+		return;
+
+	if (value != NULL && priv->packaging_format_preference != NULL &&
+	    g_strv_equal (value, (const char * const *) priv->packaging_format_preference)) {
+		return;
+	}
+
+	g_clear_pointer (&priv->packaging_format_preference, g_strfreev);
+
+	if (value != NULL) {
+		guint len = g_strv_length ((char **) value);
+
+		priv->packaging_format_preference = g_new0 (char *, len + 1);
+		for (guint i = 0; value[i] != NULL; i++) {
+			priv->packaging_format_preference[i] = g_strdup (value[i]);
+		}
+	}
+
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_PACKAGING_FORMAT_PREFERENCE]);
+
+	refresh_default_source_tag (self);
 }

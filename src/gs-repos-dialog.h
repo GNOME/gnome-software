@@ -13,6 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "gnome-software-private.h"
+#include "gs-shell.h"
 
 G_BEGIN_DECLS
 
@@ -20,6 +21,7 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsReposDialog, gs_repos_dialog, GS, REPOS_DIALOG, AdwDialog)
 
-GsReposDialog *gs_repos_dialog_new (GsPluginLoader *plugin_loader);
+GsReposDialog *gs_repos_dialog_new	(GsPluginLoader *plugin_loader,
+					 GsShell        *shell);
 
 G_END_DECLS

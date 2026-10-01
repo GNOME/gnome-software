@@ -18,12 +18,20 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_REPOS_SECTION (gs_repos_section_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsReposSection, gs_repos_section, GS, REPOS_SECTION, AdwPreferencesGroup)
+G_DECLARE_FINAL_TYPE (GsReposSection, gs_repos_section, GS, REPOS_SECTION, GtkBox)
 
-GtkWidget	*gs_repos_section_new			(gboolean		 always_allow_enable_disable);
+GtkWidget	*gs_repos_section_new			(gboolean		 always_allow_enable_disable,
+							 gboolean		 options_visible);
 void		 gs_repos_section_add_repo		(GsReposSection		*self,
 							 GsApp			*repo);
+AdwPreferencesPage *
+		 gs_repos_section_get_prefs_page	(GsReposSection		*self);
 const gchar	*gs_repos_section_get_title		(GsReposSection		*self);
+void		 gs_repos_section_set_title		(GsReposSection		*self,
+							 const gchar		*value);
+const gchar	*gs_repos_section_get_icon_name		(GsReposSection		*self);
+void		 gs_repos_section_set_icon_name		(GsReposSection		*self,
+							 const gchar		*value);
 const gchar	*gs_repos_section_get_sort_key		(GsReposSection		*self);
 void		 gs_repos_section_set_sort_key		(GsReposSection		*self,
 							 const gchar		*sort_key);

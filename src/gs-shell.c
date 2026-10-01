@@ -2515,7 +2515,7 @@ void
 gs_shell_show_repositories (GsShell *shell)
 {
 	if (shell->repos_dialog == NULL) {
-		shell->repos_dialog = gs_repos_dialog_new (shell->plugin_loader);
+		shell->repos_dialog = gs_repos_dialog_new (shell->plugin_loader, shell);
 		g_signal_connect (shell->repos_dialog, "closed", G_CALLBACK (dialog_closed_cb), &shell->repos_dialog);
 	}
 

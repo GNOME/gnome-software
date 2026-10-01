@@ -11,32 +11,32 @@
         <property name="row-spacing">6</property>
         <property name="column-spacing">12</property>
         <child>
-          <object class="GtkLabel" id="name_label">
+          <object class="GtkBox">
             <property name="halign">start</property>
             <property name="hexpand">True</property>
-            <property name="ellipsize">none</property>
-            <property name="wrap">True</property>
-            <property name="xalign">0</property>
+            <property name="orientation">horizontal</property>
+            <property name="homogeneous">False</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkLabel" id="name_label">
+                <property name="halign">start</property>
+                <property name="ellipsize">none</property>
+                <property name="wrap">True</property>
+                <property name="xalign">0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage" id="default_source_image">
+                <property name="halign">start</property>
+                <property name="icon-name">starred-symbolic</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
+              </object>
+            </child>
             <layout>
               <property name="column">0</property>
               <property name="row">0</property>
-              <property name="column-span">1</property>
-              <property name="row-span">1</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="hostname_label">
-            <property name="halign">start</property>
-            <property name="hexpand">True</property>
-            <property name="ellipsize">end</property>
-            <property name="xalign">0</property>
-            <attributes>
-              <attribute name="scale" value="0.8"/>
-            </attributes>
-            <layout>
-              <property name="column">0</property>
-              <property name="row">1</property>
               <property name="column-span">1</property>
               <property name="row-span">1</property>
             </layout>
@@ -58,25 +58,9 @@
             </style>
             <layout>
               <property name="column">0</property>
-              <property name="row">2</property>
+              <property name="row">1</property>
               <property name="column-span">1</property>
               <property name="row-span">1</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="remove_button">
-            <property name="visible">False</property>
-            <property name="can_focus">True</property>
-            <property name="halign">end</property>
-            <property name="valign">center</property>
-            <property name="hexpand">False</property>
-            <property name="has-frame">False</property>
-            <layout>
-              <property name="column">1</property>
-              <property name="row">0</property>
-              <property name="column-span">1</property>
-              <property name="row-span">3</property>
             </layout>
           </object>
         </child>
@@ -87,14 +71,102 @@
             <property name="valign">center</property>
             <property name="hexpand">False</property>
             <layout>
+              <property name="column">1</property>
+              <property name="row">0</property>
+              <property name="column-span">1</property>
+              <property name="row-span">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="options_button">
+            <property name="visible">False</property>
+            <property name="can_focus">True</property>
+            <property name="halign">end</property>
+            <property name="valign">center</property>
+            <property name="hexpand">False</property>
+            <property name="has-frame">False</property>
+            <property name="icon-name">view-more-symbolic</property>
+            <property name="popover">options_popover</property>
+            <layout>
               <property name="column">2</property>
               <property name="row">0</property>
               <property name="column-span">1</property>
-              <property name="row-span">3</property>
+              <property name="row-span">2</property>
             </layout>
           </object>
         </child>
       </object>
     </child>
   </template>
+  <object class="GtkPopover" id="options_popover">
+    <property name="visible">False</property>
+    <style>
+      <class name="menu"/>
+    </style>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="propagate-natural-height">true</property>
+        <property name="propagate-natural-width">true</property>
+        <property name="max-content-height">600</property>
+        <property name="visible">true</property>
+        <child>
+          <object class="GtkListBox" id="options_popover_list_box">
+            <property name="selection-mode">none</property>
+            <property name="visible">true</property>
+            <property name="valign">start</property>
+            <property name="name">gs_repos_row_options_popover_list_box</property>
+            <signal name="row-activated" handler="options_popover_row_activated_cb"/>
+            <child>
+              <object class="GtkListBoxRow" id="options_scope_row">
+                <property name="sensitive">false</property>
+                <child>
+                  <object class="GtkLabel" id="options_scope_row_label">
+                    <property name="label" translatable="yes">Repository available to all users</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBoxRow" id="options_default_source_row">
+                <property name="name">options_default_source_row</property>
+                <child>
+                  <object class="GtkBox" id="options_default_source_box">
+                    <property name="orientation">horizontal</property>
+                    <property name="homogeneous">false</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="hexpand">true</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Default for App Install</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="options_default_source_switch">
+                        <property name="can_focus">True</property>
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">False</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBoxRow" id="options_delete_row">
+                <property name="name">options_delete_row</property>
+                <child>
+                  <object class="GtkLabel" id="options_delete_label">
+                    <property name="label" translatable="yes">Delete…</property>
+                    <property name="halign">start</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
 </interface>
