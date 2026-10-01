@@ -91,7 +91,7 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 
 	gs_app_set_metadata (app, "GnomeSoftware::SortKey", "100");
 	gs_app_set_metadata (app, "GnomeSoftware::InstallationKind",
-		is_user ? _("User Installation") : _("System Installation"));
+		is_user ? _("Repository available to current user only") : _("Repository available to all users"));
 
 	/* title */
 	title = flatpak_remote_get_title (xremote);
