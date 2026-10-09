@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-08-28 18:12+0000\n"
-"PO-Revision-Date: 2026-07-24 09:17+0200\n"
+"POT-Creation-Date: 2026-09-21 22:47+0000\n"
+"PO-Revision-Date: 2026-10-09 21:16+0300\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2);\n"
-"X-Generator: Gtranslator 50.0\n"
+"X-Generator: Gtranslator 51.0\n"
 "X-Project-Style: gnome\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-DL-VCS-Web: https://gitlab.gnome.org/GNOME/gnome-software/\n"
@@ -82,8 +82,8 @@ msgid "The update details"
 msgstr "Detaliile actualizărilor"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3116
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3118
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3137
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3139
 #: src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "Proiectul GNOME"
@@ -899,15 +899,15 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "Pachet"
 
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:538
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:543
 msgid "Pending"
 msgstr "În așteptare"
 
-#: src/gs-app-addon-row.c:100 src/gs-app-row.c:542 src/gs-details-page.c:393
+#: src/gs-app-addon-row.c:100 src/gs-app-row.c:547 src/gs-details-page.c:393
 msgid "Pending install"
 msgstr "Instalare în așteptare"
 
-#: src/gs-app-addon-row.c:104 src/gs-app-row.c:546 src/gs-details-page.c:400
+#: src/gs-app-addon-row.c:104 src/gs-app-row.c:551 src/gs-details-page.c:400
 msgid "Pending remove"
 msgstr "Eliminare în așteptare"
 
@@ -1062,11 +1062,11 @@ msgstr "Nu este disponibilă nicio descriere a actualizării."
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:249
+#: src/gs-app-details-page.c:255
 msgid "Update Details"
 msgstr "Detaliile actualizării"
 
-#: src/gs-app-details-page.ui:27 src/gs-app-row.c:601
+#: src/gs-app-details-page.ui:27 src/gs-app-row.c:606
 msgid "Requires additional permissions"
 msgstr "Necesită permisiuni suplimentare"
 
@@ -1617,24 +1617,24 @@ msgstr "Actualizare critică"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:410
+#: src/gs-app-row.c:415
 msgid "Device cannot be used during update."
 msgstr "Aparatul nu poate fi folosit în timpul actualizării."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:420 src/gs-shell-search-provider.c:273
+#: src/gs-app-row.c:425 src/gs-shell-search-provider.c:273
 #, c-format
 msgid "Source: %s"
 msgstr "Sursa: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:608
+#: src/gs-app-row.c:613
 #, c-format
 msgid "Renamed from %s"
 msgstr "Redenumită de la %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:645 src/gs-details-page.ui:535
+#: src/gs-app-row.c:650 src/gs-details-page.ui:535
 msgid "Stopped Receiving Updates"
 msgstr "Nu mai primește actualizări"
 
@@ -2464,11 +2464,11 @@ msgstr "Sunt necesare pachete suplimentare"
 msgid "Find in Software"
 msgstr "Caută în Aplicații"
 
-#: src/gs-description-box.c:93 src/gs-description-box.c:355
+#: src/gs-description-box.c:97 src/gs-description-box.c:359
 msgid "_Show More"
 msgstr "_Mai multe"
 
-#: src/gs-description-box.c:93
+#: src/gs-description-box.c:97
 msgid "_Show Less"
 msgstr "_Mai puține"
 
@@ -5695,7 +5695,7 @@ msgstr[2] "Actualizări importante ale sistemului au fost instalate."
 #: src/gs-update-monitor.c:1448
 msgctxt "updates"
 msgid "Review"
-msgstr "Recenzează"
+msgstr "Arată"
 
 #. TRANSLATORS: this is when the offline update failed
 #: src/gs-update-monitor.c:1500
