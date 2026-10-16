@@ -746,6 +746,8 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(GError) error = NULL;
 
+	g_clear_object (&self->cancellable_refresh);
+
 	/* get the results */
 	ret = gs_plugin_loader_job_process_finish (plugin_loader, res, NULL, &error);
 	if (!ret) {
@@ -782,8 +784,7 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 	/* force a check for updates and download */
 	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_REFRESH);
 
-	g_cancellable_cancel (self->cancellable_refresh);
-	g_clear_object (&self->cancellable_refresh);
+	g_assert (self->cancellable_refresh == NULL);
 	self->cancellable_refresh = g_cancellable_new ();
 
 	plugin_job = gs_plugin_job_refresh_metadata_new (1,
