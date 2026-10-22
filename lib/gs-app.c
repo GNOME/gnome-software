@@ -6406,7 +6406,7 @@ gs_app_set_origin_ui (GsApp *app,
  *
  * Gets the packaging format, e.g. 'RPM' or 'Flatpak'.
  *
- * Returns: The packaging format
+ * Returns: The packaging format as a human readable string
  *
  * Since: 3.32
  **/
@@ -6421,8 +6421,13 @@ gs_app_get_packaging_format (GsApp *app)
 
 	/* does the app have packaging format set? */
 	packaging_format = gs_app_get_metadata_item (app, "GnomeSoftware::PackagingFormat");
-	if (packaging_format != NULL)
-		return g_strdup (packaging_format);
+	if (packaging_format != NULL) {
+		/* Format as human readable, as GnomeSoftware::PackagingFormat itself is not. */
+		if (g_str_equal (packaging_format, "web-app"))
+			return g_strdup (_("Web App"));
+		else
+			return g_strdup (packaging_format);
+	}
 
 	/* fall back to bundle kind */
 	bundle_kind = gs_app_get_bundle_kind (app);
