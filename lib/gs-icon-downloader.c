@@ -257,8 +257,11 @@ gs_icon_downloader_queue_app (GsIconDownloader *self,
 	/* Nothing to download */
 	if (!has_uncached_remote_icon) {
 		gs_app_set_icons_state (app, GS_APP_ICONS_STATE_AVAILABLE);
+		g_debug ("%s: Skipping %s", G_STRFUNC, gs_app_get_id (app));
 		return;
 	}
+
+	g_debug ("%s: Queueing %s", G_STRFUNC, gs_app_get_id (app));
 
 	gs_app_set_icons_state (app, GS_APP_ICONS_STATE_PENDING_DOWNLOAD);
 
@@ -311,6 +314,8 @@ download_remote_icons_of_the_app_cb (GTask        *task,
 	app = GS_APP (task_data);
 	icons = gs_app_dup_icons (app);
 	remote_icons = g_ptr_array_new_full (icons ? icons->len : 0, g_object_unref);
+
+	g_debug ("%s: Processing %s", G_STRFUNC, gs_app_get_id (app));
 
 	for (guint j = 0; icons && j < icons->len; j++) {
 		GObject *icon = g_ptr_array_index (icons, j);
