@@ -332,6 +332,61 @@ is_cache_file_new_enough (const char *cache_filename)
 	        (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24 * 30));
 }
 
+static gboolean
+query_cache_file_xattrs (const char   *cache_filename,
+                         unsigned int *out_pixbuf_width,
+                         unsigned int *out_pixbuf_height)
+{
+	g_autoptr(GFile) cache_file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
+	const char *attributes;
+	uint64_t pixbuf_width, pixbuf_height;
+
+	cache_file = g_file_new_for_path (cache_filename);
+	attributes = "xattr::gnome-software::icon-width,xattr::gnome-software::icon-height";
+	info = g_file_query_info (cache_file, attributes, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+
+	if (info != NULL &&
+	    g_file_info_has_attribute (info, "xattr::gnome-software::icon-width") &&
+	    g_file_info_has_attribute (info, "xattr::gnome-software::icon-height") &&
+	    g_ascii_string_to_unsigned (g_file_info_get_attribute_string (info, "xattr::gnome-software::icon-width"),
+					10, 1, INT_MAX, &pixbuf_width, NULL) &&
+	    g_ascii_string_to_unsigned (g_file_info_get_attribute_string (info, "xattr::gnome-software::icon-height"),
+					10, 1, INT_MAX, &pixbuf_height, NULL)) {
+		*out_pixbuf_width = pixbuf_width;
+		*out_pixbuf_height = pixbuf_height;
+		return TRUE;
+	} else {
+		*out_pixbuf_width = 0;
+		*out_pixbuf_height = 0;
+		return FALSE;
+	}
+}
+
+static void
+update_cache_file_xattrs (const char   *cache_filename,
+                          unsigned int  pixbuf_width,
+                          unsigned int  pixbuf_height)
+{
+	g_autofree char *pixbuf_width_str = NULL, *pixbuf_height_str = NULL;
+	g_autoptr(GFile) cache_file = NULL;
+
+	if (pixbuf_width == 0 || pixbuf_height == 0)
+		return;
+
+	cache_file = g_file_new_for_path (cache_filename);
+
+	pixbuf_width_str = g_strdup_printf ("%u", pixbuf_width);
+	g_file_set_attribute_string (cache_file, "xattr::gnome-software::icon-width",
+				     pixbuf_width_str, G_FILE_QUERY_INFO_NONE,
+				     NULL, NULL);
+
+	pixbuf_height_str = g_strdup_printf ("%u", pixbuf_height);
+	g_file_set_attribute_string (cache_file, "xattr::gnome-software::icon-height",
+				     pixbuf_height_str, G_FILE_QUERY_INFO_NONE,
+				     NULL, NULL);
+}
+
 static void
 ensure_icon_dimensions (GsRemoteIcon *self,
                         unsigned int  pixbuf_width,
@@ -364,6 +419,45 @@ ensure_icon_dimensions (GsRemoteIcon *self,
 		gs_icon_set_width (icon, icon_device_width);
 		gs_icon_set_height (icon, icon_device_height);
 	}
+}
+
+/**
+ * gs_remote_icon_is_cached:
+ * @self: a remote icon
+ *
+ * Checks whether the icon is already cached.
+ *
+ * This does no network requests, it only queries the local file system.
+ *
+ * Returns: true if the icon is already in the cache and not too old;
+ *   false otherwise
+ * Since: 52
+ */
+gboolean
+gs_remote_icon_is_cached (GsRemoteIcon *self)
+{
+	const char *uri;
+	g_autofree char *cache_filename = NULL;
+	unsigned int pixbuf_width, pixbuf_height;
+
+	g_return_val_if_fail (GS_IS_REMOTE_ICON (self), FALSE);
+
+	/* Work out cache filename. */
+	uri = gs_remote_icon_get_uri (self);
+	cache_filename = gs_remote_icon_get_cache_filename (uri, TRUE, NULL);
+	if (cache_filename == NULL)
+		return FALSE;
+
+	if (!is_cache_file_new_enough (cache_filename))
+		return FALSE;
+
+	/* We can only return true if we ensure the width and height are available */
+	if (!query_cache_file_xattrs (cache_filename, &pixbuf_width, &pixbuf_height))
+		return FALSE;
+
+	ensure_icon_dimensions (self, pixbuf_width, pixbuf_height);
+
+	return TRUE;
 }
 
 /**
@@ -423,7 +517,10 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	/* Already in cache and not older than 30 days */
 	if (is_cache_file_new_enough (cache_filename)) {
 		/* Fallthrough and ensure the downloaded image dimensions are stored on the icon */
-		gdk_pixbuf_get_file_info (cache_filename, &pixbuf_width, &pixbuf_height);
+		if (!query_cache_file_xattrs (cache_filename, (unsigned int *) &pixbuf_width, (unsigned int *)  &pixbuf_height)) {
+			gdk_pixbuf_get_file_info (cache_filename, &pixbuf_width, &pixbuf_height);
+			update_cache_file_xattrs (cache_filename, pixbuf_width, pixbuf_height);
+		}
 	} else {
 		g_autoptr(GdkPixbuf) cached_pixbuf = NULL;
 		g_autofree gchar *failed_filename = g_strconcat (cache_filename, ".failed", NULL);
@@ -448,6 +545,8 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 
 		pixbuf_width = gdk_pixbuf_get_width (cached_pixbuf);
 		pixbuf_height = gdk_pixbuf_get_height (cached_pixbuf);
+
+		update_cache_file_xattrs (cache_filename, pixbuf_width, pixbuf_height);
 	}
 
 	/* Ensure the dimensions are set correctly on the icon. We know the
