@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-08-25 05:51+0000\n"
-"PO-Revision-Date: 2026-08-26 16:43+0200\n"
+"POT-Creation-Date: 2026-10-22 10:43+0000\n"
+"PO-Revision-Date: 2026-10-27 22:33+0100\n"
 "Last-Translator: Patrik Sivek <patriksivek@gnome.org>\n"
 "Language-Team: Czech\n"
 "Language: cs\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Gtranslator 50.0\n"
+"X-Generator: Gtranslator 51.0\n"
 "X-Project-Style: gnome\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35
@@ -76,8 +76,8 @@ msgid "The update details"
 msgstr "Podrobnosti o aktualizaci"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3075
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3077
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3162
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3164
 #: src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
@@ -876,15 +876,15 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "Balíček"
 
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:538
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:543
 msgid "Pending"
 msgstr "Čeká na zpracování"
 
-#: src/gs-app-addon-row.c:100 src/gs-app-row.c:542 src/gs-details-page.c:393
+#: src/gs-app-addon-row.c:100 src/gs-app-row.c:547 src/gs-details-page.c:393
 msgid "Pending install"
 msgstr "Čeká na instalaci"
 
-#: src/gs-app-addon-row.c:104 src/gs-app-row.c:546 src/gs-details-page.c:400
+#: src/gs-app-addon-row.c:104 src/gs-app-row.c:551 src/gs-details-page.c:400
 msgid "Pending remove"
 msgstr "Čeká na odebrání"
 
@@ -1039,11 +1039,11 @@ msgstr "Není k dispozici žádný popis aktualizace."
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:249
+#: src/gs-app-details-page.c:255
 msgid "Update Details"
 msgstr "Podrobnosti o aktualizaci"
 
-#: src/gs-app-details-page.ui:27 src/gs-app-row.c:601
+#: src/gs-app-details-page.ui:27 src/gs-app-row.c:606
 msgid "Requires additional permissions"
 msgstr "Vyžaduje dodatečná oprávnění"
 
@@ -1200,7 +1200,7 @@ msgstr ""
 "Marek Černocký <marek@manet.cz>\n"
 "Vojtěch Perník <translations@pervoj.cz>\n"
 "Daniel Rusek <mail@asciiwolf.com>\n"
-"Patrik Sivek <sivekpatrik@gmail.com>"
+"Patrik Sivek <patriksivek@gnome.org>"
 
 #. TRANSLATORS: we tried to show an app that did not exist
 #: src/gs-application.c:679
@@ -1591,24 +1591,24 @@ msgstr "Kritická aktualizace"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:410
+#: src/gs-app-row.c:415
 msgid "Device cannot be used during update."
 msgstr "Zařízení nelze během aktualizace používat."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:420 src/gs-shell-search-provider.c:273
+#: src/gs-app-row.c:425 src/gs-shell-search-provider.c:273
 #, c-format
 msgid "Source: %s"
 msgstr "Zdroj: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:608
+#: src/gs-app-row.c:613
 #, c-format
 msgid "Renamed from %s"
 msgstr "Přejmenováno z %s"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:645 src/gs-details-page.ui:535
+#: src/gs-app-row.c:650 src/gs-details-page.ui:535
 msgid "Stopped Receiving Updates"
 msgstr "Příjem aktualizací zastaven"
 
@@ -1671,7 +1671,7 @@ msgstr "Vyžadováno přihlášení"
 #: src/gs-dkms-dialog.ui:120 src/gs-page.c:439 src/gs-removal-dialog.ui:24
 #: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:241
 #: src/gs-repos-dialog.c:324 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
-#: src/gs-review-row.c:263 src/gs-updates-page.c:872
+#: src/gs-review-row.c:263 src/gs-updates-page.c:873
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
 msgstr "_Zrušit"
@@ -2438,11 +2438,11 @@ msgstr "Požadavek na dodatečné balíčky"
 msgid "Find in Software"
 msgstr "Najít v aplikaci Software"
 
-#: src/gs-description-box.c:93 src/gs-description-box.c:355
+#: src/gs-description-box.c:97 src/gs-description-box.c:359
 msgid "_Show More"
 msgstr "Zobrazit _více"
 
-#: src/gs-description-box.c:93
+#: src/gs-description-box.c:97
 msgid "_Show Less"
 msgstr "Zobrazit _méně"
 
@@ -3817,7 +3817,7 @@ msgstr "Předvolby"
 msgid "Software Updates"
 msgstr "Aktualizace softwaru"
 
-#: src/gs-prefs-dialog.ui:15 src/gs-safety-context-dialog.ui:108
+#: src/gs-prefs-dialog.ui:15
 msgid "More Information"
 msgstr "Další informace"
 
@@ -4636,6 +4636,10 @@ msgstr "Zdroj"
 #: src/gs-safety-context-dialog.ui:103
 msgid "SDK"
 msgstr "SDK"
+
+#: src/gs-safety-context-dialog.ui:108
+msgid "End of Life"
+msgstr "Konec životnosti"
 
 #: src/gs-safety-context-dialog.ui:152
 msgid ""
@@ -5731,12 +5735,12 @@ msgid "Your operating system has stopped receiving critical software updates"
 msgstr "Váš operační systém přestal dostávat kritické aktualizace softwaru"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:868
+#: src/gs-updates-page.c:869
 msgid "Charges May Apply"
 msgstr "Možné zpoplatnění"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:870
+#: src/gs-updates-page.c:871
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -5745,19 +5749,19 @@ msgstr ""
 "operátorem."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:874
+#: src/gs-updates-page.c:875
 msgid "Check _Anyway"
 msgstr "_Přesto zkontrolovat"
 
-#: src/gs-updates-page.c:928
+#: src/gs-updates-page.c:929
 msgid "Software Upgrades Downloaded"
 msgstr "Staženy povýšení softwaru"
 
-#: src/gs-updates-page.c:929
+#: src/gs-updates-page.c:930
 msgid "Upgrades are ready to be installed"
 msgstr "Aktualizace jsou připravené k instalaci"
 
-#: src/gs-updates-page.c:1279
+#: src/gs-updates-page.c:1280
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Aktualizace"
@@ -6009,7 +6013,7 @@ msgstr "Přidat, odebrat nebo aktualizovat software v tomto počítači"
 #. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:11
 msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
-msgstr "aktualizace;povýšení;zdroje;repozitáře;předvolby;nastavení;instalace;odinstalace;odebrání;program;software;aplikace;obchod;"
+msgstr "aktualizace;povýšení;zdroje;repozitáře;předvolby;nastavení;instalace;odinstalace;odebrání;program;software;aplikace;obchod;updates;upgrade;app;"
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the first part of a system notification.
