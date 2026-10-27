@@ -241,7 +241,7 @@ gs_icon_downloader_queue_app (GsIconDownloader *self,
 {
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GPtrArray) icons = NULL;
-	gboolean has_remote_icon = FALSE;
+	gboolean has_uncached_remote_icon = FALSE;
 
 	g_return_if_fail (GS_IS_ICON_DOWNLOADER (self));
 	g_return_if_fail (GS_IS_APP (app));
@@ -249,13 +249,13 @@ gs_icon_downloader_queue_app (GsIconDownloader *self,
 	icons = gs_app_dup_icons (app);
 
 	for (guint j = 0; icons && j < icons->len; j++) {
-		has_remote_icon |= GS_IS_REMOTE_ICON (g_ptr_array_index (icons, j));
-		if (has_remote_icon)
-			break;
+		has_uncached_remote_icon |=
+			(GS_IS_REMOTE_ICON (g_ptr_array_index (icons, j)) &&
+			 !gs_remote_icon_is_cached (GS_REMOTE_ICON (g_ptr_array_index (icons, j))));
 	}
 
 	/* Nothing to download */
-	if (!has_remote_icon) {
+	if (!has_uncached_remote_icon) {
 		gs_app_set_icons_state (app, GS_APP_ICONS_STATE_AVAILABLE);
 		return;
 	}
