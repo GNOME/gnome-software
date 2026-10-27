@@ -1854,6 +1854,7 @@ gs_app_get_icon_for_size (GsApp       *app,
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GIcon) best_candidate = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	g_return_val_if_fail (size > 0, NULL);
@@ -1866,7 +1867,11 @@ gs_app_get_icon_for_size (GsApp       *app,
 
 	/* See if there’s an icon of the right size, or the first one which is too
 	 * big which could be scaled down. Note that the icons array may be
-	 * lazily created. */
+	 * lazily created.
+	 *
+	 * We rely on the icons array being in the sorted order defined by
+	 * icon_sort_cb(). This allows us to prioritise local files over remote
+	 * ones, for example. */
 	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
 		GIcon *icon = priv->icons->pdata[i];
 		g_autofree gchar *icon_str = g_icon_to_string (icon);
@@ -1890,9 +1895,18 @@ gs_app_get_icon_for_size (GsApp       *app,
 		if (icon_width == 0 || icon_width * icon_scale < size * scale)
 			continue;
 
-		if (icon_width * icon_scale >= size * scale)
+		/* Is it big enough? */
+		if (icon_width == size && icon_scale == scale) {
+			g_debug ("\tFound perfect match");
 			return g_object_ref (icon);
+		} else if (icon_width * icon_scale >= size * scale) {
+			g_debug ("\tUpdating candidate");
+			g_set_object (&best_candidate, icon);
+		}
 	}
+
+	if (best_candidate != NULL)
+		return g_steal_pointer (&best_candidate);
 
 	/* Fallback to themed icons with no width set. Typically
 	 * themed icons are available in any given size. */
@@ -2000,24 +2014,59 @@ gs_app_has_icons (GsApp *app)
 	return priv->icons != NULL && priv->icons->len > 0;
 }
 
+/* Lower scores are more preferable */
+static int
+icon_type_score (GIcon *icon)
+{
+	if (G_IS_FILE_ICON (icon) && !GS_IS_REMOTE_ICON (icon))
+		return 1;  /* local files are fast to load and high quality */
+	else if (GS_IS_REMOTE_ICON (icon))
+		return 2;  /* remote files are high quality but slow to load */
+	else if (G_IS_THEMED_ICON (icon))
+		return 3;  /* themed icons are fast to load but low quality/irrelevant */
+	else
+		return 4;  /* unknown */
+}
+
 static gint
 icon_sort_cb (const void *a,
               const void *b)
 {
 	GIcon *icon_a = *((GIcon **) a);
 	GIcon *icon_b = *((GIcon **) b);
-	guint width_a = gs_icon_get_width (icon_a);
-	guint width_b = gs_icon_get_width (icon_b);
+	unsigned int scale_a, scale_b;
+	unsigned int width_a, width_b;
+	int icon_a_type_score, icon_b_type_score;
+
+	/* Sort by scale first, since if we’re looking for a 128@1 icon, we’d
+	 * prefer to choose the 128@1 option rather than the 64@2 option.
+	 * Sort unknown scales (0 value) to the end. */
+	scale_a = gs_icon_get_scale (icon_a);
+	scale_b = gs_icon_get_scale (icon_b);
+
+	if (scale_a == 0 && scale_b != 0)
+		return 1;
+	else if (scale_a != 0 && scale_b == 0)
+		return -1;
+	else if (scale_a != scale_b)
+		return scale_a - scale_b;
 
 	/* Sort unknown widths (0 value) to the end. */
-	if (width_a == 0 && width_b == 0)
-		return 0;
-	else if (width_a == 0)
+	width_a = gs_icon_get_width (icon_a);
+	width_b = gs_icon_get_width (icon_b);
+
+	if (width_a == 0 && width_b != 0)
 		return 1;
-	else if (width_b == 0)
+	if (width_a != 0 && width_b == 0)
 		return -1;
-	else
+	else if (width_a != width_b)
 		return width_a - width_b;
+
+	/* If the widths and scales are equal, prioritise by icon type */
+	icon_a_type_score = icon_type_score (icon_a);
+	icon_b_type_score = icon_type_score (icon_b);
+
+	return icon_a_type_score - icon_b_type_score;
 }
 
 /**
