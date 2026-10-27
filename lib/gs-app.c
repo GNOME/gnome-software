@@ -2001,8 +2001,8 @@ gs_app_has_icons (GsApp *app)
 }
 
 static gint
-icon_sort_width_cb (gconstpointer a,
-                    gconstpointer b)
+icon_sort_cb (const void *a,
+              const void *b)
 {
 	GIcon *icon_a = *((GIcon **) a);
 	GIcon *icon_b = *((GIcon **) b);
@@ -2061,7 +2061,7 @@ gs_app_add_icon (GsApp *app, GIcon *icon)
 	g_ptr_array_add (priv->icons, g_object_ref (icon));
 
 	/* Ensure the array is sorted by increasing width. */
-	g_ptr_array_sort (priv->icons, icon_sort_width_cb);
+	g_ptr_array_sort (priv->icons, icon_sort_cb);
 }
 
 /**
