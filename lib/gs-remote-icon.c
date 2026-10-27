@@ -321,6 +321,51 @@ gs_icon_download (SoupSession   *session,
 	return g_steal_pointer (&scaled_pixbuf);
 }
 
+static gboolean
+is_cache_file_new_enough (const char *cache_filename)
+{
+	GStatBuf stat_buf;
+
+	/* Already in cache and not older than 30 days? */
+	return (g_stat (cache_filename, &stat_buf) != -1 &&
+	        S_ISREG (stat_buf.st_mode) &&
+	        (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24 * 30));
+}
+
+static void
+ensure_icon_dimensions (GsRemoteIcon *self,
+                        unsigned int  pixbuf_width,
+                        unsigned int  pixbuf_height)
+{
+	unsigned int scale;
+	unsigned int icon_device_width, icon_device_height;
+	GIcon *icon = G_ICON (self);
+
+	scale = gs_icon_get_scale (icon);
+	g_assert (scale > 0);
+
+	icon_device_width = pixbuf_width / scale;
+	icon_device_height = pixbuf_height / scale;
+
+	if (gs_icon_get_width (icon) != 0 && gs_icon_get_height (icon) != 0 &&
+	    (gs_icon_get_width (icon) != icon_device_width ||
+	     gs_icon_get_height (icon) != icon_device_height)) {
+		g_debug ("Icon downloaded from ‘%s’ has dimensions %ux%u@%u, "
+		         "but was expected to have dimensions %ux%u@%u "
+		         "according to metadata. Overriding with downloaded "
+		         "dimensions.",
+		         gs_remote_icon_get_uri (self),
+			 icon_device_width, icon_device_height, scale,
+		         gs_icon_get_width (icon), gs_icon_get_height (icon),
+		         gs_icon_get_scale (icon));
+		gs_icon_set_width (icon, icon_device_width);
+		gs_icon_set_height (icon, icon_device_height);
+	} else if (gs_icon_get_width (icon) == 0 || gs_icon_get_height (icon) == 0) {
+		gs_icon_set_width (icon, icon_device_width);
+		gs_icon_set_height (icon, icon_device_height);
+	}
+}
+
 /**
  * gs_remote_icon_ensure_cached:
  * @self: a #GsRemoteIcon
@@ -358,7 +403,6 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	GIcon *icon = NULL;
 	GStatBuf stat_buf;
 	int pixbuf_width = 0, pixbuf_height = 0;
-	unsigned int icon_device_width, icon_device_height;
 
 	g_return_val_if_fail (GS_IS_REMOTE_ICON (self), FALSE);
 	g_return_val_if_fail (SOUP_IS_SESSION (soup_session), FALSE);
@@ -377,9 +421,7 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	icon = G_ICON (self);
 
 	/* Already in cache and not older than 30 days */
-	if (g_stat (cache_filename, &stat_buf) != -1 &&
-	    S_ISREG (stat_buf.st_mode) &&
-	    (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24 * 30)) {
+	if (is_cache_file_new_enough (cache_filename)) {
 		/* Fallthrough and ensure the downloaded image dimensions are stored on the icon */
 		gdk_pixbuf_get_file_info (cache_filename, &pixbuf_width, &pixbuf_height);
 	} else {
@@ -412,28 +454,7 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	 * pixbuf’s (device) dimensions, so need to convert those to logical
 	 * dimensions using the icon’s scale. The caller will have set the scale
 	 * on the #GsIcon already, or it will default to 1. */
-	scale = gs_icon_get_scale (icon);
-	g_assert (scale > 0);
-
-	icon_device_width = pixbuf_width / scale;
-	icon_device_height = pixbuf_height / scale;
-
-	if (gs_icon_get_width (icon) != 0 && gs_icon_get_height (icon) != 0 &&
-	    (gs_icon_get_width (icon) != icon_device_width ||
-	     gs_icon_get_height (icon) != icon_device_height)) {
-		g_debug ("Icon downloaded from ‘%s’ has dimensions %ux%u@%u, "
-		         "but was expected to have dimensions %ux%u@%u "
-		         "according to metadata. Overriding with downloaded "
-		         "dimensions.",
-		         uri, icon_device_width, icon_device_height, scale,
-		         gs_icon_get_width (icon), gs_icon_get_height (icon),
-		         gs_icon_get_scale (icon));
-		gs_icon_set_width (icon, icon_device_width);
-		gs_icon_set_height (icon, icon_device_height);
-	} else if (gs_icon_get_width (icon) == 0 || gs_icon_get_height (icon) == 0) {
-		gs_icon_set_width (icon, icon_device_width);
-		gs_icon_set_height (icon, icon_device_height);
-	}
+	ensure_icon_dimensions (self, pixbuf_width, pixbuf_height);
 
 	return TRUE;
 }
