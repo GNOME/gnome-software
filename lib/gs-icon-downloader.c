@@ -37,6 +37,7 @@ struct _GsIconDownloader
 	guint		 scale;
 	guint		 maximum_size_px;
 	SoupSession	*soup_session; /* (owned) */
+	GNetworkMonitor	*network_monitor;  /* (nullable) (owned) */
 
 	GsWorkerThread	*worker; /* (owned) */
 	GCancellable	*cancellable; /* (owned) */
@@ -61,6 +62,7 @@ gs_icon_downloader_finalize (GObject *object)
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->worker);
 	g_clear_object (&self->soup_session);
+	g_clear_object (&self->network_monitor);
 
 	G_OBJECT_CLASS (gs_icon_downloader_parent_class)->finalize (object);
 }
@@ -167,6 +169,9 @@ static void
 gs_icon_downloader_init (GsIconDownloader *self)
 {
 	self->scale = 1;
+	self->network_monitor = g_network_monitor_get_default ();
+	if (self->network_monitor != NULL)
+		g_object_ref (self->network_monitor);
 	self->worker = gs_worker_thread_new ("gs-icon-downloader");
 }
 
@@ -258,6 +263,14 @@ gs_icon_downloader_queue_app (GsIconDownloader *self,
 	if (!has_uncached_remote_icon) {
 		gs_app_set_icons_state (app, GS_APP_ICONS_STATE_AVAILABLE);
 		g_debug ("%s: Skipping %s", G_STRFUNC, gs_app_get_id (app));
+		return;
+	}
+
+	if (self->network_monitor != NULL &&
+	    g_network_monitor_get_network_metered (self->network_monitor)) {
+		gs_app_set_icons_state (app, GS_APP_ICONS_STATE_AVAILABLE);
+		g_debug ("%s: Skipping %s due to being on a metered network",
+			 G_STRFUNC, gs_app_get_id (app));
 		return;
 	}
 
