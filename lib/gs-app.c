@@ -159,7 +159,6 @@ typedef struct
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 	GPtrArray		*relations;  /* (nullable) (element-type AsRelation) (owned) */
 	gboolean		 has_translations;
-	GsAppIconsState		 icons_state;
 	gboolean		 key_color_for_light_set;
 	GdkRGBA			 key_color_for_light;
 	gboolean		 key_color_for_dark_set;
@@ -204,11 +203,11 @@ typedef enum {
 	PROP_RELATIONS,
 	PROP_ORIGIN_UI,
 	PROP_HAS_TRANSLATIONS,
-	PROP_ICONS_STATE,
 	PROP_MOK_KEY_PENDING,
+	PROP_ICONS,
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_MOK_KEY_PENDING + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_ICONS + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -1822,6 +1821,9 @@ get_icon_theme (void)
  * @scale: scale of the icon to fetch, typically from gtk_widget_get_scale_factor()
  * @fallback_icon_name: (nullable): name of an icon to load as a fallback if
  *    no other suitable one is found, or %NULL for no fallback
+ * @allow_uncached: true to allow returning a remote icon which is not yet
+ *   cached locally, so the caller can schedule it for download; false to always
+ *   choose a locally available/cached icon
  *
  * Finds the most appropriate icon in the @app’s set of icons to be loaded at
  * the given @size×@scale to represent the application. This might be provided
@@ -1837,36 +1839,44 @@ get_icon_theme (void)
  * Icons which come from a remote server (over HTTP or HTTPS) will be returned
  * as a pointer into a local cache, which may not have been populated. You must
  * call gs_remote_icon_ensure_cached() on icons of type #GsRemoteIcon to
- * download them; this function will not do that for you.
+ * download them; this function will not do that for you, and will avoid
+ * returning uncached icons unless @allow_uncached is true.
  *
  * This function may do disk I/O or image resizing, but it will not do network
  * I/O to load a pixbuf. It should be acceptable to call this from a UI thread.
  *
  * Returns: (transfer full) (nullable): a #GIcon, or %NULL
  *
- * Since: 40
+ * Since: 52
  */
 GIcon *
 gs_app_get_icon_for_size (GsApp       *app,
                           guint        size,
                           guint        scale,
-                          const gchar *fallback_icon_name)
+                          const gchar *fallback_icon_name,
+                          gboolean     allow_uncached)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GIcon) best_candidate = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	g_return_val_if_fail (size > 0, NULL);
 	g_return_val_if_fail (scale >= 1, NULL);
 
-	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s",
-		 gs_app_get_id (app), size, scale, fallback_icon_name);
+	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s, %sallowing uncached icons",
+		 gs_app_get_id (app), size, scale, fallback_icon_name,
+		 allow_uncached ? "" : "dis");
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
 	/* See if there’s an icon of the right size, or the first one which is too
 	 * big which could be scaled down. Note that the icons array may be
-	 * lazily created. */
+	 * lazily created.
+	 *
+	 * We rely on the icons array being in the sorted order defined by
+	 * icon_sort_cb(). This allows us to prioritise local files over remote
+	 * ones, for example. */
 	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
 		GIcon *icon = priv->icons->pdata[i];
 		g_autofree gchar *icon_str = g_icon_to_string (icon);
@@ -1876,23 +1886,33 @@ gs_app_get_icon_for_size (GsApp       *app,
 		g_debug ("\tConsidering icon of type %s (%s), width %u@%u",
 			 G_OBJECT_TYPE_NAME (icon), icon_str, icon_width, icon_scale);
 
-		/* To avoid excessive I/O, the loading of AppStream data does
-		 * not verify the existence of cached icons, which we do now. */
-		if (G_IS_FILE_ICON (icon)) {
-			GFile *file = g_file_icon_get_file (G_FILE_ICON (icon));
-			if (!g_file_query_exists (file, NULL)) {
-				continue;
-			}
-		}
-
 		/* Ignore icons with unknown width and skip over ones which
 		 * are too small. */
 		if (icon_width == 0 || icon_width * icon_scale < size * scale)
 			continue;
 
-		if (icon_width * icon_scale >= size * scale)
+		/* To avoid excessive I/O, the loading of AppStream data does
+		 * not verify the existence of cached icons, which we do now. */
+		if (G_IS_FILE_ICON (icon)) {
+			GFile *file = g_file_icon_get_file (G_FILE_ICON (icon));
+			if (!g_file_query_exists (file, NULL) &&
+			    (!GS_IS_REMOTE_ICON (icon) || !allow_uncached)) {
+				continue;
+			}
+		}
+
+		/* Is it big enough? */
+		if (icon_width == size && icon_scale == scale) {
+			g_debug ("\tFound perfect match");
 			return g_object_ref (icon);
+		} else if (icon_width * icon_scale >= size * scale) {
+			g_debug ("\tUpdating candidate");
+			g_set_object (&best_candidate, icon);
+		}
 	}
+
+	if (best_candidate != NULL)
+		return g_steal_pointer (&best_candidate);
 
 	/* Fallback to themed icons with no width set. Typically
 	 * themed icons are available in any given size. */
@@ -1913,7 +1933,7 @@ gs_app_get_icon_for_size (GsApp       *app,
 
 	if (scale > 1) {
 		g_debug ("Retrying at scale 1");
-		return gs_app_get_icon_for_size (app, size, 1, fallback_icon_name);
+		return gs_app_get_icon_for_size (app, size, 1, fallback_icon_name, allow_uncached);
 	} else if (fallback_icon_name != NULL) {
 		g_debug ("Using fallback icon %s", fallback_icon_name);
 		return g_themed_icon_new (fallback_icon_name);
@@ -2000,24 +2020,59 @@ gs_app_has_icons (GsApp *app)
 	return priv->icons != NULL && priv->icons->len > 0;
 }
 
+/* Lower scores are more preferable */
+static int
+icon_type_score (GIcon *icon)
+{
+	if (G_IS_FILE_ICON (icon) && !GS_IS_REMOTE_ICON (icon))
+		return 1;  /* local files are fast to load and high quality */
+	else if (GS_IS_REMOTE_ICON (icon))
+		return 2;  /* remote files are high quality but slow to load */
+	else if (G_IS_THEMED_ICON (icon))
+		return 3;  /* themed icons are fast to load but low quality/irrelevant */
+	else
+		return 4;  /* unknown */
+}
+
 static gint
-icon_sort_width_cb (gconstpointer a,
-                    gconstpointer b)
+icon_sort_cb (const void *a,
+              const void *b)
 {
 	GIcon *icon_a = *((GIcon **) a);
 	GIcon *icon_b = *((GIcon **) b);
-	guint width_a = gs_icon_get_width (icon_a);
-	guint width_b = gs_icon_get_width (icon_b);
+	unsigned int scale_a, scale_b;
+	unsigned int width_a, width_b;
+	int icon_a_type_score, icon_b_type_score;
+
+	/* Sort by scale first, since if we’re looking for a 128@1 icon, we’d
+	 * prefer to choose the 128@1 option rather than the 64@2 option.
+	 * Sort unknown scales (0 value) to the end. */
+	scale_a = gs_icon_get_scale (icon_a);
+	scale_b = gs_icon_get_scale (icon_b);
+
+	if (scale_a == 0 && scale_b != 0)
+		return 1;
+	else if (scale_a != 0 && scale_b == 0)
+		return -1;
+	else if (scale_a != scale_b)
+		return scale_a - scale_b;
 
 	/* Sort unknown widths (0 value) to the end. */
-	if (width_a == 0 && width_b == 0)
-		return 0;
-	else if (width_a == 0)
+	width_a = gs_icon_get_width (icon_a);
+	width_b = gs_icon_get_width (icon_b);
+
+	if (width_a == 0 && width_b != 0)
 		return 1;
-	else if (width_b == 0)
+	if (width_a != 0 && width_b == 0)
 		return -1;
-	else
+	else if (width_a != width_b)
 		return width_a - width_b;
+
+	/* If the widths and scales are equal, prioritise by icon type */
+	icon_a_type_score = icon_type_score (icon_a);
+	icon_b_type_score = icon_type_score (icon_b);
+
+	return icon_a_type_score - icon_b_type_score;
 }
 
 /**
@@ -2061,7 +2116,9 @@ gs_app_add_icon (GsApp *app, GIcon *icon)
 	g_ptr_array_add (priv->icons, g_object_ref (icon));
 
 	/* Ensure the array is sorted by increasing width. */
-	g_ptr_array_sort (priv->icons, icon_sort_width_cb);
+	g_ptr_array_sort (priv->icons, icon_sort_cb);
+
+	gs_app_queue_notify (app, obj_props[PROP_ICONS]);
 }
 
 /**
@@ -2080,8 +2137,10 @@ gs_app_remove_all_icons (GsApp *app)
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	if (priv->icons != NULL)
+	if (priv->icons != NULL && priv->icons->len != 0) {
 		g_ptr_array_set_size (priv->icons, 0);
+		gs_app_queue_notify (app, obj_props[PROP_ICONS]);
+	}
 }
 
 /**
@@ -4748,7 +4807,7 @@ calculate_key_colors (GsApp *app)
 	}
 
 	/* Try and load the pixbuf. */
-	icon_small = gs_app_get_icon_for_size (app, 32, 1, NULL);
+	icon_small = gs_app_get_icon_for_size (app, 32, 1, NULL, FALSE);
 
 	if (icon_small == NULL) {
 		g_debug ("no pixbuf, so no key colors");
@@ -5489,11 +5548,11 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_HAS_TRANSLATIONS:
 		g_value_set_boolean (value, gs_app_get_has_translations (app));
 		break;
-	case PROP_ICONS_STATE:
-		g_value_set_enum (value, priv->icons_state);
-		break;
 	case PROP_MOK_KEY_PENDING:
 		g_value_set_boolean (value, gs_app_get_mok_key_pending (app));
+		break;
+	case PROP_ICONS:
+		g_value_take_boxed (value, gs_app_dup_icons (app));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -5618,13 +5677,12 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	case PROP_HAS_TRANSLATIONS:
 		gs_app_set_has_translations (app, g_value_get_boolean (value));
 		break;
-	case PROP_ICONS_STATE:
-		/* Read-only */
-		g_assert_not_reached ();
-		break;
 	case PROP_MOK_KEY_PENDING:
 		gs_app_set_mok_key_pending (app, g_value_get_boolean (value));
 		break;
+	case PROP_ICONS:
+		/* Read only */
+		g_assert_not_reached ();
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -6145,22 +6203,6 @@ gs_app_class_init (GsAppClass *klass)
 				      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
-	 * GsApp:icons-state:
-	 *
-	 * The state of the icons of this app. Notice that it is valid
-	 * for the icon state to be %GS_APP_ICONS_STATE_AVAILABLE, and
-	 * for there to be no icon for the app. This can happen, for
-	 * example, if it downloads an icon, but the icon download has
-	 * failed.
-	 *
-	 * Since: 44
-	 */
-	obj_props[PROP_ICONS_STATE] = g_param_spec_enum ("icons-state", NULL, NULL,
-					GS_TYPE_APP_ICONS_STATE,
-					GS_APP_ICONS_STATE_UNKNOWN,
-					G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-	/**
 	 * GsApp:mok-key-pending
 	 *
 	 * Set to %TRUE, when the app requires restart to enroll a Machine
@@ -6173,6 +6215,22 @@ gs_app_class_init (GsAppClass *klass)
 		g_param_spec_boolean ("mok-key-pending", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:icons: (nullable) (element-type GIcon)
+	 *
+	 * All known icons for the app.
+	 *
+	 * `NULL` is equivalent to an empty array. Icons may not necessarily
+	 * have been cached. a [signal@GObject.Object::notify] signal will be
+	 * emitted for this property if the cache status changes for any of the
+	 * app’s icons.
+	 *
+	 * Since: 52
+	 */
+	obj_props[PROP_ICONS] =
+		g_param_spec_boxed ("icons", NULL, NULL, G_TYPE_PTR_ARRAY,
+				    G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
@@ -6688,6 +6746,7 @@ gs_app_ensure_icons_downloaded (GsApp *app,
 	g_autoptr(GMutexLocker) locker = NULL;
 	GPtrArray *icons;
 	guint i;
+	gboolean cache_modified = FALSE;
 
 	g_return_if_fail (GS_IS_APP (app));
 
@@ -6709,6 +6768,7 @@ gs_app_ensure_icons_downloaded (GsApp *app,
 						   soup_session,
 						   maximum_icon_size,
 						   scale,
+						   &cache_modified,
 						   cancellable,
 						   &error_local)) {
 			/* we failed, but keep going */
@@ -6717,6 +6777,15 @@ gs_app_ensure_icons_downloaded (GsApp *app,
 				 error_local->message);
 		}
 	}
+
+	if (cache_modified)
+		gs_app_notify_icon_cache_updated (app);
+}
+
+void
+gs_app_notify_icon_cache_updated (GsApp *app)
+{
+	gs_app_queue_notify (app, obj_props[PROP_ICONS]);
 }
 
 /**
@@ -6883,53 +6952,6 @@ gs_app_is_downloaded (GsApp *app)
 		return FALSE;
 
 	return TRUE;
-}
-
-/**
- * gs_app_get_icons_state:
- * @app: a #GsApp
- *
- * Returns the state of the icons of @app.
- *
- * Returns: a #GsAppIconsState
- *
- * Since: 44
- **/
-GsAppIconsState
-gs_app_get_icons_state (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_ICONS_STATE_UNKNOWN);
-
-	return priv->icons_state;
-}
-
-/**
- * gs_app_set_icons_state:
- * @app: a #GsApp
- * @icons_state: a #GsAppIconsState
- *
- * Sets the app icons state of @app.
- *
- * Since: 44
- **/
-void
-gs_app_set_icons_state (GsApp           *app,
-                        GsAppIconsState  icons_state)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	g_return_if_fail (GS_IS_APP (app));
-
-	locker = g_mutex_locker_new (&priv->mutex);
-
-	if (priv->icons_state == icons_state)
-		return;
-
-	priv->icons_state = icons_state;
-	gs_app_queue_notify (app, obj_props[PROP_ICONS_STATE]);
 }
 
 /**

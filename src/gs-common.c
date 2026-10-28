@@ -114,7 +114,7 @@ gs_app_notify_installed (GsApp *app)
 
 	if (gs_app_has_icons (app)) {
 		g_autoptr(GIcon) icon = NULL;
-		icon = gs_app_get_icon_for_size (app, 48, 1, NULL);
+		icon = gs_app_get_icon_for_size (app, 48, 1, NULL, FALSE);
 		if (icon)
 			g_notification_set_icon (n, icon);
 	}

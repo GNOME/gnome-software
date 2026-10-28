@@ -1389,7 +1389,8 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 			icon = gs_app_get_icon_for_size (self->app,
 							 icon_fallbacks[i].icon_size,
 							 gtk_widget_get_scale_factor (self->application_details_icon),
-							 icon_fallbacks[i].fallback_icon_name);
+							 icon_fallbacks[i].fallback_icon_name,
+							 FALSE);
 		}
 	}
 
@@ -1923,6 +1924,9 @@ _set_app (GsDetailsPage *self, GsApp *app)
 				 G_CALLBACK (gs_details_page_allow_cancel_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::pending-action",
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
+				 self, 0);
+	g_signal_connect_object (self->app, "notify::icons",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 

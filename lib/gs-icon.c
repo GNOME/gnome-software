@@ -289,7 +289,7 @@ gs_icon_new_for_appstream_icon (AsIcon *appstream_icon)
 
 	/* Store the width, height and scale as associated metadata (if
 	 * available) so that #GsApp can sort icons by size and return the most
-	 * appropriately sized one in gs_app_get_icon_by_size().
+	 * appropriately sized one in gs_app_get_icon_for_size().
 	 *
 	 * FIXME: Ideally we’d store these as properties on the objects, but
 	 * GIO currently doesn’t allow subclassing of its #GIcon classes. If we

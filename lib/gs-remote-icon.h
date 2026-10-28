@@ -28,10 +28,12 @@ GIcon		*gs_remote_icon_new		(const gchar		 *uri);
 
 const gchar	*gs_remote_icon_get_uri		(GsRemoteIcon		 *self);
 
+gboolean	 gs_remote_icon_is_cached	(GsRemoteIcon		 *self);
 gboolean	 gs_remote_icon_ensure_cached	(GsRemoteIcon		 *self,
 						 SoupSession		 *soup_session,
 						 guint			  maximum_icon_size,
 						 guint			  scale,
+						 gboolean		 *inout_cache_modified,
 						 GCancellable		 *cancellable,
 						 GError			**error);
 

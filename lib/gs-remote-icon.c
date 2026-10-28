@@ -321,12 +321,154 @@ gs_icon_download (SoupSession   *session,
 	return g_steal_pointer (&scaled_pixbuf);
 }
 
+static gboolean
+is_cache_file_new_enough (const char *cache_filename)
+{
+	GStatBuf stat_buf;
+
+	/* Already in cache and not older than 30 days? */
+	return (g_stat (cache_filename, &stat_buf) != -1 &&
+	        S_ISREG (stat_buf.st_mode) &&
+	        (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24 * 30));
+}
+
+static gboolean
+query_cache_file_xattrs (const char   *cache_filename,
+                         unsigned int *out_pixbuf_width,
+                         unsigned int *out_pixbuf_height)
+{
+	g_autoptr(GFile) cache_file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
+	const char *attributes;
+	uint64_t pixbuf_width, pixbuf_height;
+
+	cache_file = g_file_new_for_path (cache_filename);
+	attributes = "xattr::gnome-software::icon-width,xattr::gnome-software::icon-height";
+	info = g_file_query_info (cache_file, attributes, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+
+	if (info != NULL &&
+	    g_file_info_has_attribute (info, "xattr::gnome-software::icon-width") &&
+	    g_file_info_has_attribute (info, "xattr::gnome-software::icon-height") &&
+	    g_ascii_string_to_unsigned (g_file_info_get_attribute_string (info, "xattr::gnome-software::icon-width"),
+					10, 1, INT_MAX, &pixbuf_width, NULL) &&
+	    g_ascii_string_to_unsigned (g_file_info_get_attribute_string (info, "xattr::gnome-software::icon-height"),
+					10, 1, INT_MAX, &pixbuf_height, NULL)) {
+		*out_pixbuf_width = pixbuf_width;
+		*out_pixbuf_height = pixbuf_height;
+		return TRUE;
+	} else {
+		*out_pixbuf_width = 0;
+		*out_pixbuf_height = 0;
+		return FALSE;
+	}
+}
+
+static void
+update_cache_file_xattrs (const char   *cache_filename,
+                          unsigned int  pixbuf_width,
+                          unsigned int  pixbuf_height)
+{
+	g_autofree char *pixbuf_width_str = NULL, *pixbuf_height_str = NULL;
+	g_autoptr(GFile) cache_file = NULL;
+
+	if (pixbuf_width == 0 || pixbuf_height == 0)
+		return;
+
+	cache_file = g_file_new_for_path (cache_filename);
+
+	pixbuf_width_str = g_strdup_printf ("%u", pixbuf_width);
+	g_file_set_attribute_string (cache_file, "xattr::gnome-software::icon-width",
+				     pixbuf_width_str, G_FILE_QUERY_INFO_NONE,
+				     NULL, NULL);
+
+	pixbuf_height_str = g_strdup_printf ("%u", pixbuf_height);
+	g_file_set_attribute_string (cache_file, "xattr::gnome-software::icon-height",
+				     pixbuf_height_str, G_FILE_QUERY_INFO_NONE,
+				     NULL, NULL);
+}
+
+static void
+ensure_icon_dimensions (GsRemoteIcon *self,
+                        unsigned int  pixbuf_width,
+                        unsigned int  pixbuf_height)
+{
+	unsigned int scale;
+	unsigned int icon_device_width, icon_device_height;
+	GIcon *icon = G_ICON (self);
+
+	scale = gs_icon_get_scale (icon);
+	g_assert (scale > 0);
+
+	icon_device_width = pixbuf_width / scale;
+	icon_device_height = pixbuf_height / scale;
+
+	if (gs_icon_get_width (icon) != 0 && gs_icon_get_height (icon) != 0 &&
+	    (gs_icon_get_width (icon) != icon_device_width ||
+	     gs_icon_get_height (icon) != icon_device_height)) {
+		g_debug ("Icon downloaded from ‘%s’ has dimensions %ux%u@%u, "
+		         "but was expected to have dimensions %ux%u@%u "
+		         "according to metadata. Overriding with downloaded "
+		         "dimensions.",
+		         gs_remote_icon_get_uri (self),
+			 icon_device_width, icon_device_height, scale,
+		         gs_icon_get_width (icon), gs_icon_get_height (icon),
+		         gs_icon_get_scale (icon));
+		gs_icon_set_width (icon, icon_device_width);
+		gs_icon_set_height (icon, icon_device_height);
+	} else if (gs_icon_get_width (icon) == 0 || gs_icon_get_height (icon) == 0) {
+		gs_icon_set_width (icon, icon_device_width);
+		gs_icon_set_height (icon, icon_device_height);
+	}
+}
+
+/**
+ * gs_remote_icon_is_cached:
+ * @self: a remote icon
+ *
+ * Checks whether the icon is already cached.
+ *
+ * This does no network requests, it only queries the local file system.
+ *
+ * Returns: true if the icon is already in the cache and not too old;
+ *   false otherwise
+ * Since: 52
+ */
+gboolean
+gs_remote_icon_is_cached (GsRemoteIcon *self)
+{
+	const char *uri;
+	g_autofree char *cache_filename = NULL;
+	unsigned int pixbuf_width, pixbuf_height;
+
+	g_return_val_if_fail (GS_IS_REMOTE_ICON (self), FALSE);
+
+	/* Work out cache filename. */
+	uri = gs_remote_icon_get_uri (self);
+	cache_filename = gs_remote_icon_get_cache_filename (uri, TRUE, NULL);
+	if (cache_filename == NULL)
+		return FALSE;
+
+	if (!is_cache_file_new_enough (cache_filename))
+		return FALSE;
+
+	/* We can only return true if we ensure the width and height are available */
+	if (!query_cache_file_xattrs (cache_filename, &pixbuf_width, &pixbuf_height))
+		return FALSE;
+
+	ensure_icon_dimensions (self, pixbuf_width, pixbuf_height);
+
+	return TRUE;
+}
+
 /**
  * gs_remote_icon_ensure_cached:
  * @self: a #GsRemoteIcon
  * @soup_session: a #SoupSession to use to download the icon
  * @maximum_icon_size: maximum size (in logical pixels) of the icon to save
  * @scale: scale the icon will be used at
+ * @inout_cache_modified: (inout caller-allocates) (optional): return location
+ *   which will be set to true if the cache is modified; if the cache is not
+ *   modified, its value will be left untouched
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: return location for a #GError, or %NULL
  *
@@ -343,13 +485,14 @@ gs_icon_download (SoupSession   *session,
  * thread-safe.
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 48
+ * Since: 52
  */
 gboolean
 gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
                               SoupSession   *soup_session,
                               guint          maximum_icon_size,
                               guint          scale,
+                              gboolean      *inout_cache_modified,
                               GCancellable  *cancellable,
                               GError       **error)
 {
@@ -358,7 +501,7 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	GIcon *icon = NULL;
 	GStatBuf stat_buf;
 	int pixbuf_width = 0, pixbuf_height = 0;
-	unsigned int icon_device_width, icon_device_height;
+	gboolean cache_modified = FALSE;
 
 	g_return_val_if_fail (GS_IS_REMOTE_ICON (self), FALSE);
 	g_return_val_if_fail (SOUP_IS_SESSION (soup_session), FALSE);
@@ -377,11 +520,13 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	icon = G_ICON (self);
 
 	/* Already in cache and not older than 30 days */
-	if (g_stat (cache_filename, &stat_buf) != -1 &&
-	    S_ISREG (stat_buf.st_mode) &&
-	    (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24 * 30)) {
+	if (is_cache_file_new_enough (cache_filename)) {
 		/* Fallthrough and ensure the downloaded image dimensions are stored on the icon */
-		gdk_pixbuf_get_file_info (cache_filename, &pixbuf_width, &pixbuf_height);
+		if (!query_cache_file_xattrs (cache_filename, (unsigned int *) &pixbuf_width, (unsigned int *)  &pixbuf_height)) {
+			gdk_pixbuf_get_file_info (cache_filename, &pixbuf_width, &pixbuf_height);
+			update_cache_file_xattrs (cache_filename, pixbuf_width, pixbuf_height);
+			cache_modified = TRUE;
+		}
 	} else {
 		g_autoptr(GdkPixbuf) cached_pixbuf = NULL;
 		g_autofree gchar *failed_filename = g_strconcat (cache_filename, ".failed", NULL);
@@ -406,34 +551,19 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 
 		pixbuf_width = gdk_pixbuf_get_width (cached_pixbuf);
 		pixbuf_height = gdk_pixbuf_get_height (cached_pixbuf);
+
+		update_cache_file_xattrs (cache_filename, pixbuf_width, pixbuf_height);
+		cache_modified = TRUE;
 	}
 
 	/* Ensure the dimensions are set correctly on the icon. We know the
 	 * pixbuf’s (device) dimensions, so need to convert those to logical
 	 * dimensions using the icon’s scale. The caller will have set the scale
 	 * on the #GsIcon already, or it will default to 1. */
-	scale = gs_icon_get_scale (icon);
-	g_assert (scale > 0);
+	ensure_icon_dimensions (self, pixbuf_width, pixbuf_height);
 
-	icon_device_width = pixbuf_width / scale;
-	icon_device_height = pixbuf_height / scale;
-
-	if (gs_icon_get_width (icon) != 0 && gs_icon_get_height (icon) != 0 &&
-	    (gs_icon_get_width (icon) != icon_device_width ||
-	     gs_icon_get_height (icon) != icon_device_height)) {
-		g_debug ("Icon downloaded from ‘%s’ has dimensions %ux%u@%u, "
-		         "but was expected to have dimensions %ux%u@%u "
-		         "according to metadata. Overriding with downloaded "
-		         "dimensions.",
-		         uri, icon_device_width, icon_device_height, scale,
-		         gs_icon_get_width (icon), gs_icon_get_height (icon),
-		         gs_icon_get_scale (icon));
-		gs_icon_set_width (icon, icon_device_width);
-		gs_icon_set_height (icon, icon_device_height);
-	} else if (gs_icon_get_width (icon) == 0 || gs_icon_get_height (icon) == 0) {
-		gs_icon_set_width (icon, icon_device_width);
-		gs_icon_set_height (icon, icon_device_height);
-	}
+	if (inout_cache_modified != NULL && cache_modified)
+		*inout_cache_modified = TRUE;
 
 	return TRUE;
 }

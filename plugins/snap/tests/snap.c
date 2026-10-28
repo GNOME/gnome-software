@@ -311,7 +311,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (as_image_get_url (image), ==, "http://example.com/screenshot2.jpg");
 	g_assert_cmpint (as_image_get_width (image), ==, 1024);
 	g_assert_cmpint (as_image_get_height (image), ==, 768);
-	icon = gs_app_get_icon_for_size (app, 64, 1, NULL);
+	icon = gs_app_get_icon_for_size (app, 64, 1, NULL, FALSE);
 	g_assert_null (icon);
 
 	size_installed_type = gs_app_get_size_installed (app, &size_installed_bytes);
@@ -338,7 +338,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 
 	g_assert_cmpint (gs_app_get_install_date (app), ==, g_date_time_to_unix (g_date_time_new_utc (2017, 1, 2, 11, 23, 58)));
 
-	icon = gs_app_get_icon_for_size (app, 128, 1, NULL);
+	icon = gs_app_get_icon_for_size (app, 128, 1, NULL, FALSE);
 	g_assert_nonnull (icon);
 	g_assert_true (G_IS_LOADABLE_ICON (icon));
 	icon_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon), 128, NULL, NULL, &error);
