@@ -47,6 +47,7 @@ struct _GsAppDetailsPage
 
 	GsPluginLoader	*plugin_loader; /* (owned) */
 	GsApp		*app;  /* (owned) (nullable) */
+	unsigned long	 app_notify_id;
 	GCancellable	*refine_cancellable; /* (owned) (nullable) */
 };
 
@@ -321,6 +322,16 @@ gs_app_details_page_get_app (GsAppDetailsPage *page)
 	return page->app;
 }
 
+static void
+app_notify_cb (GObject    *obj,
+               GParamSpec *pspec,
+               void       *user_data)
+{
+	GsAppDetailsPage *self = GS_APP_DETAILS_PAGE (user_data);
+
+	set_updates_description_ui (self, self->app);
+}
+
 /**
  * gs_app_details_page_set_app:
  * @page: a #GsAppDetailsPage
@@ -339,7 +350,11 @@ gs_app_details_page_set_app (GsAppDetailsPage *page, GsApp *app)
 	if (page->app == app)
 		return;
 
+	g_clear_signal_handler (&page->app_notify_id, page->app);
 	g_set_object (&page->app, app);
+
+	if (app != NULL)
+		page->app_notify_id = g_signal_connect (app, "notify", G_CALLBACK (app_notify_cb), page);
 
 	set_updates_description_ui (page, app);
 
@@ -356,6 +371,7 @@ gs_app_details_page_dispose (GObject *object)
 
 	g_clear_object (&page->refine_cancellable);
 	g_clear_object (&page->plugin_loader);
+	g_clear_signal_handler (&page->app_notify_id, page->app);
 	g_clear_object (&page->app);
 
 	G_OBJECT_CLASS (gs_app_details_page_parent_class)->dispose (object);
