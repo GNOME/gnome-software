@@ -821,6 +821,9 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 	g_signal_connect_object (priv->app, "notify::allow-cancel",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
+	g_signal_connect_object (priv->app, "notify::icons",
+				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
+				 app_row, 0);
 
 	gs_app_row_schedule_refresh (app_row);
 	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_APP]);
