@@ -245,18 +245,31 @@ gs_icon_downloader_queue_app (GsIconDownloader *self,
 			      gboolean          interactive)
 {
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GPtrArray) icons = NULL;
 	gboolean has_uncached_remote_icon = FALSE;
+
+	/* FIXME: For now, hardcode the icon sizes which are used across the UI
+	 * as the ones we care about loading. In future, the needed sizes could
+	 * be passed to GsPluginJobRefine and from there to here to make this
+	 * more maintainable.
+	 *
+	 * Query for each icon size and see if the result is an uncached
+	 * GsRemoteIcon. In the common case, all the icons will already be
+	 * available locally as GFileIcons (e.g. as part of the flatpak icon
+	 * cache, provided by flatpak’s appstream mechanism), so we won’t need
+	 * to download anything. */
+	const unsigned int required_icon_sizes[] = { 128, 96, 64, 48 };
 
 	g_return_if_fail (GS_IS_ICON_DOWNLOADER (self));
 	g_return_if_fail (GS_IS_APP (app));
 
-	icons = gs_app_dup_icons (app);
+	for (size_t i = 0; i < G_N_ELEMENTS (required_icon_sizes); i++) {
+		g_autoptr(GIcon) icon = NULL;
 
-	for (guint j = 0; icons && j < icons->len; j++) {
-		has_uncached_remote_icon |=
-			(GS_IS_REMOTE_ICON (g_ptr_array_index (icons, j)) &&
-			 !gs_remote_icon_is_cached (GS_REMOTE_ICON (g_ptr_array_index (icons, j))));
+		icon = gs_app_get_icon_for_size (app, required_icon_sizes[i],
+						 self->scale, NULL, TRUE);
+		has_uncached_remote_icon |= (icon != NULL &&
+					     GS_IS_REMOTE_ICON (icon) &&
+					     !gs_remote_icon_is_cached (GS_REMOTE_ICON (icon)));
 	}
 
 	/* Nothing to download */
