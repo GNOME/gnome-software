@@ -1926,6 +1926,9 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::pending-action",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
+	g_signal_connect_object (self->app, "notify::icons",
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
+				 self, 0);
 
 	if (gs_app_is_application (self->app)) {
 		gtk_label_set_text (GTK_LABEL (self->label_eol), _("This app is no longer receiving updates, including security fixes"));
