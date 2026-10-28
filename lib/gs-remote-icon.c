@@ -466,6 +466,9 @@ gs_remote_icon_is_cached (GsRemoteIcon *self)
  * @soup_session: a #SoupSession to use to download the icon
  * @maximum_icon_size: maximum size (in logical pixels) of the icon to save
  * @scale: scale the icon will be used at
+ * @inout_cache_modified: (inout caller-allocates) (optional): return location
+ *   which will be set to true if the cache is modified; if the cache is not
+ *   modified, its value will be left untouched
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: return location for a #GError, or %NULL
  *
@@ -482,13 +485,14 @@ gs_remote_icon_is_cached (GsRemoteIcon *self)
  * thread-safe.
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 48
+ * Since: 52
  */
 gboolean
 gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
                               SoupSession   *soup_session,
                               guint          maximum_icon_size,
                               guint          scale,
+                              gboolean      *inout_cache_modified,
                               GCancellable  *cancellable,
                               GError       **error)
 {
@@ -497,6 +501,7 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	GIcon *icon = NULL;
 	GStatBuf stat_buf;
 	int pixbuf_width = 0, pixbuf_height = 0;
+	gboolean cache_modified = FALSE;
 
 	g_return_val_if_fail (GS_IS_REMOTE_ICON (self), FALSE);
 	g_return_val_if_fail (SOUP_IS_SESSION (soup_session), FALSE);
@@ -520,6 +525,7 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 		if (!query_cache_file_xattrs (cache_filename, (unsigned int *) &pixbuf_width, (unsigned int *)  &pixbuf_height)) {
 			gdk_pixbuf_get_file_info (cache_filename, &pixbuf_width, &pixbuf_height);
 			update_cache_file_xattrs (cache_filename, pixbuf_width, pixbuf_height);
+			cache_modified = TRUE;
 		}
 	} else {
 		g_autoptr(GdkPixbuf) cached_pixbuf = NULL;
@@ -547,6 +553,7 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 		pixbuf_height = gdk_pixbuf_get_height (cached_pixbuf);
 
 		update_cache_file_xattrs (cache_filename, pixbuf_width, pixbuf_height);
+		cache_modified = TRUE;
 	}
 
 	/* Ensure the dimensions are set correctly on the icon. We know the
@@ -554,6 +561,9 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	 * dimensions using the icon’s scale. The caller will have set the scale
 	 * on the #GsIcon already, or it will default to 1. */
 	ensure_icon_dimensions (self, pixbuf_width, pixbuf_height);
+
+	if (inout_cache_modified != NULL && cache_modified)
+		*inout_cache_modified = TRUE;
 
 	return TRUE;
 }

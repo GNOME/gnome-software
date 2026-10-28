@@ -159,7 +159,6 @@ typedef struct
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 	GPtrArray		*relations;  /* (nullable) (element-type AsRelation) (owned) */
 	gboolean		 has_translations;
-	GsAppIconsState		 icons_state;
 	gboolean		 key_color_for_light_set;
 	GdkRGBA			 key_color_for_light;
 	gboolean		 key_color_for_dark_set;
@@ -204,11 +203,11 @@ typedef enum {
 	PROP_RELATIONS,
 	PROP_ORIGIN_UI,
 	PROP_HAS_TRANSLATIONS,
-	PROP_ICONS_STATE,
 	PROP_MOK_KEY_PENDING,
+	PROP_ICONS,
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_MOK_KEY_PENDING + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_ICONS + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -2118,6 +2117,8 @@ gs_app_add_icon (GsApp *app, GIcon *icon)
 
 	/* Ensure the array is sorted by increasing width. */
 	g_ptr_array_sort (priv->icons, icon_sort_cb);
+
+	gs_app_queue_notify (app, obj_props[PROP_ICONS]);
 }
 
 /**
@@ -2136,8 +2137,10 @@ gs_app_remove_all_icons (GsApp *app)
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	if (priv->icons != NULL)
+	if (priv->icons != NULL && priv->icons->len != 0) {
 		g_ptr_array_set_size (priv->icons, 0);
+		gs_app_queue_notify (app, obj_props[PROP_ICONS]);
+	}
 }
 
 /**
@@ -5545,11 +5548,11 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_HAS_TRANSLATIONS:
 		g_value_set_boolean (value, gs_app_get_has_translations (app));
 		break;
-	case PROP_ICONS_STATE:
-		g_value_set_enum (value, priv->icons_state);
-		break;
 	case PROP_MOK_KEY_PENDING:
 		g_value_set_boolean (value, gs_app_get_mok_key_pending (app));
+		break;
+	case PROP_ICONS:
+		g_value_take_boxed (value, gs_app_dup_icons (app));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -5674,13 +5677,12 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	case PROP_HAS_TRANSLATIONS:
 		gs_app_set_has_translations (app, g_value_get_boolean (value));
 		break;
-	case PROP_ICONS_STATE:
-		/* Read-only */
-		g_assert_not_reached ();
-		break;
 	case PROP_MOK_KEY_PENDING:
 		gs_app_set_mok_key_pending (app, g_value_get_boolean (value));
 		break;
+	case PROP_ICONS:
+		/* Read only */
+		g_assert_not_reached ();
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -6201,22 +6203,6 @@ gs_app_class_init (GsAppClass *klass)
 				      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
-	 * GsApp:icons-state:
-	 *
-	 * The state of the icons of this app. Notice that it is valid
-	 * for the icon state to be %GS_APP_ICONS_STATE_AVAILABLE, and
-	 * for there to be no icon for the app. This can happen, for
-	 * example, if it downloads an icon, but the icon download has
-	 * failed.
-	 *
-	 * Since: 44
-	 */
-	obj_props[PROP_ICONS_STATE] = g_param_spec_enum ("icons-state", NULL, NULL,
-					GS_TYPE_APP_ICONS_STATE,
-					GS_APP_ICONS_STATE_UNKNOWN,
-					G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-	/**
 	 * GsApp:mok-key-pending
 	 *
 	 * Set to %TRUE, when the app requires restart to enroll a Machine
@@ -6229,6 +6215,22 @@ gs_app_class_init (GsAppClass *klass)
 		g_param_spec_boolean ("mok-key-pending", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:icons: (nullable) (element-type GIcon)
+	 *
+	 * All known icons for the app.
+	 *
+	 * `NULL` is equivalent to an empty array. Icons may not necessarily
+	 * have been cached. a [signal@GObject.Object::notify] signal will be
+	 * emitted for this property if the cache status changes for any of the
+	 * app’s icons.
+	 *
+	 * Since: 52
+	 */
+	obj_props[PROP_ICONS] =
+		g_param_spec_boxed ("icons", NULL, NULL, G_TYPE_PTR_ARRAY,
+				    G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
@@ -6744,6 +6746,7 @@ gs_app_ensure_icons_downloaded (GsApp *app,
 	g_autoptr(GMutexLocker) locker = NULL;
 	GPtrArray *icons;
 	guint i;
+	gboolean cache_modified = FALSE;
 
 	g_return_if_fail (GS_IS_APP (app));
 
@@ -6765,6 +6768,7 @@ gs_app_ensure_icons_downloaded (GsApp *app,
 						   soup_session,
 						   maximum_icon_size,
 						   scale,
+						   &cache_modified,
 						   cancellable,
 						   &error_local)) {
 			/* we failed, but keep going */
@@ -6773,6 +6777,15 @@ gs_app_ensure_icons_downloaded (GsApp *app,
 				 error_local->message);
 		}
 	}
+
+	if (cache_modified)
+		gs_app_notify_icon_cache_updated (app);
+}
+
+void
+gs_app_notify_icon_cache_updated (GsApp *app)
+{
+	gs_app_queue_notify (app, obj_props[PROP_ICONS]);
 }
 
 /**
@@ -6939,53 +6952,6 @@ gs_app_is_downloaded (GsApp *app)
 		return FALSE;
 
 	return TRUE;
-}
-
-/**
- * gs_app_get_icons_state:
- * @app: a #GsApp
- *
- * Returns the state of the icons of @app.
- *
- * Returns: a #GsAppIconsState
- *
- * Since: 44
- **/
-GsAppIconsState
-gs_app_get_icons_state (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_ICONS_STATE_UNKNOWN);
-
-	return priv->icons_state;
-}
-
-/**
- * gs_app_set_icons_state:
- * @app: a #GsApp
- * @icons_state: a #GsAppIconsState
- *
- * Sets the app icons state of @app.
- *
- * Since: 44
- **/
-void
-gs_app_set_icons_state (GsApp           *app,
-                        GsAppIconsState  icons_state)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	g_return_if_fail (GS_IS_APP (app));
-
-	locker = g_mutex_locker_new (&priv->mutex);
-
-	if (priv->icons_state == icons_state)
-		return;
-
-	priv->icons_state = icons_state;
-	gs_app_queue_notify (app, obj_props[PROP_ICONS_STATE]);
 }
 
 /**

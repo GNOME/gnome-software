@@ -261,22 +261,18 @@ gs_icon_downloader_queue_app (GsIconDownloader *self,
 
 	/* Nothing to download */
 	if (!has_uncached_remote_icon) {
-		gs_app_set_icons_state (app, GS_APP_ICONS_STATE_AVAILABLE);
 		g_debug ("%s: Skipping %s", G_STRFUNC, gs_app_get_id (app));
 		return;
 	}
 
 	if (self->network_monitor != NULL &&
 	    g_network_monitor_get_network_metered (self->network_monitor)) {
-		gs_app_set_icons_state (app, GS_APP_ICONS_STATE_AVAILABLE);
 		g_debug ("%s: Skipping %s due to being on a metered network",
 			 G_STRFUNC, gs_app_get_id (app));
 		return;
 	}
 
 	g_debug ("%s: Queueing %s", G_STRFUNC, gs_app_get_id (app));
-
-	gs_app_set_icons_state (app, GS_APP_ICONS_STATE_PENDING_DOWNLOAD);
 
 	task = g_task_new (self, self->cancellable, app_remote_icons_download_finished, NULL);
 	g_task_set_task_data (task, g_object_ref (app), g_object_unref);
@@ -321,6 +317,7 @@ download_remote_icons_of_the_app_cb (GTask        *task,
 	g_autoptr(GPtrArray) remote_icons = NULL;
 	g_autoptr(GPtrArray) icons = NULL;
 	GsApp *app;
+	gboolean cache_modified = FALSE;
 
 	g_assert (gs_worker_thread_is_in_worker_context (self->worker));
 
@@ -341,8 +338,6 @@ download_remote_icons_of_the_app_cb (GTask        *task,
 
 	g_debug ("Downloading %u icons for app %s", remote_icons->len, gs_app_get_id (app));
 
-	gs_app_set_icons_state (app, GS_APP_ICONS_STATE_DOWNLOADING);
-
 	for (guint j = 0; j < remote_icons->len; j++) {
 		GObject *icon = g_ptr_array_index (remote_icons, j);
 		g_autoptr(GError) local_error = NULL;
@@ -351,6 +346,7 @@ download_remote_icons_of_the_app_cb (GTask        *task,
 					      self->soup_session,
 					      self->maximum_size_px,
 					      self->scale,
+					      &cache_modified,
 					      cancellable,
 					      &local_error);
 
@@ -358,12 +354,14 @@ download_remote_icons_of_the_app_cb (GTask        *task,
 			g_debug ("Error downloading remote icon: %s", local_error->message);
 
 		if (g_task_return_error_if_cancelled (task)) {
-			gs_app_set_icons_state (app, GS_APP_ICONS_STATE_AVAILABLE);
+			if (cache_modified)
+				gs_app_notify_icon_cache_updated (app);
 			return;
 		}
 	}
 
-	gs_app_set_icons_state (app, GS_APP_ICONS_STATE_AVAILABLE);
+	if (cache_modified)
+		gs_app_notify_icon_cache_updated (app);
 
 	g_task_return_boolean (task, TRUE);
 }

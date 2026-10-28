@@ -23,7 +23,6 @@ void		 gs_app_remove_addon		(GsApp		*app,
 GCancellable	*gs_app_get_cancellable		(GsApp		*app);
 gint		 gs_app_compare_priority	(GsApp		*app1,
 						 GsApp		*app2);
-void		 gs_app_set_icons_state		(GsApp		*app,
-						 GsAppIconsState icons_state);
+void		 gs_app_notify_icon_cache_updated (GsApp	*app);
 
 G_END_DECLS

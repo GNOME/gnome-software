@@ -73,8 +73,6 @@ struct _GsSummaryTile
 	GtkWidget	*matches_hardware_icon;
 	GtkWidget	*stack;
 	gint		 preferred_width;
-
-	GsAppIconsState	 current_app_icons_state;
 };
 
 G_DEFINE_TYPE (GsSummaryTile, gs_summary_tile, GS_TYPE_APP_TILE)
@@ -89,12 +87,12 @@ static void
 gs_summary_tile_refresh (GsAppTile *self)
 {
 	GsSummaryTile *tile = GS_SUMMARY_TILE (self);
-	GsAppIconsState app_icons_state;
 	GsApp *app = gs_app_tile_get_app (self);
 	gboolean installed;
 	gboolean matches_hardware;
 	g_autofree gchar *name = NULL;
 	const gchar *summary;
+	g_autoptr(GIcon) icon = NULL;
 
 	if (app == NULL)
 		return;
@@ -109,31 +107,34 @@ gs_summary_tile_refresh (GsAppTile *self)
 	gtk_label_set_label (GTK_LABEL (tile->summary), summary);
 	gtk_widget_set_visible (tile->summary, summary && summary[0]);
 
-	app_icons_state = gs_app_get_icons_state (app);
-	if (tile->current_app_icons_state != app_icons_state) {
-		g_autoptr(GIcon) icon = NULL;
-
-		switch (app_icons_state) {
-		case GS_APP_ICONS_STATE_AVAILABLE:
-			icon = gs_app_get_icon_for_size (app,
-							 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
-							 gtk_widget_get_scale_factor (tile->image),
-							 "org.gnome.Software.Generic",
-							 FALSE);
+	/* Work out what icon to show. We want to immediately show the best
+	 * available icon, but also wait for a queued download if that would
+	 * give a better icon in future. GsApp::notify::icons will be emitted
+	 * once the download is complete and will trigger a refresh. */
+	icon = gs_app_get_icon_for_size (app,
+					 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
+					 gtk_widget_get_scale_factor (tile->image),
+					 NULL,
+					 FALSE);
+	if (icon != NULL) {
+		gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
+		gtk_stack_set_visible_child_name (GTK_STACK (tile->image_stack), "image");
+	} else {
+		icon = gs_app_get_icon_for_size (app,
+						 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
+						 gtk_widget_get_scale_factor (tile->image),
+						 NULL,
+						 TRUE);
+		if (icon != NULL) {
+			gtk_stack_set_visible_child_name (GTK_STACK (tile->image_stack), "loading");
+		} else {
+			icon = g_themed_icon_new ("org.gnome.Software.Generic");
 			gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
 			gtk_stack_set_visible_child_name (GTK_STACK (tile->image_stack), "image");
-			break;
-		case GS_APP_ICONS_STATE_UNKNOWN:
-		case GS_APP_ICONS_STATE_PENDING_DOWNLOAD:
-		case GS_APP_ICONS_STATE_DOWNLOADING:
-		default:
-			gtk_stack_set_visible_child_name (GTK_STACK (tile->image_stack), "loading");
-			break;
 		}
-
-		tile->current_app_icons_state = app_icons_state;
 	}
 
+	/* Name and installed state */
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_UPDATABLE:
@@ -188,23 +189,8 @@ gs_summary_tile_refresh (GsAppTile *self)
 static void
 gs_summary_tile_init (GsSummaryTile *tile)
 {
-	tile->current_app_icons_state = GS_APP_ICONS_STATE_UNKNOWN;
 	tile->preferred_width = -1;
 	gtk_widget_init_template (GTK_WIDGET (tile));
-}
-
-static void
-gs_summary_tile_notify (GObject    *object,
-                        GParamSpec *pspec)
-{
-	GsSummaryTile *self = GS_SUMMARY_TILE (object);
-
-	/* If the app of this tile changes, we have to reload its icon */
-	if (g_strcmp0 (pspec->name, "app") == 0)
-		self->current_app_icons_state = GS_APP_ICONS_STATE_UNKNOWN;
-
-	if (G_OBJECT_CLASS (gs_summary_tile_parent_class)->notify)
-		G_OBJECT_CLASS (gs_summary_tile_parent_class)->notify (object, pspec);
 }
 
 static void
@@ -257,7 +243,6 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	object_class->get_property = gs_summary_tile_get_property;
 	object_class->set_property = gs_summary_tile_set_property;
-	object_class->notify = gs_summary_tile_notify;
 
 	tile_class->refresh = gs_summary_tile_refresh;
 
