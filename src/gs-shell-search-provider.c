@@ -255,7 +255,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 		g_variant_builder_add (&meta, "{sv}", "name", g_variant_new_string (gs_app_get_name (app)));
 
 		/* ICON_SIZE is defined as 24px in js/ui/search.js in gnome-shell */
-		icon = gs_app_get_icon_for_size (app, 24, 1, NULL);
+		icon = gs_app_get_icon_for_size (app, 24, 1, NULL, FALSE);
 		if (icon != NULL) {
 			g_autofree gchar *icon_str = g_icon_to_string (icon);
 			if (icon_str != NULL) {

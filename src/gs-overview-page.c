@@ -287,7 +287,8 @@ filter_hi_res_icon (GsApp *app, gpointer user_data)
 	icon = gs_app_get_icon_for_size (app,
 					 128,
 					 gtk_widget_get_scale_factor (overview_page),
-					 NULL);
+					 NULL,
+					 FALSE);
 
 	/* Returning TRUE means to keep the app in the list */
 	return (icon != NULL);

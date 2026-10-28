@@ -267,20 +267,23 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	icon = gs_app_get_icon_for_size (app,
 					 icon_size,
 					 gtk_widget_get_scale_factor (GTK_WIDGET (page)),
-					 NULL);
+					 NULL,
+					 FALSE);
 	if (icon == NULL) {
 		icon_size = 64;
 		icon = gs_app_get_icon_for_size (app,
 						 icon_size,
 						 gtk_widget_get_scale_factor (GTK_WIDGET (page)),
-						 NULL);
+						 NULL,
+						 FALSE);
 	}
 	if (icon == NULL) {
 		icon_size = 96;
 		icon = gs_app_get_icon_for_size (app,
 						 icon_size,
 						 gtk_widget_get_scale_factor (GTK_WIDGET (page)),
-						 "org.gnome.Software.Generic");
+						 "org.gnome.Software.Generic",
+						 FALSE);
 	}
 
 	display = gdk_display_get_default ();

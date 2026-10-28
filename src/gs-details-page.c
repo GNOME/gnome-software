@@ -1389,7 +1389,8 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 			icon = gs_app_get_icon_for_size (self->app,
 							 icon_fallbacks[i].icon_size,
 							 gtk_widget_get_scale_factor (self->application_details_icon),
-							 icon_fallbacks[i].fallback_icon_name);
+							 icon_fallbacks[i].fallback_icon_name,
+							 FALSE);
 		}
 	}
 

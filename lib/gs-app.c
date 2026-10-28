@@ -1822,6 +1822,9 @@ get_icon_theme (void)
  * @scale: scale of the icon to fetch, typically from gtk_widget_get_scale_factor()
  * @fallback_icon_name: (nullable): name of an icon to load as a fallback if
  *    no other suitable one is found, or %NULL for no fallback
+ * @allow_uncached: true to allow returning a remote icon which is not yet
+ *   cached locally, so the caller can schedule it for download; false to always
+ *   choose a locally available/cached icon
  *
  * Finds the most appropriate icon in the @app’s set of icons to be loaded at
  * the given @size×@scale to represent the application. This might be provided
@@ -1837,20 +1840,22 @@ get_icon_theme (void)
  * Icons which come from a remote server (over HTTP or HTTPS) will be returned
  * as a pointer into a local cache, which may not have been populated. You must
  * call gs_remote_icon_ensure_cached() on icons of type #GsRemoteIcon to
- * download them; this function will not do that for you.
+ * download them; this function will not do that for you, and will avoid
+ * returning uncached icons unless @allow_uncached is true.
  *
  * This function may do disk I/O or image resizing, but it will not do network
  * I/O to load a pixbuf. It should be acceptable to call this from a UI thread.
  *
  * Returns: (transfer full) (nullable): a #GIcon, or %NULL
  *
- * Since: 40
+ * Since: 52
  */
 GIcon *
 gs_app_get_icon_for_size (GsApp       *app,
                           guint        size,
                           guint        scale,
-                          const gchar *fallback_icon_name)
+                          const gchar *fallback_icon_name,
+                          gboolean     allow_uncached)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
@@ -1860,8 +1865,9 @@ gs_app_get_icon_for_size (GsApp       *app,
 	g_return_val_if_fail (size > 0, NULL);
 	g_return_val_if_fail (scale >= 1, NULL);
 
-	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s",
-		 gs_app_get_id (app), size, scale, fallback_icon_name);
+	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s, %sallowing uncached icons",
+		 gs_app_get_id (app), size, scale, fallback_icon_name,
+		 allow_uncached ? "" : "dis");
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
@@ -1881,19 +1887,20 @@ gs_app_get_icon_for_size (GsApp       *app,
 		g_debug ("\tConsidering icon of type %s (%s), width %u@%u",
 			 G_OBJECT_TYPE_NAME (icon), icon_str, icon_width, icon_scale);
 
-		/* To avoid excessive I/O, the loading of AppStream data does
-		 * not verify the existence of cached icons, which we do now. */
-		if (G_IS_FILE_ICON (icon)) {
-			GFile *file = g_file_icon_get_file (G_FILE_ICON (icon));
-			if (!g_file_query_exists (file, NULL)) {
-				continue;
-			}
-		}
-
 		/* Ignore icons with unknown width and skip over ones which
 		 * are too small. */
 		if (icon_width == 0 || icon_width * icon_scale < size * scale)
 			continue;
+
+		/* To avoid excessive I/O, the loading of AppStream data does
+		 * not verify the existence of cached icons, which we do now. */
+		if (G_IS_FILE_ICON (icon)) {
+			GFile *file = g_file_icon_get_file (G_FILE_ICON (icon));
+			if (!g_file_query_exists (file, NULL) &&
+			    (!GS_IS_REMOTE_ICON (icon) || !allow_uncached)) {
+				continue;
+			}
+		}
 
 		/* Is it big enough? */
 		if (icon_width == size && icon_scale == scale) {
@@ -1927,7 +1934,7 @@ gs_app_get_icon_for_size (GsApp       *app,
 
 	if (scale > 1) {
 		g_debug ("Retrying at scale 1");
-		return gs_app_get_icon_for_size (app, size, 1, fallback_icon_name);
+		return gs_app_get_icon_for_size (app, size, 1, fallback_icon_name, allow_uncached);
 	} else if (fallback_icon_name != NULL) {
 		g_debug ("Using fallback icon %s", fallback_icon_name);
 		return g_themed_icon_new (fallback_icon_name);
@@ -4797,7 +4804,7 @@ calculate_key_colors (GsApp *app)
 	}
 
 	/* Try and load the pixbuf. */
-	icon_small = gs_app_get_icon_for_size (app, 32, 1, NULL);
+	icon_small = gs_app_get_icon_for_size (app, 32, 1, NULL, FALSE);
 
 	if (icon_small == NULL) {
 		g_debug ("no pixbuf, so no key colors");

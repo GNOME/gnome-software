@@ -369,7 +369,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Zeus");
 	g_assert_cmpstr (gs_app_get_default_source (app), ==, "zeus");
-	icon = gs_app_get_icon_for_size (app, 48, 1, NULL);
+	icon = gs_app_get_icon_for_size (app, 48, 1, NULL, FALSE);
 	g_assert_nonnull (icon);
 	g_assert_true (G_IS_THEMED_ICON (icon));
 	g_clear_object (&icon);
@@ -404,7 +404,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 			 "LicenseRef-free=https://www.debian.org/");
 	/* The app has a non-existent icon */
 	g_assert_true (gs_app_has_icons (addon));
-	icon = gs_app_get_icon_for_size (addon, 48, 1, NULL);
+	icon = gs_app_get_icon_for_size (addon, 48, 1, NULL, FALSE);
 	g_assert_null (icon);
 }
 

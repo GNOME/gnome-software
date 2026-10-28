@@ -202,7 +202,8 @@ app_has_hi_res_icon (GsCategoryPage *self,
 	icon = gs_app_get_icon_for_size (app,
 					 128,
 					 gtk_widget_get_scale_factor (GTK_WIDGET (self)),
-					 NULL);
+					 NULL,
+					 FALSE);
 
 	/* Returning TRUE means to keep the app in the list */
 	return (icon != NULL);

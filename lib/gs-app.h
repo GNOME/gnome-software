@@ -395,7 +395,8 @@ void		 gs_app_set_management_plugin	(GsApp		*app,
 GIcon		*gs_app_get_icon_for_size	(GsApp		*app,
 						 guint		 size,
 						 guint		 scale,
-						 const gchar	*fallback_icon_name);
+						 const gchar	*fallback_icon_name,
+						 gboolean	 allow_uncached);
 GPtrArray	*gs_app_dup_icons		(GsApp		*app);
 gboolean	 gs_app_has_icons		(GsApp		*app);
 void		 gs_app_add_icon		(GsApp		*app,

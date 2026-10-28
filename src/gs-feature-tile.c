@@ -380,14 +380,16 @@ gs_feature_tile_refresh (GsFeatureTile *tile)
 		icon = gs_app_get_icon_for_size (app,
 						 160,
 						 gtk_widget_get_scale_factor (tile->image),
-						 NULL);
+						 NULL,
+						 FALSE);
 		icon_size = 160;
 	}
 	if (icon == NULL) {
 		icon = gs_app_get_icon_for_size (app,
 						 128,
 						 gtk_widget_get_scale_factor (tile->image),
-						 NULL);
+						 NULL,
+						 FALSE);
 		icon_size = 128;
 	}
 

@@ -1146,7 +1146,7 @@ gs_plugin_epiphany_install_apps_async (GsPlugin                           *plugi
 			missing_element = "name";
 
 		for (guint j = 0; j < G_N_ELEMENTS (icon_sizes); j++) {
-			GIcon *icon = gs_app_get_icon_for_size (app, icon_sizes[j], 1, NULL);
+			GIcon *icon = gs_app_get_icon_for_size (app, icon_sizes[j], 1, NULL, FALSE);
 			if (icon != NULL)
 				icon_v = get_serialized_icon (app, icon);
 			if (icon_v != NULL)
