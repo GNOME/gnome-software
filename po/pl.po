@@ -4,14 +4,15 @@
 # Piotr Drąg <piotrdrag@gmail.com>, 2012-2025.
 # Aviary.pl <community-poland@mozilla.org>, 2012-2025.
 # Victoria Niedzielska <victorian@gnome.org>, 2026.
+# Tomasz Bojanowski <tomasz@bojanowski.me>, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2026-06-10 15:27+0000\n"
-"PO-Revision-Date: 2026-07-04 13:05+0200\n"
-"Last-Translator: Victoria Niedzielska <victorian@gnome.org>\n"
+"POT-Creation-Date: 2026-10-22 10:19+0000\n"
+"PO-Revision-Date: 2026-11-04 17:51+0100\n"
+"Last-Translator: Tomasz Bojanowski <tomasz@bojanowski.me>\n"
 "Language-Team: Polish <https://l10n.gnome.org/teams/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Gtranslator 50.0\n"
+"X-Generator: Gtranslator 51.0\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:35
 #: src/org.gnome.Software.desktop.in:2
@@ -73,8 +74,9 @@ msgid "The update details"
 msgstr "Informacje o aktualizacji"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:3022
-#: src/gs-application.c:400
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3162
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:3164
+#: src/gs-application.c:402
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
 
@@ -217,7 +219,7 @@ msgstr "Czas ostatniego sprawdzenia aktualizacji"
 
 #: data/org.gnome.software.gschema.xml:51
 msgid "The last upgrade notification timestamp"
-msgstr "Czas ostatniego powiadomienia o aktualizacji"
+msgstr "Czas ostatniego powiadomienia o aktualizacji systemu"
 
 #: data/org.gnome.software.gschema.xml:55
 msgid "The last update notification timestamp"
@@ -243,7 +245,7 @@ msgid ""
 "means to never check the server if the image already exists in the cache."
 msgstr ""
 "Wybranie większej wartości oznacza mniej wycieczek do zdalnego serwera, ale "
-"wyświetlenie aktualizacji zrzutów ekranu mogą zająć więcej czasu. Wartość 0 "
+"wyświetlenie aktualizacji zrzutów ekranu może zająć więcej czasu. Wartość 0 "
 "oznacza, że serwer nigdy nie zostanie sprawdzony, jeśli obraz już istnieje "
 "w pamięci podręcznej."
 
@@ -345,7 +347,7 @@ msgid ""
 "by a colon, for example 'flatpak:flathub'."
 msgstr ""
 "Kolejność priorytetów preferowanych formatów pakietów, z ważniejszymi "
-"formatami wymienionymi jako pierwsze. Pusta macierz oznacza domyślną "
+"formatami wymienionymi jako pierwsze. Pusty macierz oznacza domyślną "
 "kolejność. Pominięte formaty są uznawane jako wymienione na końcu. "
 "Przykładowe formaty pakietów: deb, flatpak, rpm, snap. Formaty mogą być "
 "opcjonalnie podane z nazwą repozytorium oddzieloną dwukropkiem, na przykład "
@@ -652,7 +654,7 @@ msgstr "Udostępnianie położenia"
 #: src/gs-age-rating-context-dialog.c:336
 msgid "No information regarding sharing of physical location with other users"
 msgstr ""
-"Brak informacji o udostępnianiu rzeczywistego adresu innym użytkownikom"
+"Brak informacji o udostępnianiu fizycznego położenia innym użytkownikom"
 
 # I really wish "homophobia" was a category instead of this :/
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
@@ -815,7 +817,7 @@ msgstr "Aplikacja %s jest odpowiednia dla wszystkich"
 #: src/gs-age-rating-context-dialog.c:1025
 #, c-format
 msgid "%s is suitable for toddlers"
-msgstr "Aplikacja %s jest odpowiednia dla niemowląt"
+msgstr "Aplikacja %s jest odpowiednia dla maluchów"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 5. The placeholder is the app name.
@@ -865,7 +867,7 @@ msgstr "Klasyfikacja wiekowa"
 msgid "_How to contribute missing information"
 msgstr "_Jak dodać brakujące informacje"
 
-#: lib/gs-app.c:6328
+#: lib/gs-app.c:6347
 msgid "Local file"
 msgstr "Lokalny plik"
 
@@ -874,26 +876,26 @@ msgstr "Lokalny plik"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6347 src/gs-safety-context-dialog.c:588
+#: lib/gs-app.c:6366 src/gs-safety-context-dialog.c:588
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
 #. Translators: This is a heading for a row showing the package name of an app (such as ‘gnome-software-46.0-1’).
-#: lib/gs-app.c:6424 src/gs-safety-context-dialog.c:825
+#: lib/gs-app.c:6443 src/gs-safety-context-dialog.c:825
 #: src/gs-safety-context-dialog.ui:92
 msgid "Package"
 msgstr "Pakiet"
 
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:538
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:543
 msgid "Pending"
 msgstr "Oczekujące"
 
-#: src/gs-app-addon-row.c:100 src/gs-app-row.c:542 src/gs-details-page.c:393
+#: src/gs-app-addon-row.c:100 src/gs-app-row.c:547 src/gs-details-page.c:393
 msgid "Pending install"
 msgstr "Oczekuje na instalację"
 
-#: src/gs-app-addon-row.c:104 src/gs-app-row.c:546 src/gs-details-page.c:400
+#: src/gs-app-addon-row.c:104 src/gs-app-row.c:551 src/gs-details-page.c:400
 msgid "Pending remove"
 msgstr "Oczekuje na usunięcie"
 
@@ -1048,19 +1050,19 @@ msgstr "Brak opisu aktualizacji."
 
 #. FIXME support app == NULL
 #. set page title
-#: src/gs-app-details-page.c:249
+#: src/gs-app-details-page.c:255
 msgid "Update Details"
 msgstr "Informacje o aktualizacji"
 
-#: src/gs-app-details-page.ui:27 src/gs-app-row.c:601
+#: src/gs-app-details-page.ui:27 src/gs-app-row.c:606
 msgid "Requires additional permissions"
-msgstr "Wymaga dodatkowych uprawnień."
+msgstr "Wymaga dodatkowych uprawnień"
 
-#: src/gs-app-reviews-dialog.c:135
+#: src/gs-app-reviews-dialog.c:136
 msgid "Invalid ratings data received from server"
 msgstr "Otrzymano nieprawidłowe dane ocen z serwera"
 
-#: src/gs-app-reviews-dialog.c:138 src/gs-details-page.c:2430
+#: src/gs-app-reviews-dialog.c:139 src/gs-details-page.c:2435
 msgid "Could not communicate with ratings server"
 msgstr "Nie można komunikować się z serwerem ocen"
 
@@ -1177,35 +1179,42 @@ msgid "Installs any pending updates in the background"
 msgstr "Instaluje wszystkie oczekujące aktualizacje w tle"
 
 #: src/gs-application.c:156
+msgid "Show the updates page and start checking for available updates"
+msgstr ""
+"Wyświetla stronę aktualizacji i rozpoczyna wyszukiwanie dostępnych "
+"aktualizacji"
+
+#: src/gs-application.c:158
 msgid "Show preferences"
 msgstr "Wyświetla preferencje"
 
-#: src/gs-application.c:158
+#: src/gs-application.c:160
 msgid "Quit the running instance"
 msgstr "Kończy działanie uruchomionego wystąpienia"
 
-#: src/gs-application.c:160
+#: src/gs-application.c:162
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferuje lokalne źródła plików nad danymi AppStream"
 
-#: src/gs-application.c:162
+#: src/gs-application.c:164
 msgid "Show version number"
 msgstr "Wyświetla numer wersji"
 
-#: src/gs-application.c:395
+#: src/gs-application.c:397
 #, c-format
 msgid "Copyright © 2016–%d GNOME Software contributors"
 msgstr "Prawa autorskie © 2016-%d współtwórcy Oprogramowania GNOME"
 
-#: src/gs-application.c:409
+#: src/gs-application.c:411
 msgid "translator-credits"
 msgstr ""
 "Piotr Drąg <piotrdrag@gmail.com>, 2012-2025\n"
 "Aviary.pl <community-poland@mozilla.org>, 2012-2025\n"
-"Victoria Niedzielska <victorian@gnome.org>, 2026"
+"Victoria Niedzielska <victorian@gnome.org>, 2026\n"
+"Tomasz Bojanowski <tomasz@bojanowski.me>, 2026"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:666
+#: src/gs-application.c:679
 msgid "Sorry! There are no details for that application."
 msgstr "Przepraszamy! Nie ma informacji o tej aplikacji."
 
@@ -1386,7 +1395,7 @@ msgstr "Dostarczane przez stronę trzecią"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:494
 msgid "Software no longer supported"
-msgstr "Oprogramowanie nie jest już wspierane"
+msgstr "Oprogramowanie jest bez wsparcia"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
@@ -1514,7 +1523,7 @@ msgstr "Do gry wymaga kontrolera"
 #. * short and in title case.
 #: src/gs-app-context-bar.c:737
 msgid "Adaptive"
-msgstr "Adaptacyjny"
+msgstr "Adaptacyjna"
 
 #: src/gs-app-context-bar.c:738
 msgid "Works on phones, tablets and desktops"
@@ -1593,24 +1602,24 @@ msgstr "Krytyczna aktualizacja"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:410
+#: src/gs-app-row.c:415
 msgid "Device cannot be used during update."
 msgstr "Nie można używać urządzenia podczas aktualizacji."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:420 src/gs-shell-search-provider.c:273
+#: src/gs-app-row.c:425 src/gs-shell-search-provider.c:273
 #, c-format
 msgid "Source: %s"
 msgstr "Źródło: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:608
+#: src/gs-app-row.c:613
 #, c-format
 msgid "Renamed from %s"
 msgstr "Zmieniono nazwę z „%s”"
 
 #. Replace user-provided non-localized string with a localized text
-#: src/gs-app-row.c:645 src/gs-details-page.ui:535
+#: src/gs-app-row.c:650 src/gs-details-page.ui:535
 msgid "Stopped Receiving Updates"
 msgstr "Przestało otrzymywać aktualizacje"
 
@@ -1653,7 +1662,7 @@ msgstr "Tłumaczenia"
 msgid "_Translation Website"
 msgstr "Strona tłu_maczeń"
 
-#: lib/gs-appstream.c:303
+#: lib/gs-appstream.c:296
 msgid "Release notes"
 msgstr "Informacje o wydaniu"
 
@@ -1673,7 +1682,7 @@ msgstr "Wymagane jest zalogowanie"
 #: src/gs-dkms-dialog.ui:120 src/gs-page.c:439 src/gs-removal-dialog.ui:24
 #: src/gs-remove-app-dialog.ui:14 src/gs-repos-dialog.c:241
 #: src/gs-repos-dialog.c:324 src/gs-review-dialog.ui:24 src/gs-review-row.c:239
-#: src/gs-review-row.c:263 src/gs-updates-page.c:854
+#: src/gs-review-row.c:263 src/gs-updates-page.c:873
 #: src/gs-upgrade-banner.ui:198
 msgid "_Cancel"
 msgstr "_Anuluj"
@@ -1843,7 +1852,7 @@ msgstr ""
 #. TRANSLATORS: this is button text to not ask about non-free content again
 #: src/gs-common.c:273
 msgid "Don’t _Warn Again"
-msgstr "_Bez ostrzegania ponownie"
+msgstr "Nie ostrzegaj pono_wnie"
 
 #. TRANSLATORS: button text
 #: src/gs-common.c:282
@@ -1890,7 +1899,7 @@ msgid "An app has been uninstalled"
 msgid_plural "Apps have been uninstalled"
 msgstr[0] "Odinstalowano aplikację"
 msgstr[1] "Odinstalowano aplikacje"
-msgstr[2] "Odinstalowano aplikacji"
+msgstr[2] "Odinstalowano aplikacje"
 
 #. TRANSLATORS: the new apps will not be run until we restart
 #: src/gs-common.c:813
@@ -2116,7 +2125,7 @@ msgstr "Gry przygodowe"
 #: lib/gs-desktop-data.c:99
 msgctxt "Menu of Games"
 msgid "Arcade"
-msgstr "Gry platformowe"
+msgstr "Gry zręcznościowe"
 
 #: lib/gs-desktop-data.c:102
 msgctxt "Menu of Games"
@@ -2256,7 +2265,7 @@ msgstr "Historyczne"
 #: lib/gs-desktop-data.c:210
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
-msgstr "Luksusowe"
+msgstr "Styl życia"
 
 #: lib/gs-desktop-data.c:213
 msgctxt "Menu of Reference"
@@ -2443,11 +2452,11 @@ msgstr "Wymagane są dodatkowe pakiety"
 msgid "Find in Software"
 msgstr "Znajdź w Oprogramowaniu"
 
-#: src/gs-description-box.c:93 src/gs-description-box.c:348
+#: src/gs-description-box.c:97 src/gs-description-box.c:359
 msgid "_Show More"
 msgstr "_Więcej"
 
-#: src/gs-description-box.c:93
+#: src/gs-description-box.c:97
 msgid "_Show Less"
 msgstr "_Mniej"
 
@@ -2540,32 +2549,32 @@ msgstr "Inne aplikacje od %s"
 #: src/gs-details-page.c:1463
 #, c-format
 msgid "Developer %s has proven the ownership of %s"
-msgstr "Autor %s dowiódł posiadanie aplikacji %s"
+msgstr "Autor %s dowiódł, że jest właścicielem aplikacji %s"
 
 #. Translators: the %s is replaced with the app id
 #: src/gs-details-page.c:1466
 #, c-format
 msgid "Developer has proven the ownership of %s"
-msgstr "Autor dowiódł posiadanie aplikacji %s"
+msgstr "Autor dowiódł, że jest właścicielem aplikacji %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1821
+#: src/gs-details-page.c:1826
 msgid "You need internet access to write a review"
 msgstr "Wymagany jest dostęp do Internetu, aby napisać opinię"
 
-#: src/gs-details-page.c:1925
+#: src/gs-details-page.c:1930
 msgid "This app is no longer receiving updates, including security fixes"
 msgstr ""
 "Ta aplikacja nie otrzymuje już aktualizacji, w tym poprawek bezpieczeństwa"
 
-#: src/gs-details-page.c:1926
+#: src/gs-details-page.c:1931
 msgid ""
 "This app is already provided by your distribution and should not be replaced."
 msgstr ""
-"Ta aplikacja jest już dostarczana przez Twoją dystrybucję i nie powinna być "
+"Ta aplikacja jest już dostarczana przez dystrybucję i nie powinna być "
 "zastąpiona."
 
-#: src/gs-details-page.c:1927
+#: src/gs-details-page.c:1932
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2573,13 +2582,13 @@ msgstr ""
 "Ta aplikacja nie dostarcza żadnych odnośników do strony, repozytorium kodu "
 "ani systemu śledzenia błędów."
 
-#: src/gs-details-page.c:1929
+#: src/gs-details-page.c:1934
 msgid "This software is no longer receiving updates, including security fixes"
 msgstr ""
 "To oprogramowanie nie otrzymuje już aktualizacji, w tym poprawek "
 "bezpieczeństwa"
 
-#: src/gs-details-page.c:1930
+#: src/gs-details-page.c:1935
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2587,7 +2596,7 @@ msgstr ""
 "To oprogramowanie jest już dostarczane przez dystrybucję i nie powinno być "
 "zastąpione."
 
-#: src/gs-details-page.c:1931
+#: src/gs-details-page.c:1936
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2595,54 +2604,54 @@ msgstr ""
 "To oprogramowanie nie dostarcza żadnych odnośników do strony, repozytorium "
 "kodu ani systemu śledzenia błędów."
 
-#: src/gs-details-page.c:2022 src/gs-details-page.c:2039
+#: src/gs-details-page.c:2027 src/gs-details-page.c:2044
 #, c-format
 msgid ""
 "Software failed to retrieve information for “%s” and is unable to show the "
 "details for this app."
 msgstr ""
-"Oprogramowanie nie mógło pobrać informacji o aplikacji %s i nie może "
+"Oprogramowanie nie mogło pobrać informacji o aplikacji %s i nie może "
 "wyświetlić informacji o niej."
 
-#: src/gs-details-page.c:2067
+#: src/gs-details-page.c:2072
 #, c-format
 msgid ""
 "Software could not load the file ‘%s’, as it’s not in a format supported by "
 "this system."
 msgstr ""
-"Oprogramowanie nie mogło załadować pliku „%s”, ponieważ ten format nie jest "
-"wspierany przez ten system."
+"Oprogramowanie nie mogło wczytać pliku „%s”, ponieważ ten format nie jest "
+"obsługiwany przez ten system."
 
-#: src/gs-details-page.c:2069
+#: src/gs-details-page.c:2074
 #, c-format
 msgid "Software could not load the file ‘%s’."
-msgstr "Oprogramowanie nie mogło załadować pliku „%s”."
+msgstr "Oprogramowanie nie mogło wczytać pliku „%s”."
 
-#: src/gs-details-page.c:2098
+#: src/gs-details-page.c:2103
 #, c-format
 msgid ""
 "Software could not load the URL ‘%s’, as it’s not in a format supported by "
 "this system."
 msgstr ""
-"Oprogramowanie nie mogło załadować odnośnika URL „%s”, ponieważ ten format "
-"nie jest wspierany przez ten system."
+"Oprogramowanie nie mogło wczytać odnośnika URL „%s”, ponieważ ten format nie "
+"jest obsługiwany przez ten system."
 
-#: src/gs-details-page.c:2100
+#: src/gs-details-page.c:2105
 #, c-format
 msgid "Software could not load the URL ‘%s’."
-msgstr "Oprogramowanie nie mogło załadować odnośnika URL „%s”."
+msgstr "Oprogramowanie nie mogło wczytać odnośnika URL „%s”."
 
-#: src/gs-details-page.c:2427
+#: src/gs-details-page.c:2432
 msgid "Invalid review response received from server"
 msgstr "Otrzymano nieprawidłową odpowiedź opinii z serwera"
 
-#: src/gs-details-page.c:2437
+#: src/gs-details-page.c:2442
 #, c-format
 msgid "Failed to submit review for “%s”: %s"
 msgstr "Wysłanie opinii o aplikacji „%s” się nie powiodło: %s"
 
 #. display a toast to the user
-#: src/gs-details-page.c:2451
+#: src/gs-details-page.c:2456
 msgid "Review submitted successfully"
 msgstr "Pomyślnie wysłano opinię"
 
@@ -2679,8 +2688,8 @@ msgstr "Dodatki"
 #: src/gs-details-page.ui:606
 msgid "This app can only be used when there is an active internet connection."
 msgstr ""
-"Ta aplikacja może być używana tylko, kiedy dostępne jest aktywne połączenie "
-"internetowe."
+"Ta aplikacja może być używana tylko wtedy, kiedy dostępne jest aktywne "
+"połączenie internetowe."
 
 #: src/gs-details-page.ui:629
 msgid "Software Repository Included"
@@ -3454,7 +3463,7 @@ msgid ""
 "\n"
 "You may or may not be able to contribute to this app."
 msgstr ""
-"Ta aplikacja nie podaje na warunkach jakiej licencji jest tworzona i może "
+"Ta aplikacja nie podaje, na warunkach jakiej licencji jest tworzona i może "
 "być własnościowa. Może być niebezpieczna na trudne do wykrycia sposoby "
 "i może zmienić się niespodziewanie.\n"
 "\n"
@@ -3694,7 +3703,7 @@ msgstr "Inne kategorie"
 msgid "No App Data Found"
 msgstr "Nie odnaleziono danych aplikacji"
 
-#: lib/gs-plugin-loader.c:2444
+#: lib/gs-plugin-loader.c:2489
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Nieznana"
@@ -3835,7 +3844,7 @@ msgid ""
 "features are therefore paused when on metered network connections and when "
 "power saver is on."
 msgstr ""
-"Wyszukiwanie i pobieranie aktualizacji używa dane i prąd. Z tego powodu "
+"Wyszukiwanie i pobieranie aktualizacji zużywa dane i energię. Z tego powodu "
 "funkcje automatycznego aktualizowania są wstrzymane podczas korzystania "
 "z taryfowych połączeń sieciowych i trybu oszczędzania energii."
 
@@ -3894,7 +3903,7 @@ msgid ""
 "Installed software is incompatible with %s, and will be automatically "
 "removed during upgrade."
 msgstr ""
-"Zainstalowane oprogramowanie jest niezgodna z systemem %s i zostanie "
+"Zainstalowane oprogramowanie jest niezgodne z systemem %s i zostanie "
 "automatycznie usunięte podczas aktualizacji systemu."
 
 #: src/gs-removal-dialog.ui:6
@@ -3988,7 +3997,7 @@ msgstr "Nie udało się wyszukać podobnych aplikacji"
 
 #: src/gs-repos-dialog.c:569 src/gs-repos-dialog.c:629
 msgid "Unable to load repositories"
-msgstr "Nie można załadować repozytoriów"
+msgstr "Nie można wczytać repozytoriów"
 
 #: src/gs-repos-dialog.c:685
 msgid "Enable New Repositories"
@@ -4016,20 +4025,20 @@ msgstr "Dodatkowe repozytoria od wybranych stron trzecich. %s."
 msgid "Fedora Third Party Repositories"
 msgstr "Repozytoria Fedory dostarczane przez stronę trzecią"
 
-#: src/gs-repos-dialog.c:777 src/gs-repos-dialog.c:800
+#: src/gs-repos-dialog.c:778 src/gs-repos-dialog.c:801
 msgid "Unable to load Fedora third party repositories"
 msgstr ""
-"Nie można załadować repozytoriów Fedory dostarczanych przez stronę trzecią"
+"Nie można wczytać repozytoriów Fedory dostarczanych przez stronę trzecią"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:860
+#: src/gs-repos-dialog.c:861
 msgid "the operating system"
 msgstr "operacyjny"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:916
+#: src/gs-repos-dialog.c:917
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -4539,7 +4548,7 @@ msgstr "Niezabezpieczone zależności"
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
-"Oprogramowanie lub jego zależności nie są już wspierane, a jego "
+"Oprogramowanie lub jego zależności nie są już obsługiwane, a jego "
 "bezpieczeństwo może być niepewne"
 
 #: src/gs-safety-context-dialog.c:464
@@ -5303,7 +5312,7 @@ msgstr "_Skróty klawiszowe"
 
 #: src/gs-shell.ui:23
 msgid "_About Software"
-msgstr "_O aplikacji"
+msgstr "O _aplikacji"
 
 #: src/gs-shell.ui:142 src/gs-shell.ui:144
 msgid "Search"
@@ -5339,59 +5348,72 @@ msgid "Go back"
 msgstr "Wstecz"
 
 #: src/gs-shortcuts-dialog.ui:13
+msgctxt "shortcut window"
 msgid "Navigation"
 msgstr "Nawigacja"
 
 #: src/gs-shortcuts-dialog.ui:17
+msgctxt "shortcut window"
 msgid "Navigate to Explore Page"
 msgstr "Przejście do strony odkrywania"
 
 #: src/gs-shortcuts-dialog.ui:23
+msgctxt "shortcut window"
 msgid "Navigate to Installed Page"
 msgstr "Przejście do strony zainstalowanych"
 
 #: src/gs-shortcuts-dialog.ui:29
+msgctxt "shortcut window"
 msgid "Navigate to Updates Page"
 msgstr "Przejście do strony aktualizacji"
 
 #: src/gs-shortcuts-dialog.ui:35
+msgctxt "shortcut window"
 msgid "Open Search Bar"
 msgstr "Otwarcie paska wyszukiwania"
 
 #: src/gs-shortcuts-dialog.ui:41
+msgctxt "shortcut window"
 msgid "Open Main Menu"
 msgstr "Otwarcie menu głównego"
 
 #: src/gs-shortcuts-dialog.ui:49
+msgctxt "shortcut window"
 msgid "Windows"
 msgstr "Okna"
 
 #: src/gs-shortcuts-dialog.ui:53
+msgctxt "shortcut window"
 msgid "Open Preferences"
 msgstr "Otwarcie preferencji"
 
 #: src/gs-shortcuts-dialog.ui:59
+msgctxt "shortcut window"
 msgid "Open Software Repositories"
 msgstr "Otwarcie repozytoriów oprogramowania"
 
 #: src/gs-shortcuts-dialog.ui:65
+msgctxt "shortcut window"
 msgid "Close Main Window"
 msgstr "Zamknięcie głównego okna"
 
 #: src/gs-shortcuts-dialog.ui:73
+msgctxt "shortcut window"
 msgid "Updates Page"
 msgstr "Strona aktualizacji"
 
-#: src/gs-shortcuts-dialog.ui:77 src/gs-updates-page.ui:262
-#: src/gs-updates-page.ui:265
+#: src/gs-shortcuts-dialog.ui:77
+msgctxt "shortcut window"
 msgid "Check for Updates"
 msgstr "Wyszukanie aktualizacji"
 
 #: src/gs-shortcuts-dialog.ui:85
+msgctxt "shortcut window"
 msgid "Help"
 msgstr "Pomoc"
 
 #: src/gs-shortcuts-dialog.ui:89
+msgctxt "shortcut window"
 msgid "Open Keyboard Shortcuts"
 msgstr "Otwarcie skrótów klawiszowych"
 
@@ -5456,25 +5478,29 @@ msgstr ""
 msgid "Storage"
 msgstr "Miejsce na dysku"
 
-#: src/gs-summary-tile.c:139
+#: src/gs-summary-tile.c:141
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (zainstalowane)"
 
-#: src/gs-summary-tile.c:144
+#: src/gs-summary-tile.c:146
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (instalowanie)"
 
-#: src/gs-summary-tile.c:149
+#: src/gs-summary-tile.c:151
 #, c-format
 msgid "%s (Downloading)"
 msgstr "%s (pobieranie)"
 
-#: src/gs-summary-tile.c:154
+#: src/gs-summary-tile.c:156
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (usuwanie)"
+
+#: src/gs-summary-tile.c:177
+msgid "Driver indicates that it supports the current system"
+msgstr "Sterownik zgłasza, że obsługuje bieżący system"
 
 #: src/gs-toast.c:58 src/gs-toast.c:68
 msgid "_Details"
@@ -5488,48 +5514,62 @@ msgstr "_Sprawdź"
 msgid "_Show Review"
 msgstr "_Wyświetl opinię"
 
-#: src/gs-update-monitor.c:238 src/gs-update-monitor.c:261
+#: src/gs-update-monitor.c:248 src/gs-update-monitor.c:279
 msgid "Critical Updates Ready to Install"
 msgstr "Krytyczne aktualizacje są gotowe do instalacji"
 
-#: src/gs-update-monitor.c:239 src/gs-update-monitor.c:262
+#: src/gs-update-monitor.c:249 src/gs-update-monitor.c:280
 msgid "Install critical updates as soon as possible"
 msgstr "Należy instalować aktualizacje krytyczne tak szybko, jak to możliwe"
 
-#: src/gs-update-monitor.c:245 src/gs-update-monitor.c:272
+#: src/gs-update-monitor.c:255 src/gs-update-monitor.c:290
 msgid "Updates Ready to Install"
 msgstr "Aktualizacje są gotowe do instalacji"
 
-#: src/gs-update-monitor.c:246 src/gs-update-monitor.c:273
+#: src/gs-update-monitor.c:256 src/gs-update-monitor.c:291
 msgid "Software updates are ready and waiting"
 msgstr "Aktualizacje oprogramowania są gotowe"
 
-#: src/gs-update-monitor.c:254
-msgid "Updates Are Out of Date"
-msgstr "Aktualizacje są nieaktualne"
-
-#: src/gs-update-monitor.c:255
-msgid "Please check for available updates"
-msgstr "Proszę wyszukać dostępne aktualizacje."
-
+#. TRANSLATORS: Notification title, keep it short. Context: it’s been a long time since updates were checked.
 #: src/gs-update-monitor.c:265
+msgid "Could Not Check for Updates Recently"
+msgstr "Ostatnio nie można było wyszukać aktualizacji"
+
+#: src/gs-update-monitor.c:266
+msgid ""
+"Updates may have been paused due to being on a metered network, power saver "
+"mode, or game mode"
+msgstr ""
+"Aktualizacje mogły zostać wstrzymane z powodu połączenia taryfowego, trybu "
+"oszczędzania energii lub trybu gier"
+
+#. Strictly we don’t need an additional button here, as the default action
+#. * for the notification will open the updates page. From there, users still
+#. * have to manually press the refresh button, though, which might be
+#. * non-obvious; so add a button to the notification to help.
+#: src/gs-update-monitor.c:272 src/gs-updates-page.ui:262
+#: src/gs-updates-page.ui:265
+msgid "Check for Updates"
+msgstr "Wyszukanie aktualizacji"
+
+#: src/gs-update-monitor.c:283
 msgid "Critical Updates Available to Download"
 msgstr "Krytyczne aktualizacje są dostępne do pobrania"
 
-#: src/gs-update-monitor.c:266
+#: src/gs-update-monitor.c:284
 msgid "Download critical updates as soon as possible"
 msgstr "Należy pobierać aktualizacje krytyczne tak szybko, jak to możliwe"
 
-#: src/gs-update-monitor.c:277
+#: src/gs-update-monitor.c:295
 msgid "Updates Available to Download"
 msgstr "Aktualizacje są dostępne do pobrania"
 
-#: src/gs-update-monitor.c:278
+#: src/gs-update-monitor.c:296
 msgid "Software updates can be downloaded"
 msgstr "Można pobrać aktualizacje oprogramowania"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:401
+#: src/gs-update-monitor.c:421
 #, c-format
 msgid "%u App Updated — Restart Required"
 msgid_plural "%u Apps Updated — Restart Required"
@@ -5538,7 +5578,7 @@ msgstr[1] "Zaktualizowano %u aplikacje — wymagane jest ponowne uruchomienie"
 msgstr[2] "Zaktualizowano %u aplikacji — wymagane jest ponowne uruchomienie"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:407
+#: src/gs-update-monitor.c:427
 #, c-format
 msgid "%u App Updated"
 msgid_plural "%u Apps Updated"
@@ -5547,24 +5587,24 @@ msgstr[1] "Zaktualizowano %u aplikacje"
 msgstr[2] "Zaktualizowano %u aplikacji"
 
 #. TRANSLATORS: %1 is an app name, e.g. Firefox
-#: src/gs-update-monitor.c:418
+#: src/gs-update-monitor.c:438
 #, c-format
 msgid "%s has been updated."
 msgstr "Aplikacja %s została zaktualizowana."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:421
+#: src/gs-update-monitor.c:441
 msgid "Please restart the app."
 msgstr "Proszę uruchomić ją ponownie."
 
 #. TRANSLATORS: %1 and %2 are both app names, e.g. Firefox
-#: src/gs-update-monitor.c:429
+#: src/gs-update-monitor.c:449
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "Aplikacje %s i %s zostały zaktualizowane."
 
 #. TRANSLATORS: at least one app needs restarting
-#: src/gs-update-monitor.c:435 src/gs-update-monitor.c:454
+#: src/gs-update-monitor.c:455 src/gs-update-monitor.c:474
 #, c-format
 msgid "%u app requires a restart."
 msgid_plural "%u apps require a restart."
@@ -5573,62 +5613,62 @@ msgstr[1] "%u aplikacje wymagają ponownego uruchomienia."
 msgstr[2] "%u aplikacji wymaga ponownego uruchomienia."
 
 #. TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox
-#: src/gs-update-monitor.c:447
+#: src/gs-update-monitor.c:467
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "W tym: %s, %s i %s."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:755
+#: src/gs-update-monitor.c:775
 msgid "System Has Reached End of Life"
-msgstr "System nie jest już wspierany"
+msgstr "System jest bez wsparcia"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:757
+#: src/gs-update-monitor.c:777
 msgid "Upgrade to continue receiving updates"
 msgstr "Należy zaktualizować system, aby nadal otrzymywać aktualizacje"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:816
+#: src/gs-update-monitor.c:836
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Nowa wersja systemu %s jest gotowa do zainstalowania"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:820
+#: src/gs-update-monitor.c:840
 msgid "Software Upgrade Available"
 msgstr "Dostępna jest aktualizacja oprogramowania"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1347
+#: src/gs-update-monitor.c:1367
 msgid "Software Updates Failed"
 msgstr "Aktualizacje oprogramowania się nie powiodły"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1349
+#: src/gs-update-monitor.c:1369
 msgid "Prepared updates were not installed"
 msgstr "Przygotowane aktualizacje nie zostały zainstalowane"
 
-#: src/gs-update-monitor.c:1350
+#: src/gs-update-monitor.c:1370
 msgid "Show Details"
 msgstr "Wyświetl informacje"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1399
+#: src/gs-update-monitor.c:1419
 msgid "System Upgrade Complete"
 msgstr "Ukończono aktualizację systemu"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1404
+#: src/gs-update-monitor.c:1424
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Witamy w systemie %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1413
+#: src/gs-update-monitor.c:1433
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Zainstalowano aktualizację oprogramowania"
@@ -5636,7 +5676,7 @@ msgstr[1] "Zainstalowano aktualizacje oprogramowania"
 msgstr[2] "Zainstalowano aktualizacje oprogramowania"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1417
+#: src/gs-update-monitor.c:1437
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "Zainstalowano ważną aktualizację systemu operacyjnego."
@@ -5648,30 +5688,30 @@ msgstr[2] "Zainstalowano ważne aktualizacje systemu operacyjnego."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1428
+#: src/gs-update-monitor.c:1448
 msgctxt "updates"
 msgid "Review"
 msgstr "Przejrzyj"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1480
+#: src/gs-update-monitor.c:1500
 msgid "Failed To Update"
 msgstr "Aktualizacja się nie powiodła"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1485
+#: src/gs-update-monitor.c:1505
 msgid "The system was already up to date."
 msgstr "Komputer jest już aktualny."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1490
+#: src/gs-update-monitor.c:1510
 msgid "The update was cancelled."
 msgstr "Anulowano aktualizację."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1495
+#: src/gs-update-monitor.c:1515
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -5680,23 +5720,23 @@ msgstr ""
 "upewnić, że można połączyć się z Internetem i spróbować ponownie."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1500
+#: src/gs-update-monitor.c:1520
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr ""
-"Aktualizacja zawiera błędy bezpieczeństwa. Proszę skontaktować się "
+"Wystąpiły problemy z zabezpieczeniami aktualizacji. Proszę skontaktować się "
 "z dostawcą oprogramowania, aby dowiedzieć się więcej."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1505
+#: src/gs-update-monitor.c:1525
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Za mało miejsca na dysku. Proszę zwolnić trochę miejsca i spróbować ponownie."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1509
+#: src/gs-update-monitor.c:1529
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -5727,33 +5767,33 @@ msgstr ""
 "oprogramowania"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:850
+#: src/gs-updates-page.c:869
 msgid "Charges May Apply"
 msgstr "Możliwe opłaty"
 
 #. TRANSLATORS: we need network to do the updates check
-#: src/gs-updates-page.c:852
+#: src/gs-updates-page.c:871
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
 msgstr ""
 "Wyszukiwanie aktualizacji na połączeniu komórkowym może spowodować "
-"naniesienie opłat."
+"naliczenie opłat."
 
 #. TRANSLATORS: this is a link to the control-center network panel
-#: src/gs-updates-page.c:856
+#: src/gs-updates-page.c:875
 msgid "Check _Anyway"
 msgstr "Wyszukaj _mimo to"
 
-#: src/gs-updates-page.c:903
+#: src/gs-updates-page.c:929
 msgid "Software Upgrades Downloaded"
 msgstr "Pobrano aktualizacje oprogramowania"
 
-#: src/gs-updates-page.c:904
+#: src/gs-updates-page.c:930
 msgid "Upgrades are ready to be installed"
 msgstr "Aktualizacje są gotowe do zainstalowania"
 
-#: src/gs-updates-page.c:1254
+#: src/gs-updates-page.c:1280
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Aktualizacje"
@@ -5787,7 +5827,7 @@ msgid ""
 "charges"
 msgstr ""
 "Wyszukiwanie aktualizacji na połączeniu komórkowym może spowodować "
-"naniesienie opłat"
+"naliczenie opłat"
 
 #: src/gs-updates-page.ui:183
 msgid "_Check Anyway"
@@ -6008,7 +6048,7 @@ msgstr "Dodawanie, usuwanie i aktualizowanie oprogramowania na komputerze"
 #. Translators: Search terms to find this app. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:11
 msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
-msgstr "Aktualizacje;Aktualizuj;Zaktualizuj;Uaktualnienia;Uaktualnij;Update;Upgrade;Źródła;Źródło;Repozytoria;Repozytorium,Preferencje;Opcje;Ustawienia;Instalacja;Zainstaluj;Odinstaluj;Deinstalacja;Deinstaluj;Program;Oprogramowanie;Software;Aplikacja;Aplikacje;App;Apps;Sklep;Store;"
+msgstr "Aktualizacje;Aktualizuj;Zaktualizuj;Uaktualnienia;Uaktualnij;Update;Upgrade;Źródła;Źródło;Repozytoria;Repozytorium;Preferencje;Opcje;Ustawienia;Instalacja;Zainstaluj;Odinstaluj;Deinstalacja;Deinstaluj;Program;Oprogramowanie;Software;Aplikacja;Aplikacje;App;Apps;Sklep;Store;"
 
 #. Translators: The "%s" is replaced with an app name, like "NVIDIA Linux Graphics Driver".
 #. This is the first part of a system notification.
@@ -6098,7 +6138,7 @@ msgstr "Flatpak to system dla aplikacji na Linuksa"
 msgid "Getting flatpak metadata for %s…"
 msgstr "Pobieranie metadanych Flatpak dla %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3328
+#: plugins/flatpak/gs-flatpak.c:3357
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Dopracowanie dodatku „%s” się nie powiodło: %s"
@@ -6393,7 +6433,7 @@ msgstr "Aktualizacja baterii %s"
 #: plugins/fwupd/gs-fwupd-app.c:268
 #, c-format
 msgid "%s Camera Update"
-msgstr "Aktualizacja aparatu %s"
+msgstr "Aktualizacja kamery %s"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
 #: plugins/fwupd/gs-fwupd-app.c:272
@@ -6648,3 +6688,6 @@ msgstr "Składnik systemu"
 #, c-format
 msgid "Removing sysupdate job '%s' failed with status %i"
 msgstr "Usunięcie zadania sysupdate „%s” się nie powiodło ze stanem %i"
+
+#~ msgid "Updates Are Out of Date"
+#~ msgstr "Aktualizacje są nieaktualne"
