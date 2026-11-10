@@ -3387,10 +3387,13 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		       GError **error)
 {
 	g_autoptr(GsSiloHandle) silo_handle = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* ensure valid */
-	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo_handle, cancellable, error))
-		return FALSE;
+	if (!gs_flatpak_rescan_app_data (self, interactive, event_callback, event_user_data, &silo_handle, cancellable, &local_error)) {
+		/* do not panic when the rescan failed */
+		g_debug ("Failed to rescan app data for '%s': %s", gs_app_get_unique_id (app), local_error->message);
+	}
 
 	return gs_flatpak_refine_app_internal (self, app, require_flags, interactive, force_state_update, NULL,
 					       gs_silo_wrapper_get_silo (silo_handle),

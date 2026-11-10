@@ -701,6 +701,8 @@ refine_app (GsPluginFlatpak             *self,
             GCancellable                *cancellable,
             GError                     **error)
 {
+	g_autoptr(GError) local_error = NULL;
+
 	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineApp, "Flatpak (refine app)", NULL);
 
 	/* only process this app if was created by this plugin */
@@ -708,8 +710,10 @@ refine_app (GsPluginFlatpak             *self,
 		return TRUE;
 
 	/* get the runtime first */
-	if (!gs_plugin_flatpak_refine_app (self, app, require_flags, interactive, event_callback, event_user_data, cancellable, error))
-		return FALSE;
+	if (!gs_plugin_flatpak_refine_app (self, app, require_flags, interactive, event_callback, event_user_data, cancellable, &local_error)) {
+		g_debug ("Failed to refine app '%s': %s", gs_app_get_unique_id (app), local_error->message);
+		/* do not fail here, it would stop refining the other apps in the list */
+	}
 
 	GS_PROFILER_END_SCOPED (FlatpakRefineApp);
 
@@ -719,14 +723,18 @@ refine_app (GsPluginFlatpak             *self,
 		if (runtime != NULL) {
 			GS_PROFILER_BEGIN_SCOPED (FlatpakRefineAppRuntime, "Flatpak (refine runtime)", NULL);
 
+			g_clear_error (&local_error);
+
 			if (!gs_plugin_flatpak_refine_app (self, runtime,
 							   require_flags,
 							   interactive,
 							   event_callback,
 							   event_user_data,
 							   cancellable,
-							   error)) {
-				return FALSE;
+							   &local_error)) {
+				g_debug ("Failed to refine runtime '%s' for app '%s': %s", gs_app_get_unique_id (runtime),
+					 gs_app_get_unique_id (app), local_error->message);
+				/* do not fail here, it would stop refining the other apps in the list */
 			}
 
 			GS_PROFILER_END_SCOPED (FlatpakRefineAppRuntime);
